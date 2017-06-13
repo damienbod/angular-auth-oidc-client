@@ -14,7 +14,6 @@ before_install:
 install:
   - npm install
 script:
-  - npm test
   - npm run build
 before_script:
   - export DISPLAY=:99.0
