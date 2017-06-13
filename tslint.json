@@ -1,0 +1,87 @@
+{
+	"rules": {
+		"class-name": true,
+		"comment-format": [
+			true
+		],
+		"curly": true,
+		"eofline": false,
+		"forin": false,
+		"indent": [
+			false,
+			"spaces"
+		],
+		"label-position": true,
+		"max-line-length": [
+			true,
+			400
+		],
+		"member-access": false,
+		"member-ordering": [
+			true,
+			"static-before-instance",
+			"variables-before-functions"
+		],
+		"no-arg": true,
+		"no-bitwise": true,
+		"no-console": [
+			true,
+			"debug",
+			"info",
+			"time",
+			"timeEnd",
+			"trace"
+		],
+		"no-construct": true,
+		"no-debugger": true,
+		"no-duplicate-variable": true,
+		"no-empty": false,
+		"no-eval": true,
+		"no-inferrable-types": [ true ],
+		"no-shadowed-variable": false,
+		"no-string-literal": false,
+		"no-switch-case-fall-through": false,
+		"no-trailing-whitespace": true,
+		"no-unused-expression": true,
+		"no-use-before-declare": true,
+		"no-var-keyword": true,
+		"object-literal-sort-keys": false,
+		"one-line": [
+			true,
+			"check-open-brace",
+			"check-catch",
+			"check-else",
+			"check-whitespace"
+		],
+		"quotemark": [
+			true,
+			"single"
+		],
+		"radix": false,
+		"semicolon": [
+			"always"
+		],
+		"triple-equals": [
+			false,
+			"allow-null-check"
+		],
+		"typedef-whitespace": [
+			true,
+			{
+				"index-signature": "nospace",
+				"parameter": "nospace",
+				"property-declaration": "nospace",
+				"variable-declaration": "nospace"
+			}
+		],
+		"variable-name": false,
+		"whitespace": [
+			true,
+			"check-branch",
+			"check-decl",
+			"check-operator",
+			"check-separator",
+			"check-type"
+		]
+	}
+}
