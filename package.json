@@ -1,7 +1,7 @@
 {
     "name": "angular-auth-oidc-client",
     "version": "0.0.4",
-    "description": "Build an Angular library compatible with AoT compilation and Tree shaking",
+    "description": "An OpenID Connect Implicit Flow client for Angular",
     "main": "./bundles/angular-auth-oidc-client.umd.js",
     "module": "./modules/angular-auth-oidc-client.es5.js",
     "es2015": "./modules/angular-auth-oidc-client.js",
