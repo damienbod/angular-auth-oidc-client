@@ -1,14 +1,19 @@
 import resolve from 'rollup-plugin-node-resolve';
 
-// Add here external dependencies that actually you use.
 const globals = {
     '@angular/core': 'ng.core',
     '@angular/common': 'ng.common',
-    '@angular/forms': 'ng.forms',
     '@angular/http': 'ng.http',
 	'@angular/router': 'ng.router',
+    'rxjs/Rx': 'Rx',
     'rxjs/Observable': 'Rx',
-    'rxjs/Observer': 'Rx'
+    'rxjs/Observer': 'Rx',
+    'rxjs/BehaviorSubject': 'Rx',
+    'rxjs/add/operator/map': 'Rx',
+    'rxjs/add/operator/catch': 'Rx',
+    'rxjs/add/observable/throw': 'Rx',
+    'rxjs/add/observable/interval': 'Rx',
+    'rxjs/add/observable/timer': 'Rx'
 };
 
 export default {
@@ -16,7 +21,7 @@ export default {
     dest: './dist/bundles/angular-auth-oidc-client.umd.js',
     format: 'umd',
     exports: 'named',
-    moduleName: 'angular-auth-oidc-client',
+    moduleName: 'ng.angularAuthOidcClient',
     plugins: [resolve()],
     external: Object.keys(globals),
     globals: globals,
