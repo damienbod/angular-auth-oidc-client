@@ -1,11 +1,9 @@
 # angular-library-starter
-[![Build Status](https://travis-ci.org/robisim74/angular-library-starter.svg?branch=master)](https://travis-ci.org/robisim74/angular-library-starter)
->Build an Angular library compatible with AoT compilation &amp; Tree shaking.
+[![Build Status](https://travis-ci.org/damienbod/angular-auth-oidc-client.svg?branch=master)](https://travis-ci.org/damienbod/angular-auth-oidc-client)
+>OpenID Connect Implicit Flow
 
-This starter allows you to create a library for **Angular 2+** apps written in _TypeScript_, _ES6_ or _ES5_. 
-The project is based on the official _Angular_ packages.
 
-Get the [Changelog](https://github.com/robisim74/angular-library-starter/blob/master/CHANGELOG.md).
+Get the [Changelog](https://github.com/damienbod/angular-auth-oidc-client/blob/master/CHANGELOG.md).
 
 ## Contents
 * [1 Project structure](#1)
@@ -33,29 +31,6 @@ Get the [Changelog](https://github.com/robisim74/angular-library-starter/blob/ma
     - **tslint.json** _TypeScript_ linter rules with _Codelyzer_
     - **travis.yml** _Travis CI_ configuration
 
-## <a name="2"></a>2 Customizing
-1. Update [Node & npm](https://docs.npmjs.com/getting-started/installing-node).
-
-2. Rename `angular-library-starter` and `angularLibraryStarter` everywhere to `my-library` and `myLibrary`.
-
-3. Update in `package.json` file:
-    - version: [Semantic Versioning](http://semver.org/)
-    - description
-    - urls
-    - packages
-
-    and run `npm install`.
-
-4. Create your classes in `src` folder, and export public classes in `my-library.ts`.
-
-5. You can create only one _module_ for the whole library: 
-I suggest you create different _modules_ for different functions, 
-so that the user can import only those he needs and optimize _Tree shaking_ of his app.
-
-6. Update in `rollup.config.js` file `globals` external dependencies with those that actually you use.
-
-7. Create unit & integration tests in `tests` folder, or unit tests next to the things they test in `src` folder, always using `.spec.ts` extension. 
-_Karma_ is configured to use _webpack_ only for `*.ts` files: if you need to test different formats, you have to update it.
 
 ## <a name="3"></a>3 Testing
 The following command run unit & integration tests that are in the `tests` folder, and unit tests that are in `src` folder: 
@@ -109,7 +84,7 @@ npm install my-library --save
 ```JavaScript
 System.config({
     map: {
-        'my-library': 'node_modules/my-library/bundles/my-library.umd.js'
+        'angular-auth-oidc-client': 'node_modules/angular-auth-oidc-client/bundles/my-library.umd.js'
     }
 });
 ```
@@ -120,7 +95,7 @@ No need to set up anything, just import it in your code.
 #### Plain JavaScript
 Include the `umd` bundle in your `index.html`:
 ```Html
-<script src="node_modules/my-library/bundles/my-library.umd.js"></script>
+<script src="node_modules/angular-auth-oidc-client/bundles/angular-auth-oidc-client.umd.js"></script>
 ```
 and use global `ng.myLibrary` namespace.
 
@@ -130,10 +105,10 @@ The library is compatible with _AoT compilation_.
 ## <a name="8"></a>8 What it is important to know
 1. `package.json`
 
-    * `"main": "./bundles/angular-library-starter.umd.js"` legacy module format 
-    * `"module": "./bundles/angular-library-starter.es5.js"` flat _ES_ module, for using module bundlers such as _Rollup_ or _webpack_: 
+    * `"main": "./bundles/angular-auth-oidc-client.umd.js"` legacy module format 
+    * `"module": "./bundles/angular-auth-oidc-client.es5.js"` flat _ES_ module, for using module bundlers such as _Rollup_ or _webpack_: 
     [package module](https://github.com/rollup/rollup/wiki/pkg.module)
-    * `"es2015": "./bundles/angular-library-starter.js"` _ES2015_ flat _ESM_ format, experimental _ES2015_ build
+    * `"es2015": "./bundles/angular-auth-oidc-client.js"` _ES2015_ flat _ESM_ format, experimental _ES2015_ build
     * `"peerDependencies"` the packages and their versions required by the library when it will be installed
 
 2. `tsconfig.json` file used by _TypeScript_ compiler
