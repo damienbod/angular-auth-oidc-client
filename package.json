@@ -1,0 +1,71 @@
+{
+    "name": "angular-library-starter",
+    "version": "0.0.1",
+    "description": "Build an Angular library compatible with AoT compilation and Tree shaking",
+    "main": "./bundles/angular-library-starter.umd.js",
+    "module": "./modules/angular-library-starter.es5.js",
+    "es2015": "./modules/angular-library-starter.js",
+    "scripts": {
+        "build": "node build.js",
+        "test": "karma start",
+        "pack-lib": "npm pack ./dist",
+        "publish-lib": "npm publish ./dist",
+        "compodoc": "compodoc -p tsconfig.json",
+        "compodoc-serve": "compodoc -s"
+    },
+    "typings": "./index.d.ts",
+    "author": "",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/damienbod/angular-auth-oidc-client.git"
+    },
+    "bugs": {
+        "url": "https://github.com/damienbod/angular-auth-oidc-client/issues"
+    },
+    "homepage": "https://github.com/damienbod/angular-auth-oidc-client",
+    "keywords": [
+        "angular",
+        "javascript",
+        "typescript"
+    ],
+    "license": "MIT",
+    "peerDependencies": {
+        "@angular/common": ">= 4.2.1",
+        "@angular/core": ">= 4.2.1"
+    },
+    "devDependencies": {
+        "@angular/common": "4.2.1",
+        "@angular/compiler": "4.2.1",
+        "@angular/compiler-cli": "4.2.1",
+        "@angular/core": "4.2.1",
+        "@angular/platform-browser": "4.2.1",
+        "@angular/platform-browser-dynamic": "4.2.1",
+        "@angular/platform-server": "4.2.1",
+        "@angular/animations": "4.2.1",
+        "@types/jasmine": "2.5.48",
+        "@types/node": "7.0.22",
+        "codelyzer": "3.0.1",
+        "@compodoc/compodoc": "1.0.0-beta.9",
+        "core-js": "2.4.1",
+        "jasmine-core": "2.6.2",
+        "karma": "1.7.0",
+        "karma-chrome-launcher": "2.1.1",
+        "karma-jasmine": "1.1.0",
+        "karma-sourcemap-loader": "0.3.7",
+        "karma-spec-reporter": "0.0.31",
+        "karma-webpack": "2.0.3",
+        "reflect-metadata": "0.1.10",
+        "rollup": "0.41.6",
+        "rollup-plugin-node-resolve": "3.0.0",
+        "rxjs": "5.4.0",
+        "ts-loader": "2.1.0",
+        "tslint": "5.4.0",
+        "typescript": "2.3.4",
+        "webpack": "2.6.1",
+        "zone.js": "0.8.11",
+        "shelljs": "0.7.7",
+        "chalk": "1.1.3",
+        "sorcery": "0.10.0",
+        "yargs": "8.0.1"
+    }
+}
