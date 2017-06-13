@@ -5,6 +5,7 @@
 
 Get the [Changelog](https://github.com/damienbod/angular-auth-oidc-client/blob/master/CHANGELOG.md).
 
+Latest docs : https://github.com/damienbod/angular-auth-oidc-client
 
 ## <a name="3"></a>Using the package
 
