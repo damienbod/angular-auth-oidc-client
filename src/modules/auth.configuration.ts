@@ -31,7 +31,7 @@ export class AuthConfiguration {
 
     log_console_warning_active = true;
 
-    log_console_debug_active = true;
+    log_console_debug_active = false;
 
     // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
     // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
