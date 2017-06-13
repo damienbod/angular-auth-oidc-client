@@ -257,7 +257,7 @@ export class OidcSecurityValidation {
 
     private getTokenExpirationDate(dataIdToken: any): Date {
         if (!dataIdToken.hasOwnProperty('exp')) {
-            return null;
+            return new Date();
         }
 
         let date = new Date(0); // The 0 here is the key, which sets the date to the epoch
