@@ -39,6 +39,8 @@ https://cdnjs.com/libraries/jsrsasign
 </html>
 ```
 
+## Using in the angular application
+
 Import the module and services in your module. Set the AuthConfiguration properties to match the server configuration. At present only the id_token token flow is supported.
 
 ```javascipt
