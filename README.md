@@ -5,139 +5,120 @@
 
 Get the [Changelog](https://github.com/damienbod/angular-auth-oidc-client/blob/master/CHANGELOG.md).
 
-## Contents
-* [1 Project structure](#1)
-* [2 Customizing](#2)
-* [3 Testing](#3)
-* [4 Building](#4)
-* [5 Publishing](#5)
-* [6 Documentation](#6)
-* [7 Using the library](#7)
-* [8 What it is important to know](#8)
 
-## <a name="1"></a>1 Project structure
-- Library:
-    - **src** folder for the classes
-    - **public_api.ts** entry point for all public APIs of the package
-    - **package.json** _npm_ options
-    - **rollup.config.js** _Rollup_ configuration for building the bundles
-    - **tsconfig-build.json** _ngc_ compiler options for _AoT compilation_
-    - **build.js** building process using _ShellJS_
-- Testing:
-    - **tests** folder for unit & integration tests
-    - **karma.conf.js** _Karma_ configuration that uses _webpack_ to build the tests
-    - **spec.bundle.js** defines the files used by _webpack_
-- Extra:
-    - **tslint.json** _TypeScript_ linter rules with _Codelyzer_
-    - **travis.yml** _Travis CI_ configuration
+## <a name="3"></a>3 Using
 
-
-## <a name="3"></a>3 Testing
-The following command run unit & integration tests that are in the `tests` folder, and unit tests that are in `src` folder: 
-```Shell
-npm test 
+Add the npm package to your package.json
+```javascipt
+ "angular-auth-oidc-client": "0.0.2"
 ```
 
-## <a name="4"></a>4 Building
-The following command:
-```Shell
-npm run build
-```
-- starts _TSLint_ with _Codelyzer_
-- starts _AoT compilation_ using _ngc_ compiler
-- creates `dist` folder with all the files of distribution
+Import the module and services in your module. Set the AuthConfiguration properties to match the server configuration. At present only the id_token token flow is supported.
 
-> If you get errors during the building process or bundles are not created, set _silent_ to false in the _build.js_ file to check what's going wrong: warnings on the first execution of _rollup_ are normal, and also the errors on _tsc_ are a known issue.
+```javascipt
+import { NgModule } from '@angular/core';
 
-To test locally the npm package:
-```Shell
-npm run pack-lib
-```
-Then you can install it in an app to test it:
-```Shell
-npm install [path]my-library-[version].tgz
-```
+...
 
-## <a name="5"></a>5 Publishing
-Before publishing the first time:
-- you can register your library on [Travis CI](https://travis-ci.org/): you have already configured `.travis.yml` file
-- you must have a user on the _npm_ registry: [Publishing npm packages](https://docs.npmjs.com/getting-started/publishing-npm-packages)
+import { AuthModule, AuthConfiguration, OidcSecurityService } from 'angular-auth-oidc-client';
 
-```Shell
-npm run publish-lib
-```
+@NgModule({
+    imports: [
+        ...
+        AuthModule.forRoot(),
+    ],
+    declarations: [
+        AppComponent,
+		...
+    ],
+    providers: [
+        OidcSecurityService,
+        ...
+    ],
+    bootstrap:    [AppComponent],
+})
 
-## <a name="6"></a>6 Documentation
-To generate the documentation, this starter uses [compodoc](https://github.com/compodoc/compodoc):
-```Shell
-npm run compodoc
-npm run compodoc-serve 
-```
-
-## <a name="7"></a>7 Using the library
-### Installing
-```Shell
-npm install my-library --save 
-```
-### Loading
-#### Using SystemJS configuration
-```JavaScript
-System.config({
-    map: {
-        'angular-auth-oidc-client': 'node_modules/angular-auth-oidc-client/bundles/my-library.umd.js'
+export class AppModule {
+    constructor(public authConfiguration: AuthConfiguration) {
+        this.authConfiguration.stsServer = 'https://localhost:44318';
+        this.authConfiguration.redirect_url = 'https://localhost:44311';
+        // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer identified by the iss (issuer) Claim as an audience.
+        // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences not trusted by the Client.
+        this.authConfiguration.client_id = 'angularclient';
+        this.authConfiguration.response_type = 'id_token token';
+        this.authConfiguration.scope = 'dataEventRecords securedFiles openid';
+        this.authConfiguration.post_logout_redirect_uri = 'https://localhost:44311/Unauthorized';
+        this.authConfiguration.start_checksession = false;
+        this.authConfiguration.silent_renew = true;
+        this.authConfiguration.startup_route = '/dataeventrecords/list';
+        // HTTP 403
+        this.authConfiguration.forbidden_route = '/Forbidden';
+        // HTTP 401
+        this.authConfiguration.unauthorized_route = '/Unauthorized';
+        this.authConfiguration.log_console_warning_active = true;
+        this.authConfiguration.log_console_debug_active = false;
+        // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
+        // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
+        this.authConfiguration.max_id_token_iat_offset_allowed_in_seconds = 3;
     }
-});
+
+}
+
 ```
-#### Angular-CLI
-No need to set up anything, just import it in your code.
-#### Rollup or webpack
-No need to set up anything, just import it in your code.
-#### Plain JavaScript
-Include the `umd` bundle in your `index.html`:
-```Html
-<script src="node_modules/angular-auth-oidc-client/bundles/angular-auth-oidc-client.umd.js"></script>
+
+Create the login, logout component and use the oidcSecurityService
+
+```javascipt
+  constructor(public oidcSecurityService: OidcSecurityService) {
+    }
+
+    ngOnInit() {
+        if (window.location.hash) {
+            this.oidcSecurityService.authorizedCallback();
+        }
+    }
+
+    login() {
+        console.log('start login');
+        this.oidcSecurityService.authorize();
+    }
+
+    refreshSession() {
+        console.log('start refreshSession');
+        this.oidcSecurityService.authorize();
+    }
+
+    logout() {
+        console.log('start logoff');
+        this.oidcSecurityService.logoff();
+    }
+
 ```
-and use global `ng.myLibrary` namespace.
 
-### AoT compilation
-The library is compatible with _AoT compilation_.
+In the http services, add the token to the header using the oidcSecurityService
 
-## <a name="8"></a>8 What it is important to know
-1. `package.json`
+```javascipt
+private setHeaders() {
+        this.headers = new Headers();
+        this.headers.append('Content-Type', 'application/json');
+        this.headers.append('Accept', 'application/json');
 
-    * `"main": "./bundles/angular-auth-oidc-client.umd.js"` legacy module format 
-    * `"module": "./bundles/angular-auth-oidc-client.es5.js"` flat _ES_ module, for using module bundlers such as _Rollup_ or _webpack_: 
-    [package module](https://github.com/rollup/rollup/wiki/pkg.module)
-    * `"es2015": "./bundles/angular-auth-oidc-client.js"` _ES2015_ flat _ESM_ format, experimental _ES2015_ build
-    * `"peerDependencies"` the packages and their versions required by the library when it will be installed
+        let token = this.oidcSecurityService.getToken();
+        if (token !== '') {
+            let tokenValue = 'Bearer ' + token;
+            this.headers.append('Authorization', tokenValue);
+        }
+    }
 
-2. `tsconfig.json` file used by _TypeScript_ compiler
+```
 
-    * Compiler options:
-        * `"strict": true` enables _TypeScript_ `strict` master option
+## Example using: 
 
-3. `tsconfig-build.json` file used by _ngc_ compiler
+https://github.com/damienbod/AspNet5IdentityServerAngularImplicitFlow/tree/npm-lib-test/src/AngularClient
 
-    * Compiler options:
-        * `"declaration": true` to emit _TypeScript_ declaration files
-        * `"module": "es2015"` & `"target": "es2015"` are used by _Rollup_ to create the _ES2015_ bundle
+## Notes: 
 
-    * Angular Compiler Options:
-        * `"skipTemplateCodegen": true,` skips generating _AoT_ files
-        * `"annotateForClosureCompiler": true` for compatibility with _Google Closure compiler_
-        * `"strictMetadataEmit": true` without emitting metadata files, the library will not compatible with _AoT compilation_
-
-4. `rollup.config.js` file used by _Rollup_
-
-    * `format: 'umd'` the _Universal Module Definition_ pattern is used by _Angular_ for its bundles
-    * `moduleName: 'ng.angularLibraryStarter'` defines the global namespace used by _JavaScript_ apps
-    * `external` & `globals` declare the external packages
-
-5. Server-side prerendering
-
-    If you want the library will be compatible with server-side prerendering:
-    * `window`, `document`, `navigator` and other browser types do not exist on the server
-    * don't manipulate the _nativeElement_ directly
+This npm package was created using the https://github.com/robisim74/angular-library-starter from Roberto Simonetti.
 
 ## License
 MIT

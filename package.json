@@ -1,6 +1,6 @@
 {
     "name": "angular-auth-oidc-client",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "description": "Build an Angular library compatible with AoT compilation and Tree shaking",
     "main": "./bundles/angular-auth-oidc-client.umd.js",
     "module": "./modules/angular-auth-oidc-client.es5.js",
