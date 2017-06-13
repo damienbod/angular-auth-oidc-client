@@ -10,7 +10,7 @@ Get the [Changelog](https://github.com/damienbod/angular-auth-oidc-client/blob/m
 
 Add the npm package to your package.json
 ```javascipt
- "angular-auth-oidc-client": "0.0.2"
+ "angular-auth-oidc-client": "0.0.3"
 ```
 
 Import the module and services in your module. Set the AuthConfiguration properties to match the server configuration. At present only the id_token token flow is supported.
