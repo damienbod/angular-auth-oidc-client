@@ -3,7 +3,7 @@
 require('shelljs/global');
 const chalk = require('chalk');
 
-const PACKAGE = `angular-library-starter`;
+const PACKAGE = `angular-auth-oidc-client`;
 const NPM_DIR = `dist`;
 const MODULES_DIR = `${NPM_DIR}/modules`;
 const BUNDLES_DIR = `${NPM_DIR}/bundles`;

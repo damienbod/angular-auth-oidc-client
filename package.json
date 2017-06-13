@@ -1,10 +1,10 @@
 {
-    "name": "angular-library-starter",
+    "name": "angular-auth-oidc-client",
     "version": "0.0.1",
     "description": "Build an Angular library compatible with AoT compilation and Tree shaking",
-    "main": "./bundles/angular-library-starter.umd.js",
-    "module": "./modules/angular-library-starter.es5.js",
-    "es2015": "./modules/angular-library-starter.js",
+    "main": "./bundles/angular-auth-oidc-client.umd.js",
+    "module": "./modules/angular-auth-oidc-client.es5.js",
+    "es2015": "./modules/angular-auth-oidc-client.js",
     "scripts": {
         "build": "node build.js",
         "test": "karma start",
