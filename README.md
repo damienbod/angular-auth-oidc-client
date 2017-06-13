@@ -6,7 +6,7 @@
 Get the [Changelog](https://github.com/damienbod/angular-auth-oidc-client/blob/master/CHANGELOG.md).
 
 
-## <a name="3"></a>3 Using
+## <a name="3"></a>Using the package
 
 Add the npm package to your package.json
 ```javascipt
