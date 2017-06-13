@@ -1,9 +1,9 @@
 import { NgModule, ModuleWithProviders, Injectable } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Http, Response, Headers } from '@angular/http';
-import 'rxjs/add/operator/map';
-import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/map';
 
 import { OidcSecurityService } from '../services/oidc.security.service';
 import { AuthConfiguration } from './auth.configuration';
@@ -19,7 +19,6 @@ import { AuthWellKnownEndpoints } from '../services/auth.well-known-endpoints';
         CommonModule
     ]
 })
-
 export class AuthModule {
     static forRoot(): ModuleWithProviders {
         return {
@@ -36,11 +35,7 @@ export class AuthModule {
             ]
         };
     }
-	
 
-    /**
-     * Use in features modules with lazy loading: new instance of SumService.
-     */
     public static forChild(): ModuleWithProviders {
         return {
             ngModule: AuthModule,
