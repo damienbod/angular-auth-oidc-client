@@ -18,7 +18,7 @@ Latest docs : https://github.com/damienbod/angular-auth-oidc-client
 ## <a></a>Using the package
 
 Add the npm package to your package.json
-```javascipt
+```typescript
  "angular-auth-oidc-client": "0.0.5"
 ```
 
@@ -30,7 +30,7 @@ https://github.com/kjur/jsrsasign
 
 https://cdnjs.com/libraries/jsrsasign
 
-```javascipt
+```html
 <!doctype html>
 <html>
 <head>
@@ -52,7 +52,7 @@ https://cdnjs.com/libraries/jsrsasign
 
 Import the module and services in your module. Set the AuthConfiguration properties to match the server configuration. At present only the id_token token flow is supported.
 
-```javascipt
+```typescript
 import { NgModule } from '@angular/core';
 
 ...
@@ -105,7 +105,7 @@ export class AppModule {
 
 Create the login, logout component and use the oidcSecurityService
 
-```javascipt
+```typescript
   constructor(public oidcSecurityService: OidcSecurityService) {
     }
 
@@ -134,7 +134,7 @@ Create the login, logout component and use the oidcSecurityService
 
 In the http services, add the token to the header using the oidcSecurityService
 
-```javascipt
+```typescript
 private setHeaders() {
         this.headers = new Headers();
         this.headers.append('Content-Type', 'application/json');
