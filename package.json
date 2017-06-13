@@ -25,7 +25,10 @@
     "homepage": "https://github.com/damienbod/angular-auth-oidc-client",
     "keywords": [
         "angular",
-        "javascript",
+		"oidc",
+		"oauth2",
+		"openid",
+		"security",
         "typescript"
     ],
     "license": "MIT",
