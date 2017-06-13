@@ -11,7 +11,7 @@ Latest docs : https://github.com/damienbod/angular-auth-oidc-client
 
 Add the npm package to your package.json
 ```javascipt
- "angular-auth-oidc-client": "0.0.3"
+ "angular-auth-oidc-client": "0.0.4"
 ```
 
 ## jsrsasign
