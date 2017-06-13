@@ -48,7 +48,7 @@ export class OidcSecurityUserService {
         return this.http.get(this.authWellKnownEndpoints.userinfo_endpoint, {
             headers: headers,
             body: ''
-        }).map((res | any) => res.json());
+        }).map((res : any) => res.json());
     }
 
     private handleError(error: any) {

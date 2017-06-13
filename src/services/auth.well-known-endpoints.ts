@@ -87,6 +87,6 @@ export class AuthWellKnownEndpoints {
         return this.http.get(this.authConfiguration.stsServer + '/.well-known/openid-configuration', {
             headers: headers,
             body: ''
-        }).map((res | any) => res.json());
+        }).map((res : any) => res.json());
     }
 }
