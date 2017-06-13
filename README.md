@@ -112,6 +112,30 @@ private setHeaders() {
 
 ```
 
+The npm depends on jsrsasign. You need to download this, the full lib, and add it to your main html file.
+
+https://github.com/kjur/jsrsasign
+
+https://cdnjs.com/libraries/jsrsasign
+
+```javascipt
+<!doctype html>
+<html>
+<head>
+    <base href="./">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ASP.NET Core 1.0 Angular IdentityServer4 Client</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	
+	<script src="assets/jsrsasign.min.js"></script>
+</head>
+<body>
+    <my-app>Loading...</my-app>
+</body>
+</html>
+```
+
 ## Example using: 
 
 https://github.com/damienbod/AspNet5IdentityServerAngularImplicitFlow/tree/npm-lib-test/src/AngularClient
