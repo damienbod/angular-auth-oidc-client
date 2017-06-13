@@ -36,4 +36,24 @@ export class AuthModule {
             ]
         };
     }
+	
+
+    /**
+     * Use in features modules with lazy loading: new instance of SumService.
+     */
+    public static forChild(): ModuleWithProviders {
+        return {
+            ngModule: AuthModule,
+            providers: [
+                OidcSecurityService,
+                OidcSecurityValidation,
+                OidcSecurityCheckSession,
+                OidcSecuritySilentRenew,
+                OidcSecurityUserService,
+                OidcSecurityCommon,
+                AuthConfiguration,
+                AuthWellKnownEndpoints
+            ]
+        };
+    }
 }
