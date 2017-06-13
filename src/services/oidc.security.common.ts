@@ -1,5 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
-import { AuthConfiguration } from '../auth.configuration';
+import { AuthConfiguration } from '../modules/auth.configuration';
 
 @Injectable()
 export class OidcSecurityCommon {

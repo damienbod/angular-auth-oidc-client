@@ -7,7 +7,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 
-import { AuthConfiguration } from '../auth.configuration';
+import { AuthConfiguration } from '../modules/auth.configuration';
 import { OidcSecurityCommon } from './oidc.security.common';
 import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
 
@@ -48,7 +48,7 @@ export class OidcSecurityUserService {
         return this.http.get(this.authWellKnownEndpoints.userinfo_endpoint, {
             headers: headers,
             body: ''
-        }).map(res => res.json());
+        }).map((res | any) => res.json());
     }
 
     private handleError(error: any) {
