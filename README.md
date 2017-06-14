@@ -5,7 +5,7 @@
 
 ## Features
 - Angular 4 onwards
-- Supports OpenID Implicit Flow 'id_token token' http://openid.net/specs/openid-connect-implicit-1_0.html
+- Supports OpenID Implicit Flow http://openid.net/specs/openid-connect-implicit-1_0.html
 - Complete client side validation for REQUIRED features
 - OpenID Connect Session Management 1.0 http://openid.net/specs/openid-connect-session-1_0.html
 - AOT build
@@ -19,7 +19,7 @@ Latest docs : https://github.com/damienbod/angular-auth-oidc-client
 
 Add the npm package to your package.json
 ```typescript
- "angular-auth-oidc-client": "0.0.5"
+ "angular-auth-oidc-client": "0.0.6"
 ```
 
 ## jsrsasign
