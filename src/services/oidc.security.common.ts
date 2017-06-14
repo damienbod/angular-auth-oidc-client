@@ -15,13 +15,11 @@ export class OidcSecurityCommon {
     storage_well_known_endpoints = 'wellknownendpoints';
 
     constructor(private authConfiguration: AuthConfiguration) {
-        this.storage = sessionStorage; //localStorage;
+        if (typeof Storage !== 'undefined') { this.storage = sessionStorage; } //localStorage;
     }
 
     retrieve(key: string): any {
-        let item = this.storage.getItem(key);
-
-        if (item && item !== 'undefined') {
+        if (this.storage) {
             return JSON.parse(this.storage.getItem(key));
         }
 
@@ -29,7 +27,9 @@ export class OidcSecurityCommon {
     }
 
     store(key: string, value: any) {
-        this.storage.setItem(key, JSON.stringify(value));
+        if (this.storage) {
+            this.storage.setItem(key, JSON.stringify(value));
+        }
     }
 
     resetStorageData() {
