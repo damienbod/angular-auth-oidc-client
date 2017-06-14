@@ -169,6 +169,15 @@ export class OidcSecurityValidation {
         return true;
     }
 
+    validate_userdata_sub_id_token(id_token_sub: any, userdata_sub: any): boolean {
+        if (id_token_sub !== userdata_sub) {
+            this.oidcSecurityCommon.logDebug('validate_userdata_sub_id_token failed, id_token_sub: ' + id_token_sub + ' userdata_sub:' + userdata_sub);
+            return false;
+        }
+
+        return true;
+    }
+
     getPayloadFromToken(token: any, encode: boolean) {
         let data = {};
         if (typeof token !== 'undefined') {

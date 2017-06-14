@@ -175,22 +175,29 @@ export class OidcSecurityService {
                         this.oidcSecurityUserService.initUserData()
                             .subscribe(() => {
                                 this.oidcSecurityCommon.logDebug('authorizedCallback id_token token flow');
-                                this.onUserDataLoaded.emit();
-                                this.oidcSecurityCommon.logDebug(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_access_token));
-                                this.oidcSecurityCommon.logDebug(this.oidcSecurityUserService.userData);
-                                if (this.authConfiguration.start_checksession) {
-                                    this.oidcSecurityCheckSession.init().subscribe(() => {
-                                        this.oidcSecurityCheckSession.pollServerSession(result.session_state, this.authConfiguration.client_id);
-                                    });
+                                if (this.oidcSecurityValidation.validate_userdata_sub_id_token(decoded_id_token.sub, this.oidcSecurityUserService.userData.sub)) {
+                                    this.onUserDataLoaded.emit();
+                                    this.oidcSecurityCommon.logDebug(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_access_token));
+                                    this.oidcSecurityCommon.logDebug(this.oidcSecurityUserService.userData);
+                                    if (this.authConfiguration.start_checksession) {
+                                        this.oidcSecurityCheckSession.init().subscribe(() => {
+                                            this.oidcSecurityCheckSession.pollServerSession(result.session_state, this.authConfiguration.client_id);
+                                        });
+                                    }
+
+                                    if (this.authConfiguration.silent_renew) {
+                                        this.oidcSecuritySilentRenew.initRenew();
+                                    }
+
+                                    this.runTokenValidatation();
+
+                                    this.router.navigate([this.authConfiguration.startup_route]);
+                                } else { // some went wrong, userdata sub does not match that from id_token
+                                    this.oidcSecurityCommon.logWarning('authorizedCallback, User data sub does not match sub in id_token');
+                                    this.oidcSecurityCommon.logDebug('authorizedCallback, token(s) validation failed, resetting');
+                                    this.resetAuthorizationData();
+                                    this.router.navigate([this.authConfiguration.unauthorized_route]);
                                 }
-
-                                if (this.authConfiguration.silent_renew) {
-                                    this.oidcSecuritySilentRenew.initRenew();
-                                }
-
-                                this.runTokenValidatation();
-
-                                this.router.navigate([this.authConfiguration.startup_route]);
                             });
                     } else { // flow id_token
                         this.oidcSecurityCommon.logDebug('authorizedCallback id_token flow');
