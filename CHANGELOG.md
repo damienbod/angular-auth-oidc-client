@@ -1,6 +1,10 @@
 ## angular-auth-oidc-client Changelog
 
 <a name="2017-06-14"></a>
+### 2017-06-14 version 0.0.7
+* validate user data sub value
+
+<a name="2017-06-14"></a>
 ### 2017-06-14
 * id_token flow
 * fixed rollup build
