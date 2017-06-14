@@ -33,7 +33,6 @@
     ],
     "license": "MIT",
     "peerDependencies": {
-        "@angular/common": ">= 4.1.0",
         "@angular/core": ">= 4.1.0",
         "@angular/http": ">= 4.1.0",
         "@angular/router": ">= 4.1.0"
