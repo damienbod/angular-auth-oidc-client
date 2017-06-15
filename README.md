@@ -55,24 +55,14 @@ Import the module and services in your module. Set the AuthConfiguration propert
 ```typescript
 import { NgModule } from '@angular/core';
 
-...
-
-import { AuthModule, AuthConfiguration, OidcSecurityService } from 'angular-auth-oidc-client';
+import { AuthModule, AuthConfiguration } from 'angular-auth-oidc-client';
 
 @NgModule({
     imports: [
         ...
         AuthModule.forRoot(),
     ],
-    declarations: [
-        AppComponent,
-		...
-    ],
-    providers: [
-        OidcSecurityService,
-        ...
-    ],
-    bootstrap:    [AppComponent],
+    ...
 })
 
 export class AppModule {

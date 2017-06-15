@@ -42,7 +42,10 @@ exec(`node scripts/map-sources -f ${MODULES_DIR}/${PACKAGE}.es5.js`);
 rm(`-f`, `${MODULES_DIR}/${PACKAGE}.es5.ts`);
 
 echo(`Run Rollup conversion on package`);
-exec(`rollup -c rollup.config.js --sourcemap`, { silent: true });
+if (exec(`rollup -c rollup.config.js --sourcemap`).code !== 0) {
+    echo(chalk.red(`Error: Rollup conversion failed`));
+    exit(1);
+}
 exec(`node scripts/map-sources -f ${BUNDLES_DIR}/${PACKAGE}.umd.js`);
 
 echo(`Minifying`);
