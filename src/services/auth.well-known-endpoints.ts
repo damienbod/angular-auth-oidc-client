@@ -36,7 +36,11 @@ export class AuthWellKnownEndpoints {
             this.authorization_endpoint = data.authorization_endpoint;
             this.token_endpoint = data.token_endpoint;
             this.userinfo_endpoint = data.userinfo_endpoint;
-            this.end_session_endpoint = data.end_session_endpoint;
+			
+            if (data.end_session_endpoint) {
+                this.end_session_endpoint = data.end_session_endpoint;
+            
+			};
 
             if (data.check_session_iframe) {
                 this.check_session_iframe = data.check_session_iframe;
