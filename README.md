@@ -1,5 +1,5 @@
 # angular-auth-oidc-client
-[![Build Status](https://travis-ci.org/damienbod/angular-auth-oidc-client.svg?branch=master)](https://travis-ci.org/damienbod/angular-auth-oidc-client)[![downloads][downloads-badge]][npm-stat]
+[![Build Status](https://travis-ci.org/damienbod/angular-auth-oidc-client.svg?branch=master)](https://travis-ci.org/damienbod/angular-auth-oidc-client)
 
 >OpenID Connect Implicit Flow
 
