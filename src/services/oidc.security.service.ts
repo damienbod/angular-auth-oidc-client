@@ -230,22 +230,27 @@ export class OidcSecurityService {
         // /connect/endsession?id_token_hint=...&post_logout_redirect_uri=https://myapp.com
         this.oidcSecurityCommon.logDebug('BEGIN Authorize, no auth data');
 
-        let authorizationEndsessionUrl = this.authWellKnownEndpoints.end_session_endpoint;
+        if (this.authWellKnownEndpoints.end_session_endpoint) {
+            let authorizationEndsessionUrl = this.authWellKnownEndpoints.end_session_endpoint;
 
-        let id_token_hint = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_id_token);
-        let post_logout_redirect_uri = this.authConfiguration.post_logout_redirect_uri;
+            let id_token_hint = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_id_token);
+            let post_logout_redirect_uri = this.authConfiguration.post_logout_redirect_uri;
 
-        let url =
-            authorizationEndsessionUrl + '?' +
-            'id_token_hint=' + encodeURI(id_token_hint) + '&' +
-            'post_logout_redirect_uri=' + encodeURI(post_logout_redirect_uri);
+            let url =
+                authorizationEndsessionUrl + '?' +
+                'id_token_hint=' + encodeURI(id_token_hint) + '&' +
+                'post_logout_redirect_uri=' + encodeURI(post_logout_redirect_uri);
 
-        this.resetAuthorizationData();
+            this.resetAuthorizationData();
 
-        if (this.authConfiguration.start_checksession && this.checkSessionChanged) {
-            this.oidcSecurityCommon.logDebug('only local login cleaned up, server session has changed');
+            if (this.authConfiguration.start_checksession && this.checkSessionChanged) {
+                this.oidcSecurityCommon.logDebug('only local login cleaned up, server session has changed');
+            } else {
+                window.location.href = url;
+            }
         } else {
-            window.location.href = url;
+            this.resetAuthorizationData();
+            this.oidcSecurityCommon.logDebug('only local login cleaned up, no end_session_endpoint');
         }
     }
 
