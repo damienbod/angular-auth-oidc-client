@@ -36,8 +36,8 @@ export class AuthConfiguration {
     // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
     // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
     max_id_token_iat_offset_allowed_in_seconds = 3;
-	
-	override_well_known_configuration = false;
+
+    override_well_known_configuration = false;
 
     override_well_known_configuration_url = 'https://localhost:44386/wellknownconfiguration.json';
 }

@@ -37,21 +37,25 @@
         "@angular/http": ">= 4.1.0",
         "@angular/router": ">= 4.1.0"
     },
+    "dependencies": {
+        "jsrsasign": "7.2.1"
+    },
     "devDependencies": {
+        "@angular/animations": "4.1.0",
         "@angular/common": "4.1.0",
         "@angular/compiler": "4.1.0",
         "@angular/compiler-cli": "4.1.0",
         "@angular/core": "4.1.0",
         "@angular/http": "4.1.0",
-        "@angular/router": "4.1.0",
         "@angular/platform-browser": "4.1.0",
         "@angular/platform-browser-dynamic": "4.1.0",
         "@angular/platform-server": "4.1.0",
-        "@angular/animations": "4.1.0",
+        "@angular/router": "4.1.0",
+        "@compodoc/compodoc": "1.0.0-beta.9",
         "@types/jasmine": "2.5.48",
         "@types/node": "7.0.22",
+        "chalk": "1.1.3",
         "codelyzer": "3.0.1",
-        "@compodoc/compodoc": "1.0.0-beta.9",
         "core-js": "2.4.1",
         "jasmine-core": "2.6.2",
         "karma": "1.7.0",
@@ -62,16 +66,16 @@
         "karma-webpack": "2.0.3",
         "reflect-metadata": "0.1.10",
         "rollup": "0.41.6",
+        "rollup-plugin-commonjs": "8.0.2",
         "rollup-plugin-node-resolve": "3.0.0",
         "rxjs": "5.4.0",
+        "shelljs": "0.7.7",
+        "sorcery": "0.10.0",
         "ts-loader": "2.1.0",
         "tslint": "5.4.0",
         "typescript": "2.3.4",
         "webpack": "2.6.1",
-        "zone.js": "0.8.11",
-        "shelljs": "0.7.7",
-        "chalk": "1.1.3",
-        "sorcery": "0.10.0",
-        "yargs": "8.0.1"
+        "yargs": "8.0.1",
+        "zone.js": "0.8.11"
     }
 }
