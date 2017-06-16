@@ -36,7 +36,11 @@ export class AuthWellKnownEndpoints {
             this.authorization_endpoint = data.authorization_endpoint;
             this.token_endpoint = data.token_endpoint;
             this.userinfo_endpoint = data.userinfo_endpoint;
-            this.end_session_endpoint = data.end_session_endpoint;
+			
+            if (data.end_session_endpoint) {
+                this.end_session_endpoint = data.end_session_endpoint;
+            
+			};
 
             if (data.check_session_iframe) {
                 this.check_session_iframe = data.check_session_iframe;
@@ -58,7 +62,10 @@ export class AuthWellKnownEndpoints {
                     this.authorization_endpoint = data.authorization_endpoint;
                     this.token_endpoint = data.token_endpoint;
                     this.userinfo_endpoint = data.userinfo_endpoint;
-                    this.end_session_endpoint = data.end_session_endpoint;
+
+                    if (data.end_session_endpoint) {
+                        this.end_session_endpoint = data.end_session_endpoint;
+                    };
 
                     if (data.check_session_iframe) {
                         this.check_session_iframe = data.check_session_iframe;
@@ -84,7 +91,12 @@ export class AuthWellKnownEndpoints {
         headers.append('Content-Type', 'application/json');
         headers.append('Accept', 'application/json');
 
-        return this.http.get(this.authConfiguration.stsServer + '/.well-known/openid-configuration', {
+        let url = this.authConfiguration.stsServer + '/.well-known/openid-configuration';
+        if (this.authConfiguration.override_well_known_configuration) {
+            url = this.authConfiguration.override_well_known_configuration_url;
+        }
+
+        return this.http.get(url, {
             headers: headers,
             body: ''
         }).map((res: any) => res.json());

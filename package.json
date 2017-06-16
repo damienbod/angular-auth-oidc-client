@@ -1,6 +1,6 @@
 {
     "name": "angular-auth-oidc-client",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "description": "An OpenID Connect Implicit Flow client for Angular",
     "main": "./bundles/angular-auth-oidc-client.umd.js",
     "module": "./modules/angular-auth-oidc-client.es5.js",

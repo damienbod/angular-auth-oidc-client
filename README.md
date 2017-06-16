@@ -1,5 +1,5 @@
 # angular-auth-oidc-client
-[![Build Status](https://travis-ci.org/damienbod/angular-auth-oidc-client.svg?branch=master)](https://travis-ci.org/damienbod/angular-auth-oidc-client)
+[![Build Status](https://travis-ci.org/damienbod/angular-auth-oidc-client.svg?branch=master)](https://travis-ci.org/damienbod/angular-auth-oidc-client) 
 >OpenID Connect Implicit Flow
 
 
@@ -19,7 +19,7 @@ Latest docs : https://github.com/damienbod/angular-auth-oidc-client
 
 Add the npm package to your package.json
 ```typescript
- "angular-auth-oidc-client": "0.0.7"
+ "angular-auth-oidc-client": "0.0.8"
 ```
 
 ## jsrsasign
@@ -143,6 +143,8 @@ private setHeaders() {
 ## Example using: 
 
 https://github.com/damienbod/AspNet5IdentityServerAngularImplicitFlow/tree/npm-lib-test/src/AngularClient
+
+https://github.com/damienbod/angular-auth-oidc-sample-google-openid
 
 ## Notes: 
 
