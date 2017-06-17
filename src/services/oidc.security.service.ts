@@ -149,7 +149,7 @@ export class OidcSecurityService {
                                                 this.oidcSecurityCommon.logWarning('authorizedCallback incorrect aud');
                                             }
                                         } else {
-                                            this.oidcSecurityCommon.logWarning('authorizedCallback incorrect iss');
+                                            this.oidcSecurityCommon.logWarning('authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer');
                                         }
                                     } else {
                                         this.oidcSecurityCommon.logWarning('authorizedCallback Validation, iat rejected id_token was issued too far away from the current time');

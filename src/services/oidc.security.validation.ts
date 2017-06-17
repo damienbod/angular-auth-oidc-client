@@ -137,9 +137,9 @@ export class OidcSecurityValidation {
     }
 
     // id_token C1: The Issuer Identifier for the OpenID Provider (which is typically obtained during Discovery) MUST exactly match the value of the iss (issuer) Claim.
-    validate_id_token_iss(dataIdToken: any, client_id: any): boolean {
-        if (dataIdToken.iss !== client_id) {
-            this.oidcSecurityCommon.logDebug('Validate_id_token_iss failed, dataIdToken.iss: ' + dataIdToken.iss + ' client_id:' + client_id);
+    validate_id_token_iss(dataIdToken: any, authWellKnownEndpoints_issuer: any): boolean {
+        if (dataIdToken.iss !== authWellKnownEndpoints_issuer) {
+            this.oidcSecurityCommon.logDebug('Validate_id_token_iss failed, dataIdToken.iss: ' + dataIdToken.iss + ' authWellKnownEndpoints issuer:' + authWellKnownEndpoints_issuer);
             return false;
         }
 
