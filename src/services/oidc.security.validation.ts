@@ -267,6 +267,14 @@ export class OidcSecurityValidation {
         return isValid;
     }
 
+    config_validate_response_type(response_type: string): boolean {
+        if (response_type === 'id_token token' || response_type === 'id_token') {
+            return true;
+        }
+
+        this.oidcSecurityCommon.logWarning('module configure incorrect, invalid response_type:' + response_type);
+        return false;
+    }
     // Accepts ID Token without 'kid' claim in JOSE header if only one JWK supplied in 'jwks_url'
     private validate_no_kid_in_header_only_one_allowed_in_jwtkeys(header_data: any, jwtkeys: any): boolean {
         this.oidcSecurityCommon.logDebug('amount of jwtkeys.keys: ' + jwtkeys.keys.length);

@@ -63,6 +63,12 @@ export class OidcSecurityService {
     }
 
     authorize() {
+
+        if (!this.oidcSecurityValidation.config_validate_response_type(this.authConfiguration.response_type)) {
+            // invalid response_type
+            return
+        }
+
         this.resetAuthorizationData();
 
         this.oidcSecurityCommon.logDebug('BEGIN Authorize, no auth data');
