@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-06-17"></a>
+### 2017-06-17 version 0.0.9
+* remove manual dependency to jsrasign
+
 <a name="2017-06-15"></a>
 ### 2017-06-15 version 0.0.8
 * build clean up
