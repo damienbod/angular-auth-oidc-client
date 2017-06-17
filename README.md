@@ -19,7 +19,7 @@ Latest docs : https://github.com/damienbod/angular-auth-oidc-client
 
 Add the npm package to your package.json
 ```typescript
- "angular-auth-oidc-client": "0.0.9"
+ "angular-auth-oidc-client": "0.0.10"
 ```
 
 ## Using in the angular application

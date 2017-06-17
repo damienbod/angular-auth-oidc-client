@@ -1,6 +1,10 @@
 ## angular-auth-oidc-client Changelog
 
 <a name="2017-06-17"></a>
+### 2017-06-17 version 0.0.10
+* Validating kid in id_token header
+
+<a name="2017-06-17"></a>
 ### 2017-06-17 version 0.0.9
 * remove manual dependency to jsrasign
 
