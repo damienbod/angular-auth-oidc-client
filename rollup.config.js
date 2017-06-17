@@ -1,3 +1,4 @@
+import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 
 const globals = {
@@ -12,7 +13,8 @@ const globals = {
     'rxjs/add/operator/catch': 'Rx',
     'rxjs/add/observable/throw': 'Rx',
     'rxjs/add/observable/interval': 'Rx',
-    'rxjs/add/observable/timer': 'Rx'
+    'rxjs/add/observable/timer': 'Rx',
+    'jsrsasign': 'jsrsasign'
 };
 
 export default {
@@ -21,7 +23,14 @@ export default {
     format: 'umd',
     exports: 'named',
     moduleName: 'ng.angularAuthOidcClient',
-    plugins: [resolve()],
+    plugins: [
+        resolve(),
+        commonjs({
+            namedExports: {
+                'node_modules/jsrsasign\lib\jsrsasign.js': ['KJUR', 'KEYUTIL', 'hextob64u']
+            }
+        })
+    ],
     external: Object.keys(globals),
     globals: globals,
     onwarn: () => { return }

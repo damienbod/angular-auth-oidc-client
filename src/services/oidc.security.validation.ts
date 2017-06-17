@@ -1,10 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { OidcSecurityCommon } from './oidc.security.common';
 
-// from jsrasiign
-declare var KJUR: any;
-declare var KEYUTIL: any;
-declare var hextob64u: any;
+import { KJUR, KEYUTIL, hextob64u } from 'jsrsasign';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
@@ -41,7 +38,7 @@ export class OidcSecurityValidation {
         return !(this.validate_id_token_exp_not_expired(decoded, offsetSeconds));
     }
 
-     // id_token C7: The current time MUST be before the time represented by the exp Claim (possibly allowing for some small leeway to account for clock skew).
+    // id_token C7: The current time MUST be before the time represented by the exp Claim (possibly allowing for some small leeway to account for clock skew).
     validate_id_token_exp_not_expired(decoded_id_token: string, offsetSeconds?: number): boolean {
         let tokenExpirationDate = this.getTokenExpirationDate(decoded_id_token);
         offsetSeconds = offsetSeconds || 0;
@@ -78,7 +75,7 @@ export class OidcSecurityValidation {
     // iat
     // REQUIRED. Time at which the JWT was issued. Its value is a JSON number representing the number of seconds from 1970- 01 - 01T00: 00:00Z as measured
     // in UTC until the date/ time.
-    validate_required_id_token(dataIdToken: any): boolean  {
+    validate_required_id_token(dataIdToken: any): boolean {
 
         let validated = true;
         if (!dataIdToken.hasOwnProperty('iss')) {
@@ -126,7 +123,7 @@ export class OidcSecurityValidation {
         }
 
         this.oidcSecurityCommon.logDebug('validate_id_token_iat_max_offset: ' + (new Date().valueOf() - dateTime_iat_id_token.valueOf()) + ' < ' + (max_offset_allowed_in_seconds * 1000));
-        return ( (new Date().valueOf() - dateTime_iat_id_token.valueOf())  < (max_offset_allowed_in_seconds * 1000) );
+        return ((new Date().valueOf() - dateTime_iat_id_token.valueOf()) < (max_offset_allowed_in_seconds * 1000));
     }
 
     // id_token C9: The value of the nonce Claim MUST be checked to verify that it is the same value as the one that was sent in the Authentication Request.The Client SHOULD check the nonce value for replay attacks.The precise method for detecting replay attacks is Client specific.
