@@ -161,7 +161,7 @@ export class OidcSecurityService {
                                 this.oidcSecurityCommon.logWarning('authorizedCallback incorrect nonce');
                             }
                         } else {
-                            this.oidcSecurityCommon.logWarning('authorizedCallback incorrect Signature id_token');
+                            this.oidcSecurityCommon.logDebug('authorizedCallback Signature validation failed id_token');
                         }
                     } else {
                         this.oidcSecurityCommon.logWarning('authorizedCallback incorrect state');
