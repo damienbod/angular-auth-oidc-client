@@ -1,5 +1,7 @@
 # angular-auth-oidc-client API documentation
 
+Documentation : [Quickstart](https://github.com/damienbod/angular-auth-oidc-client) | [API Documentation](https://github.com/damienbod/angular-auth-oidc-client/blob/master/API_DOCUMENTATION.md) | [Changelog](https://github.com/damienbod/angular-auth-oidc-client/blob/master/CHANGELOG.md)
+
 ## AuthConfiguration 
 
 ### stsServer
@@ -102,20 +104,36 @@ URL used to get the configuration is reading locally.
 
 ### @Output() onUserDataLoaded: EventEmitter<any>
 
+This event can be used when the User data is loaded.
+
 ### checkSessionChanged: boolean;
 	
+This boolean is set to throurg when the OpenID session management recieves a message that the server session has changed.
+
 ### isAuthorized: boolean;
+
+Set to true is the client and user are authenicated.
 
 ### getToken()
 
+public function to get the access_token which can be used to access APIs on the server.
+
 ### getUserData()
 	
+Gets the user data from the auth module of the logged in user.
+
 ### authorize() 
+
+Starts the OpenID Implicit Flow authenication and authorization.
 
 ### authorizedCallback() 
 
+Redirect after a STS server login. This method validates the id_token and the access_token if used. 
+
 ### logoff()
+
+Logs off from the client application and also from the server if the endsession API is implemented on the STS server.
 
 ### handleError(error: any)
 
-
+handle errors from the auth module.
