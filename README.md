@@ -13,7 +13,7 @@
 
 Get the [Changelog](https://github.com/damienbod/angular-auth-oidc-client/blob/master/CHANGELOG.md).
 
-Latest docs : https://github.com/damienbod/angular-auth-oidc-client
+Documentation : [Quickstart](https://github.com/damienbod/angular-auth-oidc-client) | [API Documentation](https://github.com/damienbod/angular-auth-oidc-client/blob/master/API_DOCUMENTATION.md).
 
 ## <a></a>Using the package
 
