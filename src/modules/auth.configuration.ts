@@ -13,7 +13,7 @@ export class AuthConfiguration {
 
     response_type = 'id_token token';
 
-    scope = 'dataEventRecords securedFiles openid';
+    scope = 'openid email profile';
 
     post_logout_redirect_uri = 'https://localhost:44311/Unauthorized';
 
