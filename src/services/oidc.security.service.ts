@@ -302,10 +302,17 @@ export class OidcSecurityService {
         let redirect_uri = this.authConfiguration.redirect_url;
         let response_type = this.authConfiguration.response_type;
         let scope = this.authConfiguration.scope;
+        let resource_identifier = this.authConfiguration.resource; 
+
+        //if default resource_identifier is not changed, do not include it
+        if(resource_identifier != ''){
+            resource_identifier = 'resource=' + encodeURI(this.authConfiguration.resource) + '&';
+        }
 
         let url =
             authorizationUrl + '?' +
             'response_type=' + encodeURI(response_type) + '&' +
+            resource_identifier +
             'client_id=' + encodeURI(client_id) + '&' +
             'redirect_uri=' + encodeURI(redirect_uri) + '&' +
             'scope=' + encodeURI(scope) + '&' +
