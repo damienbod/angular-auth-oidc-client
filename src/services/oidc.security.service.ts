@@ -305,7 +305,7 @@ export class OidcSecurityService {
         let resource_identifier = this.authConfiguration.resource;
 
         //if default resource_identifier is not changed, do not include it
-        if (resource_identifier != ''){
+        if (resource_identifier != '') {
             resource_identifier = 'resource=' + encodeURI(this.authConfiguration.resource) + '&';
         }
 
