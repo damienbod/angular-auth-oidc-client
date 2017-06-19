@@ -50,6 +50,10 @@ export class AppModule {
         this.authConfiguration.start_checksession = false;
         this.authConfiguration.silent_renew = true;
         this.authConfiguration.startup_route = '/dataeventrecords/list';
+
+        // *OPTIONAL* - some implementations require you to provide resource (e.g. client id or resource name) along with the request. provide it here. 
+        this.authConfiguration.resource ='';
+
         // HTTP 403
         this.authConfiguration.forbidden_route = '/Forbidden';
         // HTTP 401
