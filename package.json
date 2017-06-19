@@ -38,13 +38,14 @@
         "@angular/router": ">= 4.1.0"
     },
     "dependencies": {
-        "jsrsasign": "7.2.1"
+        "jsrsasign": "7.2.1",
+        "ngc-webpack": "^3.0.0"
     },
     "devDependencies": {
         "@angular/animations": "4.1.0",
         "@angular/common": "4.1.0",
-        "@angular/compiler": "4.1.0",
-        "@angular/compiler-cli": "4.1.0",
+        "@angular/compiler": "^4.1.0",
+        "@angular/compiler-cli": "^4.1.0",
         "@angular/core": "4.1.0",
         "@angular/http": "4.1.0",
         "@angular/platform-browser": "4.1.0",
@@ -68,11 +69,11 @@
         "rollup": "0.41.6",
         "rollup-plugin-commonjs": "8.0.2",
         "rollup-plugin-node-resolve": "3.0.0",
-        "rxjs": "5.4.0",
+        "rxjs": "^5.4.0",
         "shelljs": "0.7.7",
         "sorcery": "0.10.0",
         "ts-loader": "2.1.0",
-        "tslint": "5.4.0",
+        "tslint": "^5.4.0",
         "typescript": "2.3.4",
         "webpack": "2.6.1",
         "yargs": "8.0.1",
