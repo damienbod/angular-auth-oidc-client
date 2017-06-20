@@ -42,7 +42,7 @@ export class OidcSecurityUserService {
         let token = this.oidcSecurityCommon.getAccessToken();
 
         if (token !== '') {
-            headers.append('Authorization', 'Bearer ' + token);
+            headers.append('Authorization', 'Bearer ' + decodeURIComponent(token));
         }
 
         return this.http.get(this.authWellKnownEndpoints.userinfo_endpoint, {
