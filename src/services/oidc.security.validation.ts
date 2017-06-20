@@ -1,9 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { OidcSecurityCommon } from './oidc.security.common';
 
-import { KJUR, KEYUTIL, hextob64u, stob64u, utf8tob64u } from 'jsrsasign';
-
-const encode = require('base64url').encode;
+import { KJUR, KEYUTIL, hextob64u } from 'jsrsasign';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
