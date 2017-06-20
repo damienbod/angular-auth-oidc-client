@@ -1,5 +1,15 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-06-20"></a>
+### 2017-06-20 version 1.0.0
+* Version for OpenID Certification
+* support for decoded tokens
+
+<a name="2017-06-20"></a>
+### 2017-06-20 version 0.0.11
+* Adding a resource configuration
+
+
 <a name="2017-06-17"></a>
 ### 2017-06-17 version 0.0.10
 * Validating kid in id_token header
