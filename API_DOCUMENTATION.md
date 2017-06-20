@@ -99,6 +99,12 @@ default value : 'https://localhost:44386/wellknownconfiguration.json'
 
 URL used to get the configuration is reading locally.
 
+### resource
+
+default value : ''
+
+For some oidc, we require resource identifier to be provided along with the request.
+   
 
 ## OidcSecurityService
 

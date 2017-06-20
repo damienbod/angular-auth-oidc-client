@@ -17,7 +17,7 @@ Documentation : [Quickstart](https://github.com/damienbod/angular-auth-oidc-clie
 
 Add the npm package to your package.json
 ```typescript
- "angular-auth-oidc-client": "0.0.10"
+ "angular-auth-oidc-client": "0.0.11"
 ```
 
 ## Using in the angular application
