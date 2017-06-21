@@ -80,27 +80,27 @@ export class OidcSecurityValidation {
         let validated = true;
         if (!dataIdToken.hasOwnProperty('iss')) {
             validated = false;
-            this.oidcSecurityCommon.logWarning('iss missing, validatation REQUIRED prorpeties in id_token');
+            this.oidcSecurityCommon.logWarning('iss is missing, this is required in the id_token');
         }
 
         if (!dataIdToken.hasOwnProperty('sub')) {
             validated = false;
-            this.oidcSecurityCommon.logWarning('sub missing, validatation REQUIRED prorpeties in id_token');
+            this.oidcSecurityCommon.logWarning('sub is missing, this is required in the id_token');
         }
 
         if (!dataIdToken.hasOwnProperty('aud')) {
             validated = false;
-            this.oidcSecurityCommon.logWarning('aud missing, validatation REQUIRED prorpeties in id_token');
+            this.oidcSecurityCommon.logWarning('aud is missing, this is required in the id_token');
         }
 
         if (!dataIdToken.hasOwnProperty('exp')) {
             validated = false;
-            this.oidcSecurityCommon.logWarning('exp missing, validatation REQUIRED prorpeties in id_token');
+            this.oidcSecurityCommon.logWarning('exp is missing, this is required in the id_token');
         }
 
         if (!dataIdToken.hasOwnProperty('iat')) {
             validated = false;
-            this.oidcSecurityCommon.logWarning('iat missing, validatation REQUIRED prorpeties in id_token');
+            this.oidcSecurityCommon.logWarning('iat is missing, this is required in the id_token');
         }
 
         return validated;
