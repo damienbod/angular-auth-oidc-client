@@ -224,12 +224,6 @@ export class OidcSecurityValidation {
 
         let header_data = this.getHeaderFromToken(id_token, false);
 
-        // Accepts ID Token without 'kid' claim in JOSE header if only one JWK supplied in 'jwks_url'
-        if (!this.validate_no_kid_in_header_only_one_allowed_in_jwtkeys(header_data, jwtkeys)) {
-            this.oidcSecurityCommon.logWarning('no ID Token kid claim in JOSE header and multiple supplied in jwks_uri');
-            return false;
-        }
-
         let kid = header_data.kid;
         let alg = header_data.alg;
 
@@ -242,13 +236,31 @@ export class OidcSecurityValidation {
 
         if (!header_data.hasOwnProperty('kid')) {
             // exactly 1 key in the jwtkeys and no kid in the Jose header
+            // kty	"RSA" use "sig"
+            let amountOfMatchingKeys = 0;
             for (let key of jwtkeys.keys) {
-                let publickey = KEYUTIL.getKey(key);
-                isValid = KJUR.jws.JWS.verify(id_token, publickey, ['RS256']);
-                if (!isValid) {
-                    this.oidcSecurityCommon.logWarning('incorrect Signature, validation failed for id_token');
+                if (key.kty == 'RSA' && key.use == 'sig') {
+                    amountOfMatchingKeys = amountOfMatchingKeys + 1;
                 }
-                return isValid;
+            }
+
+            if (amountOfMatchingKeys == 0) {
+                this.oidcSecurityCommon.logWarning('no keys found, incorrect Signature, validation failed for id_token');
+                return false;
+            } else if (amountOfMatchingKeys > 1 ) {
+                this.oidcSecurityCommon.logWarning('no ID Token kid claim in JOSE header and multiple supplied in jwks_uri');
+                return false;
+            } else {
+                for (let key of jwtkeys.keys) {
+                    if (key.kty == 'RSA' && key.use == 'sig') {
+                        let publickey = KEYUTIL.getKey(key);
+                        isValid = KJUR.jws.JWS.verify(id_token, publickey, ['RS256']);
+                        if (!isValid) {
+                            this.oidcSecurityCommon.logWarning('incorrect Signature, validation failed for id_token');
+                        }
+                        return isValid;
+                    }
+                }
             }
         } else {
             // kid in the Jose header of id_token
@@ -276,18 +288,18 @@ export class OidcSecurityValidation {
         return false;
     }
     // Accepts ID Token without 'kid' claim in JOSE header if only one JWK supplied in 'jwks_url'
-    private validate_no_kid_in_header_only_one_allowed_in_jwtkeys(header_data: any, jwtkeys: any): boolean {
-        this.oidcSecurityCommon.logDebug('amount of jwtkeys.keys: ' + jwtkeys.keys.length);
-        if (!header_data.hasOwnProperty('kid')) {
-            // no kid defined in Jose header
-            if (jwtkeys.keys.length != 1) {
-                this.oidcSecurityCommon.logDebug('jwtkeys.keys.length != 1 and no kid in header');
-                return false;
-            }
-        }
+    ////private validate_no_kid_in_header_only_one_allowed_in_jwtkeys(header_data: any, jwtkeys: any): boolean {
+    ////    this.oidcSecurityCommon.logDebug('amount of jwtkeys.keys: ' + jwtkeys.keys.length);
+    ////    if (!header_data.hasOwnProperty('kid')) {
+    ////        // no kid defined in Jose header
+    ////        if (jwtkeys.keys.length != 1) {
+    ////            this.oidcSecurityCommon.logDebug('jwtkeys.keys.length != 1 and no kid in header');
+    ////            return false;
+    ////        }
+    ////    }
 
-        return true;
-    }
+    ////    return true;
+    ////}
 
     // Access Token Validation
     // access_token C1: Hash the octets of the ASCII representation of the access_token with the hash algorithm specified in JWA[JWA] for the alg Header Parameter of the ID Token's JOSE Header. For instance, if the alg is RS256, the hash algorithm used is SHA-256.
