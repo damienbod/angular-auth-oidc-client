@@ -17,9 +17,26 @@ Latest docs : https://github.com/damienbod/angular-auth-oidc-client
 
 ## <a></a>Using the package
 
-Add the npm package to your package.json
-```typescript
+Navigate to the level of your package.json and type
+``` javascript
+ npm install angular-auth-oidc-client --save
+```
+
+and for yarn do
+
+``` javascript
+ yarn add angular-auth-oidc-client
+```
+
+Or you add the npm package to your package.json
+``` javascript
  "angular-auth-oidc-client": "0.0.10"
+```
+
+and type 
+
+``` javascript
+ npm install
 ```
 
 ## Using in the angular application
