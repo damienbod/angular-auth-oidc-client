@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-06-23"></a>
+### 2017-06-23 version 1.0.3
+* updating validation messages
+
 <a name="2017-06-21"></a>
 ### 2017-06-21 version 1.0.2
 * Bug fix no kid validation withe single, multiple jwks headers
