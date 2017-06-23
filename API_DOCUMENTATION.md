@@ -97,7 +97,7 @@ If you want to configure the well known endpoints locally, you need to set this 
 	
 default value : 'https://localhost:44386/wellknownconfiguration.json'
 
-URL used to get the configuration is reading locally.
+URL used to get the configuration if it is being read locally.
 
 ### resource
 
@@ -118,7 +118,7 @@ This boolean is set to throurg when the OpenID session management recieves a mes
 
 ### isAuthorized: boolean;
 
-Set to true is the client and user are authenicated.
+Set to true if the client and user are authenicated.
 
 ### getToken()
 
