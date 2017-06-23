@@ -51,7 +51,8 @@ export class OidcSecurityService {
     }
 
     getToken(): any {
-        return this.oidcSecurityCommon.getAccessToken();
+        let token = this.oidcSecurityCommon.getAccessToken();
+        return decodeURIComponent(token);
     }
 
     getUserData(): any {

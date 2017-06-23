@@ -11,9 +11,7 @@
 - AOT build
 - Can be lazy loaded
 
-Get the [Changelog](https://github.com/damienbod/angular-auth-oidc-client/blob/master/CHANGELOG.md).
-
-Latest docs : https://github.com/damienbod/angular-auth-oidc-client
+Documentation : [Quickstart](https://github.com/damienbod/angular-auth-oidc-client) | [API Documentation](https://github.com/damienbod/angular-auth-oidc-client/blob/master/API_DOCUMENTATION.md) | [Changelog](https://github.com/damienbod/angular-auth-oidc-client/blob/master/CHANGELOG.md)
 
 ## <a></a>Using the package
 
@@ -22,17 +20,17 @@ Navigate to the level of your package.json and type
  npm install angular-auth-oidc-client --save
 ```
 
-and for yarn do
+or with yarn
 
 ``` javascript
  yarn add angular-auth-oidc-client
 ```
 
-Or you add the npm package to your package.json
+or you can add the npm package to your package.json
 ``` javascript
- "angular-auth-oidc-client": "0.0.10"
+ "angular-auth-oidc-client": "1.0.3"
 ```
-
+ 
 and type 
 
 ``` javascript
@@ -69,6 +67,10 @@ export class AppModule {
         this.authConfiguration.start_checksession = false;
         this.authConfiguration.silent_renew = true;
         this.authConfiguration.startup_route = '/dataeventrecords/list';
+
+        // *OPTIONAL* - some implementations require you to provide resource (e.g. client id or resource name) along with the request. provide it here. 
+        this.authConfiguration.resource ='';
+
         // HTTP 403
         this.authConfiguration.forbidden_route = '/Forbidden';
         // HTTP 401

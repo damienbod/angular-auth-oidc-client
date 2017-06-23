@@ -1,5 +1,28 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-06-23"></a>
+### 2017-06-23 version 1.0.3
+* updating validation messages
+
+<a name="2017-06-21"></a>
+### 2017-06-21 version 1.0.2
+* Bug fix no kid validation withe single, multiple jwks headers
+
+<a name="2017-06-20"></a>
+### 2017-06-20 version 1.0.1
+* Bug fix validation
+
+
+<a name="2017-06-20"></a>
+### 2017-06-20 version 1.0.0
+* Version for OpenID Certification
+* support for decoded tokens
+
+<a name="2017-06-20"></a>
+### 2017-06-20 version 0.0.11
+* Adding a resource configuration
+
+
 <a name="2017-06-17"></a>
 ### 2017-06-17 version 0.0.10
 * Validating kid in id_token header
