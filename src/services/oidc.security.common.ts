@@ -14,8 +14,11 @@ export class OidcSecurityCommon {
     storage_auth_state_control = 'authStateControl';
     storage_well_known_endpoints = 'wellknownendpoints';
 
-    constructor(private authConfiguration: AuthConfiguration) {
-        if (typeof Storage !== 'undefined') { this.storage = sessionStorage; } //localStorage;
+    constructor(private authConfiguration: AuthConfiguration, private injectedStorage: Storage) {
+        if (typeof Storage !== 'undefined') {
+            if (injectedStorage) { this.storage = injectedStorage; }
+            else { this.storage = sessionStorage; }
+        }
     }
 
     retrieve(key: string): any {
