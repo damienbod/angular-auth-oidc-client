@@ -132,6 +132,17 @@ private setHeaders() {
 
 ```
 
+## Storage
+
+For example, you can get angular-auth-oidc-client to store access tokens in Cookies by downloading and adding Cookie-Storage to your project, creating a factory method to provide it:
+
+let cookieStorageFactory = () => {
+return new CookieStorage();
+}
+
+..and then adding it to the providers array in @NgModule:
+{ provide: Storage, useFactory: cookieStorageFactory }
+
 
 ## Example using: 
 

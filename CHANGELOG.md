@@ -1,5 +1,10 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-06-27"></a>
+### 2017-06-27 version 1.0.4
+* Adding suppport for server rendering in Angular
+* storage can be set now
+
 <a name="2017-06-23"></a>
 ### 2017-06-23 version 1.0.3
 * updating validation messages
