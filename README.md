@@ -28,7 +28,7 @@ or with yarn
 
 or you can add the npm package to your package.json
 ``` javascript
- "angular-auth-oidc-client": "1.0.8"
+ "angular-auth-oidc-client": "1.1.0"
 ```
  
 and type 
@@ -55,7 +55,7 @@ import { AuthModule, AuthConfiguration } from 'angular-auth-oidc-client';
 })
 
 export class AppModule {
-    constructor(public authConfiguration: AuthConfiguration) {
+    constructor(public authConfiguration: AuthConfiguration, public oidcSecurityService: OidcSecurityService) {
         this.authConfiguration.stsServer = 'https://localhost:44318';
         this.authConfiguration.redirect_url = 'https://localhost:44311';
         // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer identified by the iss (issuer) Claim as an audience.
@@ -80,6 +80,11 @@ export class AppModule {
         // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
         // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
         this.authConfiguration.max_id_token_iat_offset_allowed_in_seconds = 3;
+		
+		
+        this.oidcSecurityService.setupModule();
+        
+        // this.oidcSecurityService.setStorage(localStorage);
     }
 
 }
@@ -134,7 +139,7 @@ private setHeaders() {
 
 ## Storage
 
-In child component of the Angular app you can set the storage of your choice. Tested with localStorage and sessionStorage, for example in the app.component. Do not set this in the appmodule, otherwise your configuration will not be used.
+In the app module of the Angular app you can set the storage of your choice. Tested with localStorage and sessionStorage, for example in the app.component. 
 
 ```typescript
  constructor(public oidcSecurityService: OidcSecurityService) {

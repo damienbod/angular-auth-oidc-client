@@ -15,6 +15,9 @@ export class OidcSecurityCommon {
     storage_well_known_endpoints = 'wellknownendpoints';
 
     constructor(private authConfiguration: AuthConfiguration) {
+    }
+
+    setupModule() {
         this.storage = sessionStorage;
     }
 

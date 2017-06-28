@@ -22,7 +22,9 @@ export class OidcSecurityUserService {
         private oidcSecurityCommon: OidcSecurityCommon,
         private authWellKnownEndpoints: AuthWellKnownEndpoints
     ) {
+    }
 
+    setupModule() {
         if (this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_user_data) !== '') {
             this.userData = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_user_data);
         }
