@@ -16,8 +16,11 @@ export class OidcSecurityCommon {
 
     constructor(private authConfiguration: AuthConfiguration, private injectedStorage: Storage) {
         if (typeof Storage !== 'undefined') {
-            if (injectedStorage) { this.storage = injectedStorage; }
-            else { this.storage = sessionStorage; }
+            if (injectedStorage) {
+                this.storage = injectedStorage;
+            } else {
+                this.storage = sessionStorage;
+            }
         }
     }
 
