@@ -100,7 +100,7 @@ export class OidcSecurityService {
     setStorage(storage: any) {
         this.oidcSecurityCommon.storage = storage;
         this.authWellKnownEndpointsLoaded = false;
-        this.authWellKnownEndpoints.init();
+        this.authWellKnownEndpoints = new AuthWellKnownEndpoints(this.http, this.authConfiguration, this.oidcSecurityCommon);
     }
 
     authorizedCallback() {
