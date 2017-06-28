@@ -1,7 +1,7 @@
 ## angular-auth-oidc-client Changelog
 
 <a name="2017-06-28"></a>
-### 2017-06-28 version 1.0.7
+### 2017-06-28 version 1.0.8
 * setStorage method added
 * bug fix well known endpoints loaded logout.
 
