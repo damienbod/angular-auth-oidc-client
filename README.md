@@ -84,7 +84,7 @@ export class AppModule {
 		
         this.oidcSecurityService.setupModule();
         
-		// this.oidcSecurityService.setStorage(localStorage);
+        // this.oidcSecurityService.setStorage(localStorage);
     }
 
 }
