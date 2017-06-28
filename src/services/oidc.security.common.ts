@@ -4,7 +4,7 @@ import { AuthConfiguration } from '../modules/auth.configuration';
 @Injectable()
 export class OidcSecurityCommon {
 
-    private storage: any;
+    storage: any;
 
     storage_access_token = 'authorizationData';
     storage_id_token = 'authorizationDataIdToken';
@@ -14,14 +14,12 @@ export class OidcSecurityCommon {
     storage_auth_state_control = 'authStateControl';
     storage_well_known_endpoints = 'wellknownendpoints';
 
-    constructor(private authConfiguration: AuthConfiguration, private injectedStorage: Storage) {
-        if (typeof Storage !== 'undefined') {
-            if (injectedStorage) {
-                this.storage = injectedStorage;
-            } else {
-                this.storage = sessionStorage;
-            }
-        }
+    constructor(private authConfiguration: AuthConfiguration) {
+        this.storage = sessionStorage;
+    }
+
+    setStorage(storage: Storage) {
+        this.storage = storage;
     }
 
     retrieve(key: string): any {
