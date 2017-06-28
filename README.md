@@ -28,7 +28,7 @@ or with yarn
 
 or you can add the npm package to your package.json
 ``` javascript
- "angular-auth-oidc-client": "1.0.5"
+ "angular-auth-oidc-client": "1.0.6"
 ```
  
 and type 
