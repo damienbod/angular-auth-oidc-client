@@ -26,6 +26,7 @@ export class OidcSecurityService {
     private oidcSecurityValidation: OidcSecurityValidation;
     private errorMessage: string;
     private jwtKeys: JwtKeys;
+    private authWellKnownEndpointsLoaded = false;
 
     constructor(
         private http: Http,
@@ -48,6 +49,7 @@ export class OidcSecurityService {
         }
 
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => { this.onCheckSessionChanged(); });
+        this.authWellKnownEndpoints.onWellKnownEndpointsLoaded.subscribe(() => { this.onWellKnownEndpointsLoaded(); });
     }
 
     getToken(): any {
@@ -64,6 +66,11 @@ export class OidcSecurityService {
     }
 
     authorize() {
+
+        if (!this.authWellKnownEndpointsLoaded) {
+            this.oidcSecurityCommon.logError('Well known endpoints must be loaded before user can login!')
+            return;
+        }
 
         if (!this.oidcSecurityValidation.config_validate_response_type(this.authConfiguration.response_type)) {
             // invalid response_type
@@ -83,6 +90,10 @@ export class OidcSecurityService {
 
         let url = this.createAuthorizeUrl(nonce, state);
         window.location.href = url;
+    }
+
+    setStorage(storage: Storage) {
+        this.oidcSecurityCommon.storage = storage;
     }
 
     authorizedCallback() {
@@ -336,6 +347,11 @@ export class OidcSecurityService {
     private onCheckSessionChanged() {
         this.oidcSecurityCommon.logDebug('onCheckSessionChanged');
         this.checkSessionChanged = true;
+    }
+
+    private onWellKnownEndpointsLoaded() {
+        this.oidcSecurityCommon.logDebug('onWellKnownEndpointsLoaded');
+        this.authWellKnownEndpointsLoaded = true;
     }
 
     private runGetSigningKeys() {

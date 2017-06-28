@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter, Output } from '@angular/core';
 import { Http, Response, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { Observer } from 'rxjs/Observer';
@@ -11,6 +11,8 @@ import { OidcSecurityCommon } from './oidc.security.common';
 
 @Injectable()
 export class AuthWellKnownEndpoints {
+
+    @Output() onWellKnownEndpointsLoaded: EventEmitter<any> = new EventEmitter<any>(true);
 
     issuer: string;
     jwks_uri: string;
@@ -53,6 +55,8 @@ export class AuthWellKnownEndpoints {
             if (data.introspection_endpoint) {
                 this.introspection_endpoint = data.introspection_endpoint;
             }
+
+            this.onWellKnownEndpointsLoaded.emit();
         } else {
             this.oidcSecurityCommon.logDebug('AuthWellKnownEndpoints first time, get from the server');
             this.getWellKnownEndpoints()
@@ -81,6 +85,8 @@ export class AuthWellKnownEndpoints {
 
                     this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_well_known_endpoints, data);
                     this.oidcSecurityCommon.logDebug(data);
+
+                    this.onWellKnownEndpointsLoaded.emit();
                 });
         }
     }
