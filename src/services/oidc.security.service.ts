@@ -4,7 +4,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs/Rx';
 import { Router } from '@angular/router';
-import { AuthConfiguration } from '../modules/auth.configuration';
+import { AuthConfiguration, OpenIDImplicitFlowConfiguration } from '../modules/auth.configuration';
 import { OidcSecurityValidation } from './oidc.security.validation';
 import { OidcSecurityCheckSession } from './oidc.security.check-session';
 import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
@@ -40,7 +40,9 @@ export class OidcSecurityService {
     ) {
     }
 
-    setupModule() {
+    setupModule(openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration) {
+
+        this.authConfiguration.init(openIDImplicitFlowConfiguration);
         this.oidcSecurityValidation = new OidcSecurityValidation(this.oidcSecurityCommon);
 
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => { this.onCheckSessionChanged(); });

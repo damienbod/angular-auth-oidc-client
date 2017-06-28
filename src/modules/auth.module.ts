@@ -1,7 +1,7 @@
 import { NgModule, ModuleWithProviders } from '@angular/core';
 
 import { OidcSecurityService } from '../services/oidc.security.service';
-import { AuthConfiguration } from './auth.configuration';
+import { AuthConfiguration, DefaultConfiguration } from './auth.configuration';
 import { OidcSecurityValidation } from '../services/oidc.security.validation';
 import { OidcSecurityCheckSession } from '../services/oidc.security.check-session';
 import { OidcSecuritySilentRenew } from '../services/oidc.security.silent-renew';
@@ -22,6 +22,7 @@ export class AuthModule {
                 OidcSecurityUserService,
                 OidcSecurityCommon,
                 AuthConfiguration,
+                DefaultConfiguration,
                 AuthWellKnownEndpoints
             ]
         };

@@ -29,104 +29,102 @@ export class DefaultConfiguration {
     override_well_known_configuration_url = 'https://localhost:44386/wellknownconfiguration.json';
 }
 
-export class CustomConfiguration {
+export class OpenIDImplicitFlowConfiguration {
 
-    constructor(
-        public stsServer: string,
-        public redirect_url: string,
-        public client_id: string,
-        public response_type: string,
-        public resource: string,
-        public scope: string,
-        public post_logout_redirect_uri: string,
-        public start_checksession: boolean,
-        public silent_renew = true,
-        public startup_route: string,
-        public forbidden_route: string,
-        public unauthorized_route: string,
-        public log_console_warning_active: boolean,
-        public log_console_debug_active: boolean,
-        public max_id_token_iat_offset_allowed_in_seconds: number,
-        public override_well_known_configuration: boolean,
-        public override_well_known_configuration_url: string
-    ) { }
+    stsServer: string;
+    redirect_url: string;
+    client_id: string;
+    response_type: string;
+    resource: string;
+    scope: string;
+    post_logout_redirect_uri: string;
+    start_checksession: boolean;
+    silent_renew: boolean;
+    startup_route: string;
+    forbidden_route: string;
+    unauthorized_route: string;
+    log_console_warning_active: boolean;
+    log_console_debug_active: boolean;
+    max_id_token_iat_offset_allowed_in_seconds: number;
+    override_well_known_configuration: boolean;
+    override_well_known_configuration_url: string;
 }
 
 @Injectable()
 export class AuthConfiguration {
-    private _customConfiguration: CustomConfiguration;
+    private openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration;
 
     get stsServer(): string {
-        return this._customConfiguration.stsServer || this.defaultConfig.stsServer;
+        return this.openIDImplicitFlowConfiguration.stsServer || this.defaultConfig.stsServer;
     }
 
     get redirect_url(): string {
-        return this._customConfiguration.redirect_url || this.defaultConfig.redirect_url;
+        return this.openIDImplicitFlowConfiguration.redirect_url || this.defaultConfig.redirect_url;
     }
 
     get client_id(): string {
-        return this._customConfiguration.client_id || this.defaultConfig.client_id;
+        return this.openIDImplicitFlowConfiguration.client_id || this.defaultConfig.client_id;
     }
 
     get response_type(): string {
-        return this._customConfiguration.response_type || this.defaultConfig.response_type;
+        return this.openIDImplicitFlowConfiguration.response_type || this.defaultConfig.response_type;
     }
 
     get resource(): string {
-        return this._customConfiguration.resource || this.defaultConfig.resource;
+        return this.openIDImplicitFlowConfiguration.resource || this.defaultConfig.resource;
     }
 
     get scope(): string {
-        return this._customConfiguration.scope || this.defaultConfig.scope;
+        return this.openIDImplicitFlowConfiguration.scope || this.defaultConfig.scope;
     }
 
     get post_logout_redirect_uri(): string {
-        return this._customConfiguration.post_logout_redirect_uri || this.defaultConfig.post_logout_redirect_uri;
+        return this.openIDImplicitFlowConfiguration.post_logout_redirect_uri || this.defaultConfig.post_logout_redirect_uri;
     }
 
     get start_checksession(): boolean {
-        return this._customConfiguration.start_checksession || this.defaultConfig.start_checksession;
+        return this.openIDImplicitFlowConfiguration.start_checksession || this.defaultConfig.start_checksession;
     }
 
     get silent_renew(): boolean {
-        return this._customConfiguration.silent_renew || this.defaultConfig.silent_renew;
+        return this.openIDImplicitFlowConfiguration.silent_renew || this.defaultConfig.silent_renew;
     }
 
     get startup_route(): string {
-        return this._customConfiguration.startup_route || this.defaultConfig.startup_route;
+        return this.openIDImplicitFlowConfiguration.startup_route || this.defaultConfig.startup_route;
     }
 
     get forbidden_route(): string {
-        return this._customConfiguration.forbidden_route || this.defaultConfig.forbidden_route;
+        return this.openIDImplicitFlowConfiguration.forbidden_route || this.defaultConfig.forbidden_route;
     }
 
     get unauthorized_route(): string {
-        return this._customConfiguration.unauthorized_route || this.defaultConfig.unauthorized_route;
+        return this.openIDImplicitFlowConfiguration.unauthorized_route || this.defaultConfig.unauthorized_route;
     }
 
     get log_console_warning_active(): boolean {
-        return this._customConfiguration.log_console_warning_active || this.defaultConfig.log_console_warning_active;
+        return this.openIDImplicitFlowConfiguration.log_console_warning_active || this.defaultConfig.log_console_warning_active;
     }
 
     get log_console_debug_active(): boolean {
-        return this._customConfiguration.log_console_debug_active || this.defaultConfig.log_console_debug_active;
+        return this.openIDImplicitFlowConfiguration.log_console_debug_active || this.defaultConfig.log_console_debug_active;
     }
 
     get max_id_token_iat_offset_allowed_in_seconds(): number {
-        return this._customConfiguration.max_id_token_iat_offset_allowed_in_seconds || this.defaultConfig.max_id_token_iat_offset_allowed_in_seconds;
+        return this.openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds || this.defaultConfig.max_id_token_iat_offset_allowed_in_seconds;
     }
 
     get override_well_known_configuration(): boolean {
-        return this._customConfiguration.override_well_known_configuration || this.defaultConfig.override_well_known_configuration;
+        return this.openIDImplicitFlowConfiguration.override_well_known_configuration || this.defaultConfig.override_well_known_configuration;
     }
 
     get override_well_known_configuration_url(): string {
-        return this._customConfiguration.override_well_known_configuration_url || this.defaultConfig.override_well_known_configuration_url;
+        return this.openIDImplicitFlowConfiguration.override_well_known_configuration_url || this.defaultConfig.override_well_known_configuration_url;
     }
 
     constructor(private defaultConfig: DefaultConfiguration) { }
 
-    init(customConfiguration: CustomConfiguration) {
-        this._customConfiguration = customConfiguration;
+    init(openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration) {
+        this.openIDImplicitFlowConfiguration = openIDImplicitFlowConfiguration;
     }
 }
