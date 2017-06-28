@@ -134,7 +134,7 @@ private setHeaders() {
 
 ## Storage
 
-In the app module of the Angular app you can set the storage of your choice. Tested with localStorage and sessionStorage
+In child component of the Angular app you can set the storage of your choice. Tested with localStorage and sessionStorage, for example in the app.component. Do not set this in the appmodule, otherwise your configuration will not be used.
 
 ```typescript
  constructor(public oidcSecurityService: OidcSecurityService) {
