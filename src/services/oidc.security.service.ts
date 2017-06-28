@@ -38,7 +38,16 @@ export class OidcSecurityService {
         private oidcSecurityCommon: OidcSecurityCommon,
         private authWellKnownEndpoints: AuthWellKnownEndpoints
     ) {
+    }
+
+    setupModule() {
         this.oidcSecurityValidation = new OidcSecurityValidation(this.oidcSecurityCommon);
+
+        this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => { this.onCheckSessionChanged(); });
+        this.authWellKnownEndpoints.onWellKnownEndpointsLoaded.subscribe(() => { this.onWellKnownEndpointsLoaded(); });
+
+        this.oidcSecurityCommon.setupModule();
+        this.oidcSecurityUserService.setupModule();
 
         this.headers = new Headers();
         this.headers.append('Content-Type', 'application/json');
@@ -48,11 +57,8 @@ export class OidcSecurityService {
             this.isAuthorized = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_is_authorized);
         }
 
-        this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => { this.onCheckSessionChanged(); });
-        this.authWellKnownEndpoints.onWellKnownEndpointsLoaded.subscribe(() => { this.onWellKnownEndpointsLoaded(); });
-
         this.oidcSecurityCommon.logDebug('STS server: ' + this.authConfiguration.stsServer);
-        this.authWellKnownEndpoints.init();
+        this.authWellKnownEndpoints.setupModule();
     }
 
     getToken(): any {
@@ -103,7 +109,7 @@ export class OidcSecurityService {
     setStorage(storage: any) {
         this.oidcSecurityCommon.storage = storage;
         this.authWellKnownEndpointsLoaded = false;
-        this.authWellKnownEndpoints.init();
+        this.authWellKnownEndpoints.setupModule();
     }
 
     authorizedCallback() {
