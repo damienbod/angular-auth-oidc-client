@@ -67,6 +67,11 @@ export class OidcSecurityService {
 
     authorize() {
 
+        let data = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_well_known_endpoints);
+        if (data && data !== '') {
+            this.authWellKnownEndpointsLoaded = true;
+        }
+
         if (!this.authWellKnownEndpointsLoaded) {
             this.oidcSecurityCommon.logError('Well known endpoints must be loaded before user can login!')
             return;
@@ -92,8 +97,10 @@ export class OidcSecurityService {
         window.location.href = url;
     }
 
-    setStorage(storage: Storage) {
+    setStorage(storage: any) {
         this.oidcSecurityCommon.storage = storage;
+        this.authWellKnownEndpointsLoaded = false;
+        this.authWellKnownEndpoints.init();
     }
 
     authorizedCallback() {

@@ -18,7 +18,7 @@ export class OidcSecurityCommon {
         this.storage = sessionStorage;
     }
 
-    setStorage(storage: Storage) {
+    setStorage(storage: any) {
         this.storage = storage;
     }
 
