@@ -50,6 +50,9 @@ export class OidcSecurityService {
 
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => { this.onCheckSessionChanged(); });
         this.authWellKnownEndpoints.onWellKnownEndpointsLoaded.subscribe(() => { this.onWellKnownEndpointsLoaded(); });
+
+        this.oidcSecurityCommon.logDebug('STS server: ' + this.authConfiguration.stsServer);
+        this.authWellKnownEndpoints.init();
     }
 
     getToken(): any {
@@ -100,7 +103,7 @@ export class OidcSecurityService {
     setStorage(storage: any) {
         this.oidcSecurityCommon.storage = storage;
         this.authWellKnownEndpointsLoaded = false;
-        this.authWellKnownEndpoints = new AuthWellKnownEndpoints(this.http, this.authConfiguration, this.oidcSecurityCommon);
+        this.authWellKnownEndpoints.init();
     }
 
     authorizedCallback() {

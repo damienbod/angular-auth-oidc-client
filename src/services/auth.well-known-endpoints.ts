@@ -29,7 +29,6 @@ export class AuthWellKnownEndpoints {
         private authConfiguration: AuthConfiguration,
         private oidcSecurityCommon: OidcSecurityCommon
     ) {
-        this.init();
     }
 
     init() {
@@ -94,6 +93,7 @@ export class AuthWellKnownEndpoints {
                 });
         }
     }
+
     private getWellKnownEndpoints = (): Observable<any> => {
 
         let headers = new Headers();
