@@ -7,7 +7,7 @@ export { OidcSecurityUserService } from './services/oidc.security.user-service';
 export { OidcSecurityCommon } from './services/oidc.security.common';
 export { AuthWellKnownEndpoints } from './services/auth.well-known-endpoints';
 
-export { AuthConfiguration, CustomConfiguration, DefaultConfiguration } from './modules/auth.configuration';
+export { AuthConfiguration, OpenIDImplicitFlowConfiguration, DefaultConfiguration } from './modules/auth.configuration';
 export { AuthModule } from './modules/auth.module';
 
 
