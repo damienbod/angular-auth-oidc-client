@@ -140,6 +140,18 @@ Redirect after a STS server login. This method validates the id_token and the ac
 
 Logs off from the client application and also from the server if the endsession API is implemented on the STS server.
 
+###
+
+## setStorage(storage: any)
+
+In the app module of the Angular app you can set the storage of your choice. Tested with localStorage and sessionStorage
+
+```typescript
+ constructor(public oidcSecurityService: OidcSecurityService) {
+        this.oidcSecurityService.setStorage(localStorage);
+    }
+```
+
 ### handleError(error: any)
 
 handle errors from the auth module.

@@ -28,7 +28,7 @@ or with yarn
 
 or you can add the npm package to your package.json
 ``` javascript
- "angular-auth-oidc-client": "1.0.6"
+ "angular-auth-oidc-client": "1.0.7"
 ```
  
 and type 
@@ -134,15 +134,13 @@ private setHeaders() {
 
 ## Storage
 
-For example, you can get angular-auth-oidc-client to store access tokens in Cookies by downloading and adding Cookie-Storage to your project, creating a factory method to provide it:
+In the app module of the Angular app you can set the storage of your choice. Tested with localStorage and sessionStorage
 
-let cookieStorageFactory = () => {
-return new CookieStorage();
-}
-
-..and then adding it to the providers array in @NgModule:
-{ provide: Storage, useFactory: cookieStorageFactory }
-
+```typescript
+ constructor(public oidcSecurityService: OidcSecurityService) {
+        this.oidcSecurityService.setStorage(localStorage);
+    }
+```
 
 ## Example using: 
 

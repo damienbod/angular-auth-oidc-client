@@ -1,6 +1,12 @@
 ## angular-auth-oidc-client Changelog
 
 <a name="2017-06-28"></a>
+### 2017-06-28 version 1.0.7
+* setStorage method added
+* bug fix well known endpoints loaded logout.
+
+
+<a name="2017-06-28"></a>
 ### 2017-06-28 version 1.0.6
 * Event for well known endpoints loaded
 * storage is can be set per function
