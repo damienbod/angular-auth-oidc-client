@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-07-01"></a>
+### 2017-07-01 version 1.1.2
+* API documentation
+
 <a name="2017-06-28"></a>
 ### 2017-06-28 version 1.1.1
 * refactor init of module
