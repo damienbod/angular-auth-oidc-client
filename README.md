@@ -139,7 +139,11 @@ In the app module of the Angular app you can set the storage of your choice. Tes
 
 ```typescript
  constructor(public oidcSecurityService: OidcSecurityService) {
+        ...
+        
+        
         this.oidcSecurityService.setStorage(localStorage);
+        this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
     }
 ```
 

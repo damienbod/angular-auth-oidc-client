@@ -145,10 +145,14 @@ Logs off from the client application and also from the server if the endsession 
 ## setStorage(storage: any)
 
 In the app module of the Angular app you can set the storage of your choice. Tested with localStorage and sessionStorage
+This needs to be called before the setupModule function.
 
 ```typescript
  constructor(public oidcSecurityService: OidcSecurityService) {
-        this.oidcSecurityService.setStorage(localStorage);
+        ...
+
+        // this.oidcSecurityService.setStorage(localStorage);
+        this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
     }
 ```
 
