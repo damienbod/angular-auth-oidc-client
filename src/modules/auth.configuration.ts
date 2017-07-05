@@ -10,14 +10,14 @@ export class DefaultConfiguration {
     // For some oidc, we require resource identifier to be provided along with the request.
     resource = '';
     scope = 'openid email profile';
-    post_logout_redirect_uri = 'https://localhost:44311/Unauthorized';
+    post_logout_redirect_uri = 'https://localhost:44311/unauthorized';
     start_checksession = false;
     silent_renew = true;
-    startup_route = '/dataeventrecords/list';
+    startup_route = '/dataeventrecords';
     // HTTP 403
-    forbidden_route = '/Forbidden';
+    forbidden_route = '/forbidden';
     // HTTP 401
-    unauthorized_route = '/Unauthorized';
+    unauthorized_route = '/unauthorized';
     log_console_warning_active = true;
     log_console_debug_active = false;
 

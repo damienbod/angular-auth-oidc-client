@@ -83,6 +83,10 @@ export class OidcSecurityService {
             this.oidcSecurityCommon.logError('User must be logged in before you can get the user data!')
         }
 
+        if (!this.oidcSecurityUserService.userData) {
+            this.oidcSecurityUserService.userData = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_user_data);
+        }
+
         return this.oidcSecurityUserService.userData;
     }
 
@@ -120,8 +124,6 @@ export class OidcSecurityService {
 
     setStorage(storage: any) {
         this.oidcSecurityCommon.storage = storage;
-        this.authWellKnownEndpointsLoaded = false;
-        this.authWellKnownEndpoints.setupModule();
     }
 
     authorizedCallback() {
