@@ -34,7 +34,7 @@ or with yarn
 
 or you can add the npm package to your package.json
 ``` javascript
- "angular-auth-oidc-client": "1.1.2"
+ "angular-auth-oidc-client": "1.1.3"
 ```
  
 and type 
@@ -139,7 +139,11 @@ In the app module of the Angular app you can set the storage of your choice. Tes
 
 ```typescript
  constructor(public oidcSecurityService: OidcSecurityService) {
+        ...
+        
+        
         this.oidcSecurityService.setStorage(localStorage);
+        this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
     }
 ```
 

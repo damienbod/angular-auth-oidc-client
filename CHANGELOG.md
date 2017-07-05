@@ -1,6 +1,11 @@
 ## angular-auth-oidc-client Changelog
 
 <a name="2017-07-01"></a>
+### 2017-07-01 version 1.1.3
+* clean up session management
+* bugfix Silent token renew fails on state validation 
+
+<a name="2017-07-01"></a>
 ### 2017-07-01 version 1.1.2
 * API documentation
 

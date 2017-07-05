@@ -29,24 +29,31 @@ export class OidcSecurityCheckSession {
     }
 
     init() {
-        this.sessionIframe = window.document.createElement('iframe');
-        this.oidcSecurityCommon.logDebug(this.sessionIframe);
-        this.sessionIframe.style.display = 'none';
-        this.sessionIframe.src = this.authWellKnownEndpoints.check_session_iframe;
+        let exists = window.parent.document.getElementById('myiFrameForCheckSession');
+        if (!exists) {
+            this.sessionIframe = window.document.createElement('iframe');
 
-        window.document.body.appendChild(this.sessionIframe);
-        this.iframeMessageEvent = this.messageHandler.bind(this);
-        window.addEventListener('message', this.iframeMessageEvent, false);
+            this.sessionIframe.id = 'myiFrameForCheckSession';
+            this.oidcSecurityCommon.logDebug(this.sessionIframe);
+            this.sessionIframe.style.display = 'none';
+            this.sessionIframe.src = this.authWellKnownEndpoints.check_session_iframe;
 
-        return Observable.create((observer: Observer<any>) => {
-            this.sessionIframe.onload = () => {
-                observer.next(this);
-                observer.complete();
-            }
-        });
+            window.document.body.appendChild(this.sessionIframe);
+            this.iframeMessageEvent = this.messageHandler.bind(this);
+            window.addEventListener('message', this.iframeMessageEvent, false);
+
+            return Observable.create((observer: Observer<any>) => {
+                this.sessionIframe.onload = () => {
+                    observer.next(this);
+                    observer.complete();
+                }
+            });
+        }
+
+        return Observable.empty<Response>();
     }
 
-    pollServerSession(session_state: any, clientId: any) {
+    pollServerSession(clientId: any) {
         let source = Observable.timer(3000, 3000)
             .timeInterval()
             .pluck('interval')
@@ -54,7 +61,10 @@ export class OidcSecurityCheckSession {
 
         let subscription = source.subscribe(() => {
                 this.oidcSecurityCommon.logDebug(this.sessionIframe);
-                this.sessionIframe.contentWindow.postMessage(clientId + ' ' + session_state, this.authConfiguration.stsServer);
+                let session_state = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_session_state);
+                if (session_state && session_state !== '') {
+                    this.sessionIframe.contentWindow.postMessage(clientId + ' ' + session_state, this.authConfiguration.stsServer);
+                }
             },
             (err: any) => {
                 this.oidcSecurityCommon.logError('pollServerSession error: ' + err);
