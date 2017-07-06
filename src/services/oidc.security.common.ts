@@ -20,7 +20,7 @@ export class OidcSecurityCommon {
     }
 
     setupModule() {
-        this.storage = sessionStorage;
+        if (typeof Storage !== 'undefined') { this.storage = sessionStorage; } //localStorage;
     }
 
     setStorage(storage: any) {
