@@ -79,7 +79,7 @@ export class AppModule {
         openIDImplicitFlowConfiguration.override_well_known_configuration = false;
         openIDImplicitFlowConfiguration.override_well_known_configuration_url = 'https://localhost:44386/wellknownconfiguration.json';
 
-		// this.oidcSecurityService.setStorage(localStorage);
+        // this.oidcSecurityService.setStorage(localStorage);
         this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
     }
 }
