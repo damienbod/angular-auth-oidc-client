@@ -1,4 +1,6 @@
-﻿import { Injectable, EventEmitter, Output } from '@angular/core';
+﻿import { PLATFORM_ID, Inject } from '@angular/core';
+import { isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { Injectable, EventEmitter, Output } from '@angular/core';
 import { Http, Response, Headers } from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -29,6 +31,7 @@ export class OidcSecurityService {
     private authWellKnownEndpointsLoaded = false;
 
     constructor(
+        @Inject(PLATFORM_ID) private platformId: Object,
         private http: Http,
         private authConfiguration: AuthConfiguration,
         private router: Router,
@@ -60,17 +63,22 @@ export class OidcSecurityService {
         }
 
         this.oidcSecurityCommon.logDebug('STS server: ' + this.authConfiguration.stsServer);
-        this.authWellKnownEndpoints.setupModule();
 
-        if (this.authConfiguration.silent_renew) {
-            this.oidcSecuritySilentRenew.initRenew();
+        if (isPlatformBrowser(this.platformId)) {
+            // Client only code.
+            this.authWellKnownEndpoints.setupModule();
+
+            if (this.authConfiguration.silent_renew) {
+                this.oidcSecuritySilentRenew.initRenew();
+            }
+
+            if (this.authConfiguration.start_checksession) {
+                this.oidcSecurityCheckSession.init().subscribe(() => {
+                    this.oidcSecurityCheckSession.pollServerSession(this.authConfiguration.client_id);
+                });
+            }
         }
 
-        if (this.authConfiguration.start_checksession) {
-            this.oidcSecurityCheckSession.init().subscribe(() => {
-                this.oidcSecurityCheckSession.pollServerSession(this.authConfiguration.client_id);
-            });
-        }
     }
 
     getToken(): any {
@@ -301,9 +309,9 @@ export class OidcSecurityService {
     }
 
     private successful_validation() {
-            this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_nonce, '');
-            this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_state_control, '');
-            this.oidcSecurityCommon.logDebug('AuthorizedCallback token(s) validated, continue');
+        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_nonce, '');
+        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_state_control, '');
+        this.oidcSecurityCommon.logDebug('AuthorizedCallback token(s) validated, continue');
     }
 
     private refreshSession() {
@@ -425,18 +433,18 @@ export class OidcSecurityService {
             .take(10000);
 
         let subscription = source.subscribe(() => {
-                if (this.isAuthorized) {
-                    if (this.oidcSecurityValidation.isTokenExpired(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_id_token))) {
-                        this.oidcSecurityCommon.logDebug('IsAuthorized: id_token isTokenExpired, start silent renew if active');
+            if (this.isAuthorized) {
+                if (this.oidcSecurityValidation.isTokenExpired(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_id_token))) {
+                    this.oidcSecurityCommon.logDebug('IsAuthorized: id_token isTokenExpired, start silent renew if active');
 
-                        if (this.authConfiguration.silent_renew) {
-                            this.refreshSession();
-                        } else {
-                            this.resetAuthorizationData(false);
-                        }
+                    if (this.authConfiguration.silent_renew) {
+                        this.refreshSession();
+                    } else {
+                        this.resetAuthorizationData(false);
                     }
                 }
-            },
+            }
+        },
             (err: any) => {
                 this.oidcSecurityCommon.logError('Error: ' + err);
             },
