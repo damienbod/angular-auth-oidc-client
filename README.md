@@ -135,17 +135,45 @@ private setHeaders() {
 
 ## Storage
 
-In the app module of the Angular app you can set the storage of your choice. Tested with localStorage and sessionStorage, for example in the app.component. 
+In the app module of the Angular app you can set the localeStorage: default is sessionStorage. For example in the app.component: 
 
 ```typescript
  constructor(public oidcSecurityService: OidcSecurityService) {
-        ...
-        
-        
+        ...        
         this.oidcSecurityService.setStorage(localStorage);
         this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
     }
 ```
+
+If you need, you can create a custom storage (for example to use cookies).
+
+Implement `OidcSecurityStorage` class-interface and the `read` and `write` methods:
+```TypeScript
+@Injectable()
+export class LocalStorage implements OidcSecurityStorage {
+
+    public read(key: string): any {
+        ...
+        return ...
+    }
+
+    public write(key: string, value: string): void {
+        ...
+    }
+
+}
+```
+Then provide the class in the module:
+```TypeScript
+@NgModule({
+    imports: [
+        ...
+        AuthModule.forRoot({ storage: CustomStorage })
+    ],
+    ...
+})
+```
+See also `OidcSecurityStorage` code.
 
 ## Example using: 
 
