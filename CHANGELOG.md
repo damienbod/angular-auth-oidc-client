@@ -3,7 +3,7 @@
 <a name="2017-07-09"></a>
 ### 2017-07-06 version 1.2.0
 * support for SSR
-* Adding abstract OidcSecurityStorage class
+* support for custom storage
 
 <a name="2017-07-06"></a>
 ### 2017-07-06 version 1.1.4
