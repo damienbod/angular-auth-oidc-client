@@ -133,17 +133,7 @@ private setHeaders() {
 
 ```
 
-## Storage
-
-In the app module of the Angular app you can set the localeStorage: default is sessionStorage. For example in the app.component: 
-
-```typescript
- constructor(public oidcSecurityService: OidcSecurityService) {
-        ...        
-        this.oidcSecurityService.setStorage(localStorage);
-        this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
-    }
-```
+## Custom Storage
 
 If you need, you can create a custom storage (for example to use cookies).
 
@@ -173,7 +163,7 @@ Then provide the class in the module:
     ...
 })
 ```
-See also `OidcSecurityStorage` code.
+See also `oidc.security.storage.ts` for an example.
 
 ## Example using: 
 

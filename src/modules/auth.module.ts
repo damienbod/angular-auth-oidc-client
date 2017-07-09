@@ -7,12 +7,12 @@ import { OidcSecurityCheckSession } from '../services/oidc.security.check-sessio
 import { OidcSecuritySilentRenew } from '../services/oidc.security.silent-renew';
 import { OidcSecurityUserService } from '../services/oidc.security.user-service';
 import { OidcSecurityCommon } from '../services/oidc.security.common';
-import { OidcSecurityStorage, LocalStorage } from '../services/oidc.security.storage';
+import { OidcSecurityStorage, BrowserStorage } from '../services/oidc.security.storage';
 import { AuthWellKnownEndpoints } from '../services/auth.well-known-endpoints';
 
 @NgModule()
 export class AuthModule {
-    static forRoot(token: any = {}): ModuleWithProviders {
+    static forRoot(token: Token = {}): ModuleWithProviders {
         return {
             ngModule: AuthModule,
             providers: [
@@ -27,13 +27,13 @@ export class AuthModule {
                 AuthWellKnownEndpoints,
                 {
                     provide: OidcSecurityStorage,
-                    useClass: token.storage || LocalStorage
-                },
+                    useClass: token.storage || BrowserStorage
+                }
             ]
         };
     }
 
-    public static forChild(token: any = {}): ModuleWithProviders {
+    public static forChild(token: Token = {}): ModuleWithProviders {
         return {
             ngModule: AuthModule,
             providers: [
@@ -47,9 +47,21 @@ export class AuthModule {
                 AuthWellKnownEndpoints,
                 {
                     provide: OidcSecurityStorage,
-                    useClass: token.storage || LocalStorage
-                },
+                    useClass: token.storage || BrowserStorage
+                }
             ]
         };
     }
+}
+
+export interface Type<T> extends Function {
+
+    new (...args: any[]): T;
+
+}
+
+export interface Token {
+
+    storage?: Type<any>;
+
 }

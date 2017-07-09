@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { AuthConfiguration } from '../modules/auth.configuration';
 
 /**
  * Implement this class-interface to create a custom storage.
@@ -23,22 +24,17 @@ export abstract class OidcSecurityStorage {
 }
 
 @Injectable()
-export class LocalStorage implements OidcSecurityStorage {
-
-    public storage: any;
+export class BrowserStorage implements OidcSecurityStorage {
 
     private hasStorage: boolean;
 
-    constructor() {
+    constructor(private authConfiguration: AuthConfiguration) {
         this.hasStorage = typeof Storage !== 'undefined';
-
-        // Default is sessionStorage.
-        if (this.hasStorage) { this.storage = sessionStorage; }
     }
 
     public read(key: string): any {
         if (this.hasStorage) {
-            return JSON.parse(this.storage.getItem(key));
+            return JSON.parse(this.authConfiguration.storage.getItem(key));
         }
 
         return;
@@ -46,7 +42,7 @@ export class LocalStorage implements OidcSecurityStorage {
 
     public write(key: string, value: string): void {
         if (this.hasStorage) {
-            this.storage.setItem(key, JSON.stringify(value));
+            this.authConfiguration.storage.setItem(key, JSON.stringify(value));
         }
     }
 

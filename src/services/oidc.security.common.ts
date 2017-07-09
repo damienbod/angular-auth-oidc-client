@@ -1,11 +1,9 @@
 ﻿import { Injectable } from '@angular/core';
 import { AuthConfiguration } from '../modules/auth.configuration';
-import { LocalStorage } from './oidc.security.storage';
+import { OidcSecurityStorage } from './oidc.security.storage';
 
 @Injectable()
 export class OidcSecurityCommon {
-
-    storage: any;
 
     storage_access_token = 'authorizationData';
     storage_id_token = 'authorizationDataIdToken';
@@ -17,17 +15,17 @@ export class OidcSecurityCommon {
     storage_session_state = 'session_state';
     storage_silent_renew_running = 'storage_silent_renew_running';
 
-    constructor(private authConfiguration: AuthConfiguration, private localStorage: LocalStorage) {
+    constructor(private authConfiguration: AuthConfiguration, private oidcSecurityStorage: OidcSecurityStorage) {
     }
 
     setupModule() { }
 
     retrieve(key: string): any {
-        return this.localStorage.read(key);
+        return this.oidcSecurityStorage.read(key);
     }
 
     store(key: string, value: any) {
-        this.localStorage.write(key, value);
+        this.oidcSecurityStorage.write(key, value);
     }
 
     resetStorageData(isRenewProcess: boolean) {
