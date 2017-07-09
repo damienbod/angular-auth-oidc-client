@@ -27,6 +27,8 @@ export class DefaultConfiguration {
     max_id_token_iat_offset_allowed_in_seconds = 3;
     override_well_known_configuration = false;
     override_well_known_configuration_url = 'https://localhost:44386/wellknownconfiguration.json';
+
+    storage = typeof Storage !== 'undefined' ? sessionStorage : null;
 }
 
 export class OpenIDImplicitFlowConfiguration {
@@ -48,6 +50,7 @@ export class OpenIDImplicitFlowConfiguration {
     max_id_token_iat_offset_allowed_in_seconds: number;
     override_well_known_configuration: boolean;
     override_well_known_configuration_url: string;
+    storage: any;
 }
 
 @Injectable()
@@ -120,6 +123,10 @@ export class AuthConfiguration {
 
     get override_well_known_configuration_url(): string {
         return this.openIDImplicitFlowConfiguration.override_well_known_configuration_url || this.defaultConfig.override_well_known_configuration_url;
+    }
+
+    get storage(): any {
+        return this.openIDImplicitFlowConfiguration.storage || this.defaultConfig.storage;
     }
 
     constructor(private defaultConfig: DefaultConfiguration) { }

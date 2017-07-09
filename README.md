@@ -78,8 +78,8 @@ export class AppModule {
         openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
         openIDImplicitFlowConfiguration.override_well_known_configuration = false;
         openIDImplicitFlowConfiguration.override_well_known_configuration_url = 'https://localhost:44386/wellknownconfiguration.json';
-
-        // this.oidcSecurityService.setStorage(localStorage);
+        // openIDImplicitFlowConfiguration.storage = localStorage;
+        
         this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
     }
 }
@@ -94,7 +94,7 @@ Create the login, logout component and use the oidcSecurityService
     }
 
     ngOnInit() {
-        if (window.location.hash) {
+        if (typeof location !== "undefined" && window.location.hash) {
             this.oidcSecurityService.authorizedCallback();
         }
     }
@@ -133,19 +133,37 @@ private setHeaders() {
 
 ```
 
-## Storage
+## Custom Storage
 
-In the app module of the Angular app you can set the storage of your choice. Tested with localStorage and sessionStorage, for example in the app.component. 
+If you need, you can create a custom storage (for example to use cookies).
 
-```typescript
- constructor(public oidcSecurityService: OidcSecurityService) {
+Implement `OidcSecurityStorage` class-interface and the `read` and `write` methods:
+```TypeScript
+@Injectable()
+export class CustomStorage implements OidcSecurityStorage {
+
+    public read(key: string): any {
         ...
-        
-        
-        this.oidcSecurityService.setStorage(localStorage);
-        this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
+        return ...
     }
+
+    public write(key: string, value: string): void {
+        ...
+    }
+
+}
 ```
+Then provide the class in the module:
+```TypeScript
+@NgModule({
+    imports: [
+        ...
+        AuthModule.forRoot({ storage: CustomStorage })
+    ],
+    ...
+})
+```
+See also `oidc.security.storage.ts` for an example.
 
 ## Example using: 
 

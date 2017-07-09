@@ -104,6 +104,12 @@ URL used to get the configuration if it is being read locally.
 default value : ''
 
 For some oidc, we require resource identifier to be provided along with the request.
+
+### storage
+
+default value : sessionStorage
+
+You can set the storage to localStorage, or implement a custom storage (see README).
    
 
 ## OidcSecurityService
@@ -139,22 +145,6 @@ Redirect after a STS server login. This method validates the id_token and the ac
 ### logoff()
 
 Logs off from the client application and also from the server if the endsession API is implemented on the STS server.
-
-###
-
-## setStorage(storage: any)
-
-In the app module of the Angular app you can set the storage of your choice. Tested with localStorage and sessionStorage
-This needs to be called before the setupModule function.
-
-```typescript
- constructor(public oidcSecurityService: OidcSecurityService) {
-        ...
-
-        // this.oidcSecurityService.setStorage(localStorage);
-        this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
-    }
-```
 
 ### handleError(error: any)
 
