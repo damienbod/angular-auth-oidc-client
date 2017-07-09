@@ -150,7 +150,7 @@ If you need, you can create a custom storage (for example to use cookies).
 Implement `OidcSecurityStorage` class-interface and the `read` and `write` methods:
 ```TypeScript
 @Injectable()
-export class LocalStorage implements OidcSecurityStorage {
+export class CustomStorage implements OidcSecurityStorage {
 
     public read(key: string): any {
         ...
