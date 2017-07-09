@@ -78,8 +78,8 @@ export class AppModule {
         openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
         openIDImplicitFlowConfiguration.override_well_known_configuration = false;
         openIDImplicitFlowConfiguration.override_well_known_configuration_url = 'https://localhost:44386/wellknownconfiguration.json';
-
-        // this.oidcSecurityService.setStorage(localStorage);
+        // openIDImplicitFlowConfiguration.storage = localStorage;
+        
         this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
     }
 }
