@@ -94,7 +94,7 @@ Create the login, logout component and use the oidcSecurityService
     }
 
     ngOnInit() {
-        if (window.location.hash) {
+        if (typeof location !== "undefined" && window.location.hash) {
             this.oidcSecurityService.authorizedCallback();
         }
     }
