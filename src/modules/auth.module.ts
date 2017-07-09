@@ -7,11 +7,12 @@ import { OidcSecurityCheckSession } from '../services/oidc.security.check-sessio
 import { OidcSecuritySilentRenew } from '../services/oidc.security.silent-renew';
 import { OidcSecurityUserService } from '../services/oidc.security.user-service';
 import { OidcSecurityCommon } from '../services/oidc.security.common';
+import { OidcSecurityStorage, LocalStorage } from '../services/oidc.security.storage';
 import { AuthWellKnownEndpoints } from '../services/auth.well-known-endpoints';
 
 @NgModule()
 export class AuthModule {
-    static forRoot(): ModuleWithProviders {
+    static forRoot(token: any = {}): ModuleWithProviders {
         return {
             ngModule: AuthModule,
             providers: [
@@ -23,12 +24,16 @@ export class AuthModule {
                 OidcSecurityCommon,
                 AuthConfiguration,
                 DefaultConfiguration,
-                AuthWellKnownEndpoints
+                AuthWellKnownEndpoints,
+                {
+                    provide: OidcSecurityStorage,
+                    useClass: token.storage || LocalStorage
+                },
             ]
         };
     }
 
-    public static forChild(): ModuleWithProviders {
+    public static forChild(token: any = {}): ModuleWithProviders {
         return {
             ngModule: AuthModule,
             providers: [
@@ -39,7 +44,11 @@ export class AuthModule {
                 OidcSecurityUserService,
                 OidcSecurityCommon,
                 AuthConfiguration,
-                AuthWellKnownEndpoints
+                AuthWellKnownEndpoints,
+                {
+                    provide: OidcSecurityStorage,
+                    useClass: token.storage || LocalStorage
+                },
             ]
         };
     }

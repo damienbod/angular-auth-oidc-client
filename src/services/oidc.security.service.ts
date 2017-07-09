@@ -13,6 +13,7 @@ import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
 import { OidcSecurityUserService } from './oidc.security.user-service';
 import { OidcSecurityCommon } from './oidc.security.common';
 import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
+import { LocalStorage } from './oidc.security.storage';
 
 import { JwtKeys } from './jwtkeys';
 
@@ -39,6 +40,7 @@ export class OidcSecurityService {
         private oidcSecuritySilentRenew: OidcSecuritySilentRenew,
         private oidcSecurityUserService: OidcSecurityUserService,
         private oidcSecurityCommon: OidcSecurityCommon,
+        private localStorage: LocalStorage,
         private authWellKnownEndpoints: AuthWellKnownEndpoints
     ) {
     }
@@ -131,7 +133,7 @@ export class OidcSecurityService {
     }
 
     setStorage(storage: any) {
-        this.oidcSecurityCommon.storage = storage;
+        this.localStorage.storage = storage;
     }
 
     authorizedCallback() {
