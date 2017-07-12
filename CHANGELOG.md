@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-07-12"></a>
+### 2017-07-12 version 1.2.1
+* Fix types in storage class
+
 <a name="2017-07-09"></a>
 ### 2017-07-06 version 1.2.0
 * support for SSR
