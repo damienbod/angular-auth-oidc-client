@@ -40,7 +40,7 @@ export class BrowserStorage implements OidcSecurityStorage {
         return;
     }
 
-    public write(key: string, value: string): void {
+    public write(key: string, value: any): void {
         if (this.hasStorage) {
             this.authConfiguration.storage.setItem(key, JSON.stringify(value));
         }

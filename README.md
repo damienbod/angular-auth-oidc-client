@@ -147,7 +147,7 @@ export class CustomStorage implements OidcSecurityStorage {
         return ...
     }
 
-    public write(key: string, value: string): void {
+    public write(key: string, value: any): void {
         ...
     }
 
