@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-07-19"></a>
+### 2017-07-19 version 1.2.2
+* support reading json file configurations
+
 <a name="2017-07-12"></a>
 ### 2017-07-12 version 1.2.1
 * Fix types in storage class

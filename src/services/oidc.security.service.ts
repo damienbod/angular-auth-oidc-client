@@ -20,7 +20,8 @@ import { JwtKeys } from './jwtkeys';
 export class OidcSecurityService {
 
     @Output() onUserDataLoaded: EventEmitter<any> = new EventEmitter<any>(true);
-
+    @Output() onModuleSetup: EventEmitter<any> = new EventEmitter<any>(true);
+	
     checkSessionChanged: boolean;
     isAuthorized: boolean;
 
@@ -79,6 +80,7 @@ export class OidcSecurityService {
             }
         }
 
+		 this.onModuleSetup.emit();
     }
 
     getToken(): any {
