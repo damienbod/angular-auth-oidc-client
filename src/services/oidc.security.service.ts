@@ -20,12 +20,14 @@ import { JwtKeys } from './jwtkeys';
 @Injectable()
 export class OidcSecurityService {
 
-    @Output() onUserDataLoaded: EventEmitter<any> = new EventEmitter<any>(true);
     @Output() onModuleSetup: EventEmitter<any> = new EventEmitter<any>(true);
 
     checkSessionChanged: boolean;
     private _isAuthorized = new BehaviorSubject<boolean>(false);
     private _isAuthorizedValue: boolean;
+
+    private _userData = new BehaviorSubject<any>('');
+    private _userDataValue: boolean;
 
     private headers: Headers;
     private oidcSecurityValidation: OidcSecurityValidation;
@@ -55,7 +57,11 @@ export class OidcSecurityService {
         this.authWellKnownEndpoints.onWellKnownEndpointsLoaded.subscribe(() => { this.onWellKnownEndpointsLoaded(); });
 
         this.oidcSecurityCommon.setupModule();
-        this.oidcSecurityUserService.setupModule();
+
+        if (this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_user_data) !== '') {
+            console.log('userdata from storage');
+            this.setUserData(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_user_data));
+        }
 
         this.headers = new Headers();
         this.headers.append('Content-Type', 'application/json');
@@ -85,6 +91,15 @@ export class OidcSecurityService {
 		 this.onModuleSetup.emit();
     }
 
+    getUserData(): Observable<any> {
+        return this._userData.asObservable();
+    }
+
+    private setUserData(userData: any) {
+        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_user_data, userData);
+        this._userData.next(userData);
+    }
+
     getIsAuthorized(): Observable<boolean> {
         return this._isAuthorized.asObservable();
     }
@@ -94,7 +109,6 @@ export class OidcSecurityService {
         this._isAuthorized.next(isAuthorized);
     }
 
-
     getToken(): any {
         if (!this._isAuthorizedValue) {
             return '';
@@ -102,18 +116,6 @@ export class OidcSecurityService {
 
         let token = this.oidcSecurityCommon.getAccessToken();
         return decodeURIComponent(token);
-    }
-
-    getUserData(): any {
-        if (!this._isAuthorizedValue) {
-            this.oidcSecurityCommon.logError('User must be logged in before you can get the user data!')
-        }
-
-        if (!this.oidcSecurityUserService.userData) {
-            this.oidcSecurityUserService.userData = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_user_data);
-        }
-
-        return this.oidcSecurityUserService.userData;
     }
 
     authorize() {
@@ -254,7 +256,7 @@ export class OidcSecurityService {
                                 .subscribe(() => {
                                     this.oidcSecurityCommon.logDebug('authorizedCallback id_token token flow');
                                     if (this.oidcSecurityValidation.validate_userdata_sub_id_token(decoded_id_token.sub, this.oidcSecurityUserService.userData.sub)) {
-                                        this.onUserDataLoaded.emit();
+                                        this.setUserData(this.oidcSecurityUserService.userData);
                                         this.oidcSecurityCommon.logDebug(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_access_token));
                                         this.oidcSecurityCommon.logDebug(this.oidcSecurityUserService.userData);
 
@@ -277,6 +279,7 @@ export class OidcSecurityService {
 
                         // userData is set to the id_token decoded. No access_token.
                         this.oidcSecurityUserService.userData = decoded_id_token;
+                        this.setUserData(this.oidcSecurityUserService.userData);
 
                         this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_session_state, result.session_state);
 
