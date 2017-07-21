@@ -114,23 +114,100 @@ You can set the storage to localStorage, or implement a custom storage (see READ
 
 ## OidcSecurityService
 
-### @Output() onUserDataLoaded: EventEmitter<any>
+### @Output() onModuleSetup: EventEmitter<any> = new EventEmitter<any>(true);
 
-This event can be used when the User data is loaded.
+This is required if you need to wait for a json configuration file to load.
 
 ### checkSessionChanged: boolean;
 	
 This boolean is set to throurg when the OpenID session management recieves a message that the server session has changed.
 
-### isAuthorized: boolean;
+### getIsAuthorized(): Observable<boolean>
 
 Set to true if the client and user are authenicated.
+
+Example using:
+
+``` javascript
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs/Subscription';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
+
+
+@Component({
+    selector: 'example',
+    templateUrl: 'example.component.html'
+})
+
+export class ExampleComponent implements OnInit, OnDestroy   {
+
+    isAuthorizedSubscription: Subscription;
+    isAuthorized: boolean;
+
+    constructor(
+        public oidcSecurityService: OidcSecurityService,
+    ) {
+    }
+
+    ngOnInit() {
+        this.isAuthorizedSubscription = this.oidcSecurityService.getIsAuthorized().subscribe(
+            (isAuthorized: boolean) => {
+                this.isAuthorized = isAuthorized;
+            });
+    }
+
+    ngOnDestroy() {
+        this.isAuthorizedSubscription.unsubscribe();
+    }
+
+}
+
+```
+
 
 ### getToken()
 
 public function to get the access_token which can be used to access APIs on the server.
 
-### getUserData()
+### getUserData(): Observable<any> 
+
+Example using:
+
+``` javascript
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs/Subscription';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
+
+
+@Component({
+    selector: 'example',
+    templateUrl: 'example.component.html'
+})
+
+export class ExampleComponent implements OnInit, OnDestroy   {
+
+    userDataSubscription: Subscription;
+    userData: boolean;
+
+    constructor(
+        public oidcSecurityService: OidcSecurityService,
+    ) {
+    }
+
+    ngOnInit() {
+        this.userDataSubscription = this.oidcSecurityService.getUserData().subscribe(
+            (userData: any) => {
+                 this.userData = userData
+            });
+    }
+
+    ngOnDestroy() {
+        this.userDataSubscription.unsubscribe();
+    }
+
+}
+
+```
 	
 Gets the user data from the auth module of the logged in user.
 
