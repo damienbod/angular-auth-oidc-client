@@ -5,6 +5,7 @@ import { Http, Response, Headers } from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs/Rx';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Router } from '@angular/router';
 import { AuthConfiguration, OpenIDImplicitFlowConfiguration } from '../modules/auth.configuration';
 import { OidcSecurityValidation } from './oidc.security.validation';
@@ -21,9 +22,10 @@ export class OidcSecurityService {
 
     @Output() onUserDataLoaded: EventEmitter<any> = new EventEmitter<any>(true);
     @Output() onModuleSetup: EventEmitter<any> = new EventEmitter<any>(true);
-	
+
     checkSessionChanged: boolean;
-    isAuthorized: boolean;
+    private _isAuthorized = new BehaviorSubject<boolean>(false);
+    private _isAuthorizedValue: boolean;
 
     private headers: Headers;
     private oidcSecurityValidation: OidcSecurityValidation;
@@ -60,7 +62,7 @@ export class OidcSecurityService {
         this.headers.append('Accept', 'application/json');
 
         if (this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_is_authorized) !== '') {
-            this.isAuthorized = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_is_authorized);
+            this.setIsAuthorized(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_is_authorized));
         }
 
         this.oidcSecurityCommon.logDebug('STS server: ' + this.authConfiguration.stsServer);
@@ -83,13 +85,27 @@ export class OidcSecurityService {
 		 this.onModuleSetup.emit();
     }
 
+    getIsAuthorized(): Observable<boolean> {
+        return this._isAuthorized.asObservable();
+    }
+
+    private setIsAuthorized(isAuthorized: boolean) {
+        this._isAuthorizedValue = isAuthorized;
+        this._isAuthorized.next(isAuthorized);
+    }
+
+
     getToken(): any {
+        if (!this._isAuthorizedValue) {
+            return '';
+        }
+
         let token = this.oidcSecurityCommon.getAccessToken();
         return decodeURIComponent(token);
     }
 
     getUserData(): any {
-        if (!this.isAuthorized) {
+        if (!this._isAuthorizedValue) {
             this.oidcSecurityCommon.logError('User must be logged in before you can get the user data!')
         }
 
@@ -338,7 +354,7 @@ export class OidcSecurityService {
         this.oidcSecurityCommon.logDebug('storing to storage, getting the roles');
         this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_access_token, access_token);
         this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_id_token, id_token);
-        this.isAuthorized = true;
+        this.setIsAuthorized(true);
         this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_is_authorized, true);
     }
 
@@ -365,7 +381,7 @@ export class OidcSecurityService {
 
     private resetAuthorizationData(isRenewProcess: boolean) {
         if (!isRenewProcess) {
-            this.isAuthorized = false;
+            this.setIsAuthorized(false);
             this.oidcSecurityCommon.resetStorageData(isRenewProcess);
             this.checkSessionChanged = false;
         }
@@ -431,7 +447,7 @@ export class OidcSecurityService {
             .take(10000);
 
         let subscription = source.subscribe(() => {
-            if (this.isAuthorized) {
+            if (this._isAuthorizedValue) {
                 if (this.oidcSecurityValidation.isTokenExpired(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_id_token))) {
                     this.oidcSecurityCommon.logDebug('IsAuthorized: id_token isTokenExpired, start silent renew if active');
 
