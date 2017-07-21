@@ -116,6 +116,68 @@ You can set the storage to localStorage, or implement a custom storage (see READ
 
 ### @Output() onModuleSetup: EventEmitter<any> = new EventEmitter<any>(true);
 
+Example using:
+
+
+App.module: get your json settings:
+```
+configClient() {
+        return this.http.get('/api/ClientAppSettings').map(res => {
+            this.clientConfiguration = res.json();
+        });
+    }
+```
+App.module: 
+Config the module, subscribe to the json get:
+```
+this.configClient().subscribe(config => {
+
+            console.log(this.clientConfiguration);
+            const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
+            openIDImplicitFlowConfiguration.stsServer = this.clientConfiguration.urlStsServer;
+
+            openIDImplicitFlowConfiguration.redirect_url = this.clientConfiguration.urlRedirect;
+            // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the
+            // Issuer identified by the iss (issuer) Claim as an audience.
+            // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience,
+            // or if it contains additional audiences not trusted by the Client.
+            openIDImplicitFlowConfiguration.client_id = 'clientId';
+            openIDImplicitFlowConfiguration.response_type = 'id_token token';
+            openIDImplicitFlowConfiguration.scope = ' openid vmsscope profile email';
+            openIDImplicitFlowConfiguration.post_logout_redirect_uri = this.clientConfiguration.urlRedirectPostLogout;
+            openIDImplicitFlowConfiguration.start_checksession = false;
+            openIDImplicitFlowConfiguration.silent_renew = true;
+            openIDImplicitFlowConfiguration.startup_route = '/vms';
+            // HTTP 403
+            openIDImplicitFlowConfiguration.forbidden_route = '/forbidden';
+            // HTTP 401
+            openIDImplicitFlowConfiguration.unauthorized_route = '/unauthorized';
+            openIDImplicitFlowConfiguration.log_console_warning_active = true;
+            openIDImplicitFlowConfiguration.log_console_debug_active = true;
+            // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
+            // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
+            openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
+
+            this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
+        });
+```
+
+AppComponent, subscribe to the onModuleSetup event:
+```
+ constructor(public oidcSecurityService: OidcSecurityService) {
+        this.oidcSecurityService.onModuleSetup.subscribe(() => { this.onModuleSetup(); });
+    }
+```
+
+Handle the authorize callback using the event:
+```
+ private onModuleSetup() {
+        if (window.location.hash) {
+            this.oidcSecurityService.authorizedCallback();
+        }
+    }
+```
+
 This is required if you need to wait for a json configuration file to load.
 
 ### checkSessionChanged: boolean;
