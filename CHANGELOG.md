@@ -1,6 +1,11 @@
 ## angular-auth-oidc-client Changelog
 
 <a name="2017-07-21"></a>
+### 2017-07-21 version 1.3.1
+* bugfix error handling
+* bugfix configuration default values
+
+<a name="2017-07-21"></a>
 ### 2017-07-21 version 1.3.0
 * bugfix refresh isAuthorized
 * bugfix refresh user data
