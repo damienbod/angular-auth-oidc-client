@@ -86,11 +86,11 @@ export class AuthConfiguration {
     }
 
     get start_checksession(): boolean {
-        return this.openIDImplicitFlowConfiguration.start_checksession || this.defaultConfig.start_checksession;
+        return this.openIDImplicitFlowConfiguration.start_checksession !== undefined ? this.openIDImplicitFlowConfiguration.start_checksession : this.defaultConfig.start_checksession;
     }
 
     get silent_renew(): boolean {
-        return this.openIDImplicitFlowConfiguration.silent_renew || this.defaultConfig.silent_renew;
+        return this.openIDImplicitFlowConfiguration.silent_renew !== undefined ? this.openIDImplicitFlowConfiguration.silent_renew : this.defaultConfig.silent_renew;
     }
 
     get startup_route(): string {
@@ -106,11 +106,11 @@ export class AuthConfiguration {
     }
 
     get log_console_warning_active(): boolean {
-        return this.openIDImplicitFlowConfiguration.log_console_warning_active || this.defaultConfig.log_console_warning_active;
+        return this.openIDImplicitFlowConfiguration.log_console_warning_active !== undefined ? this.openIDImplicitFlowConfiguration.log_console_warning_active : this.defaultConfig.log_console_warning_active;
     }
 
     get log_console_debug_active(): boolean {
-        return this.openIDImplicitFlowConfiguration.log_console_debug_active || this.defaultConfig.log_console_debug_active;
+        return this.openIDImplicitFlowConfiguration.log_console_debug_active !== undefined ? this.openIDImplicitFlowConfiguration.log_console_debug_active : this.defaultConfig.log_console_debug_active;
     }
 
     get max_id_token_iat_offset_allowed_in_seconds(): number {
@@ -118,7 +118,7 @@ export class AuthConfiguration {
     }
 
     get override_well_known_configuration(): boolean {
-        return this.openIDImplicitFlowConfiguration.override_well_known_configuration || this.defaultConfig.override_well_known_configuration;
+        return this.openIDImplicitFlowConfiguration.override_well_known_configuration !== undefined ? this.openIDImplicitFlowConfiguration.override_well_known_configuration : this.defaultConfig.override_well_known_configuration;
     }
 
     get override_well_known_configuration_url(): string {
