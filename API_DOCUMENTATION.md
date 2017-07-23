@@ -69,6 +69,12 @@ default value : '/Unauthorized'
 
 Route, if the server returns a 401. This is an Angular route. HTTP 401
 
+### auto_userinfo
+
+default value : 'true'
+
+Automatically get user info after authentication.
+
 ### log_console_warning_active
 
 default value : true
