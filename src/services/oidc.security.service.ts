@@ -48,7 +48,7 @@ export class OidcSecurityService {
     ) {
     }
 
-    setupModule(openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration) {
+    setupModule(openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration): void {
 
         this.authConfiguration.init(openIDImplicitFlowConfiguration);
         this.oidcSecurityValidation = new OidcSecurityValidation(this.oidcSecurityCommon);
@@ -94,7 +94,7 @@ export class OidcSecurityService {
         return this._userData.asObservable();
     }
 
-    private setUserData(userData: any) {
+    private setUserData(userData: any): void {
         this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_user_data, userData);
         this._userData.next(userData);
     }
@@ -103,7 +103,7 @@ export class OidcSecurityService {
         return this._isAuthorized.asObservable();
     }
 
-    private setIsAuthorized(isAuthorized: boolean) {
+    private setIsAuthorized(isAuthorized: boolean): void {
         this._isAuthorizedValue = isAuthorized;
         this._isAuthorized.next(isAuthorized);
     }
@@ -131,6 +131,14 @@ export class OidcSecurityService {
         return this.oidcSecurityValidation.getPayloadFromToken(token, encode);
     }
 
+    setState(state: string): void {
+        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_state_control, state);
+    }
+
+    getState(): string {
+        return this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_auth_state_control);
+    }
+
     authorize() {
 
         let data = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_well_known_endpoints);
@@ -145,17 +153,20 @@ export class OidcSecurityService {
 
         if (!this.oidcSecurityValidation.config_validate_response_type(this.authConfiguration.response_type)) {
             // invalid response_type
-            return
+            return;
         }
 
         this.resetAuthorizationData(false);
 
         this.oidcSecurityCommon.logDebug('BEGIN Authorize, no auth data');
 
-        let nonce = 'N' + Math.random() + '' + Date.now();
-        let state = Date.now() + '' + Math.random();
+        let state = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_auth_state_control);
+        if (state === '') {
+            state = Date.now() + '' + Math.random();
+            this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_state_control, state);
+        }
 
-        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_state_control, state);
+        let nonce = 'N' + Math.random() + '' + Date.now();
         this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_nonce, nonce);
         this.oidcSecurityCommon.logDebug('AuthorizedController created. local state: ' + this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_auth_state_control));
 
@@ -364,7 +375,7 @@ export class OidcSecurityService {
 
     private successful_validation() {
         this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_nonce, '');
-        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_state_control, '');
+        // this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_state_control, '');
         this.oidcSecurityCommon.logDebug('AuthorizedCallback token(s) validated, continue');
     }
 
