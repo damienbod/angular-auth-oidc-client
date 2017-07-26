@@ -375,17 +375,23 @@ export class OidcSecurityService {
 
     private successful_validation() {
         this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_nonce, '');
-        // this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_state_control, '');
+
+        if (this.authConfiguration.auto_clean_state_after_authentication) {
+            this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_state_control, '');
+        }
         this.oidcSecurityCommon.logDebug('AuthorizedCallback token(s) validated, continue');
     }
 
     private refreshSession() {
         this.oidcSecurityCommon.logDebug('BEGIN refresh session Authorize');
 
-        let nonce = 'N' + Math.random() + '' + Date.now();
-        let state = Date.now() + '' + Math.random();
+        let state = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_auth_state_control);
+        if (state === '') {
+            state = Date.now() + '' + Math.random();
+            this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_state_control, state);
+        }
 
-        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_state_control, state);
+        let nonce = 'N' + Math.random() + '' + Date.now();
         this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_nonce, nonce);
         this.oidcSecurityCommon.logDebug('RefreshSession created. adding myautostate: ' + this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_auth_state_control));
 
