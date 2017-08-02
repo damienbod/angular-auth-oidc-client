@@ -32,7 +32,6 @@ export class OidcSecurityUserService {
     private getIdentityUserData = (): Observable<any> => {
 
         let headers = new Headers();
-        headers.append('Content-Type', 'application/json');
         headers.append('Accept', 'application/json');
 
         let token = this.oidcSecurityCommon.getAccessToken();
