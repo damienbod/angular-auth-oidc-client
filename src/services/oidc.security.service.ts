@@ -23,6 +23,7 @@ export class OidcSecurityService {
     @Output() onModuleSetup: EventEmitter<any> = new EventEmitter<any>(true);
 
     checkSessionChanged: boolean;
+    moduleSetup = false;
     private _isAuthorized = new BehaviorSubject<boolean>(false);
     private _isAuthorizedValue: boolean;
 
@@ -82,6 +83,7 @@ export class OidcSecurityService {
             }
         }
 
+        this.moduleSetup = true;
         this.onModuleSetup.emit();
     }
 

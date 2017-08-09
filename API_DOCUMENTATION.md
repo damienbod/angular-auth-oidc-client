@@ -120,12 +120,29 @@ You can set the storage to localStorage, or implement a custom storage (see READ
 
 ## OidcSecurityService
 
+### @Output() moduleSetup: boolean
+
+Can be used to check if the setup logic is already completed, before your component loads.
+
+```
+constructor(public oidcSecurityService: OidcSecurityService) {
+	if (this.oidcSecurityService.moduleSetup) {
+		this.doCallbackLogicIfRequired();
+	} else {
+		this.oidcSecurityService.onModuleSetup.subscribe(() => {
+			this.doCallbackLogicIfRequired();
+		});
+	}
+}
+```
+
 ### @Output() onModuleSetup: EventEmitter<any> = new EventEmitter<any>(true);
 
 Example using:
 
 
 App.module: get your json settings:
+
 ```
 configClient() {
         return this.http.get('/api/ClientAppSettings').map(res => {
@@ -169,10 +186,17 @@ this.configClient().subscribe(config => {
 ```
 
 AppComponent, subscribe to the onModuleSetup event:
+
 ```
- constructor(public oidcSecurityService: OidcSecurityService) {
-        this.oidcSecurityService.onModuleSetup.subscribe(() => { this.onModuleSetup(); });
-    }
+constructor(public oidcSecurityService: OidcSecurityService) {
+	if (this.oidcSecurityService.moduleSetup) {
+		this.doCallbackLogicIfRequired();
+	} else {
+		this.oidcSecurityService.onModuleSetup.subscribe(() => {
+			this.doCallbackLogicIfRequired();
+		});
+	}
+}
 ```
 
 Handle the authorize callback using the event:
