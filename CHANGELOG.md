@@ -1,6 +1,11 @@
 ## angular-auth-oidc-client Changelog
 
 <a name="2017-08-09"></a>
+### 2017-08-09 version 1.3.4
+* Fix authorization url construction
+
+
+<a name="2017-08-09"></a>
 ### 2017-08-09 version 1.3.3
 * adding moduleSetup boolean so that the authorization callback can wait until the module is ready
 
