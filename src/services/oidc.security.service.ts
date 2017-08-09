@@ -399,31 +399,24 @@ export class OidcSecurityService {
         this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_is_authorized, true);
     }
 
-    private createAuthorizeUrl(nonce: string, state: string): string {
+    private createAuthorizeUrl(nonce: string, state: string) {
 
-        let authorizationUrl = this.authWellKnownEndpoints.authorization_endpoint;
-        let requiredParams = {
-            client_id: this.authConfiguration.client_id,
-            redirect_uri: this.authConfiguration.redirect_url,
-            response_type: this.authConfiguration.response_type,
-            scope: this.authConfiguration.scope,
-            nonce: nonce,
-            state: state
-        };
+        let authorizationUrl = new URL(this.authWellKnownEndpoints.authorization_endpoint);
+        
+        let params = authorizationUrl.searchParams;
+        params.set('client_id', this.authConfiguration.client_id);
+        params.set('redirect_uri', this.authConfiguration.redirect_url);
+        params.set('response_type', this.authConfiguration.response_type);
+        params.set('scope', this.authConfiguration.scope);
+        params.set('nonce', nonce);
+        params.set('state', state);
+
         let customParams = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_custom_request_params);
-
-        let params = Object.assign({}, requiredParams, customParams);
-
-        let url = authorizationUrl + '?';
-
-        Object.keys(params).forEach(key => {
-            url += key + '=' + params[key] + '&';
+        Object.keys(customParams).forEach(key => {
+            params.set(key, customParams[key]);
         });
 
-        url = url.slice(0, -1);
-
-        return url;
-
+        return authorizationUrl.toString();            
     }
 
     private resetAuthorizationData(isRenewProcess: boolean) {
