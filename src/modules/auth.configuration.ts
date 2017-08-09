@@ -18,6 +18,7 @@ export class DefaultConfiguration {
     forbidden_route = '/forbidden';
     // HTTP 401
     unauthorized_route = '/unauthorized';
+    auto_userinfo = true;
     log_console_warning_active = true;
     log_console_debug_active = false;
 
@@ -45,6 +46,7 @@ export class OpenIDImplicitFlowConfiguration {
     startup_route: string;
     forbidden_route: string;
     unauthorized_route: string;
+    auto_userinfo: boolean;
     log_console_warning_active: boolean;
     log_console_debug_active: boolean;
     max_id_token_iat_offset_allowed_in_seconds: number;
@@ -103,6 +105,10 @@ export class AuthConfiguration {
 
     get unauthorized_route(): string {
         return this.openIDImplicitFlowConfiguration.unauthorized_route || this.defaultConfig.unauthorized_route;
+    }
+
+    get auto_userinfo(): boolean {
+        return this.openIDImplicitFlowConfiguration.auto_userinfo !== undefined ? this.openIDImplicitFlowConfiguration.auto_userinfo : this.defaultConfig.auto_userinfo;
     }
 
     get log_console_warning_active(): boolean {
