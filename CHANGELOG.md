@@ -1,6 +1,10 @@
 ## angular-auth-oidc-client Changelog
 
 <a name="2017-08-09"></a>
+### 2017-08-09 version 1.3.3
+* adding moduleSetup boolean so that the authorization callback can wait until the module is ready
+
+<a name="2017-08-09"></a>
 ### 2017-08-09 version 1.3.2
 * API new function for get id_token
 * API new function for get user info
