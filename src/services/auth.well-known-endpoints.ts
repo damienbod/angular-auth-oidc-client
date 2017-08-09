@@ -106,7 +106,6 @@ export class AuthWellKnownEndpoints {
 
         return this.http.get(url, {
             headers: headers,
-            body: ''
         }).map((res: any) => res.json());
     }
 }
