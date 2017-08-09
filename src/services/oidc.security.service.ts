@@ -1,7 +1,7 @@
 ﻿import { PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { Injectable, EventEmitter, Output } from '@angular/core';
-import { Http, Response, Headers } from '@angular/http';
+import { Http, Response } from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs/Rx';
@@ -29,7 +29,6 @@ export class OidcSecurityService {
     private _userData = new BehaviorSubject<any>('');
     private _userDataValue: boolean;
 
-    private headers: Headers;
     private oidcSecurityValidation: OidcSecurityValidation;
     private errorMessage: string;
     private jwtKeys: JwtKeys;
@@ -61,10 +60,6 @@ export class OidcSecurityService {
         if (this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_user_data) !== '') {
             this.setUserData(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_user_data));
         }
-
-        this.headers = new Headers();
-        this.headers.append('Content-Type', 'application/json');
-        this.headers.append('Accept', 'application/json');
 
         if (this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_is_authorized) !== '') {
             this.setIsAuthorized(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_is_authorized));
