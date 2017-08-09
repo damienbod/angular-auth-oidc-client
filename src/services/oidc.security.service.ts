@@ -121,7 +121,7 @@ export class OidcSecurityService {
         return decodeURIComponent(token);
     }
 
-    getPayloadFromIdToken(encode: boolean = false): any {
+    getPayloadFromIdToken(encode = false): any {
         const token = this.getIdToken();
         return this.oidcSecurityValidation.getPayloadFromToken(token, encode);
     }
@@ -279,7 +279,7 @@ export class OidcSecurityService {
             });
     }
 
-    getUserinfo(isRenewProcess: boolean = false, result?: any, id_token?: any, decoded_id_token?: any): Observable<boolean> {
+    getUserinfo(isRenewProcess = false, result?: any, id_token?: any, decoded_id_token?: any): Observable<boolean> {
         result = result ? result : this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_auth_result);
         id_token = id_token ? id_token : this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_id_token);
         decoded_id_token = decoded_id_token ? decoded_id_token : this.oidcSecurityValidation.getPayloadFromToken(id_token, false);
