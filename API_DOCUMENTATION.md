@@ -232,6 +232,9 @@ export class ExampleComponent implements OnInit, OnDestroy   {
 
 ```
 
+### getIdToken()
+
+public function to get the id_token
 
 ### getToken()
 
@@ -278,6 +281,14 @@ export class ExampleComponent implements OnInit, OnDestroy   {
 ```
 	
 Gets the user data from the auth module of the logged in user.
+
+### getUserinfo
+
+Gets the user data direct from the STS API
+
+### setCustomRequestParameters(params: { [key: string]: string | number | boolean })
+
+public function so extra parameters can be added to the authorization URL request.
 
 ### authorize() 
 
