@@ -131,6 +131,10 @@ export class OidcSecurityService {
         return this.oidcSecurityValidation.getPayloadFromToken(token, encode);
     }
 
+    setCustomRequestParameters(params: { [key: string]: string | number | boolean }) {
+        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_custom_request_params, params);
+    }
+
     authorize() {
 
         let data = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_well_known_endpoints);
@@ -401,19 +405,25 @@ export class OidcSecurityService {
     private createAuthorizeUrl(nonce: string, state: string): string {
 
         let authorizationUrl = this.authWellKnownEndpoints.authorization_endpoint;
-        let client_id = this.authConfiguration.client_id;
-        let redirect_uri = this.authConfiguration.redirect_url;
-        let response_type = this.authConfiguration.response_type;
-        let scope = this.authConfiguration.scope;
+        let requiredParams = {
+            client_id: this.authConfiguration.client_id,
+            redirect_uri: this.authConfiguration.redirect_url,
+            response_type: this.authConfiguration.response_type,
+            scope: this.authConfiguration.scope,
+            nonce: nonce,
+            state: state
+        };
+        let customParams = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_custom_request_params);
 
-        let url =
-            authorizationUrl + '?' +
-            'response_type=' + encodeURI(response_type) + '&' +
-            'client_id=' + encodeURI(client_id) + '&' +
-            'redirect_uri=' + encodeURI(redirect_uri) + '&' +
-            'scope=' + encodeURI(scope) + '&' +
-            'nonce=' + encodeURI(nonce) + '&' +
-            'state=' + encodeURI(state);
+        let params = Object.assign({}, requiredParams, customParams);
+
+        let url = authorizationUrl + '?';
+
+        Object.keys(params).forEach(key => {
+            url += key + '=' + params[key] + '&';
+        });
+
+        url = url.slice(0, -1);
 
         return url;
 

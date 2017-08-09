@@ -15,6 +15,7 @@ export class OidcSecurityCommon {
     storage_well_known_endpoints = 'wellknownendpoints';
     storage_session_state = 'session_state';
     storage_silent_renew_running = 'storage_silent_renew_running';
+    storage_custom_request_params = 'storage_custom_request_params';
 
     constructor(private authConfiguration: AuthConfiguration, private oidcSecurityStorage: OidcSecurityStorage) {
     }
