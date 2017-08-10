@@ -32,7 +32,7 @@ describe('OidcSecurityService', () => {
             (oidcSecurityService: OidcSecurityService) => {   
 			
 				let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
-				openIDImplicitFlowConfiguration.stsServer = 'https://accounts.google.com';
+				openIDImplicitFlowConfiguration.stsServer = 'https://localhost:5001';
 				openIDImplicitFlowConfiguration.redirect_url = 'https://localhost:44386';
 				openIDImplicitFlowConfiguration.client_id = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
 				openIDImplicitFlowConfiguration.response_type = 'id_token token';
@@ -62,7 +62,7 @@ describe('OidcSecurityService', () => {
             (oidcSecurityService: OidcSecurityService) => {   
 			
 				let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
-				openIDImplicitFlowConfiguration.stsServer = 'https://accounts.google.com';
+				openIDImplicitFlowConfiguration.stsServer = 'https://localhost:5001';
 				openIDImplicitFlowConfiguration.redirect_url = 'https://localhost:44386';
 				openIDImplicitFlowConfiguration.client_id = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
 				openIDImplicitFlowConfiguration.response_type = 'id_token token';
