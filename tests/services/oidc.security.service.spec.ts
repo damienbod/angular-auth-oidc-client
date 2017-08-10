@@ -86,10 +86,10 @@ describe('OidcSecurityService', () => {
 				(oidcSecurityService as any).authConfiguration.init(openIDImplicitFlowConfiguration);
 				//oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
 				
-				oidcSecurityService.setCustomRequestParameters({'testcustom': 'customvalue'});
+				oidcSecurityService.setCustomRequestParameters({'testcustom': 'customvalue', 'p': 'b2c_1_sign_in'});
 				
                 let value = (oidcSecurityService as any).createAuthorizeUrl('nonce', 'state', 'http://example');
-				let expectValue = 'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&redirect_uri=https://localhost:44386&response_type=id_token token&scope=openid email profile&nonce=nonce&state=state&testcustom=customvalue';
+				let expectValue = 'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&redirect_uri=https://localhost:44386&response_type=id_token token&scope=openid email profile&nonce=nonce&state=state&testcustom=customvalue&p=b2c_1_sign_in';
                 expect(expectValue).toEqual(value);
             })
     );
