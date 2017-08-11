@@ -410,7 +410,7 @@ export class OidcSecurityService {
         params.set('scope', this.authConfiguration.scope);
         params.set('nonce', nonce);
         params.set('state', state);
-       
+
         let customParams = Object.assign({}, this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_custom_request_params));
 
         Object.keys(customParams).forEach(key => {
