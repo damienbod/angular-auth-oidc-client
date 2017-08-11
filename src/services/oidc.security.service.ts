@@ -164,14 +164,14 @@ export class OidcSecurityService {
         window.location.href = url;
     }
 
-    authorizedCallback() {
+    authorizedCallback(hash?: string) {
         let silentRenew = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_silent_renew_running);
         let isRenewProcess = (silentRenew === 'running');
 
         this.oidcSecurityCommon.logDebug('BEGIN authorizedCallback, no auth data');
         this.resetAuthorizationData(isRenewProcess);
 
-        let hash = window.location.hash.substr(1);
+        hash = hash || window.location.hash.substr(1);
 
         let result: any = hash.split('&').reduce(function (result: any, item: string) {
             let parts = item.split('=');
