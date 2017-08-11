@@ -1,7 +1,7 @@
 ## angular-auth-oidc-client Changelog
 
-<a name="2017-08-10"></a>
-### 2017-08-10 version 1.3.6
+<a name="2017-08-11"></a>
+### 2017-08-11 version 1.3.6
 * support for custom authorization strings like Azure Active Directory B2C
 
 <a name="2017-08-09"></a>
