@@ -97,7 +97,6 @@ export class AuthWellKnownEndpoints {
     private getWellKnownEndpoints = (): Observable<any> => {
 
         let headers = new Headers();
-        headers.append('Content-Type', 'application/json');
         headers.append('Accept', 'application/json');
 
         let url = this.authConfiguration.stsServer + '/.well-known/openid-configuration';
@@ -107,7 +106,6 @@ export class AuthWellKnownEndpoints {
 
         return this.http.get(url, {
             headers: headers,
-            body: ''
         }).map((res: any) => res.json());
     }
 }

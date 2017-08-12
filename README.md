@@ -4,7 +4,7 @@
 
 ## OpenID Certification
 
-This library is <a href="http://openid.net/certification/#RPs">certified</a> by OpenID Foundation. (Implicit RP)
+This library is <a href="http://openid.net/certification/#RPs">certified</a> by OpenID Foundation. (RP Implicit and Config RP)
  
 <a href="http://openid.net/certification/#RPs"><img src="https://damienbod.files.wordpress.com/2017/06/oid-l-certification-mark-l-rgb-150dpi-90mm.png" alt="" width="200" /></a>
 
@@ -34,7 +34,7 @@ or with yarn
 
 or you can add the npm package to your package.json
 ``` javascript
- "angular-auth-oidc-client": "1.3.1"
+ "angular-auth-oidc-client": "1.3.7"
 ```
  
 and type 
@@ -91,29 +91,49 @@ export class AppModule {
 Create the login, logout component and use the oidcSecurityService
 
 ```typescript
-  constructor(public oidcSecurityService: OidcSecurityService) {
-    }
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs/Subscription';
+import { OidcSecurityService } from './auth/services/oidc.security.service';
 
-    ngOnInit() {
-        if (typeof location !== "undefined" && window.location.hash) {
-            this.oidcSecurityService.authorizedCallback();
+@Component({
+    selector: 'my-app',
+    templateUrl: 'app.component.html'
+})
+
+export class AppComponent implements OnInit, OnDestroy {
+
+    constructor(public oidcSecurityService: OidcSecurityService) {
+        if (this.oidcSecurityService.moduleSetup) {
+            this.doCallbackLogicIfRequired();
+        } else {
+            this.oidcSecurityService.onModuleSetup.subscribe(() => {
+                this.doCallbackLogicIfRequired();
+            });
         }
     }
 
-    login() {
-        console.log('start login');
-        this.oidcSecurityService.authorize();
+    ngOnInit() {
+        
     }
 
-    refreshSession() {
-        console.log('start refreshSession');
+    ngOnDestroy(): void {
+        this.oidcSecurityService.onModuleSetup.unsubscribe();
+    }
+
+    login() {
         this.oidcSecurityService.authorize();
     }
 
     logout() {
-        console.log('start logoff');
         this.oidcSecurityService.logoff();
     }
+
+    private doCallbackLogicIfRequired() {
+        if (window.location.hash) {
+            this.oidcSecurityService.authorizedCallback();
+        }
+    }
+}
 
 ```
 

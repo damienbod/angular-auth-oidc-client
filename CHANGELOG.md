@@ -1,5 +1,29 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-08-11"></a>
+### 2017-08-11 version 1.3.7
+* support for hash routes 
+
+<a name="2017-08-11"></a>
+### 2017-08-11 version 1.3.6
+* support for custom authorization strings like Azure Active Directory B2C
+
+<a name="2017-08-09"></a>
+### 2017-08-09 version 1.3.4
+* Fix authorization url construction
+
+
+<a name="2017-08-09"></a>
+### 2017-08-09 version 1.3.3
+* adding moduleSetup boolean so that the authorization callback can wait until the module is ready
+
+<a name="2017-08-09"></a>
+### 2017-08-09 version 1.3.2
+* API new function for get id_token
+* API new function for get user info
+* user info configuration for auto get user info after login
+* API custom request params can be added to the authorization request URL using the setCustomRequestParameters function
+
 <a name="2017-07-21"></a>
 ### 2017-07-21 version 1.3.1
 * bugfix error handling
