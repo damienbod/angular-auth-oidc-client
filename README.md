@@ -4,7 +4,7 @@
 
 ## OpenID Certification
 
-This library is <a href="http://openid.net/certification/#RPs">certified</a> by OpenID Foundation. (Implicit RP)
+This library is <a href="http://openid.net/certification/#RPs">certified</a> by OpenID Foundation. (RP Implicit and Config RP)
  
 <a href="http://openid.net/certification/#RPs"><img src="https://damienbod.files.wordpress.com/2017/06/oid-l-certification-mark-l-rgb-150dpi-90mm.png" alt="" width="200" /></a>
 
