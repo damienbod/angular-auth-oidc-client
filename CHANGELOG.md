@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-08-13"></a>
+### 2017-08-13 version 1.3.8
+* auto_clean_state_after_authentication which can be used for custom state logic handling
+
 <a name="2017-08-11"></a>
 ### 2017-08-11 version 1.3.7
 * support for hash routes 

@@ -117,6 +117,9 @@ default value : sessionStorage
 
 You can set the storage to localStorage, or implement a custom storage (see README).
    
+### auto_clean_state_after_authentication
+
+can be used for custom state logic handling, the state is not automatically reset, when set to false
 
 ## OidcSecurityService
 
