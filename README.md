@@ -192,6 +192,8 @@ https://github.com/damienbod/AspNet5IdentityServerAngularImplicitFlow/tree/npm-l
 
 https://github.com/damienbod/angular-auth-oidc-sample-google-openid
 
+https://github.com/HWouters/ad-b2c-oidc-angular
+
 ## Notes: 
 
 This npm package was created using the https://github.com/robisim74/angular-library-starter from Roberto Simonetti.
