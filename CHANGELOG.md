@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-08-15"></a>
+### 2017-08-15 version 1.3.9
+* endsession support for custom parameters
+
 <a name="2017-08-13"></a>
 ### 2017-08-13 version 1.3.8
 * auto_clean_state_after_authentication which can be used for custom state logic handling
