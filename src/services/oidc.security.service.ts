@@ -354,7 +354,7 @@ export class OidcSecurityService {
             let end_session_endpoint = this.authWellKnownEndpoints.end_session_endpoint;
             let id_token_hint = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_id_token);
             let url = this.createEndSessionUrl(end_session_endpoint, id_token_hint);
-          
+
             this.resetAuthorizationData(false);
 
             if (this.authConfiguration.start_checksession && this.checkSessionChanged) {
@@ -433,9 +433,9 @@ export class OidcSecurityService {
 
     private createEndSessionUrl(end_session_endpoint: string, id_token_hint: string) {
         let urlParts = end_session_endpoint.split('?');
-        
+
         let authorizationEndsessionUrl = urlParts[0];
-        
+
         let params = new URLSearchParams(urlParts[1]);
         params.set('id_token_hint', id_token_hint);
         params.set('post_logout_redirect_uri', this.authConfiguration.post_logout_redirect_uri);
