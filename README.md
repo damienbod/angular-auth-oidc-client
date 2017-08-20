@@ -47,16 +47,19 @@ and type
 
 The OidcSecurityService has a dependency on the HttpModule which needs to be imported. This is required even if your using the new HttpClientModule module. The angular-auth-oidc-client module supports all version of Angular 4.
 
-``` javascript
+Import the module and services in your module. 
 
+``` javascript
+import { NgModule } from '@angular/core';
 import { HttpModule } from '@angular/http';
 
 import { AuthModule, OidcSecurityService, OpenIDImplicitFlowConfiguration } from 'angular-auth-oidc-client';
 
 @NgModule({
     imports: [
+        ...
         HttpModule,
-		...
+		AuthModule.forRoot()
     ],
     declarations: [
         ...
@@ -69,20 +72,9 @@ import { AuthModule, OidcSecurityService, OpenIDImplicitFlowConfiguration } from
 })
 ```
 
-Import the module and services in your module. Set the AuthConfiguration properties to match the server configuration. At present only the id_token token flow is supported.
+Set the AuthConfiguration properties to match the server configuration. At present only the id_token token flow is supported.
 
 ```typescript
-import { NgModule } from '@angular/core';
-
-import { AuthModule, OidcSecurityService, OpenIDImplicitFlowConfiguration } from 'angular-auth-oidc-client';
-
-@NgModule({
-    imports: [
-        ...
-        AuthModule.forRoot()
-    ],
-    ...
-})
 
 export class AppModule {
     constructor(public oidcSecurityService: OidcSecurityService) {
