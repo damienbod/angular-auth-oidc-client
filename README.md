@@ -59,7 +59,7 @@ import { AuthModule, OidcSecurityService, OpenIDImplicitFlowConfiguration } from
     imports: [
         ...
         HttpModule,
-		AuthModule.forRoot()
+        AuthModule.forRoot()
     ],
     declarations: [
         ...
