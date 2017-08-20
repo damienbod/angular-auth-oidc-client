@@ -1,7 +1,7 @@
 ## angular-auth-oidc-client Changelog
 
 <a name="2017-08-20"></a>
-### 2017-08-20 version 1.3.10
+### 2017-08-20 version 1.3.11
 * updating jsrasign
 
 <a name="2017-08-15"></a>
