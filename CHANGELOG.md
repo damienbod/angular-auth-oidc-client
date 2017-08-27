@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-08-27"></a>
+### 2017-08-27 version 1.3.12
+* Throws Exception when the library is used in an application inside a iframe (cross domain)
+
 <a name="2017-08-20"></a>
 ### 2017-08-20 version 1.3.11
 * updating jsrasign
