@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-09-01"></a>
+### 2017-09-01 version 1.3.13
+* Add option to trigger event on authorization resolution instead of automatic redirect
+
 <a name="2017-08-27"></a>
 ### 2017-08-27 version 1.3.12
 * Throws Exception when the library is used in an application inside a iframe (cross domain)
