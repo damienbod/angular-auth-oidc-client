@@ -7,3 +7,4 @@
  */
 
 export * from './src/angular-auth-oidc-client';
+export * from './src/services/authorization-result.enum';
