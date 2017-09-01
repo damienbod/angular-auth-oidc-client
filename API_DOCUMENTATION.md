@@ -224,7 +224,7 @@ This is required if you need to wait for a json configuration file to load.
 
 ### @Output() onAuthorizationResult: EventEmitter<AuthorizationResult>
  
- This event returns the result of the authoriazation callback. It is only used if the trigger_authorization_result_event configuration property is set to true.
+ This event returns the result of the authorization callback. It is only used if the trigger_authorization_result_event configuration property is set to true.
 ### checkSessionChanged: boolean;
 	
 This boolean is set to throurg when the OpenID session management recieves a message that the server session has changed.
