@@ -121,6 +121,15 @@ You can set the storage to localStorage, or implement a custom storage (see READ
 
 can be used for custom state logic handling, the state is not automatically reset, when set to false
 
+### trigger_authorization_result_event
+
+This can be set to true which emits an event instead of an angular route change.
+
+Instead of forcing the application consuming this library to automatically redirect to one of the 3 hard-configured routes (start, unauthorized, forbidden), this modification will add an extra configuration option to override such behavior and trigger an event that will allow to subscribe to it and let the application perform other actions.
+This would be useful to allow the application to save an initial return url so that the user is redirected to it after a successful login on the STS (ie: saving the return url previously on sessionStorage and then retrieving it during the triggering of the event).
+
+default value : false;
+
 ## OidcSecurityService
 
 ### @Output() moduleSetup: boolean
@@ -213,6 +222,9 @@ Handle the authorize callback using the event:
 
 This is required if you need to wait for a json configuration file to load.
 
+### @Output() onAuthorizationResult: EventEmitter<AuthorizationResult>
+ 
+ This event returns the result of the authoriazation callback. It is only used if the trigger_authorization_result_event configuration property is set to true.
 ### checkSessionChanged: boolean;
 	
 This boolean is set to throurg when the OpenID session management recieves a message that the server session has changed.
