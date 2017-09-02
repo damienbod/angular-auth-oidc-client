@@ -13,6 +13,7 @@ export class DefaultConfiguration {
     post_logout_redirect_uri = 'https://localhost:44311/unauthorized';
     start_checksession = false;
     silent_renew = true;
+    silent_renew_offset_in_seconds = 0;
     startup_route = '/dataeventrecords';
     // HTTP 403
     forbidden_route = '/forbidden';
@@ -45,6 +46,7 @@ export class OpenIDImplicitFlowConfiguration {
     post_logout_redirect_uri: string;
     start_checksession: boolean;
     silent_renew: boolean;
+    silent_renew_offset_in_seconds: number;
     startup_route: string;
     forbidden_route: string;
     unauthorized_route: string;
@@ -97,6 +99,10 @@ export class AuthConfiguration {
 
     get silent_renew(): boolean {
         return this.openIDImplicitFlowConfiguration.silent_renew !== undefined ? this.openIDImplicitFlowConfiguration.silent_renew : this.defaultConfig.silent_renew;
+    }
+
+    get silent_renew_offset_in_seconds(): number {
+        return this.openIDImplicitFlowConfiguration.silent_renew_offset_in_seconds || this.defaultConfig.silent_renew_offset_in_seconds;
     }
 
     get startup_route(): string {
