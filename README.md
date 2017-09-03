@@ -86,6 +86,9 @@ export class AppModule {
         openIDImplicitFlowConfiguration.response_type = 'id_token token';
         openIDImplicitFlowConfiguration.scope = 'openid email profile';
         openIDImplicitFlowConfiguration.post_logout_redirect_uri = 'https://localhost:44311/Unauthorized';
+        openIDImplicitFlowConfiguration.start_checksession = false;
+        openIDImplicitFlowConfiguration.silent_renew = true;
+        openIDImplicitFlowConfiguration.silent_renew_offset_in_seconds = 0;
         openIDImplicitFlowConfiguration.startup_route = '/home';
         openIDImplicitFlowConfiguration.forbidden_route = '/Forbidden';
         openIDImplicitFlowConfiguration.unauthorized_route = '/Unauthorized';
