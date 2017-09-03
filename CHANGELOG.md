@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-09-03"></a>
+### 2017-09-03 version 1.3.14
+* Add silent_renew_offset_in_seconds option
+
 <a name="2017-09-01"></a>
 ### 2017-09-01 version 1.3.13
 * Add option to trigger event on authorization resolution instead of automatic redirect

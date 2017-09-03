@@ -130,6 +130,12 @@ This would be useful to allow the application to save an initial return url so t
 
 default value : false;
 
+### silent_renew_offset_in_seconds
+
+Makes it possible to add an offset to the silent renew check in seconds. By entering a negivative value, you can renew the tokens, before the tokens expire.
+
+default value : 0;
+
 ## OidcSecurityService
 
 ### @Output() moduleSetup: boolean
