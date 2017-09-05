@@ -292,6 +292,7 @@ export class OidcSecurityService {
                             }
                         });
                     } else {
+                        this.runTokenValidatation();
                         if (this.authConfiguration.trigger_authorization_result_event) {
 							this.onAuthorizationResult.emit(AuthorizationResult.authorized);
 						} else {
