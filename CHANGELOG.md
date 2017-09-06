@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-09-06"></a>
+### 2017-09-06 version 1.3.15
+* fix: if auto_userinfo is false, we still need to execute runTokenValidatation
+
 <a name="2017-09-03"></a>
 ### 2017-09-03 version 1.3.14
 * Add silent_renew_offset_in_seconds option
