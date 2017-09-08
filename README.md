@@ -1,6 +1,7 @@
 # angular-auth-oidc-client
 [![Build Status](https://travis-ci.org/damienbod/angular-auth-oidc-client.svg?branch=master)](https://travis-ci.org/damienbod/angular-auth-oidc-client) 
-[![npm](https://img.shields.io/npm/v/angular-auth-oidc-client.svg)][npm-badge-url][![npm](https://img.shields.io/npm/dm/angular-auth-oidc-client.svg)][npm-badge-url]
+
+[![npm](https://img.shields.io/npm/v/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client)[![npm](https://img.shields.io/npm/dm/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client)
 >OpenID Connect Implicit Flow
 
 ## OpenID Certification
