@@ -142,7 +142,7 @@ default value : 0;
 
 Can be used to check if the setup logic is already completed, before your component loads.
 
-```
+```typescript
 constructor(public oidcSecurityService: OidcSecurityService) {
 	if (this.oidcSecurityService.moduleSetup) {
 		this.doCallbackLogicIfRequired();
@@ -161,16 +161,18 @@ Example using:
 
 App.module: get your json settings:
 
-```
+```typescript
 configClient() {
         return this.http.get('/api/ClientAppSettings').map(res => {
             this.clientConfiguration = res.json();
         });
     }
 ```
+
 App.module: 
 Config the module, subscribe to the json get:
-```
+
+```typescript
 this.configClient().subscribe(config => {
 
             console.log(this.clientConfiguration);
@@ -205,7 +207,7 @@ this.configClient().subscribe(config => {
 
 AppComponent, subscribe to the onModuleSetup event:
 
-```
+```typescript
 constructor(public oidcSecurityService: OidcSecurityService) {
 	if (this.oidcSecurityService.moduleSetup) {
 		this.doCallbackLogicIfRequired();
@@ -218,7 +220,8 @@ constructor(public oidcSecurityService: OidcSecurityService) {
 ```
 
 Handle the authorize callback using the event:
-```
+
+```typescript
  private onModuleSetup() {
         if (window.location.hash) {
             this.oidcSecurityService.authorizedCallback();
@@ -241,7 +244,7 @@ Set to true if the client and user are authenicated.
 
 Example using:
 
-``` javascript
+```typescript
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
@@ -274,7 +277,6 @@ export class ExampleComponent implements OnInit, OnDestroy   {
     }
 
 }
-
 ```
 
 ### getIdToken()
@@ -289,7 +291,7 @@ public function to get the access_token which can be used to access APIs on the 
 
 Example using:
 
-``` javascript
+```typescript
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
@@ -322,7 +324,6 @@ export class ExampleComponent implements OnInit, OnDestroy   {
     }
 
 }
-
 ```
 	
 Gets the user data from the auth module of the logged in user.
