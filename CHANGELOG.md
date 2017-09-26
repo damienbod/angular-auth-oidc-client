@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-09-26"></a>
+### 2017-09-26 version 1.3.16
+* fix: OidcSecurityService emits onModuleSetup before authWellKnownEndpoints are loaded
+
 <a name="2017-09-06"></a>
 ### 2017-09-06 version 1.3.15
 * fix: if auto_userinfo is false, we still need to execute runTokenValidatation
