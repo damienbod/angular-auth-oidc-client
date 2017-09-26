@@ -88,9 +88,7 @@ export class OidcSecurityService {
                     this.oidcSecurityCheckSession.pollServerSession(this.authConfiguration.client_id);
                 });
             }
-        }
-        else
-        {
+        } else {
             this.moduleSetup = true;
             this.onModuleSetup.emit();
         }
