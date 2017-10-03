@@ -36,6 +36,7 @@ export class OidcSecurityService {
     private errorMessage: string;
     private jwtKeys: JwtKeys;
     private authWellKnownEndpointsLoaded = false;
+    private runTokenValidatationRunning: boolean;
 
     constructor(
         @Inject(PLATFORM_ID) private platformId: Object,
@@ -66,6 +67,9 @@ export class OidcSecurityService {
 
         if (this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_is_authorized) !== '') {
             this.setIsAuthorized(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_is_authorized));
+
+            // Start the silent renew
+            this.runTokenValidatation();
         }
 
         this.oidcSecurityCommon.logDebug('STS server: ' + this.authConfiguration.stsServer);
@@ -537,7 +541,11 @@ export class OidcSecurityService {
     }
 
     private runTokenValidatation() {
-        let source = Observable.timer(3000, 3000)
+        if (this.runTokenValidatationRunning) {
+            return;
+        }
+        this.runTokenValidatationRunning = true;
+        let source = Observable.timer(5000, 3000)
             .timeInterval()
             .pluck('interval')
             .take(10000);
