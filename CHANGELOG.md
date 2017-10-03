@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-10-03"></a>
+### 2017-10-03 version 1.3.17
+* fix: silent renew fix after refresh
+
 <a name="2017-09-26"></a>
 ### 2017-09-26 version 1.3.16
 * fix: OidcSecurityService emits onModuleSetup before authWellKnownEndpoints are loaded
