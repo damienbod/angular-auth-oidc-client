@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-10-05"></a>
+### 2017-10-05 version 1.3.18
+* fix: Local Storage session_state undefined parse error
+
 <a name="2017-10-03"></a>
 ### 2017-10-03 version 1.3.17
 * fix: silent renew fix after refresh
