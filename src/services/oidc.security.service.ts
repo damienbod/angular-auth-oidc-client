@@ -4,7 +4,7 @@ import { Injectable, EventEmitter, Output } from '@angular/core';
 import { Http, Response, URLSearchParams } from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Router } from '@angular/router';
 import { AuthConfiguration, OpenIDImplicitFlowConfiguration } from '../modules/auth.configuration';
