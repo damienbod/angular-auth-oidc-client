@@ -1,15 +1,19 @@
 ﻿import { Injectable, EventEmitter, Output } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { Observer } from 'rxjs/Observer';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/timeInterval';
+import 'rxjs/add/operator/pluck';
+import 'rxjs/add/operator/take';
 import 'rxjs/add/observable/throw';
 import 'rxjs/add/observable/interval';
 import 'rxjs/add/observable/timer';
+import 'rxjs/add/observable/empty';
 import { AuthConfiguration } from '../modules/auth.configuration';
 import { OidcSecurityCommon } from './oidc.security.common';
 import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
-import { Observer } from 'rxjs/Observer';
 
 // http://openid.net/specs/openid-connect-session-1_0-ID4.html
 
