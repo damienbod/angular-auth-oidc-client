@@ -10,11 +10,15 @@ const globals = {
     'rxjs/Observable': 'Rx',
     'rxjs/Observer': 'Rx',
     'rxjs/BehaviorSubject': 'Rx',
-    'rxjs/add/operator/map': 'Rx',
-    'rxjs/add/operator/catch': 'Rx',
-    'rxjs/add/observable/throw': 'Rx',
-    'rxjs/add/observable/interval': 'Rx',
-    'rxjs/add/observable/timer': 'Rx',
+    'rxjs/add/operator/map': 'Rx.Observable.prototype',
+    'rxjs/add/operator/catch': 'Rx.Observable.prototype',
+    'rxjs/add/operator/timeInterval': 'Rx.Observable.prototype',
+    'rxjs/add/operator/pluck': 'Rx.Observable.prototype',
+    'rxjs/add/operator/take': 'Rx.Observable.prototype',
+    'rxjs/add/observable/empty': 'Rx.Observable',
+    'rxjs/add/observable/throw': 'Rx.Observable',
+    'rxjs/add/observable/interval': 'Rx.Observable',
+    'rxjs/add/observable/timer': 'Rx.Observable',
     'jsrsasign': 'jsrsasign'
 };
 
