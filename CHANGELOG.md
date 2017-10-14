@@ -4,7 +4,7 @@
 ### 2017-10-15 version 1.3.19
 * Fix rxjs imports
 * Add optional hd parameter for Google Auth with particular G Suite domain, see https://developers.google.com/identity/protocols/OpenIDConnect#hd-param
-
+* fix: local_state is always null because is not being set
 
 <a name="2017-10-05"></a>
 ### 2017-10-05 version 1.3.18

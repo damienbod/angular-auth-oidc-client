@@ -178,7 +178,7 @@ export class OidcSecurityService {
         this.oidcSecurityCommon.logDebug('BEGIN Authorize, no auth data');
 
         let state = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_auth_state_control);
-        if (state === '') {
+        if (state === '' || state === null) {
             state = Date.now() + '' + Math.random();
             this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_state_control, state);
         }
@@ -414,7 +414,7 @@ export class OidcSecurityService {
         this.oidcSecurityCommon.logDebug('BEGIN refresh session Authorize');
 
         let state = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_auth_state_control);
-        if (state === '') {
+        if (state === '' || state === null) {
             state = Date.now() + '' + Math.random();
             this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_state_control, state);
         }
