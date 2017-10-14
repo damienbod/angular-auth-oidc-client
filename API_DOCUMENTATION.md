@@ -136,6 +136,10 @@ Makes it possible to add an offset to the silent renew check in seconds. By ente
 
 default value : 0;
 
+### hd_param
+
+Optional hd parameter for Google Auth with particular G Suite domain, see https://developers.google.com/identity/protocols/OpenIDConnect#hd-param
+
 ## OidcSecurityService
 
 ### @Output() moduleSetup: boolean
