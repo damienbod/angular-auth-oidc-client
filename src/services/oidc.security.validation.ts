@@ -224,7 +224,7 @@ export class OidcSecurityValidation {
 
         let header_data = this.getHeaderFromToken(id_token, false);
 
-		if (!(Object.keys(header_data).length === 0 && header_data.constructor === Object)) {
+		if ((Object.keys(header_data).length === 0 && header_data.constructor === Object)) {
 			this.oidcSecurityCommon.logWarning('id token has no header data');
             return false;
 		}
