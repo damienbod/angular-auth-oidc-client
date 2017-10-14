@@ -1,5 +1,11 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-10-15"></a>
+### 2017-10-15 version 1.3.19
+* Fix rxjs imports
+* Add optional hd parameter for Google Auth with particular G Suite domain, see https://developers.google.com/identity/protocols/OpenIDConnect#hd-param
+
+
 <a name="2017-10-05"></a>
 ### 2017-10-05 version 1.3.18
 * fix: Local Storage session_state undefined parse error
