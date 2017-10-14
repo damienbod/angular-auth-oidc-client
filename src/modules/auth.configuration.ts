@@ -10,6 +10,8 @@ export class DefaultConfiguration {
     // For some oidc, we require resource identifier to be provided along with the request.
     resource = '';
     scope = 'openid email profile';
+    // Only for Google Auth with particular G Suite domain, see https://developers.google.com/identity/protocols/OpenIDConnect#hd-param
+    hd_param = '';
     post_logout_redirect_uri = 'https://localhost:44311/unauthorized';
     start_checksession = false;
     silent_renew = true;
@@ -43,6 +45,7 @@ export class OpenIDImplicitFlowConfiguration {
     response_type: string;
     resource: string;
     scope: string;
+    hd_param: string;
     post_logout_redirect_uri: string;
     start_checksession: boolean;
     silent_renew: boolean;
@@ -87,6 +90,10 @@ export class AuthConfiguration {
 
     get scope(): string {
         return this.openIDImplicitFlowConfiguration.scope || this.defaultConfig.scope;
+    }
+
+    get hd_param(): string {
+      return this.openIDImplicitFlowConfiguration.hd_param || this.defaultConfig.hd_param;
     }
 
     get post_logout_redirect_uri(): string {
