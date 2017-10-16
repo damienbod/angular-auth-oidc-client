@@ -21,7 +21,7 @@
 
 <a name="2017-09-06"></a>
 ### 2017-09-06 version 1.3.15
-* fix: if auto_userinfo is false, we still need to execute runTokenValidatation
+* fix: if auto_userinfo is false, we still need to execute runTokenValidation
 
 <a name="2017-09-03"></a>
 ### 2017-09-03 version 1.3.14

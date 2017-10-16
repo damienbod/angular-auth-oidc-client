@@ -16,7 +16,8 @@ export class DefaultConfiguration {
     start_checksession = false;
     silent_renew = true;
     silent_renew_offset_in_seconds = 0;
-    startup_route = '/dataeventrecords';
+    login_route = '/';
+    logout_route = '/';
     // HTTP 403
     forbidden_route = '/forbidden';
     // HTTP 401
@@ -50,7 +51,8 @@ export class OpenIDImplicitFlowConfiguration {
     start_checksession: boolean;
     silent_renew: boolean;
     silent_renew_offset_in_seconds: number;
-    startup_route: string;
+    login_route: string;
+    logout_route: string;
     forbidden_route: string;
     unauthorized_route: string;
     auto_userinfo: boolean;
@@ -112,8 +114,12 @@ export class AuthConfiguration {
         return this.openIDImplicitFlowConfiguration.silent_renew_offset_in_seconds || this.defaultConfig.silent_renew_offset_in_seconds;
     }
 
-    get startup_route(): string {
-        return this.openIDImplicitFlowConfiguration.startup_route || this.defaultConfig.startup_route;
+    get login_route(): string {
+        return this.openIDImplicitFlowConfiguration.login_route || this.defaultConfig.login_route;
+    }
+
+    get logout_route(): string {
+        return this.openIDImplicitFlowConfiguration.logout_route || this.defaultConfig.logout_route;
     }
 
     get forbidden_route(): string {

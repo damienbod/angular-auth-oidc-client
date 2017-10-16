@@ -8,7 +8,6 @@ export class OidcSecurityCommon {
     storage_auth_result = 'authorizationResult';
     storage_access_token = 'authorizationData';
     storage_id_token = 'authorizationDataIdToken';
-    storage_is_authorized = '_isAuthorized';
     storage_user_data = 'userData';
     storage_auth_nonce = 'authNonce';
     storage_auth_state_control = 'authStateControl';
@@ -35,7 +34,6 @@ export class OidcSecurityCommon {
             this.store(this.storage_auth_result, '');
             this.store(this.storage_session_state, '');
             this.store(this.storage_silent_renew_running, '');
-            this.store(this.storage_is_authorized, false);
             this.store(this.storage_access_token, '');
             this.store(this.storage_id_token, '');
             this.store(this.storage_user_data, '');

@@ -89,7 +89,8 @@ export class AppModule {
         openIDImplicitFlowConfiguration.start_checksession = false;
         openIDImplicitFlowConfiguration.silent_renew = true;
         openIDImplicitFlowConfiguration.silent_renew_offset_in_seconds = 0;
-        openIDImplicitFlowConfiguration.startup_route = '/home';
+        openIDImplicitFlowConfiguration.login_route = '/home';
+        openIDImplicitFlowConfiguration.logout_route = '/';
         openIDImplicitFlowConfiguration.forbidden_route = '/Forbidden';
         openIDImplicitFlowConfiguration.unauthorized_route = '/Unauthorized';
         openIDImplicitFlowConfiguration.auto_userinfo = true;

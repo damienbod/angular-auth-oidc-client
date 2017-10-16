@@ -45,8 +45,4 @@ export class OidcSecurityUserService {
             body: ''
         }).map((res: any) => res.json());
     }
-
-    private handleError(error: any) {
-        this.oidcSecurityCommon.logError(error);
-    }
 }
