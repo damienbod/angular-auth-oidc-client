@@ -31,6 +31,8 @@ export class OidcSecurityService {
 
     checkSessionChanged: boolean;
     moduleSetup = false;
+    private _isAuthorized = new BehaviorSubject<boolean>(false);
+    private _isAuthorizedValue: boolean;
 
     private lastUserData: any = undefined;
     private _userData = new BehaviorSubject<any>('');
@@ -67,6 +69,10 @@ export class OidcSecurityService {
 
         if (this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_user_data) !== '') {
             this.setUserData(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_user_data));
+        }
+
+        if (this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_is_authorized) !== '') {
+            this.setIsAuthorized(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_is_authorized));
 
             // Start the silent renew
             this.runTokenValidation();
@@ -108,12 +114,21 @@ export class OidcSecurityService {
     }
 
     getIsAuthorized(): Observable<boolean> {
-        return this.getUserData()
-            .map(userData => !!userData);
+        if (this.authConfiguration.auto_userinfo) {
+            return this.getUserData()
+                .map(userData => !!userData);
+        }
+
+        return this._isAuthorized.asObservable();
+    }
+
+    private setIsAuthorized(isAuthorized: boolean): void {
+        this._isAuthorizedValue = isAuthorized;
+        this._isAuthorized.next(isAuthorized);
     }
 
     getToken(): any {
-        if (!this._userData.value) {
+        if (!this._isAuthorizedValue) {
             return '';
         }
 
@@ -122,7 +137,7 @@ export class OidcSecurityService {
     }
 
     getIdToken(): any {
-        if (!this._userData.value) {
+        if (!this._isAuthorizedValue) {
             return '';
         }
 
@@ -430,6 +445,8 @@ export class OidcSecurityService {
         this.oidcSecurityCommon.logDebug('storing to storage, getting the roles');
         this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_access_token, access_token);
         this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_id_token, id_token);
+        this.setIsAuthorized(true);
+        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_is_authorized, true);
     }
 
     private createAuthorizeUrl(nonce: string, state: string, authorization_endpoint: string): string {
@@ -470,9 +487,11 @@ export class OidcSecurityService {
 
     private resetAuthorizationData(isRenewProcess: boolean) {
         if (!isRenewProcess) {
-            // Clear user data. Fixes #97.
-            this.setUserData('');
-
+            if (this.authConfiguration.auto_userinfo) {
+                // Clear user data. Fixes #97.
+                this.setUserData('');
+            }
+            this.setIsAuthorized(false);
             this.oidcSecurityCommon.resetStorageData(isRenewProcess);
             this.checkSessionChanged = false;
         }
@@ -562,7 +581,7 @@ export class OidcSecurityService {
         let subscription = source.subscribe(() => {
             if (this._userData.value) {
                 if (this.oidcSecurityValidation.isTokenExpired(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_id_token), this.authConfiguration.silent_renew_offset_in_seconds)) {
-                    this.oidcSecurityCommon.logDebug('runTokenValidation: id_token isTokenExpired, start silent renew if active');
+                    this.oidcSecurityCommon.logDebug('IsAuthorized: id_token isTokenExpired, start silent renew if active');
 
                     if (this.authConfiguration.silent_renew) {
                         this.refreshSession();
