@@ -32,7 +32,7 @@ export class OidcSecurityService {
     checkSessionChanged: boolean;
     moduleSetup = false;
 
-    private lastUserData:any = undefined;
+    private lastUserData: any = undefined;
     private _userData = new BehaviorSubject<any>('');
 
     private oidcSecurityValidation: OidcSecurityValidation;
