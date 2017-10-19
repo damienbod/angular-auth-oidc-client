@@ -286,7 +286,7 @@ export class OidcSecurityService {
 								if (this.authConfiguration.trigger_authorization_result_event) {
 									this.onAuthorizationResult.emit(AuthorizationResult.authorized);
 								} else {
-									this.router.navigate([this.authConfiguration.login_route]);
+                                    this.router.navigate([this.authConfiguration.post_login_route]);
 								}
                             } else {
 								if (this.authConfiguration.trigger_authorization_result_event) {
@@ -301,7 +301,7 @@ export class OidcSecurityService {
                         if (this.authConfiguration.trigger_authorization_result_event) {
 							this.onAuthorizationResult.emit(AuthorizationResult.authorized);
 						} else {
-							this.router.navigate([this.authConfiguration.login_route]);
+                            this.router.navigate([this.authConfiguration.post_login_route]);
 						}
                     }
                 } else { // something went wrong
