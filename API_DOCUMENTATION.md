@@ -51,11 +51,17 @@ default value : true
 
 Renews the client tokens, once the token_id expires.
 
-### startup_route
+### login_route
 
-default value : '/dataeventrecords/list'
+default value : '/'
 
 The Angular route which is used after a successful login.
+
+### logout_route
+
+default value : '/'
+
+The Angular route which is used after a successful logout.
 
 ### forbidden_route
 
@@ -194,7 +200,8 @@ this.configClient().subscribe(config => {
             openIDImplicitFlowConfiguration.post_logout_redirect_uri = this.clientConfiguration.urlRedirectPostLogout;
             openIDImplicitFlowConfiguration.start_checksession = false;
             openIDImplicitFlowConfiguration.silent_renew = true;
-            openIDImplicitFlowConfiguration.startup_route = '/vms';
+            openIDImplicitFlowConfiguration.login_route = '/vms';
+            openIDImplicitFlowConfiguration.logout_route = '/';
             // HTTP 403
             openIDImplicitFlowConfiguration.forbidden_route = '/forbidden';
             // HTTP 401
@@ -237,14 +244,15 @@ This is required if you need to wait for a json configuration file to load.
 
 ### @Output() onAuthorizationResult: EventEmitter<AuthorizationResult>
  
- This event returns the result of the authorization callback. It is only used if the trigger_authorization_result_event configuration property is set to true.
+This event returns the result of the authorization callback. It is only used if the trigger_authorization_result_event configuration property is set to true.
+
 ### checkSessionChanged: boolean;
 	
-This boolean is set to throurg when the OpenID session management recieves a message that the server session has changed.
+This boolean is set to true when the OpenID session management receives a message that the server session has changed.
 
 ### getIsAuthorized(): Observable<boolean>
 
-Set to true if the client and user are authenicated.
+Set to true if the client and user are authenticated.
 
 Example using:
 
