@@ -117,9 +117,9 @@ export class OidcSecurityService {
         if (this.authConfiguration.auto_userinfo) {
             return this.getUserData()
                 .map(userData => !!userData);
+        } else {
+            return this._isAuthorized.asObservable();
         }
-
-        return this._isAuthorized.asObservable();
     }
 
     private setIsAuthorized(isAuthorized: boolean): void {
