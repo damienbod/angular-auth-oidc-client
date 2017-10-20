@@ -51,17 +51,11 @@ default value : true
 
 Renews the client tokens, once the token_id expires.
 
-### login_route
+### post_login_route
 
 default value : '/'
 
-The Angular route which is used after a successful login.
-
-### logout_route
-
-default value : '/'
-
-The Angular route which is used after a successful logout.
+The default Angular route which is used after a successful login, if not using the <em>trigger_authorization_result_event</em>
 
 ### forbidden_route
 
