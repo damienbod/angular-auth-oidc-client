@@ -159,16 +159,16 @@ In the http services, add the token to the header using the oidcSecurityService
 
 ```typescript
 private setHeaders() {
-        this.headers = new Headers();
-        this.headers.append('Content-Type', 'application/json');
-        this.headers.append('Accept', 'application/json');
+	this.headers = new HttpHeaders();
+	this.headers = this.headers.set('Content-Type', 'application/json');
+	this.headers = this.headers.set('Accept', 'application/json');
 
-        let token = this.oidcSecurityService.getToken();
-        if (token !== '') {
-            let tokenValue = 'Bearer ' + token;
-            this.headers.append('Authorization', tokenValue);
-        }
-    }
+	const token = this._securityService.getToken();
+	if (token !== '') {
+		const tokenValue = 'Bearer ' + token;
+		this.headers = this.headers.set('Authorization', tokenValue);
+	}
+}
 
 ```
 
