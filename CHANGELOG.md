@@ -1,5 +1,11 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-10-20"></a>
+### 2017-10-20 version 2.0.0
+* Renaming startup_route to post_login_route
+* setting better default values for the configuration
+* Documentation fixes
+
 <a name="2017-10-15"></a>
 ### 2017-10-15 version 1.3.19
 * Fix rxjs imports
@@ -21,7 +27,7 @@
 
 <a name="2017-09-06"></a>
 ### 2017-09-06 version 1.3.15
-* fix: if auto_userinfo is false, we still need to execute runTokenValidatation
+* fix: if auto_userinfo is false, we still need to execute runTokenValidation
 
 <a name="2017-09-03"></a>
 ### 2017-09-03 version 1.3.14

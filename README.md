@@ -34,7 +34,7 @@ or with yarn
 
 or you can add the npm package to your package.json
 ``` javascript
- "angular-auth-oidc-client": "1.3.19"
+ "angular-auth-oidc-client": "2.0.0"
 ```
  
 and type 
@@ -89,7 +89,8 @@ export class AppModule {
         openIDImplicitFlowConfiguration.start_checksession = false;
         openIDImplicitFlowConfiguration.silent_renew = true;
         openIDImplicitFlowConfiguration.silent_renew_offset_in_seconds = 0;
-        openIDImplicitFlowConfiguration.startup_route = '/home';
+        openIDImplicitFlowConfiguration.login_route = '/home';
+        openIDImplicitFlowConfiguration.logout_route = '/';
         openIDImplicitFlowConfiguration.forbidden_route = '/Forbidden';
         openIDImplicitFlowConfiguration.unauthorized_route = '/Unauthorized';
         openIDImplicitFlowConfiguration.auto_userinfo = true;
@@ -112,7 +113,7 @@ Create the login, logout component and use the oidcSecurityService
 ```typescript
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
-import { OidcSecurityService } from './auth/services/oidc.security.service';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
     selector: 'my-app',

@@ -26,22 +26,22 @@ import { AuthorizationResult } from './authorization-result.enum';
 @Injectable()
 export class OidcSecurityService {
 
-	@Output() onModuleSetup: EventEmitter<any> = new EventEmitter<any>(true);
-	@Output() onAuthorizationResult: EventEmitter<AuthorizationResult> = new EventEmitter<AuthorizationResult>(true);
+    @Output() onModuleSetup: EventEmitter<any> = new EventEmitter<any>(true);
+    @Output() onAuthorizationResult: EventEmitter<AuthorizationResult> = new EventEmitter<AuthorizationResult>(true);
 
     checkSessionChanged: boolean;
     moduleSetup = false;
     private _isAuthorized = new BehaviorSubject<boolean>(false);
     private _isAuthorizedValue: boolean;
 
+    private lastUserData: any = undefined;
     private _userData = new BehaviorSubject<any>('');
-    private _userDataValue: boolean;
 
     private oidcSecurityValidation: OidcSecurityValidation;
     private errorMessage: string;
     private jwtKeys: JwtKeys;
     private authWellKnownEndpointsLoaded = false;
-    private runTokenValidatationRunning: boolean;
+    private runTokenValidationRunning: boolean;
 
     constructor(
         @Inject(PLATFORM_ID) private platformId: Object,
@@ -63,6 +63,7 @@ export class OidcSecurityService {
 
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => { this.onCheckSessionChanged(); });
         this.authWellKnownEndpoints.onWellKnownEndpointsLoaded.subscribe(() => { this.onWellKnownEndpointsLoaded(); });
+        this._userData.subscribe(() => { this.onUserDataChanged(); });
 
         this.oidcSecurityCommon.setupModule();
 
@@ -74,7 +75,7 @@ export class OidcSecurityService {
             this.setIsAuthorized(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_is_authorized));
 
             // Start the silent renew
-            this.runTokenValidatation();
+            this.runTokenValidation();
         }
 
         this.oidcSecurityCommon.logDebug('STS server: ' + this.authConfiguration.stsServer);
@@ -295,7 +296,7 @@ export class OidcSecurityService {
 								if (this.authConfiguration.trigger_authorization_result_event) {
 									this.onAuthorizationResult.emit(AuthorizationResult.authorized);
 								} else {
-									this.router.navigate([this.authConfiguration.startup_route]);
+                                    this.router.navigate([this.authConfiguration.post_login_route]);
 								}
                             } else {
 								if (this.authConfiguration.trigger_authorization_result_event) {
@@ -306,14 +307,14 @@ export class OidcSecurityService {
                             }
                         });
                     } else {
-                        this.runTokenValidatation();
+                        this.runTokenValidation();
                         if (this.authConfiguration.trigger_authorization_result_event) {
 							this.onAuthorizationResult.emit(AuthorizationResult.authorized);
 						} else {
-							this.router.navigate([this.authConfiguration.startup_route]);
+                            this.router.navigate([this.authConfiguration.post_login_route]);
 						}
                     }
-                } else { // some went wrong
+                } else { // something went wrong
                     this.oidcSecurityCommon.logDebug('authorizedCallback, token(s) validation failed, resetting');
 					this.resetAuthorizationData(false);
 					if (this.authConfiguration.trigger_authorization_result_event) {
@@ -348,9 +349,9 @@ export class OidcSecurityService {
 
                                 this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_session_state, result.session_state);
 
-                                this.runTokenValidatation();
+                                this.runTokenValidation();
                                 observer.next(true);
-                            } else { // some went wrong, userdata sub does not match that from id_token
+                            } else { // something went wrong, userdata sub does not match that from id_token
                                 this.oidcSecurityCommon.logWarning('authorizedCallback, User data sub does not match sub in id_token');
                                 this.oidcSecurityCommon.logDebug('authorizedCallback, token(s) validation failed, resetting');
                                 this.resetAuthorizationData(false);
@@ -370,7 +371,7 @@ export class OidcSecurityService {
                 this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_session_state, result.session_state);
 
                 if (!isRenewProcess) {
-                    this.runTokenValidatation();
+                    this.runTokenValidation();
                 }
 
                 observer.next(true);
@@ -481,6 +482,10 @@ export class OidcSecurityService {
 
     private resetAuthorizationData(isRenewProcess: boolean) {
         if (!isRenewProcess) {
+            if (this.authConfiguration.auto_userinfo) {
+                // Clear user data. Fixes #97.
+                this.setUserData('');
+            }
             this.setIsAuthorized(false);
             this.oidcSecurityCommon.resetStorageData(isRenewProcess);
             this.checkSessionChanged = false;
@@ -516,6 +521,16 @@ export class OidcSecurityService {
         this.authWellKnownEndpointsLoaded = true;
     }
 
+    private onUserDataChanged() {
+        this.oidcSecurityCommon.logDebug(`onUserDataChanged: last = ${this.lastUserData}, new = ${this._userData.value}`);
+
+        if (this.lastUserData && !this._userData.value) {
+            this.oidcSecurityCommon.logDebug('onUserDataChanged: Logout detected.');
+            // TODO should we have an action here
+        }
+        this.lastUserData = this._userData.value;
+    }
+
     private runGetSigningKeys() {
         this.getSigningKeys()
             .subscribe(
@@ -548,18 +563,18 @@ export class OidcSecurityService {
         return Observable.throw(errMsg);
     }
 
-    private runTokenValidatation() {
-        if (this.runTokenValidatationRunning) {
+    private runTokenValidation() {
+        if (this.runTokenValidationRunning) {
             return;
         }
-        this.runTokenValidatationRunning = true;
+        this.runTokenValidationRunning = true;
         let source = Observable.timer(5000, 3000)
             .timeInterval()
             .pluck('interval')
             .take(10000);
 
         let subscription = source.subscribe(() => {
-            if (this._isAuthorizedValue) {
+            if (this._userData.value) {
                 if (this.oidcSecurityValidation.isTokenExpired(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_id_token), this.authConfiguration.silent_renew_offset_in_seconds)) {
                     this.oidcSecurityCommon.logDebug('IsAuthorized: id_token isTokenExpired, start silent renew if active');
 
