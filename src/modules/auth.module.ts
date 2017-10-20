@@ -32,26 +32,6 @@ export class AuthModule {
             ]
         };
     }
-
-    public static forChild(token: Token = {}): ModuleWithProviders {
-        return {
-            ngModule: AuthModule,
-            providers: [
-                OidcSecurityService,
-                OidcSecurityValidation,
-                OidcSecurityCheckSession,
-                OidcSecuritySilentRenew,
-                OidcSecurityUserService,
-                OidcSecurityCommon,
-                AuthConfiguration,
-                AuthWellKnownEndpoints,
-                {
-                    provide: OidcSecurityStorage,
-                    useClass: token.storage || BrowserStorage
-                }
-            ]
-        };
-    }
 }
 
 export interface Type<T> extends Function {

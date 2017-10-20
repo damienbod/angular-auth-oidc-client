@@ -2,6 +2,10 @@
 
 <a name="2017-10-20"></a>
 ### 2017-10-20 version 2.0.0
+* Removing forChild function, not used
+
+<a name="2017-10-20"></a>
+### 2017-10-20 version 2.0.0
 * Renaming startup_route to post_login_route
 * setting better default values for the configuration
 * Documentation fixes
