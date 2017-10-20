@@ -531,7 +531,7 @@ export class OidcSecurityService {
 
         if (this.lastUserData && !this._userData.value) {
             this.oidcSecurityCommon.logDebug('onUserDataChanged: Logout detected.');
-            this.router.navigate([this.authConfiguration.logout_route]);
+            // TODO should we have an action here
         }
         this.lastUserData = this._userData.value;
     }

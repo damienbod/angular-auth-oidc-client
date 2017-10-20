@@ -17,7 +17,6 @@ export class DefaultConfiguration {
     silent_renew = true;
     silent_renew_offset_in_seconds = 0;
     post_login_route = '/';
-    logout_route = '/';
     // HTTP 403
     forbidden_route = '/forbidden';
     // HTTP 401
@@ -52,7 +51,6 @@ export class OpenIDImplicitFlowConfiguration {
     silent_renew: boolean;
     silent_renew_offset_in_seconds: number;
     post_login_route: string;
-    logout_route: string;
     forbidden_route: string;
     unauthorized_route: string;
     auto_userinfo: boolean;
@@ -116,10 +114,6 @@ export class AuthConfiguration {
 
     get post_login_route(): string {
         return this.openIDImplicitFlowConfiguration.post_login_route || this.defaultConfig.post_login_route;
-    }
-
-    get logout_route(): string {
-        return this.openIDImplicitFlowConfiguration.logout_route || this.defaultConfig.logout_route;
     }
 
     get forbidden_route(): string {
