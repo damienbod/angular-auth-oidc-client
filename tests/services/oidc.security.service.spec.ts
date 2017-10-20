@@ -4,7 +4,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { HttpModule, JsonpModule } from '@angular/http';
+
+import { HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { AuthModule } from './../../index';
 import { OpenIDImplicitFlowConfiguration } from './../../index';
@@ -16,9 +18,8 @@ describe('OidcSecurityService', () => {
 		TestBed.configureTestingModule({
 			imports: [
 				BrowserModule,
-				HttpModule,
+				HttpClientModule,
 				RouterTestingModule,
-				JsonpModule,
 				AuthModule.forRoot(),
 			],
 			providers: [
