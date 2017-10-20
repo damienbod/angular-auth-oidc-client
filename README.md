@@ -51,14 +51,14 @@ The OidcSecurityService has a dependency on the HttpModule which needs to be imp
 
 ``` javascript
 import { NgModule } from '@angular/core';
-import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AuthModule, OidcSecurityService, OpenIDImplicitFlowConfiguration } from 'angular-auth-oidc-client';
 
 @NgModule({
     imports: [
         ...
-        HttpModule,
+        HttpClientModule,
         AuthModule.forRoot()
     ],
     declarations: [
