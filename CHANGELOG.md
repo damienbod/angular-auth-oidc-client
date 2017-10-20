@@ -1,7 +1,7 @@
 ## angular-auth-oidc-client Changelog
 
 <a name="2017-10-20"></a>
-### 2017-10-20 version 2.0.0
+### 2017-10-20 version 2.0.1
 * Removing forChild function, not used
 
 <a name="2017-10-20"></a>
