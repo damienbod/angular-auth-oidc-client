@@ -1,7 +1,7 @@
 import { PLATFORM_ID, Inject } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { Injectable, EventEmitter, Output } from '@angular/core';
-import { Http, Response, URLSearchParams } from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/timeInterval';
@@ -45,7 +45,7 @@ export class OidcSecurityService {
 
     constructor(
         @Inject(PLATFORM_ID) private platformId: Object,
-        private http: Http,
+        private http: HttpClient,
         private authConfiguration: AuthConfiguration,
         private router: Router,
         private oidcSecurityCheckSession: OidcSecurityCheckSession,
@@ -540,21 +540,15 @@ export class OidcSecurityService {
 
     private getSigningKeys(): Observable<JwtKeys> {
         this.oidcSecurityCommon.logDebug('jwks_uri: ' + this.authWellKnownEndpoints.jwks_uri);
-        return this.http.get(this.authWellKnownEndpoints.jwks_uri)
-            .map(this.extractData)
+        return this.http.get<JwtKeys>(this.authWellKnownEndpoints.jwks_uri)
             .catch(this.handleErrorGetSigningKeys);
-    }
-
-    private extractData(res: Response) {
-        let body = res.json();
-        return body;
     }
 
     private handleErrorGetSigningKeys(error: Response | any) {
         let errMsg: string;
         if (error instanceof Response) {
             const body = error.json() || {};
-            const err = body.error || JSON.stringify(body);
+            const err = JSON.stringify(body);
             errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
         } else {
             errMsg = error.message ? error.message : error.toString();
