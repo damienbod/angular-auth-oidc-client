@@ -4,8 +4,8 @@ import resolve from 'rollup-plugin-node-resolve';
 const globals = {
     '@angular/core': 'ng.core',
     '@angular/common': 'ng.common',
-    '@angular/http': 'ng.http',
     '@angular/router': 'ng.router',
+	'@angular/common/http': 'ng.http',
     'rxjs/Rx': 'Rx',
     'rxjs/Observable': 'Rx',
     'rxjs/Observer': 'Rx',

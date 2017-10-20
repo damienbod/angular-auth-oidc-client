@@ -1,5 +1,5 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
-import { Http, Response, Headers } from '@angular/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { Observer } from 'rxjs/Observer';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -25,7 +25,7 @@ export class AuthWellKnownEndpoints {
     introspection_endpoint: string;
 
     constructor(
-        private http: Http,
+        private http: HttpClient,
         private authConfiguration: AuthConfiguration,
         private oidcSecurityCommon: OidcSecurityCommon
     ) {
@@ -96,8 +96,8 @@ export class AuthWellKnownEndpoints {
 
     private getWellKnownEndpoints = (): Observable<any> => {
 
-        let headers = new Headers();
-        headers.append('Accept', 'application/json');
+        let headers = new HttpHeaders();
+        headers = headers.set('Accept', 'application/json');
 
         let url = this.authConfiguration.stsServer + '/.well-known/openid-configuration';
         if (this.authConfiguration.override_well_known_configuration) {
@@ -106,6 +106,6 @@ export class AuthWellKnownEndpoints {
 
         return this.http.get(url, {
             headers: headers,
-        }).map((res: any) => res.json());
+        });
     }
 }

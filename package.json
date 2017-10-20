@@ -1,6 +1,6 @@
 {
     "name": "angular-auth-oidc-client",
-    "version": "2.0.1",
+    "version": "3.0.0",
     "description": "An OpenID Connect Implicit Flow client for Angular",
     "main": "./bundles/angular-auth-oidc-client.umd.js",
     "module": "./modules/angular-auth-oidc-client.es5.js",
@@ -33,24 +33,23 @@
     ],
     "license": "MIT",
     "peerDependencies": {
-        "@angular/core": ">= 4.1.0",
-        "@angular/http": ">= 4.1.0",
-        "@angular/router": ">= 4.1.0"
+        "@angular/core": ">= 4.3.0",
+        "@angular/common/http": ">= 4.3.0",
+        "@angular/router": ">= 4.3.0"
     },
     "dependencies": {
         "jsrsasign": "8.0.3"
     },
     "devDependencies": {
-        "@angular/animations": "4.1.0",
-        "@angular/common": "4.1.0",
-        "@angular/compiler": "4.1.0",
-        "@angular/compiler-cli": "4.1.0",
-        "@angular/core": "4.1.0",
-        "@angular/http": "4.1.0",
-        "@angular/platform-browser": "4.1.0",
-        "@angular/platform-browser-dynamic": "4.1.0",
-        "@angular/platform-server": "4.1.0",
-        "@angular/router": "4.1.0",
+        "@angular/animations": "4.3.0",
+        "@angular/common": "4.3.0",
+        "@angular/compiler": "4.3.0",
+        "@angular/compiler-cli": "4.3.0",
+        "@angular/core": "4.3.0",
+        "@angular/platform-browser": "4.3.0",
+        "@angular/platform-browser-dynamic": "4.3.0",
+        "@angular/platform-server": "4.3.0",
+        "@angular/router": "4.3.0",
         "@compodoc/compodoc": "1.0.0-beta.9",
         "@types/jasmine": "2.5.48",
         "@types/node": "7.0.22",

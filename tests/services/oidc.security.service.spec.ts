@@ -4,7 +4,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { HttpModule, JsonpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { AuthModule } from './../../index';
 import { OpenIDImplicitFlowConfiguration } from './../../index';
@@ -16,9 +17,8 @@ describe('OidcSecurityService', () => {
 		TestBed.configureTestingModule({
 			imports: [
 				BrowserModule,
-				HttpModule,
+				HttpClientModule,
 				RouterTestingModule,
-				JsonpModule,
 				AuthModule.forRoot(),
 			],
 			providers: [
@@ -57,7 +57,7 @@ describe('OidcSecurityService', () => {
 				//oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
 
 				let value = (oidcSecurityService as any).createAuthorizeUrl('nonce', 'state', 'http://example');
-				expect('http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&redirect_uri=https://localhost:44386&response_type=id_token%20token&scope=openid%20email%20profile&nonce=nonce&state=state').toEqual(value);
+				expect('http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flocalhost%3A44386&response_type=id_token+token&scope=openid+email+profile&nonce=nonce&state=state').toEqual(value);
 			})
 	);
 
@@ -88,7 +88,7 @@ describe('OidcSecurityService', () => {
 				(oidcSecurityService as any).authConfiguration.init(openIDImplicitFlowConfiguration);
 
 				let value = (oidcSecurityService as any).createAuthorizeUrl('nonce', 'state', 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=b2c_1_sign_in');
-				let expectValue = 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=b2c_1_sign_in&client_id=myid&redirect_uri=https://localhost:44386&response_type=id_token%20token&scope=openid%20email%20profile&nonce=nonce&state=state';
+				let expectValue = 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=b2c_1_sign_in&client_id=myid&redirect_uri=https%3A%2F%2Flocalhost%3A44386&response_type=id_token+token&scope=openid+email+profile&nonce=nonce&state=state';
 				expect(expectValue).toEqual(value);
 			})
 	);
@@ -119,7 +119,7 @@ describe('OidcSecurityService', () => {
 				(oidcSecurityService as any).authConfiguration.init(openIDImplicitFlowConfiguration);
 
 				let value = (oidcSecurityService as any).createEndSessionUrl('https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in', 'UzI1NiIsImtpZCI6Il');
-				let expectValue = 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in&id_token_hint=UzI1NiIsImtpZCI6Il&post_logout_redirect_uri=https://localhost:44386/Unauthorized';
+				let expectValue = 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in&id_token_hint=UzI1NiIsImtpZCI6Il&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
 				expect(expectValue).toEqual(value);
 			})
 	);
@@ -152,7 +152,7 @@ describe('OidcSecurityService', () => {
 				oidcSecurityService.setCustomRequestParameters({ 'testcustom': 'customvalue' });
 
 				let value = (oidcSecurityService as any).createAuthorizeUrl('nonce', 'state', 'http://example');
-				let expectValue = 'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&redirect_uri=https://localhost:44386&response_type=id_token%20token&scope=openid%20email%20profile&nonce=nonce&state=state&testcustom=customvalue';
+				let expectValue = 'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flocalhost%3A44386&response_type=id_token+token&scope=openid+email+profile&nonce=nonce&state=state&testcustom=customvalue';
 				expect(expectValue).toEqual(value);
 			})
 	);
@@ -183,7 +183,7 @@ describe('OidcSecurityService', () => {
 				(oidcSecurityService as any).authConfiguration.init(openIDImplicitFlowConfiguration);
 
 				let value = (oidcSecurityService as any).createEndSessionUrl('http://example', 'mytoken');
-				let expectValue = 'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https://localhost:44386/Unauthorized';
+				let expectValue = 'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
 				expect(expectValue).toEqual(value);
 			})
 	);

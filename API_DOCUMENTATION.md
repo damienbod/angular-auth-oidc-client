@@ -167,47 +167,45 @@ App.module: get your json settings:
 
 ```typescript
 configClient() {
-        return this.http.get('/api/ClientAppSettings').map(res => {
-            this.clientConfiguration = res.json();
-        });
-    }
+	return this.http.get(`${window.location.origin}/api/ClientAppSettings`);
+}
 ```
 
 App.module: 
 Config the module, subscribe to the json get:
 
 ```typescript
-this.configClient().subscribe(config => {
+this.configClient().subscribe((config: any) => {
+	// this.clientConfiguration = config;
 
-            console.log(this.clientConfiguration);
-            const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
-            openIDImplicitFlowConfiguration.stsServer = this.clientConfiguration.urlStsServer;
+	let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
+	openIDImplicitFlowConfiguration.stsServer = this.clientConfiguration.stsServer;
+	openIDImplicitFlowConfiguration.redirect_url = this.clientConfiguration.redirect_url;
+	// The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer identified by the iss (issuer) Claim as an audience.
+	// The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences not trusted by the Client.
+	openIDImplicitFlowConfiguration.client_id = this.clientConfiguration.client_id;
+	openIDImplicitFlowConfiguration.response_type = this.clientConfiguration.response_type;
+	openIDImplicitFlowConfiguration.scope = this.clientConfiguration.scope;
+	openIDImplicitFlowConfiguration.post_logout_redirect_uri = this.clientConfiguration.post_logout_redirect_uri;
+	openIDImplicitFlowConfiguration.start_checksession = this.clientConfiguration.start_checksession;
+	openIDImplicitFlowConfiguration.silent_renew = this.clientConfiguration.silent_renew;
+	openIDImplicitFlowConfiguration.post_login_route = this.clientConfiguration.startup_route;
+	// HTTP 403
+	openIDImplicitFlowConfiguration.forbidden_route = this.clientConfiguration.forbidden_route;
+	// HTTP 401
+	openIDImplicitFlowConfiguration.unauthorized_route = this.clientConfiguration.unauthorized_route;
+	openIDImplicitFlowConfiguration.log_console_warning_active = this.clientConfiguration.log_console_warning_active;
+	openIDImplicitFlowConfiguration.log_console_debug_active = this.clientConfiguration.log_console_debug_active;
+	// id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
+	// limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
+	openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = this.clientConfiguration.max_id_token_iat_offset_allowed_in_seconds;
 
-            openIDImplicitFlowConfiguration.redirect_url = this.clientConfiguration.urlRedirect;
-            // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the
-            // Issuer identified by the iss (issuer) Claim as an audience.
-            // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience,
-            // or if it contains additional audiences not trusted by the Client.
-            openIDImplicitFlowConfiguration.client_id = 'clientId';
-            openIDImplicitFlowConfiguration.response_type = 'id_token token';
-            openIDImplicitFlowConfiguration.scope = ' openid vmsscope profile email';
-            openIDImplicitFlowConfiguration.post_logout_redirect_uri = this.clientConfiguration.urlRedirectPostLogout;
-            openIDImplicitFlowConfiguration.start_checksession = false;
-            openIDImplicitFlowConfiguration.silent_renew = true;
-            openIDImplicitFlowConfiguration.login_route = '/vms';
-            openIDImplicitFlowConfiguration.logout_route = '/';
-            // HTTP 403
-            openIDImplicitFlowConfiguration.forbidden_route = '/forbidden';
-            // HTTP 401
-            openIDImplicitFlowConfiguration.unauthorized_route = '/unauthorized';
-            openIDImplicitFlowConfiguration.log_console_warning_active = true;
-            openIDImplicitFlowConfiguration.log_console_debug_active = true;
-            // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
-            // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
-            openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
+	configuration.FileServer = this.clientConfiguration.apiFileServer;
+	configuration.Server = this.clientConfiguration.apiServer;
 
-            this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
-        });
+	this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
+});
+}
 ```
 
 AppComponent, subscribe to the onModuleSetup event:
