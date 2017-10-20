@@ -4,7 +4,6 @@
 ### 2017-10-20 version 2.0.0
 * Renaming startup_route to post_login_route
 * setting better default values for the configuration
-* setting the isAuthorized only after the user data was selected, if using the auto_userinfo property
 * Documentation fixes
 
 <a name="2017-10-15"></a>
