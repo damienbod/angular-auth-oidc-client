@@ -65,7 +65,6 @@ import { AuthModule, OidcSecurityService, OpenIDImplicitFlowConfiguration } from
         ...
     ],
     providers: [
-        OidcSecurityService,
         ...
     ],
     bootstrap:    [AppComponent],
