@@ -44,7 +44,6 @@ export class AuthWellKnownEndpoints {
 
             if (data.end_session_endpoint) {
                 this.end_session_endpoint = data.end_session_endpoint;
-
             };
 
             if (data.check_session_iframe) {
