@@ -206,11 +206,15 @@ See also `oidc.security.storage.ts` for an example.
 
 ## Example using: 
 
-https://github.com/damienbod/AspNet5IdentityServerAngularImplicitFlow/tree/npm-lib-test/src/AngularClient
+https://github.com/damienbod/AspNetCoreAngularSignalRSecurity
 
 https://github.com/damienbod/angular-auth-oidc-sample-google-openid
 
 https://github.com/HWouters/ad-b2c-oidc-angular
+
+### Using src code directly:
+
+https://github.com/damienbod/AspNet5IdentityServerAngularImplicitFlow
 
 ## Notes: 
 
