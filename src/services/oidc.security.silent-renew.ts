@@ -11,25 +11,12 @@ export class OidcSecuritySilentRenew {
     }
 
     initRenew() {
-        let existsparent = undefined;
-        try {
-          let parentdoc = window.parent.document;
-          if (!parentdoc) {
-              throw new Error('Unaccessible');
-          }
-
-          existsparent =  parentdoc.getElementById('myiFrameForSilentRenew');
-        } catch (e) {
-            // not accessible
-        }
+        let parentdoc = window.parent && window.parent.document;
+        let existsparent = parentdoc && parentdoc.getElementById('myiFrameForSilentRenew');
         let exists = window.document.getElementById('myiFrameForSilentRenew');
-        if (existsparent) {
-            this.sessionIframe = existsparent;
-        } else if (exists) {
-            this.sessionIframe = exists;
-        }
 
-        if (!exists && !existsparent) {
+        this.sessionIframe = existsparent || exists;
+        if (!this.sessionIframe) {
             this.sessionIframe = window.document.createElement('iframe');
             this.sessionIframe.id = 'myiFrameForSilentRenew';
             this.oidcSecurityCommon.logDebug(this.sessionIframe);
@@ -40,22 +27,13 @@ export class OidcSecuritySilentRenew {
     }
 
     startRenew(url: string) {
-        let existsparent = undefined;
-        try {
-          let parentdoc = window.parent.document;
-          if (!parentdoc) {
-              throw new Error('Unaccessible');
-          }
-
-          existsparent =  parentdoc.getElementById('myiFrameForSilentRenew');
-        } catch (e) {
-            // not accessible
-        }
+        let parentdoc = window.parent && window.parent.document;
+        let existsparent = parentdoc && parentdoc.getElementById('myiFrameForSilentRenew');
         let exists = window.document.getElementById('myiFrameForSilentRenew');
-        if (existsparent) {
-            this.sessionIframe = existsparent;
-        } else if (exists) {
-            this.sessionIframe = exists;
+
+        this.sessionIframe = existsparent || exists;
+        if (!this.sessionIframe) {
+            throw new Error('Session IFRAME not found.');
         }
 
         this.oidcSecurityCommon.logDebug('startRenew for URL:' + url);
