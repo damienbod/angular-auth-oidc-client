@@ -1,5 +1,5 @@
 import { PLATFORM_ID, Inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { Injectable, EventEmitter, Output } from '@angular/core';
 import 'rxjs/add/operator/map';
@@ -446,36 +446,33 @@ export class OidcSecurityService {
 
     private createAuthorizeUrl(nonce: string, state: string, authorization_endpoint: string): string {
 
-        let urlParts = authorization_endpoint.split('?');
-        let authorizationUrl = urlParts[0];
-        let params = new URLSearchParams(urlParts[1]);
-        params.set('client_id', this.authConfiguration.client_id);
-        params.set('redirect_uri', this.authConfiguration.redirect_url);
-        params.set('response_type', this.authConfiguration.response_type);
-        params.set('scope', this.authConfiguration.scope);
-        params.set('nonce', nonce);
-        params.set('state', state);
+        let authorizationUrl = authorization_endpoint;
+        let params = new HttpParams();
+        params = params.set('client_id', this.authConfiguration.client_id);
+        params = params.append('redirect_uri', this.authConfiguration.redirect_url);
+        params = params.append('response_type', this.authConfiguration.response_type);
+        params = params.append('scope', this.authConfiguration.scope);
+        params = params.append('nonce', nonce);
+        params = params.append('state', state);
         if (this.authConfiguration.hd_param) {
-          params.set('hd', this.authConfiguration.hd_param);
+            params = params.append('hd', this.authConfiguration.hd_param);
         }
 
         let customParams = Object.assign({}, this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_custom_request_params));
 
         Object.keys(customParams).forEach(key => {
-            params.set(key, customParams[key]);
+            params = params.append(key, customParams[key]);
         });
 
         return `${authorizationUrl}?${params}`;
     }
 
     private createEndSessionUrl(end_session_endpoint: string, id_token_hint: string) {
-        let urlParts = end_session_endpoint.split('?');
+        let authorizationEndsessionUrl = end_session_endpoint;
 
-        let authorizationEndsessionUrl = urlParts[0];
-
-        let params = new URLSearchParams(urlParts[1]);
-        params.set('id_token_hint', id_token_hint);
-        params.set('post_logout_redirect_uri', this.authConfiguration.post_logout_redirect_uri);
+        let params = new HttpParams();
+        params = params.set('id_token_hint', id_token_hint);
+        params = params.append('post_logout_redirect_uri', this.authConfiguration.post_logout_redirect_uri);
 
         return `${authorizationEndsessionUrl}?${params}`;
     }
