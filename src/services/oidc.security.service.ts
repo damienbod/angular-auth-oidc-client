@@ -22,6 +22,7 @@ import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
 
 import { JwtKeys } from './jwtkeys';
 import { AuthorizationResult } from './authorization-result.enum';
+import { UriEncoder } from './uri-encoder';
 
 @Injectable()
 export class OidcSecurityService {
@@ -293,35 +294,35 @@ export class OidcSecurityService {
                     if (this.authConfiguration.auto_userinfo) {
                         this.getUserinfo(isRenewProcess, result, id_token, decoded_id_token).subscribe((response) => {
                             if (response) {
-								if (this.authConfiguration.trigger_authorization_result_event) {
-									this.onAuthorizationResult.emit(AuthorizationResult.authorized);
-								} else {
+                                if (this.authConfiguration.trigger_authorization_result_event) {
+                                    this.onAuthorizationResult.emit(AuthorizationResult.authorized);
+                                } else {
                                     this.router.navigate([this.authConfiguration.post_login_route]);
-								}
+                                }
                             } else {
-								if (this.authConfiguration.trigger_authorization_result_event) {
-									this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
-								} else {
-									this.router.navigate([this.authConfiguration.unauthorized_route]);
-								}
+                                if (this.authConfiguration.trigger_authorization_result_event) {
+                                    this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
+                                } else {
+                                    this.router.navigate([this.authConfiguration.unauthorized_route]);
+                                }
                             }
                         });
                     } else {
                         this.runTokenValidation();
                         if (this.authConfiguration.trigger_authorization_result_event) {
-							this.onAuthorizationResult.emit(AuthorizationResult.authorized);
-						} else {
+                            this.onAuthorizationResult.emit(AuthorizationResult.authorized);
+                        } else {
                             this.router.navigate([this.authConfiguration.post_login_route]);
-						}
+                        }
                     }
                 } else { // something went wrong
                     this.oidcSecurityCommon.logDebug('authorizedCallback, token(s) validation failed, resetting');
-					this.resetAuthorizationData(false);
-					if (this.authConfiguration.trigger_authorization_result_event) {
-						this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
-					} else {
-						this.router.navigate([this.authConfiguration.unauthorized_route]);
-					}
+                    this.resetAuthorizationData(false);
+                    if (this.authConfiguration.trigger_authorization_result_event) {
+                        this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
+                    } else {
+                        this.router.navigate([this.authConfiguration.unauthorized_route]);
+                    }
                 }
             });
     }
@@ -446,8 +447,9 @@ export class OidcSecurityService {
 
     private createAuthorizeUrl(nonce: string, state: string, authorization_endpoint: string): string {
 
-        let authorizationUrl = authorization_endpoint;
-        let params = new HttpParams();
+        let urlParts = authorization_endpoint.split('?');
+        let authorizationUrl = urlParts[0];
+        let params = new HttpParams({ fromString: urlParts[1], encoder: new UriEncoder() });
         params = params.set('client_id', this.authConfiguration.client_id);
         params = params.append('redirect_uri', this.authConfiguration.redirect_url);
         params = params.append('response_type', this.authConfiguration.response_type);
@@ -468,9 +470,11 @@ export class OidcSecurityService {
     }
 
     private createEndSessionUrl(end_session_endpoint: string, id_token_hint: string) {
-        let authorizationEndsessionUrl = end_session_endpoint;
+        let urlParts = end_session_endpoint.split('?');
 
-        let params = new HttpParams();
+        let authorizationEndsessionUrl = urlParts[0];
+
+        let params = new HttpParams({ fromString: urlParts[1], encoder: new UriEncoder() });
         params = params.set('id_token_hint', id_token_hint);
         params = params.append('post_logout_redirect_uri', this.authConfiguration.post_logout_redirect_uri);
 
@@ -492,19 +496,19 @@ export class OidcSecurityService {
     handleError(error: any) {
         this.oidcSecurityCommon.logError(error);
         if (error.status == 403) {
-			if (this.authConfiguration.trigger_authorization_result_event) {
-				this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
-			} else {
-				this.router.navigate([this.authConfiguration.forbidden_route]);
-			}
+            if (this.authConfiguration.trigger_authorization_result_event) {
+                this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
+            } else {
+                this.router.navigate([this.authConfiguration.forbidden_route]);
+            }
         } else if (error.status == 401) {
             let silentRenew = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_silent_renew_running);
-			this.resetAuthorizationData(silentRenew);
-			if (this.authConfiguration.trigger_authorization_result_event) {
-				this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
-			} else {
-				this.router.navigate([this.authConfiguration.unauthorized_route]);
-			}
+            this.resetAuthorizationData(silentRenew);
+            if (this.authConfiguration.trigger_authorization_result_event) {
+                this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
+            } else {
+                this.router.navigate([this.authConfiguration.unauthorized_route]);
+            }
         }
     }
 
