@@ -68,12 +68,14 @@ export class OidcSecurityService {
 
         this.oidcSecurityCommon.setupModule();
 
-        if (this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_user_data) !== '') {
-            this.setUserData(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_user_data));
+        const userData = this.oidcSecurityCommon.userData;
+        if (userData !== '') {
+            this.setUserData(userData);
         }
 
-        if (this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_is_authorized) !== '') {
-            this.setIsAuthorized(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_is_authorized));
+        const isAuthorized = this.oidcSecurityCommon.isAuthorized;
+        if (isAuthorized !== undefined) {
+            this.setIsAuthorized(isAuthorized);
 
             // Start the silent renew
             this.runTokenValidation();
@@ -110,7 +112,7 @@ export class OidcSecurityService {
     }
 
     private setUserData(userData: any): void {
-        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_user_data, userData);
+        this.oidcSecurityCommon.userData = userData;
         this._userData.next(userData);
     }
 
@@ -147,20 +149,20 @@ export class OidcSecurityService {
     }
 
     setState(state: string): void {
-        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_state_control, state);
+        this.oidcSecurityCommon.authStateControl = state;
     }
 
     getState(): string {
-        return this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_auth_state_control);
+        return this.oidcSecurityCommon.authStateControl;
     }
 
     setCustomRequestParameters(params: { [key: string]: string | number | boolean }) {
-        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_custom_request_params, params);
+        this.oidcSecurityCommon.customRequestParams = params;
     }
 
     authorize() {
 
-        let data = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_well_known_endpoints);
+        let data = this.oidcSecurityCommon.wellKnownEndpoints;
         if (data && data !== '') {
             this.authWellKnownEndpointsLoaded = true;
         }
@@ -179,22 +181,22 @@ export class OidcSecurityService {
 
         this.oidcSecurityCommon.logDebug('BEGIN Authorize, no auth data');
 
-        let state = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_auth_state_control);
+        let state = this.oidcSecurityCommon.authStateControl;
         if (state === '' || state === null) {
             state = Date.now() + '' + Math.random();
-            this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_state_control, state);
+            this.oidcSecurityCommon.authStateControl = state;
         }
 
         let nonce = 'N' + Math.random() + '' + Date.now();
-        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_nonce, nonce);
-        this.oidcSecurityCommon.logDebug('AuthorizedController created. local state: ' + this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_auth_state_control));
+        this.oidcSecurityCommon.authNonce = nonce;
+        this.oidcSecurityCommon.logDebug('AuthorizedController created. local state: ' + this.oidcSecurityCommon.authStateControl);
 
         let url = this.createAuthorizeUrl(nonce, state, this.authWellKnownEndpoints.authorization_endpoint);
         window.location.href = url;
     }
 
     authorizedCallback(hash?: string) {
-        let silentRenew = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_silent_renew_running);
+        let silentRenew = this.oidcSecurityCommon.silentRenewRunning;
         let isRenewProcess = (silentRenew === 'running');
 
         this.oidcSecurityCommon.logDebug('BEGIN authorizedCallback, no auth data');
@@ -207,7 +209,7 @@ export class OidcSecurityService {
             result[parts[0]] = parts[1];
             return result;
         }, {});
-        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_result, result);
+        this.oidcSecurityCommon.authResult = result;
 
         this.oidcSecurityCommon.logDebug(result);
         this.oidcSecurityCommon.logDebug('authorizedCallback created, begin token validation');
@@ -224,7 +226,7 @@ export class OidcSecurityService {
                 if (!result.error) {
 
                     // validate state
-                    if (this.oidcSecurityValidation.validateStateFromHashCallback(result.state, this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_auth_state_control))) {
+                    if (this.oidcSecurityValidation.validateStateFromHashCallback(result.state, this.oidcSecurityCommon.authStateControl)) {
                         if (this.authConfiguration.response_type === 'id_token token') {
                             access_token = result.access_token;
                         }
@@ -237,7 +239,7 @@ export class OidcSecurityService {
                         // validate jwt signature
                         if (this.oidcSecurityValidation.validate_signature_id_token(id_token, this.jwtKeys)) {
                             // validate nonce
-                            if (this.oidcSecurityValidation.validate_id_token_nonce(decoded_id_token, this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_auth_nonce))) {
+                            if (this.oidcSecurityValidation.validate_id_token_nonce(decoded_id_token, this.oidcSecurityCommon.authNonce)) {
                                 // validate required fields id_token
                                 if (this.oidcSecurityValidation.validate_required_id_token(decoded_id_token)) {
                                     // validate max offset from the id_token issue to now
@@ -287,7 +289,7 @@ export class OidcSecurityService {
                     }
                 }
 
-                this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_silent_renew_running, '');
+                this.oidcSecurityCommon.silentRenewRunning = '';
 
                 if (authResponseIsValid) {
                     this.setAuthorizationData(access_token, id_token);
@@ -328,15 +330,15 @@ export class OidcSecurityService {
     }
 
     getUserinfo(isRenewProcess = false, result?: any, id_token?: any, decoded_id_token?: any): Observable<boolean> {
-        result = result ? result : this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_auth_result);
-        id_token = id_token ? id_token : this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_id_token);
+        result = result ? result : this.oidcSecurityCommon.authResult;
+        id_token = id_token ? id_token : this.oidcSecurityCommon.idToken;
         decoded_id_token = decoded_id_token ? decoded_id_token : this.oidcSecurityValidation.getPayloadFromToken(id_token, false);
 
         return new Observable<boolean>(observer => {
             // flow id_token token
             if (this.authConfiguration.response_type === 'id_token token') {
                 if (isRenewProcess) {
-                    this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_session_state, result.session_state);
+                    this.oidcSecurityCommon.sessionState = result.session_state;
                     observer.next(true);
                     observer.complete();
                 } else {
@@ -345,10 +347,10 @@ export class OidcSecurityService {
                             this.oidcSecurityCommon.logDebug('authorizedCallback id_token token flow');
                             if (this.oidcSecurityValidation.validate_userdata_sub_id_token(decoded_id_token.sub, this.oidcSecurityUserService.userData.sub)) {
                                 this.setUserData(this.oidcSecurityUserService.userData);
-                                this.oidcSecurityCommon.logDebug(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_access_token));
+                                this.oidcSecurityCommon.logDebug(this.oidcSecurityCommon.accessToken);
                                 this.oidcSecurityCommon.logDebug(this.oidcSecurityUserService.userData);
 
-                                this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_session_state, result.session_state);
+                                this.oidcSecurityCommon.sessionState = result.session_state;
 
                                 this.runTokenValidation();
                                 observer.next(true);
@@ -363,13 +365,13 @@ export class OidcSecurityService {
                 }
             } else { // flow id_token
                 this.oidcSecurityCommon.logDebug('authorizedCallback id_token flow');
-                this.oidcSecurityCommon.logDebug(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_access_token));
+                this.oidcSecurityCommon.logDebug(this.oidcSecurityCommon.accessToken);
 
                 // userData is set to the id_token decoded. No access_token.
                 this.oidcSecurityUserService.userData = decoded_id_token;
                 this.setUserData(this.oidcSecurityUserService.userData);
 
-                this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_session_state, result.session_state);
+                this.oidcSecurityCommon.sessionState = result.session_state;
 
                 if (!isRenewProcess) {
                     this.runTokenValidation();
@@ -387,7 +389,7 @@ export class OidcSecurityService {
 
         if (this.authWellKnownEndpoints.end_session_endpoint) {
             let end_session_endpoint = this.authWellKnownEndpoints.end_session_endpoint;
-            let id_token_hint = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_id_token);
+            let id_token_hint = this.oidcSecurityCommon.idToken;
             let url = this.createEndSessionUrl(end_session_endpoint, id_token_hint);
 
             this.resetAuthorizationData(false);
@@ -404,10 +406,10 @@ export class OidcSecurityService {
     }
 
     private successful_validation() {
-        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_nonce, '');
+        this.oidcSecurityCommon.authNonce = '';
 
         if (this.authConfiguration.auto_clean_state_after_authentication) {
-            this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_state_control, '');
+            this.oidcSecurityCommon.authStateControl = '';
         }
         this.oidcSecurityCommon.logDebug('AuthorizedCallback token(s) validated, continue');
     }
@@ -415,34 +417,34 @@ export class OidcSecurityService {
     private refreshSession() {
         this.oidcSecurityCommon.logDebug('BEGIN refresh session Authorize');
 
-        let state = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_auth_state_control);
+        let state = this.oidcSecurityCommon.authStateControl;
         if (state === '' || state === null) {
             state = Date.now() + '' + Math.random();
-            this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_state_control, state);
+            this.oidcSecurityCommon.authStateControl = state;
         }
 
         let nonce = 'N' + Math.random() + '' + Date.now();
-        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_auth_nonce, nonce);
-        this.oidcSecurityCommon.logDebug('RefreshSession created. adding myautostate: ' + this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_auth_state_control));
+        this.oidcSecurityCommon.authNonce = nonce;
+        this.oidcSecurityCommon.logDebug('RefreshSession created. adding myautostate: ' + this.oidcSecurityCommon.authStateControl);
 
         let url = this.createAuthorizeUrl(nonce, state, this.authWellKnownEndpoints.authorization_endpoint);
 
-        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_silent_renew_running, 'running');
+        this.oidcSecurityCommon.silentRenewRunning = 'running';
         this.oidcSecuritySilentRenew.startRenew(url);
     }
 
     private setAuthorizationData(access_token: any, id_token: any) {
-        if (this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_access_token) !== '') {
-            this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_access_token, '');
+        if (this.oidcSecurityCommon.accessToken !== '') {
+            this.oidcSecurityCommon.accessToken = '';
         }
 
         this.oidcSecurityCommon.logDebug(access_token);
         this.oidcSecurityCommon.logDebug(id_token);
         this.oidcSecurityCommon.logDebug('storing to storage, getting the roles');
-        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_access_token, access_token);
-        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_id_token, id_token);
+        this.oidcSecurityCommon.accessToken = access_token;
+        this.oidcSecurityCommon.idToken = id_token;
         this.setIsAuthorized(true);
-        this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_is_authorized, true);
+        this.oidcSecurityCommon.isAuthorized = true;
     }
 
     private createAuthorizeUrl(nonce: string, state: string, authorization_endpoint: string): string {
@@ -460,10 +462,10 @@ export class OidcSecurityService {
             params = params.append('hd', this.authConfiguration.hd_param);
         }
 
-        let customParams = Object.assign({}, this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_custom_request_params));
+        let customParams = Object.assign({}, this.oidcSecurityCommon.customRequestParams);
 
         Object.keys(customParams).forEach(key => {
-            params = params.append(key, customParams[key]);
+            params = params.append(key, customParams[key].toString());
         });
 
         return `${authorizationUrl}?${params}`;
@@ -502,13 +504,13 @@ export class OidcSecurityService {
                 this.router.navigate([this.authConfiguration.forbidden_route]);
             }
         } else if (error.status == 401) {
-            let silentRenew = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_silent_renew_running);
-            this.resetAuthorizationData(silentRenew);
-            if (this.authConfiguration.trigger_authorization_result_event) {
-                this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
-            } else {
-                this.router.navigate([this.authConfiguration.unauthorized_route]);
-            }
+            let silentRenew = this.oidcSecurityCommon.silentRenewRunning;
+			this.resetAuthorizationData(silentRenew !== '');
+			if (this.authConfiguration.trigger_authorization_result_event) {
+				this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
+			} else {
+				this.router.navigate([this.authConfiguration.unauthorized_route]);
+			}
         }
     }
 
@@ -570,7 +572,7 @@ export class OidcSecurityService {
 
         let subscription = source.subscribe(() => {
             if (this._userData.value) {
-                if (this.oidcSecurityValidation.isTokenExpired(this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_id_token), this.authConfiguration.silent_renew_offset_in_seconds)) {
+                if (this.oidcSecurityValidation.isTokenExpired(this.oidcSecurityCommon.idToken, this.authConfiguration.silent_renew_offset_in_seconds)) {
                     this.oidcSecurityCommon.logDebug('IsAuthorized: id_token isTokenExpired, start silent renew if active');
 
                     if (this.authConfiguration.silent_renew) {
