@@ -1,5 +1,10 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-10-26"></a>
+### 2017-10-26 version 3.0.2
+* fix: adding additional URL parameters to the authorize request in IE, Edge
+* documentation HTTPClient intercept
+
 <a name="2017-10-21"></a>
 ### 2017-10-21 version 3.0.1
 * fixing peer dependency bug
