@@ -101,7 +101,7 @@ export class AppModule {
         
         this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
 		
-		// if you need custom parameters
+        // if you need custom parameters
         // oidcSecurityService.setCustomRequestParameters({ 't4': 'ABC abc 123', 't3': 'wo' });
     }
 }
