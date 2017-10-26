@@ -47,7 +47,7 @@ and type
 
 Import the module and services in your module. 
 
-The OidcSecurityService has a dependency on the HttpModule which needs to be imported. This is required, even if you are using the new HttpClientModule module. The angular-auth-oidc-client module supports all versions of Angular 4 onwards.
+The OidcSecurityService has a dependency on the HttpClientModule which needs to be imported. The angular-auth-oidc-client module supports all versions of Angular 4.3 onwards.
 
 ``` javascript
 import { NgModule } from '@angular/core';
@@ -203,6 +203,39 @@ Then provide the class in the module:
 })
 ```
 See also `oidc.security.storage.ts` for an example.
+
+## Http Interceptor
+
+The HttpClient allows you to write [interceptors](https://angular.io/guide/http#intercepting-all-requests-or-responses). A common usecase would be to intercept any outgoing HTTP request and add an authorization header. Keep in mind that injecting OidcSecurityService into the interceptor via the constructor results in a cyclic dependency. To avoid this use the [injector](https://angular.io/api/core/Injector) instead.
+
+```TypeScript
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+    private oidcSecurityService: OidcSecurityService;
+
+    constructor(private injector: Injector) {
+    }
+
+    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        let requestToForward = req;
+
+        if (this.oidcSecurityService === undefined) {
+            this.oidcSecurityService = this.injector.get(OidcSecurityService);
+        }
+        if (this.oidcSecurityService !== undefined) {
+            let token = this.oidcSecurityService.getToken();
+            if (token !== "") {
+                let tokenValue = "Bearer " + token;
+                requestToForward = req.clone({ setHeaders: { "Authorization": tokenValue } });
+            }
+        } else {
+            console.debug("OidcSecurityService undefined: NO auth header!");
+        }
+
+        return next.handle(requestToForward);
+    }
+}
+```
 
 ## Example using: 
 
