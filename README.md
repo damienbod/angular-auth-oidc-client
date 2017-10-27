@@ -240,7 +240,9 @@ export class AuthInterceptor implements HttpInterceptor {
 }
 ```
 
-## Example using: 
+## Examples using: 
+
+https://github.com/robisim74/angular-openid-connect-php
 
 https://github.com/damienbod/AspNetCoreAngularSignalRSecurity
 
