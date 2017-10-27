@@ -355,3 +355,19 @@ Logs off from the client application and also from the server if the endsession 
 ### handleError(error: any)
 
 handle errors from the auth module.
+
+### events
+
+An observable of all service events. The sequence of  events are
+
+- `AuthenticationStart`
+  - `AuthenticationSuccess`
+    - `FetchUserInfoStart`
+      - `FetchUserInfoSuccess`
+      - `FetchUserInfoError`
+    - `RefreshTokenStart`
+      - `RefreshTokenSuccess`
+      - `RefreshTokenError`
+    - `RefreshTokenExpired`
+  - `AuthenticationError`
+  - `AuthenticationLogout`
