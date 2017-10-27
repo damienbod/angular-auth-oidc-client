@@ -1,12 +1,7 @@
 import { inject, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-
-import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { HttpClientModule } from '@angular/common/http';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-
 import { AuthModule } from './../../index';
 import { OpenIDImplicitFlowConfiguration } from './../../index';
 import { OidcSecurityService } from './../../index';
@@ -31,7 +26,20 @@ describe('OidcSecurityService', () => {
 		inject([OidcSecurityService],
 			(oidcSecurityService: OidcSecurityService) => {
 
-				// let well = '{ "issuer":"https://accounts.google.com", "authorization_endpoint":"https://accounts.google.com/o/oauth2/v2/auth", "token_endpoint":"https://www.googleapis.com/oauth2/v4/token", "userinfo_endpoint":"https://www.googleapis.com/oauth2/v3/userinfo", "revocation_endpoint":"https://accounts.google.com/o/oauth2/revoke", "jwks_uri":"https://www.googleapis.com/oauth2/v3/certs", "response_types_supported":[ "code", "token", "id_token", "codetoken", "codeid_token", "tokenid_token", "codetokenid_token", "none" ], "subject_types_supported":[ "public" ], "id_token_signing_alg_values_supported":[ "RS256" ], "scopes_supported":[ "openid", "email", "profile" ], "token_endpoint_auth_methods_supported":[ "client_secret_post", "client_secret_basic" ], "claims_supported":[ "aud", "email", "email_verified", "exp", "family_name", "given_name", "iat", "iss","locale","name","picture","sub"],"code_challenge_methods_supported":["plain","S256"]}';
+				// let well = '{
+				// 	"issuer":"https://accounts.google.com",
+				// 	"authorization_endpoint":"https://accounts.google.com/o/oauth2/v2/auth",
+				// 	"token_endpoint":"https://www.googleapis.com/oauth2/v4/token",
+				// 	"userinfo_endpoint":"https://www.googleapis.com/oauth2/v3/userinfo",
+				// 	"revocation_endpoint":"https://accounts.google.com/o/oauth2/revoke",
+				// 	"jwks_uri":"https://www.googleapis.com/oauth2/v3/certs",
+				// 	"response_types_supported":[ "code", "token", "id_token", "codetoken", "codeid_token", "tokenid_token", "codetokenid_token", "none" ],
+				// 	"subject_types_supported":[ "public" ],
+				// 	"id_token_signing_alg_values_supported":[ "RS256" ],
+				// 	"scopes_supported":[ "openid", "email", "profile" ],
+				// 	"token_endpoint_auth_methods_supported":[ "client_secret_post", "client_secret_basic" ],
+				// 	"claims_supported":[ "aud", "email", "email_verified", "exp", "family_name", "given_name", "iat", "iss","locale","name","picture","sub"],
+				// 	"code_challenge_methods_supported":["plain","S256"]}';
 				// (oidcSecurityService as any).oidcSecurityCommon.store('wellknownendpoints', well);
 
 				let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
@@ -156,7 +164,7 @@ describe('OidcSecurityService', () => {
 				expect(expectValue).toEqual(value);
 			})
 	);
-	
+
 	it('createAuthorizeUrl with custom values',
 		inject([OidcSecurityService],
 			(oidcSecurityService: OidcSecurityService) => {
