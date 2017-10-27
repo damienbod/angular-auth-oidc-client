@@ -41,8 +41,6 @@ export class OidcSecurityService {
     checkSessionChanged: boolean;
     moduleSetup = false;
     private _isAuthorized = new BehaviorSubject<boolean>(false);
-
-    private lastUserData: any = undefined;
     private _userData = new BehaviorSubject<any>('');
 
     private oidcSecurityValidation: OidcSecurityValidation;
@@ -76,7 +74,6 @@ export class OidcSecurityService {
 
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => { this.onCheckSessionChanged(); });
         this.authWellKnownEndpoints.onWellKnownEndpointsLoaded.subscribe(() => { this.onWellKnownEndpointsLoaded(); });
-        this._userData.subscribe(() => { this.onUserDataChanged(); });
 
         this.oidcSecurityCommon.setupModule();
 
@@ -561,16 +558,6 @@ export class OidcSecurityService {
     private onWellKnownEndpointsLoaded() {
         this.oidcSecurityCommon.logDebug('onWellKnownEndpointsLoaded');
         this.authWellKnownEndpointsLoaded = true;
-    }
-
-    private onUserDataChanged() {
-        this.oidcSecurityCommon.logDebug(`onUserDataChanged: last = ${this.lastUserData}, new = ${this._userData.value}`);
-
-        if (this.lastUserData && !this._userData.value) {
-            this.oidcSecurityCommon.logDebug('onUserDataChanged: Logout detected.');
-            // TODO should we have an action here
-        }
-        this.lastUserData = this._userData.value;
     }
 
     private getSigningKeys(): Observable<JwtKeys> {
