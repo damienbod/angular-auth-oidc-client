@@ -6,6 +6,8 @@ import { AuthModule } from './../../index';
 import { OpenIDImplicitFlowConfiguration } from './../../index';
 import { OidcSecurityService } from './../../index';
 
+import {} from 'jasmine';
+
 describe('OidcSecurityService', () => {
 
 	beforeEach(() => {
