@@ -7,6 +7,7 @@ import { OpenIDImplicitFlowConfiguration } from './../../index';
 import { OidcSecurityService } from './../../index';
 
 import {} from 'jasmine';
+import {} from 'node';
 
 describe('OidcSecurityService', () => {
 
