@@ -32,7 +32,6 @@ export class OidcSecurityService {
     checkSessionChanged: boolean;
     moduleSetup = false;
     private _isAuthorized = new BehaviorSubject<boolean>(false);
-    private _isAuthorizedValue: boolean;
 
     private lastUserData: any = undefined;
     private _userData = new BehaviorSubject<any>('');
@@ -119,12 +118,11 @@ export class OidcSecurityService {
     }
 
     private setIsAuthorized(isAuthorized: boolean): void {
-        this._isAuthorizedValue = isAuthorized;
         this._isAuthorized.next(isAuthorized);
     }
 
     getToken(): any {
-        if (!this._isAuthorizedValue) {
+        if (!this._isAuthorized.value) {
             return '';
         }
 
@@ -133,7 +131,7 @@ export class OidcSecurityService {
     }
 
     getIdToken(): any {
-        if (!this._isAuthorizedValue) {
+        if (!this._isAuthorized.value) {
             return '';
         }
 
