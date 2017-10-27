@@ -1,6 +1,6 @@
 import { PLATFORM_ID, Inject } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { isPlatformBrowser } from '@angular/common';
 import { Injectable, EventEmitter, Output } from '@angular/core';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -19,7 +19,6 @@ import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
 import { OidcSecurityUserService } from './oidc.security.user-service';
 import { OidcSecurityCommon } from './oidc.security.common';
 import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
-
 import { JwtKeys } from './jwtkeys';
 import { AuthorizationResult } from './authorization-result.enum';
 import { UriEncoder } from './uri-encoder';
@@ -39,7 +38,6 @@ export class OidcSecurityService {
     private _userData = new BehaviorSubject<any>('');
 
     private oidcSecurityValidation: OidcSecurityValidation;
-    private errorMessage: string;
     private jwtKeys: JwtKeys;
     private authWellKnownEndpointsLoaded = false;
     private runTokenValidationRunning: boolean;
@@ -232,9 +230,7 @@ export class OidcSecurityService {
                         }
                         id_token = result.id_token;
 
-                        let headerDecoded;
                         decoded_id_token = this.oidcSecurityValidation.getPayloadFromToken(id_token, false);
-                        headerDecoded = this.oidcSecurityValidation.getHeaderFromToken(id_token, false);
 
                         // validate jwt signature
                         if (this.oidcSecurityValidation.validate_signature_id_token(id_token, this.jwtKeys)) {
@@ -534,13 +530,6 @@ export class OidcSecurityService {
         this.lastUserData = this._userData.value;
     }
 
-    private runGetSigningKeys() {
-        this.getSigningKeys()
-            .subscribe(
-            jwtKeys => this.jwtKeys = jwtKeys,
-            error => this.errorMessage = <any>error);
-    }
-
     private getSigningKeys(): Observable<JwtKeys> {
         this.oidcSecurityCommon.logDebug('jwks_uri: ' + this.authWellKnownEndpoints.jwks_uri);
         return this.http.get<JwtKeys>(this.authWellKnownEndpoints.jwks_uri)
@@ -570,7 +559,7 @@ export class OidcSecurityService {
             .pluck('interval')
             .take(10000);
 
-        let subscription = source.subscribe(() => {
+        source.subscribe(() => {
             if (this._userData.value) {
                 if (this.oidcSecurityValidation.isTokenExpired(this.oidcSecurityCommon.idToken, this.authConfiguration.silent_renew_offset_in_seconds)) {
                     this.oidcSecurityCommon.logDebug('IsAuthorized: id_token isTokenExpired, start silent renew if active');
@@ -583,11 +572,11 @@ export class OidcSecurityService {
                 }
             }
         },
-            (err: any) => {
-                this.oidcSecurityCommon.logError('Error: ' + err);
-            },
-            () => {
-                this.oidcSecurityCommon.logDebug('Completed');
-            });
+        (err: any) => {
+            this.oidcSecurityCommon.logError('Error: ' + err);
+        },
+        () => {
+            this.oidcSecurityCommon.logDebug('Completed');
+        });
     }
 }

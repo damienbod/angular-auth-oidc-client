@@ -1,7 +1,6 @@
 ﻿import { Injectable, EventEmitter, Output } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Observer } from 'rxjs/Observer';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/timeInterval';
@@ -63,7 +62,7 @@ export class OidcSecurityCheckSession {
             .pluck('interval')
             .take(10000);
 
-        let subscription = source.subscribe(() => {
+        source.subscribe(() => {
                 this.oidcSecurityCommon.logDebug(this.sessionIframe);
                 let session_state = this.oidcSecurityCommon.sessionState;
                 if (session_state && session_state !== '') {
