@@ -32,7 +32,7 @@ export class AuthWellKnownEndpoints {
     }
 
     setupModule() {
-        let data = this.oidcSecurityCommon.retrieve(this.oidcSecurityCommon.storage_well_known_endpoints);
+        let data = this.oidcSecurityCommon.wellKnownEndpoints;
         this.oidcSecurityCommon.logDebug(data);
         if (data && data !== '') {
             this.oidcSecurityCommon.logDebug('AuthWellKnownEndpoints already defined');
@@ -86,7 +86,7 @@ export class AuthWellKnownEndpoints {
                         this.introspection_endpoint = data.introspection_endpoint;
                     }
 
-                    this.oidcSecurityCommon.store(this.oidcSecurityCommon.storage_well_known_endpoints, data);
+                    this.oidcSecurityCommon.wellKnownEndpoints = data;
                     this.oidcSecurityCommon.logDebug(data);
 
                     this.onWellKnownEndpointsLoaded.emit();
