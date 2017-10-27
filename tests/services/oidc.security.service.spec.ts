@@ -65,7 +65,8 @@ describe('OidcSecurityService', () => {
 				//oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
 
 				let value = (oidcSecurityService as any).createAuthorizeUrl('nonce', 'state', 'http://example');
-				expect('http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flocalhost%3A44386&response_type=id_token%20token&scope=openid%20email%20profile&nonce=nonce&state=state').toEqual(value);
+				let expectValue = 'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flocalhost%3A44386&response_type=id_token%20token&scope=openid%20email%20profile&nonce=nonce&state=state';
+				expect(value).toEqual(expectValue);
 			})
 	);
 
@@ -97,7 +98,7 @@ describe('OidcSecurityService', () => {
 
 				let value = (oidcSecurityService as any).createAuthorizeUrl('nonce', 'state', 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=b2c_1_sign_in');
 				let expectValue = 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=b2c_1_sign_in&client_id=myid&redirect_uri=https%3A%2F%2Flocalhost%3A44386&response_type=id_token%20token&scope=openid%20email%20profile&nonce=nonce&state=state';
-				expect(expectValue).toEqual(value);
+				expect(value).toEqual(expectValue);
 			})
 	);
 
@@ -128,7 +129,7 @@ describe('OidcSecurityService', () => {
 
 				let value = (oidcSecurityService as any).createEndSessionUrl('https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in', 'UzI1NiIsImtpZCI6Il');
 				let expectValue = 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in&id_token_hint=UzI1NiIsImtpZCI6Il&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
-				expect(expectValue).toEqual(value);
+				expect(value).toEqual(expectValue);
 			})
 	);
 
@@ -161,7 +162,7 @@ describe('OidcSecurityService', () => {
 
 				let value = (oidcSecurityService as any).createAuthorizeUrl('nonce', 'state', 'http://example');
 				let expectValue = 'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flocalhost%3A44386&response_type=id_token%20token&scope=openid%20email%20profile&nonce=nonce&state=state&testcustom=customvalue';
-				expect(expectValue).toEqual(value);
+				expect(value).toEqual(expectValue);
 			})
 	);
 
@@ -194,7 +195,7 @@ describe('OidcSecurityService', () => {
 
 				let value = (oidcSecurityService as any).createAuthorizeUrl('nonce', 'state', 'http://example');
 				let expectValue = 'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flocalhost%3A44386&response_type=id_token%20token&scope=openid%20email%20profile&nonce=nonce&state=state&t4=ABC%20abc%20123&t3=%23&t2=-_.!~*()&t1=%3B%2C%2F%3F%3A%40%26%3D%2B%24';
-				expect(expectValue).toEqual(value);
+				expect(value).toEqual(expectValue);
 			})
 	);
 
@@ -225,7 +226,7 @@ describe('OidcSecurityService', () => {
 
 				let value = (oidcSecurityService as any).createEndSessionUrl('http://example', 'mytoken');
 				let expectValue = 'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
-				expect(expectValue).toEqual(value);
+				expect(value).toEqual(expectValue);
 			})
 	);
 
