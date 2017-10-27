@@ -10,6 +10,7 @@ import 'rxjs/add/operator/take';
 import 'rxjs/add/observable/interval';
 import 'rxjs/add/observable/timer';
 import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Router } from '@angular/router';
 import { AuthConfiguration, OpenIDImplicitFlowConfiguration } from '../modules/auth.configuration';
@@ -22,6 +23,14 @@ import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
 import { JwtKeys } from './jwtkeys';
 import { AuthorizationResult } from './authorization-result.enum';
 import { UriEncoder } from './uri-encoder';
+
+import {
+    OidcEvent,
+    AuthenticationStart, AuthenticationSuccess, AuthenticationError,
+    AuthenticationLogout,
+    FetchUserInfoStart, FetchUserInfoSuccess, FetchUserInfoError,
+    RefreshTokenStart, RefreshTokenSuccess, RefreshTokenError, RefreshTokenExpired
+} from './oidc.security.events';
 
 @Injectable()
 export class OidcSecurityService {
@@ -40,6 +49,12 @@ export class OidcSecurityService {
     private jwtKeys: JwtKeys;
     private authWellKnownEndpointsLoaded = false;
     private runTokenValidationRunning: boolean;
+
+    private oidcEvents = new Subject<OidcEvent>();
+    private lastEventId = 0;
+    private getNextEventId = () => ++this.lastEventId
+    private triggerEvent = (event: OidcEvent) => this.oidcEvents.next(event)
+    get events(): Observable<OidcEvent> { return this.oidcEvents; }
 
     constructor(
         @Inject(PLATFORM_ID) private platformId: Object,
@@ -65,14 +80,23 @@ export class OidcSecurityService {
 
         this.oidcSecurityCommon.setupModule();
 
+        // Do not call getNextEventId() if there is no event to emit.
+        let eventId: number | undefined = undefined;
+
         const userData = this.oidcSecurityCommon.userData;
         if (userData !== '') {
             this.setUserData(userData);
+
+            eventId = eventId || this.getNextEventId();
+            this.triggerEvent(new FetchUserInfoSuccess(eventId));
         }
 
         const isAuthorized = this.oidcSecurityCommon.isAuthorized;
         if (isAuthorized !== undefined) {
             this.setIsAuthorized(isAuthorized);
+
+            eventId = eventId || this.getNextEventId();
+            this.triggerEvent(new AuthenticationSuccess(eventId));
 
             // Start the silent renew
             this.runTokenValidation();
@@ -157,6 +181,8 @@ export class OidcSecurityService {
     }
 
     authorize() {
+        const eventId = this.getNextEventId();
+        this.triggerEvent(new AuthenticationStart(eventId));
 
         let data = this.oidcSecurityCommon.wellKnownEndpoints;
         if (data && data !== '') {
@@ -164,12 +190,20 @@ export class OidcSecurityService {
         }
 
         if (!this.authWellKnownEndpointsLoaded) {
-            this.oidcSecurityCommon.logError('Well known endpoints must be loaded before user can login!')
+            const errorMessage = 'Well known endpoints must be loaded before user can login!';
+            this.triggerEvent(new AuthenticationError(eventId, errorMessage));
+            this.oidcSecurityCommon.logError(errorMessage);
+
+            // ToDo: Should throw new Error(errorMessage)? Return false?
             return;
         }
 
         if (!this.oidcSecurityValidation.config_validate_response_type(this.authConfiguration.response_type)) {
-            // invalid response_type
+            const errorMessage = 'invalid response_type';
+            this.triggerEvent(new AuthenticationError(eventId, errorMessage));
+            this.oidcSecurityCommon.logError(errorMessage);
+
+            // ToDo: Should throw new Error(errorMessage)? Return false?
             return;
         }
 
@@ -192,6 +226,9 @@ export class OidcSecurityService {
     }
 
     authorizedCallback(hash?: string) {
+        // ToDo: Preserve original eventId using state?
+        const eventId = this.getNextEventId();
+
         let silentRenew = this.oidcSecurityCommon.silentRenewRunning;
         let isRenewProcess = (silentRenew === 'running');
 
@@ -287,15 +324,19 @@ export class OidcSecurityService {
 
                 if (authResponseIsValid) {
                     this.setAuthorizationData(access_token, id_token);
+                    this.triggerEvent(new AuthenticationSuccess(eventId));
                     if (this.authConfiguration.auto_userinfo) {
+                        this.triggerEvent(new FetchUserInfoStart(eventId));
                         this.getUserinfo(isRenewProcess, result, id_token, decoded_id_token).subscribe((response) => {
                             if (response) {
+                                this.triggerEvent(new FetchUserInfoSuccess(eventId));
                                 if (this.authConfiguration.trigger_authorization_result_event) {
                                     this.onAuthorizationResult.emit(AuthorizationResult.authorized);
                                 } else {
                                     this.router.navigate([this.authConfiguration.post_login_route]);
                                 }
                             } else {
+                                this.triggerEvent(new FetchUserInfoError(eventId));
                                 if (this.authConfiguration.trigger_authorization_result_event) {
                                     this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
                                 } else {
@@ -312,7 +353,9 @@ export class OidcSecurityService {
                         }
                     }
                 } else { // something went wrong
-                    this.oidcSecurityCommon.logDebug('authorizedCallback, token(s) validation failed, resetting');
+                    const errorMessage = 'authorizedCallback, token(s) validation failed, resetting';
+                    this.triggerEvent(new AuthenticationError(eventId, errorMessage));
+                    this.oidcSecurityCommon.logDebug(errorMessage);
                     this.resetAuthorizationData(false);
                     if (this.authConfiguration.trigger_authorization_result_event) {
                         this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
@@ -381,22 +424,22 @@ export class OidcSecurityService {
         // /connect/endsession?id_token_hint=...&post_logout_redirect_uri=https://myapp.com
         this.oidcSecurityCommon.logDebug('BEGIN Authorize, no auth data');
 
+        this.resetAuthorizationData(false);
+        const eventId = this.getNextEventId();
+        this.triggerEvent(new AuthenticationLogout(eventId));
+
         if (this.authWellKnownEndpoints.end_session_endpoint) {
             let end_session_endpoint = this.authWellKnownEndpoints.end_session_endpoint;
             let id_token_hint = this.oidcSecurityCommon.idToken;
             let url = this.createEndSessionUrl(end_session_endpoint, id_token_hint);
 
-            this.resetAuthorizationData(false);
-
-            if (this.authConfiguration.start_checksession && this.checkSessionChanged) {
-                this.oidcSecurityCommon.logDebug('only local login cleaned up, server session has changed');
-            } else {
+            if (!this.authConfiguration.start_checksession || !this.checkSessionChanged) {
                 window.location.href = url;
+                return;
             }
-        } else {
-            this.resetAuthorizationData(false);
-            this.oidcSecurityCommon.logDebug('only local login cleaned up, no end_session_endpoint');
         }
+
+        this.oidcSecurityCommon.logDebug('only local login cleaned up, no end_session_endpoint');
     }
 
     private successful_validation() {
@@ -489,22 +532,24 @@ export class OidcSecurityService {
         }
     }
 
+    // WARNING: Remove this? (never called!)
     handleError(error: any) {
         this.oidcSecurityCommon.logError(error);
         if (error.status == 403) {
             if (this.authConfiguration.trigger_authorization_result_event) {
                 this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
             } else {
+                // WARNING: Only usage of authConfiguration.forbidden_route (never called!)
                 this.router.navigate([this.authConfiguration.forbidden_route]);
             }
         } else if (error.status == 401) {
             let silentRenew = this.oidcSecurityCommon.silentRenewRunning;
-			this.resetAuthorizationData(silentRenew !== '');
-			if (this.authConfiguration.trigger_authorization_result_event) {
-				this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
-			} else {
-				this.router.navigate([this.authConfiguration.unauthorized_route]);
-			}
+            this.resetAuthorizationData(silentRenew !== '');
+            if (this.authConfiguration.trigger_authorization_result_event) {
+                this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
+            } else {
+                this.router.navigate([this.authConfiguration.unauthorized_route]);
+            }
         }
     }
 
@@ -557,24 +602,32 @@ export class OidcSecurityService {
             .pluck('interval')
             .take(10000);
 
+        let eventId: number;
         source.subscribe(() => {
             if (this._userData.value) {
                 if (this.oidcSecurityValidation.isTokenExpired(this.oidcSecurityCommon.idToken, this.authConfiguration.silent_renew_offset_in_seconds)) {
+                    eventId = this.getNextEventId();
+                    this.triggerEvent(new RefreshTokenExpired(eventId));
                     this.oidcSecurityCommon.logDebug('IsAuthorized: id_token isTokenExpired, start silent renew if active');
 
+                    console.log('getNextEventId: runTokenValidation', eventId);
                     if (this.authConfiguration.silent_renew) {
+                        this.triggerEvent(new RefreshTokenStart(eventId));
                         this.refreshSession();
                     } else {
                         this.resetAuthorizationData(false);
+                        this.triggerEvent(new AuthenticationLogout(eventId));
                     }
                 }
             }
         },
-        (err: any) => {
-            this.oidcSecurityCommon.logError('Error: ' + err);
-        },
-        () => {
-            this.oidcSecurityCommon.logDebug('Completed');
-        });
+            (err: any) => {
+                this.triggerEvent(new RefreshTokenError(eventId, err));
+                this.oidcSecurityCommon.logError('Error: ' + err);
+            },
+            () => {
+                this.triggerEvent(new RefreshTokenSuccess(eventId));
+                this.oidcSecurityCommon.logDebug('Completed');
+            });
     }
 }
