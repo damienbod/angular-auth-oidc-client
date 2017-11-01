@@ -52,7 +52,7 @@ export class OidcSecurityService {
     private lastEventId = 0;
     private getNextEventId = () => ++this.lastEventId
     private triggerEvent = (event: OidcEvent) => this.oidcEvents.next(event)
-    get events(): Observable<OidcEvent> { return this.oidcEvents; }
+    get events(): Observable<OidcEvent> { return this.oidcEvents.asObservable(); }
 
     constructor(
         @Inject(PLATFORM_ID) private platformId: Object,
