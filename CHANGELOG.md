@@ -1,5 +1,12 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-11-03"></a>
+### 2017-11-03 version 3.0.3
+* Add prompt= none to silent renew, according to the spec: in fact some op do not refresh the token in the absence of it. Related to: #14
+* Fix the starting of silent renew and check session after the authWellKnownEndpoint has been loaded, to avoid an undefined router (they use its info)
+* Fix(building): public api exports
+
+
 <a name="2017-10-26"></a>
 ### 2017-10-26 version 3.0.2
 * fix: adding additional URL parameters to the authorize request in IE, Edge
