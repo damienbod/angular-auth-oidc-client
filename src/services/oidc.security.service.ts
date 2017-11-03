@@ -86,19 +86,19 @@ export class OidcSecurityService {
             this.authWellKnownEndpoints.onWellKnownEndpointsLoaded.subscribe(() => {
                 this.moduleSetup = true;
                 this.onModuleSetup.emit();
+
+                if (this.authConfiguration.silent_renew) {
+                    this.oidcSecuritySilentRenew.initRenew();
+                }
+
+                if (this.authConfiguration.start_checksession) {
+                    this.oidcSecurityCheckSession.init().subscribe(() => {
+                        this.oidcSecurityCheckSession.pollServerSession(this.authConfiguration.client_id);
+                    });
+                }
             });
 
             this.authWellKnownEndpoints.setupModule();
-
-            if (this.authConfiguration.silent_renew) {
-                this.oidcSecuritySilentRenew.initRenew();
-            }
-
-            if (this.authConfiguration.start_checksession) {
-                this.oidcSecurityCheckSession.init().subscribe(() => {
-                    this.oidcSecurityCheckSession.pollServerSession(this.authConfiguration.client_id);
-                });
-            }
         } else {
             this.moduleSetup = true;
             this.onModuleSetup.emit();
@@ -423,7 +423,7 @@ export class OidcSecurityService {
         this.oidcSecurityCommon.authNonce = nonce;
         this.oidcSecurityCommon.logDebug('RefreshSession created. adding myautostate: ' + this.oidcSecurityCommon.authStateControl);
 
-        let url = this.createAuthorizeUrl(nonce, state, this.authWellKnownEndpoints.authorization_endpoint);
+        let url = this.createAuthorizeUrl(nonce, state, this.authWellKnownEndpoints.authorization_endpoint, 'none');
 
         this.oidcSecurityCommon.silentRenewRunning = 'running';
         this.oidcSecuritySilentRenew.startRenew(url);
@@ -443,7 +443,7 @@ export class OidcSecurityService {
         this.oidcSecurityCommon.isAuthorized = true;
     }
 
-    private createAuthorizeUrl(nonce: string, state: string, authorization_endpoint: string): string {
+    private createAuthorizeUrl(nonce: string, state: string, authorization_endpoint: string, prompt?: string): string {
 
         let urlParts = authorization_endpoint.split('?');
         let authorizationUrl = urlParts[0];
@@ -454,6 +454,9 @@ export class OidcSecurityService {
         params = params.append('scope', this.authConfiguration.scope);
         params = params.append('nonce', nonce);
         params = params.append('state', state);
+        if (prompt) {
+            params = params.append('prompt', prompt);
+        }
         if (this.authConfiguration.hd_param) {
             params = params.append('hd', this.authConfiguration.hd_param);
         }
@@ -501,12 +504,12 @@ export class OidcSecurityService {
             }
         } else if (error.status == 401) {
             let silentRenew = this.oidcSecurityCommon.silentRenewRunning;
-			this.resetAuthorizationData(silentRenew !== '');
-			if (this.authConfiguration.trigger_authorization_result_event) {
-				this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
-			} else {
-				this.router.navigate([this.authConfiguration.unauthorized_route]);
-			}
+            this.resetAuthorizationData(silentRenew !== '');
+            if (this.authConfiguration.trigger_authorization_result_event) {
+                this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
+            } else {
+                this.router.navigate([this.authConfiguration.unauthorized_route]);
+            }
         }
     }
 
@@ -572,11 +575,11 @@ export class OidcSecurityService {
                 }
             }
         },
-        (err: any) => {
-            this.oidcSecurityCommon.logError('Error: ' + err);
-        },
-        () => {
-            this.oidcSecurityCommon.logDebug('Completed');
-        });
+            (err: any) => {
+                this.oidcSecurityCommon.logError('Error: ' + err);
+            },
+            () => {
+                this.oidcSecurityCommon.logDebug('Completed');
+            });
     }
 }
