@@ -12,6 +12,8 @@
         "inlineSources": true,
         "target": "es2015",
         "skipLibCheck": true,
+        "noUnusedLocals": true, 
+        "noUnusedParameters": true, 
         "lib": [
             "es2015",
             "dom"

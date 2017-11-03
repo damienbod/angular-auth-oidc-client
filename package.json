@@ -70,9 +70,9 @@
         "rxjs": "5.4.0",
         "shelljs": "0.7.7",
         "sorcery": "0.10.0",
+        "tslint": "5.8.0",
         "ts-loader": "2.1.0",
-        "tslint": "5.4.0",
-        "typescript": "2.5.3",
+        "typescript": "2.6.1",
         "webpack": "3.8.1",
         "yargs": "8.0.1",
         "zone.js": "0.8.11"
