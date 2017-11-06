@@ -39,11 +39,8 @@ export class OidcSecurityCommon {
 
     private storage_is_authorized = '_isAuthorized';
 
-    public get isAuthorized(): boolean | undefined {
-        const storedValue = this.retrieve(this.storage_is_authorized) as string;
-        if (storedValue === 'true') { return true; }
-        if (storedValue === 'false') { return false; }
-        return undefined;
+	public get isAuthorized(): boolean | undefined {
+        return this.retrieve(this.storage_is_authorized);
     }
 
     public set isAuthorized(value: boolean | undefined) {
