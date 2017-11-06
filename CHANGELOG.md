@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-11-06"></a>
+### 2017-11-06 version 3.0.4
+* isAuthorized does not working on refresh
+
 <a name="2017-11-03"></a>
 ### 2017-11-03 version 3.0.3
 * Add prompt= none to silent renew, according to the spec: in fact some op do not refresh the token in the absence of it. Related to: #14
