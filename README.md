@@ -242,13 +242,13 @@ export class AuthInterceptor implements HttpInterceptor {
 
 ## Examples using: 
 
-https://github.com/robisim74/angular-openid-connect-php
-
 https://github.com/damienbod/AspNetCoreAngularSignalRSecurity
 
 https://github.com/damienbod/angular-auth-oidc-sample-google-openid
 
 https://github.com/HWouters/ad-b2c-oidc-angular
+
+https://github.com/robisim74/angular-openid-connect-php/tree/angular-auth-oidc-client
 
 ### Using src code directly:
 
