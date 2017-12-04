@@ -410,7 +410,7 @@ export class OidcSecurityService {
         this.oidcSecurityCommon.logDebug('AuthorizedCallback token(s) validated, continue');
     }
 
-    private refreshSession() {
+    public refreshSession() {
         this.oidcSecurityCommon.logDebug('BEGIN refresh session Authorize');
 
         let state = this.oidcSecurityCommon.authStateControl;
