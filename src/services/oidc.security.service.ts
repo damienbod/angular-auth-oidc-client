@@ -109,18 +109,8 @@ export class OidcSecurityService {
         return this._userData.asObservable();
     }
 
-    private setUserData(userData: any): void {
-        this.oidcSecurityCommon.userData = userData;
-        this._userData.next(userData);
-    }
-
     getIsAuthorized(): Observable<boolean> {
         return this._isAuthorized.asObservable();
-    }
-
-    private setIsAuthorized(isAuthorized: boolean): void {
-        this._isAuthorizedValue = isAuthorized;
-        this._isAuthorized.next(isAuthorized);
     }
 
     getToken(): any {
@@ -401,16 +391,7 @@ export class OidcSecurityService {
         }
     }
 
-    private successful_validation() {
-        this.oidcSecurityCommon.authNonce = '';
-
-        if (this.authConfiguration.auto_clean_state_after_authentication) {
-            this.oidcSecurityCommon.authStateControl = '';
-        }
-        this.oidcSecurityCommon.logDebug('AuthorizedCallback token(s) validated, continue');
-    }
-
-    public refreshSession() {
+    refreshSession() {
         this.oidcSecurityCommon.logDebug('BEGIN refresh session Authorize');
 
         let state = this.oidcSecurityCommon.authStateControl;
@@ -427,6 +408,44 @@ export class OidcSecurityService {
 
         this.oidcSecurityCommon.silentRenewRunning = 'running';
         this.oidcSecuritySilentRenew.startRenew(url);
+    }
+
+    handleError(error: any) {
+        this.oidcSecurityCommon.logError(error);
+        if (error.status == 403) {
+            if (this.authConfiguration.trigger_authorization_result_event) {
+                this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
+            } else {
+                this.router.navigate([this.authConfiguration.forbidden_route]);
+            }
+        } else if (error.status == 401) {
+            let silentRenew = this.oidcSecurityCommon.silentRenewRunning;
+            this.resetAuthorizationData(silentRenew !== '');
+            if (this.authConfiguration.trigger_authorization_result_event) {
+                this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
+            } else {
+                this.router.navigate([this.authConfiguration.unauthorized_route]);
+            }
+        }
+    }
+
+    private setUserData(userData: any): void {
+        this.oidcSecurityCommon.userData = userData;
+        this._userData.next(userData);
+    }
+
+    private setIsAuthorized(isAuthorized: boolean): void {
+        this._isAuthorizedValue = isAuthorized;
+        this._isAuthorized.next(isAuthorized);
+    }
+
+    private successful_validation() {
+        this.oidcSecurityCommon.authNonce = '';
+
+        if (this.authConfiguration.auto_clean_state_after_authentication) {
+            this.oidcSecurityCommon.authStateControl = '';
+        }
+        this.oidcSecurityCommon.logDebug('AuthorizedCallback token(s) validated, continue');
     }
 
     private setAuthorizationData(access_token: any, id_token: any) {
@@ -491,25 +510,6 @@ export class OidcSecurityService {
             this.setIsAuthorized(false);
             this.oidcSecurityCommon.resetStorageData(isRenewProcess);
             this.checkSessionChanged = false;
-        }
-    }
-
-    handleError(error: any) {
-        this.oidcSecurityCommon.logError(error);
-        if (error.status == 403) {
-            if (this.authConfiguration.trigger_authorization_result_event) {
-                this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
-            } else {
-                this.router.navigate([this.authConfiguration.forbidden_route]);
-            }
-        } else if (error.status == 401) {
-            let silentRenew = this.oidcSecurityCommon.silentRenewRunning;
-            this.resetAuthorizationData(silentRenew !== '');
-            if (this.authConfiguration.trigger_authorization_result_event) {
-                this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
-            } else {
-                this.router.navigate([this.authConfiguration.unauthorized_route]);
-            }
         }
     }
 
