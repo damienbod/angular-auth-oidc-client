@@ -32,7 +32,7 @@ export class OidcSecurityCheckSession {
     }
 
     init() {
-        let exists = window.parent.document.getElementById('myiFrameForCheckSession');
+        const exists = window.parent.document.getElementById('myiFrameForCheckSession');
         if (!exists) {
             this.sessionIframe = window.document.createElement('iframe');
 
@@ -57,14 +57,14 @@ export class OidcSecurityCheckSession {
     }
 
     pollServerSession(clientId: any) {
-        let source = Observable.timer(3000, 3000)
+        const source = Observable.timer(3000, 3000)
             .timeInterval()
             .pluck('interval')
             .take(10000);
 
         source.subscribe(() => {
                 this.oidcSecurityCommon.logDebug(this.sessionIframe);
-                let session_state = this.oidcSecurityCommon.sessionState;
+                const session_state = this.oidcSecurityCommon.sessionState;
                 if (session_state && session_state !== '') {
                     this.sessionIframe.contentWindow.postMessage(clientId + ' ' + session_state, this.authConfiguration.stsServer);
                 }

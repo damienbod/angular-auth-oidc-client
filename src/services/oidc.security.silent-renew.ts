@@ -13,7 +13,7 @@ export class OidcSecuritySilentRenew {
     initRenew() {
         let existsparent = undefined;
         try {
-          let parentdoc = window.parent.document;
+          const parentdoc = window.parent.document;
           if (!parentdoc) {
               throw new Error('Unaccessible');
           }
@@ -22,7 +22,7 @@ export class OidcSecuritySilentRenew {
         } catch (e) {
             // not accessible
         }
-        let exists = window.document.getElementById('myiFrameForSilentRenew');
+        const exists = window.document.getElementById('myiFrameForSilentRenew');
         if (existsparent) {
             this.sessionIframe = existsparent;
         } else if (exists) {
@@ -42,7 +42,7 @@ export class OidcSecuritySilentRenew {
     startRenew(url: string) {
         let existsparent = undefined;
         try {
-          let parentdoc = window.parent.document;
+          const parentdoc = window.parent.document;
           if (!parentdoc) {
               throw new Error('Unaccessible');
           }
@@ -51,7 +51,7 @@ export class OidcSecuritySilentRenew {
         } catch (e) {
             // not accessible
         }
-        let exists = window.document.getElementById('myiFrameForSilentRenew');
+        const exists = window.document.getElementById('myiFrameForSilentRenew');
         if (existsparent) {
             this.sessionIframe = existsparent;
         } else if (exists) {

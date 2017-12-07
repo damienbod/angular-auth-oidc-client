@@ -29,7 +29,7 @@ export class OidcSecurityUserService {
         let headers = new HttpHeaders();
         headers = headers.set('Accept', 'application/json');
 
-        let token = this.oidcSecurityCommon.getAccessToken();
+        const token = this.oidcSecurityCommon.getAccessToken();
 
         if (token !== '') {
             headers = headers.set('Authorization', 'Bearer ' + decodeURIComponent(token));

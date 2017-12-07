@@ -39,7 +39,7 @@ export class OidcSecurityCommon {
 
     private storage_is_authorized = '_isAuthorized';
 
-	public get isAuthorized(): boolean | undefined {
+    public get isAuthorized(): boolean | undefined {
         return this.retrieve(this.storage_is_authorized);
     }
 
