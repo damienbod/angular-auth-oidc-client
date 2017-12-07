@@ -224,10 +224,10 @@ export class OidcSecurityValidation {
 
         let header_data = this.getHeaderFromToken(id_token, false);
 
-		if ((Object.keys(header_data).length === 0 && header_data.constructor === Object)) {
-			this.oidcSecurityCommon.logWarning('id token has no header data');
+        if ((Object.keys(header_data).length === 0 && header_data.constructor === Object)) {
+            this.oidcSecurityCommon.logWarning('id token has no header data');
             return false;
-		}
+        }
 
         let kid = header_data.kid;
         let alg = header_data.alg;
@@ -252,7 +252,7 @@ export class OidcSecurityValidation {
             if (amountOfMatchingKeys == 0) {
                 this.oidcSecurityCommon.logWarning('no keys found, incorrect Signature, validation failed for id_token');
                 return false;
-            } else if (amountOfMatchingKeys > 1 ) {
+            } else if (amountOfMatchingKeys > 1) {
                 this.oidcSecurityCommon.logWarning('no ID Token kid claim in JOSE header and multiple supplied in jwks_uri');
                 return false;
             } else {
@@ -292,8 +292,9 @@ export class OidcSecurityValidation {
         this.oidcSecurityCommon.logWarning('module configure incorrect, invalid response_type:' + response_type);
         return false;
     }
+
     // Accepts ID Token without 'kid' claim in JOSE header if only one JWK supplied in 'jwks_url'
-    ////private validate_no_kid_in_header_only_one_allowed_in_jwtkeys(header_data: any, jwtkeys: any): boolean {
+    //// private validate_no_kid_in_header_only_one_allowed_in_jwtkeys(header_data: any, jwtkeys: any): boolean {
     ////    this.oidcSecurityCommon.logDebug('amount of jwtkeys.keys: ' + jwtkeys.keys.length);
     ////    if (!header_data.hasOwnProperty('kid')) {
     ////        // no kid defined in Jose header
@@ -304,7 +305,7 @@ export class OidcSecurityValidation {
     ////    }
 
     ////    return true;
-    ////}
+    //// }
 
     // Access Token Validation
     // access_token C1: Hash the octets of the ASCII representation of the access_token with the hash algorithm specified in JWA[JWA] for the alg Header Parameter of the ID Token's JOSE Header. For instance, if the alg is RS256, the hash algorithm used is SHA-256.
@@ -312,14 +313,14 @@ export class OidcSecurityValidation {
     // access_token C3: The value of at_hash in the ID Token MUST match the value produced in the previous step if at_hash is present in the ID Token.
     validate_id_token_at_hash(access_token: any, at_hash: any): boolean {
         this.oidcSecurityCommon.logDebug('From the server:' + at_hash);
-        let testdata =  this.generate_at_hash('' + access_token);
+        let testdata = this.generate_at_hash('' + access_token);
         this.oidcSecurityCommon.logDebug('client validation not decoded:' + testdata);
         if (testdata == at_hash) {
             return true; // isValid;
         } else {
             let testValue = this.generate_at_hash('' + decodeURIComponent(access_token));
             this.oidcSecurityCommon.logDebug('-gen access--' + testValue);
-           if (testValue == at_hash) {
+            if (testValue == at_hash) {
                 return true; // isValid
             }
         }
@@ -328,11 +329,11 @@ export class OidcSecurityValidation {
     }
 
     private generate_at_hash(access_token: any): string {
-      let hash = KJUR.crypto.Util.hashString(access_token, 'sha256');
+        let hash = KJUR.crypto.Util.hashString(access_token, 'sha256');
         let first128bits = hash.substr(0, hash.length / 2);
         let testdata = hextob64u(first128bits);
 
-      return testdata;
+        return testdata;
     }
 
     private getTokenExpirationDate(dataIdToken: any): Date {
