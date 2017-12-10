@@ -1,6 +1,6 @@
 {
     "name": "angular-auth-oidc-client",
-    "version": "3.0.7",
+    "version": "3.0.8",
     "description": "An OpenID Connect Implicit Flow client for Angular",
     "main": "./bundles/angular-auth-oidc-client.umd.js",
     "module": "./modules/angular-auth-oidc-client.es5.js",
@@ -67,7 +67,7 @@
         "rollup": "0.41.6",
         "rollup-plugin-commonjs": "8.0.2",
         "rollup-plugin-node-resolve": "3.0.0",
-        "rxjs": "5.5.0",
+        "rxjs": "5.4.0",
         "shelljs": "0.7.7",
         "sorcery": "0.10.0",
         "tslint": "5.8.0",
