@@ -1,6 +1,10 @@
 ## angular-auth-oidc-client Changelog
 
 <a name="2017-12-10"></a>
+### 2017-12-10 version 3.0.7
+* bug fix, rxjs imports
+
+<a name="2017-12-10"></a>
 ### 2017-12-10 version 3.0.6
 * using lettable operators rxjs
 * bug fix, check session

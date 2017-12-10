@@ -10,7 +10,13 @@ const globals = {
     'rxjs/Observable': 'Rx',
     'rxjs/Observer': 'Rx',
     'rxjs/BehaviorSubject': 'Rx',
-    'rxjs/operators': 'Rx.Observable.prototype',
+    'rxjs/operators/map': 'Rx.Observable.prototype',
+	'rxjs/operators/catchError': 'Rx.Observable.prototype',
+    'rxjs/operators/timeInterval': 'Rx.Observable.prototype',
+    'rxjs/operators/pluck': 'Rx.Observable.prototype',
+	'rxjs/operators/take': 'Rx.Observable.prototype',
+	'rxjs/observable/timer': 'Rx.Observable.prototype',
+
     jsrsasign: 'jsrsasign'
 };
 
