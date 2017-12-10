@@ -47,22 +47,24 @@ import { KJUR, KEYUTIL, hextob64u } from 'jsrsasign';
 
 @Injectable()
 export class OidcSecurityValidation {
-
-    constructor(private oidcSecurityCommon: OidcSecurityCommon) {
-    }
+    constructor(private oidcSecurityCommon: OidcSecurityCommon) {}
 
     // id_token C7: The current time MUST be before the time represented by the exp Claim (possibly allowing for some small leeway to account for clock skew).
     isTokenExpired(token: string, offsetSeconds?: number): boolean {
-
         let decoded: any;
         decoded = this.getPayloadFromToken(token, false);
 
-        return !(this.validate_id_token_exp_not_expired(decoded, offsetSeconds));
+        return !this.validate_id_token_exp_not_expired(decoded, offsetSeconds);
     }
 
     // id_token C7: The current time MUST be before the time represented by the exp Claim (possibly allowing for some small leeway to account for clock skew).
-    validate_id_token_exp_not_expired(decoded_id_token: string, offsetSeconds?: number): boolean {
-        const tokenExpirationDate = this.getTokenExpirationDate(decoded_id_token);
+    validate_id_token_exp_not_expired(
+        decoded_id_token: string,
+        offsetSeconds?: number
+    ): boolean {
+        const tokenExpirationDate = this.getTokenExpirationDate(
+            decoded_id_token
+        );
         offsetSeconds = offsetSeconds || 0;
 
         if (!tokenExpirationDate) {
@@ -70,7 +72,10 @@ export class OidcSecurityValidation {
         }
 
         // Token not expired?
-        return (tokenExpirationDate.valueOf() > (new Date().valueOf() + (offsetSeconds * 1000)));
+        return (
+            tokenExpirationDate.valueOf() >
+            new Date().valueOf() + offsetSeconds * 1000
+        );
     }
 
     // iss
@@ -98,31 +103,40 @@ export class OidcSecurityValidation {
     // REQUIRED. Time at which the JWT was issued. Its value is a JSON number representing the number of seconds from 1970- 01 - 01T00: 00:00Z as measured
     // in UTC until the date/ time.
     validate_required_id_token(dataIdToken: any): boolean {
-
         let validated = true;
         if (!dataIdToken.hasOwnProperty('iss')) {
             validated = false;
-            this.oidcSecurityCommon.logWarning('iss is missing, this is required in the id_token');
+            this.oidcSecurityCommon.logWarning(
+                'iss is missing, this is required in the id_token'
+            );
         }
 
         if (!dataIdToken.hasOwnProperty('sub')) {
             validated = false;
-            this.oidcSecurityCommon.logWarning('sub is missing, this is required in the id_token');
+            this.oidcSecurityCommon.logWarning(
+                'sub is missing, this is required in the id_token'
+            );
         }
 
         if (!dataIdToken.hasOwnProperty('aud')) {
             validated = false;
-            this.oidcSecurityCommon.logWarning('aud is missing, this is required in the id_token');
+            this.oidcSecurityCommon.logWarning(
+                'aud is missing, this is required in the id_token'
+            );
         }
 
         if (!dataIdToken.hasOwnProperty('exp')) {
             validated = false;
-            this.oidcSecurityCommon.logWarning('exp is missing, this is required in the id_token');
+            this.oidcSecurityCommon.logWarning(
+                'exp is missing, this is required in the id_token'
+            );
         }
 
         if (!dataIdToken.hasOwnProperty('iat')) {
             validated = false;
-            this.oidcSecurityCommon.logWarning('iat is missing, this is required in the id_token');
+            this.oidcSecurityCommon.logWarning(
+                'iat is missing, this is required in the id_token'
+            );
         }
 
         return validated;
@@ -130,7 +144,10 @@ export class OidcSecurityValidation {
 
     // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
     // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
-    validate_id_token_iat_max_offset(dataIdToken: any, max_offset_allowed_in_seconds: number): boolean {
+    validate_id_token_iat_max_offset(
+        dataIdToken: any,
+        max_offset_allowed_in_seconds: number
+    ): boolean {
         if (!dataIdToken.hasOwnProperty('iat')) {
             return false;
         }
@@ -144,10 +161,16 @@ export class OidcSecurityValidation {
             return false;
         }
 
-        this.oidcSecurityCommon.logDebug('validate_id_token_iat_max_offset: '
-            + (new Date().valueOf() - dateTime_iat_id_token.valueOf())
-            + ' < ' + (max_offset_allowed_in_seconds * 1000));
-        return ((new Date().valueOf() - dateTime_iat_id_token.valueOf()) < (max_offset_allowed_in_seconds * 1000));
+        this.oidcSecurityCommon.logDebug(
+            'validate_id_token_iat_max_offset: ' +
+                (new Date().valueOf() - dateTime_iat_id_token.valueOf()) +
+                ' < ' +
+                max_offset_allowed_in_seconds * 1000
+        );
+        return (
+            new Date().valueOf() - dateTime_iat_id_token.valueOf() <
+            max_offset_allowed_in_seconds * 1000
+        );
     }
 
     // id_token C9: The value of the nonce Claim MUST be checked to verify that it is the same value as the one
@@ -155,7 +178,12 @@ export class OidcSecurityValidation {
     // The precise method for detecting replay attacks is Client specific.
     validate_id_token_nonce(dataIdToken: any, local_nonce: any): boolean {
         if (dataIdToken.nonce !== local_nonce) {
-            this.oidcSecurityCommon.logDebug('Validate_id_token_nonce failed, dataIdToken.nonce: ' + dataIdToken.nonce + ' local_nonce:' + local_nonce);
+            this.oidcSecurityCommon.logDebug(
+                'Validate_id_token_nonce failed, dataIdToken.nonce: ' +
+                    dataIdToken.nonce +
+                    ' local_nonce:' +
+                    local_nonce
+            );
             return false;
         }
 
@@ -164,11 +192,20 @@ export class OidcSecurityValidation {
 
     // id_token C1: The Issuer Identifier for the OpenID Provider (which is typically obtained during Discovery)
     // MUST exactly match the value of the iss (issuer) Claim.
-    validate_id_token_iss(dataIdToken: any, authWellKnownEndpoints_issuer: any): boolean {
-        if (dataIdToken.iss as string !== authWellKnownEndpoints_issuer as string) {
-            this.oidcSecurityCommon.logDebug('Validate_id_token_iss failed, dataIdToken.iss: '
-                + dataIdToken.iss + ' authWellKnownEndpoints issuer:'
-                + authWellKnownEndpoints_issuer);
+    validate_id_token_iss(
+        dataIdToken: any,
+        authWellKnownEndpoints_issuer: any
+    ): boolean {
+        if (
+            (dataIdToken.iss as string) !==
+            (authWellKnownEndpoints_issuer as string)
+        ) {
+            this.oidcSecurityCommon.logDebug(
+                'Validate_id_token_iss failed, dataIdToken.iss: ' +
+                    dataIdToken.iss +
+                    ' authWellKnownEndpoints issuer:' +
+                    authWellKnownEndpoints_issuer
+            );
             return false;
         }
 
@@ -180,8 +217,13 @@ export class OidcSecurityValidation {
     // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences
     // not trusted by the Client.
     validate_id_token_aud(dataIdToken: any, aud: any): boolean {
-        if (dataIdToken.aud as string !== aud as string) {
-            this.oidcSecurityCommon.logDebug('Validate_id_token_aud failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud);
+        if ((dataIdToken.aud as string) !== (aud as string)) {
+            this.oidcSecurityCommon.logDebug(
+                'Validate_id_token_aud failed, dataIdToken.aud: ' +
+                    dataIdToken.aud +
+                    ' client_id:' +
+                    aud
+            );
             return false;
         }
 
@@ -189,17 +231,30 @@ export class OidcSecurityValidation {
     }
 
     validateStateFromHashCallback(state: any, local_state: any): boolean {
-        if (state as string !== local_state as string) {
-            this.oidcSecurityCommon.logDebug('ValidateStateFromHashCallback failed, state: ' + state + ' local_state:' + local_state);
+        if ((state as string) !== (local_state as string)) {
+            this.oidcSecurityCommon.logDebug(
+                'ValidateStateFromHashCallback failed, state: ' +
+                    state +
+                    ' local_state:' +
+                    local_state
+            );
             return false;
         }
 
         return true;
     }
 
-    validate_userdata_sub_id_token(id_token_sub: any, userdata_sub: any): boolean {
-        if (id_token_sub as string !== userdata_sub as string) {
-            this.oidcSecurityCommon.logDebug('validate_userdata_sub_id_token failed, id_token_sub: ' + id_token_sub + ' userdata_sub:' + userdata_sub);
+    validate_userdata_sub_id_token(
+        id_token_sub: any,
+        userdata_sub: any
+    ): boolean {
+        if ((id_token_sub as string) !== (userdata_sub as string)) {
+            this.oidcSecurityCommon.logDebug(
+                'validate_userdata_sub_id_token failed, id_token_sub: ' +
+                    id_token_sub +
+                    ' userdata_sub:' +
+                    userdata_sub
+            );
             return false;
         }
 
@@ -250,14 +305,16 @@ export class OidcSecurityValidation {
     // id_token C6: The alg value SHOULD be RS256. Validation of tokens using other signing algorithms is described in the
     // OpenID Connect Core 1.0 [OpenID.Core] specification.
     validate_signature_id_token(id_token: any, jwtkeys: any): boolean {
-
         if (!jwtkeys || !jwtkeys.keys) {
             return false;
         }
 
         const header_data = this.getHeaderFromToken(id_token, false);
 
-        if ((Object.keys(header_data).length === 0 && header_data.constructor === Object)) {
+        if (
+            Object.keys(header_data).length === 0 &&
+            header_data.constructor === Object
+        ) {
             this.oidcSecurityCommon.logWarning('id token has no header data');
             return false;
         }
@@ -265,7 +322,7 @@ export class OidcSecurityValidation {
         const kid = header_data.kid;
         const alg = header_data.alg;
 
-        if ('RS256' !== alg as string) {
+        if ('RS256' !== (alg as string)) {
             this.oidcSecurityCommon.logWarning('Only RS256 supported');
             return false;
         }
@@ -277,24 +334,38 @@ export class OidcSecurityValidation {
             // kty	"RSA" use "sig"
             let amountOfMatchingKeys = 0;
             for (const key of jwtkeys.keys) {
-                if (key.kty as string === 'RSA' && key.use as string === 'sig') {
+                if (
+                    (key.kty as string) === 'RSA' &&
+                    (key.use as string) === 'sig'
+                ) {
                     amountOfMatchingKeys = amountOfMatchingKeys + 1;
                 }
             }
 
             if (amountOfMatchingKeys === 0) {
-                this.oidcSecurityCommon.logWarning('no keys found, incorrect Signature, validation failed for id_token');
+                this.oidcSecurityCommon.logWarning(
+                    'no keys found, incorrect Signature, validation failed for id_token'
+                );
                 return false;
             } else if (amountOfMatchingKeys > 1) {
-                this.oidcSecurityCommon.logWarning('no ID Token kid claim in JOSE header and multiple supplied in jwks_uri');
+                this.oidcSecurityCommon.logWarning(
+                    'no ID Token kid claim in JOSE header and multiple supplied in jwks_uri'
+                );
                 return false;
             } else {
                 for (const key of jwtkeys.keys) {
-                    if (key.kty as string === 'RSA' && key.use as string === 'sig') {
+                    if (
+                        (key.kty as string) === 'RSA' &&
+                        (key.use as string) === 'sig'
+                    ) {
                         const publickey = KEYUTIL.getKey(key);
-                        isValid = KJUR.jws.JWS.verify(id_token, publickey, ['RS256']);
+                        isValid = KJUR.jws.JWS.verify(id_token, publickey, [
+                            'RS256'
+                        ]);
                         if (!isValid) {
-                            this.oidcSecurityCommon.logWarning('incorrect Signature, validation failed for id_token');
+                            this.oidcSecurityCommon.logWarning(
+                                'incorrect Signature, validation failed for id_token'
+                            );
                         }
                         return isValid;
                     }
@@ -303,11 +374,15 @@ export class OidcSecurityValidation {
         } else {
             // kid in the Jose header of id_token
             for (const key of jwtkeys.keys) {
-                if (key.kid as string === kid as string) {
+                if ((key.kid as string) === (kid as string)) {
                     const publickey = KEYUTIL.getKey(key);
-                    isValid = KJUR.jws.JWS.verify(id_token, publickey, ['RS256']);
+                    isValid = KJUR.jws.JWS.verify(id_token, publickey, [
+                        'RS256'
+                    ]);
                     if (!isValid) {
-                        this.oidcSecurityCommon.logWarning('incorrect Signature, validation failed for id_token');
+                        this.oidcSecurityCommon.logWarning(
+                            'incorrect Signature, validation failed for id_token'
+                        );
                     }
                     return isValid;
                 }
@@ -318,11 +393,16 @@ export class OidcSecurityValidation {
     }
 
     config_validate_response_type(response_type: string): boolean {
-        if (response_type === 'id_token token' || response_type === 'id_token') {
+        if (
+            response_type === 'id_token token' ||
+            response_type === 'id_token'
+        ) {
             return true;
         }
 
-        this.oidcSecurityCommon.logWarning('module configure incorrect, invalid response_type:' + response_type);
+        this.oidcSecurityCommon.logWarning(
+            'module configure incorrect, invalid response_type:' + response_type
+        );
         return false;
     }
 
@@ -349,13 +429,17 @@ export class OidcSecurityValidation {
     validate_id_token_at_hash(access_token: any, at_hash: any): boolean {
         this.oidcSecurityCommon.logDebug('From the server:' + at_hash);
         const testdata = this.generate_at_hash('' + access_token);
-        this.oidcSecurityCommon.logDebug('client validation not decoded:' + testdata);
-        if (testdata === at_hash as string) {
+        this.oidcSecurityCommon.logDebug(
+            'client validation not decoded:' + testdata
+        );
+        if (testdata === (at_hash as string)) {
             return true; // isValid;
         } else {
-            const testValue = this.generate_at_hash('' + decodeURIComponent(access_token));
+            const testValue = this.generate_at_hash(
+                '' + decodeURIComponent(access_token)
+            );
             this.oidcSecurityCommon.logDebug('-gen access--' + testValue);
-            if (testValue === at_hash as string) {
+            if (testValue === (at_hash as string)) {
                 return true; // isValid
             }
         }
