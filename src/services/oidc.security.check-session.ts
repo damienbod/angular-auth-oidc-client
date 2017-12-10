@@ -1,15 +1,9 @@
 ﻿import { Injectable, EventEmitter, Output } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs/observable';
+import { of } from 'rxjs/observable/of';
+import { timer } from 'rxjs/observable/timer';
+import { pluck, take } from 'rxjs/operators';
 import { Observer } from 'rxjs/Observer';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/timeInterval';
-import 'rxjs/add/operator/pluck';
-import 'rxjs/add/operator/take';
-import 'rxjs/add/observable/throw';
-import 'rxjs/add/observable/interval';
-import 'rxjs/add/observable/timer';
-import 'rxjs/add/observable/empty';
 import { AuthConfiguration } from '../modules/auth.configuration';
 import { OidcSecurityCommon } from './oidc.security.common';
 import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
@@ -18,21 +12,22 @@ import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
 
 @Injectable()
 export class OidcSecurityCheckSession {
-
     private sessionIframe: any;
     private iframeMessageEvent: any;
 
-    @Output() onCheckSessionChanged: EventEmitter<any> = new EventEmitter<any>(true);
+    @Output()
+    onCheckSessionChanged: EventEmitter<any> = new EventEmitter<any>(true);
 
     constructor(
         private authConfiguration: AuthConfiguration,
         private oidcSecurityCommon: OidcSecurityCommon,
         private authWellKnownEndpoints: AuthWellKnownEndpoints
-    ) {
-    }
+    ) {}
 
     init() {
-        const exists = window.parent.document.getElementById('myiFrameForCheckSession');
+        const exists = window.parent.document.getElementById(
+            'myiFrameForCheckSession'
+        );
         if (!exists) {
             this.sessionIframe = window.document.createElement('iframe');
 
@@ -49,44 +44,55 @@ export class OidcSecurityCheckSession {
                 this.sessionIframe.onload = () => {
                     observer.next(this);
                     observer.complete();
-                }
+                };
             });
         }
 
-        return Observable.empty<Response>();
+        return of('');
     }
 
     pollServerSession(clientId: any) {
-        const source = Observable.timer(3000, 3000)
-            .timeInterval()
-            .pluck('interval')
-            .take(10000);
+        const source = timer(3000, 3000).pipe(pluck('interval'), take(10000));
 
-        source.subscribe(() => {
+        source.subscribe(
+            () => {
                 this.oidcSecurityCommon.logDebug(this.sessionIframe);
                 const session_state = this.oidcSecurityCommon.sessionState;
                 if (session_state && session_state !== '') {
-                    this.sessionIframe.contentWindow.postMessage(clientId + ' ' + session_state, this.authConfiguration.stsServer);
+                    this.sessionIframe.contentWindow.postMessage(
+                        clientId + ' ' + session_state,
+                        this.authConfiguration.stsServer
+                    );
                 }
             },
             (err: any) => {
-                this.oidcSecurityCommon.logError('pollServerSession error: ' + err);
+                this.oidcSecurityCommon.logError(
+                    'pollServerSession error: ' + err
+                );
             },
             () => {
-                this.oidcSecurityCommon.logDebug('checksession pollServerSession completed');
-            });
+                this.oidcSecurityCommon.logDebug(
+                    'checksession pollServerSession completed'
+                );
+            }
+        );
     }
 
     private messageHandler(e: any) {
-        if (e.origin === this.authConfiguration.stsServer &&
+        if (
+            e.origin === this.authConfiguration.stsServer &&
             e.source === this.sessionIframe.contentWindow
         ) {
             if (e.data === 'error') {
-                this.oidcSecurityCommon.logWarning('error from checksession messageHandler');
+                this.oidcSecurityCommon.logWarning(
+                    'error from checksession messageHandler'
+                );
             } else if (e.data === 'changed') {
                 this.onCheckSessionChanged.emit();
             } else {
-                this.oidcSecurityCommon.logDebug(e.data + ' from checksession messageHandler');
+                this.oidcSecurityCommon.logDebug(
+                    e.data + ' from checksession messageHandler'
+                );
             }
         }
     }

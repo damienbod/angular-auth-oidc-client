@@ -7,18 +7,17 @@ import { Observable } from 'rxjs/Observable';
 export class OidcSecuritySilentRenew {
     private sessionIframe: any;
 
-    constructor(private oidcSecurityCommon: OidcSecurityCommon) {
-    }
+    constructor(private oidcSecurityCommon: OidcSecurityCommon) {}
 
     initRenew() {
         let existsparent = undefined;
         try {
-          const parentdoc = window.parent.document;
-          if (!parentdoc) {
-              throw new Error('Unaccessible');
-          }
+            const parentdoc = window.parent.document;
+            if (!parentdoc) {
+                throw new Error('Unaccessible');
+            }
 
-          existsparent =  parentdoc.getElementById('myiFrameForSilentRenew');
+            existsparent = parentdoc.getElementById('myiFrameForSilentRenew');
         } catch (e) {
             // not accessible
         }
@@ -42,12 +41,12 @@ export class OidcSecuritySilentRenew {
     startRenew(url: string) {
         let existsparent = undefined;
         try {
-          const parentdoc = window.parent.document;
-          if (!parentdoc) {
-              throw new Error('Unaccessible');
-          }
+            const parentdoc = window.parent.document;
+            if (!parentdoc) {
+                throw new Error('Unaccessible');
+            }
 
-          existsparent =  parentdoc.getElementById('myiFrameForSilentRenew');
+            existsparent = parentdoc.getElementById('myiFrameForSilentRenew');
         } catch (e) {
             // not accessible
         }
@@ -65,7 +64,7 @@ export class OidcSecuritySilentRenew {
             this.sessionIframe.onload = () => {
                 observer.next(this);
                 observer.complete();
-            }
+            };
         });
     }
 }

@@ -6,7 +6,6 @@ import { AuthConfiguration } from '../modules/auth.configuration';
  */
 @Injectable()
 export abstract class OidcSecurityStorage {
-
     /**
      * This method must contain the logic to read the storage.
      * @param key
@@ -20,12 +19,10 @@ export abstract class OidcSecurityStorage {
      * @param value The value for the given key
      */
     public abstract write(key: string, value: any): void;
-
 }
 
 @Injectable()
 export class BrowserStorage implements OidcSecurityStorage {
-
     private hasStorage: boolean;
 
     constructor(private authConfiguration: AuthConfiguration) {
@@ -46,5 +43,4 @@ export class BrowserStorage implements OidcSecurityStorage {
             this.authConfiguration.storage.setItem(key, JSON.stringify(value));
         }
     }
-
 }
