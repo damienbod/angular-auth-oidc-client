@@ -102,7 +102,7 @@ export class OidcSecurityService {
                         this.oidcSecuritySilentRenew.initRenew();
                     }
 
-                    if (this.authConfiguration.start_checksession) {
+                    if (this.authConfiguration.start_checksession && !this.oidcSecurityCheckSession.doesSessionExist()) {
                         this.oidcSecurityCheckSession.init().subscribe(() => {
                             this.oidcSecurityCheckSession.pollServerSession(
                                 this.authConfiguration.client_id
