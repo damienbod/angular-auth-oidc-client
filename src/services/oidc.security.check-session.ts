@@ -1,5 +1,5 @@
 ﻿import { Injectable, EventEmitter, Output } from '@angular/core';
-import { Observable } from 'rxjs/observable';
+import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import { timer } from 'rxjs/observable/timer';
 import { pluck, take } from 'rxjs/operators';
