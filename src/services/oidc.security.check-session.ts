@@ -2,7 +2,7 @@
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import { timer } from 'rxjs/observable/timer';
-import { pluck, take } from 'rxjs/operators';
+import { pluck, take, timeInterval } from 'rxjs/operators';
 import { Observer } from 'rxjs/Observer';
 import { AuthConfiguration } from '../modules/auth.configuration';
 import { OidcSecurityCommon } from './oidc.security.common';
@@ -52,7 +52,11 @@ export class OidcSecurityCheckSession {
     }
 
     pollServerSession(clientId: any) {
-        const source = timer(3000, 3000).pipe(pluck('interval'), take(10000));
+        const source = timer(3000, 3000).pipe(
+            timeInterval(),
+            pluck('interval'),
+            take(10000)
+        );
 
         source.subscribe(
             () => {

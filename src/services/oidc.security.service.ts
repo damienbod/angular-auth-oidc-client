@@ -19,7 +19,7 @@ import { JwtKeys } from './jwtkeys';
 import { AuthorizationResult } from './authorization-result.enum';
 import { UriEncoder } from './uri-encoder';
 import { timer } from 'rxjs/observable/timer';
-import { pluck, take, catchError } from 'rxjs/operators';
+import { pluck, take, catchError, timeInterval } from 'rxjs/operators';
 
 @Injectable()
 export class OidcSecurityService {
@@ -791,7 +791,11 @@ export class OidcSecurityService {
         }
         this.runTokenValidationRunning = true;
 
-        const source = timer(5000, 3000).pipe(pluck('interval'), take(10000));
+        const source = timer(5000, 3000).pipe(
+            timeInterval(),
+            pluck('interval'),
+            take(10000)
+        );
 
         source.subscribe(
             () => {
