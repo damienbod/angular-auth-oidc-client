@@ -1,5 +1,10 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-12-10"></a>
+### 2017-12-10 version 3.0.6
+* using lettable operators rxjs
+* bug fix, check session
+
 <a name="2017-12-07"></a>
 ### 2017-11-06 version 3.0.5
 * refreshSession is now public
