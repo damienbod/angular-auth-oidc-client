@@ -11,7 +11,7 @@ import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
 
 @Injectable()
 export class OidcSecurityCheckSession {
-    public sessionIframe: any;
+    private sessionIframe: any;
     private iframeMessageEvent: any;
 
     @Output()
