@@ -15,13 +15,13 @@ import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
 import { OidcSecurityUserService } from './oidc.security.user-service';
 import { OidcSecurityCommon } from './oidc.security.common';
 import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
-import { JwtKeys } from './jwtkeys';
-import { AuthorizationResult } from './authorization-result.enum';
+import { JwtKeys } from '../models/jwtkeys';
+import { AuthorizationResult } from '../models/authorization-result.enum';
 import { UriEncoder } from './uri-encoder';
 import { timer } from 'rxjs/observable/timer';
 import { pluck, take, catchError, timeInterval } from 'rxjs/operators';
 import { StateValidationService } from './oidc-security-state-validation.service';
-import { ValidateStateResult } from '../modules/validate-state-result.model';
+import { ValidateStateResult } from '../models/validate-state-result.model';
 
 @Injectable()
 export class OidcSecurityService {

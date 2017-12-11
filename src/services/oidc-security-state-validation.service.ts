@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { OidcSecurityCommon } from './oidc.security.common';
 import { OidcSecurityValidation } from './oidc.security.validation';
 import { AuthConfiguration } from '../modules/auth.configuration';
-import { JwtKeys } from './jwtkeys';
 import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
-import { ValidateStateResult } from '../modules/validate-state-result.model';
+import { ValidateStateResult } from '../models/validate-state-result.model';
+import { JwtKeys } from '../models/jwtkeys';
 
 @Injectable()
 export class StateValidationService {
