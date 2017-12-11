@@ -12,7 +12,7 @@ export class StateValidationService {
 
     constructor(
         private authConfiguration: AuthConfiguration,
-        private oidcSecurityCommon: OidcSecurityCommon,
+        public oidcSecurityCommon: OidcSecurityCommon,
         private authWellKnownEndpoints: AuthWellKnownEndpoints
     ) {
         this.oidcSecurityValidation = new OidcSecurityValidation(
