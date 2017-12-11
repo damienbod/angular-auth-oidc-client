@@ -20,6 +20,8 @@ import { AuthorizationResult } from './authorization-result.enum';
 import { UriEncoder } from './uri-encoder';
 import { timer } from 'rxjs/observable/timer';
 import { pluck, take, catchError, timeInterval } from 'rxjs/operators';
+import { StateValidationService } from './oidc-security-state-validation.service';
+import { ValidateStateResult } from '../modules/validate-state-result.model';
 
 @Injectable()
 export class OidcSecurityService {
@@ -38,13 +40,13 @@ export class OidcSecurityService {
     private _userData = new BehaviorSubject<any>('');
 
     private oidcSecurityValidation: OidcSecurityValidation;
-    private jwtKeys: JwtKeys;
     private authWellKnownEndpointsLoaded = false;
     private runTokenValidationRunning: boolean;
 
     constructor(
         @Inject(PLATFORM_ID) private platformId: Object,
         private http: HttpClient,
+        private stateValidationService: StateValidationService,
         private authConfiguration: AuthConfiguration,
         private router: Router,
         private oidcSecurityCheckSession: OidcSecurityCheckSession,
@@ -102,7 +104,10 @@ export class OidcSecurityService {
                         this.oidcSecuritySilentRenew.initRenew();
                     }
 
-                    if (this.authConfiguration.start_checksession && !this.oidcSecurityCheckSession.doesSessionExist()) {
+                    if (
+                        this.authConfiguration.start_checksession &&
+                        !this.oidcSecurityCheckSession.doesSessionExist()
+                    ) {
                         this.oidcSecurityCheckSession.init().subscribe(() => {
                             this.oidcSecurityCheckSession.pollServerSession(
                                 this.authConfiguration.client_id
@@ -236,160 +241,25 @@ export class OidcSecurityService {
             'authorizedCallback created, begin token validation'
         );
 
-        let access_token = '';
-        let id_token = '';
-        let authResponseIsValid = false;
-        let decoded_id_token: any;
-
         this.getSigningKeys().subscribe(jwtKeys => {
-            this.jwtKeys = jwtKeys;
-
-            if (!result.error) {
-                // validate state
-                if (
-                    this.oidcSecurityValidation.validateStateFromHashCallback(
-                        result.state,
-                        this.oidcSecurityCommon.authStateControl
-                    )
-                ) {
-                    if (
-                        this.authConfiguration.response_type ===
-                        'id_token token'
-                    ) {
-                        access_token = result.access_token;
-                    }
-                    id_token = result.id_token;
-
-                    decoded_id_token = this.oidcSecurityValidation.getPayloadFromToken(
-                        id_token,
-                        false
-                    );
-
-                    // validate jwt signature
-                    if (
-                        this.oidcSecurityValidation.validate_signature_id_token(
-                            id_token,
-                            this.jwtKeys
-                        )
-                    ) {
-                        // validate nonce
-                        if (
-                            this.oidcSecurityValidation.validate_id_token_nonce(
-                                decoded_id_token,
-                                this.oidcSecurityCommon.authNonce
-                            )
-                        ) {
-                            // validate required fields id_token
-                            if (
-                                this.oidcSecurityValidation.validate_required_id_token(
-                                    decoded_id_token
-                                )
-                            ) {
-                                // validate max offset from the id_token issue to now
-                                if (
-                                    this.oidcSecurityValidation.validate_id_token_iat_max_offset(
-                                        decoded_id_token,
-                                        this.authConfiguration
-                                            .max_id_token_iat_offset_allowed_in_seconds
-                                    )
-                                ) {
-                                    // validate iss
-                                    if (
-                                        this.oidcSecurityValidation.validate_id_token_iss(
-                                            decoded_id_token,
-                                            this.authWellKnownEndpoints.issuer
-                                        )
-                                    ) {
-                                        // validate aud
-                                        if (
-                                            this.oidcSecurityValidation.validate_id_token_aud(
-                                                decoded_id_token,
-                                                this.authConfiguration.client_id
-                                            )
-                                        ) {
-                                            // validate_id_token_exp_not_expired
-                                            if (
-                                                this.oidcSecurityValidation.validate_id_token_exp_not_expired(
-                                                    decoded_id_token
-                                                )
-                                            ) {
-                                                // flow id_token token
-                                                if (
-                                                    this.authConfiguration
-                                                        .response_type ===
-                                                    'id_token token'
-                                                ) {
-                                                    // valiadate at_hash and access_token
-                                                    if (
-                                                        this.oidcSecurityValidation.validate_id_token_at_hash(
-                                                            access_token,
-                                                            decoded_id_token.at_hash
-                                                        ) ||
-                                                        !access_token
-                                                    ) {
-                                                        authResponseIsValid = true;
-                                                        this.successful_validation();
-                                                    } else {
-                                                        this.oidcSecurityCommon.logWarning(
-                                                            'authorizedCallback incorrect at_hash'
-                                                        );
-                                                    }
-                                                } else {
-                                                    authResponseIsValid = true;
-                                                    this.successful_validation();
-                                                }
-                                            } else {
-                                                this.oidcSecurityCommon.logWarning(
-                                                    'authorizedCallback token expired'
-                                                );
-                                            }
-                                        } else {
-                                            this.oidcSecurityCommon.logWarning(
-                                                'authorizedCallback incorrect aud'
-                                            );
-                                        }
-                                    } else {
-                                        this.oidcSecurityCommon.logWarning(
-                                            'authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer'
-                                        );
-                                    }
-                                } else {
-                                    this.oidcSecurityCommon.logWarning(
-                                        'authorizedCallback Validation, iat rejected id_token was issued too far away from the current time'
-                                    );
-                                }
-                            } else {
-                                this.oidcSecurityCommon.logDebug(
-                                    'authorizedCallback Validation, one of the REQUIRED properties missing from id_token'
-                                );
-                            }
-                        } else {
-                            this.oidcSecurityCommon.logWarning(
-                                'authorizedCallback incorrect nonce'
-                            );
-                        }
-                    } else {
-                        this.oidcSecurityCommon.logDebug(
-                            'authorizedCallback Signature validation failed id_token'
-                        );
-                    }
-                } else {
-                    this.oidcSecurityCommon.logWarning(
-                        'authorizedCallback incorrect state'
-                    );
-                }
-            }
+            let validationResult = this.getValidatedStateResult(
+                result,
+                jwtKeys
+            );
 
             this.oidcSecurityCommon.silentRenewRunning = '';
 
-            if (authResponseIsValid) {
-                this.setAuthorizationData(access_token, id_token);
+            if (validationResult.authResponseIsValid) {
+                this.setAuthorizationData(
+                    validationResult.access_token,
+                    validationResult.id_token
+                );
                 if (this.authConfiguration.auto_userinfo) {
                     this.getUserinfo(
                         isRenewProcess,
                         result,
-                        id_token,
-                        decoded_id_token
+                        validationResult.id_token,
+                        validationResult.decoded_id_token
                     ).subscribe(response => {
                         if (response) {
                             if (
@@ -624,6 +494,17 @@ export class OidcSecurityService {
         }
     }
 
+    private getValidatedStateResult(
+        result: any,
+        jwtKeys: JwtKeys
+    ): ValidateStateResult {
+        if (result.error) {
+            return new ValidateStateResult('', '', false, {});
+        }
+
+        return this.stateValidationService.validateState(result, jwtKeys);
+    }
+
     private setUserData(userData: any): void {
         this.oidcSecurityCommon.userData = userData;
         this._userData.next(userData);
@@ -632,17 +513,6 @@ export class OidcSecurityService {
     private setIsAuthorized(isAuthorized: boolean): void {
         this._isAuthorizedValue = isAuthorized;
         this._isAuthorized.next(isAuthorized);
-    }
-
-    private successful_validation() {
-        this.oidcSecurityCommon.authNonce = '';
-
-        if (this.authConfiguration.auto_clean_state_after_authentication) {
-            this.oidcSecurityCommon.authStateControl = '';
-        }
-        this.oidcSecurityCommon.logDebug(
-            'AuthorizedCallback token(s) validated, continue'
-        );
     }
 
     private setAuthorizationData(access_token: any, id_token: any) {
