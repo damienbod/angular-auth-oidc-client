@@ -35,7 +35,9 @@ export class OidcSecurityCheckSession {
         } catch (e) {
             // not accessible
         }
-        const exists = window.document.getElementById('myiFrameForCheckSession');
+        const exists = window.document.getElementById(
+            'myiFrameForCheckSession'
+        );
         if (existsparent) {
             this.sessionIframe = existsparent;
         } else if (exists) {
@@ -80,7 +82,7 @@ export class OidcSecurityCheckSession {
                 if (this.sessionIframe && clientId) {
                     this.oidcSecurityCommon.logDebug(this.sessionIframe);
                     const session_state = this.oidcSecurityCommon.sessionState;
-                    if (session_state && session_state !== '') {
+                    if (session_state) {
                         this.sessionIframe.contentWindow.postMessage(
                             clientId + ' ' + session_state,
                             this.authConfiguration.stsServer
@@ -92,7 +94,7 @@ export class OidcSecurityCheckSession {
                     );
                     this.oidcSecurityCommon.logDebug(clientId);
                     this.oidcSecurityCommon.logDebug(this.sessionIframe);
-                   // this.init();
+                    // this.init();
                 }
             },
             (err: any) => {
@@ -109,7 +111,8 @@ export class OidcSecurityCheckSession {
     }
 
     private messageHandler(e: any) {
-        if (this.sessionIframe &&
+        if (
+            this.sessionIframe &&
             e.origin === this.authConfiguration.stsServer &&
             e.source === this.sessionIframe.contentWindow
         ) {

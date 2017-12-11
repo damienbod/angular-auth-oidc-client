@@ -28,7 +28,7 @@ export class AuthWellKnownEndpoints {
     setupModule() {
         const data = this.oidcSecurityCommon.wellKnownEndpoints;
         this.oidcSecurityCommon.logDebug(data);
-        if (data && data !== '') {
+        if (data) {
             this.oidcSecurityCommon.logDebug(
                 'AuthWellKnownEndpoints already defined'
             );

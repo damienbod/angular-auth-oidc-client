@@ -77,12 +77,12 @@ export class OidcSecurityService {
         this.oidcSecurityCommon.setupModule();
 
         const userData = this.oidcSecurityCommon.userData;
-        if (userData !== '') {
+        if (userData) {
             this.setUserData(userData);
         }
 
         const isAuthorized = this.oidcSecurityCommon.isAuthorized;
-        if (isAuthorized !== undefined) {
+        if (isAuthorized) {
             this.setIsAuthorized(isAuthorized);
 
             // Start the silent renew
@@ -171,7 +171,7 @@ export class OidcSecurityService {
 
     authorize() {
         const data = this.oidcSecurityCommon.wellKnownEndpoints;
-        if (data && data !== '') {
+        if (data) {
             this.authWellKnownEndpointsLoaded = true;
         }
 
@@ -481,7 +481,9 @@ export class OidcSecurityService {
             }
         } else if (error.status === 401 || error.status === '401') {
             const silentRenew = this.oidcSecurityCommon.silentRenewRunning;
-            this.resetAuthorizationData(silentRenew !== '');
+
+            this.resetAuthorizationData(!!silentRenew);
+
             if (this.authConfiguration.trigger_authorization_result_event) {
                 this.onAuthorizationResult.emit(
                     AuthorizationResult.unauthorized
