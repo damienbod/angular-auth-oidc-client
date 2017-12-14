@@ -7,7 +7,7 @@ import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
 
 @Injectable()
 export class OidcSecurityUserService {
-    userData: any = '';
+    userData = '';
 
     constructor(
         private http: HttpClient,
@@ -27,7 +27,7 @@ export class OidcSecurityUserService {
 
         const token = this.oidcSecurityCommon.getAccessToken();
 
-        if (token !== '') {
+        if (token) {
             headers = headers.set(
                 'Authorization',
                 'Bearer ' + decodeURIComponent(token)
