@@ -242,7 +242,7 @@ export class OidcSecurityService {
         );
 
         this.getSigningKeys().subscribe(jwtKeys => {
-            let validationResult = this.getValidatedStateResult(
+            const validationResult = this.getValidatedStateResult(
                 result,
                 jwtKeys
             );

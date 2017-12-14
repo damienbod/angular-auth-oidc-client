@@ -140,7 +140,7 @@ export class StateValidationService {
                 toReturn.access_token,
                 toReturn.decoded_id_token.at_hash
             ) ||
-            toReturn.access_token
+            !toReturn.access_token
         ) {
             this.oidcSecurityCommon.logWarning(
                 'authorizedCallback incorrect at_hash'
