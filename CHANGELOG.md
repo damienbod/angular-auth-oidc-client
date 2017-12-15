@@ -1,5 +1,11 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-12-15"></a>
+### 2017-12-15 version 3.0.9
+* bug fix aud string arrays not supported
+* bug fix user data set from id_token, when oidc user api is not supported
+* code clean up, package size 
+
 <a name="2017-12-10"></a>
 ### 2017-12-10 version 3.0.8
 * bug fix, rxjs imports
