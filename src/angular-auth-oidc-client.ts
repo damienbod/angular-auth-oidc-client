@@ -12,7 +12,7 @@ export {
     BrowserStorage
 } from './services/oidc.security.storage';
 export { AuthWellKnownEndpoints } from './services/auth.well-known-endpoints';
-export { AuthorizationResult } from './services/authorization-result.enum';
+export { AuthorizationResult } from './models/authorization-result.enum';
 
 export {
     AuthConfiguration,
