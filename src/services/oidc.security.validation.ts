@@ -217,14 +217,41 @@ export class OidcSecurityValidation {
     // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences
     // not trusted by the Client.
     validate_id_token_aud(dataIdToken: any, aud: any): boolean {
-        if ((dataIdToken.aud as string) !== (aud as string)) {
+        if (dataIdToken.aud instanceof Array) {
+            const result = this.arraysEqual(dataIdToken.aud, aud);
+            if (!result) {
+                this.oidcSecurityCommon.logDebug(
+                    'Validate_id_token_aud  array failed, dataIdToken.aud: ' +
+                    dataIdToken.aud +
+                    ' client_id:' +
+                    aud
+                );
+                return false;
+            }
+
+            return true;
+        } else if (dataIdToken.aud !== aud) {
             this.oidcSecurityCommon.logDebug(
                 'Validate_id_token_aud failed, dataIdToken.aud: ' +
                     dataIdToken.aud +
                     ' client_id:' +
                     aud
             );
+
             return false;
+        }
+
+        return true;
+    }
+
+    private arraysEqual(arr1: Array<string>, arr2: Array<string>) {
+        if (arr1.length !== arr2.length) {
+            return false;
+        }
+
+        for (var i = arr1.length; i--;) {
+            if (arr1[i] !== arr2[i])
+                return false;
         }
 
         return true;
