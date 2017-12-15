@@ -290,6 +290,10 @@ export class OidcSecurityService {
                         }
                     });
                 } else {
+
+                    // userData is set to the id_token decoded, auto get user data set to false
+                    this.oidcSecurityUserService.userData = validationResult.decoded_id_token;
+                    this.setUserData(this.oidcSecurityUserService.userData);
                     this.runTokenValidation();
                     if (
                         this.authConfiguration

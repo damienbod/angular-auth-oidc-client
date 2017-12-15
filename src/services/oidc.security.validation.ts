@@ -249,9 +249,10 @@ export class OidcSecurityValidation {
             return false;
         }
 
-        for (var i = arr1.length; i--;) {
-            if (arr1[i] !== arr2[i])
+        for (let i = arr1.length; i--;) {
+            if (arr1[i] !== arr2[i]) {
                 return false;
+            }
         }
 
         return true;
