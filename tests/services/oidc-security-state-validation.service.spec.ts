@@ -8,7 +8,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AuthModule } from '../../src/modules/auth.module';
 import {
     OidcSecurityValidation,
-    OidcSecurityStorage
+    OidcSecurityStorage,
+    AuthConfiguration
 } from '../../src/angular-auth-oidc-client';
 import { OidcSecurityCommon } from '../../src/services/oidc.security.common';
 
@@ -19,6 +20,7 @@ describe('OidcSecurityService', () => {
     let stateValidationService: StateValidationService;
     let oidcSecurityValidation: OidcSecurityValidation;
     let oidcSecurityCommon: OidcSecurityCommon;
+    let authConfiguration: AuthConfiguration;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -32,6 +34,7 @@ describe('OidcSecurityService', () => {
                 StateValidationService,
                 OidcSecurityValidation,
                 OidcSecurityCommon,
+                AuthConfiguration,
                 {
                     provide: OidcSecurityStorage,
                     useClass: TestStorage
@@ -44,12 +47,14 @@ describe('OidcSecurityService', () => {
         stateValidationService = TestBed.get(StateValidationService);
         oidcSecurityValidation = TestBed.get(OidcSecurityValidation);
         oidcSecurityCommon = TestBed.get(OidcSecurityCommon);
+        authConfiguration = TestBed.get(AuthConfiguration);
     });
 
     it('should create', () => {
         expect(stateValidationService).toBeTruthy();
         expect(oidcSecurityValidation).toBeTruthy();
         expect(oidcSecurityCommon).toBeTruthy();
+        expect(authConfiguration).toBeTruthy();
     });
 
     it('should return invalid result if validateStateFromHashCallback is false ', () => {
@@ -58,9 +63,7 @@ describe('OidcSecurityService', () => {
             'validateStateFromHashCallback'
         ).and.returnValue(false);
 
-        spyOn(oidcSecurityCommon, 'logWarning').and.callFake(() => {
-            console.log('spyOn(oidcSecurityCommon');
-        });
+        spyOn(oidcSecurityCommon, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState('', new JwtKeys());
 
@@ -71,5 +74,90 @@ describe('OidcSecurityService', () => {
         expect(state.authResponseIsValid).toBe(false);
         expect(state.decoded_id_token).toBeDefined();
         expect(state.id_token).toBe('');
+    });
+
+    it('access_token should equal result.access_token if response_type is "id_token token"', () => {
+        spyOn(
+            oidcSecurityValidation,
+            'validateStateFromHashCallback'
+        ).and.returnValue(true);
+
+        spyOnProperty(
+            authConfiguration,
+            'response_type',
+            'get'
+        ).and.returnValue('id_token token');
+
+        spyOn(oidcSecurityValidation, 'getPayloadFromToken').and.returnValue(
+            'decoded_id_token'
+        );
+
+        spyOn(
+            oidcSecurityValidation,
+            'validate_signature_id_token'
+        ).and.returnValue(true);
+
+        spyOn(
+            oidcSecurityValidation,
+            'validate_id_token_nonce'
+        ).and.returnValue(true);
+
+        spyOn(
+            oidcSecurityValidation,
+            'validate_required_id_token'
+        ).and.returnValue(true);
+
+        spyOnProperty(
+            authConfiguration,
+            'max_id_token_iat_offset_allowed_in_seconds',
+            'get'
+        ).and.returnValue(0);
+
+        spyOnProperty(authConfiguration, 'client_id', 'get').and.returnValue(
+            ''
+        );
+
+        spyOn(
+            oidcSecurityValidation,
+            'validate_id_token_iat_max_offset'
+        ).and.returnValue(true);
+
+        spyOn(oidcSecurityValidation, 'validate_id_token_aud').and.returnValue(
+            true
+        );
+
+        spyOn(
+            oidcSecurityValidation,
+            'validate_id_token_exp_not_expired'
+        ).and.returnValue(true);
+
+        spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(
+            true
+        );
+
+        spyOn(
+            oidcSecurityValidation,
+            'validate_id_token_at_hash'
+        ).and.returnValue(true);
+
+        spyOnProperty(
+            authConfiguration,
+            'auto_clean_state_after_authentication',
+            'get'
+        ).and.returnValue('');
+
+        spyOn(oidcSecurityCommon, 'logDebug').and.callFake(() => {});
+
+        const state = stateValidationService.validateState(
+            {
+                access_token: 'access_tokenTEST',
+                id_token: 'id_tokenTEST'
+            },
+            new JwtKeys()
+        );
+
+        expect(state.access_token).toBe('access_tokenTEST');
+        expect(state.id_token).toBe('id_tokenTEST');
+        expect(state.authResponseIsValid).toBe(true);
     });
 });

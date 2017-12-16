@@ -32,6 +32,7 @@ export class StateValidationService {
         if (this.authConfiguration.response_type === 'id_token token') {
             toReturn.access_token = result.access_token;
         }
+
         toReturn.id_token = result.id_token;
 
         toReturn.decoded_id_token = this.oidcSecurityValidation.getPayloadFromToken(
