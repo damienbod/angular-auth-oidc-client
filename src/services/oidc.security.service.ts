@@ -25,21 +25,18 @@ import { ValidateStateResult } from '../models/validate-state-result.model';
 
 @Injectable()
 export class OidcSecurityService {
-    @Output() onModuleSetup: EventEmitter<any> = new EventEmitter<any>(true);
-    @Output()
-    onAuthorizationResult: EventEmitter<AuthorizationResult> = new EventEmitter<
-        AuthorizationResult
-    >(true);
+    @Output() onModuleSetup = new EventEmitter<boolean>();
+    @Output() onAuthorizationResult = new EventEmitter<AuthorizationResult>();
 
     checkSessionChanged: boolean;
     moduleSetup = false;
+
     private _isAuthorized = new BehaviorSubject<boolean>(false);
     private _isAuthorizedValue: boolean;
 
-    private lastUserData: any = undefined;
-    private _userData = new BehaviorSubject<any>('');
+    private lastUserData: any;
+    private _userData = new BehaviorSubject<string>('');
 
-    private oidcSecurityValidation: OidcSecurityValidation;
     private authWellKnownEndpointsLoaded = false;
     private runTokenValidationRunning: boolean;
 
@@ -47,22 +44,23 @@ export class OidcSecurityService {
         @Inject(PLATFORM_ID) private platformId: Object,
         private http: HttpClient,
         private stateValidationService: StateValidationService,
-        private authConfiguration: AuthConfiguration,
+        public authConfiguration: AuthConfiguration,
         private router: Router,
         private oidcSecurityCheckSession: OidcSecurityCheckSession,
         private oidcSecuritySilentRenew: OidcSecuritySilentRenew,
         private oidcSecurityUserService: OidcSecurityUserService,
         private oidcSecurityCommon: OidcSecurityCommon,
-        private authWellKnownEndpoints: AuthWellKnownEndpoints
+        private authWellKnownEndpoints: AuthWellKnownEndpoints,
+        private oidcSecurityValidation: OidcSecurityValidation
     ) {}
 
     setupModule(
         openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration
     ): void {
         this.authConfiguration.init(openIDImplicitFlowConfiguration);
-        this.oidcSecurityValidation = new OidcSecurityValidation(
-            this.oidcSecurityCommon
-        );
+        // this.oidcSecurityValidation = new OidcSecurityValidation(
+        //     this.oidcSecurityCommon
+        // );
 
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => {
             this.onCheckSessionChanged();
@@ -73,8 +71,6 @@ export class OidcSecurityService {
         this._userData.subscribe(() => {
             this.onUserDataChanged();
         });
-
-        this.oidcSecurityCommon.setupModule();
 
         const userData = this.oidcSecurityCommon.userData;
         if (userData) {
@@ -124,7 +120,7 @@ export class OidcSecurityService {
         }
     }
 
-    getUserData(): Observable<any> {
+    getUserData(): Observable<string> {
         return this._userData.asObservable();
     }
 
@@ -132,7 +128,7 @@ export class OidcSecurityService {
         return this._isAuthorized.asObservable();
     }
 
-    getToken(): any {
+    getToken(): string {
         if (!this._isAuthorizedValue) {
             return '';
         }
@@ -141,7 +137,7 @@ export class OidcSecurityService {
         return decodeURIComponent(token);
     }
 
-    getIdToken(): any {
+    getIdToken(): string {
         if (!this._isAuthorizedValue) {
             return '';
         }
@@ -196,7 +192,7 @@ export class OidcSecurityService {
         this.oidcSecurityCommon.logDebug('BEGIN Authorize, no auth data');
 
         let state = this.oidcSecurityCommon.authStateControl;
-        if (state === '' || state === null) {
+        if (!state) {
             state = Date.now() + '' + Math.random();
             this.oidcSecurityCommon.authStateControl = state;
         }
@@ -290,9 +286,9 @@ export class OidcSecurityService {
                         }
                     });
                 } else {
-
                     // userData is set to the id_token decoded, auto get user data set to false
-                    this.oidcSecurityUserService.userData = validationResult.decoded_id_token;
+                    this.oidcSecurityUserService.userData =
+                        validationResult.decoded_id_token;
                     this.setUserData(this.oidcSecurityUserService.userData);
                     this.runTokenValidation();
                     if (
@@ -537,7 +533,7 @@ export class OidcSecurityService {
         this.oidcSecurityCommon.isAuthorized = true;
     }
 
-    private createAuthorizeUrl(
+    public createAuthorizeUrl(
         nonce: string,
         state: string,
         authorization_endpoint: string,
@@ -561,9 +557,11 @@ export class OidcSecurityService {
         params = params.append('scope', this.authConfiguration.scope);
         params = params.append('nonce', nonce);
         params = params.append('state', state);
+
         if (prompt) {
             params = params.append('prompt', prompt);
         }
+
         if (this.authConfiguration.hd_param) {
             params = params.append('hd', this.authConfiguration.hd_param);
         }
@@ -580,7 +578,7 @@ export class OidcSecurityService {
         return `${authorizationUrl}?${params}`;
     }
 
-    private createEndSessionUrl(
+    public createEndSessionUrl(
         end_session_endpoint: string,
         id_token_hint: string
     ) {

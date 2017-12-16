@@ -6,7 +6,6 @@ export type SilentRenewState = 'running' | '';
 
 @Injectable()
 export class OidcSecurityCommon {
-
     private storage_auth_result = 'authorizationResult';
 
     public get authResult(): any {
@@ -109,18 +108,24 @@ export class OidcSecurityCommon {
 
     private storage_custom_request_params = 'storage_custom_request_params';
 
-    public get customRequestParams(): { [key: string]: string | number | boolean } {
+    public get customRequestParams(): {
+        [key: string]: string | number | boolean;
+    } {
         return this.retrieve(this.storage_custom_request_params);
     }
 
-    public set customRequestParams(value: { [key: string]: string | number | boolean }) {
+    public set customRequestParams(value: {
+        [key: string]: string | number | boolean;
+    }) {
         this.store(this.storage_custom_request_params, value);
     }
 
-    constructor(private authConfiguration: AuthConfiguration, private oidcSecurityStorage: OidcSecurityStorage) {
-    }
+    constructor(
+        private authConfiguration: AuthConfiguration,
+        private oidcSecurityStorage: OidcSecurityStorage
+    ) {}
 
-    setupModule() { }
+    setupModule() {}
 
     private retrieve(key: string): any {
         return this.oidcSecurityStorage.read(key);
