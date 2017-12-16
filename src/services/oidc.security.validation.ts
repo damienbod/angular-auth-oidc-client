@@ -222,9 +222,9 @@ export class OidcSecurityValidation {
             if (!result) {
                 this.oidcSecurityCommon.logDebug(
                     'Validate_id_token_aud  array failed, dataIdToken.aud: ' +
-                    dataIdToken.aud +
-                    ' client_id:' +
-                    aud
+                        dataIdToken.aud +
+                        ' client_id:' +
+                        aud
                 );
                 return false;
             }
@@ -249,7 +249,7 @@ export class OidcSecurityValidation {
             return false;
         }
 
-        for (let i = arr1.length; i--;) {
+        for (let i = arr1.length; i--; ) {
             if (arr1[i] !== arr2[i]) {
                 return false;
             }

@@ -1,27 +1,28 @@
-import { PLATFORM_ID, Inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
-import { Injectable, EventEmitter, Output } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Inject, PLATFORM_ID } from '@angular/core';
+import { EventEmitter, Injectable, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable } from 'rxjs/Observable';
+import { timer } from 'rxjs/observable/timer';
+import { catchError, pluck, take, timeInterval } from 'rxjs/operators';
+
+import { AuthorizationResult } from '../models/authorization-result.enum';
+import { JwtKeys } from '../models/jwtkeys';
+import { ValidateStateResult } from '../models/validate-state-result.model';
 import {
     AuthConfiguration,
     OpenIDImplicitFlowConfiguration
 } from '../modules/auth.configuration';
-import { OidcSecurityValidation } from './oidc.security.validation';
+import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
+import { StateValidationService } from './oidc-security-state-validation.service';
 import { OidcSecurityCheckSession } from './oidc.security.check-session';
+import { OidcSecurityCommon } from './oidc.security.common';
 import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
 import { OidcSecurityUserService } from './oidc.security.user-service';
-import { OidcSecurityCommon } from './oidc.security.common';
-import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
-import { JwtKeys } from '../models/jwtkeys';
-import { AuthorizationResult } from '../models/authorization-result.enum';
+import { OidcSecurityValidation } from './oidc.security.validation';
 import { UriEncoder } from './uri-encoder';
-import { timer } from 'rxjs/observable/timer';
-import { pluck, take, catchError, timeInterval } from 'rxjs/operators';
-import { StateValidationService } from './oidc-security-state-validation.service';
-import { ValidateStateResult } from '../models/validate-state-result.model';
 
 @Injectable()
 export class OidcSecurityService {
