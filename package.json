@@ -8,6 +8,7 @@
     "scripts": {
         "build": "node build.js",
         "test": "karma start",
+        "test-dev": "karma start --single-run=false",
         "pack-lib": "npm pack ./dist",
         "publish-lib": "npm publish ./dist",
         "compodoc": "compodoc -p tsconfig.json",
