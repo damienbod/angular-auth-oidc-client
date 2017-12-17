@@ -5,6 +5,7 @@ import { AuthConfiguration } from '../modules/auth.configuration';
 import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
 import { ValidateStateResult } from '../models/validate-state-result.model';
 import { JwtKeys } from '../models/jwtkeys';
+import { TokenHelperService } from './oidc-token-helper.service';
 
 @Injectable()
 export class StateValidationService {
@@ -12,7 +13,8 @@ export class StateValidationService {
         private authConfiguration: AuthConfiguration,
         public oidcSecurityCommon: OidcSecurityCommon,
         private authWellKnownEndpoints: AuthWellKnownEndpoints,
-        private oidcSecurityValidation: OidcSecurityValidation
+        private oidcSecurityValidation: OidcSecurityValidation,
+        private tokenHelperService: TokenHelperService
     ) {}
 
     public validateState(result: any, jwtKeys: JwtKeys): ValidateStateResult {
@@ -34,7 +36,7 @@ export class StateValidationService {
         }
         toReturn.id_token = result.id_token;
 
-        toReturn.decoded_id_token = this.oidcSecurityValidation.getPayloadFromToken(
+        toReturn.decoded_id_token = this.tokenHelperService.getPayloadFromToken(
             toReturn.id_token,
             false
         );

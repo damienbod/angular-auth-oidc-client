@@ -24,6 +24,7 @@ import { OidcSecurityUserService } from './oidc.security.user-service';
 import { OidcSecurityValidation } from './oidc.security.validation';
 import { UriEncoder } from './uri-encoder';
 import { OidcDataService } from './oidc-data.service';
+import { TokenHelperService } from './oidc-token-helper.service';
 
 @Injectable()
 export class OidcSecurityService {
@@ -53,7 +54,8 @@ export class OidcSecurityService {
         private oidcSecurityUserService: OidcSecurityUserService,
         private oidcSecurityCommon: OidcSecurityCommon,
         private authWellKnownEndpoints: AuthWellKnownEndpoints,
-        private oidcSecurityValidation: OidcSecurityValidation
+        private oidcSecurityValidation: OidcSecurityValidation,
+        private tokenHelperService: TokenHelperService
     ) {}
 
     setupModule(
@@ -150,7 +152,7 @@ export class OidcSecurityService {
 
     getPayloadFromIdToken(encode = false): any {
         const token = this.getIdToken();
-        return this.oidcSecurityValidation.getPayloadFromToken(token, encode);
+        return this.tokenHelperService.getPayloadFromToken(token, encode);
     }
 
     setState(state: string): void {
@@ -335,7 +337,7 @@ export class OidcSecurityService {
         id_token = id_token ? id_token : this.oidcSecurityCommon.idToken;
         decoded_id_token = decoded_id_token
             ? decoded_id_token
-            : this.oidcSecurityValidation.getPayloadFromToken(id_token, false);
+            : this.tokenHelperService.getPayloadFromToken(id_token, false);
 
         return new Observable<boolean>(observer => {
             // flow id_token token

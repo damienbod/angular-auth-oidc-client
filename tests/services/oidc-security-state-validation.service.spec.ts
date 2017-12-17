@@ -15,12 +15,14 @@ import { OidcSecurityCommon } from '../../src/services/oidc.security.common';
 
 import {} from 'jasmine';
 import {} from 'node';
+import { TokenHelperService } from '../../src/services/oidc-token-helper.service';
 
 describe('OidcSecurityStateValidationService', () => {
     let stateValidationService: StateValidationService;
     let oidcSecurityValidation: OidcSecurityValidation;
     let oidcSecurityCommon: OidcSecurityCommon;
     let authConfiguration: AuthConfiguration;
+    let tokenHelperService: TokenHelperService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -35,6 +37,7 @@ describe('OidcSecurityStateValidationService', () => {
                 OidcSecurityValidation,
                 OidcSecurityCommon,
                 AuthConfiguration,
+                TokenHelperService,
                 {
                     provide: OidcSecurityStorage,
                     useClass: TestStorage
@@ -48,6 +51,7 @@ describe('OidcSecurityStateValidationService', () => {
         oidcSecurityValidation = TestBed.get(OidcSecurityValidation);
         oidcSecurityCommon = TestBed.get(OidcSecurityCommon);
         authConfiguration = TestBed.get(AuthConfiguration);
+        tokenHelperService = TestBed.get(TokenHelperService);
     });
 
     it('should create', () => {
@@ -96,7 +100,7 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue('id_token token');
 
-        spyOn(oidcSecurityValidation, 'getPayloadFromToken').and.returnValue(
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
             'decoded_id_token'
         );
 
@@ -182,7 +186,7 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue('id_token token');
 
-        spyOn(oidcSecurityValidation, 'getPayloadFromToken').and.returnValue(
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
             'decoded_id_token'
         );
 
@@ -225,7 +229,7 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue('id_token token');
 
-        spyOn(oidcSecurityValidation, 'getPayloadFromToken').and.returnValue(
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
             'decoded_id_token'
         );
 
@@ -274,7 +278,7 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue('id_token token');
 
-        spyOn(oidcSecurityValidation, 'getPayloadFromToken').and.returnValue(
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
             'decoded_id_token'
         );
 
@@ -327,7 +331,7 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue('id_token token');
 
-        spyOn(oidcSecurityValidation, 'getPayloadFromToken').and.returnValue(
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
             'decoded_id_token'
         );
 
@@ -392,7 +396,7 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue('id_token token');
 
-        spyOn(oidcSecurityValidation, 'getPayloadFromToken').and.returnValue(
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
             'decoded_id_token'
         );
 
@@ -461,7 +465,7 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue('id_token token');
 
-        spyOn(oidcSecurityValidation, 'getPayloadFromToken').and.returnValue(
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
             'decoded_id_token'
         );
 
@@ -538,7 +542,7 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue('id_token token');
 
-        spyOn(oidcSecurityValidation, 'getPayloadFromToken').and.returnValue(
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
             'decoded_id_token'
         );
 
@@ -614,7 +618,7 @@ describe('OidcSecurityStateValidationService', () => {
             'validateStateFromHashCallback'
         ).and.returnValue(true);
 
-        spyOn(oidcSecurityValidation, 'getPayloadFromToken').and.returnValue(
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
             'decoded_id_token'
         );
 
@@ -702,7 +706,7 @@ describe('OidcSecurityStateValidationService', () => {
             'validateStateFromHashCallback'
         ).and.returnValue(true);
 
-        spyOn(oidcSecurityValidation, 'getPayloadFromToken').and.returnValue(
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
             'decoded_id_token'
         );
 

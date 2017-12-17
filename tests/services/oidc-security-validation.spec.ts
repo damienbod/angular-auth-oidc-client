@@ -12,6 +12,8 @@ import { OidcSecurityCommon } from '../../src/services/oidc.security.common';
 import { OidcSecurityValidation } from '../../src/services/oidc.security.validation';
 import { TestStorage } from '../common/test-storage.service';
 import { AuthModule } from './../../index';
+import { ArrayHelperService } from '../../src/services/oidc-array-helper.service';
+import { TokenHelperService } from '../../src/services/oidc-token-helper.service';
 
 describe('OidcSecurityValidation', () => {
     beforeEach(() => {
@@ -22,7 +24,7 @@ describe('OidcSecurityValidation', () => {
                 RouterTestingModule,
                 AuthModule.forRoot()
             ],
-            providers: []
+            providers: [ArrayHelperService]
         });
     });
 
@@ -68,7 +70,9 @@ describe('OidcSecurityValidation', () => {
         );
 
         const oidcSecurityValidation = new OidcSecurityValidation(
-            oidcSecurityCommon
+            oidcSecurityCommon,
+            new ArrayHelperService(),
+            new TokenHelperService()
         );
 
         const dataIdToken = { aud: 'banana' };
@@ -122,7 +126,9 @@ describe('OidcSecurityValidation', () => {
             oidcSecurityStorage
         );
         const oidcSecurityValidation = new OidcSecurityValidation(
-            oidcSecurityCommon
+            oidcSecurityCommon,
+            new ArrayHelperService(),
+            new TokenHelperService()
         );
 
         const dataIdToken = {
