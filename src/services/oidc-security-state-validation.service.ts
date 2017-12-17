@@ -8,21 +8,15 @@ import { JwtKeys } from '../models/jwtkeys';
 
 @Injectable()
 export class StateValidationService {
-    private oidcSecurityValidation: OidcSecurityValidation;
-
     constructor(
         private authConfiguration: AuthConfiguration,
         public oidcSecurityCommon: OidcSecurityCommon,
-        private authWellKnownEndpoints: AuthWellKnownEndpoints
-    ) {
-        this.oidcSecurityValidation = new OidcSecurityValidation(
-            this.oidcSecurityCommon
-        );
-    }
+        private authWellKnownEndpoints: AuthWellKnownEndpoints,
+        private oidcSecurityValidation: OidcSecurityValidation
+    ) {}
 
     public validateState(result: any, jwtKeys: JwtKeys): ValidateStateResult {
         const toReturn = new ValidateStateResult('', '', false, {});
-
         if (
             !this.oidcSecurityValidation.validateStateFromHashCallback(
                 result.state,
