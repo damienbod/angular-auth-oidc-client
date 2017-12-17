@@ -10,7 +10,7 @@ import { OidcSecurityStorage } from '../../src/services/oidc.security.storage';
 import { TestStorage } from '../common/test-storage.service';
 
 describe('OidcSecurityService', () => {
-    let oidcSecurityService: OidcSecurityService;
+    let oidcSecurityService: any;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
