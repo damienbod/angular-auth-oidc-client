@@ -17,7 +17,7 @@ export class StateValidationService {
         private tokenHelperService: TokenHelperService
     ) {}
 
-    public validateState(result: any, jwtKeys: JwtKeys): ValidateStateResult {
+    validateState(result: any, jwtKeys: JwtKeys): ValidateStateResult {
         const toReturn = new ValidateStateResult('', '', false, {});
         if (
             !this.oidcSecurityValidation.validateStateFromHashCallback(
@@ -127,7 +127,7 @@ export class StateValidationService {
         // flow id_token token
         if (this.authConfiguration.response_type !== 'id_token token') {
             toReturn.authResponseIsValid = true;
-            this.successful_validation();
+            this.handleSuccessfulValidation();
             return toReturn;
         }
 
@@ -145,11 +145,11 @@ export class StateValidationService {
         }
 
         toReturn.authResponseIsValid = true;
-        this.successful_validation();
+        this.handleSuccessfulValidation();
         return toReturn;
     }
 
-    private successful_validation() {
+    private handleSuccessfulValidation() {
         this.oidcSecurityCommon.authNonce = '';
 
         if (this.authConfiguration.auto_clean_state_after_authentication) {

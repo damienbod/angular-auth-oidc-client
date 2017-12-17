@@ -291,9 +291,12 @@ export class OidcSecurityService {
                     });
                 } else {
                     // userData is set to the id_token decoded, auto get user data set to false
-                    this.oidcSecurityUserService.userData =
-                        validationResult.decoded_id_token;
-                    this.setUserData(this.oidcSecurityUserService.userData);
+                    this.oidcSecurityUserService.setUserData(
+                        validationResult.decoded_id_token
+                    );
+                    this.setUserData(
+                        this.oidcSecurityUserService.getUserData()
+                    );
                     this.runTokenValidation();
                     if (
                         this.authConfiguration
@@ -353,20 +356,21 @@ export class OidcSecurityService {
                             this.oidcSecurityCommon.logDebug(
                                 'authorizedCallback id_token token flow'
                             );
+
+                            const userData = this.oidcSecurityUserService.getUserData();
+
                             if (
                                 this.oidcSecurityValidation.validate_userdata_sub_id_token(
                                     decoded_id_token.sub,
-                                    this.oidcSecurityUserService.userData.sub
+                                    userData.sub
                                 )
                             ) {
-                                this.setUserData(
-                                    this.oidcSecurityUserService.userData
-                                );
+                                this.setUserData(userData);
                                 this.oidcSecurityCommon.logDebug(
                                     this.oidcSecurityCommon.accessToken
                                 );
                                 this.oidcSecurityCommon.logDebug(
-                                    this.oidcSecurityUserService.userData
+                                    this.oidcSecurityUserService.getUserData()
                                 );
 
                                 this.oidcSecurityCommon.sessionState =
@@ -398,8 +402,8 @@ export class OidcSecurityService {
                 );
 
                 // userData is set to the id_token decoded. No access_token.
-                this.oidcSecurityUserService.userData = decoded_id_token;
-                this.setUserData(this.oidcSecurityUserService.userData);
+                this.oidcSecurityUserService.setUserData(decoded_id_token);
+                this.setUserData(this.oidcSecurityUserService.getUserData());
 
                 this.oidcSecurityCommon.sessionState = result.session_state;
 

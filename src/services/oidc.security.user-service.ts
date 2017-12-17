@@ -7,7 +7,7 @@ import { OidcDataService } from './oidc-data.service';
 
 @Injectable()
 export class OidcSecurityUserService {
-    userData = '';
+    private userData = '';
 
     constructor(
         private oidcDataService: OidcDataService,
@@ -19,6 +19,18 @@ export class OidcSecurityUserService {
         return this.getIdentityUserData().pipe(
             map((data: any) => (this.userData = data))
         );
+    }
+
+    getUserData(): string {
+        if (!this.userData) {
+            throw Error('UserData is not set!');
+        }
+
+        return this.userData;
+    }
+
+    setUserData(value: string): void {
+        this.userData = value;
     }
 
     private getIdentityUserData(): Observable<any> {
