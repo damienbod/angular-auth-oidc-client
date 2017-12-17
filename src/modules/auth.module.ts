@@ -1,3 +1,4 @@
+import { ArrayHelperService } from '../services/oidc-array-helper.service';
 import { NgModule, ModuleWithProviders } from '@angular/core';
 
 import { OidcSecurityService } from '../services/oidc.security.service';
@@ -29,6 +30,7 @@ export class AuthModule {
                 OidcSecurityCommon,
                 AuthConfiguration,
                 DefaultConfiguration,
+                ArrayHelperService,
                 AuthWellKnownEndpoints,
                 OidcDataService,
                 StateValidationService,

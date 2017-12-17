@@ -2,6 +2,7 @@
 import { OidcSecurityCommon } from './oidc.security.common';
 
 import { KJUR, KEYUTIL, hextob64u } from 'jsrsasign';
+import { ArrayHelperService } from './oidc-array-helper.service';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
@@ -47,7 +48,10 @@ import { KJUR, KEYUTIL, hextob64u } from 'jsrsasign';
 
 @Injectable()
 export class OidcSecurityValidation {
-    constructor(private oidcSecurityCommon: OidcSecurityCommon) {}
+    constructor(
+        private oidcSecurityCommon: OidcSecurityCommon,
+        private arrayHelperService: ArrayHelperService
+    ) {}
 
     // id_token C7: The current time MUST be before the time represented by the exp Claim (possibly allowing for some small leeway to account for clock skew).
     isTokenExpired(token: string, offsetSeconds?: number): boolean {
@@ -218,7 +222,11 @@ export class OidcSecurityValidation {
     // not trusted by the Client.
     validate_id_token_aud(dataIdToken: any, aud: any): boolean {
         if (dataIdToken.aud instanceof Array) {
-            const result = this.arraysEqual(dataIdToken.aud, aud);
+            const result = this.arrayHelperService.arraysEqual(
+                dataIdToken.aud,
+                aud
+            );
+
             if (!result) {
                 this.oidcSecurityCommon.logDebug(
                     'Validate_id_token_aud  array failed, dataIdToken.aud: ' +
@@ -239,20 +247,6 @@ export class OidcSecurityValidation {
             );
 
             return false;
-        }
-
-        return true;
-    }
-
-    private arraysEqual(arr1: Array<string>, arr2: Array<string>) {
-        if (arr1.length !== arr2.length) {
-            return false;
-        }
-
-        for (let i = arr1.length; i--; ) {
-            if (arr1[i] !== arr2[i]) {
-                return false;
-            }
         }
 
         return true;
