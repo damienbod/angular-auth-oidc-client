@@ -36,7 +36,7 @@ export class OidcSecurityService {
     private _isAuthorizedValue: boolean;
 
     private lastUserData: any;
-    private _userData = new BehaviorSubject<string>('');
+    private _userData = new BehaviorSubject<any>('');
 
     private authWellKnownEndpointsLoaded = false;
     private runTokenValidationRunning: boolean;
@@ -45,7 +45,7 @@ export class OidcSecurityService {
         @Inject(PLATFORM_ID) private platformId: Object,
         private http: HttpClient,
         private stateValidationService: StateValidationService,
-        public authConfiguration: AuthConfiguration,
+        private authConfiguration: AuthConfiguration,
         private router: Router,
         private oidcSecurityCheckSession: OidcSecurityCheckSession,
         private oidcSecuritySilentRenew: OidcSecuritySilentRenew,
@@ -534,7 +534,7 @@ export class OidcSecurityService {
         this.oidcSecurityCommon.isAuthorized = true;
     }
 
-    public createAuthorizeUrl(
+    private createAuthorizeUrl(
         nonce: string,
         state: string,
         authorization_endpoint: string,
@@ -579,7 +579,7 @@ export class OidcSecurityService {
         return `${authorizationUrl}?${params}`;
     }
 
-    public createEndSessionUrl(
+    private createEndSessionUrl(
         end_session_endpoint: string,
         id_token_hint: string
     ) {
