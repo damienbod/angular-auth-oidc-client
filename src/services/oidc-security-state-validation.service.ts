@@ -32,20 +32,12 @@ export class StateValidationService {
         if (this.authConfiguration.response_type === 'id_token token') {
             toReturn.access_token = result.access_token;
         }
-
         toReturn.id_token = result.id_token;
 
         toReturn.decoded_id_token = this.oidcSecurityValidation.getPayloadFromToken(
             toReturn.id_token,
             false
         );
-
-        // flow id_token token
-        if (this.authConfiguration.response_type !== 'id_token token') {
-            toReturn.authResponseIsValid = true;
-            this.successful_validation();
-            return toReturn;
-        }
 
         if (
             !this.oidcSecurityValidation.validate_signature_id_token(
@@ -127,6 +119,13 @@ export class StateValidationService {
             this.oidcSecurityCommon.logWarning(
                 'authorizedCallback token expired'
             );
+            return toReturn;
+        }
+
+        // flow id_token token
+        if (this.authConfiguration.response_type !== 'id_token token') {
+            toReturn.authResponseIsValid = true;
+            this.successful_validation();
             return toReturn;
         }
 
