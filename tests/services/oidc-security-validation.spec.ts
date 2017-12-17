@@ -13,7 +13,7 @@ import { OidcSecurityValidation } from '../../src/services/oidc.security.validat
 import { TestStorage } from '../common/test-storage.service';
 import { AuthModule } from './../../index';
 
-describe('OidcSecurityService', () => {
+describe('OidcSecurityValidation', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [

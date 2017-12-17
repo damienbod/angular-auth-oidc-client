@@ -1,13 +1,13 @@
-import { Injectable, EventEmitter, Output } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { EventEmitter, Injectable, Output } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+
 import { AuthConfiguration } from '../modules/auth.configuration';
 import { OidcSecurityCommon } from './oidc.security.common';
 
 @Injectable()
 export class AuthWellKnownEndpoints {
-    @Output()
-    onWellKnownEndpointsLoaded: EventEmitter<any> = new EventEmitter<any>(true);
+    @Output() onWellKnownEndpointsLoaded = new EventEmitter<any>();
 
     issuer: string;
     jwks_uri: string;
@@ -27,7 +27,9 @@ export class AuthWellKnownEndpoints {
 
     setupModule() {
         const data = this.oidcSecurityCommon.wellKnownEndpoints;
+
         this.oidcSecurityCommon.logDebug(data);
+
         if (data) {
             this.oidcSecurityCommon.logDebug(
                 'AuthWellKnownEndpoints already defined'
@@ -73,6 +75,7 @@ export class AuthWellKnownEndpoints {
             this.introspection_endpoint = data.introspection_endpoint;
         }
     }
+
     private getWellKnownEndpoints = (): Observable<any> => {
         let headers = new HttpHeaders();
         headers = headers.set('Accept', 'application/json');
