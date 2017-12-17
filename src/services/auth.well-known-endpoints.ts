@@ -1,9 +1,9 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { EventEmitter, Injectable, Output } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { AuthConfiguration } from '../modules/auth.configuration';
 import { OidcSecurityCommon } from './oidc.security.common';
+import { OidcDataService } from './oidc-data.service';
 
 @Injectable()
 export class AuthWellKnownEndpoints {
@@ -20,7 +20,7 @@ export class AuthWellKnownEndpoints {
     introspection_endpoint: string;
 
     constructor(
-        private http: HttpClient,
+        private oidcDataService: OidcDataService,
         private authConfiguration: AuthConfiguration,
         private oidcSecurityCommon: OidcSecurityCommon
     ) {}
@@ -76,19 +76,20 @@ export class AuthWellKnownEndpoints {
         }
     }
 
-    private getWellKnownEndpoints = (): Observable<any> => {
-        let headers = new HttpHeaders();
-        headers = headers.set('Accept', 'application/json');
+    private getWellKnownEndpoints(): Observable<any> {
+        let url = this.getUrl();
 
-        let url =
-            this.authConfiguration.stsServer +
-            '/.well-known/openid-configuration';
+        return this.oidcDataService.get(url);
+    }
+
+    private getUrl(): string {
         if (this.authConfiguration.override_well_known_configuration) {
-            url = this.authConfiguration.override_well_known_configuration_url;
+            return this.authConfiguration.override_well_known_configuration_url;
         }
 
-        return this.http.get(url, {
-            headers: headers
-        });
-    };
+        return (
+            this.authConfiguration.stsServer +
+            '/.well-known/openid-configuration'
+        );
+    }
 }

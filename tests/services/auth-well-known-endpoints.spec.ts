@@ -1,3 +1,4 @@
+import { OidcDataService } from '../../src/services/oidc-data.service';
 import {
     HttpClientTestingModule,
     HttpTestingController
@@ -34,6 +35,7 @@ describe('AuthWellKnownEndpoints', () => {
                 AuthWellKnownEndpoints,
                 AuthConfiguration,
                 OidcSecurityCommon,
+                OidcDataService,
                 {
                     provide: OidcSecurityStorage,
                     useClass: TestStorage

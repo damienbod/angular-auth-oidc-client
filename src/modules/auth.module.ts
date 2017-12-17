@@ -13,6 +13,7 @@ import {
 } from '../services/oidc.security.storage';
 import { AuthWellKnownEndpoints } from '../services/auth.well-known-endpoints';
 import { StateValidationService } from '../services/oidc-security-state-validation.service';
+import { OidcDataService } from '../services/oidc-data.service';
 
 @NgModule()
 export class AuthModule {
@@ -29,6 +30,7 @@ export class AuthModule {
                 AuthConfiguration,
                 DefaultConfiguration,
                 AuthWellKnownEndpoints,
+                OidcDataService,
                 StateValidationService,
                 {
                     provide: OidcSecurityStorage,

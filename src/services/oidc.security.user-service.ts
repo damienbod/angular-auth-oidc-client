@@ -1,16 +1,16 @@
 ﻿import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { map } from 'rxjs/operators';
 import { OidcSecurityCommon } from './oidc.security.common';
 import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
+import { OidcDataService } from './oidc-data.service';
 
 @Injectable()
 export class OidcSecurityUserService {
     userData = '';
 
     constructor(
-        private http: HttpClient,
+        private oidcDataService: OidcDataService,
         private oidcSecurityCommon: OidcSecurityCommon,
         private authWellKnownEndpoints: AuthWellKnownEndpoints
     ) {}
@@ -22,20 +22,16 @@ export class OidcSecurityUserService {
     }
 
     private getIdentityUserData = (): Observable<any> => {
-        let headers = new HttpHeaders();
-        headers = headers.set('Accept', 'application/json');
-
+        let headers: { [key: string]: string } = {};
         const token = this.oidcSecurityCommon.getAccessToken();
 
         if (token) {
-            headers = headers.set(
-                'Authorization',
-                'Bearer ' + decodeURIComponent(token)
-            );
+            headers['Authorization'] = 'Bearer ' + decodeURIComponent(token);
         }
 
-        return this.http.get(this.authWellKnownEndpoints.userinfo_endpoint, {
-            headers: headers
-        });
+        return this.oidcDataService.get(
+            this.authWellKnownEndpoints.userinfo_endpoint,
+            headers
+        );
     };
 }

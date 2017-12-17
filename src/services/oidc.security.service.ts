@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Inject, PLATFORM_ID } from '@angular/core';
 import { EventEmitter, Injectable, Output } from '@angular/core';
 import { Router } from '@angular/router';
@@ -23,6 +23,7 @@ import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
 import { OidcSecurityUserService } from './oidc.security.user-service';
 import { OidcSecurityValidation } from './oidc.security.validation';
 import { UriEncoder } from './uri-encoder';
+import { OidcDataService } from './oidc-data.service';
 
 @Injectable()
 export class OidcSecurityService {
@@ -43,7 +44,7 @@ export class OidcSecurityService {
 
     constructor(
         @Inject(PLATFORM_ID) private platformId: Object,
-        private http: HttpClient,
+        private oidcDataService: OidcDataService,
         private stateValidationService: StateValidationService,
         private authConfiguration: AuthConfiguration,
         private router: Router,
@@ -642,7 +643,7 @@ export class OidcSecurityService {
         this.oidcSecurityCommon.logDebug(
             'jwks_uri: ' + this.authWellKnownEndpoints.jwks_uri
         );
-        return this.http
+        return this.oidcDataService
             .get<JwtKeys>(this.authWellKnownEndpoints.jwks_uri)
             .pipe(catchError(this.handleErrorGetSigningKeys));
     }
