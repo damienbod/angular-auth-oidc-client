@@ -317,7 +317,7 @@ describe('AuthWellKnownEndpoints', () => {
         httpMock.verify();
     });
 
-    it('if override_well_known_configuration is set url changes', () => {
+    it('if override_well_known_configuration is set to true the url changes', () => {
         spyOnProperty(authConfiguration, 'stsServer', 'get').and.returnValue(
             'hallelujah'
         );
