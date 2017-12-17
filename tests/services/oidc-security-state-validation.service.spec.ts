@@ -16,7 +16,7 @@ import { OidcSecurityCommon } from '../../src/services/oidc.security.common';
 import {} from 'jasmine';
 import {} from 'node';
 
-describe('OidcSecurityService', () => {
+describe('OidcSecurityStateValidationService', () => {
     let stateValidationService: StateValidationService;
     let oidcSecurityValidation: OidcSecurityValidation;
     let oidcSecurityCommon: OidcSecurityCommon;
