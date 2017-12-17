@@ -21,17 +21,12 @@ export class OidcSecurityUserService {
         );
     }
 
-    private getIdentityUserData = (): Observable<any> => {
-        let headers: { [key: string]: string } = {};
+    private getIdentityUserData(): Observable<any> {
         const token = this.oidcSecurityCommon.getAccessToken();
 
-        if (token) {
-            headers['Authorization'] = 'Bearer ' + decodeURIComponent(token);
-        }
-
-        return this.oidcDataService.get(
+        return this.oidcDataService.getIdentityUserData(
             this.authWellKnownEndpoints.userinfo_endpoint,
-            headers
+            token
         );
-    };
+    }
 }

@@ -79,7 +79,7 @@ export class AuthWellKnownEndpoints {
     private getWellKnownEndpoints(): Observable<any> {
         let url = this.getUrl();
 
-        return this.oidcDataService.get(url);
+        return this.oidcDataService.getWellknownEndpoints(url);
     }
 
     private getUrl(): string {

@@ -4,20 +4,36 @@ import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class OidcDataService {
-    private headers: HttpHeaders;
-    constructor(private httpClient: HttpClient) {
-        this.headers = new HttpHeaders();
-        this.headers = this.headers.set('Accept', 'application/json');
-    }
+    constructor(private httpClient: HttpClient) {}
 
-    get<T>(url: string, headers: { [key: string]: any } = {}): Observable<T> {
-        for (let key in headers) {
-            let value = headers[key];
-            this.headers = this.headers.set(key, value);
-        }
+    getWellknownEndpoints<T>(url: string): Observable<T> {
+        let headers = new HttpHeaders();
+        headers = headers.set('Accept', 'application/json');
 
         return this.httpClient.get<T>(url, {
-            headers: this.headers
+            headers: headers
+        });
+    }
+
+    getIdentityUserData<T>(url: string, token: string): Observable<T> {
+        let headers = new HttpHeaders();
+        headers = headers.set('Accept', 'application/json');
+        headers = headers.set(
+            'Authorization',
+            'Bearer ' + decodeURIComponent(token)
+        );
+
+        return this.httpClient.get<T>(url, {
+            headers: headers
+        });
+    }
+
+    get<T>(url: string): Observable<T> {
+        let headers = new HttpHeaders();
+        headers = headers.set('Accept', 'application/json');
+
+        return this.httpClient.get<T>(url, {
+            headers: headers
         });
     }
 }
