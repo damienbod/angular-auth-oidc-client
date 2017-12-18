@@ -1,9 +1,10 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { EventEmitter, Injectable, Output } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { AuthConfiguration } from '../modules/auth.configuration';
 import { OidcSecurityCommon } from './oidc.security.common';
+import { OidcDataService } from './oidc-data.service';
+import { LoggerService } from './oidc.logger.service';
 
 @Injectable()
 export class AuthWellKnownEndpoints {
@@ -20,32 +21,33 @@ export class AuthWellKnownEndpoints {
     introspection_endpoint: string;
 
     constructor(
-        private http: HttpClient,
+        private oidcDataService: OidcDataService,
         private authConfiguration: AuthConfiguration,
-        private oidcSecurityCommon: OidcSecurityCommon
+        private oidcSecurityCommon: OidcSecurityCommon,
+        private loggerService: LoggerService
     ) {}
 
     setupModule() {
         const data = this.oidcSecurityCommon.wellKnownEndpoints;
 
-        this.oidcSecurityCommon.logDebug(data);
+        this.loggerService.logDebug(data);
 
         if (data) {
-            this.oidcSecurityCommon.logDebug(
+            this.loggerService.logDebug(
                 'AuthWellKnownEndpoints already defined'
             );
 
             this.setWellKnownEndpoints(data);
             this.onWellKnownEndpointsLoaded.emit();
         } else {
-            this.oidcSecurityCommon.logDebug(
+            this.loggerService.logDebug(
                 'AuthWellKnownEndpoints first time, get from the server'
             );
             this.getWellKnownEndpoints().subscribe((dataFromServer: any) => {
                 this.setWellKnownEndpoints(dataFromServer);
 
                 this.oidcSecurityCommon.wellKnownEndpoints = dataFromServer;
-                this.oidcSecurityCommon.logDebug(dataFromServer);
+                this.loggerService.logDebug(dataFromServer);
 
                 this.onWellKnownEndpointsLoaded.emit();
             });
@@ -76,19 +78,20 @@ export class AuthWellKnownEndpoints {
         }
     }
 
-    private getWellKnownEndpoints = (): Observable<any> => {
-        let headers = new HttpHeaders();
-        headers = headers.set('Accept', 'application/json');
+    private getWellKnownEndpoints(): Observable<any> {
+        const url = this.getUrl();
 
-        let url =
-            this.authConfiguration.stsServer +
-            '/.well-known/openid-configuration';
+        return this.oidcDataService.getWellknownEndpoints(url);
+    }
+
+    private getUrl(): string {
         if (this.authConfiguration.override_well_known_configuration) {
-            url = this.authConfiguration.override_well_known_configuration_url;
+            return this.authConfiguration.override_well_known_configuration_url;
         }
 
-        return this.http.get(url, {
-            headers: headers
-        });
-    };
+        return (
+            this.authConfiguration.stsServer +
+            '/.well-known/openid-configuration'
+        );
+    }
 }

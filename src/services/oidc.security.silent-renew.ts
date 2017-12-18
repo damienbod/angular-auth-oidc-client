@@ -1,13 +1,13 @@
 ﻿import { Injectable } from '@angular/core';
-import { OidcSecurityCommon } from './oidc.security.common';
 import { Observer } from 'rxjs/Observer';
 import { Observable } from 'rxjs/Observable';
+import { LoggerService } from './oidc.logger.service';
 
 @Injectable()
 export class OidcSecuritySilentRenew {
     private sessionIframe: any;
 
-    constructor(private oidcSecurityCommon: OidcSecurityCommon) {}
+    constructor(private loggerService: LoggerService) {}
 
     initRenew() {
         let existsparent = undefined;
@@ -31,13 +31,14 @@ export class OidcSecuritySilentRenew {
         if (!exists && !existsparent) {
             this.sessionIframe = window.document.createElement('iframe');
             this.sessionIframe.id = 'myiFrameForSilentRenew';
-            this.oidcSecurityCommon.logDebug(this.sessionIframe);
+            this.loggerService.logDebug(this.sessionIframe);
             this.sessionIframe.style.display = 'none';
 
             window.document.body.appendChild(this.sessionIframe);
         }
     }
 
+    // TODO The return type of this method is never used. Is it needed?
     startRenew(url: string) {
         let existsparent = undefined;
         try {
@@ -57,7 +58,7 @@ export class OidcSecuritySilentRenew {
             this.sessionIframe = exists;
         }
 
-        this.oidcSecurityCommon.logDebug('startRenew for URL:' + url);
+        this.loggerService.logDebug('startRenew for URL:' + url);
         this.sessionIframe.src = url;
 
         return Observable.create((observer: Observer<any>) => {
