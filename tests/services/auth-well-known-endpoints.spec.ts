@@ -1,3 +1,5 @@
+import { TestLogging } from '../common/test-logging.service';
+import { LoggerService } from '../../src/services/oidc.logger.service';
 import { OidcDataService } from '../../src/services/oidc-data.service';
 import {
     HttpClientTestingModule,
@@ -22,6 +24,7 @@ describe('AuthWellKnownEndpoints', () => {
     let oidcSecurityCommon: OidcSecurityCommon;
     let httpMock: HttpTestingController;
     let authConfiguration: AuthConfiguration;
+    let loggerService: LoggerService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -39,6 +42,10 @@ describe('AuthWellKnownEndpoints', () => {
                 {
                     provide: OidcSecurityStorage,
                     useClass: TestStorage
+                },
+                {
+                    provide: LoggerService,
+                    useClass: TestLogging
                 }
             ]
         });
@@ -49,6 +56,7 @@ describe('AuthWellKnownEndpoints', () => {
         oidcSecurityCommon = TestBed.get(OidcSecurityCommon);
         httpMock = TestBed.get(HttpTestingController);
         authConfiguration = TestBed.get(AuthConfiguration);
+        loggerService = TestBed.get(LoggerService);
     });
 
     it('can create', () => {
@@ -65,7 +73,7 @@ describe('AuthWellKnownEndpoints', () => {
             'get'
         ).and.returnValue({ issuer: 'anyValue' });
 
-        const logDebugSpy = spyOn(oidcSecurityCommon, 'logDebug').and.callFake(
+        const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(
             () => {}
         );
 
@@ -84,8 +92,6 @@ describe('AuthWellKnownEndpoints', () => {
             'wellKnownEndpoints',
             'get'
         ).and.returnValue({ issuer: 'anyValue' });
-
-        spyOn(oidcSecurityCommon, 'logDebug').and.callFake(() => {});
 
         spyOn(authWellKnownEndpoints.onWellKnownEndpointsLoaded, 'emit');
 
@@ -112,8 +118,6 @@ describe('AuthWellKnownEndpoints', () => {
             revocation_endpoint: 'revocation_endpoint',
             introspection_endpoint: 'introspection_endpoint'
         });
-
-        spyOn(oidcSecurityCommon, 'logDebug').and.callFake(() => {});
 
         authWellKnownEndpoints.setupModule();
 
@@ -160,7 +164,7 @@ describe('AuthWellKnownEndpoints', () => {
             'get'
         ).and.returnValue('');
 
-        const logDebugSpy = spyOn(oidcSecurityCommon, 'logDebug').and.callFake(
+        const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(
             () => {}
         );
 
@@ -213,8 +217,6 @@ describe('AuthWellKnownEndpoints', () => {
             introspection_endpoint: 'introspection_endpoint'
         };
 
-        spyOn(oidcSecurityCommon, 'logDebug').and.callFake(() => {});
-
         spyOn(authWellKnownEndpoints, 'getWellKnownEndpoints').and.callFake(
             () => {
                 return of(testValues);
@@ -239,7 +241,7 @@ describe('AuthWellKnownEndpoints', () => {
             introspection_endpoint: 'introspection_endpoint'
         };
 
-        const logDebugSpy = spyOn(oidcSecurityCommon, 'logDebug').and.callFake(
+        const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(
             () => {}
         );
 
@@ -266,8 +268,6 @@ describe('AuthWellKnownEndpoints', () => {
             revocation_endpoint: 'revocation_endpoint',
             introspection_endpoint: 'introspection_endpoint'
         };
-
-        spyOn(oidcSecurityCommon, 'logDebug').and.callFake(() => {});
 
         spyOn(authWellKnownEndpoints, 'getWellKnownEndpoints').and.callFake(
             () => {

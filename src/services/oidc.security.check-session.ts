@@ -6,6 +6,7 @@ import { Observer } from 'rxjs/Observer';
 import { AuthConfiguration } from '../modules/auth.configuration';
 import { OidcSecurityCommon } from './oidc.security.common';
 import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
+import { LoggerService } from './oidc.logger.service';
 
 // http://openid.net/specs/openid-connect-session-1_0-ID4.html
 
@@ -20,7 +21,8 @@ export class OidcSecurityCheckSession {
     constructor(
         private authConfiguration: AuthConfiguration,
         private oidcSecurityCommon: OidcSecurityCommon,
-        private authWellKnownEndpoints: AuthWellKnownEndpoints
+        private authWellKnownEndpoints: AuthWellKnownEndpoints,
+        private loggerService: LoggerService
     ) {}
 
     doesSessionExist(): boolean {
@@ -54,7 +56,7 @@ export class OidcSecurityCheckSession {
     init() {
         this.sessionIframe = window.document.createElement('iframe');
         this.sessionIframe.id = 'myiFrameForCheckSession';
-        this.oidcSecurityCommon.logDebug(this.sessionIframe);
+        this.loggerService.logDebug(this.sessionIframe);
         this.sessionIframe.style.display = 'none';
         window.document.body.appendChild(this.sessionIframe);
         this.sessionIframe.src = this.authWellKnownEndpoints.check_session_iframe;
@@ -80,7 +82,7 @@ export class OidcSecurityCheckSession {
         source.subscribe(
             () => {
                 if (this.sessionIframe && clientId) {
-                    this.oidcSecurityCommon.logDebug(this.sessionIframe);
+                    this.loggerService.logDebug(this.sessionIframe);
                     const session_state = this.oidcSecurityCommon.sessionState;
                     if (session_state) {
                         this.sessionIframe.contentWindow.postMessage(
@@ -89,21 +91,19 @@ export class OidcSecurityCheckSession {
                         );
                     }
                 } else {
-                    this.oidcSecurityCommon.logWarning(
+                    this.loggerService.logWarning(
                         'OidcSecurityCheckSession pollServerSession sessionIframe does not exist'
                     );
-                    this.oidcSecurityCommon.logDebug(clientId);
-                    this.oidcSecurityCommon.logDebug(this.sessionIframe);
+                    this.loggerService.logDebug(clientId);
+                    this.loggerService.logDebug(this.sessionIframe);
                     // this.init();
                 }
             },
             (err: any) => {
-                this.oidcSecurityCommon.logError(
-                    'pollServerSession error: ' + err
-                );
+                this.loggerService.logError('pollServerSession error: ' + err);
             },
             () => {
-                this.oidcSecurityCommon.logDebug(
+                this.loggerService.logDebug(
                     'checksession pollServerSession completed'
                 );
             }
@@ -117,13 +117,13 @@ export class OidcSecurityCheckSession {
             e.source === this.sessionIframe.contentWindow
         ) {
             if (e.data === 'error') {
-                this.oidcSecurityCommon.logWarning(
+                this.loggerService.logWarning(
                     'error from checksession messageHandler'
                 );
             } else if (e.data === 'changed') {
                 this.onCheckSessionChanged.emit();
             } else {
-                this.oidcSecurityCommon.logDebug(
+                this.loggerService.logDebug(
                     e.data + ' from checksession messageHandler'
                 );
             }

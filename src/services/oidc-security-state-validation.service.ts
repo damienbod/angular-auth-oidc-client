@@ -6,6 +6,7 @@ import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
 import { ValidateStateResult } from '../models/validate-state-result.model';
 import { JwtKeys } from '../models/jwtkeys';
 import { TokenHelperService } from './oidc-token-helper.service';
+import { LoggerService } from './oidc.logger.service';
 
 @Injectable()
 export class StateValidationService {
@@ -14,7 +15,8 @@ export class StateValidationService {
         public oidcSecurityCommon: OidcSecurityCommon,
         private authWellKnownEndpoints: AuthWellKnownEndpoints,
         private oidcSecurityValidation: OidcSecurityValidation,
-        private tokenHelperService: TokenHelperService
+        private tokenHelperService: TokenHelperService,
+        private loggerService: LoggerService
     ) {}
 
     validateState(result: any, jwtKeys: JwtKeys): ValidateStateResult {
@@ -25,9 +27,7 @@ export class StateValidationService {
                 this.oidcSecurityCommon.authStateControl
             )
         ) {
-            this.oidcSecurityCommon.logWarning(
-                'authorizedCallback incorrect state'
-            );
+            this.loggerService.logWarning('authorizedCallback incorrect state');
             return toReturn;
         }
 
@@ -47,7 +47,7 @@ export class StateValidationService {
                 jwtKeys
             )
         ) {
-            this.oidcSecurityCommon.logDebug(
+            this.loggerService.logDebug(
                 'authorizedCallback Signature validation failed id_token'
             );
             return toReturn;
@@ -59,9 +59,7 @@ export class StateValidationService {
                 this.oidcSecurityCommon.authNonce
             )
         ) {
-            this.oidcSecurityCommon.logWarning(
-                'authorizedCallback incorrect nonce'
-            );
+            this.loggerService.logWarning('authorizedCallback incorrect nonce');
             return toReturn;
         }
 
@@ -70,7 +68,7 @@ export class StateValidationService {
                 toReturn.decoded_id_token
             )
         ) {
-            this.oidcSecurityCommon.logDebug(
+            this.loggerService.logDebug(
                 'authorizedCallback Validation, one of the REQUIRED properties missing from id_token'
             );
             return toReturn;
@@ -83,7 +81,7 @@ export class StateValidationService {
                     .max_id_token_iat_offset_allowed_in_seconds
             )
         ) {
-            this.oidcSecurityCommon.logWarning(
+            this.loggerService.logWarning(
                 'authorizedCallback Validation, iat rejected id_token was issued too far away from the current time'
             );
             return toReturn;
@@ -95,7 +93,7 @@ export class StateValidationService {
                 this.authWellKnownEndpoints.issuer
             )
         ) {
-            this.oidcSecurityCommon.logWarning(
+            this.loggerService.logWarning(
                 'authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer'
             );
             return toReturn;
@@ -107,9 +105,7 @@ export class StateValidationService {
                 this.authConfiguration.client_id
             )
         ) {
-            this.oidcSecurityCommon.logWarning(
-                'authorizedCallback incorrect aud'
-            );
+            this.loggerService.logWarning('authorizedCallback incorrect aud');
             return toReturn;
         }
 
@@ -118,9 +114,7 @@ export class StateValidationService {
                 toReturn.decoded_id_token
             )
         ) {
-            this.oidcSecurityCommon.logWarning(
-                'authorizedCallback token expired'
-            );
+            this.loggerService.logWarning('authorizedCallback token expired');
             return toReturn;
         }
 
@@ -138,7 +132,7 @@ export class StateValidationService {
             ) ||
             !toReturn.access_token
         ) {
-            this.oidcSecurityCommon.logWarning(
+            this.loggerService.logWarning(
                 'authorizedCallback incorrect at_hash'
             );
             return toReturn;
@@ -155,7 +149,7 @@ export class StateValidationService {
         if (this.authConfiguration.auto_clean_state_after_authentication) {
             this.oidcSecurityCommon.authStateControl = '';
         }
-        this.oidcSecurityCommon.logDebug(
+        this.loggerService.logDebug(
             'AuthorizedCallback token(s) validated, continue'
         );
     }

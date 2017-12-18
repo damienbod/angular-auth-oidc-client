@@ -1,9 +1,9 @@
 ﻿import { Injectable } from '@angular/core';
-import { OidcSecurityCommon } from './oidc.security.common';
 
 import { KJUR, KEYUTIL, hextob64u } from 'jsrsasign';
 import { ArrayHelperService } from './oidc-array-helper.service';
 import { TokenHelperService } from './oidc-token-helper.service';
+import { LoggerService } from './oidc.logger.service';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
@@ -50,9 +50,9 @@ import { TokenHelperService } from './oidc-token-helper.service';
 @Injectable()
 export class OidcSecurityValidation {
     constructor(
-        private oidcSecurityCommon: OidcSecurityCommon,
         private arrayHelperService: ArrayHelperService,
-        private tokenHelperService: TokenHelperService
+        private tokenHelperService: TokenHelperService,
+        private loggerService: LoggerService
     ) {}
 
     // id_token C7: The current time MUST be before the time represented by the exp Claim (possibly allowing for some small leeway to account for clock skew).
@@ -112,35 +112,35 @@ export class OidcSecurityValidation {
         let validated = true;
         if (!dataIdToken.hasOwnProperty('iss')) {
             validated = false;
-            this.oidcSecurityCommon.logWarning(
+            this.loggerService.logWarning(
                 'iss is missing, this is required in the id_token'
             );
         }
 
         if (!dataIdToken.hasOwnProperty('sub')) {
             validated = false;
-            this.oidcSecurityCommon.logWarning(
+            this.loggerService.logWarning(
                 'sub is missing, this is required in the id_token'
             );
         }
 
         if (!dataIdToken.hasOwnProperty('aud')) {
             validated = false;
-            this.oidcSecurityCommon.logWarning(
+            this.loggerService.logWarning(
                 'aud is missing, this is required in the id_token'
             );
         }
 
         if (!dataIdToken.hasOwnProperty('exp')) {
             validated = false;
-            this.oidcSecurityCommon.logWarning(
+            this.loggerService.logWarning(
                 'exp is missing, this is required in the id_token'
             );
         }
 
         if (!dataIdToken.hasOwnProperty('iat')) {
             validated = false;
-            this.oidcSecurityCommon.logWarning(
+            this.loggerService.logWarning(
                 'iat is missing, this is required in the id_token'
             );
         }
@@ -167,7 +167,7 @@ export class OidcSecurityValidation {
             return false;
         }
 
-        this.oidcSecurityCommon.logDebug(
+        this.loggerService.logDebug(
             'validate_id_token_iat_max_offset: ' +
                 (new Date().valueOf() - dateTime_iat_id_token.valueOf()) +
                 ' < ' +
@@ -184,7 +184,7 @@ export class OidcSecurityValidation {
     // The precise method for detecting replay attacks is Client specific.
     validate_id_token_nonce(dataIdToken: any, local_nonce: any): boolean {
         if (dataIdToken.nonce !== local_nonce) {
-            this.oidcSecurityCommon.logDebug(
+            this.loggerService.logDebug(
                 'Validate_id_token_nonce failed, dataIdToken.nonce: ' +
                     dataIdToken.nonce +
                     ' local_nonce:' +
@@ -206,7 +206,7 @@ export class OidcSecurityValidation {
             (dataIdToken.iss as string) !==
             (authWellKnownEndpoints_issuer as string)
         ) {
-            this.oidcSecurityCommon.logDebug(
+            this.loggerService.logDebug(
                 'Validate_id_token_iss failed, dataIdToken.iss: ' +
                     dataIdToken.iss +
                     ' authWellKnownEndpoints issuer:' +
@@ -230,7 +230,7 @@ export class OidcSecurityValidation {
             );
 
             if (!result) {
-                this.oidcSecurityCommon.logDebug(
+                this.loggerService.logDebug(
                     'Validate_id_token_aud  array failed, dataIdToken.aud: ' +
                         dataIdToken.aud +
                         ' client_id:' +
@@ -241,7 +241,7 @@ export class OidcSecurityValidation {
 
             return true;
         } else if (dataIdToken.aud !== aud) {
-            this.oidcSecurityCommon.logDebug(
+            this.loggerService.logDebug(
                 'Validate_id_token_aud failed, dataIdToken.aud: ' +
                     dataIdToken.aud +
                     ' client_id:' +
@@ -256,7 +256,7 @@ export class OidcSecurityValidation {
 
     validateStateFromHashCallback(state: any, local_state: any): boolean {
         if ((state as string) !== (local_state as string)) {
-            this.oidcSecurityCommon.logDebug(
+            this.loggerService.logDebug(
                 'ValidateStateFromHashCallback failed, state: ' +
                     state +
                     ' local_state:' +
@@ -273,7 +273,7 @@ export class OidcSecurityValidation {
         userdata_sub: any
     ): boolean {
         if ((id_token_sub as string) !== (userdata_sub as string)) {
-            this.oidcSecurityCommon.logDebug(
+            this.loggerService.logDebug(
                 'validate_userdata_sub_id_token failed, id_token_sub: ' +
                     id_token_sub +
                     ' userdata_sub:' +
@@ -303,7 +303,7 @@ export class OidcSecurityValidation {
             Object.keys(header_data).length === 0 &&
             header_data.constructor === Object
         ) {
-            this.oidcSecurityCommon.logWarning('id token has no header data');
+            this.loggerService.logWarning('id token has no header data');
             return false;
         }
 
@@ -311,7 +311,7 @@ export class OidcSecurityValidation {
         const alg = header_data.alg;
 
         if ('RS256' !== (alg as string)) {
-            this.oidcSecurityCommon.logWarning('Only RS256 supported');
+            this.loggerService.logWarning('Only RS256 supported');
             return false;
         }
 
@@ -331,12 +331,12 @@ export class OidcSecurityValidation {
             }
 
             if (amountOfMatchingKeys === 0) {
-                this.oidcSecurityCommon.logWarning(
+                this.loggerService.logWarning(
                     'no keys found, incorrect Signature, validation failed for id_token'
                 );
                 return false;
             } else if (amountOfMatchingKeys > 1) {
-                this.oidcSecurityCommon.logWarning(
+                this.loggerService.logWarning(
                     'no ID Token kid claim in JOSE header and multiple supplied in jwks_uri'
                 );
                 return false;
@@ -351,7 +351,7 @@ export class OidcSecurityValidation {
                             'RS256'
                         ]);
                         if (!isValid) {
-                            this.oidcSecurityCommon.logWarning(
+                            this.loggerService.logWarning(
                                 'incorrect Signature, validation failed for id_token'
                             );
                         }
@@ -368,7 +368,7 @@ export class OidcSecurityValidation {
                         'RS256'
                     ]);
                     if (!isValid) {
-                        this.oidcSecurityCommon.logWarning(
+                        this.loggerService.logWarning(
                             'incorrect Signature, validation failed for id_token'
                         );
                     }
@@ -388,7 +388,7 @@ export class OidcSecurityValidation {
             return true;
         }
 
-        this.oidcSecurityCommon.logWarning(
+        this.loggerService.logWarning(
             'module configure incorrect, invalid response_type:' + response_type
         );
         return false;
@@ -415,9 +415,9 @@ export class OidcSecurityValidation {
     // access_token C3: The value of at_hash in the ID Token MUST match the value produced in the previous step if at_hash
     // is present in the ID Token.
     validate_id_token_at_hash(access_token: any, at_hash: any): boolean {
-        this.oidcSecurityCommon.logDebug('From the server:' + at_hash);
+        this.loggerService.logDebug('From the server:' + at_hash);
         const testdata = this.generate_at_hash('' + access_token);
-        this.oidcSecurityCommon.logDebug(
+        this.loggerService.logDebug(
             'client validation not decoded:' + testdata
         );
         if (testdata === (at_hash as string)) {
@@ -426,7 +426,7 @@ export class OidcSecurityValidation {
             const testValue = this.generate_at_hash(
                 '' + decodeURIComponent(access_token)
             );
-            this.oidcSecurityCommon.logDebug('-gen access--' + testValue);
+            this.loggerService.logDebug('-gen access--' + testValue);
             if (testValue === (at_hash as string)) {
                 return true; // isValid
             }

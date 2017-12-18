@@ -1,5 +1,4 @@
 ﻿import { Injectable } from '@angular/core';
-import { AuthConfiguration } from '../modules/auth.configuration';
 import { OidcSecurityStorage } from './oidc.security.storage';
 
 export type SilentRenewState = 'running' | '';
@@ -120,10 +119,7 @@ export class OidcSecurityCommon {
         this.store(this.storage_custom_request_params, value);
     }
 
-    constructor(
-        private authConfiguration: AuthConfiguration,
-        private oidcSecurityStorage: OidcSecurityStorage
-    ) {}
+    constructor(private oidcSecurityStorage: OidcSecurityStorage) {}
 
     setupModule() {}
 
@@ -153,21 +149,5 @@ export class OidcSecurityCommon {
 
     getIdToken(): any {
         return this.retrieve(this.storage_id_token);
-    }
-
-    logError(message: any) {
-        console.error(message);
-    }
-
-    logWarning(message: any) {
-        if (this.authConfiguration.log_console_warning_active) {
-            console.warn(message);
-        }
-    }
-
-    logDebug(message: any) {
-        if (this.authConfiguration.log_console_debug_active) {
-            console.log(message);
-        }
     }
 }

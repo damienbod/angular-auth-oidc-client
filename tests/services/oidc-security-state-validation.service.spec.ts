@@ -1,3 +1,4 @@
+import { TestLogging } from '../common/test-logging.service';
 import { TestStorage } from '../common/test-storage.service';
 import { JwtKeys } from '../../src/models/jwtkeys';
 import { StateValidationService } from '../../src/services/oidc-security-state-validation.service';
@@ -16,6 +17,7 @@ import { OidcSecurityCommon } from '../../src/services/oidc.security.common';
 import {} from 'jasmine';
 import {} from 'node';
 import { TokenHelperService } from '../../src/services/oidc-token-helper.service';
+import { LoggerService } from '../../src/services/oidc.logger.service';
 
 describe('OidcSecurityStateValidationService', () => {
     let stateValidationService: StateValidationService;
@@ -23,6 +25,7 @@ describe('OidcSecurityStateValidationService', () => {
     let oidcSecurityCommon: OidcSecurityCommon;
     let authConfiguration: AuthConfiguration;
     let tokenHelperService: TokenHelperService;
+    let loggerService: LoggerService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -37,10 +40,15 @@ describe('OidcSecurityStateValidationService', () => {
                 OidcSecurityValidation,
                 OidcSecurityCommon,
                 AuthConfiguration,
+                LoggerService,
                 TokenHelperService,
                 {
                     provide: OidcSecurityStorage,
                     useClass: TestStorage
+                },
+                {
+                    provide: LoggerService,
+                    useClass: TestLogging
                 }
             ]
         });
@@ -52,6 +60,7 @@ describe('OidcSecurityStateValidationService', () => {
         oidcSecurityCommon = TestBed.get(OidcSecurityCommon);
         authConfiguration = TestBed.get(AuthConfiguration);
         tokenHelperService = TestBed.get(TokenHelperService);
+        loggerService = TestBed.get(LoggerService);
     });
 
     it('should create', () => {
@@ -67,10 +76,9 @@ describe('OidcSecurityStateValidationService', () => {
             'validateStateFromHashCallback'
         ).and.returnValue(false);
 
-        let logWarningSpy = spyOn(
-            oidcSecurityCommon,
-            'logWarning'
-        ).and.callFake(() => {});
+        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+            () => {}
+        );
 
         const state = stateValidationService.validateState('', new JwtKeys());
 
@@ -158,8 +166,6 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue('');
 
-        spyOn(oidcSecurityCommon, 'logDebug').and.callFake(() => {});
-
         const state = stateValidationService.validateState(
             {
                 access_token: 'access_tokenTEST',
@@ -195,7 +201,7 @@ describe('OidcSecurityStateValidationService', () => {
             'validate_signature_id_token'
         ).and.returnValue(false);
 
-        let logDebugSpy = spyOn(oidcSecurityCommon, 'logDebug').and.callFake(
+        let logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(
             () => {}
         );
 
@@ -243,10 +249,9 @@ describe('OidcSecurityStateValidationService', () => {
             'validate_id_token_nonce'
         ).and.returnValue(false);
 
-        let logWarningSpy = spyOn(
-            oidcSecurityCommon,
-            'logWarning'
-        ).and.callFake(() => {});
+        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+            () => {}
+        );
 
         const state = stateValidationService.validateState(
             {
@@ -297,7 +302,7 @@ describe('OidcSecurityStateValidationService', () => {
             'validate_required_id_token'
         ).and.returnValue(false);
 
-        let logDebugSpy = spyOn(oidcSecurityCommon, 'logDebug').and.callFake(
+        let logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(
             () => {}
         );
 
@@ -361,10 +366,9 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue(0);
 
-        let logWarningSpy = spyOn(
-            oidcSecurityCommon,
-            'logWarning'
-        ).and.callFake(() => {});
+        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+            () => {}
+        );
 
         const state = stateValidationService.validateState(
             {
@@ -430,10 +434,9 @@ describe('OidcSecurityStateValidationService', () => {
             false
         );
 
-        let logWarningSpy = spyOn(
-            oidcSecurityCommon,
-            'logWarning'
-        ).and.callFake(() => {});
+        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+            () => {}
+        );
 
         const state = stateValidationService.validateState(
             {
@@ -507,10 +510,9 @@ describe('OidcSecurityStateValidationService', () => {
             ''
         );
 
-        let logWarningSpy = spyOn(
-            oidcSecurityCommon,
-            'logWarning'
-        ).and.callFake(() => {});
+        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+            () => {}
+        );
 
         const state = stateValidationService.validateState(
             {
@@ -589,10 +591,9 @@ describe('OidcSecurityStateValidationService', () => {
             'validate_id_token_exp_not_expired'
         ).and.returnValue(false);
 
-        let logWarningSpy = spyOn(
-            oidcSecurityCommon,
-            'logWarning'
-        ).and.callFake(() => {});
+        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+            () => {}
+        );
 
         const state = stateValidationService.validateState(
             {
@@ -677,7 +678,7 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue('');
 
-        let logDebugSpy = spyOn(oidcSecurityCommon, 'logDebug').and.callFake(
+        let logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(
             () => {}
         );
 
@@ -770,10 +771,9 @@ describe('OidcSecurityStateValidationService', () => {
             'validate_id_token_at_hash'
         ).and.returnValue(false);
 
-        let logWarningSpy = spyOn(
-            oidcSecurityCommon,
-            'logWarning'
-        ).and.callFake(() => {});
+        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+            () => {}
+        );
 
         const state = stateValidationService.validateState(
             {

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { AuthConfiguration } from '../modules/auth.configuration';
 import { OidcSecurityCommon } from './oidc.security.common';
 import { OidcDataService } from './oidc-data.service';
+import { LoggerService } from './oidc.logger.service';
 
 @Injectable()
 export class AuthWellKnownEndpoints {
@@ -22,30 +23,31 @@ export class AuthWellKnownEndpoints {
     constructor(
         private oidcDataService: OidcDataService,
         private authConfiguration: AuthConfiguration,
-        private oidcSecurityCommon: OidcSecurityCommon
+        private oidcSecurityCommon: OidcSecurityCommon,
+        private loggerService: LoggerService
     ) {}
 
     setupModule() {
         const data = this.oidcSecurityCommon.wellKnownEndpoints;
 
-        this.oidcSecurityCommon.logDebug(data);
+        this.loggerService.logDebug(data);
 
         if (data) {
-            this.oidcSecurityCommon.logDebug(
+            this.loggerService.logDebug(
                 'AuthWellKnownEndpoints already defined'
             );
 
             this.setWellKnownEndpoints(data);
             this.onWellKnownEndpointsLoaded.emit();
         } else {
-            this.oidcSecurityCommon.logDebug(
+            this.loggerService.logDebug(
                 'AuthWellKnownEndpoints first time, get from the server'
             );
             this.getWellKnownEndpoints().subscribe((dataFromServer: any) => {
                 this.setWellKnownEndpoints(dataFromServer);
 
                 this.oidcSecurityCommon.wellKnownEndpoints = dataFromServer;
-                this.oidcSecurityCommon.logDebug(dataFromServer);
+                this.loggerService.logDebug(dataFromServer);
 
                 this.onWellKnownEndpointsLoaded.emit();
             });

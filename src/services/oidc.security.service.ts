@@ -25,6 +25,7 @@ import { OidcSecurityValidation } from './oidc.security.validation';
 import { UriEncoder } from './uri-encoder';
 import { OidcDataService } from './oidc-data.service';
 import { TokenHelperService } from './oidc-token-helper.service';
+import { LoggerService } from './oidc.logger.service';
 
 @Injectable()
 export class OidcSecurityService {
@@ -55,7 +56,8 @@ export class OidcSecurityService {
         private oidcSecurityCommon: OidcSecurityCommon,
         private authWellKnownEndpoints: AuthWellKnownEndpoints,
         private oidcSecurityValidation: OidcSecurityValidation,
-        private tokenHelperService: TokenHelperService
+        private tokenHelperService: TokenHelperService,
+        private loggerService: LoggerService
     ) {}
 
     setupModule(
@@ -89,7 +91,7 @@ export class OidcSecurityService {
             this.runTokenValidation();
         }
 
-        this.oidcSecurityCommon.logDebug(
+        this.loggerService.logDebug(
             'STS server: ' + this.authConfiguration.stsServer
         );
 
@@ -176,7 +178,7 @@ export class OidcSecurityService {
         }
 
         if (!this.authWellKnownEndpointsLoaded) {
-            this.oidcSecurityCommon.logError(
+            this.loggerService.logError(
                 'Well known endpoints must be loaded before user can login!'
             );
             return;
@@ -193,7 +195,7 @@ export class OidcSecurityService {
 
         this.resetAuthorizationData(false);
 
-        this.oidcSecurityCommon.logDebug('BEGIN Authorize, no auth data');
+        this.loggerService.logDebug('BEGIN Authorize, no auth data');
 
         let state = this.oidcSecurityCommon.authStateControl;
         if (!state) {
@@ -203,7 +205,7 @@ export class OidcSecurityService {
 
         const nonce = 'N' + Math.random() + '' + Date.now();
         this.oidcSecurityCommon.authNonce = nonce;
-        this.oidcSecurityCommon.logDebug(
+        this.loggerService.logDebug(
             'AuthorizedController created. local state: ' +
                 this.oidcSecurityCommon.authStateControl
         );
@@ -220,9 +222,7 @@ export class OidcSecurityService {
         const silentRenew = this.oidcSecurityCommon.silentRenewRunning;
         const isRenewProcess = silentRenew === 'running';
 
-        this.oidcSecurityCommon.logDebug(
-            'BEGIN authorizedCallback, no auth data'
-        );
+        this.loggerService.logDebug('BEGIN authorizedCallback, no auth data');
         this.resetAuthorizationData(isRenewProcess);
 
         hash = hash || window.location.hash.substr(1);
@@ -236,8 +236,8 @@ export class OidcSecurityService {
             }, {});
 
         this.oidcSecurityCommon.authResult = result;
-        this.oidcSecurityCommon.logDebug(result);
-        this.oidcSecurityCommon.logDebug(
+        this.loggerService.logDebug(result);
+        this.loggerService.logDebug(
             'authorizedCallback created, begin token validation'
         );
 
@@ -313,7 +313,7 @@ export class OidcSecurityService {
                 }
             } else {
                 // something went wrong
-                this.oidcSecurityCommon.logDebug(
+                this.loggerService.logDebug(
                     'authorizedCallback, token(s) validation failed, resetting'
                 );
                 this.resetAuthorizationData(false);
@@ -353,7 +353,7 @@ export class OidcSecurityService {
                     this.oidcSecurityUserService
                         .initUserData()
                         .subscribe(() => {
-                            this.oidcSecurityCommon.logDebug(
+                            this.loggerService.logDebug(
                                 'authorizedCallback id_token token flow'
                             );
 
@@ -366,10 +366,10 @@ export class OidcSecurityService {
                                 )
                             ) {
                                 this.setUserData(userData);
-                                this.oidcSecurityCommon.logDebug(
+                                this.loggerService.logDebug(
                                     this.oidcSecurityCommon.accessToken
                                 );
-                                this.oidcSecurityCommon.logDebug(
+                                this.loggerService.logDebug(
                                     this.oidcSecurityUserService.getUserData()
                                 );
 
@@ -380,10 +380,10 @@ export class OidcSecurityService {
                                 observer.next(true);
                             } else {
                                 // something went wrong, userdata sub does not match that from id_token
-                                this.oidcSecurityCommon.logWarning(
+                                this.loggerService.logWarning(
                                     'authorizedCallback, User data sub does not match sub in id_token'
                                 );
-                                this.oidcSecurityCommon.logDebug(
+                                this.loggerService.logDebug(
                                     'authorizedCallback, token(s) validation failed, resetting'
                                 );
                                 this.resetAuthorizationData(false);
@@ -394,10 +394,8 @@ export class OidcSecurityService {
                 }
             } else {
                 // flow id_token
-                this.oidcSecurityCommon.logDebug(
-                    'authorizedCallback id_token flow'
-                );
-                this.oidcSecurityCommon.logDebug(
+                this.loggerService.logDebug('authorizedCallback id_token flow');
+                this.loggerService.logDebug(
                     this.oidcSecurityCommon.accessToken
                 );
 
@@ -419,7 +417,7 @@ export class OidcSecurityService {
 
     logoff() {
         // /connect/endsession?id_token_hint=...&post_logout_redirect_uri=https://myapp.com
-        this.oidcSecurityCommon.logDebug('BEGIN Authorize, no auth data');
+        this.loggerService.logDebug('BEGIN Authorize, no auth data');
 
         if (this.authWellKnownEndpoints.end_session_endpoint) {
             const end_session_endpoint = this.authWellKnownEndpoints
@@ -436,7 +434,7 @@ export class OidcSecurityService {
                 this.authConfiguration.start_checksession &&
                 this.checkSessionChanged
             ) {
-                this.oidcSecurityCommon.logDebug(
+                this.loggerService.logDebug(
                     'only local login cleaned up, server session has changed'
                 );
             } else {
@@ -444,14 +442,14 @@ export class OidcSecurityService {
             }
         } else {
             this.resetAuthorizationData(false);
-            this.oidcSecurityCommon.logDebug(
+            this.loggerService.logDebug(
                 'only local login cleaned up, no end_session_endpoint'
             );
         }
     }
 
     refreshSession() {
-        this.oidcSecurityCommon.logDebug('BEGIN refresh session Authorize');
+        this.loggerService.logDebug('BEGIN refresh session Authorize');
 
         let state = this.oidcSecurityCommon.authStateControl;
         if (state === '' || state === null) {
@@ -461,7 +459,7 @@ export class OidcSecurityService {
 
         const nonce = 'N' + Math.random() + '' + Date.now();
         this.oidcSecurityCommon.authNonce = nonce;
-        this.oidcSecurityCommon.logDebug(
+        this.loggerService.logDebug(
             'RefreshSession created. adding myautostate: ' +
                 this.oidcSecurityCommon.authStateControl
         );
@@ -478,7 +476,7 @@ export class OidcSecurityService {
     }
 
     handleError(error: any) {
-        this.oidcSecurityCommon.logError(error);
+        this.loggerService.logError(error);
         if (error.status === 403 || error.status === '403') {
             if (this.authConfiguration.trigger_authorization_result_event) {
                 this.onAuthorizationResult.emit(
@@ -530,11 +528,9 @@ export class OidcSecurityService {
             this.oidcSecurityCommon.accessToken = '';
         }
 
-        this.oidcSecurityCommon.logDebug(access_token);
-        this.oidcSecurityCommon.logDebug(id_token);
-        this.oidcSecurityCommon.logDebug(
-            'storing to storage, getting the roles'
-        );
+        this.loggerService.logDebug(access_token);
+        this.loggerService.logDebug(id_token);
+        this.loggerService.logDebug('storing to storage, getting the roles');
         this.oidcSecurityCommon.accessToken = access_token;
         this.oidcSecurityCommon.idToken = id_token;
         this.setIsAuthorized(true);
@@ -620,33 +616,31 @@ export class OidcSecurityService {
     }
 
     private onCheckSessionChanged() {
-        this.oidcSecurityCommon.logDebug('onCheckSessionChanged');
+        this.loggerService.logDebug('onCheckSessionChanged');
         this.checkSessionChanged = true;
     }
 
     private onWellKnownEndpointsLoaded() {
-        this.oidcSecurityCommon.logDebug('onWellKnownEndpointsLoaded');
+        this.loggerService.logDebug('onWellKnownEndpointsLoaded');
         this.authWellKnownEndpointsLoaded = true;
     }
 
     private onUserDataChanged() {
-        this.oidcSecurityCommon.logDebug(
+        this.loggerService.logDebug(
             `onUserDataChanged: last = ${this.lastUserData}, new = ${
                 this._userData.value
             }`
         );
 
         if (this.lastUserData && !this._userData.value) {
-            this.oidcSecurityCommon.logDebug(
-                'onUserDataChanged: Logout detected.'
-            );
+            this.loggerService.logDebug('onUserDataChanged: Logout detected.');
             // TODO should we have an action here
         }
         this.lastUserData = this._userData.value;
     }
 
     private getSigningKeys(): Observable<JwtKeys> {
-        this.oidcSecurityCommon.logDebug(
+        this.loggerService.logDebug(
             'jwks_uri: ' + this.authWellKnownEndpoints.jwks_uri
         );
         return this.oidcDataService
@@ -689,7 +683,7 @@ export class OidcSecurityService {
                                 .silent_renew_offset_in_seconds
                         )
                     ) {
-                        this.oidcSecurityCommon.logDebug(
+                        this.loggerService.logDebug(
                             'IsAuthorized: id_token isTokenExpired, start silent renew if active'
                         );
 
@@ -702,10 +696,10 @@ export class OidcSecurityService {
                 }
             },
             (err: any) => {
-                this.oidcSecurityCommon.logError('Error: ' + err);
+                this.loggerService.logError('Error: ' + err);
             },
             () => {
-                this.oidcSecurityCommon.logDebug('Completed');
+                this.loggerService.logDebug('Completed');
             }
         );
     }
