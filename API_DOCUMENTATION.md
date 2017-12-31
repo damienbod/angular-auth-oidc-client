@@ -132,7 +132,7 @@ default value : false;
 
 ### silent_renew_offset_in_seconds
 
-Makes it possible to add an offset to the silent renew check in seconds. By entering a negivative value, you can renew the tokens, before the tokens expire.
+Makes it possible to add an offset to the silent renew check in seconds. By entering a value, you can renew the tokens, before the tokens expire.
 
 default value : 0;
 
