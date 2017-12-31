@@ -247,13 +247,13 @@ export class OidcSecurityService {
                 jwtKeys
             );
 
-            this.oidcSecurityCommon.silentRenewRunning = '';
-
             if (validationResult.authResponseIsValid) {
                 this.setAuthorizationData(
                     validationResult.access_token,
                     validationResult.id_token
                 );
+                this.oidcSecurityCommon.silentRenewRunning = '';
+
                 if (this.authConfiguration.auto_userinfo) {
                     this.getUserinfo(
                         isRenewProcess,
@@ -313,10 +313,12 @@ export class OidcSecurityService {
                 }
             } else {
                 // something went wrong
-                this.loggerService.logDebug(
+                this.loggerService.logWarning(
                     'authorizedCallback, token(s) validation failed, resetting'
                 );
+                this.loggerService.logWarning(window.location.hash);
                 this.resetAuthorizationData(false);
+                this.oidcSecurityCommon.silentRenewRunning = '';
                 if (this.authConfiguration.trigger_authorization_result_event) {
                     this.onAuthorizationResult.emit(
                         AuthorizationResult.unauthorized
@@ -675,12 +677,10 @@ export class OidcSecurityService {
 
         source.subscribe(
             () => {
-                if (this._userData.value) {
-                    if (
-                        this.oidcSecurityValidation.isTokenExpired(
+                if (this._userData.value && (this.oidcSecurityCommon.silentRenewRunning !== 'running') && this.getIdToken()) {
+                    if (this.oidcSecurityValidation.isTokenExpired(
                             this.oidcSecurityCommon.idToken,
-                            this.authConfiguration
-                                .silent_renew_offset_in_seconds
+                            this.authConfiguration.silent_renew_offset_in_seconds
                         )
                     ) {
                         this.loggerService.logDebug(
