@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2017-12-31"></a>
+### 2017-12-31 version 3.0.10
+* bug fix silent renew error handling
+
 <a name="2017-12-15"></a>
 ### 2017-12-15 version 3.0.9
 * bug fix aud string arrays not supported
