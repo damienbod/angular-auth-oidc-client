@@ -126,7 +126,7 @@ export class OidcSecurityService {
         }
     }
 
-    getUserData(): Observable<string> {
+    getUserData(): Observable<any> {
         return this._userData.asObservable();
     }
 

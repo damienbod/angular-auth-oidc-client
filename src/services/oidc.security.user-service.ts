@@ -7,13 +7,13 @@ import { OidcDataService } from './oidc-data.service';
 
 @Injectable()
 export class OidcSecurityUserService {
-    private userData = '';
+    private userData: any = '';
 
     constructor(
         private oidcDataService: OidcDataService,
         private oidcSecurityCommon: OidcSecurityCommon,
         private authWellKnownEndpoints: AuthWellKnownEndpoints
-    ) {}
+    ) { }
 
     initUserData() {
         return this.getIdentityUserData().pipe(
@@ -21,7 +21,7 @@ export class OidcSecurityUserService {
         );
     }
 
-    getUserData(): string {
+    getUserData(): any {
         if (!this.userData) {
             throw Error('UserData is not set!');
         }
@@ -29,7 +29,7 @@ export class OidcSecurityUserService {
         return this.userData;
     }
 
-    setUserData(value: string): void {
+    setUserData(value: any): void {
         this.userData = value;
     }
 
