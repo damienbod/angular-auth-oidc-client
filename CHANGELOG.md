@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-01-01"></a>
+### 2017-01-01 version 3.0.11
+* bug fix incorrect user data type
+
 <a name="2017-12-31"></a>
 ### 2017-12-31 version 3.0.10
 * bug fix silent renew error handling
