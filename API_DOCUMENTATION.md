@@ -243,6 +243,10 @@ this.oidcSecurityService.onCheckSessionChanged.subscribe(
 (checksession: boolean) => {
 	console.log('...recieved a check session event');
 	this.checksession = checksession;
+	if (window.parent) {
+		// sent from the child iframe
+		window.parent.location.href = '/check_session_logic';
+	}
 });
 		
 ngOnDestroy(): void {
