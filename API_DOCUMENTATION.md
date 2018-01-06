@@ -234,10 +234,6 @@ Handle the authorize callback using the event:
 
 This is required if you need to wait for a json configuration file to load.
 
-### @Output() onAuthorizationResult: EventEmitter<AuthorizationResult>
- 
-This event returns the result of the authorization callback. It is only used if the trigger_authorization_result_event configuration property is set to true.
-
 ### @Output() onCheckSessionChanged = new EventEmitter<boolean>();
  
 This event is triggered when the check session changed event is received from the server.
@@ -371,7 +367,10 @@ Logs off from the client application and also from the server if the endsession 
 
 handle errors from the auth module.
 
-### @Output() onAuthorizationResult = new EventEmitter<AuthorizationResult>();
+
+### @Output() onAuthorizationResult: EventEmitter<AuthorizationResult>
+ 
+This event returns the result of the authorization callback. 
 
 ```typescript
 this.oidcSecurityService.onAuthorizationResult.subscribe(
