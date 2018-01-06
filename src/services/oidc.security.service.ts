@@ -31,6 +31,7 @@ import { LoggerService } from './oidc.logger.service';
 export class OidcSecurityService {
     @Output() onModuleSetup = new EventEmitter<boolean>();
     @Output() onAuthorizationResult = new EventEmitter<AuthorizationResult>();
+    @Output() onCheckSessionChanged = new EventEmitter<boolean>();
 
     checkSessionChanged: boolean;
     moduleSetup = false;
@@ -69,7 +70,11 @@ export class OidcSecurityService {
         // );
 
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => {
-            this.onCheckSessionChanged();
+            this.loggerService.logDebug('onCheckSessionChanged');
+            this.checkSessionChanged = true;
+            this.onCheckSessionChanged.emit(
+                this.checkSessionChanged
+            );
         });
         this.authWellKnownEndpoints.onWellKnownEndpointsLoaded.subscribe(() => {
             this.onWellKnownEndpointsLoaded();
@@ -615,11 +620,6 @@ export class OidcSecurityService {
             this.oidcSecurityCommon.resetStorageData(isRenewProcess);
             this.checkSessionChanged = false;
         }
-    }
-
-    private onCheckSessionChanged() {
-        this.loggerService.logDebug('onCheckSessionChanged');
-        this.checkSessionChanged = true;
     }
 
     private onWellKnownEndpointsLoaded() {
