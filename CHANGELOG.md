@@ -1,8 +1,11 @@
 ## angular-auth-oidc-client Changelog
 
 <a name="2018-01-06"></a>
-### 2017-01-01 version 3.0.12
-* adding a chec session event
+### 2017-01-06 version 3.0.12
+* adding a check session event
+* adding onAuthorizationResult for the silent renew event
+* onAuthorizationResult is always sent now
+* no redirects are triggered for silent renews
 
 <a name="2018-01-01"></a>
 ### 2017-01-01 version 3.0.11
