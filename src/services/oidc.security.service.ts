@@ -267,50 +267,35 @@ export class OidcSecurityService {
                         validationResult.decoded_id_token
                     ).subscribe(response => {
                         if (response) {
-                            if (
-                                this.authConfiguration
-                                    .trigger_authorization_result_event
-                            ) {
-                                this.onAuthorizationResult.emit(
-                                    AuthorizationResult.authorized
-                                );
-                            } else {
+                            this.onAuthorizationResult.emit(AuthorizationResult.authorized);
+                            if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
                                 this.router.navigate([
                                     this.authConfiguration.post_login_route
                                 ]);
                             }
                         } else {
-                            if (
-                                this.authConfiguration
-                                    .trigger_authorization_result_event
-                            ) {
-                                this.onAuthorizationResult.emit(
-                                    AuthorizationResult.unauthorized
-                                );
-                            } else {
+                            this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
+                            if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
                                 this.router.navigate([
-                                    this.authConfiguration.unauthorized_route
+                                    this.authConfiguration.post_login_route
                                 ]);
                             }
                         }
                     });
                 } else {
-                    // userData is set to the id_token decoded, auto get user data set to false
-                    this.oidcSecurityUserService.setUserData(
-                        validationResult.decoded_id_token
-                    );
-                    this.setUserData(
-                        this.oidcSecurityUserService.getUserData()
-                    );
-                    this.runTokenValidation();
-                    if (
-                        this.authConfiguration
-                            .trigger_authorization_result_event
-                    ) {
-                        this.onAuthorizationResult.emit(
-                            AuthorizationResult.authorized
+                    if (!isRenewProcess) {
+                        // userData is set to the id_token decoded, auto get user data set to false
+                        this.oidcSecurityUserService.setUserData(
+                            validationResult.decoded_id_token
                         );
-                    } else {
+                        this.setUserData(
+                            this.oidcSecurityUserService.getUserData()
+                        );
+                        this.runTokenValidation();
+                    }
+
+                    this.onAuthorizationResult.emit(AuthorizationResult.authorized);
+                    if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
                         this.router.navigate([
                             this.authConfiguration.post_login_route
                         ]);
@@ -324,11 +309,9 @@ export class OidcSecurityService {
                 this.loggerService.logWarning(window.location.hash);
                 this.resetAuthorizationData(false);
                 this.oidcSecurityCommon.silentRenewRunning = '';
-                if (this.authConfiguration.trigger_authorization_result_event) {
-                    this.onAuthorizationResult.emit(
-                        AuthorizationResult.unauthorized
-                    );
-                } else {
+
+                this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
+                if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
                     this.router.navigate([
                         this.authConfiguration.unauthorized_route
                     ]);
