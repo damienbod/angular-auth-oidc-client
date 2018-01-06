@@ -238,6 +238,21 @@ This is required if you need to wait for a json configuration file to load.
  
 This event returns the result of the authorization callback. It is only used if the trigger_authorization_result_event configuration property is set to true.
 
+### @Output() onCheckSessionChanged = new EventEmitter<boolean>();
+ 
+This event is triggered when the check session changed event is received from the server.
+ 
+```typescript
+this.oidcSecurityService.onCheckSessionChanged.subscribe(
+(checksession: boolean) => {
+	console.log('...recieved a check session event');
+	this.checksession = checksession;
+});
+		
+ngOnDestroy(): void {
+	this.oidcSecurityService.onCheckSessionChanged.unsubscribe();
+}		
+```
 ### checkSessionChanged: boolean;
 	
 This boolean is set to true when the OpenID session management receives a message that the server session has changed.

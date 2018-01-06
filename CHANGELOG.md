@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-01-06"></a>
+### 2017-01-01 version 3.0.12
+* adding a chec session event
+
 <a name="2018-01-01"></a>
 ### 2017-01-01 version 3.0.11
 * bug fix incorrect user data type
