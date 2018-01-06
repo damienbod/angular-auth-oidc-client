@@ -277,7 +277,7 @@ export class OidcSecurityService {
                             this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
                             if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
                                 this.router.navigate([
-                                    this.authConfiguration.post_login_route
+                                    this.authConfiguration.unauthorized_route
                                 ]);
                             }
                         }
