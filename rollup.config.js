@@ -25,7 +25,7 @@ export default {
         resolve(),
         commonjs({
             namedExports: {
-                'node_modules/jsrsasign\lib\jsrsasign.js': ['KJUR', 'KEYUTIL', 'hextob64u']
+                'node_modules/jsrsasign/lib/jsrsasign.js': ['KJUR', 'KEYUTIL', 'hextob64u']
             }
         })
     ],
