@@ -234,10 +234,25 @@ Handle the authorize callback using the event:
 
 This is required if you need to wait for a json configuration file to load.
 
-### @Output() onAuthorizationResult: EventEmitter<AuthorizationResult>
+### @Output() onCheckSessionChanged = new EventEmitter<boolean>();
  
-This event returns the result of the authorization callback. It is only used if the trigger_authorization_result_event configuration property is set to true.
-
+This event is triggered when the check session changed event is received from the server.
+ 
+```typescript
+this.oidcSecurityService.onCheckSessionChanged.subscribe(
+(checksession: boolean) => {
+	console.log('...recieved a check session event');
+	this.checksession = checksession;
+	if (window.parent) {
+		// sent from the child iframe
+		window.parent.location.href = '/check_session_logic';
+	}
+});
+		
+ngOnDestroy(): void {
+	this.oidcSecurityService.onCheckSessionChanged.unsubscribe();
+}		
+```
 ### checkSessionChanged: boolean;
 	
 This boolean is set to true when the OpenID session management receives a message that the server session has changed.
@@ -342,7 +357,7 @@ public function so extra parameters can be added to the authorization URL reques
 
 ### authorize() 
 
-Starts the OpenID Implicit Flow authenication and authorization.
+Starts the OpenID Implicit Flow authentication and authorization.
 
 ### authorizedCallback() 
 
@@ -355,3 +370,35 @@ Logs off from the client application and also from the server if the endsession 
 ### handleError(error: any)
 
 handle errors from the auth module.
+
+
+### @Output() onAuthorizationResult: EventEmitter<AuthorizationResult>
+ 
+This event returns the result of the authorization callback. 
+
+```typescript
+this.oidcSecurityService.onAuthorizationResult.subscribe(
+	(authorizationResult: AuthorizationResult) => {
+		this.onAuthorizationResultComplete(authorizationResult);
+	});
+	
+ngOnDestroy(): void {
+	this.oidcSecurityService.onAuthorizationResult.unsubscribe();
+}
+	
+```	
+
+```typescript
+private onAuthorizationResultComplete(authorizationResult: AuthorizationResult) {
+	console.log('Auth result received:' + authorizationResult);
+	if (authorizationResult === AuthorizationResult.unauthorized) {
+		if (window.parent) {
+			// sent from the child iframe, for example the silent renew
+			window.parent.location.href = '/unauthorized';
+		} else {
+			// sent from the main window
+			window.location.href = '/unauthorized';
+		}
+	}
+}
+```
