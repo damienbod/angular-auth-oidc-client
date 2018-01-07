@@ -5,7 +5,7 @@ const globals = {
     '@angular/core': 'ng.core',
     '@angular/common': 'ng.common',
     '@angular/router': 'ng.router',
-    '@angular/common/http': 'ng.http',
+    '@angular/common/http': 'ng.common.http',
     'rxjs/Observable': 'Rx',
     'rxjs/Observer': 'Rx',
     'rxjs/BehaviorSubject': 'Rx',
