@@ -5,16 +5,11 @@ const globals = {
     '@angular/core': 'ng.core',
     '@angular/common': 'ng.common',
     '@angular/router': 'ng.router',
-    '@angular/common/http': 'ng.http',
-    'rxjs/Rx': 'Rx',
+    '@angular/common/http': 'ng.common.http',
     'rxjs/Observable': 'Rx',
     'rxjs/Observer': 'Rx',
     'rxjs/BehaviorSubject': 'Rx',
-    'rxjs/operators/map': 'Rx.Observable.prototype',
-	'rxjs/operators/catchError': 'Rx.Observable.prototype',
-    'rxjs/operators/timeInterval': 'Rx.Observable.prototype',
-    'rxjs/operators/pluck': 'Rx.Observable.prototype',
-	'rxjs/operators/take': 'Rx.Observable.prototype',
+    'rxjs/operators': 'Rx.Observable.prototype',
 	'rxjs/observable/timer': 'Rx.Observable.prototype',
 
     jsrsasign: 'jsrsasign'
@@ -30,11 +25,7 @@ export default {
         resolve(),
         commonjs({
             namedExports: {
-                'node_modules/jsrsasignlibjsrsasign.js': [
-                    'KJUR',
-                    'KEYUTIL',
-                    'hextob64u'
-                ]
+                'node_modules/jsrsasign/lib/jsrsasign.js': ['KJUR', 'KEYUTIL', 'hextob64u']
             }
         })
     ],
