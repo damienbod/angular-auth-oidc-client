@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-01-08"></a>
+### 2017-01-08 version 3.0.13
+* fixing rollup build
+
 <a name="2018-01-06"></a>
 ### 2017-01-06 version 3.0.12
 * adding a check session event
