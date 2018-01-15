@@ -204,30 +204,6 @@ describe('AuthWellKnownEndpoints', () => {
         );
     });
 
-    it('if wellKnownEndpoints are not set oidcSecurityCommon.wellKnownEndpoints equal the returned data', () => {
-        const testValues = {
-            issuer: 'anyValue',
-            authorization_endpoint: 'authorization_endpoint',
-            jwks_uri: 'jwks_uri',
-            token_endpoint: 'token_endpoint',
-            userinfo_endpoint: 'userinfo_endpoint',
-            end_session_endpoint: 'end_session_endpoint',
-            check_session_iframe: 'check_session_iframe',
-            revocation_endpoint: 'revocation_endpoint',
-            introspection_endpoint: 'introspection_endpoint'
-        };
-
-        spyOn(authWellKnownEndpoints, 'getWellKnownEndpoints').and.callFake(
-            () => {
-                return of(testValues);
-            }
-        );
-
-        authWellKnownEndpoints.setupModule();
-
-        expect(oidcSecurityCommon.wellKnownEndpoints).toBe(testValues);
-    });
-
     it('if wellKnownEndpoints are not set logdebug is called with the data', () => {
         const testValues = {
             issuer: 'anyValue',
@@ -284,77 +260,4 @@ describe('AuthWellKnownEndpoints', () => {
         ).toHaveBeenCalled();
     });
 
-    it('if override_well_known_configuration is not set url stays same', () => {
-        spyOnProperty(authConfiguration, 'stsServer', 'get').and.returnValue(
-            'hallelujah'
-        );
-
-        spyOnProperty(
-            authConfiguration,
-            'override_well_known_configuration',
-            'get'
-        ).and.returnValue(false);
-
-        authWellKnownEndpoints
-            .getWellKnownEndpoints()
-            .subscribe((data: any) => {
-                expect(data.name).toBe('Luke Skywalker');
-            });
-
-        const req = httpMock.expectOne(
-            `hallelujah/.well-known/openid-configuration`,
-            'call to api'
-        );
-
-        expect(req.request.method).toBe('GET');
-        expect(req.request.headers.get('Accept')).toBe('application/json');
-        expect(req.request.url).toBe(
-            `hallelujah/.well-known/openid-configuration`
-        );
-
-        req.flush({
-            name: 'Luke Skywalker'
-        });
-
-        httpMock.verify();
-    });
-
-    it('if override_well_known_configuration is set to true the url changes', () => {
-        spyOnProperty(authConfiguration, 'stsServer', 'get').and.returnValue(
-            'hallelujah'
-        );
-
-        spyOnProperty(
-            authConfiguration,
-            'override_well_known_configuration',
-            'get'
-        ).and.returnValue(true);
-
-        spyOnProperty(
-            authConfiguration,
-            'override_well_known_configuration_url',
-            'get'
-        ).and.returnValue('OVERRIDE THE WHOLE URL!!!!');
-
-        authWellKnownEndpoints
-            .getWellKnownEndpoints()
-            .subscribe((data: any) => {
-                expect(data.name).toBe('Luke Skywalker');
-            });
-
-        const req = httpMock.expectOne(
-            `OVERRIDE THE WHOLE URL!!!!`,
-            'call to api'
-        );
-
-        expect(req.request.method).toBe('GET');
-        expect(req.request.headers.get('Accept')).toBe('application/json');
-        expect(req.request.url).toBe(`OVERRIDE THE WHOLE URL!!!!`);
-
-        req.flush({
-            name: 'Luke Skywalker'
-        });
-
-        httpMock.verify();
-    });
 });
