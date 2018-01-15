@@ -75,16 +75,6 @@ export class OidcSecurityCommon {
         this.store(this.storage_auth_state_control, value);
     }
 
-    private storage_well_known_endpoints = 'wellknownendpoints';
-
-    public get wellKnownEndpoints(): any {
-        return this.retrieve(this.storage_well_known_endpoints);
-    }
-
-    public set wellKnownEndpoints(value: any) {
-        this.store(this.storage_well_known_endpoints, value);
-    }
-
     private storage_session_state = 'session_state';
 
     public get sessionState(): any {

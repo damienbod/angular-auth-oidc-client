@@ -12,11 +12,12 @@ import {
     OidcSecurityStorage,
     BrowserStorage
 } from '../services/oidc.security.storage';
-import { AuthWellKnownEndpoints } from '../services/auth.well-known-endpoints';
 import { StateValidationService } from '../services/oidc-security-state-validation.service';
 import { OidcDataService } from '../services/oidc-data.service';
 import { TokenHelperService } from '../services/oidc-token-helper.service';
 import { LoggerService } from '../services/oidc.logger.service';
+import { OidcConfigService } from '../services/oidc.security.config.service';
+import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 
 @NgModule()
 export class AuthModule {
@@ -24,6 +25,7 @@ export class AuthModule {
         return {
             ngModule: AuthModule,
             providers: [
+                OidcConfigService,
                 OidcSecurityService,
                 OidcSecurityValidation,
                 OidcSecurityCheckSession,
