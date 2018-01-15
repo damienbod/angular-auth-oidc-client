@@ -93,18 +93,6 @@ default value : 3
 
 id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time, limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
 	
-### override_well_known_configuration
-
-default value : false
-
-If you want to configure the well known endpoints locally, you need to set this to true.
-
-### override_well_known_configuration_url
-	
-default value : 'https://localhost:44386/wellknownconfiguration.json'
-
-URL used to get the configuration if it is being read locally.
-
 ### resource
 
 default value : ''
