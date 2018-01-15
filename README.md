@@ -83,7 +83,7 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 })
 ```
 
-Set the AuthConfiguration properties to match the server configuration. At present only the id_token token flow is supported.
+Set the AuthConfiguration properties to match the server configuration. At present only the 'id_token token' or the 'id_token' flows are supported.
 
 ```typescript
 export class AppModule {
@@ -146,10 +146,7 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 export class AppComponent implements OnInit, OnDestroy {
 
     constructor(public oidcSecurityService: OidcSecurityService) {
-        if (this.oidcSecurityService.moduleSetup) {
-            this.doCallbackLogicIfRequired();
-        } else {
-            this.oidcSecurityService.onModuleSetup.subscribe(() => {
+        this.oidcSecurityService.onModuleSetup.subscribe(() => {
                 this.doCallbackLogicIfRequired();
             });
         }
