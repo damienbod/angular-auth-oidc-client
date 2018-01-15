@@ -210,7 +210,7 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 
 Example:
 
-You can add any configurations to this json, as long as the stsServer is present. This is REQUIRED. The you can map the properties in the AppModule.
+You can add any configurations to this json, as long as the stsServer is present. This is REQUIRED. Then you can map the properties in the AppModule.
 
 ```javascript
 {
