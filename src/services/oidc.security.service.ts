@@ -70,9 +70,6 @@ export class OidcSecurityService {
         this.oidcSecurityCheckSession.setupModule(authWellKnownEndpoints);
         this.oidcSecurityUserService.setupModule(authWellKnownEndpoints);
 
-        console.log('this.authWellKnownEndpoints');
-        console.log(this.authWellKnownEndpoints);
-
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => {
             this.loggerService.logDebug('onCheckSessionChanged');
             this.checkSessionChanged = true;
@@ -227,9 +224,6 @@ export class OidcSecurityService {
     }
 
     authorizedCallback(hash?: string) {
-        console.log('this.authorizedCallback');
-        console.log('this.authWellKnownEndpoints');
-        console.log(this.authWellKnownEndpoints);
         const silentRenew = this.oidcSecurityCommon.silentRenewRunning;
         const isRenewProcess = silentRenew === 'running';
 
