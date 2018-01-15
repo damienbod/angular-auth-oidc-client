@@ -184,13 +184,8 @@ Config the module, subscribe to the json get:
 export class AppModule {
 
     constructor(
-        private oidcSecurityService: OidcSecurityService,
-        public oidcConfigService: OidcConfigService,
-        configuration: Configuration,
-        public l10nLoader: L10nLoader
+        public oidcConfigService: OidcConfigService
     ) {
-        this.l10nLoader.load();
-
         this.oidcConfigService.onConfigurationLoaded.subscribe(() => {
 
             const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
