@@ -90,7 +90,7 @@ export class AppModule {
 
     constructor(
         private oidcSecurityService: OidcSecurityService,
-        public oidcConfigService: OidcConfigService
+        private oidcConfigService: OidcConfigService,
     ) {
         this.oidcConfigService.onConfigurationLoaded.subscribe(() => {
 

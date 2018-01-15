@@ -184,7 +184,8 @@ Config the module, subscribe to the json get:
 export class AppModule {
 
     constructor(
-        public oidcConfigService: OidcConfigService
+        private oidcSecurityService: OidcSecurityService,
+        private oidcConfigService: OidcConfigService,
     ) {
         this.oidcConfigService.onConfigurationLoaded.subscribe(() => {
 
