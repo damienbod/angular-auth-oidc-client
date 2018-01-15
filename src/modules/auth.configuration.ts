@@ -32,8 +32,6 @@ export class DefaultConfiguration {
     // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
     // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
     max_id_token_iat_offset_allowed_in_seconds = 3;
-    override_well_known_configuration = false;
-    override_well_known_configuration_url = 'https://localhost:44386/wellknownconfiguration.json';
 
     storage = typeof Storage !== 'undefined' ? sessionStorage : null;
 }
@@ -59,8 +57,6 @@ export class OpenIDImplicitFlowConfiguration {
     log_console_warning_active: boolean;
     log_console_debug_active: boolean;
     max_id_token_iat_offset_allowed_in_seconds: number;
-    override_well_known_configuration: boolean;
-    override_well_known_configuration_url: string;
     storage: any;
 }
 
@@ -207,22 +203,6 @@ export class AuthConfiguration {
             this.openIDImplicitFlowConfiguration
                 .max_id_token_iat_offset_allowed_in_seconds ||
             this.defaultConfig.max_id_token_iat_offset_allowed_in_seconds
-        );
-    }
-
-    get override_well_known_configuration(): boolean {
-        return this.openIDImplicitFlowConfiguration
-            .override_well_known_configuration !== undefined
-            ? this.openIDImplicitFlowConfiguration
-                  .override_well_known_configuration
-            : this.defaultConfig.override_well_known_configuration;
-    }
-
-    get override_well_known_configuration_url(): string {
-        return (
-            this.openIDImplicitFlowConfiguration
-                .override_well_known_configuration_url ||
-            this.defaultConfig.override_well_known_configuration_url
         );
     }
 
