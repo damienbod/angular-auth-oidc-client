@@ -8,6 +8,8 @@
 
 export * from './src/oidc.security.config.service';
 export * from './src/oidc.security.service';
+export * from './src/oidc.security.storage';
+
 
 export * from './models/auth.well-known-endpoints';
 export * from './models/authorization-result.enum';
