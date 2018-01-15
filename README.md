@@ -22,24 +22,24 @@ Documentation : [Quickstart](https://github.com/damienbod/angular-auth-oidc-clie
 ## <a></a>Using the package
 
 Navigate to the level of your package.json and type
-``` javascript
+```typescript
  npm install angular-auth-oidc-client --save
 ```
 
 or with yarn
 
-``` javascript
+```typescript
  yarn add angular-auth-oidc-client
 ```
 
 or you can add the npm package to your package.json
-``` javascript
+```typescript
  "angular-auth-oidc-client": "4.0.0"
 ```
  
 and type 
 
-``` javascript
+```typescript
  npm install
 ```
 
@@ -49,11 +49,17 @@ Import the module and services in your module.
 
 The OidcSecurityService has a dependency on the HttpClientModule which needs to be imported. The angular-auth-oidc-client module supports all versions of Angular 4.3 onwards.
 
-``` javascript
+```typescript
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 
-import { AuthModule, OidcSecurityService, OpenIDImplicitFlowConfiguration, OidcConfigService } from 'angular-auth-oidc-client';
+import {
+    AuthModule,
+    OidcSecurityService,
+    OpenIDImplicitFlowConfiguration,
+    OidcConfigService,
+    AuthWellKnownEndpoints
+} from 'angular-auth-oidc-client';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
     console.log('APP_INITIALIZER STARTING');
@@ -212,7 +218,7 @@ Example:
 
 You can add any configurations to this json, as long as the stsServer is present. This is REQUIRED. Then you can map the properties in the AppModule.
 
-```javascript
+```typescript
 {
 	"stsServer":"https://localhost:44318",
 	"redirect_url":"https://localhost:44311",
@@ -235,7 +241,7 @@ You can add any configurations to this json, as long as the stsServer is present
 
 <strong>Using without APP_INITIALIZER</strong>
 
-```TypeScript
+```typescript
 export class AppModule {
     constructor(
         public oidcSecurityService: OidcSecurityService
@@ -284,7 +290,7 @@ export class AppModule {
 
 <strong>Using Guards</strong>
 
-```TypeScript
+```typescript
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
@@ -327,7 +333,7 @@ export class AuthorizationGuard implements CanActivate {
 If you need, you can create a custom storage (for example to use cookies).
 
 Implement `OidcSecurityStorage` class-interface and the `read` and `write` methods:
-```TypeScript
+```typescript
 @Injectable()
 export class CustomStorage implements OidcSecurityStorage {
 
@@ -343,7 +349,7 @@ export class CustomStorage implements OidcSecurityStorage {
 }
 ```
 Then provide the class in the module:
-```TypeScript
+```typescript
 @NgModule({
     imports: [
         ...
@@ -358,7 +364,7 @@ See also `oidc.security.storage.ts` for an example.
 
 The HttpClient allows you to write [interceptors](https://angular.io/guide/http#intercepting-all-requests-or-responses). A common usecase would be to intercept any outgoing HTTP request and add an authorization header. Keep in mind that injecting OidcSecurityService into the interceptor via the constructor results in a cyclic dependency. To avoid this use the [injector](https://angular.io/api/core/Injector) instead.
 
-```TypeScript
+```typescript
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
     private oidcSecurityService: OidcSecurityService;
