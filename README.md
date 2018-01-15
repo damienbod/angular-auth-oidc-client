@@ -288,6 +288,17 @@ export class AppModule {
 
 ```
 
+<strong>Custom STS server well known configuration</strong>
+
+Sometimes it is required to load custom .well-known/openid-configuration. The load_using_custom_stsServer can be used for this.
+
+```typescript
+export function loadConfig(oidcConfigService: OidcConfigService) {
+    console.log('APP_INITIALIZER STARTING');
+    return () => oidcConfigService.load_using_custom_stsServer('https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=b2c_1_susi');
+}
+```
+
 <strong>Using Guards</strong>
 
 ```typescript

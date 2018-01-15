@@ -19,4 +19,10 @@ export class OidcConfigService {
         this.wellKnownEndpoints = await response.json()
         this.onConfigurationLoaded.emit();
     }
+
+    async load_using_custom_stsServer(stsServer: string) {
+        const response = await fetch(stsServer);
+        this.wellKnownEndpoints = await response.json()
+        this.onConfigurationLoaded.emit();
+    }
 }
