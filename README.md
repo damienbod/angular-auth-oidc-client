@@ -70,7 +70,7 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
         ...
     ],
     providers: [
-	    OidcConfigService,
+        OidcConfigService,
         {
             provide: APP_INITIALIZER,
             useFactory: loadConfig,
@@ -220,7 +220,8 @@ You can add any configurations to this json, as long as the stsServer is present
 	"response_type":"id_token token",
 	"scope":"dataEventRecords securedFiles openid profile",
 	"post_logout_redirect_uri":"https://localhost:44311",
-	"start_checksession":true,"silent_renew":true,
+	"start_checksession":true,
+	"silent_renew":true,
 	"startup_route":"/dataeventrecords",
 	"forbidden_route":"/forbidden",
 	"unauthorized_route":"/unauthorized",
