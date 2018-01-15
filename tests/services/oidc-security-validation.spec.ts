@@ -72,9 +72,6 @@ describe('OidcSecurityValidation', () => {
         openIDImplicitFlowConfiguration.log_console_warning_active = true;
         openIDImplicitFlowConfiguration.log_console_debug_active = true;
         openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
-        openIDImplicitFlowConfiguration.override_well_known_configuration = true;
-        openIDImplicitFlowConfiguration.override_well_known_configuration_url =
-            'https://localhost:44386/wellknownconfiguration.json';
 
         authConfiguration.init(openIDImplicitFlowConfiguration);
 
@@ -116,9 +113,6 @@ describe('OidcSecurityValidation', () => {
         openIDImplicitFlowConfiguration.log_console_warning_active = true;
         openIDImplicitFlowConfiguration.log_console_debug_active = true;
         openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
-        openIDImplicitFlowConfiguration.override_well_known_configuration = true;
-        openIDImplicitFlowConfiguration.override_well_known_configuration_url =
-            'https://localhost:44386/wellknownconfiguration.json';
 
         authConfiguration.init(openIDImplicitFlowConfiguration);
 

@@ -5,8 +5,8 @@ import { pluck, take, timeInterval } from 'rxjs/operators';
 import { Observer } from 'rxjs/Observer';
 import { AuthConfiguration } from '../modules/auth.configuration';
 import { OidcSecurityCommon } from './oidc.security.common';
-import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
 import { LoggerService } from './oidc.logger.service';
+import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 
 // http://openid.net/specs/openid-connect-session-1_0-ID4.html
 
@@ -14,6 +14,7 @@ import { LoggerService } from './oidc.logger.service';
 export class OidcSecurityCheckSession {
     private sessionIframe: any;
     private iframeMessageEvent: any;
+    private authWellKnownEndpoints: AuthWellKnownEndpoints;
 
     @Output()
     onCheckSessionChanged: EventEmitter<any> = new EventEmitter<any>(true);
@@ -21,9 +22,12 @@ export class OidcSecurityCheckSession {
     constructor(
         private authConfiguration: AuthConfiguration,
         private oidcSecurityCommon: OidcSecurityCommon,
-        private authWellKnownEndpoints: AuthWellKnownEndpoints,
         private loggerService: LoggerService
     ) {}
+
+    setupModule(authWellKnownEndpoints: AuthWellKnownEndpoints) {
+        this.authWellKnownEndpoints = Object.assign({}, authWellKnownEndpoints);
+    }
 
     doesSessionExist(): boolean {
         let existsparent = undefined;

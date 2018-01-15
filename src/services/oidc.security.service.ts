@@ -15,7 +15,6 @@ import {
     AuthConfiguration,
     OpenIDImplicitFlowConfiguration
 } from '../modules/auth.configuration';
-import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
 import { StateValidationService } from './oidc-security-state-validation.service';
 import { OidcSecurityCheckSession } from './oidc.security.check-session';
 import { OidcSecurityCommon } from './oidc.security.common';
@@ -26,6 +25,7 @@ import { UriEncoder } from './uri-encoder';
 import { OidcDataService } from './oidc-data.service';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { LoggerService } from './oidc.logger.service';
+import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 
 @Injectable()
 export class OidcSecurityService {
@@ -35,7 +35,7 @@ export class OidcSecurityService {
 
     checkSessionChanged: boolean;
     moduleSetup = false;
-
+    private authWellKnownEndpoints: AuthWellKnownEndpoints;
     private _isAuthorized = new BehaviorSubject<boolean>(false);
     private _isAuthorizedValue: boolean;
 
@@ -55,19 +55,20 @@ export class OidcSecurityService {
         private oidcSecuritySilentRenew: OidcSecuritySilentRenew,
         private oidcSecurityUserService: OidcSecurityUserService,
         private oidcSecurityCommon: OidcSecurityCommon,
-        private authWellKnownEndpoints: AuthWellKnownEndpoints,
         private oidcSecurityValidation: OidcSecurityValidation,
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService
     ) {}
 
     setupModule(
-        openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration
+        openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration,
+        authWellKnownEndpoints: AuthWellKnownEndpoints
     ): void {
+        this.authWellKnownEndpoints = Object.assign({}, authWellKnownEndpoints);
         this.authConfiguration.init(openIDImplicitFlowConfiguration);
-        // this.oidcSecurityValidation = new OidcSecurityValidation(
-        //     this.oidcSecurityCommon
-        // );
+        this.stateValidationService.setupModule(authWellKnownEndpoints);
+        this.oidcSecurityCheckSession.setupModule(authWellKnownEndpoints);
+        this.oidcSecurityUserService.setupModule(authWellKnownEndpoints);
 
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => {
             this.loggerService.logDebug('onCheckSessionChanged');
@@ -76,9 +77,7 @@ export class OidcSecurityService {
                 this.checkSessionChanged
             );
         });
-        this.authWellKnownEndpoints.onWellKnownEndpointsLoaded.subscribe(() => {
-            this.onWellKnownEndpointsLoaded();
-        });
+
         this._userData.subscribe(() => {
             this.onUserDataChanged();
         });
@@ -90,10 +89,18 @@ export class OidcSecurityService {
 
         const isAuthorized = this.oidcSecurityCommon.isAuthorized;
         if (isAuthorized) {
-            this.setIsAuthorized(isAuthorized);
-
-            // Start the silent renew
-            this.runTokenValidation();
+            this.loggerService.logDebug('IsAuthorized setup module');
+            this.loggerService.logDebug(this.oidcSecurityCommon.idToken);
+            if (this.oidcSecurityValidation.isTokenExpired(
+                    this.oidcSecurityCommon.idToken,
+                    this.authConfiguration.silent_renew_offset_in_seconds)
+            ) {
+                this.loggerService.logDebug('IsAuthorized setup module; id_token isTokenExpired');
+            } else {
+                this.loggerService.logDebug('IsAuthorized setup module; id_token is valid');
+                this.setIsAuthorized(isAuthorized);
+                this.runTokenValidation();
+            }
         }
 
         this.loggerService.logDebug(
@@ -102,29 +109,23 @@ export class OidcSecurityService {
 
         if (isPlatformBrowser(this.platformId)) {
             // Client only code.
-            this.authWellKnownEndpoints.onWellKnownEndpointsLoaded.subscribe(
-                () => {
-                    this.moduleSetup = true;
-                    this.onModuleSetup.emit();
+            this.moduleSetup = true;
+            this.onModuleSetup.emit();
 
-                    if (this.authConfiguration.silent_renew) {
-                        this.oidcSecuritySilentRenew.initRenew();
-                    }
+            if (this.authConfiguration.silent_renew) {
+                this.oidcSecuritySilentRenew.initRenew();
+            }
 
-                    if (
-                        this.authConfiguration.start_checksession &&
-                        !this.oidcSecurityCheckSession.doesSessionExist()
-                    ) {
-                        this.oidcSecurityCheckSession.init().subscribe(() => {
-                            this.oidcSecurityCheckSession.pollServerSession(
-                                this.authConfiguration.client_id
-                            );
-                        });
-                    }
-                }
-            );
-
-            this.authWellKnownEndpoints.setupModule();
+            if (
+                this.authConfiguration.start_checksession &&
+                !this.oidcSecurityCheckSession.doesSessionExist()
+            ) {
+                this.oidcSecurityCheckSession.init().subscribe(() => {
+                    this.oidcSecurityCheckSession.pollServerSession(
+                        this.authConfiguration.client_id
+                    );
+                });
+            }
         } else {
             this.moduleSetup = true;
             this.onModuleSetup.emit();
@@ -177,8 +178,7 @@ export class OidcSecurityService {
     }
 
     authorize() {
-        const data = this.oidcSecurityCommon.wellKnownEndpoints;
-        if (data) {
+        if (this.authWellKnownEndpoints) {
             this.authWellKnownEndpointsLoaded = true;
         }
 
@@ -603,11 +603,6 @@ export class OidcSecurityService {
             this.oidcSecurityCommon.resetStorageData(isRenewProcess);
             this.checkSessionChanged = false;
         }
-    }
-
-    private onWellKnownEndpointsLoaded() {
-        this.loggerService.logDebug('onWellKnownEndpointsLoaded');
-        this.authWellKnownEndpointsLoaded = true;
     }
 
     private onUserDataChanged() {

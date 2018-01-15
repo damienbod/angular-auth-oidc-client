@@ -22,24 +22,24 @@ Documentation : [Quickstart](https://github.com/damienbod/angular-auth-oidc-clie
 ## <a></a>Using the package
 
 Navigate to the level of your package.json and type
-``` javascript
+```typescript
  npm install angular-auth-oidc-client --save
 ```
 
 or with yarn
 
-``` javascript
+```typescript
  yarn add angular-auth-oidc-client
 ```
 
 or you can add the npm package to your package.json
-``` javascript
- "angular-auth-oidc-client": "3.0.13"
+```typescript
+ "angular-auth-oidc-client": "4.0.0"
 ```
  
 and type 
 
-``` javascript
+```typescript
  npm install
 ```
 
@@ -49,11 +49,22 @@ Import the module and services in your module.
 
 The OidcSecurityService has a dependency on the HttpClientModule which needs to be imported. The angular-auth-oidc-client module supports all versions of Angular 4.3 onwards.
 
-``` javascript
+```typescript
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 
-import { AuthModule, OidcSecurityService, OpenIDImplicitFlowConfiguration } from 'angular-auth-oidc-client';
+import {
+    AuthModule,
+    OidcSecurityService,
+    OpenIDImplicitFlowConfiguration,
+    OidcConfigService,
+    AuthWellKnownEndpoints
+} from 'angular-auth-oidc-client';
+
+export function loadConfig(oidcConfigService: OidcConfigService) {
+    console.log('APP_INITIALIZER STARTING');
+    return () => oidcConfigService.load_using_stsServer('https://localhost:44318');
+}
 
 @NgModule({
     imports: [
@@ -65,48 +76,65 @@ import { AuthModule, OidcSecurityService, OpenIDImplicitFlowConfiguration } from
         ...
     ],
     providers: [
+        OidcConfigService,
+        {
+            provide: APP_INITIALIZER,
+            useFactory: loadConfig,
+            deps: [OidcConfigService],
+            multi: true
+        },
         ...
     ],
     bootstrap:    [AppComponent],
 })
 ```
 
-Set the AuthConfiguration properties to match the server configuration. At present only the id_token token flow is supported.
+Set the AuthConfiguration properties to match the server configuration. At present only the 'id_token token' or the 'id_token' flows are supported.
 
 ```typescript
-
 export class AppModule {
-    constructor(public oidcSecurityService: OidcSecurityService) {
 
-        let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
-        openIDImplicitFlowConfiguration.stsServer = 'https://localhost:44318';
-        openIDImplicitFlowConfiguration.redirect_url = 'https://localhost:44311';
-        openIDImplicitFlowConfiguration.client_id = 'angularclient';
-        openIDImplicitFlowConfiguration.response_type = 'id_token token';
-        openIDImplicitFlowConfiguration.scope = 'openid email profile';
-        openIDImplicitFlowConfiguration.post_logout_redirect_uri = 'https://localhost:44311/Unauthorized';
-        openIDImplicitFlowConfiguration.start_checksession = false;
-        openIDImplicitFlowConfiguration.silent_renew = true;
-        openIDImplicitFlowConfiguration.silent_renew_offset_in_seconds = 0;
-        openIDImplicitFlowConfiguration.post_login_route = '/home';
-        openIDImplicitFlowConfiguration.forbidden_route = '/Forbidden';
-        openIDImplicitFlowConfiguration.unauthorized_route = '/Unauthorized';
-        openIDImplicitFlowConfiguration.auto_userinfo = true;
-        openIDImplicitFlowConfiguration.log_console_warning_active = true;
-        openIDImplicitFlowConfiguration.log_console_debug_active = false;
-        openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
-        openIDImplicitFlowConfiguration.override_well_known_configuration = false;
-        openIDImplicitFlowConfiguration.override_well_known_configuration_url = 'https://localhost:44386/wellknownconfiguration.json';
-        // openIDImplicitFlowConfiguration.storage = localStorage;
-        
-        this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
-		
-        // if you need custom parameters
-        // oidcSecurityService.setCustomRequestParameters({ 't4': 'ABC abc 123', 't3': 'wo' });
+    constructor(
+        private oidcSecurityService: OidcSecurityService,
+        private oidcConfigService: OidcConfigService,
+    ) {
+        this.oidcConfigService.onConfigurationLoaded.subscribe(() => {
+
+            const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
+            openIDImplicitFlowConfiguration.stsServer = this.oidcConfigService.clientConfiguration.stsServer;
+            openIDImplicitFlowConfiguration.redirect_url = this.oidcConfigService.clientConfiguration.redirect_url;
+            // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer
+            // identified by the iss (issuer) Claim as an audience.
+            // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience,
+            // or if it contains additional audiences not trusted by the Client.
+            openIDImplicitFlowConfiguration.client_id = this.oidcConfigService.clientConfiguration.client_id;
+            openIDImplicitFlowConfiguration.response_type = this.oidcConfigService.clientConfiguration.response_type;
+            openIDImplicitFlowConfiguration.scope = this.oidcConfigService.clientConfiguration.scope;
+            openIDImplicitFlowConfiguration.post_logout_redirect_uri = this.oidcConfigService.clientConfiguration.post_logout_redirect_uri;
+            openIDImplicitFlowConfiguration.start_checksession = this.oidcConfigService.clientConfiguration.start_checksession;
+            openIDImplicitFlowConfiguration.silent_renew = this.oidcConfigService.clientConfiguration.silent_renew;
+            openIDImplicitFlowConfiguration.post_login_route = this.oidcConfigService.clientConfiguration.startup_route;
+            // HTTP 403
+            openIDImplicitFlowConfiguration.forbidden_route = this.oidcConfigService.clientConfiguration.forbidden_route;
+            // HTTP 401
+            openIDImplicitFlowConfiguration.unauthorized_route = this.oidcConfigService.clientConfiguration.unauthorized_route;
+            openIDImplicitFlowConfiguration.log_console_warning_active = this.oidcConfigService.clientConfiguration.log_console_warning_active;
+            openIDImplicitFlowConfiguration.log_console_debug_active = this.oidcConfigService.clientConfiguration.log_console_debug_active;
+            // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
+            // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
+            openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds =
+                this.oidcConfigService.clientConfiguration.max_id_token_iat_offset_allowed_in_seconds;
+
+            const authWellKnownEndpoints = new AuthWellKnownEndpoints();
+            authWellKnownEndpoints.setWellKnownEndpoints(this.oidcConfigService.wellKnownEndpoints);
+
+            this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration, authWellKnownEndpoints);
+
+        });
+
+        console.log('APP STARTING');
     }
 }
-
-
 ```
 
 Create the login, logout component and use the oidcSecurityService
@@ -175,12 +203,148 @@ private setHeaders() {
 
 ```
 
+<strong>Loading the configuration from the server</strong>
+
+Note the configuration json must return a property stsServer for this to work. 
+
+```typescript
+export function loadConfig(oidcConfigService: OidcConfigService) {
+    console.log('APP_INITIALIZER STARTING');
+    return () => oidcConfigService.load(`${window.location.origin}/api/ClientAppSettings`);
+}
+```
+
+Example:
+
+You can add any configurations to this json, as long as the stsServer is present. This is REQUIRED. Then you can map the properties in the AppModule.
+
+```typescript
+{
+	"stsServer":"https://localhost:44318",
+	"redirect_url":"https://localhost:44311",
+	"client_id":"angularclient",
+	"response_type":"id_token token",
+	"scope":"dataEventRecords securedFiles openid profile",
+	"post_logout_redirect_uri":"https://localhost:44311",
+	"start_checksession":true,
+	"silent_renew":true,
+	"startup_route":"/dataeventrecords",
+	"forbidden_route":"/forbidden",
+	"unauthorized_route":"/unauthorized",
+	"log_console_warning_active":true,
+	"log_console_debug_active":true,
+	"max_id_token_iat_offset_allowed_in_seconds":"10",
+	"apiServer":"https://localhost:44390/",
+	"apiFileServer":"https://localhost:44378/"
+}
+```
+
+<strong>Using without APP_INITIALIZER</strong>
+
+```typescript
+export class AppModule {
+    constructor(
+        public oidcSecurityService: OidcSecurityService
+    ) {
+            const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
+
+            openIDImplicitFlowConfiguration.stsServer = 'https://localhost:44363';
+            openIDImplicitFlowConfiguration.redirect_url = 'https://localhost:44363';
+            // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer identified by the iss (issuer) Claim as an audience.
+            // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences not trusted by the Client.
+            openIDImplicitFlowConfiguration.client_id = 'singleapp';
+            openIDImplicitFlowConfiguration.response_type = 'id_token token';
+            openIDImplicitFlowConfiguration.scope = 'dataEventRecords openid';
+            openIDImplicitFlowConfiguration.post_logout_redirect_uri = 'https://localhost:44363/Unauthorized';
+            openIDImplicitFlowConfiguration.start_checksession = false;
+            openIDImplicitFlowConfiguration.silent_renew = true;
+            openIDImplicitFlowConfiguration.post_login_route = '/dataeventrecords';
+            // HTTP 403
+            openIDImplicitFlowConfiguration.forbidden_route = '/Forbidden';
+            // HTTP 401
+            openIDImplicitFlowConfiguration.unauthorized_route = '/Unauthorized';
+            openIDImplicitFlowConfiguration.log_console_warning_active = true;
+            openIDImplicitFlowConfiguration.log_console_debug_active = true;
+            // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
+            // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
+            openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
+
+            const authWellKnownEndpoints = new AuthWellKnownEndpoints();
+            authWellKnownEndpoints.issuer = 'https://localhost:44363';
+            
+            authWellKnownEndpoints.jwks_uri = 'https://localhost:44363/.well-known/openid-configuration/jwks';
+            authWellKnownEndpoints.authorization_endpoint = 'https://localhost:44363/connect/authorize';
+            authWellKnownEndpoints.token_endpoint = 'https://localhost:44363/connect/token';
+            authWellKnownEndpoints.userinfo_endpoint = 'https://localhost:44363/connect/userinfo';
+            authWellKnownEndpoints.end_session_endpoint = 'https://localhost:44363/connect/endsession';
+            authWellKnownEndpoints.check_session_iframe = 'https://localhost:44363/connect/checksession';
+            authWellKnownEndpoints.revocation_endpoint = 'https://localhost:44363/connect/revocation';
+            authWellKnownEndpoints.introspection_endpoint = 'https://localhost:44363/connect/introspect';
+  
+            this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration, authWellKnownEndpoints);
+    }
+}
+
+
+```
+
+<strong>Custom STS server well known configuration</strong>
+
+Sometimes it is required to load custom .well-known/openid-configuration. The load_using_custom_stsServer can be used for this.
+
+```typescript
+export function loadConfig(oidcConfigService: OidcConfigService) {
+    console.log('APP_INITIALIZER STARTING');
+    return () => oidcConfigService.load_using_custom_stsServer('https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=b2c_1_susi');
+}
+```
+
+<strong>Using Guards</strong>
+
+```typescript
+import { Injectable } from '@angular/core';
+import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { Observable } from 'rxjs/Observable';
+import { map } from 'rxjs/operators';
+
+import { OidcSecurityService } from './auth/services/oidc.security.service';
+
+@Injectable()
+export class AuthorizationGuard implements CanActivate {
+
+    constructor(
+        private router: Router,
+        private oidcSecurityService: OidcSecurityService
+    ) { }
+
+    public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
+        console.log(route + '' + state);
+        console.log('AuthorizationGuard, canActivate');
+
+        return this.oidcSecurityService.getIsAuthorized().pipe(
+            map((isAuthorized: boolean) => {
+                console.log('AuthorizationGuard, canActivate isAuthorized: ' + isAuthorized);
+
+                if (isAuthorized) {
+                    return true;
+                }
+
+                this.router.navigate(['/unauthorized']);
+                return false;
+            })
+        );
+    }
+}
+
+
+```
+
 ## Custom Storage
 
 If you need, you can create a custom storage (for example to use cookies).
 
 Implement `OidcSecurityStorage` class-interface and the `read` and `write` methods:
-```TypeScript
+```typescript
 @Injectable()
 export class CustomStorage implements OidcSecurityStorage {
 
@@ -196,7 +360,7 @@ export class CustomStorage implements OidcSecurityStorage {
 }
 ```
 Then provide the class in the module:
-```TypeScript
+```typescript
 @NgModule({
     imports: [
         ...
@@ -211,7 +375,7 @@ See also `oidc.security.storage.ts` for an example.
 
 The HttpClient allows you to write [interceptors](https://angular.io/guide/http#intercepting-all-requests-or-responses). A common usecase would be to intercept any outgoing HTTP request and add an authorization header. Keep in mind that injecting OidcSecurityService into the interceptor via the constructor results in a cyclic dependency. To avoid this use the [injector](https://angular.io/api/core/Injector) instead.
 
-```TypeScript
+```typescript
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
     private oidcSecurityService: OidcSecurityService;

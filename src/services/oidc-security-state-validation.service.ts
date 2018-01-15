@@ -2,22 +2,26 @@ import { Injectable } from '@angular/core';
 import { OidcSecurityCommon } from './oidc.security.common';
 import { OidcSecurityValidation } from './oidc.security.validation';
 import { AuthConfiguration } from '../modules/auth.configuration';
-import { AuthWellKnownEndpoints } from './auth.well-known-endpoints';
 import { ValidateStateResult } from '../models/validate-state-result.model';
 import { JwtKeys } from '../models/jwtkeys';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { LoggerService } from './oidc.logger.service';
+import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 
 @Injectable()
 export class StateValidationService {
+    private authWellKnownEndpoints: AuthWellKnownEndpoints;
     constructor(
         private authConfiguration: AuthConfiguration,
         public oidcSecurityCommon: OidcSecurityCommon,
-        private authWellKnownEndpoints: AuthWellKnownEndpoints,
         private oidcSecurityValidation: OidcSecurityValidation,
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService
     ) {}
+
+    setupModule(authWellKnownEndpoints: AuthWellKnownEndpoints) {
+        this.authWellKnownEndpoints = Object.assign({}, authWellKnownEndpoints);
+    }
 
     validateState(result: any, jwtKeys: JwtKeys): ValidateStateResult {
         const toReturn = new ValidateStateResult('', '', false, {});
