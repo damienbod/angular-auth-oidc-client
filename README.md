@@ -197,6 +197,81 @@ private setHeaders() {
 
 ```
 
+<strong>Loading the configuration from the server</strong>
+
+Note the configuration json must return a property stsServer for this to work. 
+
+```typescript
+export function loadConfig(oidcConfigService: OidcConfigService) {
+    console.log('APP_INITIALIZER STARTING');
+    return () => oidcConfigService.load(`${window.location.origin}/api/ClientAppSettings`);
+}
+```
+
+Example:
+
+You can add any configurations to this json, as long as the stsServer is present. This is REQUIRED. The you can map the properties in the AppModule.
+
+```javascript
+{
+	"stsServer":"https://localhost:44318",
+	"redirect_url":"https://localhost:44311",
+	"client_id":"angularclient",
+	"response_type":"id_token token",
+	"scope":"dataEventRecords securedFiles openid profile",
+	"post_logout_redirect_uri":"https://localhost:44311",
+	"start_checksession":true,"silent_renew":true,
+	"startup_route":"/dataeventrecords",
+	"forbidden_route":"/forbidden",
+	"unauthorized_route":"/unauthorized",
+	"log_console_warning_active":true,
+	"log_console_debug_active":true,
+	"max_id_token_iat_offset_allowed_in_seconds":"10",
+	"apiServer":"https://localhost:44390/",
+	"apiFileServer":"https://localhost:44378/"
+}
+```
+
+<strong>Using Guards</strong>
+
+```TypeScript
+import { Injectable } from '@angular/core';
+import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { Observable } from 'rxjs/Observable';
+import { map } from 'rxjs/operators';
+
+import { OidcSecurityService } from './auth/services/oidc.security.service';
+
+@Injectable()
+export class AuthorizationGuard implements CanActivate {
+
+    constructor(
+        private router: Router,
+        private oidcSecurityService: OidcSecurityService
+    ) { }
+
+    public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
+        console.log(route + '' + state);
+        console.log('AuthorizationGuard, canActivate');
+
+        return this.oidcSecurityService.getIsAuthorized().pipe(
+            map((isAuthorized: boolean) => {
+                console.log('AuthorizationGuard, canActivate isAuthorized: ' + isAuthorized);
+
+                if (isAuthorized) {
+                    return true;
+                }
+
+                this.router.navigate(['/unauthorized']);
+                return false;
+            })
+        );
+    }
+}
+
+
+```
+
 ## Custom Storage
 
 If you need, you can create a custom storage (for example to use cookies).
