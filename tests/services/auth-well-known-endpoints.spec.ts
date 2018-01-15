@@ -14,17 +14,18 @@ import { TestStorage } from '../common/test-storage.service';
 import {
     AuthModule,
     AuthWellKnownEndpoints,
-    OidcSecurityCommon,
     OidcSecurityStorage,
     AuthConfiguration
 } from './../../index';
 
+import { OidcConfigService } from '../../src/services/oidc.security.config.service';
+
 describe('AuthWellKnownEndpoints', () => {
     let authWellKnownEndpoints: any;
-    let oidcSecurityCommon: OidcSecurityCommon;
     let httpMock: HttpTestingController;
     let authConfiguration: AuthConfiguration;
     let loggerService: LoggerService;
+	let oidcConfigService: OidcConfigService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -37,7 +38,6 @@ describe('AuthWellKnownEndpoints', () => {
             providers: [
                 AuthWellKnownEndpoints,
                 AuthConfiguration,
-                OidcSecurityCommon,
                 OidcDataService,
                 {
                     provide: OidcSecurityStorage,
@@ -53,7 +53,7 @@ describe('AuthWellKnownEndpoints', () => {
 
     beforeEach(() => {
         authWellKnownEndpoints = TestBed.get(AuthWellKnownEndpoints);
-        oidcSecurityCommon = TestBed.get(OidcSecurityCommon);
+        oidcConfigService = TestBed.get(OidcConfigService);
         httpMock = TestBed.get(HttpTestingController);
         authConfiguration = TestBed.get(AuthConfiguration);
         loggerService = TestBed.get(LoggerService);
@@ -61,14 +61,14 @@ describe('AuthWellKnownEndpoints', () => {
 
     it('can create', () => {
         expect(authWellKnownEndpoints).toBeDefined();
-        expect(oidcSecurityCommon).toBeDefined();
+        expect(oidcConfigService).toBeDefined();
         expect(httpMock).toBeDefined();
         expect(authConfiguration).toBeDefined();
     });
 
     it('if wellKnownEndpoints are set logdebug is called two times', () => {
         spyOnProperty(
-            oidcSecurityCommon,
+            oidcConfigService,
             'wellKnownEndpoints',
             'get'
         ).and.returnValue({ issuer: 'anyValue' });
@@ -88,7 +88,7 @@ describe('AuthWellKnownEndpoints', () => {
 
     it('if wellKnownEndpoints are set emit was firing once', () => {
         spyOnProperty(
-            oidcSecurityCommon,
+            oidcConfigService,
             'wellKnownEndpoints',
             'get'
         ).and.returnValue({ issuer: 'anyValue' });
@@ -104,7 +104,7 @@ describe('AuthWellKnownEndpoints', () => {
 
     it('if wellKnownEndpoints are set authWellKnownEndpoints applied all values correctly', () => {
         spyOnProperty(
-            oidcSecurityCommon,
+            oidcConfigService,
             'wellKnownEndpoints',
             'get'
         ).and.returnValue({
@@ -159,7 +159,7 @@ describe('AuthWellKnownEndpoints', () => {
         };
 
         spyOnProperty(
-            oidcSecurityCommon,
+            oidcConfigService,
             'wellKnownEndpoints',
             'get'
         ).and.returnValue('');

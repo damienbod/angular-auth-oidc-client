@@ -13,5 +13,4 @@ export * from './models/validate-state-result.model';
 export * from './modules/auth.configuration';
 export * from './modules/auth.module';
 
-export * from './services/oidc.security.common';
 export * from './services/oidc.security.validation';
