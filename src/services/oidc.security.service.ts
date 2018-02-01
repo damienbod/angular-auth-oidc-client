@@ -5,8 +5,7 @@ import { EventEmitter, Injectable, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
-import { timer } from 'rxjs/observable/timer';
-import { catchError, pluck, take, timeInterval } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 
 import { AuthorizationResult } from '../models/authorization-result.enum';
 import { JwtKeys } from '../models/jwtkeys';
@@ -46,7 +45,7 @@ export class OidcSecurityService {
 
     private runTokenValidationRunning: boolean;
 
-    private _scheduledHeartBeat;
+    private _scheduledHeartBeat: any;
 
     constructor(
         @Inject(PLATFORM_ID) private platformId: Object,
