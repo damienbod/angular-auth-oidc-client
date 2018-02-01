@@ -39,7 +39,7 @@ export class OidcSecuritySilentRenew {
     }
 
     // TODO The return type of this method is never used. Is it needed?
-    startRenew(url: string) {
+    startRenew(url: string): Observable<any> {
         let existsparent = undefined;
         try {
             const parentdoc = window.parent.document;
