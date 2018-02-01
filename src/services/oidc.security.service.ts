@@ -320,6 +320,12 @@ export class OidcSecurityService {
                     ]);
                 }
             }
+        }, (err) => {
+            /* Something went wrong while getting signing key */
+            this.loggerService.logWarning(
+                'Failed to retreive siging key with error: ' + JSON.stringify(err)
+            );
+            this.oidcSecurityCommon.silentRenewRunning = '';
         });
     }
 
