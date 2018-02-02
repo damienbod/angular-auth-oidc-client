@@ -1,12 +1,11 @@
 import { isPlatformBrowser } from '@angular/common';
 import { HttpParams } from '@angular/common/http';
-import { Inject, PLATFORM_ID } from '@angular/core';
+import { Inject, PLATFORM_ID, NgZone } from '@angular/core';
 import { EventEmitter, Injectable, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
-import { timer } from 'rxjs/observable/timer';
-import { catchError, pluck, take, timeInterval } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 
 import { AuthorizationResult } from '../models/authorization-result.enum';
 import { JwtKeys } from '../models/jwtkeys';
@@ -43,7 +42,10 @@ export class OidcSecurityService {
     private _userData = new BehaviorSubject<any>('');
 
     private authWellKnownEndpointsLoaded = false;
+
     private runTokenValidationRunning: boolean;
+
+    private _scheduledHeartBeat: any;
 
     constructor(
         @Inject(PLATFORM_ID) private platformId: Object,
@@ -57,7 +59,8 @@ export class OidcSecurityService {
         private oidcSecurityCommon: OidcSecurityCommon,
         private oidcSecurityValidation: OidcSecurityValidation,
         private tokenHelperService: TokenHelperService,
-        private loggerService: LoggerService
+        private loggerService: LoggerService,
+        private zone: NgZone
     ) {}
 
     setupModule(
@@ -317,6 +320,12 @@ export class OidcSecurityService {
                     ]);
                 }
             }
+        }, (err) => {
+            /* Something went wrong while getting signing key */
+            this.loggerService.logWarning(
+                'Failed to retreive siging key with error: ' + JSON.stringify(err)
+            );
+            this.oidcSecurityCommon.silentRenewRunning = '';
         });
     }
 
@@ -438,7 +447,7 @@ export class OidcSecurityService {
         }
     }
 
-    refreshSession() {
+    refreshSession(): Observable<any> {
         this.loggerService.logDebug('BEGIN refresh session Authorize');
 
         let state = this.oidcSecurityCommon.authStateControl;
@@ -462,7 +471,7 @@ export class OidcSecurityService {
         );
 
         this.oidcSecurityCommon.silentRenewRunning = 'running';
-        this.oidcSecuritySilentRenew.startRenew(url);
+        return this.oidcSecuritySilentRenew.startRenew(url);
     }
 
     handleError(error: any) {
@@ -490,6 +499,17 @@ export class OidcSecurityService {
                 ]);
             }
         }
+    }
+
+    startCheckingSilentRenew(): void {
+        this.runTokenValidation();
+    }
+
+    stopCheckingSilentRenew(): void {
+        if (this._scheduledHeartBeat) {
+            clearTimeout(this._scheduledHeartBeat);
+        }
+        this.runTokenValidationRunning = false;
     }
 
     private getValidatedStateResult(
@@ -605,7 +625,7 @@ export class OidcSecurityService {
         }
     }
 
-    private onUserDataChanged() {
+    private onUserDataChanged(){ 
         this.loggerService.logDebug(
             `onUserDataChanged: last = ${this.lastUserData}, new = ${
                 this._userData.value
@@ -647,38 +667,45 @@ export class OidcSecurityService {
         }
         this.runTokenValidationRunning = true;
 
-        const source = timer(5000, 3000).pipe(
-            timeInterval(),
-            pluck('interval'),
-            take(10000)
-        );
+        /**
+            First time: delay 10 seconds to call silentRenewHeartBeatCheck
+            Afterwards: Run this check in a 5 second interval only AFTER the previous operation ends.
+         */
+        
+        let silentRenewHeartBeatCheck = () => {
+            if (this._userData.value && (this.oidcSecurityCommon.silentRenewRunning !== 'running') && this.getIdToken()) {
+                if (this.oidcSecurityValidation.isTokenExpired(
+                    this.oidcSecurityCommon.idToken,
+                    this.authConfiguration.silent_renew_offset_in_seconds
+                )
+                ) {
+                    this.loggerService.logDebug(
+                        'IsAuthorized: id_token isTokenExpired, start silent renew if active'
+                    );
 
-        source.subscribe(
-            () => {
-                if (this._userData.value && (this.oidcSecurityCommon.silentRenewRunning !== 'running') && this.getIdToken()) {
-                    if (this.oidcSecurityValidation.isTokenExpired(
-                            this.oidcSecurityCommon.idToken,
-                            this.authConfiguration.silent_renew_offset_in_seconds
-                        )
-                    ) {
-                        this.loggerService.logDebug(
-                            'IsAuthorized: id_token isTokenExpired, start silent renew if active'
-                        );
-
-                        if (this.authConfiguration.silent_renew) {
-                            this.refreshSession();
-                        } else {
-                            this.resetAuthorizationData(false);
-                        }
+                    if (this.authConfiguration.silent_renew) {
+                        this.refreshSession().subscribe(() => { 
+                        }, (err: any) => {
+                            this.loggerService.logError('Error: ' + err);
+                        }, () => {
+                            this._scheduledHeartBeat = setTimeout(silentRenewHeartBeatCheck, 3000);
+                        });
+                        /* In this situation, we schedule a heatbeat check only when silentRenew is finished.
+                        We don't want to schedule another check so we have to return here */
+                        return;
+                    } else {
+                        this.resetAuthorizationData(false);
                     }
                 }
-            },
-            (err: any) => {
-                this.loggerService.logError('Error: ' + err);
-            },
-            () => {
-                this.loggerService.logDebug('Completed');
             }
-        );
+
+            /* Delay 3 seconds and do the next check */
+            this._scheduledHeartBeat = setTimeout(silentRenewHeartBeatCheck, 3000);
+        };
+
+        this.zone.runOutsideAngular(() => {
+            /* Initial heartbeat check */
+            this._scheduledHeartBeat = setTimeout(silentRenewHeartBeatCheck, 10000);
+        });
     }
 }
