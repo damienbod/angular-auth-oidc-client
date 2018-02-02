@@ -408,6 +408,8 @@ export class AuthInterceptor implements HttpInterceptor {
 
 https://github.com/damienbod/AspNetCoreAngularSignalRSecurity
 
+https://github.com/damienbod/dotnet-template-angular
+
 https://github.com/damienbod/angular-auth-oidc-sample-google-openid
 
 https://github.com/HWouters/ad-b2c-oidc-angular
