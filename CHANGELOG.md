@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-02-02"></a>
+### 2017-02-02 version 4.0.1
+* silent renew fixes
+
 <a name="2018-01-15"></a>
 ### 2017-01-15 version 4.0.0
 * fixing init process, using APP_INITIALIZER, and proper support for angular guards
