@@ -625,7 +625,7 @@ export class OidcSecurityService {
         }
     }
 
-    private onUserDataChanged(){ 
+    private onUserDataChanged() {
         this.loggerService.logDebug(
             `onUserDataChanged: last = ${this.lastUserData}, new = ${
                 this._userData.value
@@ -671,8 +671,7 @@ export class OidcSecurityService {
             First time: delay 10 seconds to call silentRenewHeartBeatCheck
             Afterwards: Run this check in a 5 second interval only AFTER the previous operation ends.
          */
-        
-        let silentRenewHeartBeatCheck = () => {
+        const silentRenewHeartBeatCheck = () => {
             if (this._userData.value && (this.oidcSecurityCommon.silentRenewRunning !== 'running') && this.getIdToken()) {
                 if (this.oidcSecurityValidation.isTokenExpired(
                     this.oidcSecurityCommon.idToken,
@@ -684,7 +683,7 @@ export class OidcSecurityService {
                     );
 
                     if (this.authConfiguration.silent_renew) {
-                        this.refreshSession().subscribe(() => { 
+                        this.refreshSession().subscribe(() => {
                         }, (err: any) => {
                             this.loggerService.logError('Error: ' + err);
                         }, () => {
