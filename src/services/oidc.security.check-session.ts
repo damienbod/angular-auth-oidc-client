@@ -1,7 +1,5 @@
-﻿import { Injectable, EventEmitter, Output } from '@angular/core';
+﻿import { Injectable, EventEmitter, Output, NgZone } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { timer } from 'rxjs/observable/timer';
-import { pluck, take, timeInterval } from 'rxjs/operators';
 import { Observer } from 'rxjs/Observer';
 import { AuthConfiguration } from '../modules/auth.configuration';
 import { OidcSecurityCommon } from './oidc.security.common';
@@ -15,6 +13,7 @@ export class OidcSecurityCheckSession {
     private sessionIframe: any;
     private iframeMessageEvent: any;
     private authWellKnownEndpoints: AuthWellKnownEndpoints;
+    private _scheduledHeartBeat: any;
 
     @Output()
     onCheckSessionChanged: EventEmitter<any> = new EventEmitter<any>(true);
@@ -22,7 +21,8 @@ export class OidcSecurityCheckSession {
     constructor(
         private authConfiguration: AuthConfiguration,
         private oidcSecurityCommon: OidcSecurityCommon,
-        private loggerService: LoggerService
+        private loggerService: LoggerService,
+        private zone: NgZone
     ) {}
 
     setupModule(authWellKnownEndpoints: AuthWellKnownEndpoints) {
@@ -76,42 +76,44 @@ export class OidcSecurityCheckSession {
         });
     }
 
-    pollServerSession(clientId: any) {
-        const source = timer(3000, 3000).pipe(
-            timeInterval(),
-            pluck('interval'),
-            take(10000)
-        );
+    startCheckingSilentRenew(clientId: any): void {
+        if (!this._scheduledHeartBeat) {
+            this.pollServerSession(clientId);
+        }
+    }
 
-        source.subscribe(
-            () => {
-                if (this.sessionIframe && clientId) {
-                    this.loggerService.logDebug(this.sessionIframe);
-                    const session_state = this.oidcSecurityCommon.sessionState;
-                    if (session_state) {
-                        this.sessionIframe.contentWindow.postMessage(
-                            clientId + ' ' + session_state,
-                            this.authConfiguration.stsServer
-                        );
-                    }
-                } else {
-                    this.loggerService.logWarning(
-                        'OidcSecurityCheckSession pollServerSession sessionIframe does not exist'
+    stopCheckingSilentRenew(): void {
+        if (this._scheduledHeartBeat) {
+            clearTimeout(this._scheduledHeartBeat);
+            this._scheduledHeartBeat = null;
+        }
+    }    
+
+    pollServerSession(clientId: any) {
+        let _pollServerSessionRecur = () => {
+            if (this.sessionIframe && clientId) {
+                this.loggerService.logDebug(this.sessionIframe);
+                const session_state = this.oidcSecurityCommon.sessionState;
+                if (session_state) {
+                    this.sessionIframe.contentWindow.postMessage(
+                        clientId + ' ' + session_state,
+                        this.authConfiguration.stsServer
                     );
-                    this.loggerService.logDebug(clientId);
-                    this.loggerService.logDebug(this.sessionIframe);
-                    // this.init();
                 }
-            },
-            (err: any) => {
-                this.loggerService.logError('pollServerSession error: ' + err);
-            },
-            () => {
-                this.loggerService.logDebug(
-                    'checksession pollServerSession completed'
+            } else {
+                this.loggerService.logWarning(
+                    'OidcSecurityCheckSession pollServerSession sessionIframe does not exist'
                 );
+                this.loggerService.logDebug(clientId);
+                this.loggerService.logDebug(this.sessionIframe);
+                // this.init();
             }
-        );
+            this._scheduledHeartBeat = setTimeout(_pollServerSessionRecur, 3000);
+        };
+
+        this.zone.runOutsideAngular(() => {
+            this._scheduledHeartBeat = setTimeout(_pollServerSessionRecur, 3000);
+        });
     }
 
     private messageHandler(e: any) {
