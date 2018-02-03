@@ -87,10 +87,10 @@ export class OidcSecurityCheckSession {
             clearTimeout(this._scheduledHeartBeat);
             this._scheduledHeartBeat = null;
         }
-    }    
+    }
 
     pollServerSession(clientId: any) {
-        let _pollServerSessionRecur = () => {
+        const _pollServerSessionRecur = () => {
             if (this.sessionIframe && clientId) {
                 this.loggerService.logDebug(this.sessionIframe);
                 const session_state = this.oidcSecurityCommon.sessionState;
