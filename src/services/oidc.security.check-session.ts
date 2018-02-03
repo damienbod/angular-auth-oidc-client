@@ -76,13 +76,13 @@ export class OidcSecurityCheckSession {
         });
     }
 
-    startCheckingSilentRenew(clientId: any): void {
+    startCheckingSession(clientId: any): void {
         if (!this._scheduledHeartBeat) {
             this.pollServerSession(clientId);
         }
     }
 
-    stopCheckingSilentRenew(): void {
+    stopCheckingSession(): void {
         if (this._scheduledHeartBeat) {
             clearTimeout(this._scheduledHeartBeat);
             this._scheduledHeartBeat = null;
