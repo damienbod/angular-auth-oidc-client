@@ -508,8 +508,9 @@ export class OidcSecurityService {
     stopCheckingSilentRenew(): void {
         if (this._scheduledHeartBeat) {
             clearTimeout(this._scheduledHeartBeat);
+            this._scheduledHeartBeat = null;
+            this.runTokenValidationRunning = false;
         }
-        this.runTokenValidationRunning = false;
     }
 
     private getValidatedStateResult(
@@ -684,9 +685,9 @@ export class OidcSecurityService {
 
                     if (this.authConfiguration.silent_renew) {
                         this.refreshSession().subscribe(() => {
+                            this._scheduledHeartBeat = setTimeout(silentRenewHeartBeatCheck, 3000);
                         }, (err: any) => {
                             this.loggerService.logError('Error: ' + err);
-                        }, () => {
                             this._scheduledHeartBeat = setTimeout(silentRenewHeartBeatCheck, 3000);
                         });
                         /* In this situation, we schedule a heatbeat check only when silentRenew is finished.
