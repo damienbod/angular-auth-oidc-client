@@ -2,27 +2,60 @@
 
 @Injectable()
 export class OidcConfigService {
-    @Output() onConfigurationLoaded = new EventEmitter<boolean>();
-    clientConfiguration: any;
-    wellKnownEndpoints: any;
+  @Output() onConfigurationLoaded = new EventEmitter<boolean>();
+  clientConfiguration: any;
+  wellKnownEndpoints: any;
 
-    constructor() {}
+  async load(configUrl: string) {
+    try {
+      const response = await fetch(configUrl);
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
 
-    async load(configUrl: string) {
-        const response = await fetch(configUrl);
-        this.clientConfiguration = await response.json()
-        await this.load_using_stsServer(this.clientConfiguration.stsServer);
+      this.clientConfiguration = await response.json();
+      await this.load_using_stsServer(this.clientConfiguration.stsServer);
+    } catch (err) {
+      console.error(
+        `OidcConfigService 'load' threw an error on calling ${configUrl}`,
+        err
+      );
     }
+  }
 
-    async load_using_stsServer(stsServer: string) {
-        const response = await fetch(`${stsServer}/.well-known/openid-configuration`);
-        this.wellKnownEndpoints = await response.json()
-        this.onConfigurationLoaded.emit();
-    }
+  async load_using_stsServer(stsServer: string) {
+    try {
+      const response = await fetch(
+        `${stsServer}/.well-known/openid-configuration`
+      );
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
 
-    async load_using_custom_stsServer(stsServer: string) {
-        const response = await fetch(stsServer);
-        this.wellKnownEndpoints = await response.json()
-        this.onConfigurationLoaded.emit();
+      this.wellKnownEndpoints = await response.json();
+      this.onConfigurationLoaded.emit();
+    } catch (err) {
+      console.error(
+        `OidcConfigService 'load_using_stsServer' threw an error on calling ${stsServer}`,
+        err
+      );
     }
+  }
+
+  async load_using_custom_stsServer(stsServer: string) {
+    try {
+      const response = await fetch(stsServer);
+
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      this.wellKnownEndpoints = await response.json();
+      this.onConfigurationLoaded.emit();
+    } catch (err) {
+      console.error(
+        `OidcConfigService 'load_using_custom_stsServer' threw an error on calling ${stsServer}`,
+        err
+      );
+    }
+  }
 }
