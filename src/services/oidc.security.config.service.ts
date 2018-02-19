@@ -20,6 +20,7 @@ export class OidcConfigService {
         `OidcConfigService 'load' threw an error on calling ${configUrl}`,
         err
       );
+      this.onConfigurationLoaded.emit(false);
     }
   }
 
@@ -33,12 +34,13 @@ export class OidcConfigService {
       }
 
       this.wellKnownEndpoints = await response.json();
-      this.onConfigurationLoaded.emit();
+      this.onConfigurationLoaded.emit(true);
     } catch (err) {
       console.error(
         `OidcConfigService 'load_using_stsServer' threw an error on calling ${stsServer}`,
         err
       );
+      this.onConfigurationLoaded.emit(false);
     }
   }
 
@@ -50,12 +52,13 @@ export class OidcConfigService {
         throw new Error(response.statusText);
       }
       this.wellKnownEndpoints = await response.json();
-      this.onConfigurationLoaded.emit();
+      this.onConfigurationLoaded.emit(true);
     } catch (err) {
       console.error(
         `OidcConfigService 'load_using_custom_stsServer' threw an error on calling ${stsServer}`,
         err
       );
+      this.onConfigurationLoaded.emit(false);
     }
   }
 }
