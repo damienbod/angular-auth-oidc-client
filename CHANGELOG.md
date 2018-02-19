@@ -1,11 +1,14 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-02-19"></a>
+### 2017-02-19 version 4.0.2
+* returning bool event from config service
+
 <a name="2018-02-03"></a>
 ### 2017-02-03 version 4.0.1
 * silent renew fixes
 * check session renew fixes
 * adding error handling to config service, used for the APP_INITIALIZER
-
 
 <a name="2018-01-15"></a>
 ### 2017-01-15 version 4.0.0
