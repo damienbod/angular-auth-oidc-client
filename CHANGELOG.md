@@ -1,17 +1,17 @@
 ## angular-auth-oidc-client Changelog
 
 <a name="2018-02-19"></a>
-### 2017-02-19 version 4.0.2
+### 2018-02-19 version 4.0.2
 * returning bool event from config service
 
 <a name="2018-02-03"></a>
-### 2017-02-03 version 4.0.1
+### 2018-02-03 version 4.0.1
 * silent renew fixes
 * check session renew fixes
 * adding error handling to config service, used for the APP_INITIALIZER
 
 <a name="2018-01-15"></a>
-### 2017-01-15 version 4.0.0
+### 2018-01-15 version 4.0.0
 * fixing init process, using APP_INITIALIZER, and proper support for angular guards
 * removed override_well_known_configuration, well_known_configuration now loaded from the APP_INITIALIZER
 * removed override_well_known_configuration_url, well_known_configuration now loaded from the APP_INITIALIZER
@@ -20,18 +20,18 @@ If you want to configure the well known endpoints locally, you need to set this 
 
 ### override_well_known_configuration_url
 <a name="2018-01-08"></a>
-### 2017-01-08 version 3.0.13
+### 2018-01-08 version 3.0.13
 * fixing rollup build
 
 <a name="2018-01-06"></a>
-### 2017-01-06 version 3.0.12
+### 2018-01-06 version 3.0.12
 * adding a check session event
 * adding onAuthorizationResult for the silent renew event
 * onAuthorizationResult is always sent now
 * no redirects are triggered for silent renews
 
 <a name="2018-01-01"></a>
-### 2017-01-01 version 3.0.11
+### 2018-01-01 version 3.0.11
 * bug fix incorrect user data type
 
 <a name="2017-12-31"></a>
