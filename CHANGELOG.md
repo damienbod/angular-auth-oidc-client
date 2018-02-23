@@ -1,7 +1,7 @@
 ## angular-auth-oidc-client Changelog
 
-<a name="2018-02-19"></a>
-### 2018-02-19 version 4.0.2
+<a name="2018-02-23"></a>
+### 2018-02-23 version 4.0.2
 * returning bool event from config service
 
 <a name="2018-02-03"></a>
