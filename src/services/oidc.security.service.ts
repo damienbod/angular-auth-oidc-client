@@ -180,7 +180,7 @@ export class OidcSecurityService {
         this.oidcSecurityCommon.customRequestParams = params;
     }
 
-    authorize() {
+    authorize(urlHandler?: (url: string) => any) {
         if (this.authWellKnownEndpoints) {
             this.authWellKnownEndpointsLoaded = true;
         }
@@ -223,7 +223,11 @@ export class OidcSecurityService {
             state,
             this.authWellKnownEndpoints.authorization_endpoint
         );
-        window.location.href = url;
+        if (urlHandler) {
+            urlHandler(url);
+        } else {
+            window.location.href = url;
+        }
     }
 
     authorizedCallback(hash?: string) {
