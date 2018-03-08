@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-02-05"></a>
+### 2018-03-05 version 4.0.3
+* added optional url handler parameter in the authorize function.
+
 <a name="2018-02-23"></a>
 ### 2018-02-23 version 4.0.2
 * returning bool event from config service
