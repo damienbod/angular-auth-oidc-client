@@ -219,6 +219,7 @@ export class OidcSecurityService {
         );
 
         const url = this.createAuthorizeUrl(
+            this.authConfiguration.redirect_url,
             nonce,
             state,
             this.authWellKnownEndpoints.authorization_endpoint
@@ -468,6 +469,7 @@ export class OidcSecurityService {
         );
 
         const url = this.createAuthorizeUrl(
+            this.authConfiguration.silent_redirect_url,
             nonce,
             state,
             this.authWellKnownEndpoints.authorization_endpoint,
@@ -553,6 +555,7 @@ export class OidcSecurityService {
     }
 
     private createAuthorizeUrl(
+        redirect_url: string,
         nonce: string,
         state: string,
         authorization_endpoint: string,
@@ -567,7 +570,7 @@ export class OidcSecurityService {
         params = params.set('client_id', this.authConfiguration.client_id);
         params = params.append(
             'redirect_uri',
-            this.authConfiguration.redirect_url
+            redirect_url
         );
         params = params.append(
             'response_type',

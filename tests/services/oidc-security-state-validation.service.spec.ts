@@ -38,7 +38,8 @@ const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
 	openIDImplicitFlowConfiguration.scope = 'dataEventRecords openid';
 	openIDImplicitFlowConfiguration.post_logout_redirect_uri = 'https://localhost:44363/Unauthorized';
 	openIDImplicitFlowConfiguration.start_checksession = false;
-	openIDImplicitFlowConfiguration.silent_renew = true;
+    openIDImplicitFlowConfiguration.silent_renew = true;
+    openIDImplicitFlowConfiguration.silent_renew_url = 'https://localhost:44363';
 	openIDImplicitFlowConfiguration.post_login_route = '/dataeventrecords';
 	// HTTP 403
 	openIDImplicitFlowConfiguration.forbidden_route = '/Forbidden';
