@@ -113,6 +113,7 @@ export class AppModule {
             openIDImplicitFlowConfiguration.post_logout_redirect_uri = this.oidcConfigService.clientConfiguration.post_logout_redirect_uri;
             openIDImplicitFlowConfiguration.start_checksession = this.oidcConfigService.clientConfiguration.start_checksession;
             openIDImplicitFlowConfiguration.silent_renew = this.oidcConfigService.clientConfiguration.silent_renew;
+            openIDImplicitFlowConfiguration.silent_renew_uri = this.oidcConfigService.clientConfiguration.silent_renew_uri;
             openIDImplicitFlowConfiguration.post_login_route = this.oidcConfigService.clientConfiguration.startup_route;
             // HTTP 403
             openIDImplicitFlowConfiguration.forbidden_route = this.oidcConfigService.clientConfiguration.forbidden_route;
@@ -227,7 +228,8 @@ You can add any configurations to this json, as long as the stsServer is present
 	"scope":"dataEventRecords securedFiles openid profile",
 	"post_logout_redirect_uri":"https://localhost:44311",
 	"start_checksession":true,
-	"silent_renew":true,
+    "silent_renew":true,
+    "silent_renew_uri":"https://localhost:44311/silent-renew.html"
 	"startup_route":"/dataeventrecords",
 	"forbidden_route":"/forbidden",
 	"unauthorized_route":"/unauthorized",
@@ -258,6 +260,7 @@ export class AppModule {
             openIDImplicitFlowConfiguration.post_logout_redirect_uri = 'https://localhost:44363/Unauthorized';
             openIDImplicitFlowConfiguration.start_checksession = false;
             openIDImplicitFlowConfiguration.silent_renew = true;
+            openIDImplicitFlowConfiguration.silent_renew_uri = 'https://localhost:44363/silent-renew.html';
             openIDImplicitFlowConfiguration.post_login_route = '/dataeventrecords';
             // HTTP 403
             openIDImplicitFlowConfiguration.forbidden_route = '/Forbidden';
@@ -417,6 +420,24 @@ login() {
         window.open(authUrl, '_blank', 'toolbar=0,location=0,menubar=0');
     });
 }
+```
+
+## Silent Renew
+
+When silent renew is enabled, a DOM event will be automatically installed in the application's host window. The event `oidc-silent-renew-message` accepts a `CustomEvent` instance with the token returned from the OAuth server in its `detail` field.
+The event handler will send this token to the authorization callback and complete the validation.
+
+Point the `silent_renew_uri` property to an HTML file which contains the following script element to enable authorization.
+```
+<script>
+    window.onload = function () {
+    /* The parent window hosts the Angular application */
+    var parent = window.parent;
+    /* Send the id_token information to the oidc message handler */
+    var event = new CustomEvent('oidc-silent-renew-message', {detail: window.location.hash.substr(1) });
+    parent.dispatchEvent(event);
+};
+</script>
 ```
 
 ## Examples using: 
