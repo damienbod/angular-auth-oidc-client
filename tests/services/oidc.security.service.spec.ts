@@ -82,6 +82,7 @@ describe('OidcSecurityService', () => {
         oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
 
         let value = oidcSecurityService.createAuthorizeUrl(
+            openIDImplicitFlowConfiguration.redirect_url,
             'nonce',
             'state',
             'http://example'
@@ -120,6 +121,7 @@ describe('OidcSecurityService', () => {
         );
 
         let value = oidcSecurityService.createAuthorizeUrl(
+            openIDImplicitFlowConfiguration.redirect_url,
             'nonce',
             'state',
             'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=b2c_1_sign_in'
@@ -196,6 +198,7 @@ describe('OidcSecurityService', () => {
         });
 
         let value = oidcSecurityService.createAuthorizeUrl(
+            openIDImplicitFlowConfiguration.redirect_url, 
             'nonce',
             'state',
             'http://example'
@@ -239,6 +242,7 @@ describe('OidcSecurityService', () => {
         });
 
         let value = oidcSecurityService.createAuthorizeUrl(
+            openIDImplicitFlowConfiguration.redirect_url,
             'nonce',
             'state',
             'http://example'
