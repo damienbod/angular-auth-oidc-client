@@ -47,6 +47,8 @@ export class OidcSecurityService {
 
     private _scheduledHeartBeat: any;
 
+    private boundSilentRenewEvent: any;
+
     constructor(
         @Inject(PLATFORM_ID) private platformId: Object,
         private oidcDataService: OidcDataService,
@@ -117,6 +119,10 @@ export class OidcSecurityService {
 
             if (this.authConfiguration.silent_renew) {
                 this.oidcSecuritySilentRenew.initRenew();
+
+                // Support authorization via DOM events.
+                this.boundSilentRenewEvent =  this.silentRenewEventHandler.bind(this);
+                window.addEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent, false);
             }
 
             if (
@@ -714,5 +720,10 @@ export class OidcSecurityService {
             /* Initial heartbeat check */
             this._scheduledHeartBeat = setTimeout(silentRenewHeartBeatCheck, 10000);
         });
+    }
+
+    private silentRenewEventHandler(e: CustomEvent) {
+        this.loggerService.logDebug('silentRenewEventHandler');
+        this.authorizedCallback(e.detail);
     }
 }
