@@ -51,6 +51,38 @@ default value : true
 
 Renews the client tokens, once the token_id expires.
 
+### silent_renew_url
+
+default value : https://localhost:44311
+
+URL which can be used for a lightweight renew callback.
+
+```html
+<!doctype html>
+<html>
+<head>
+    <base href="./">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ASP.NET Core 1.0 Angular IdentityServer4 Client</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+</head>
+<body>
+
+    <script>
+        window.onload = function () {
+            /* The parent window hosts the Angular application */
+            var parent = window.parent;
+            /* Send the id_token information to the oidc message handler */
+            var event = new CustomEvent('oidc-silent-renew-message', { detail: window.location.hash.substr(1) });
+            parent.dispatchEvent(event);
+        };
+    </script>
+</body>
+</html>
+
+```
+
 ### post_login_route
 
 default value : '/'
