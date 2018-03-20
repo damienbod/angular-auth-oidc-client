@@ -66,7 +66,7 @@ Example of a silent_renew.html callback html file.
     <base href="./">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ASP.NET Core 1.0 Angular IdentityServer4 Client</title>
+    <title>silent_renew</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 </head>
 <body>
