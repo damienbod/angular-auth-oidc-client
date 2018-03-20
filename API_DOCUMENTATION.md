@@ -57,6 +57,8 @@ default value : https://localhost:44311
 
 URL which can be used for a lightweight renew callback.
 
+Example of a silent_renew.html callback html file.
+
 ```html
 <!doctype html>
 <html>
