@@ -228,8 +228,8 @@ You can add any configurations to this json, as long as the stsServer is present
 	"scope":"dataEventRecords securedFiles openid profile",
 	"post_logout_redirect_uri":"https://localhost:44311",
 	"start_checksession":true,
-    "silent_renew":true,
-    "silent_renew_url":"https://localhost:44311/silent-renew.html"
+	"silent_renew":true,
+	"silent_renew_url":"https://localhost:44311/silent-renew.html"
 	"startup_route":"/dataeventrecords",
 	"forbidden_route":"/forbidden",
 	"unauthorized_route":"/unauthorized",
