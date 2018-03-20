@@ -1,6 +1,10 @@
 ## angular-auth-oidc-client Changelog
 
-<a name="2018-02-05"></a>
+<a name="2018-03-21"></a>
+### 2018-03-31 version 4.1.0
+* Lightweight silent renew
+
+<a name="2018-03-05"></a>
 ### 2018-03-05 version 4.0.3
 * added optional url handler parameter in the authorize function.
 
