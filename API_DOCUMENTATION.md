@@ -25,7 +25,7 @@ The Client MUST validate that the aud (audience) Claim contains its client_id va
 
 default value : 'id_token token'
 
-'id_token token' or i'd_token' Name of the flow which can be configured. You must use the 'id_token token' flow, if you want to access an API or get user data from the server. The access_token is required for this, and only returned with tis flow.
+'id_token token' or i'd_token' Name of the flow which can be configured. You must use the 'id_token token' flow, if you want to access an API or get user data from the server. The access_token is required for this, and only returned with this flow.
 
 ### scope
 
