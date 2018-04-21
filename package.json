@@ -1,6 +1,6 @@
 {
     "name": "angular-auth-oidc-client",
-    "version": "4.1.0",
+    "version": "4.1.1",
     "description": "An OpenID Connect Implicit Flow client for Angular",
     "main": "./bundles/angular-auth-oidc-client.umd.js",
     "module": "./modules/angular-auth-oidc-client.es5.js",
@@ -74,7 +74,7 @@
         "sorcery": "0.10.0",
         "ts-loader": "2.1.0",
         "tslint": "5.8.0",
-        "typescript": "2.6.1",
+        "typescript": "2.7.2",
         "webpack": "3.8.1",
         "yargs": "8.0.1",
         "zone.js": "0.8.11"
