@@ -17,6 +17,7 @@ export class DefaultConfiguration {
     post_logout_redirect_uri = 'https://localhost:44311/unauthorized';
     start_checksession = false;
     silent_renew = true;
+    silent_renew_url = 'https://localhost:44311';
     silent_renew_offset_in_seconds = 0;
     silent_redirect_url = 'https://localhost:44311';
     post_login_route = '/';
@@ -25,8 +26,8 @@ export class DefaultConfiguration {
     // HTTP 401
     unauthorized_route = '/unauthorized';
     auto_userinfo = true;
-    auto_clean_state_after_authentication: true;
-    trigger_authorization_result_event: false;
+    auto_clean_state_after_authentication = true;
+    trigger_authorization_result_event = false;
     log_console_warning_active = true;
     log_console_debug_active = false;
 
@@ -38,188 +39,209 @@ export class DefaultConfiguration {
 }
 
 export class OpenIDImplicitFlowConfiguration {
-    stsServer: string;
-    redirect_url: string;
-    client_id: string;
-    response_type: string;
-    resource: string;
-    scope: string;
-    hd_param: string;
-    post_logout_redirect_uri: string;
-    start_checksession: boolean;
-    silent_renew: boolean;
-    silent_renew_offset_in_seconds: number;
-    silent_renew_url: string;
-    post_login_route: string;
-    forbidden_route: string;
-    unauthorized_route: string;
-    auto_userinfo: boolean;
-    auto_clean_state_after_authentication: boolean;
-    trigger_authorization_result_event: boolean;
-    log_console_warning_active: boolean;
-    log_console_debug_active: boolean;
-    max_id_token_iat_offset_allowed_in_seconds: number;
-    storage: any;
+    stsServer = 'https://localhost:44318';
+    redirect_url = 'https://localhost:44311';
+    client_id = 'angularclient';
+    response_type = 'id_token token';
+    resource = '';
+    scope = 'openid email profile';
+    hd_param = '';
+    post_logout_redirect_uri = 'https://localhost:44311/unauthorized';
+    start_checksession = false;
+    silent_renew = true;
+    silent_renew_url = 'https://localhost:44311';
+    silent_renew_offset_in_seconds = 0;
+    silent_redirect_url = 'https://localhost:44311';
+    post_login_route = '/';
+    forbidden_route = '/forbidden';
+    unauthorized_route = '/unauthorized';
+    auto_userinfo = true;
+    auto_clean_state_after_authentication = true;
+    trigger_authorization_result_event = false;
+    log_console_warning_active = true;
+    log_console_debug_active = false;
+    max_id_token_iat_offset_allowed_in_seconds = 3;
+    storage: any = sessionStorage;
 }
 
 @Injectable()
 export class AuthConfiguration {
-    private openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration;
+    private openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration | undefined;
 
     get stsServer(): string {
-        return (
-            this.openIDImplicitFlowConfiguration.stsServer ||
-            this.defaultConfig.stsServer
-        );
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.stsServer;
+        }
+
+        return this.defaultConfig.stsServer;
     }
 
     get redirect_url(): string {
-        return (
-            this.openIDImplicitFlowConfiguration.redirect_url ||
-            this.defaultConfig.redirect_url
-        );
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.redirect_url;
+        }
+
+        return this.defaultConfig.redirect_url;
     }
 
     get silent_redirect_url(): string {
-        return (
-            this.openIDImplicitFlowConfiguration.silent_renew_url ||
-            this.defaultConfig.silent_redirect_url
-        );
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.silent_renew_url;
+        }
+
+        return this.defaultConfig.silent_renew_url;
     }
 
     get client_id(): string {
-        return (
-            this.openIDImplicitFlowConfiguration.client_id ||
-            this.defaultConfig.client_id
-        );
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.client_id;
+        }
+
+        return this.defaultConfig.client_id;
     }
 
     get response_type(): string {
-        return (
-            this.openIDImplicitFlowConfiguration.response_type ||
-            this.defaultConfig.response_type
-        );
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.response_type;
+        }
+
+        return this.defaultConfig.response_type;
     }
 
     get resource(): string {
-        return (
-            this.openIDImplicitFlowConfiguration.resource ||
-            this.defaultConfig.resource
-        );
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.resource;
+        }
+
+        return this.defaultConfig.resource;
     }
 
     get scope(): string {
-        return (
-            this.openIDImplicitFlowConfiguration.scope ||
-            this.defaultConfig.scope
-        );
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.scope;
+        }
+
+        return this.defaultConfig.scope;
     }
 
     get hd_param(): string {
-        return (
-            this.openIDImplicitFlowConfiguration.hd_param ||
-            this.defaultConfig.hd_param
-        );
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.hd_param;
+        }
+
+        return this.defaultConfig.hd_param;
     }
 
     get post_logout_redirect_uri(): string {
-        return (
-            this.openIDImplicitFlowConfiguration.post_logout_redirect_uri ||
-            this.defaultConfig.post_logout_redirect_uri
-        );
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.post_logout_redirect_uri;
+        }
+
+        return this.defaultConfig.post_logout_redirect_uri;
     }
 
     get start_checksession(): boolean {
-        return this.openIDImplicitFlowConfiguration.start_checksession !==
-            undefined
-            ? this.openIDImplicitFlowConfiguration.start_checksession
-            : this.defaultConfig.start_checksession;
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.start_checksession;
+        }
+
+        return this.defaultConfig.start_checksession;
     }
 
     get silent_renew(): boolean {
-        return this.openIDImplicitFlowConfiguration.silent_renew !== undefined
-            ? this.openIDImplicitFlowConfiguration.silent_renew
-            : this.defaultConfig.silent_renew;
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.silent_renew;
+        }
+
+        return this.defaultConfig.silent_renew;
     }
 
     get silent_renew_offset_in_seconds(): number {
-        return (
-            this.openIDImplicitFlowConfiguration
-                .silent_renew_offset_in_seconds ||
-            this.defaultConfig.silent_renew_offset_in_seconds
-        );
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.silent_renew_offset_in_seconds;
+        }
+
+        return this.defaultConfig.silent_renew_offset_in_seconds;
     }
 
     get post_login_route(): string {
-        return (
-            this.openIDImplicitFlowConfiguration.post_login_route ||
-            this.defaultConfig.post_login_route
-        );
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.post_login_route;
+        }
+
+        return this.defaultConfig.post_login_route;
     }
 
     get forbidden_route(): string {
-        return (
-            this.openIDImplicitFlowConfiguration.forbidden_route ||
-            this.defaultConfig.forbidden_route
-        );
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.forbidden_route;
+        }
+
+        return this.defaultConfig.forbidden_route;
     }
 
     get unauthorized_route(): string {
-        return (
-            this.openIDImplicitFlowConfiguration.unauthorized_route ||
-            this.defaultConfig.unauthorized_route
-        );
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.unauthorized_route;
+        }
+
+        return this.defaultConfig.unauthorized_route;
     }
 
     get auto_userinfo(): boolean {
-        return this.openIDImplicitFlowConfiguration.auto_userinfo !== undefined
-            ? this.openIDImplicitFlowConfiguration.auto_userinfo
-            : this.defaultConfig.auto_userinfo;
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.auto_userinfo;
+        }
+
+        return this.defaultConfig.auto_userinfo;
     }
 
     get auto_clean_state_after_authentication(): boolean {
-        return this.openIDImplicitFlowConfiguration
-            .auto_clean_state_after_authentication !== undefined
-            ? this.openIDImplicitFlowConfiguration
-                  .auto_clean_state_after_authentication
-            : this.defaultConfig.auto_clean_state_after_authentication;
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.auto_clean_state_after_authentication;
+        }
+
+        return this.defaultConfig.auto_clean_state_after_authentication;
     }
 
     get trigger_authorization_result_event(): boolean {
-        return this.openIDImplicitFlowConfiguration
-            .trigger_authorization_result_event !== undefined
-            ? this.openIDImplicitFlowConfiguration
-                  .trigger_authorization_result_event
-            : this.defaultConfig.trigger_authorization_result_event;
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.trigger_authorization_result_event;
+        }
+
+        return this.defaultConfig.trigger_authorization_result_event;
     }
 
     get log_console_warning_active(): boolean {
-        return this.openIDImplicitFlowConfiguration
-            .log_console_warning_active !== undefined
-            ? this.openIDImplicitFlowConfiguration.log_console_warning_active
-            : this.defaultConfig.log_console_warning_active;
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.log_console_warning_active;
+        }
+
+        return this.defaultConfig.log_console_warning_active;
     }
 
     get log_console_debug_active(): boolean {
-        return this.openIDImplicitFlowConfiguration.log_console_debug_active !==
-            undefined
-            ? this.openIDImplicitFlowConfiguration.log_console_debug_active
-            : this.defaultConfig.log_console_debug_active;
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.log_console_debug_active;
+        }
+
+        return this.defaultConfig.log_console_debug_active;
     }
 
     get max_id_token_iat_offset_allowed_in_seconds(): number {
-        return (
-            this.openIDImplicitFlowConfiguration
-                .max_id_token_iat_offset_allowed_in_seconds ||
-            this.defaultConfig.max_id_token_iat_offset_allowed_in_seconds
-        );
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds;
+        }
+
+        return this.defaultConfig.max_id_token_iat_offset_allowed_in_seconds;
     }
 
     get storage(): any {
-        return (
-            this.openIDImplicitFlowConfiguration.storage ||
-            this.defaultConfig.storage
-        );
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.storage;
+        }
+
+        return this.defaultConfig.storage;
     }
 
     constructor(private defaultConfig: DefaultConfiguration) {}

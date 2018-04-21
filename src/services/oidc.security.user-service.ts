@@ -4,15 +4,17 @@ import { map } from 'rxjs/operators';
 import { OidcSecurityCommon } from './oidc.security.common';
 import { OidcDataService } from './oidc-data.service';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
+import { LoggerService } from './oidc.logger.service';
 
 @Injectable()
 export class OidcSecurityUserService {
     private userData: any = '';
-    private authWellKnownEndpoints: AuthWellKnownEndpoints;
+    private authWellKnownEndpoints: AuthWellKnownEndpoints | undefined;
 
     constructor(
         private oidcDataService: OidcDataService,
         private oidcSecurityCommon: OidcSecurityCommon,
+        private loggerService: LoggerService,
     ) { }
 
     setupModule(authWellKnownEndpoints: AuthWellKnownEndpoints) {
@@ -40,8 +42,17 @@ export class OidcSecurityUserService {
     private getIdentityUserData(): Observable<any> {
         const token = this.oidcSecurityCommon.getAccessToken();
 
+        if (this.authWellKnownEndpoints) {
+            return this.oidcDataService.getIdentityUserData(
+                this.authWellKnownEndpoints.userinfo_endpoint,
+                token
+            );
+        } else {
+            this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
+        }
+
         return this.oidcDataService.getIdentityUserData(
-            this.authWellKnownEndpoints.userinfo_endpoint,
+            'undefined',
             token
         );
     }

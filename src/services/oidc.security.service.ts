@@ -32,21 +32,17 @@ export class OidcSecurityService {
     @Output() onAuthorizationResult = new EventEmitter<AuthorizationResult>();
     @Output() onCheckSessionChanged = new EventEmitter<boolean>();
 
-    checkSessionChanged: boolean;
+    checkSessionChanged = false;
     moduleSetup = false;
-    private authWellKnownEndpoints: AuthWellKnownEndpoints;
+    private authWellKnownEndpoints: AuthWellKnownEndpoints | undefined;
     private _isAuthorized = new BehaviorSubject<boolean>(false);
-    private _isAuthorizedValue: boolean;
+    private _isAuthorizedValue = false;
 
     private lastUserData: any;
     private _userData = new BehaviorSubject<any>('');
-
     private authWellKnownEndpointsLoaded = false;
-
-    private runTokenValidationRunning: boolean;
-
+    private runTokenValidationRunning = false;
     private _scheduledHeartBeat: any;
-
     private boundSilentRenewEvent: any;
 
     constructor(
@@ -224,16 +220,21 @@ export class OidcSecurityService {
                 this.oidcSecurityCommon.authStateControl
         );
 
-        const url = this.createAuthorizeUrl(
-            this.authConfiguration.redirect_url,
-            nonce,
-            state,
-            this.authWellKnownEndpoints.authorization_endpoint
-        );
-        if (urlHandler) {
-            urlHandler(url);
+        if (this.authWellKnownEndpoints) {
+            const url = this.createAuthorizeUrl(
+                this.authConfiguration.redirect_url,
+                nonce,
+                state,
+                this.authWellKnownEndpoints.authorization_endpoint
+            );
+
+            if (urlHandler) {
+                urlHandler(url);
+            } else {
+                window.location.href = url;
+            }
         } else {
-            window.location.href = url;
+            this.loggerService.logError('authWellKnownEndpoints is undefined');
         }
     }
 
@@ -429,32 +430,36 @@ export class OidcSecurityService {
         // /connect/endsession?id_token_hint=...&post_logout_redirect_uri=https://myapp.com
         this.loggerService.logDebug('BEGIN Authorize, no auth data');
 
-        if (this.authWellKnownEndpoints.end_session_endpoint) {
-            const end_session_endpoint = this.authWellKnownEndpoints
-                .end_session_endpoint;
-            const id_token_hint = this.oidcSecurityCommon.idToken;
-            const url = this.createEndSessionUrl(
-                end_session_endpoint,
-                id_token_hint
-            );
-
-            this.resetAuthorizationData(false);
-
-            if (
-                this.authConfiguration.start_checksession &&
-                this.checkSessionChanged
-            ) {
-                this.loggerService.logDebug(
-                    'only local login cleaned up, server session has changed'
+        if (this.authWellKnownEndpoints) {
+            if (this.authWellKnownEndpoints.end_session_endpoint) {
+                const end_session_endpoint = this.authWellKnownEndpoints
+                    .end_session_endpoint;
+                const id_token_hint = this.oidcSecurityCommon.idToken;
+                const url = this.createEndSessionUrl(
+                    end_session_endpoint,
+                    id_token_hint
                 );
+
+                this.resetAuthorizationData(false);
+
+                if (
+                    this.authConfiguration.start_checksession &&
+                    this.checkSessionChanged
+                ) {
+                    this.loggerService.logDebug(
+                        'only local login cleaned up, server session has changed'
+                    );
+                } else {
+                    window.location.href = url;
+                }
             } else {
-                window.location.href = url;
+                this.resetAuthorizationData(false);
+                this.loggerService.logDebug(
+                    'only local login cleaned up, no end_session_endpoint'
+                );
             }
         } else {
-            this.resetAuthorizationData(false);
-            this.loggerService.logDebug(
-                'only local login cleaned up, no end_session_endpoint'
-            );
+            this.loggerService.logWarning('authWellKnownEndpoints is undefined');
         }
     }
 
@@ -474,13 +479,18 @@ export class OidcSecurityService {
                 this.oidcSecurityCommon.authStateControl
         );
 
-        const url = this.createAuthorizeUrl(
-            this.authConfiguration.silent_redirect_url,
-            nonce,
-            state,
-            this.authWellKnownEndpoints.authorization_endpoint,
-            'none'
-        );
+        let url = '';
+        if (this.authWellKnownEndpoints) {
+             url = this.createAuthorizeUrl(
+                this.authConfiguration.silent_redirect_url,
+                nonce,
+                state,
+                this.authWellKnownEndpoints.authorization_endpoint,
+                'none'
+            );
+        } else {
+            this.loggerService.logWarning('authWellKnownEndpoints is undefined');
+        }
 
         this.oidcSecurityCommon.silentRenewRunning = 'running';
         return this.oidcSecuritySilentRenew.startRenew(url);
@@ -654,11 +664,20 @@ export class OidcSecurityService {
     }
 
     private getSigningKeys(): Observable<JwtKeys> {
-        this.loggerService.logDebug(
-            'jwks_uri: ' + this.authWellKnownEndpoints.jwks_uri
-        );
+        if (this.authWellKnownEndpoints) {
+            this.loggerService.logDebug(
+                'jwks_uri: ' + this.authWellKnownEndpoints.jwks_uri
+            );
+
+            return this.oidcDataService
+                .get<JwtKeys>(this.authWellKnownEndpoints.jwks_uri)
+                .pipe(catchError(this.handleErrorGetSigningKeys));
+        } else {
+            this.loggerService.logWarning('getSigningKeys: authWellKnownEndpoints is undefined');
+        }
+
         return this.oidcDataService
-            .get<JwtKeys>(this.authWellKnownEndpoints.jwks_uri)
+            .get<JwtKeys>('undefined')
             .pipe(catchError(this.handleErrorGetSigningKeys));
     }
 

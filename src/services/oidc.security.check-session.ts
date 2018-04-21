@@ -12,7 +12,7 @@ import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 export class OidcSecurityCheckSession {
     private sessionIframe: any;
     private iframeMessageEvent: any;
-    private authWellKnownEndpoints: AuthWellKnownEndpoints;
+    private authWellKnownEndpoints: AuthWellKnownEndpoints | undefined;
     private _scheduledHeartBeat: any;
 
     @Output()
@@ -63,7 +63,12 @@ export class OidcSecurityCheckSession {
         this.loggerService.logDebug(this.sessionIframe);
         this.sessionIframe.style.display = 'none';
         window.document.body.appendChild(this.sessionIframe);
-        this.sessionIframe.src = this.authWellKnownEndpoints.check_session_iframe;
+
+        if (this.authWellKnownEndpoints) {
+            this.sessionIframe.src = this.authWellKnownEndpoints.check_session_iframe;
+        } else {
+            this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
+        }
 
         this.iframeMessageEvent = this.messageHandler.bind(this);
         window.addEventListener('message', this.iframeMessageEvent, false);
