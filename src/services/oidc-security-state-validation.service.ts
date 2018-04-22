@@ -10,7 +10,7 @@ import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 
 @Injectable()
 export class StateValidationService {
-    private authWellKnownEndpoints: AuthWellKnownEndpoints;
+    private authWellKnownEndpoints: AuthWellKnownEndpoints | undefined;
     constructor(
         private authConfiguration: AuthConfiguration,
         public oidcSecurityCommon: OidcSecurityCommon,
@@ -91,15 +91,20 @@ export class StateValidationService {
             return toReturn;
         }
 
-        if (
-            !this.oidcSecurityValidation.validate_id_token_iss(
-                toReturn.decoded_id_token,
-                this.authWellKnownEndpoints.issuer
-            )
-        ) {
-            this.loggerService.logWarning(
-                'authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer'
-            );
+        if (this.authWellKnownEndpoints) {
+            if (
+                !this.oidcSecurityValidation.validate_id_token_iss(
+                    toReturn.decoded_id_token,
+                    this.authWellKnownEndpoints.issuer
+                )
+            ) {
+                this.loggerService.logWarning(
+                    'authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer'
+                );
+                return toReturn;
+            }
+        } else {
+            this.loggerService.logWarning('authWellKnownEndpoints is undefined');
             return toReturn;
         }
 
