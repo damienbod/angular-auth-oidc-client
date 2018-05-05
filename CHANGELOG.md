@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-05-05"></a>
+### 2018-04-31 version 6.0.0
+* Updating src to support rxjs 6.1.0, Angular 6.0.0
+
 <a name="2018-04-21"></a>
 ### 2018-04-31 version 4.1.1
 * Updating src to support typescript 2.7.2
