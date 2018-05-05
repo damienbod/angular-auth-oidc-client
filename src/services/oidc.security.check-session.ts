@@ -1,6 +1,5 @@
-﻿import { Injectable, EventEmitter, Output, NgZone } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { Observer } from 'rxjs/Observer';
+import { Injectable, EventEmitter, Output, NgZone } from '@angular/core';
+import { Observable ,  Observer } from 'rxjs';
 import { AuthConfiguration } from '../modules/auth.configuration';
 import { OidcSecurityCommon } from './oidc.security.common';
 import { LoggerService } from './oidc.logger.service';

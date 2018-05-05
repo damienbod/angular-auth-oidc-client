@@ -1,6 +1,5 @@
-﻿import { Injectable } from '@angular/core';
-import { Observer } from 'rxjs/Observer';
-import { Observable } from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+import { Observer ,  Observable } from 'rxjs';
 import { LoggerService } from './oidc.logger.service';
 
 @Injectable()

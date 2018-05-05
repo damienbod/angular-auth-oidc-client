@@ -1,10 +1,10 @@
+
+import {throwError as observableThrowError,  BehaviorSubject ,  Observable } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpParams } from '@angular/common/http';
 import { Inject, PLATFORM_ID, NgZone } from '@angular/core';
 import { EventEmitter, Injectable, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Observable } from 'rxjs/Observable';
 import { catchError } from 'rxjs/operators';
 
 import { AuthorizationResult } from '../models/authorization-result.enum';
@@ -691,7 +691,7 @@ export class OidcSecurityService {
             errMsg = error.message ? error.message : error.toString();
         }
         console.error(errMsg);
-        return Observable.throw(errMsg);
+        return observableThrowError(errMsg);
     }
 
     private runTokenValidation() {

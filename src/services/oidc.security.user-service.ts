@@ -1,5 +1,5 @@
-﻿import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { OidcSecurityCommon } from './oidc.security.common';
 import { OidcDataService } from './oidc-data.service';
