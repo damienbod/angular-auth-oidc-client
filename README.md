@@ -10,7 +10,7 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 
 
 ## Features
-- Angular 4 onwards
+- version 4.1.0 Angular 4 to Angular 5.2.10, Version 6.0.0, Angular 6 onwards
 - Supports OpenID Implicit Flow http://openid.net/specs/openid-connect-implicit-1_0.html
 - Complete client side validation for REQUIRED features
 - OpenID Connect Session Management 1.0 http://openid.net/specs/openid-connect-session-1_0.html
