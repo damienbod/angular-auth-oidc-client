@@ -440,6 +440,19 @@ Point the `silent_renew_url` property to an HTML file which contains the followi
 </script>
 ```
 
+## IE 11, Edge fetch
+
+For the fetch to work, or the app init, you need to include the isomorphic-fetch package.
+
+https://www.npmjs.com/package/isomorphic-fetch
+
+And add this to the polyfills
+
+```
+/** Workaround for IE11 and polyfill problem */
+import 'isomorphic-fetch';
+```
+
 ## Examples using: 
 
 https://github.com/damienbod/AspNetCoreAngularSignalRSecurity
