@@ -9,8 +9,6 @@ export class DefaultConfiguration {
     // or if it contains additional audiences not trusted by the Client.
     client_id = 'angularclient';
     response_type = 'id_token token';
-    // For some oidc, we require resource identifier to be provided along with the request.
-    resource = '';
     scope = 'openid email profile';
     // Only for Google Auth with particular G Suite domain, see https://developers.google.com/identity/protocols/OpenIDConnect#hd-param
     hd_param = '';
@@ -106,14 +104,6 @@ export class AuthConfiguration {
         }
 
         return this.defaultConfig.response_type;
-    }
-
-    get resource(): string {
-        if (this.openIDImplicitFlowConfiguration) {
-            return this.openIDImplicitFlowConfiguration.resource;
-        }
-
-        return this.defaultConfig.resource;
     }
 
     get scope(): string {
