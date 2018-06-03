@@ -1,7 +1,12 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-06-03"></a>
+### 2018-06-03 version 6.0.1
+* Removing resource propety from the config, not used.
+* fixing silent renew bug
+
 <a name="2018-05-05"></a>
-### 2018-04-31 version 6.0.0
+### 2018-05-05 version 6.0.0
 * Updating src to support rxjs 6.1.0, Angular 6.0.0
 
 <a name="2018-04-21"></a>
