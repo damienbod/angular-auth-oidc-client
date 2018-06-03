@@ -120,10 +120,10 @@ export class OidcSecurityService {
                 // Deregister if OidcSecurityService.setupModule is called again by any instance.
                 //      We only ever want the latest setup service to be reacting to this event.
                 this.boundSilentRenewEvent =  this.silentRenewEventHandler.bind(this);
-                
-                let instanceId = Math.random();
 
-                let boundSilentRenewInitEvent = ((e: CustomEvent) => {
+                const instanceId = Math.random();
+
+                const boundSilentRenewInitEvent = ((e: CustomEvent) => {
                     if (e.detail !== instanceId) {
                         window.removeEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent);
                         window.removeEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent);
@@ -132,7 +132,7 @@ export class OidcSecurityService {
 
                 window.addEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent, false);
                 window.addEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent, false);
-                 
+
                 window.dispatchEvent(new CustomEvent('oidc-silent-renew-init', { detail: instanceId }));
             }
 
