@@ -453,6 +453,10 @@ And add this to the polyfills
 import 'isomorphic-fetch';
 ```
 
+## X-Frame-Options  / CSP ancestor / different domains
+If deploying the client application and the STS server application with 2 different domains, the X-Frame-Options HTTPS header needs to allow all iframes. Then use the CSP HTTPS header to only allow the required domains. The silent renew requires this. 
+
+
 ## Examples using: 
 
 https://github.com/damienbod/AspNetCoreAngularSignalRSecurity
