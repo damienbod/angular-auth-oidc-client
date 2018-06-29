@@ -311,6 +311,11 @@ export class OidcSecurityService {
                                 ]);
                             }
                         }
+                    }, (err) => {
+                        /* Something went wrong while getting signing key */
+                        this.loggerService.logWarning(
+                            'Failed to retreive user info with error: ' + JSON.stringify(err)
+                        );
                     });
                 } else {
                     if (!isRenewProcess) {

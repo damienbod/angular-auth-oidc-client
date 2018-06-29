@@ -43,10 +43,15 @@ export class OidcSecurityUserService {
         const token = this.oidcSecurityCommon.getAccessToken();
 
         if (this.authWellKnownEndpoints) {
-            return this.oidcDataService.getIdentityUserData(
-                this.authWellKnownEndpoints.userinfo_endpoint,
-                token
-            );
+            if (this.authWellKnownEndpoints.userinfo_endpoint) {
+                return this.oidcDataService.getIdentityUserData(
+                    this.authWellKnownEndpoints.userinfo_endpoint,
+                    token
+                );
+            } else {
+                this.loggerService.logError('init check session: authWellKnownEndpoints.userinfo_endpoint is undefined; set auto_userinfo = false in config');
+                throw Error('authWellKnownEndpoints.userinfo_endpoint is undefined');
+            }
         } else {
             this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
         }
