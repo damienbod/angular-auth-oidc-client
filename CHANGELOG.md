@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-07-09"></a>
+### 2018-08-09 version 6.0.2
+* Throw error when userinfo_endpoint is not defined (Azure AD)
+
 <a name="2018-06-03"></a>
 ### 2018-06-03 version 6.0.1
 * Removing resource propety from the config, not used.
