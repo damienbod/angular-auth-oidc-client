@@ -59,7 +59,7 @@ export class OpenIDImplicitFlowConfiguration {
     log_console_warning_active = true;
     log_console_debug_active = false;
     max_id_token_iat_offset_allowed_in_seconds = 3;
-    storage: any = sessionStorage;
+    storage: any = typeof window !== 'undefined' ? sessionStorage : null;
 }
 
 @Injectable()
