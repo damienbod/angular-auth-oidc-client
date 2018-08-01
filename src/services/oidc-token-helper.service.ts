@@ -69,6 +69,6 @@ export class TokenHelperService {
                 throw Error('Illegal base64url string!');
         }
 
-        return window.atob(output);
+        return new Buffer(output, 'base64').toString('binary');
     }
 }
