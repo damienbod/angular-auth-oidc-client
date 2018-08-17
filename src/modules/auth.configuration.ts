@@ -64,7 +64,9 @@ export class OpenIDImplicitFlowConfiguration {
 
 @Injectable()
 export class AuthConfiguration {
-    private openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration | undefined;
+    private openIDImplicitFlowConfiguration:
+        | OpenIDImplicitFlowConfiguration
+        | undefined;
 
     get stsServer(): string {
         if (this.openIDImplicitFlowConfiguration) {
@@ -124,7 +126,8 @@ export class AuthConfiguration {
 
     get post_logout_redirect_uri(): string {
         if (this.openIDImplicitFlowConfiguration) {
-            return this.openIDImplicitFlowConfiguration.post_logout_redirect_uri;
+            return this.openIDImplicitFlowConfiguration
+                .post_logout_redirect_uri;
         }
 
         return this.defaultConfig.post_logout_redirect_uri;
@@ -148,7 +151,8 @@ export class AuthConfiguration {
 
     get silent_renew_offset_in_seconds(): number {
         if (this.openIDImplicitFlowConfiguration) {
-            return this.openIDImplicitFlowConfiguration.silent_renew_offset_in_seconds;
+            return this.openIDImplicitFlowConfiguration
+                .silent_renew_offset_in_seconds;
         }
 
         return this.defaultConfig.silent_renew_offset_in_seconds;
@@ -188,7 +192,8 @@ export class AuthConfiguration {
 
     get auto_clean_state_after_authentication(): boolean {
         if (this.openIDImplicitFlowConfiguration) {
-            return this.openIDImplicitFlowConfiguration.auto_clean_state_after_authentication;
+            return this.openIDImplicitFlowConfiguration
+                .auto_clean_state_after_authentication;
         }
 
         return this.defaultConfig.auto_clean_state_after_authentication;
@@ -196,23 +201,26 @@ export class AuthConfiguration {
 
     get trigger_authorization_result_event(): boolean {
         if (this.openIDImplicitFlowConfiguration) {
-            return this.openIDImplicitFlowConfiguration.trigger_authorization_result_event;
+            return this.openIDImplicitFlowConfiguration
+                .trigger_authorization_result_event;
         }
 
         return this.defaultConfig.trigger_authorization_result_event;
     }
 
-    get log_console_warning_active(): boolean {
+    get isLogLevelWarningEnabled(): boolean {
         if (this.openIDImplicitFlowConfiguration) {
-            return this.openIDImplicitFlowConfiguration.log_console_warning_active;
+            return this.openIDImplicitFlowConfiguration
+                .log_console_warning_active;
         }
 
         return this.defaultConfig.log_console_warning_active;
     }
 
-    get log_console_debug_active(): boolean {
+    get isLogLevelDebugEnabled(): boolean {
         if (this.openIDImplicitFlowConfiguration) {
-            return this.openIDImplicitFlowConfiguration.log_console_debug_active;
+            return this.openIDImplicitFlowConfiguration
+                .log_console_debug_active;
         }
 
         return this.defaultConfig.log_console_debug_active;
@@ -220,7 +228,8 @@ export class AuthConfiguration {
 
     get max_id_token_iat_offset_allowed_in_seconds(): number {
         if (this.openIDImplicitFlowConfiguration) {
-            return this.openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds;
+            return this.openIDImplicitFlowConfiguration
+                .max_id_token_iat_offset_allowed_in_seconds;
         }
 
         return this.defaultConfig.max_id_token_iat_offset_allowed_in_seconds;

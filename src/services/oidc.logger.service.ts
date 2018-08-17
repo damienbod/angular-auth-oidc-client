@@ -10,13 +10,13 @@ export class LoggerService {
     }
 
     logWarning(message: any) {
-        if (this.authConfiguration.log_console_warning_active) {
+        if (this.authConfiguration.isLogLevelWarningEnabled) {
             console.warn(message);
         }
     }
 
     logDebug(message: any) {
-        if (this.authConfiguration.log_console_debug_active) {
+        if (this.authConfiguration.isLogLevelDebugEnabled) {
             console.log(message);
         }
     }
