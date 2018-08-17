@@ -2,7 +2,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-
 import { OpenIDImplicitFlowConfiguration } from '../../src/modules/auth.configuration';
 import { AuthModule } from '../../src/modules/auth.module';
 import { OidcSecurityService } from '../../src/services/oidc.security.service';
@@ -18,15 +17,15 @@ describe('OidcSecurityService', () => {
                 BrowserModule,
                 HttpClientModule,
                 RouterTestingModule,
-                AuthModule.forRoot()
+                AuthModule.forRoot(),
             ],
             providers: [
                 OidcSecurityService,
                 {
                     provide: OidcSecurityStorage,
-                    useClass: TestStorage
-                }
-            ]
+                    useClass: TestStorage,
+                },
+            ],
         });
     });
 
@@ -194,11 +193,11 @@ describe('OidcSecurityService', () => {
         );
 
         oidcSecurityService.setCustomRequestParameters({
-            testcustom: 'customvalue'
+            testcustom: 'customvalue',
         });
 
         let value = oidcSecurityService.createAuthorizeUrl(
-            openIDImplicitFlowConfiguration.redirect_url, 
+            openIDImplicitFlowConfiguration.redirect_url,
             'nonce',
             'state',
             'http://example'
@@ -238,7 +237,7 @@ describe('OidcSecurityService', () => {
             t4: 'ABC abc 123',
             t3: '#',
             t2: '-_.!~*()',
-            t1: ';,/?:@&=+$'
+            t1: ';,/?:@&=+$',
         });
 
         let value = oidcSecurityService.createAuthorizeUrl(

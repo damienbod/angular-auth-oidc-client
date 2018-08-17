@@ -1,7 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
-
-import { KJUR, KEYUTIL, hextob64u } from 'jsrsasign';
-import { ArrayHelperService } from './oidc-array-helper.service';
+import { hextob64u, KEYUTIL, KJUR } from 'jsrsasign';
+import { EqualityHelperService } from './oidc-equality-helper.service';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { LoggerService } from './oidc.logger.service';
 
@@ -50,7 +49,7 @@ import { LoggerService } from './oidc.logger.service';
 @Injectable()
 export class OidcSecurityValidation {
     constructor(
-        private arrayHelperService: ArrayHelperService,
+        private arrayHelperService: EqualityHelperService,
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService
     ) {}
@@ -224,7 +223,7 @@ export class OidcSecurityValidation {
     // not trusted by the Client.
     validate_id_token_aud(dataIdToken: any, aud: any): boolean {
         if (dataIdToken.aud instanceof Array) {
-            const result = this.arrayHelperService.arraysEqual(
+            const result = this.arrayHelperService.areEqual(
                 dataIdToken.aud,
                 aud
             );
@@ -348,7 +347,7 @@ export class OidcSecurityValidation {
                     ) {
                         const publickey = KEYUTIL.getKey(key);
                         isValid = KJUR.jws.JWS.verify(id_token, publickey, [
-                            'RS256'
+                            'RS256',
                         ]);
                         if (!isValid) {
                             this.loggerService.logWarning(
@@ -365,7 +364,7 @@ export class OidcSecurityValidation {
                 if ((key.kid as string) === (kid as string)) {
                     const publickey = KEYUTIL.getKey(key);
                     isValid = KJUR.jws.JWS.verify(id_token, publickey, [
-                        'RS256'
+                        'RS256',
                     ]);
                     if (!isValid) {
                         this.loggerService.logWarning(
