@@ -1,9 +1,9 @@
-import { Injectable, EventEmitter, Output, NgZone } from '@angular/core';
-import { Observable ,  Observer } from 'rxjs';
-import { AuthConfiguration } from '../modules/auth.configuration';
-import { OidcSecurityCommon } from './oidc.security.common';
-import { LoggerService } from './oidc.logger.service';
+import { EventEmitter, Injectable, NgZone, Output } from '@angular/core';
+import { Observable, Observer } from 'rxjs';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
+import { AuthConfiguration } from '../modules/auth.configuration';
+import { LoggerService } from './oidc.logger.service';
+import { OidcSecurityCommon } from './oidc.security.common';
 
 // http://openid.net/specs/openid-connect-session-1_0-ID4.html
 
@@ -66,7 +66,9 @@ export class OidcSecurityCheckSession {
         if (this.authWellKnownEndpoints) {
             this.sessionIframe.src = this.authWellKnownEndpoints.check_session_iframe;
         } else {
-            this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
+            this.loggerService.logWarning(
+                'init check session: authWellKnownEndpoints is undefined'
+            );
         }
 
         this.iframeMessageEvent = this.messageHandler.bind(this);
@@ -112,11 +114,17 @@ export class OidcSecurityCheckSession {
                 this.loggerService.logDebug(this.sessionIframe);
                 // this.init();
             }
-            this._scheduledHeartBeat = setTimeout(_pollServerSessionRecur, 3000);
+            this._scheduledHeartBeat = setTimeout(
+                _pollServerSessionRecur,
+                3000
+            );
         };
 
         this.zone.runOutsideAngular(() => {
-            this._scheduledHeartBeat = setTimeout(_pollServerSessionRecur, 3000);
+            this._scheduledHeartBeat = setTimeout(
+                _pollServerSessionRecur,
+                3000
+            );
         });
     }
 

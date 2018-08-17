@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class OidcDataService {
         headers = headers.set('Accept', 'application/json');
 
         return this.httpClient.get<T>(url, {
-            headers: headers
+            headers: headers,
         });
     }
 
@@ -24,7 +24,7 @@ export class OidcDataService {
         );
 
         return this.httpClient.get<T>(url, {
-            headers: headers
+            headers: headers,
         });
     }
 
@@ -33,7 +33,7 @@ export class OidcDataService {
         headers = headers.set('Accept', 'application/json');
 
         return this.httpClient.get<T>(url, {
-            headers: headers
+            headers: headers,
         });
     }
 }
