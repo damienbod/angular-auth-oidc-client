@@ -2,10 +2,6 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class EqualityHelperService {
-    // string string
-    // string object
-    //
-
     areEqual(
         value1: string | any[] | object | null | undefined,
         value2: string | any[] | object | null | undefined
