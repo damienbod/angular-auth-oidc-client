@@ -111,8 +111,6 @@ export class OidcSecurityCommon {
 
     constructor(private oidcSecurityStorage: OidcSecurityStorage) {}
 
-    setupModule() {}
-
     private retrieve(key: string): any {
         return this.oidcSecurityStorage.read(key);
     }
