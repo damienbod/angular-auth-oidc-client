@@ -627,6 +627,32 @@ export class OidcSecurityService {
             this.runTokenValidationRunning = false;
         }
     }
+    
+    resetAuthorizationData(isRenewProcess: boolean) : void {
+        if (!isRenewProcess) {
+            if (this.authConfiguration.auto_userinfo) {
+                // Clear user data. Fixes #97.
+                this.setUserData('');
+            }
+            this.setIsAuthorized(false);
+            this.oidcSecurityCommon.resetStorageData(isRenewProcess);
+            this.checkSessionChanged = false;
+        }
+    }
+
+    getEndSessionUrl(): string | undefined {
+        if (this.authWellKnownEndpoints) {
+            if (this.authWellKnownEndpoints.end_session_endpoint) {
+                const end_session_endpoint = this.authWellKnownEndpoints
+                    .end_session_endpoint;
+                const id_token_hint = this.oidcSecurityCommon.idToken;
+                return this.createEndSessionUrl(
+                    end_session_endpoint,
+                    id_token_hint
+                );
+            }
+        }
+    }
 
     private getValidatedStateResult(
         result: any,
@@ -725,18 +751,6 @@ export class OidcSecurityService {
         );
 
         return `${authorizationEndsessionUrl}?${params}`;
-    }
-
-    private resetAuthorizationData(isRenewProcess: boolean) {
-        if (!isRenewProcess) {
-            if (this.authConfiguration.auto_userinfo) {
-                // Clear user data. Fixes #97.
-                this.setUserData('');
-            }
-            this.setIsAuthorized(false);
-            this.oidcSecurityCommon.resetStorageData(isRenewProcess);
-            this.checkSessionChanged = false;
-        }
     }
 
     private onUserDataChanged() {
