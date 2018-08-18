@@ -67,7 +67,7 @@ export class EqualityHelperService {
     }
 
     private valueIsString(value: any) {
-        return typeof value == 'string' || value instanceof String;
+        return typeof value === 'string' || value instanceof String;
     }
 
     private valueIsObject(value: any) {

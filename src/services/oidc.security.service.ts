@@ -627,8 +627,8 @@ export class OidcSecurityService {
             this.runTokenValidationRunning = false;
         }
     }
-    
-    resetAuthorizationData(isRenewProcess: boolean) : void {
+
+    resetAuthorizationData(isRenewProcess: boolean): void {
         if (!isRenewProcess) {
             if (this.authConfiguration.auto_userinfo) {
                 // Clear user data. Fixes #97.
