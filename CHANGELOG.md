@@ -1,8 +1,10 @@
 ## angular-auth-oidc-client Changelog
 
-<a name="2018-08-01"></a>
-### 2018-08-01 version 6.0.3
-* fixes for storage
+<a name="2018-08-18"></a>
+### 2018-08-18 version 6.0.6
+* Add unique ending to key to prevent storage crossover
+* Public resetAuthorizationData method and getEndSessionUrl function
+* wso2 Identity Server audience validation failed support
 
 <a name="2018-07-09"></a>
 ### 2018-07-09 version 6.0.2
