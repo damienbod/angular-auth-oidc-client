@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Observer ,  Observable } from 'rxjs';
+﻿import { Injectable } from '@angular/core';
+import { Observable, Observer } from 'rxjs';
 import { LoggerService } from './oidc.logger.service';
 
 @Injectable()
@@ -37,7 +37,6 @@ export class OidcSecuritySilentRenew {
         }
     }
 
-    // TODO The return type of this method is never used. Is it needed?
     startRenew(url: string): Observable<any> {
         let existsparent = undefined;
         try {

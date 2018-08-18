@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-import { OidcSecurityCommon } from './oidc.security.common';
-import { OidcSecurityValidation } from './oidc.security.validation';
-import { AuthConfiguration } from '../modules/auth.configuration';
-import { ValidateStateResult } from '../models/validate-state-result.model';
+import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 import { JwtKeys } from '../models/jwtkeys';
+import { ValidateStateResult } from '../models/validate-state-result.model';
+import { AuthConfiguration } from '../modules/auth.configuration';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { LoggerService } from './oidc.logger.service';
-import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
+import { OidcSecurityCommon } from './oidc.security.common';
+import { OidcSecurityValidation } from './oidc.security.validation';
 
 @Injectable()
 export class StateValidationService {
-    private authWellKnownEndpoints: AuthWellKnownEndpoints | undefined;
+    private authWellKnownEndpoints = new AuthWellKnownEndpoints();
     constructor(
         private authConfiguration: AuthConfiguration,
         public oidcSecurityCommon: OidcSecurityCommon,
@@ -104,7 +104,9 @@ export class StateValidationService {
                 return toReturn;
             }
         } else {
-            this.loggerService.logWarning('authWellKnownEndpoints is undefined');
+            this.loggerService.logWarning(
+                'authWellKnownEndpoints is undefined'
+            );
             return toReturn;
         }
 

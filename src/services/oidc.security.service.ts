@@ -1,36 +1,47 @@
-
-import {throwError as observableThrowError,  BehaviorSubject ,  Observable } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpParams } from '@angular/common/http';
-import { Inject, PLATFORM_ID, NgZone } from '@angular/core';
-import { EventEmitter, Injectable, Output } from '@angular/core';
+import {
+    EventEmitter,
+    Inject,
+    Injectable,
+    NgZone,
+    Output,
+    PLATFORM_ID,
+} from '@angular/core';
 import { Router } from '@angular/router';
+import {
+    BehaviorSubject,
+    Observable,
+    throwError as observableThrowError,
+} from 'rxjs';
 import { catchError } from 'rxjs/operators';
-
+import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 import { AuthorizationResult } from '../models/authorization-result.enum';
 import { JwtKeys } from '../models/jwtkeys';
 import { ValidateStateResult } from '../models/validate-state-result.model';
 import {
     AuthConfiguration,
-    OpenIDImplicitFlowConfiguration
+    OpenIDImplicitFlowConfiguration,
 } from '../modules/auth.configuration';
+import { OidcDataService } from './oidc-data.service';
 import { StateValidationService } from './oidc-security-state-validation.service';
+import { TokenHelperService } from './oidc-token-helper.service';
+import { LoggerService } from './oidc.logger.service';
 import { OidcSecurityCheckSession } from './oidc.security.check-session';
 import { OidcSecurityCommon } from './oidc.security.common';
 import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
 import { OidcSecurityUserService } from './oidc.security.user-service';
 import { OidcSecurityValidation } from './oidc.security.validation';
 import { UriEncoder } from './uri-encoder';
-import { OidcDataService } from './oidc-data.service';
-import { TokenHelperService } from './oidc-token-helper.service';
-import { LoggerService } from './oidc.logger.service';
-import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 
 @Injectable()
 export class OidcSecurityService {
-    @Output() onModuleSetup = new EventEmitter<boolean>();
-    @Output() onAuthorizationResult = new EventEmitter<AuthorizationResult>();
-    @Output() onCheckSessionChanged = new EventEmitter<boolean>();
+    @Output()
+    onModuleSetup = new EventEmitter<boolean>();
+    @Output()
+    onAuthorizationResult = new EventEmitter<AuthorizationResult>();
+    @Output()
+    onCheckSessionChanged = new EventEmitter<boolean>();
 
     checkSessionChanged = false;
     moduleSetup = false;
@@ -74,9 +85,7 @@ export class OidcSecurityService {
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => {
             this.loggerService.logDebug('onCheckSessionChanged');
             this.checkSessionChanged = true;
-            this.onCheckSessionChanged.emit(
-                this.checkSessionChanged
-            );
+            this.onCheckSessionChanged.emit(this.checkSessionChanged);
         });
 
         this._userData.subscribe(() => {
@@ -92,13 +101,19 @@ export class OidcSecurityService {
         if (isAuthorized) {
             this.loggerService.logDebug('IsAuthorized setup module');
             this.loggerService.logDebug(this.oidcSecurityCommon.idToken);
-            if (this.oidcSecurityValidation.isTokenExpired(
+            if (
+                this.oidcSecurityValidation.isTokenExpired(
                     this.oidcSecurityCommon.idToken,
-                    this.authConfiguration.silent_renew_offset_in_seconds)
+                    this.authConfiguration.silent_renew_offset_in_seconds
+                )
             ) {
-                this.loggerService.logDebug('IsAuthorized setup module; id_token isTokenExpired');
+                this.loggerService.logDebug(
+                    'IsAuthorized setup module; id_token isTokenExpired'
+                );
             } else {
-                this.loggerService.logDebug('IsAuthorized setup module; id_token is valid');
+                this.loggerService.logDebug(
+                    'IsAuthorized setup module; id_token is valid'
+                );
                 this.setIsAuthorized(isAuthorized);
                 this.runTokenValidation();
             }
@@ -119,21 +134,41 @@ export class OidcSecurityService {
                 // Support authorization via DOM events.
                 // Deregister if OidcSecurityService.setupModule is called again by any instance.
                 //      We only ever want the latest setup service to be reacting to this event.
-                this.boundSilentRenewEvent =  this.silentRenewEventHandler.bind(this);
+                this.boundSilentRenewEvent = this.silentRenewEventHandler.bind(
+                    this
+                );
 
                 const instanceId = Math.random();
 
                 const boundSilentRenewInitEvent = ((e: CustomEvent) => {
                     if (e.detail !== instanceId) {
-                        window.removeEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent);
-                        window.removeEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent);
+                        window.removeEventListener(
+                            'oidc-silent-renew-message',
+                            this.boundSilentRenewEvent
+                        );
+                        window.removeEventListener(
+                            'oidc-silent-renew-init',
+                            boundSilentRenewInitEvent
+                        );
                     }
                 }).bind(this);
 
-                window.addEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent, false);
-                window.addEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent, false);
+                window.addEventListener(
+                    'oidc-silent-renew-init',
+                    boundSilentRenewInitEvent,
+                    false
+                );
+                window.addEventListener(
+                    'oidc-silent-renew-message',
+                    this.boundSilentRenewEvent,
+                    false
+                );
 
-                window.dispatchEvent(new CustomEvent('oidc-silent-renew-init', { detail: instanceId }));
+                window.dispatchEvent(
+                    new CustomEvent('oidc-silent-renew-init', {
+                        detail: instanceId,
+                    })
+                );
             }
 
             if (
@@ -276,89 +311,123 @@ export class OidcSecurityService {
             'authorizedCallback created, begin token validation'
         );
 
-        this.getSigningKeys().subscribe(jwtKeys => {
-            const validationResult = this.getValidatedStateResult(
-                result,
-                jwtKeys
-            );
-
-            if (validationResult.authResponseIsValid) {
-                this.setAuthorizationData(
-                    validationResult.access_token,
-                    validationResult.id_token
+        this.getSigningKeys().subscribe(
+            jwtKeys => {
+                const validationResult = this.getValidatedStateResult(
+                    result,
+                    jwtKeys
                 );
-                this.oidcSecurityCommon.silentRenewRunning = '';
 
-                if (this.authConfiguration.auto_userinfo) {
-                    this.getUserinfo(
-                        isRenewProcess,
-                        result,
-                        validationResult.id_token,
-                        validationResult.decoded_id_token
-                    ).subscribe(response => {
-                        if (response) {
-                            this.onAuthorizationResult.emit(AuthorizationResult.authorized);
-                            if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
-                                this.router.navigate([
-                                    this.authConfiguration.post_login_route
-                                ]);
-                            }
-                        } else {
-                            this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
-                            if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
-                                this.router.navigate([
-                                    this.authConfiguration.unauthorized_route
-                                ]);
-                            }
-                        }
-                    }, (err) => {
-                        /* Something went wrong while getting signing key */
-                        this.loggerService.logWarning(
-                            'Failed to retreive user info with error: ' + JSON.stringify(err)
-                        );
-                    });
-                } else {
-                    if (!isRenewProcess) {
-                        // userData is set to the id_token decoded, auto get user data set to false
-                        this.oidcSecurityUserService.setUserData(
+                if (validationResult.authResponseIsValid) {
+                    this.setAuthorizationData(
+                        validationResult.access_token,
+                        validationResult.id_token
+                    );
+                    this.oidcSecurityCommon.silentRenewRunning = '';
+
+                    if (this.authConfiguration.auto_userinfo) {
+                        this.getUserinfo(
+                            isRenewProcess,
+                            result,
+                            validationResult.id_token,
                             validationResult.decoded_id_token
+                        ).subscribe(
+                            response => {
+                                if (response) {
+                                    this.onAuthorizationResult.emit(
+                                        AuthorizationResult.authorized
+                                    );
+                                    if (
+                                        !this.authConfiguration
+                                            .trigger_authorization_result_event &&
+                                        !isRenewProcess
+                                    ) {
+                                        this.router.navigate([
+                                            this.authConfiguration
+                                                .post_login_route,
+                                        ]);
+                                    }
+                                } else {
+                                    this.onAuthorizationResult.emit(
+                                        AuthorizationResult.unauthorized
+                                    );
+                                    if (
+                                        !this.authConfiguration
+                                            .trigger_authorization_result_event &&
+                                        !isRenewProcess
+                                    ) {
+                                        this.router.navigate([
+                                            this.authConfiguration
+                                                .unauthorized_route,
+                                        ]);
+                                    }
+                                }
+                            },
+                            err => {
+                                /* Something went wrong while getting signing key */
+                                this.loggerService.logWarning(
+                                    'Failed to retreive user info with error: ' +
+                                        JSON.stringify(err)
+                                );
+                            }
                         );
-                        this.setUserData(
-                            this.oidcSecurityUserService.getUserData()
-                        );
-                        this.runTokenValidation();
-                    }
+                    } else {
+                        if (!isRenewProcess) {
+                            // userData is set to the id_token decoded, auto get user data set to false
+                            this.oidcSecurityUserService.setUserData(
+                                validationResult.decoded_id_token
+                            );
+                            this.setUserData(
+                                this.oidcSecurityUserService.getUserData()
+                            );
+                            this.runTokenValidation();
+                        }
 
-                    this.onAuthorizationResult.emit(AuthorizationResult.authorized);
-                    if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
+                        this.onAuthorizationResult.emit(
+                            AuthorizationResult.authorized
+                        );
+                        if (
+                            !this.authConfiguration
+                                .trigger_authorization_result_event &&
+                            !isRenewProcess
+                        ) {
+                            this.router.navigate([
+                                this.authConfiguration.post_login_route,
+                            ]);
+                        }
+                    }
+                } else {
+                    // something went wrong
+                    this.loggerService.logWarning(
+                        'authorizedCallback, token(s) validation failed, resetting'
+                    );
+                    this.loggerService.logWarning(window.location.hash);
+                    this.resetAuthorizationData(false);
+                    this.oidcSecurityCommon.silentRenewRunning = '';
+
+                    this.onAuthorizationResult.emit(
+                        AuthorizationResult.unauthorized
+                    );
+                    if (
+                        !this.authConfiguration
+                            .trigger_authorization_result_event &&
+                        !isRenewProcess
+                    ) {
                         this.router.navigate([
-                            this.authConfiguration.post_login_route
+                            this.authConfiguration.unauthorized_route,
                         ]);
                     }
                 }
-            } else {
-                // something went wrong
+            },
+            err => {
+                /* Something went wrong while getting signing key */
                 this.loggerService.logWarning(
-                    'authorizedCallback, token(s) validation failed, resetting'
+                    'Failed to retreive siging key with error: ' +
+                        JSON.stringify(err)
                 );
-                this.loggerService.logWarning(window.location.hash);
-                this.resetAuthorizationData(false);
                 this.oidcSecurityCommon.silentRenewRunning = '';
-
-                this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
-                if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
-                    this.router.navigate([
-                        this.authConfiguration.unauthorized_route
-                    ]);
-                }
             }
-        }, (err) => {
-            /* Something went wrong while getting signing key */
-            this.loggerService.logWarning(
-                'Failed to retreive siging key with error: ' + JSON.stringify(err)
-            );
-            this.oidcSecurityCommon.silentRenewRunning = '';
-        });
+        );
     }
 
     getUserinfo(
@@ -479,7 +548,9 @@ export class OidcSecurityService {
                 );
             }
         } else {
-            this.loggerService.logWarning('authWellKnownEndpoints is undefined');
+            this.loggerService.logWarning(
+                'authWellKnownEndpoints is undefined'
+            );
         }
     }
 
@@ -501,7 +572,7 @@ export class OidcSecurityService {
 
         let url = '';
         if (this.authWellKnownEndpoints) {
-             url = this.createAuthorizeUrl(
+            url = this.createAuthorizeUrl(
                 this.authConfiguration.silent_redirect_url,
                 nonce,
                 state,
@@ -509,7 +580,9 @@ export class OidcSecurityService {
                 'none'
             );
         } else {
-            this.loggerService.logWarning('authWellKnownEndpoints is undefined');
+            this.loggerService.logWarning(
+                'authWellKnownEndpoints is undefined'
+            );
         }
 
         this.oidcSecurityCommon.silentRenewRunning = 'running';
@@ -537,7 +610,7 @@ export class OidcSecurityService {
                 );
             } else {
                 this.router.navigate([
-                    this.authConfiguration.unauthorized_route
+                    this.authConfiguration.unauthorized_route,
                 ]);
             }
         }
@@ -554,8 +627,8 @@ export class OidcSecurityService {
             this.runTokenValidationRunning = false;
         }
     }
-    
-    resetAuthorizationData(isRenewProcess: boolean) : void {
+
+    resetAuthorizationData(isRenewProcess: boolean): void {
         if (!isRenewProcess) {
             if (this.authConfiguration.auto_userinfo) {
                 // Clear user data. Fixes #97.
@@ -627,13 +700,10 @@ export class OidcSecurityService {
         const authorizationUrl = urlParts[0];
         let params = new HttpParams({
             fromString: urlParts[1],
-            encoder: new UriEncoder()
+            encoder: new UriEncoder(),
         });
         params = params.set('client_id', this.authConfiguration.client_id);
-        params = params.append(
-            'redirect_uri',
-            redirect_url
-        );
+        params = params.append('redirect_uri', redirect_url);
         params = params.append(
             'response_type',
             this.authConfiguration.response_type
@@ -672,7 +742,7 @@ export class OidcSecurityService {
 
         let params = new HttpParams({
             fromString: urlParts[1],
-            encoder: new UriEncoder()
+            encoder: new UriEncoder(),
         });
         params = params.set('id_token_hint', id_token_hint);
         params = params.append(
@@ -707,7 +777,9 @@ export class OidcSecurityService {
                 .get<JwtKeys>(this.authWellKnownEndpoints.jwks_uri)
                 .pipe(catchError(this.handleErrorGetSigningKeys));
         } else {
-            this.loggerService.logWarning('getSigningKeys: authWellKnownEndpoints is undefined');
+            this.loggerService.logWarning(
+                'getSigningKeys: authWellKnownEndpoints is undefined'
+            );
         }
 
         return this.oidcDataService
@@ -739,23 +811,37 @@ export class OidcSecurityService {
             Afterwards: Run this check in a 5 second interval only AFTER the previous operation ends.
          */
         const silentRenewHeartBeatCheck = () => {
-            if (this._userData.value && (this.oidcSecurityCommon.silentRenewRunning !== 'running') && this.getIdToken()) {
-                if (this.oidcSecurityValidation.isTokenExpired(
-                    this.oidcSecurityCommon.idToken,
-                    this.authConfiguration.silent_renew_offset_in_seconds
-                )
+            if (
+                this._userData.value &&
+                this.oidcSecurityCommon.silentRenewRunning !== 'running' &&
+                this.getIdToken()
+            ) {
+                if (
+                    this.oidcSecurityValidation.isTokenExpired(
+                        this.oidcSecurityCommon.idToken,
+                        this.authConfiguration.silent_renew_offset_in_seconds
+                    )
                 ) {
                     this.loggerService.logDebug(
                         'IsAuthorized: id_token isTokenExpired, start silent renew if active'
                     );
 
                     if (this.authConfiguration.silent_renew) {
-                        this.refreshSession().subscribe(() => {
-                            this._scheduledHeartBeat = setTimeout(silentRenewHeartBeatCheck, 3000);
-                        }, (err: any) => {
-                            this.loggerService.logError('Error: ' + err);
-                            this._scheduledHeartBeat = setTimeout(silentRenewHeartBeatCheck, 3000);
-                        });
+                        this.refreshSession().subscribe(
+                            () => {
+                                this._scheduledHeartBeat = setTimeout(
+                                    silentRenewHeartBeatCheck,
+                                    3000
+                                );
+                            },
+                            (err: any) => {
+                                this.loggerService.logError('Error: ' + err);
+                                this._scheduledHeartBeat = setTimeout(
+                                    silentRenewHeartBeatCheck,
+                                    3000
+                                );
+                            }
+                        );
                         /* In this situation, we schedule a heatbeat check only when silentRenew is finished.
                         We don't want to schedule another check so we have to return here */
                         return;
@@ -766,12 +852,18 @@ export class OidcSecurityService {
             }
 
             /* Delay 3 seconds and do the next check */
-            this._scheduledHeartBeat = setTimeout(silentRenewHeartBeatCheck, 3000);
+            this._scheduledHeartBeat = setTimeout(
+                silentRenewHeartBeatCheck,
+                3000
+            );
         };
 
         this.zone.runOutsideAngular(() => {
             /* Initial heartbeat check */
-            this._scheduledHeartBeat = setTimeout(silentRenewHeartBeatCheck, 10000);
+            this._scheduledHeartBeat = setTimeout(
+                silentRenewHeartBeatCheck,
+                10000
+            );
         });
     }
 

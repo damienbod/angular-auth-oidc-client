@@ -2,21 +2,20 @@ import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-
 import {
+    OidcSecurityStorage,
     OpenIDImplicitFlowConfiguration,
-    OidcSecurityStorage
 } from '../../src/angular-auth-oidc-client';
 import {
     AuthConfiguration,
-    DefaultConfiguration
+    DefaultConfiguration,
 } from '../../src/modules/auth.configuration';
+import { EqualityHelperService } from '../../src/services/oidc-equality-helper.service';
+import { LoggerService } from '../../src/services/oidc.logger.service';
 import { OidcSecurityValidation } from '../../src/services/oidc.security.validation';
+import { TestLogging } from '../common/test-logging.service';
 import { TestStorage } from '../common/test-storage.service';
 import { AuthModule } from './../../index';
-import { ArrayHelperService } from '../../src/services/oidc-array-helper.service';
-import { LoggerService } from '../../src/services/oidc.logger.service';
-import { TestLogging } from '../common/test-logging.service';
 
 describe('OidcSecurityValidation', () => {
     let oidcSecurityValidation: OidcSecurityValidation;
@@ -27,20 +26,20 @@ describe('OidcSecurityValidation', () => {
                 BrowserModule,
                 HttpClientModule,
                 RouterTestingModule,
-                AuthModule.forRoot()
+                AuthModule.forRoot(),
             ],
             providers: [
-                ArrayHelperService,
+                EqualityHelperService,
                 OidcSecurityValidation,
                 {
                     provide: OidcSecurityStorage,
-                    useClass: TestStorage
+                    useClass: TestStorage,
                 },
                 {
                     provide: LoggerService,
-                    useClass: TestLogging
-                }
-            ]
+                    useClass: TestLogging,
+                },
+            ],
         });
     });
 
@@ -117,7 +116,7 @@ describe('OidcSecurityValidation', () => {
         authConfiguration.init(openIDImplicitFlowConfiguration);
 
         const dataIdToken = {
-            aud: ['banana', 'apple', 'https://nice.dom']
+            aud: ['banana', 'apple', 'https://nice.dom'],
         };
         let valueTrue = oidcSecurityValidation.validate_id_token_aud(
             dataIdToken,
