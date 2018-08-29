@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { OidcSecurityCommon } from './oidc.security.common';
-import { OidcDataService } from './oidc-data.service';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
+import { OidcDataService } from './oidc-data.service';
 import { LoggerService } from './oidc.logger.service';
+import { OidcSecurityCommon } from './oidc.security.common';
 
 @Injectable()
 export class OidcSecurityUserService {
@@ -14,17 +14,15 @@ export class OidcSecurityUserService {
     constructor(
         private oidcDataService: OidcDataService,
         private oidcSecurityCommon: OidcSecurityCommon,
-        private loggerService: LoggerService,
-    ) { }
+        private loggerService: LoggerService
+    ) {}
 
     setupModule(authWellKnownEndpoints: AuthWellKnownEndpoints) {
         this.authWellKnownEndpoints = Object.assign({}, authWellKnownEndpoints);
     }
 
     initUserData() {
-        return this.getIdentityUserData().pipe(
-            map((data: any) => (this.userData = data))
-        );
+        return this.getIdentityUserData().pipe(map((data: any) => (this.userData = data)));
     }
 
     getUserData(): any {
@@ -42,22 +40,26 @@ export class OidcSecurityUserService {
     private getIdentityUserData(): Observable<any> {
         const token = this.oidcSecurityCommon.getAccessToken();
 
-        if (this.authWellKnownEndpoints) {
-            if (this.authWellKnownEndpoints.userinfo_endpoint) {
-                return this.oidcDataService.getIdentityUserData(
-                    this.authWellKnownEndpoints.userinfo_endpoint,
-                    token
-                );
-            } else {
-                this.loggerService.logError('init check session: authWellKnownEndpoints.userinfo_endpoint is undefined; set auto_userinfo = false in config');
-                throw Error('authWellKnownEndpoints.userinfo_endpoint is undefined');
-            }
-        } else {
-            this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
+        if (!this.authWellKnownEndpoints) {
+            this.loggerService.logWarning(
+                'init check session: authWellKnownEndpoints is undefined'
+            );
+
+            throw Error('authWellKnownEndpoints is undefined');
+        }
+
+        const canGetUserData =
+            this.authWellKnownEndpoints && this.authWellKnownEndpoints.userinfo_endpoint;
+
+        if (!canGetUserData) {
+            this.loggerService.logError(
+                'init check session: authWellKnownEndpoints.userinfo_endpoint is undefined; set auto_userinfo = false in config'
+            );
+            throw Error('authWellKnownEndpoints.userinfo_endpoint is undefined');
         }
 
         return this.oidcDataService.getIdentityUserData(
-            'undefined',
+            this.authWellKnownEndpoints.userinfo_endpoint,
             token
         );
     }
