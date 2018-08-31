@@ -12,7 +12,7 @@ export class OidcSecurityCheckSession {
     private sessionIframe: any;
     private iframeMessageEvent: any;
     private authWellKnownEndpoints: AuthWellKnownEndpoints | undefined;
-    private _scheduledHeartBeat: any;
+    private scheduledHeartBeat: any;
 
     @Output()
     onCheckSessionChanged: EventEmitter<any> = new EventEmitter<any>(true);
@@ -40,9 +40,7 @@ export class OidcSecurityCheckSession {
         } catch (e) {
             // not accessible
         }
-        const exists = window.document.getElementById(
-            'myiFrameForCheckSession'
-        );
+        const exists = window.document.getElementById('myiFrameForCheckSession');
         if (existsparent) {
             this.sessionIframe = existsparent;
         } else if (exists) {
@@ -83,15 +81,15 @@ export class OidcSecurityCheckSession {
     }
 
     startCheckingSession(clientId: any): void {
-        if (!this._scheduledHeartBeat) {
+        if (!this.scheduledHeartBeat) {
             this.pollServerSession(clientId);
         }
     }
 
     stopCheckingSession(): void {
-        if (this._scheduledHeartBeat) {
-            clearTimeout(this._scheduledHeartBeat);
-            this._scheduledHeartBeat = null;
+        if (this.scheduledHeartBeat) {
+            clearTimeout(this.scheduledHeartBeat);
+            this.scheduledHeartBeat = null;
         }
     }
 
@@ -114,17 +112,11 @@ export class OidcSecurityCheckSession {
                 this.loggerService.logDebug(this.sessionIframe);
                 // this.init();
             }
-            this._scheduledHeartBeat = setTimeout(
-                _pollServerSessionRecur,
-                3000
-            );
+            this.scheduledHeartBeat = setTimeout(_pollServerSessionRecur, 3000);
         };
 
         this.zone.runOutsideAngular(() => {
-            this._scheduledHeartBeat = setTimeout(
-                _pollServerSessionRecur,
-                3000
-            );
+            this.scheduledHeartBeat = setTimeout(_pollServerSessionRecur, 3000);
         });
     }
 
@@ -135,15 +127,11 @@ export class OidcSecurityCheckSession {
             e.source === this.sessionIframe.contentWindow
         ) {
             if (e.data === 'error') {
-                this.loggerService.logWarning(
-                    'error from checksession messageHandler'
-                );
+                this.loggerService.logWarning('error from checksession messageHandler');
             } else if (e.data === 'changed') {
                 this.onCheckSessionChanged.emit();
             } else {
-                this.loggerService.logDebug(
-                    e.data + ' from checksession messageHandler'
-                );
+                this.loggerService.logDebug(e.data + ' from checksession messageHandler');
             }
         }
     }
