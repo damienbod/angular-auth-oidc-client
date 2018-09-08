@@ -1,5 +1,7 @@
-﻿import { EventEmitter, Injectable, Output } from '@angular/core';
-import { XhrDataService } from '../data-services/xhr-data.service';
+﻿import { HttpClient } from '@angular/common/http';
+import { EventEmitter, Injectable, Output } from '@angular/core';
+import { of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable()
 export class OidcConfigService {
@@ -8,57 +10,69 @@ export class OidcConfigService {
     clientConfiguration: any;
     wellKnownEndpoints: any;
 
-    constructor(private readonly xhrDataService: XhrDataService) {}
+    constructor(private readonly httpClient: HttpClient) {}
 
-    async load(configUrl: string) {
-        try {
-            const response = await this.xhrDataService.loadConfiguration(configUrl);
-            this.clientConfiguration = response.json();
-            await this.load_using_stsServer(this.clientConfiguration.stsServer);
-
-            if (!response.ok) {
-                throw new Error(response.statusText);
-            }
-        } catch (err) {
-            console.error(`OidcConfigService 'load' threw an error on calling ${configUrl}`, err);
-            this.onConfigurationLoaded.emit(false);
-        }
+    load(configUrl: string) {
+        this.httpClient
+            .get(configUrl)
+            .pipe(
+                map(response => {
+                    this.clientConfiguration = response;
+                    this.load_using_stsServer(
+                        this.clientConfiguration.stsServer
+                    );
+                }),
+                catchError(error => {
+                    console.error(
+                        `OidcConfigService 'load' threw an error on calling ${configUrl}`,
+                        error
+                    );
+                    this.onConfigurationLoaded.emit(false);
+                    return of(false);
+                })
+            )
+            .subscribe();
     }
 
-    async load_using_stsServer(stsServer: string) {
-        try {
-            const url = `${stsServer}/.well-known/openid-configuration`;
-            const response = await this.xhrDataService.loadConfiguration(url);
+    load_using_stsServer(stsServer: string) {
+        const url = `${stsServer}/.well-known/openid-configuration`;
 
-            if (!response.ok) {
-                throw new Error(response.statusText);
-            }
-
-            this.wellKnownEndpoints = response.json();
-            this.onConfigurationLoaded.emit(true);
-        } catch (err) {
-            console.error(
-                `OidcConfigService 'load_using_stsServer' threw an error on calling ${stsServer}`,
-                err
-            );
-            this.onConfigurationLoaded.emit(false);
-        }
+        this.httpClient
+            .get(url)
+            .pipe(
+                map(response => {
+                    this.wellKnownEndpoints = response;
+                    this.onConfigurationLoaded.emit(true);
+                }),
+                catchError(error => {
+                    console.error(
+                        `OidcConfigService 'load_using_stsServer' threw an error on calling ${stsServer}`,
+                        error
+                    );
+                    this.onConfigurationLoaded.emit(false);
+                    return of(false);
+                })
+            )
+            .subscribe();
     }
 
-    async load_using_custom_stsServer(url: string) {
-        try {
-            const response = await this.xhrDataService.loadConfiguration(url);
-            if (!response.ok) {
-                throw new Error(response.statusText);
-            }
-            this.wellKnownEndpoints = await response.json();
-            this.onConfigurationLoaded.emit(true);
-        } catch (err) {
-            console.error(
-                `OidcConfigService 'load_using_custom_stsServer' threw an error on calling ${url}`,
-                err
-            );
-            this.onConfigurationLoaded.emit(false);
-        }
+    load_using_custom_stsServer(url: string) {
+        this.httpClient
+            .get(url)
+            .pipe(
+                map(response => {
+                    this.wellKnownEndpoints = response;
+                    this.onConfigurationLoaded.emit(true);
+                }),
+                catchError(error => {
+                    console.error(
+                        `OidcConfigService 'load_using_custom_stsServer' threw an error on calling ${url}`,
+                        error
+                    );
+                    this.onConfigurationLoaded.emit(false);
+                    return of(false);
+                })
+            )
+            .subscribe();
     }
 }

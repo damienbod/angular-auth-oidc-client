@@ -10,7 +10,10 @@ import { OidcSecurityCommon } from '../services/oidc.security.common';
 import { OidcConfigService } from '../services/oidc.security.config.service';
 import { OidcSecurityService } from '../services/oidc.security.service';
 import { OidcSecuritySilentRenew } from '../services/oidc.security.silent-renew';
-import { BrowserStorage, OidcSecurityStorage } from '../services/oidc.security.storage';
+import {
+    BrowserStorage,
+    OidcSecurityStorage,
+} from '../services/oidc.security.storage';
 import { OidcSecurityUserService } from '../services/oidc.security.user-service';
 import { OidcSecurityValidation } from '../services/oidc.security.validation';
 import { AuthConfiguration, DefaultConfiguration } from './auth.configuration';
