@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-09-09"></a>
+### 2018-09-09 version 6.0.7
+* Removing the fetch package, using the httpClient now instead
+
 <a name="2018-08-18"></a>
 ### 2018-08-18 version 6.0.6
 * Add unique ending to key to prevent storage crossover
