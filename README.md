@@ -38,7 +38,7 @@ or with yarn
 or you can add the npm package to your package.json
 
 ```typescript
- "angular-auth-oidc-client": "6.0.6"
+ "angular-auth-oidc-client": "6.0.7"
 ```
 
 and type
@@ -65,11 +65,9 @@ import {
     AuthWellKnownEndpoints
 } from 'angular-auth-oidc-client';
 
-export function loadConfig(httpClient: HttpClient) {
-    const oidcConfigService = new OidcConfigService(httpClient);
-
-    return () =>
-        oidcConfigService.load(`https://localhost:44318`);
+export function loadConfig(oidcConfigService: OidcConfigService) {
+    console.log('APP_INITIALIZER STARTING');
+    return () => oidcConfigService.load(`${window.location.origin}/api/ClientAppSettings`);
 }
 
 @NgModule({
@@ -86,7 +84,7 @@ export function loadConfig(httpClient: HttpClient) {
         {
             provide: APP_INITIALIZER,
             useFactory: loadConfig,
-            deps: [HttpClient],
+            deps: [OidcConfigService],
             multi: true,
         },
         ...
@@ -447,18 +445,6 @@ Point the `silent_renew_url` property to an HTML file which contains the followi
 </script>
 ```
 
-## IE 11, Edge fetch
-
-For the fetch to work, or the app init, you need to include the isomorphic-fetch package.
-
-https://www.npmjs.com/package/isomorphic-fetch
-
-And add this to the polyfills
-
-```
-/** Workaround for IE11 and polyfill problem */
-import 'isomorphic-fetch';
-```
 
 ## X-Frame-Options / CSP ancestor / different domains
 
