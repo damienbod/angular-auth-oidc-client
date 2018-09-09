@@ -38,7 +38,7 @@ or with yarn
 or you can add the npm package to your package.json
 
 ```typescript
- "angular-auth-oidc-client": "6.0.7"
+ "angular-auth-oidc-client": "6.0.9"
 ```
 
 and type
