@@ -10,9 +10,10 @@ const globals = {
     'rxjs/Observer': 'Rx',
     'rxjs/BehaviorSubject': 'Rx',
     'rxjs/operators': 'Rx.Observable.prototype',
-	'rxjs/observable/timer': 'Rx.Observable.prototype',
+    'rxjs/observable/timer': 'Rx.Observable.prototype',
 
-    jsrsasign: 'jsrsasign'
+    jsrsasign: 'jsrsasign',
+    buffer: 'buffer',
 };
 
 export default {
