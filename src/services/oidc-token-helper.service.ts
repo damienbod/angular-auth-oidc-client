@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Buffer } from 'buffer';
 
 @Injectable()
 export class TokenHelperService {
