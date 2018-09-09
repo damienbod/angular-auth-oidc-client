@@ -13,12 +13,7 @@ describe('OidcSecurityService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [
-                BrowserModule,
-                HttpClientModule,
-                RouterTestingModule,
-                AuthModule.forRoot(),
-            ],
+            imports: [BrowserModule, HttpClientModule, RouterTestingModule, AuthModule.forRoot()],
             providers: [
                 OidcSecurityService,
                 {
@@ -56,8 +51,7 @@ describe('OidcSecurityService', () => {
 
         let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
         openIDImplicitFlowConfiguration.stsServer = 'https://localhost:5001';
-        openIDImplicitFlowConfiguration.redirect_url =
-            'https://localhost:44386';
+        openIDImplicitFlowConfiguration.redirect_url = 'https://localhost:44386';
         openIDImplicitFlowConfiguration.client_id =
             '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
         openIDImplicitFlowConfiguration.response_type = 'id_token token';
@@ -74,9 +68,7 @@ describe('OidcSecurityService', () => {
         openIDImplicitFlowConfiguration.log_console_debug_active = true;
         openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
 
-        oidcSecurityService.authConfiguration.init(
-            openIDImplicitFlowConfiguration
-        );
+        oidcSecurityService.authConfiguration.init(openIDImplicitFlowConfiguration);
 
         oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
 
@@ -98,8 +90,7 @@ describe('OidcSecurityService', () => {
         let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
 
         openIDImplicitFlowConfiguration.stsServer = 'https://localhost:5001';
-        openIDImplicitFlowConfiguration.redirect_url =
-            'https://localhost:44386';
+        openIDImplicitFlowConfiguration.redirect_url = 'https://localhost:44386';
         openIDImplicitFlowConfiguration.client_id = 'myid';
         openIDImplicitFlowConfiguration.response_type = 'id_token token';
         openIDImplicitFlowConfiguration.scope = 'openid email profile';
@@ -115,9 +106,7 @@ describe('OidcSecurityService', () => {
         openIDImplicitFlowConfiguration.log_console_debug_active = true;
         openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
 
-        oidcSecurityService.authConfiguration.init(
-            openIDImplicitFlowConfiguration
-        );
+        oidcSecurityService.authConfiguration.init(openIDImplicitFlowConfiguration);
 
         let value = oidcSecurityService.createAuthorizeUrl(
             openIDImplicitFlowConfiguration.redirect_url,
@@ -135,8 +124,7 @@ describe('OidcSecurityService', () => {
     it('createEndSessionUrl with azure-ad-b2c policy parameter', () => {
         let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
         openIDImplicitFlowConfiguration.stsServer = 'https://localhost:5001';
-        openIDImplicitFlowConfiguration.redirect_url =
-            'https://localhost:44386';
+        openIDImplicitFlowConfiguration.redirect_url = 'https://localhost:44386';
         openIDImplicitFlowConfiguration.client_id = 'myid';
         openIDImplicitFlowConfiguration.response_type = 'id_token token';
         openIDImplicitFlowConfiguration.scope = 'openid email profile';
@@ -152,9 +140,7 @@ describe('OidcSecurityService', () => {
         openIDImplicitFlowConfiguration.log_console_debug_active = true;
         openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
 
-        oidcSecurityService.authConfiguration.init(
-            openIDImplicitFlowConfiguration
-        );
+        oidcSecurityService.authConfiguration.init(openIDImplicitFlowConfiguration);
 
         let value = oidcSecurityService.createEndSessionUrl(
             'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in',
@@ -170,8 +156,7 @@ describe('OidcSecurityService', () => {
     it('createAuthorizeUrl with custom value', () => {
         let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
         openIDImplicitFlowConfiguration.stsServer = 'https://localhost:5001';
-        openIDImplicitFlowConfiguration.redirect_url =
-            'https://localhost:44386';
+        openIDImplicitFlowConfiguration.redirect_url = 'https://localhost:44386';
         openIDImplicitFlowConfiguration.client_id =
             '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
         openIDImplicitFlowConfiguration.response_type = 'id_token token';
@@ -188,9 +173,7 @@ describe('OidcSecurityService', () => {
         openIDImplicitFlowConfiguration.log_console_debug_active = true;
         openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
 
-        oidcSecurityService.authConfiguration.init(
-            openIDImplicitFlowConfiguration
-        );
+        oidcSecurityService.authConfiguration.init(openIDImplicitFlowConfiguration);
 
         oidcSecurityService.setCustomRequestParameters({
             testcustom: 'customvalue',
@@ -211,8 +194,7 @@ describe('OidcSecurityService', () => {
     it('createAuthorizeUrl with custom values', () => {
         let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
         openIDImplicitFlowConfiguration.stsServer = 'https://localhost:5001';
-        openIDImplicitFlowConfiguration.redirect_url =
-            'https://localhost:44386';
+        openIDImplicitFlowConfiguration.redirect_url = 'https://localhost:44386';
         openIDImplicitFlowConfiguration.client_id =
             '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
         openIDImplicitFlowConfiguration.response_type = 'id_token token';
@@ -229,9 +211,7 @@ describe('OidcSecurityService', () => {
         openIDImplicitFlowConfiguration.log_console_debug_active = true;
         openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
 
-        oidcSecurityService.authConfiguration.init(
-            openIDImplicitFlowConfiguration
-        );
+        oidcSecurityService.authConfiguration.init(openIDImplicitFlowConfiguration);
 
         oidcSecurityService.setCustomRequestParameters({
             t4: 'ABC abc 123',
@@ -255,8 +235,7 @@ describe('OidcSecurityService', () => {
     it('createEndSessionUrl default', () => {
         let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
         openIDImplicitFlowConfiguration.stsServer = 'https://localhost:5001';
-        openIDImplicitFlowConfiguration.redirect_url =
-            'https://localhost:44386';
+        openIDImplicitFlowConfiguration.redirect_url = 'https://localhost:44386';
         openIDImplicitFlowConfiguration.client_id =
             '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
         openIDImplicitFlowConfiguration.response_type = 'id_token token';
@@ -273,14 +252,9 @@ describe('OidcSecurityService', () => {
         openIDImplicitFlowConfiguration.log_console_debug_active = true;
         openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
 
-        oidcSecurityService.authConfiguration.init(
-            openIDImplicitFlowConfiguration
-        );
+        oidcSecurityService.authConfiguration.init(openIDImplicitFlowConfiguration);
 
-        let value = oidcSecurityService.createEndSessionUrl(
-            'http://example',
-            'mytoken'
-        );
+        let value = oidcSecurityService.createEndSessionUrl('http://example', 'mytoken');
 
         let expectValue =
             'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
