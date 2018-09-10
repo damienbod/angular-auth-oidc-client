@@ -17,35 +17,37 @@ export class TokenHelperService {
         return date;
     }
 
-    getHeaderFromToken(token: any, encode: boolean) {
+    getHeaderFromToken(token: any, encoded: boolean) {
         if (!this.tokenIsValid(token)) {
             return {};
         }
 
-        return this.getPartOfToken(token, 0, encode);
+        return this.getPartOfToken(token, 0, encoded);
     }
 
-    getPayloadFromToken(token: any, encode: boolean) {
+    getPayloadFromToken(token: any, encoded: boolean) {
         if (!this.tokenIsValid(token)) {
             return {};
         }
 
-        return this.getPartOfToken(token, 1, encode);
+        return this.getPartOfToken(token, 1, encoded);
     }
 
-    getSignatureFromToken(token: any, encode: boolean) {
+    getSignatureFromToken(token: any, encoded: boolean) {
         if (!this.tokenIsValid(token)) {
             return {};
         }
 
-        return this.getPartOfToken(token, 2, encode);
+        return this.getPartOfToken(token, 2, encoded);
     }
 
-    private getPartOfToken(token: string, index: number, encode: boolean) {
+    private getPartOfToken(token: string, index: number, encoded: boolean) {
         const partOfToken = this.extractPartOfToken(token, index);
-        if (encode) {
+
+        if (encoded) {
             return partOfToken;
         }
+
         const result = this.urlBase64Decode(partOfToken);
         return JSON.parse(result);
     }
