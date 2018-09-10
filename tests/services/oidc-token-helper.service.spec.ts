@@ -74,12 +74,12 @@ describe('TokenHelperService', () => {
             expect(result).toEqual({});
         });
 
-        it('returns not null if token has no points, encode is true', () => {
+        it('returns not null if token has no points, encode is false', () => {
             const result = tokenHelperService.getPayloadFromToken('testStringWithoutDots', false);
             expect(result).toEqual({});
         });
 
-        it('returns not null if token has only one point, encode is true', () => {
+        it('returns not null if token has only one point, encode is false', () => {
             const result = tokenHelperService.getPayloadFromToken('testStringWith.dot', false);
             expect(result).toEqual({});
         });
@@ -98,7 +98,7 @@ describe('TokenHelperService', () => {
             expect(expected).toEqual(result);
         });
 
-        it('returns payload if token is correct, encode is true', () => {
+        it('returns payload if token is correct, encode is false', () => {
             const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
             const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
             const result = tokenHelperService.getPayloadFromToken(token, false);
@@ -120,7 +120,7 @@ describe('TokenHelperService', () => {
             expect(expected).toEqual(result);
         });
 
-        it('returns payload if token is correct, encode is false', () => {
+        it('returns payload if token is correct, encode is true', () => {
             const token =
                 'SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==';
             const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
@@ -155,12 +155,12 @@ describe('TokenHelperService', () => {
             expect(result).toEqual({});
         });
 
-        it('returns not null if token has no points, encode is true', () => {
+        it('returns not null if token has no points, encode is false', () => {
             const result = tokenHelperService.getHeaderFromToken('testStringWithoutDots', false);
             expect(result).toEqual({});
         });
 
-        it('returns not null if token has only one point, encode is true', () => {
+        it('returns not null if token has only one point, encode is false', () => {
             const result = tokenHelperService.getHeaderFromToken('testStringWith.dot', false);
             expect(result).toEqual({});
         });
@@ -179,7 +179,7 @@ describe('TokenHelperService', () => {
             expect(expected).toEqual(result);
         });
 
-        it('returns payload if token is correct, encode is true', () => {
+        it('returns payload if token is correct, encode is false', () => {
             const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.def.ghi';
             const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
             const result = tokenHelperService.getHeaderFromToken(token, false);
@@ -201,7 +201,7 @@ describe('TokenHelperService', () => {
             expect(expected).toEqual(result);
         });
 
-        it('returns payload if token is correct, encode is false', () => {
+        it('returns payload if token is correct, encode is true', () => {
             const token =
                 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==.SGVsbG8gV29ybGQgMTIzIQ==';
             const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
@@ -236,12 +236,12 @@ describe('TokenHelperService', () => {
             expect(result).toEqual({});
         });
 
-        it('returns not null if token has no points, encode is true', () => {
+        it('returns not null if token has no points, encode is false', () => {
             const result = tokenHelperService.getSignatureFromToken('testStringWithoutDots', false);
             expect(result).toEqual({});
         });
 
-        it('returns not null if token has only one point, encode is true', () => {
+        it('returns not null if token has only one point, encode is false', () => {
             const result = tokenHelperService.getSignatureFromToken('testStringWith.dot', false);
             expect(result).toEqual({});
         });
@@ -260,7 +260,7 @@ describe('TokenHelperService', () => {
             expect(expected).toEqual(result);
         });
 
-        it('returns payload if token is correct, encode is true', () => {
+        it('returns payload if token is correct, encode is false', () => {
             const token = 'def.ghi.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
             const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
             const result = tokenHelperService.getSignatureFromToken(token, false);
