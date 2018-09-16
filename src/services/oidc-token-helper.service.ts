@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
+import { LoggerService } from './oidc.logger.service';
 
 @Injectable()
 export class TokenHelperService {
-    constructor() {}
+    private PARTS_OF_TOKEN = 3;
+    constructor(private readonly loggerService: LoggerService) {}
 
     getTokenExpirationDate(dataIdToken: any): Date {
         if (!dataIdToken.hasOwnProperty('exp')) {
@@ -15,46 +17,42 @@ export class TokenHelperService {
         return date;
     }
 
-    getPayloadFromToken(token: any, encode: boolean) {
-        let data = {};
-        if (typeof token !== 'undefined') {
-            const encoded = token.split('.')[1];
-            if (encode) {
-                return encoded;
-            }
-            data = JSON.parse(this.urlBase64Decode(encoded));
+    getHeaderFromToken(token: any, encoded: boolean) {
+        if (!this.tokenIsValid(token)) {
+            return {};
         }
 
-        return data;
+        return this.getPartOfToken(token, 0, encoded);
     }
 
-    getHeaderFromToken(token: any, encode: boolean) {
-        let data = {};
-        if (typeof token !== 'undefined') {
-            const encoded = token.split('.')[0];
-            if (encode) {
-                return encoded;
-            }
-            data = JSON.parse(this.urlBase64Decode(encoded));
+    getPayloadFromToken(token: any, encoded: boolean) {
+        if (!this.tokenIsValid(token)) {
+            return {};
         }
 
-        return data;
+        return this.getPartOfToken(token, 1, encoded);
     }
 
-    getSignatureFromToken(token: any, encode: boolean) {
-        let data = {};
-        if (typeof token !== 'undefined') {
-            const encoded = token.split('.')[2];
-            if (encode) {
-                return encoded;
-            }
-            data = JSON.parse(this.urlBase64Decode(encoded));
+    getSignatureFromToken(token: any, encoded: boolean) {
+        if (!this.tokenIsValid(token)) {
+            return {};
         }
 
-        return data;
+        return this.getPartOfToken(token, 2, encoded);
     }
 
-    urlBase64Decode(str: string) {
+    private getPartOfToken(token: string, index: number, encoded: boolean) {
+        const partOfToken = this.extractPartOfToken(token, index);
+
+        if (encoded) {
+            return partOfToken;
+        }
+
+        const result = this.urlBase64Decode(partOfToken);
+        return JSON.parse(result);
+    }
+
+    private urlBase64Decode(str: string) {
         let output = str.replace('-', '+').replace('_', '/');
         switch (output.length % 4) {
             case 0:
@@ -72,5 +70,32 @@ export class TokenHelperService {
         return typeof window !== 'undefined'
             ? window.atob(output)
             : new Buffer(output, 'base64').toString('binary');
+    }
+
+    private tokenIsValid(token: string) {
+        if (!token) {
+            this.loggerService.logError(`token '${token}' is not valid --> token falsy`);
+            return false;
+        }
+
+        if (!(token as string).includes('.')) {
+            this.loggerService.logError(`token '${token}' is not valid --> no dots included`);
+            return false;
+        }
+
+        const parts = token.split('.');
+
+        if (parts.length !== this.PARTS_OF_TOKEN) {
+            this.loggerService.logError(
+                `token '${token}' is not valid --> token has t have exact three dots`
+            );
+            return false;
+        }
+
+        return true;
+    }
+
+    private extractPartOfToken(token: string, index: number) {
+        return token.split('.')[index];
     }
 }
