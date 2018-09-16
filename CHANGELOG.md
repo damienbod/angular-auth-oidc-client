@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-09-14"></a>
+### 2018-09-14 version 6.0.10
+* Handle callback params that contain equals char
+
 <a name="2018-09-09"></a>
 ### 2018-09-09 version 6.0.7
 * Removing the fetch package, using the httpClient now instead

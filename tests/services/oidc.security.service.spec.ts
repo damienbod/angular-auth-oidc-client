@@ -7,6 +7,7 @@ import { AuthModule } from '../../src/modules/auth.module';
 import { OidcSecurityService } from '../../src/services/oidc.security.service';
 import { OidcSecurityStorage } from '../../src/services/oidc.security.storage';
 import { TestStorage } from '../common/test-storage.service';
+import { empty } from 'rxjs';
 
 describe('OidcSecurityService', () => {
     let oidcSecurityService: any;
@@ -261,4 +262,36 @@ describe('OidcSecurityService', () => {
 
         expect(value).toEqual(expectValue);
     });
+
+    it('authorizedCallback should correctly parse hash params', () => {
+        spyOn(
+            oidcSecurityService,
+            'getSigningKeys'
+        ).and.returnValue(empty());
+
+        const resultSetter = spyOnProperty(
+            oidcSecurityService.oidcSecurityCommon,
+            'authResult',
+            'set'
+        );
+
+        let hash = 'access_token=ACCESS-TOKEN&token_type=bearer&state=testState';
+        let expectedResult = {
+            'access_token': 'ACCESS-TOKEN',
+            'token_type': 'bearer',
+            'state': 'testState'
+        };
+
+        (oidcSecurityService as OidcSecurityService).authorizedCallback(hash);
+        expect(resultSetter).toHaveBeenCalledWith(expectedResult);
+
+        // with '=' chars in values
+        hash = 'access_token=ACCESS-TOKEN==&token_type=bearer&state=test=State';
+        expectedResult['access_token'] = 'ACCESS-TOKEN==';
+        expectedResult['state'] = 'test=State';
+
+        (oidcSecurityService as OidcSecurityService).authorizedCallback(hash);
+        expect(resultSetter).toHaveBeenCalledWith(expectedResult);
+    });
+
 });
