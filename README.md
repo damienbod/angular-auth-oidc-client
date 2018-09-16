@@ -310,20 +310,28 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 
 ```typescript
 import { Injectable } from '@angular/core';
-import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { Router, CanActivate, CanLoad, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import { map } from 'rxjs/operators';
 
 import { OidcSecurityService } from './auth/services/oidc.security.service';
 
 @Injectable()
-export class AuthorizationGuard implements CanActivate {
+export class AuthorizationGuard implements CanActivate, CanLoad {
     constructor(private router: Router, private oidcSecurityService: OidcSecurityService) {}
 
-    public canActivate(
+    canActivate(
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
-    ): Observable<boolean> | boolean {
+    ): Observable<boolean> {
+        return this.checkUser();
+    }
+
+    canLoad(state: Route): Observable<boolean> {
+        return this.checkUser();
+    }
+
+    private checkUser(): Observable<boolean> | boolean {
         console.log(route + '' + state);
         console.log('AuthorizationGuard, canActivate');
 
