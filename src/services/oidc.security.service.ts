@@ -270,7 +270,7 @@ export class OidcSecurityService {
 
         const result: any = hash.split('&').reduce(function(resultData: any, item: string) {
             const parts = item.split('=');
-            resultData[parts[0]] = parts[1];
+            resultData[<string>parts.shift()] = parts.join('=');
             return resultData;
         }, {});
 
