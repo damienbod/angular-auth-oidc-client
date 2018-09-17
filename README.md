@@ -170,6 +170,11 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     login() {
+  
+        // if you need to add extra parameters to the login
+        // let culture = 'de-CH';
+        // this.oidcSecurityService.setCustomRequestParameters({ 'ui_locales': culture });
+	
         this.oidcSecurityService.authorize();
     }
 
