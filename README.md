@@ -350,7 +350,8 @@ export class AuthorizationGuard implements CanActivate, CanLoad {
 
                 this.router.navigate(['/unauthorized']);
                 return false;
-            })
+            }),
+            take(1)
         );
     }
 }
