@@ -206,7 +206,7 @@ private setHeaders() {
 }
 ```
 
-<strong>Loading the configuration from the server</strong>
+## Loading the configuration from the server
 
 Note the configuration json must return a property stsServer for this to work.
 
@@ -243,7 +243,7 @@ You can add any configurations to this json, as long as the stsServer is present
 }
 ```
 
-<strong>Using without APP_INITIALIZER</strong>
+## Using without APP_INITIALIZER
 
 ```typescript
 export class AppModule {
@@ -297,7 +297,7 @@ export class AppModule {
 }
 ```
 
-<strong>Custom STS server well known configuration</strong>
+## Custom STS server well known configuration
 
 Sometimes it is required to load custom .well-known/openid-configuration. The load_using_custom_stsServer can be used for this.
 
@@ -311,7 +311,7 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 }
 ```
 
-<strong>Using Guards</strong>
+## Using Guards
 
 ```typescript
 import { Injectable } from '@angular/core';
