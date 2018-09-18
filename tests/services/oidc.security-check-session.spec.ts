@@ -36,7 +36,7 @@ describe('EqualityHelperServiceTests', () => {
         expect(oidcSecurityCheckSession).toBeTruthy();
     });
 
-    it('setupModule sets authWellKnownEndpoints create', () => {
+    it('setupModule sets authWellKnownEndpoints', () => {
         expect((oidcSecurityCheckSession as any).authWellKnownEndpoints).toBe(undefined);
         const authWellKnownEndpoints = new AuthWellKnownEndpoints();
         authWellKnownEndpoints.issuer = 'testIssuer';
@@ -46,33 +46,88 @@ describe('EqualityHelperServiceTests', () => {
         expect((oidcSecurityCheckSession as any).authWellKnownEndpoints.issuer).toBe('testIssuer');
     });
 
-    it('doesSessionExist', () => {
-        console.log(window.parent.document);
+    it('doesSessionExist returns false if nothing is setup', () => {
+        let result = oidcSecurityCheckSession.doesSessionExist();
+        expect(result).toBe(false);
     });
 
-    // doesSessionExist(): boolean {
-    //     let existsparent = undefined;
-    //     try {
-    //         const parentdoc = window.parent.document;
-    //         if (!parentdoc) {
-    //             throw new Error('Unaccessible');
-    //         }
+    it('doesSessionExist returns true if document found on window.parent.document', () => {
+        let node = document.createElement('iframe');
+        node.setAttribute('id', 'myiFrameForCheckSession');
+        window.parent.document.documentElement.appendChild(node);
 
-    //         existsparent = parentdoc.getElementById('myiFrameForCheckSession');
-    //     } catch (e) {
-    //         // not accessible
-    //     }
-    //     const exists = window.document.getElementById('myiFrameForCheckSession');
-    //     if (existsparent) {
-    //         this.sessionIframe = existsparent;
-    //     } else if (exists) {
-    //         this.sessionIframe = exists;
-    //     }
+        let result = oidcSecurityCheckSession.doesSessionExist();
+        expect(result).toBe(true);
+        let remove = window.parent.document.getElementById('myiFrameForCheckSession');
+        if (remove) {
+            window.parent.document.documentElement.removeChild(remove);
+        }
+    });
 
-    //     if (existsparent || exists) {
-    //         return true;
-    //     }
+    it('doesSessionExist returns true if document found on window.document', () => {
+        let node = document.createElement('iframe');
+        node.setAttribute('id', 'myiFrameForCheckSession');
+        window.document.documentElement.appendChild(node);
+        let result = oidcSecurityCheckSession.doesSessionExist();
+        expect(result).toBe(true);
+        let remove = document.getElementById('myiFrameForCheckSession');
+        if (remove) {
+            window.document.documentElement.removeChild(remove);
+        }
+    });
 
-    //     return false;
-    // }
+    it('doesSessionExist returns false if document not found on window.parent.document given the wrong id', () => {
+        let node = document.createElement('iframe');
+        node.setAttribute('id', 'idwhichshouldneverexist');
+        window.parent.document.documentElement.appendChild(node);
+        let result = oidcSecurityCheckSession.doesSessionExist();
+        expect(result).toBe(false);
+        let remove = window.parent.document.getElementById('idwhichshouldneverexist');
+        if (remove) {
+            window.parent.document.documentElement.removeChild(remove);
+        }
+    });
+
+    it('doesSessionExist returns false if document not found on window.document given the wrong id', () => {
+        let node = document.createElement('iframe');
+        node.setAttribute('id', 'idwhichshouldneverexist');
+        window.document.documentElement.appendChild(node);
+        let result = oidcSecurityCheckSession.doesSessionExist();
+        expect(result).toBe(false);
+
+        let remove = document.getElementById('idwhichshouldneverexist');
+        if (remove) {
+            window.document.documentElement.removeChild(remove);
+        }
+    });
+
+    it('existsParent is set when document was found on window.parent', () => {
+        let node = document.createElement('iframe');
+        node.setAttribute('id', 'myiFrameForCheckSession');
+        window.parent.document.documentElement.appendChild(node);
+
+        oidcSecurityCheckSession.doesSessionExist();
+        expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
+        expect((oidcSecurityCheckSession as any).sessionIframe).toBe(node);
+
+        let remove = window.parent.document.getElementById('myiFrameForCheckSession');
+        if (remove) {
+            window.parent.document.documentElement.removeChild(remove);
+        }
+    });
+
+    it('existsParent is set when document was found on window', () => {
+        let node = document.createElement('iframe');
+        node.setAttribute('id', 'myiFrameForCheckSession');
+        window.document.documentElement.appendChild(node);
+
+        oidcSecurityCheckSession.doesSessionExist();
+        expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
+        expect((oidcSecurityCheckSession as any).sessionIframe).toBe(node);
+
+        let remove = document.getElementById('myiFrameForCheckSession');
+        if (remove) {
+            window.document.documentElement.removeChild(remove);
+        }
+    });
 });
