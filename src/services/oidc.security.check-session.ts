@@ -5,6 +5,8 @@ import { AuthConfiguration } from '../modules/auth.configuration';
 import { LoggerService } from './oidc.logger.service';
 import { OidcSecurityCommon } from './oidc.security.common';
 
+const IFRAME_FOR_CHECK_SESSION_IDENTIFIER = 'myiFrameForCheckSession';
+
 // http://openid.net/specs/openid-connect-session-1_0-ID4.html
 
 @Injectable()
@@ -29,34 +31,19 @@ export class OidcSecurityCheckSession {
     }
 
     doesSessionExist(): boolean {
-        let existsparent = undefined;
-        try {
-            const parentdoc = window.parent.document;
-            if (!parentdoc) {
-                throw new Error('Unaccessible');
-            }
+        const existingIFrame = this.getExistingIFrame();
 
-            existsparent = parentdoc.getElementById('myiFrameForCheckSession');
-        } catch (e) {
-            // not accessible
-        }
-        const exists = window.document.getElementById('myiFrameForCheckSession');
-        if (existsparent) {
-            this.sessionIframe = existsparent;
-        } else if (exists) {
-            this.sessionIframe = exists;
+        if (!existingIFrame) {
+            return false;
         }
 
-        if (existsparent || exists) {
-            return true;
-        }
-
-        return false;
+        this.sessionIframe = existingIFrame;
+        return true;
     }
 
     init() {
         this.sessionIframe = window.document.createElement('iframe');
-        this.sessionIframe.id = 'myiFrameForCheckSession';
+        this.sessionIframe.id = IFRAME_FOR_CHECK_SESSION_IDENTIFIER;
         this.loggerService.logDebug(this.sessionIframe);
         this.sessionIframe.style.display = 'none';
         window.document.body.appendChild(this.sessionIframe);
@@ -72,7 +59,7 @@ export class OidcSecurityCheckSession {
         this.iframeMessageEvent = this.messageHandler.bind(this);
         window.addEventListener('message', this.iframeMessageEvent, false);
 
-        return Observable.create((observer: Observer<any>) => {
+        return Observable.create((observer: Observer<OidcSecurityCheckSession>) => {
             this.sessionIframe.onload = () => {
                 observer.next(this);
                 observer.complete();
@@ -80,20 +67,22 @@ export class OidcSecurityCheckSession {
         });
     }
 
-    startCheckingSession(clientId: any): void {
-        if (!this.scheduledHeartBeat) {
-            this.pollServerSession(clientId);
+    startCheckingSession(clientId: string): void {
+        if (this.scheduledHeartBeat) {
+            return;
         }
+        this.pollServerSession(clientId);
     }
 
     stopCheckingSession(): void {
-        if (this.scheduledHeartBeat) {
-            clearTimeout(this.scheduledHeartBeat);
-            this.scheduledHeartBeat = null;
+        if (!this.scheduledHeartBeat) {
+            return;
         }
+
+        this.clearScheduledHeartBeat();
     }
 
-    pollServerSession(clientId: any) {
+    pollServerSession(clientId: string) {
         const _pollServerSessionRecur = () => {
             if (this.sessionIframe && clientId) {
                 this.loggerService.logDebug(this.sessionIframe);
@@ -119,6 +108,10 @@ export class OidcSecurityCheckSession {
             this.scheduledHeartBeat = setTimeout(_pollServerSessionRecur, 3000);
         });
     }
+    private clearScheduledHeartBeat() {
+        clearTimeout(this.scheduledHeartBeat);
+        this.scheduledHeartBeat = null;
+    }
 
     private messageHandler(e: any) {
         if (
@@ -134,5 +127,23 @@ export class OidcSecurityCheckSession {
                 this.loggerService.logDebug(e.data + ' from checksession messageHandler');
             }
         }
+    }
+
+    private getExistingIFrame() {
+        const iFrameOnParent = this.getIFrameFromParentWindow();
+
+        if (iFrameOnParent) {
+            return iFrameOnParent;
+        }
+
+        return this.getIFrameFromWindow();
+    }
+
+    private getIFrameFromParentWindow() {
+        return window.parent.document.getElementById(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
+    }
+
+    private getIFrameFromWindow() {
+        return window.document.getElementById(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
     }
 }

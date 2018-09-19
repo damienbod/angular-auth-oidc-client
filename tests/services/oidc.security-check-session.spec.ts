@@ -130,4 +130,55 @@ describe('EqualityHelperServiceTests', () => {
             window.document.documentElement.removeChild(remove);
         }
     });
+
+    it('init appends iframe on body with correct values', () => {
+        expect((oidcSecurityCheckSession as any).sessionIframe).toBeFalsy();
+
+        oidcSecurityCheckSession.init();
+
+        expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
+        const sessionIframe = (oidcSecurityCheckSession as any).sessionIframe;
+        expect(sessionIframe.id).toBe('myiFrameForCheckSession');
+        expect(sessionIframe.style.display).toBe('none');
+        const iFrame = document.getElementById('myiFrameForCheckSession');
+        expect(iFrame).toBeDefined();
+    });
+
+    it('src of iframe is set to authWellKnownEndpoints.check_session_iframe if existing', () => {
+        const authWellKnownEndpoints = new AuthWellKnownEndpoints();
+        authWellKnownEndpoints.check_session_iframe = 'someTestingValue';
+        (oidcSecurityCheckSession as any).authWellKnownEndpoints = authWellKnownEndpoints;
+
+        expect((oidcSecurityCheckSession as any).sessionIframe).toBeFalsy();
+
+        oidcSecurityCheckSession.init();
+
+        expect((oidcSecurityCheckSession as any).sessionIframe.src).toContain('someTestingValue');
+    });
+
+    it('src of iframe is empty if authWellKnownEndpoints.check_session_iframe is not existing', () => {
+        oidcSecurityCheckSession.init();
+
+        expect((oidcSecurityCheckSession as any).sessionIframe.src).toBe('');
+    });
+
+    it('startCheckingSession calls pollserversession with clientId if no scheduledheartbeat is set', () => {
+        const spy = spyOn(oidcSecurityCheckSession, 'pollServerSession');
+        oidcSecurityCheckSession.startCheckingSession('anyId');
+        expect(spy).toHaveBeenCalledWith('anyId');
+    });
+
+    it('startCheckingSession does not call pollserversession if scheduledheartbeat is set', () => {
+        const spy = spyOn(oidcSecurityCheckSession, 'pollServerSession');
+        (oidcSecurityCheckSession as any).scheduledHeartBeat = () => {};
+        oidcSecurityCheckSession.startCheckingSession('anyId');
+        expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('stopCheckingSession sets heartbeat to null', () => {
+        (oidcSecurityCheckSession as any).scheduledHeartBeat = setTimeout(() => {}, 999);
+        oidcSecurityCheckSession.stopCheckingSession();
+        const heartBeat = (oidcSecurityCheckSession as any).scheduledHeartBeat;
+        expect(heartBeat).toBeNull();
+    });
 });
