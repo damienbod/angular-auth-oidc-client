@@ -2,12 +2,13 @@ import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { empty } from 'rxjs';
 import { OpenIDImplicitFlowConfiguration } from '../../src/modules/auth.configuration';
 import { AuthModule } from '../../src/modules/auth.module';
+import { IFrameService } from '../../src/services/existing-iframe.service';
 import { OidcSecurityService } from '../../src/services/oidc.security.service';
 import { OidcSecurityStorage } from '../../src/services/oidc.security.storage';
 import { TestStorage } from '../common/test-storage.service';
-import { empty } from 'rxjs';
 
 describe('OidcSecurityService', () => {
     let oidcSecurityService: any;
@@ -21,6 +22,7 @@ describe('OidcSecurityService', () => {
                     provide: OidcSecurityStorage,
                     useClass: TestStorage,
                 },
+                IFrameService,
             ],
         });
     });
@@ -264,10 +266,7 @@ describe('OidcSecurityService', () => {
     });
 
     it('authorizedCallback should correctly parse hash params', () => {
-        spyOn(
-            oidcSecurityService,
-            'getSigningKeys'
-        ).and.returnValue(empty());
+        spyOn(oidcSecurityService, 'getSigningKeys').and.returnValue(empty());
 
         const resultSetter = spyOnProperty(
             oidcSecurityService.oidcSecurityCommon,
@@ -277,9 +276,9 @@ describe('OidcSecurityService', () => {
 
         let hash = 'access_token=ACCESS-TOKEN&token_type=bearer&state=testState';
         let expectedResult = {
-            'access_token': 'ACCESS-TOKEN',
-            'token_type': 'bearer',
-            'state': 'testState'
+            access_token: 'ACCESS-TOKEN',
+            token_type: 'bearer',
+            state: 'testState',
         };
 
         (oidcSecurityService as OidcSecurityService).authorizedCallback(hash);
@@ -293,5 +292,4 @@ describe('OidcSecurityService', () => {
         (oidcSecurityService as OidcSecurityService).authorizedCallback(hash);
         expect(resultSetter).toHaveBeenCalledWith(expectedResult);
     });
-
 });

@@ -6,6 +6,7 @@ import {
     OidcSecurityService,
     OidcSecurityStorage,
 } from '../../src/angular-auth-oidc-client';
+import { IFrameService } from '../../src/services/existing-iframe.service';
 import { LoggerService } from '../../src/services/oidc.logger.service';
 import { OidcSecurityCheckSession } from '../../src/services/oidc.security.check-session';
 import { OidcSecurityCommon } from '../../src/services/oidc.security.common';
@@ -24,6 +25,7 @@ describe('EqualityHelperServiceTests', () => {
                 DefaultConfiguration,
                 OidcSecurityService,
                 { provide: OidcSecurityStorage, useClass: TestStorage },
+                IFrameService,
             ],
         });
     });
@@ -49,6 +51,7 @@ describe('EqualityHelperServiceTests', () => {
     it('doesSessionExist returns false if nothing is setup', () => {
         let result = oidcSecurityCheckSession.doesSessionExist();
         expect(result).toBe(false);
+        expect(result).toBeFalsy();
     });
 
     it('doesSessionExist returns true if document found on window.parent.document', () => {

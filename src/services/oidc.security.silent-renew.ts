@@ -1,60 +1,30 @@
 ﻿import { Injectable } from '@angular/core';
 import { Observable, Observer } from 'rxjs';
+import { IFrameService } from './existing-iframe.service';
 import { LoggerService } from './oidc.logger.service';
+
+const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 
 @Injectable()
 export class OidcSecuritySilentRenew {
     private sessionIframe: any;
 
-    constructor(private loggerService: LoggerService) {}
+    constructor(private loggerService: LoggerService, private iFrameService: IFrameService) {}
 
     initRenew() {
-        let existsparent = undefined;
-        try {
-            const parentdoc = window.parent.document;
-            if (!parentdoc) {
-                throw new Error('Unaccessible');
-            }
+        const existingIFrame = this.iFrameService.getExistingIFrame(
+            IFRAME_FOR_SILENT_RENEW_IDENTIFIER
+        );
 
-            existsparent = parentdoc.getElementById('myiFrameForSilentRenew');
-        } catch (e) {
-            // not accessible
-        }
-        const exists = window.document.getElementById('myiFrameForSilentRenew');
-        if (existsparent) {
-            this.sessionIframe = existsparent;
-        } else if (exists) {
-            this.sessionIframe = exists;
-        }
-
-        if (!exists && !existsparent) {
-            this.sessionIframe = window.document.createElement('iframe');
-            this.sessionIframe.id = 'myiFrameForSilentRenew';
-            this.loggerService.logDebug(this.sessionIframe);
-            this.sessionIframe.style.display = 'none';
-
-            window.document.body.appendChild(this.sessionIframe);
+        if (!existingIFrame) {
+            this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_SILENT_RENEW_IDENTIFIER);
         }
     }
 
     startRenew(url: string): Observable<any> {
-        let existsparent = undefined;
-        try {
-            const parentdoc = window.parent.document;
-            if (!parentdoc) {
-                throw new Error('Unaccessible');
-            }
-
-            existsparent = parentdoc.getElementById('myiFrameForSilentRenew');
-        } catch (e) {
-            // not accessible
-        }
-        const exists = window.document.getElementById('myiFrameForSilentRenew');
-        if (existsparent) {
-            this.sessionIframe = existsparent;
-        } else if (exists) {
-            this.sessionIframe = exists;
-        }
+        this.sessionIframe = this.iFrameService.getExistingIFrame(
+            IFRAME_FOR_SILENT_RENEW_IDENTIFIER
+        );
 
         this.loggerService.logDebug('startRenew for URL:' + url);
         this.sessionIframe.src = url;

@@ -2,6 +2,7 @@ import { EventEmitter, Injectable, NgZone, Output } from '@angular/core';
 import { Observable, Observer } from 'rxjs';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 import { AuthConfiguration } from '../modules/auth.configuration';
+import { IFrameService } from './existing-iframe.service';
 import { LoggerService } from './oidc.logger.service';
 import { OidcSecurityCommon } from './oidc.security.common';
 
@@ -23,6 +24,7 @@ export class OidcSecurityCheckSession {
         private authConfiguration: AuthConfiguration,
         private oidcSecurityCommon: OidcSecurityCommon,
         private loggerService: LoggerService,
+        private iFrameService: IFrameService,
         private zone: NgZone
     ) {}
 
@@ -31,7 +33,9 @@ export class OidcSecurityCheckSession {
     }
 
     doesSessionExist(): boolean {
-        const existingIFrame = this.getExistingIFrame();
+        const existingIFrame = this.iFrameService.getExistingIFrame(
+            IFRAME_FOR_CHECK_SESSION_IDENTIFIER
+        );
 
         if (!existingIFrame) {
             return false;
@@ -42,11 +46,9 @@ export class OidcSecurityCheckSession {
     }
 
     init() {
-        this.sessionIframe = window.document.createElement('iframe');
-        this.sessionIframe.id = IFRAME_FOR_CHECK_SESSION_IDENTIFIER;
-        this.loggerService.logDebug(this.sessionIframe);
-        this.sessionIframe.style.display = 'none';
-        window.document.body.appendChild(this.sessionIframe);
+        this.sessionIframe = this.iFrameService.addIFrameToWindowBody(
+            IFRAME_FOR_CHECK_SESSION_IDENTIFIER
+        );
 
         if (this.authWellKnownEndpoints) {
             this.sessionIframe.src = this.authWellKnownEndpoints.check_session_iframe;
@@ -127,23 +129,5 @@ export class OidcSecurityCheckSession {
                 this.loggerService.logDebug(e.data + ' from checksession messageHandler');
             }
         }
-    }
-
-    private getExistingIFrame() {
-        const iFrameOnParent = this.getIFrameFromParentWindow();
-
-        if (iFrameOnParent) {
-            return iFrameOnParent;
-        }
-
-        return this.getIFrameFromWindow();
-    }
-
-    private getIFrameFromParentWindow() {
-        return window.parent.document.getElementById(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
-    }
-
-    private getIFrameFromWindow() {
-        return window.document.getElementById(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
     }
 }
