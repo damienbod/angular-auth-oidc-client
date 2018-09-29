@@ -709,7 +709,7 @@ export class OidcSecurityService {
         const silentRenewHeartBeatCheck = () => {
             this.loggerService.logDebug(
                 'silentRenewHeartBeatCheck\r\n' + 
-                `\tsilentRenewRunning: ${(this.oidcSecurityCommon.silentRenewRunning !== 'running')}\r\n` +
+                `\tsilentRenewRunning: ${(this.oidcSecurityCommon.silentRenewRunning === 'running')}\r\n` +
                 `\tidToken: ${(this.getIdToken() != null)}\r\n` +
                 `\t_userData.value: ${(this._userData.value != null)}`
             );
