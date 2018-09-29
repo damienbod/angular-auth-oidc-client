@@ -97,8 +97,8 @@ export class OidcSecurityService {
             } else {
                 this.loggerService.logDebug('IsAuthorized setup module; id_token is valid');
                 this.setIsAuthorized(isAuthorized);
-                this.runTokenValidation();
             }
+            this.runTokenValidation();
         }
 
         this.loggerService.logDebug('STS server: ' + this.authConfiguration.stsServer);
@@ -338,8 +338,9 @@ export class OidcSecurityService {
                                 validationResult.decoded_id_token
                             );
                             this.setUserData(this.oidcSecurityUserService.getUserData());
-                            this.runTokenValidation();
                         }
+
+                        this.runTokenValidation();
 
                         this.onAuthorizationResult.emit(AuthorizationResult.authorized);
                         if (
@@ -441,9 +442,7 @@ export class OidcSecurityService {
 
                 this.oidcSecurityCommon.sessionState = result.session_state;
 
-                if (!isRenewProcess) {
-                    this.runTokenValidation();
-                }
+                this.runTokenValidation();
 
                 observer.next(true);
                 observer.complete();
@@ -700,12 +699,20 @@ export class OidcSecurityService {
             return;
         }
         this.runTokenValidationRunning = true;
+	
+        this.loggerService.logDebug('runTokenValidation silent-renew running');
 
         /**
             First time: delay 10 seconds to call silentRenewHeartBeatCheck
             Afterwards: Run this check in a 5 second interval only AFTER the previous operation ends.
          */
         const silentRenewHeartBeatCheck = () => {
+            this.loggerService.logDebug(
+                'silentRenewHeartBeatCheck\r\n' + 
+                `\tsilentRenewRunning: ${(this.oidcSecurityCommon.silentRenewRunning !== 'running')}\r\n` +
+                `\tidToken: ${(this.getIdToken() != null)}\r\n` +
+                `\t_userData.value: ${(this._userData.value != null)}`
+            );
             if (
                 this._userData.value &&
                 this.oidcSecurityCommon.silentRenewRunning !== 'running' &&

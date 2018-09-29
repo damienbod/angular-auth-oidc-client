@@ -76,11 +76,14 @@ export class OidcSecurityValidation {
             return false;
         }
 
+        const tokenExpirationValue = tokenExpirationDate.valueOf();
+        const nowWithOffset = new Date().valueOf() + offsetSeconds * 1000;
+	const tokenNotExpired = ( tokenExpirationValue > nowWithOffset );
+
+        this.loggerService.logDebug(`Token not expired?: ${tokenExpirationValue} > ${nowWithOffset}  (${tokenNotExpired})`)
+
         // Token not expired?
-        return (
-            tokenExpirationDate.valueOf() >
-            new Date().valueOf() + offsetSeconds * 1000
-        );
+        return tokenNotExpired;
     }
 
     // iss
