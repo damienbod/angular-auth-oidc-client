@@ -78,7 +78,7 @@ export class OidcSecurityValidation {
 
         const tokenExpirationValue = tokenExpirationDate.valueOf();
         const nowWithOffset = new Date().valueOf() + offsetSeconds * 1000;
-	const tokenNotExpired = ( tokenExpirationValue > nowWithOffset );
+        const tokenNotExpired = ( tokenExpirationValue > nowWithOffset );
 
         this.loggerService.logDebug(`Token not expired?: ${tokenExpirationValue} > ${nowWithOffset}  (${tokenNotExpired})`)
 
