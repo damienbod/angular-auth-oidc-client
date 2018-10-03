@@ -3,7 +3,6 @@
 <a name="2018-10-03"></a>
 ### 2018-10-03 version 6.0.11
 * silent_renew inconsistent with execution
-* iframe refactor
 
 <a name="2018-09-14"></a>
 ### 2018-09-14 version 6.0.10
