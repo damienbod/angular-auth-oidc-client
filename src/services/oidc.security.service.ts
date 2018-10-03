@@ -699,7 +699,6 @@ export class OidcSecurityService {
             return;
         }
         this.runTokenValidationRunning = true;
-	
         this.loggerService.logDebug('runTokenValidation silent-renew running');
 
         /**
@@ -708,7 +707,7 @@ export class OidcSecurityService {
          */
         const silentRenewHeartBeatCheck = () => {
             this.loggerService.logDebug(
-                'silentRenewHeartBeatCheck\r\n' + 
+                'silentRenewHeartBeatCheck\r\n' +
                 `\tsilentRenewRunning: ${(this.oidcSecurityCommon.silentRenewRunning === 'running')}\r\n` +
                 `\tidToken: ${(this.getIdToken() != null)}\r\n` +
                 `\t_userData.value: ${(this._userData.value != null)}`
