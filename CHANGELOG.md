@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-10-03"></a>
+### 2018-10-03 version 6.0.11
+* silent_renew inconsistent with execution
+
 <a name="2018-09-14"></a>
 ### 2018-09-14 version 6.0.10
 * Handle callback params that contain equals char
