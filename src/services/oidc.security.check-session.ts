@@ -92,6 +92,11 @@ export class OidcSecurityCheckSession {
                         clientId + ' ' + session_state,
                         this.authConfiguration.stsServer
                     );
+                } else {
+                    this.loggerService.logWarning(
+                        'OidcSecurityCheckSession pollServerSession session_state is blank'
+                    );
+                    this.onCheckSessionChanged.emit();
                 }
             } else {
                 this.loggerService.logWarning(
