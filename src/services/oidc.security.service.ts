@@ -3,7 +3,7 @@ import { HttpParams } from '@angular/common/http';
 import { EventEmitter, Inject, Injectable, NgZone, Output, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, throwError as observableThrowError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, filter, shareReplay, switchMap, switchMapTo, take, tap, race } from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 import { AuthorizationResult } from '../models/authorization-result.enum';
@@ -31,9 +31,12 @@ export class OidcSecurityService {
 
     checkSessionChanged = false;
     moduleSetup = false;
+
+    private _isModuleSetup = new BehaviorSubject<boolean>(false);
+
     private authWellKnownEndpoints: AuthWellKnownEndpoints | undefined;
     private _isAuthorized = new BehaviorSubject<boolean>(false);
-    private _isAuthorizedValue = false;
+    private _isSetupAndAuthorized: Observable<boolean>;
 
     private lastUserData: any;
     private _userData = new BehaviorSubject<any>('');
@@ -56,7 +59,45 @@ export class OidcSecurityService {
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,
         private zone: NgZone
-    ) {}
+    ) {
+        this.onModuleSetup.pipe(take(1)).subscribe(() => {
+            this.moduleSetup = true;
+            this._isModuleSetup.next(true);
+        });
+
+        this._isSetupAndAuthorized = this._isModuleSetup.pipe(
+            filter((isModuleSetup : boolean) => isModuleSetup),
+            switchMap(() => {
+                let existingTokenIsValid$ = this._isAuthorized.asObservable().pipe(
+                    filter((isAuthorized: boolean) => isAuthorized),
+                    take(1),
+                    tap(() => this.loggerService.logDebug("IsAuthorizedRace: Existing token is still authorized."))
+                );
+
+                let race$ = existingTokenIsValid$.pipe(
+                    race((this.authConfiguration.silent_renew)
+                        ? this.onAuthorizationResult.asObservable().pipe(
+                            take(1),
+                            tap(() => this.loggerService.logDebug("IsAuthorizedRace: Silent Renew Refresh Session Complete"))
+                        )
+                        : this._isAuthorized.asObservable().pipe(
+                            take(1),
+                            tap((isAuthorized: boolean) => this.loggerService.logDebug(`IsAuthorizedRace: Existing token isAuthorized: ${isAuthorized}`))
+                        ))
+                );
+
+                if (this.authConfiguration.silent_renew) {
+                    this.refreshSession();
+                }
+
+                return race$;
+            }),
+            tap(() => this.loggerService.logDebug("IsAuthorizedRace: Completed")),
+            switchMapTo(this._isAuthorized.asObservable()),
+            tap((isAuthorized: boolean) => this.loggerService.logDebug(`getIsAuthorized: ${isAuthorized}`)),
+            shareReplay(1)
+        );
+    }
 
     setupModule(
         openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration,
@@ -105,7 +146,6 @@ export class OidcSecurityService {
 
         if (isPlatformBrowser(this.platformId)) {
             // Client only code.
-            this.moduleSetup = true;
             this.onModuleSetup.emit();
 
             if (this.authConfiguration.silent_renew) {
@@ -156,7 +196,6 @@ export class OidcSecurityService {
                 });
             }
         } else {
-            this.moduleSetup = true;
             this.onModuleSetup.emit();
         }
     }
@@ -165,12 +204,16 @@ export class OidcSecurityService {
         return this._userData.asObservable();
     }
 
+    getIsModuleSetup(): Observable<boolean> {
+        return this._isModuleSetup.asObservable();
+    }
+
     getIsAuthorized(): Observable<boolean> {
-        return this._isAuthorized.asObservable();
+        return this._isSetupAndAuthorized;
     }
 
     getToken(): string {
-        if (!this._isAuthorizedValue) {
+        if (!this._isAuthorized.getValue()) {
             return '';
         }
 
@@ -179,7 +222,7 @@ export class OidcSecurityService {
     }
 
     getIdToken(): string {
-        if (!this._isAuthorizedValue) {
+        if (!this._isAuthorized.getValue()) {
             return '';
         }
 
@@ -580,7 +623,6 @@ export class OidcSecurityService {
     }
 
     private setIsAuthorized(isAuthorized: boolean): void {
-        this._isAuthorizedValue = isAuthorized;
         this._isAuthorized.next(isAuthorized);
     }
 
