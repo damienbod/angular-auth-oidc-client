@@ -5,6 +5,7 @@ import { LoggerService } from './oidc.logger.service';
 @Injectable()
 export class OidcSecuritySilentRenew {
     private sessionIframe: any;
+    private isRenewInitialized = false;
 
     constructor(private loggerService: LoggerService) {}
 
@@ -35,9 +36,15 @@ export class OidcSecuritySilentRenew {
 
             window.document.body.appendChild(this.sessionIframe);
         }
+
+        this.isRenewInitialized = true;
     }
 
     startRenew(url: string): Observable<any> {
+        if (!this.isRenewInitialized) {
+            this.initRenew();
+        }
+
         let existsparent = undefined;
         try {
             const parentdoc = window.parent.document;
