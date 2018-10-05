@@ -86,7 +86,7 @@ export class OidcSecurityService {
                         )
                 ));
 
-                this.refreshSession();
+                //this.refreshSession();
 
                 return race$;
             }),
