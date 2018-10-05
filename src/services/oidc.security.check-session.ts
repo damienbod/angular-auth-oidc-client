@@ -93,7 +93,7 @@ export class OidcSecurityCheckSession {
                         this.authConfiguration.stsServer
                     );
                 } else {
-                    this.loggerService.logWarning(
+                    this.loggerService.logDebug(
                         'OidcSecurityCheckSession pollServerSession session_state is blank'
                     );
                     this.onCheckSessionChanged.emit();
