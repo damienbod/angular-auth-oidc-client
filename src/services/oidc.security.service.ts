@@ -66,7 +66,7 @@ export class OidcSecurityService {
         });
 
         this._isSetupAndAuthorized = this._isModuleSetup.pipe(
-            filter((isModuleSetup : boolean) => isModuleSetup),
+            filter((isModuleSetup: boolean) => isModuleSetup),
             switchMap(() => {
                 if (!this.authConfiguration.silent_renew) {
                     return this._isAuthorized.asObservable().pipe(
@@ -78,10 +78,10 @@ export class OidcSecurityService {
                 const race$ = this._isAuthorized.asObservable().pipe(
                     filter((isAuthorized: boolean) => isAuthorized),
                     take(1),
-                    tap(() => this.loggerService.logDebug("IsAuthorizedRace: Existing token is still authorized.")),
+                    tap(() => this.loggerService.logDebug('IsAuthorizedRace: Existing token is still authorized.')),
                     race(this.onAuthorizationResult.asObservable().pipe(
                             take(1),
-                            tap(() => this.loggerService.logDebug("IsAuthorizedRace: Silent Renew Refresh Session Complete")),
+                            tap(() => this.loggerService.logDebug('IsAuthorizedRace: Silent Renew Refresh Session Complete')),
                             map(() => true)
                         )
                 ));
@@ -90,7 +90,7 @@ export class OidcSecurityService {
 
                 return race$;
             }),
-            tap(() => this.loggerService.logDebug("IsAuthorizedRace: Completed")),
+            tap(() => this.loggerService.logDebug('IsAuthorizedRace: Completed')),
             switchMapTo(this._isAuthorized.asObservable()),
             tap((isAuthorized: boolean) => this.loggerService.logDebug(`getIsAuthorized: ${isAuthorized}`)),
             shareReplay(1)

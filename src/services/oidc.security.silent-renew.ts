@@ -5,7 +5,7 @@ import { LoggerService } from './oidc.logger.service';
 @Injectable()
 export class OidcSecuritySilentRenew {
     private sessionIframe: any;
-    private isRenewInitialized : boolean = false;
+    private isRenewInitialized = false;
 
     constructor(private loggerService: LoggerService) {}
 
