@@ -1,5 +1,10 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-10-05"></a>
+### 2018-10-05 version 6.0.12
+* Refactoring getIsAuthorized()
+* A blank `session_state` in the check session heartbeat should emit a …
+
 <a name="2018-10-03"></a>
 ### 2018-10-03 version 6.0.11
 * silent_renew inconsistent with execution
