@@ -68,27 +68,24 @@ export class OidcSecurityService {
         this._isSetupAndAuthorized = this._isModuleSetup.pipe(
             filter((isModuleSetup : boolean) => isModuleSetup),
             switchMap(() => {
-                let existingTokenIsValid$ = this._isAuthorized.asObservable().pipe(
+                if (!this.authConfiguration.silent_renew) {
+                    return this._isAuthorized.asObservable().pipe(
+                        take(1),
+                        tap((isAuthorized: boolean) => this.loggerService.logDebug(`IsAuthorizedRace: Existing token isAuthorized: ${isAuthorized}`))
+                    );
+                }
+
+                const race$ = this._isAuthorized.asObservable().pipe(
                     filter((isAuthorized: boolean) => isAuthorized),
                     take(1),
-                    tap(() => this.loggerService.logDebug("IsAuthorizedRace: Existing token is still authorized."))
-                );
-
-                let race$ = existingTokenIsValid$.pipe(
-                    race((this.authConfiguration.silent_renew)
-                        ? this.onAuthorizationResult.asObservable().pipe(
+                    tap(() => this.loggerService.logDebug("IsAuthorizedRace: Existing token is still authorized.")),
+                    race(this.onAuthorizationResult.asObservable().pipe(
                             take(1),
                             tap(() => this.loggerService.logDebug("IsAuthorizedRace: Silent Renew Refresh Session Complete"))
                         )
-                        : this._isAuthorized.asObservable().pipe(
-                            take(1),
-                            tap((isAuthorized: boolean) => this.loggerService.logDebug(`IsAuthorizedRace: Existing token isAuthorized: ${isAuthorized}`))
-                        ))
-                );
+                ));
 
-                if (this.authConfiguration.silent_renew) {
-                    this.refreshSession();
-                }
+                this.refreshSession();
 
                 return race$;
             }),
