@@ -57,22 +57,114 @@ export class OidcSecurityCommon {
 
     private storage_auth_nonce = 'authNonce';
 
-    public get authNonce(): string {
-        return this.retrieve(this.storage_auth_nonce) || '';
+    public isAuthNonceValid(nonce: string): boolean {
+        const serializedValue = this.retrieve(this.storage_auth_nonce) || '{}';
+
+        let currentValue = JSON.parse(serializedValue);
+
+        let expiredKeys: string[] = [];
+
+        let isValid = false;
+
+        for (let key in currentValue) {
+            if (currentValue.hasOwnProperty(key)) {
+                let dateAdded = Number(key);
+                if (dateAdded === NaN) continue;
+
+                if ((dateAdded + (60000 * 60)) < Date.now()) {
+                    expiredKeys.push(dateAdded.toString());
+                } else if (currentValue[key] === nonce) {
+                    isValid = true;
+                    expiredKeys.push(dateAdded.toString());
+                }
+            }
+        }
+
+        for (let key in expiredKeys.values()) {
+            delete currentValue[key];
+        }
+
+        this.store(this.storage_auth_nonce, JSON.stringify(currentValue));
+
+        return isValid;
     }
 
-    public set authNonce(value: string) {
-        this.store(this.storage_auth_nonce, value);
+    public addAuthNonce(value: string) {
+        const serializedValue = this.retrieve(this.storage_auth_nonce) || '{}';
+
+        let currentValue = JSON.parse(serializedValue);
+
+        currentValue[Date.now()] = value;
+
+        this.store(this.storage_auth_nonce, JSON.stringify(currentValue));
     }
 
     private storage_auth_state_control = 'authStateControl';
 
-    public get authStateControl(): string {
-        return this.retrieve(this.storage_auth_state_control) || '';
+    public getAuthStates(): string[] {
+        const serializedValue = this.retrieve(this.storage_auth_state_control) || '{}';
+
+        let currentValue = JSON.parse(serializedValue);
+
+        let expiredKeys: string[] = [];
+
+        let states: string[] = [];
+
+        for (let key in currentValue) {
+            if (currentValue.hasOwnProperty(key)) {
+                let dateAdded = Number(key);
+                if (dateAdded === NaN) continue;
+
+                if ((dateAdded + (60000 * 60)) < Date.now()) {
+                    expiredKeys.push(dateAdded.toString());
+                } else {
+                    states.push(currentValue[key]);
+                }
+            }
+        }
+
+        for (let key in expiredKeys.values()) {
+            delete currentValue[key];
+        }
+
+        this.store(this.storage_auth_state_control, JSON.stringify(currentValue));
+
+        return states;
     }
 
-    public set authStateControl(value: string) {
-        this.store(this.storage_auth_state_control, value);
+    public addAuthState(value: string) {
+        const serializedValue = this.retrieve(this.storage_auth_state_control) || '{}';
+
+        let currentValue = JSON.parse(serializedValue);
+
+        currentValue[Date.now()] = value;
+
+        this.store(this.storage_auth_state_control, JSON.stringify(currentValue));
+    }
+
+    public removeAuthState(state: string) {
+        const serializedValue = this.retrieve(this.storage_auth_state_control) || '{}';
+
+        let currentValue = JSON.parse(serializedValue);
+
+        let expiredKeys: string[] = [];
+
+        for (let key in currentValue) {
+            if (currentValue.hasOwnProperty(key)) {
+                let dateAdded = Number(key);
+                if (dateAdded === NaN) continue;
+
+                if (currentValue[key] === state) {
+                    expiredKeys.push(dateAdded.toString());
+                }
+            }
+        }
+
+        for (let key in expiredKeys.values()) {
+            delete currentValue[key];
+        }
+
+        this.store(this.storage_auth_state_control, JSON.stringify(currentValue));
     }
 
     private storage_session_state = 'session_state';

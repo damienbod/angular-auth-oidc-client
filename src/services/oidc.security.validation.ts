@@ -3,6 +3,7 @@ import { hextob64u, KEYUTIL, KJUR } from 'jsrsasign';
 import { EqualityHelperService } from './oidc-equality-helper.service';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { LoggerService } from './oidc.logger.service';
+import { OidcSecurityCommon } from './oidc.security.common';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
@@ -51,7 +52,8 @@ export class OidcSecurityValidation {
     constructor(
         private arrayHelperService: EqualityHelperService,
         private tokenHelperService: TokenHelperService,
-        private loggerService: LoggerService
+        private loggerService: LoggerService,
+        private oidcSecurityCommon: OidcSecurityCommon
     ) {}
 
     // id_token C7: The current time MUST be before the time represented by the exp Claim (possibly allowing for some small leeway to account for clock skew).
@@ -184,13 +186,11 @@ export class OidcSecurityValidation {
     // id_token C9: The value of the nonce Claim MUST be checked to verify that it is the same value as the one
     // that was sent in the Authentication Request.The Client SHOULD check the nonce value for replay attacks.
     // The precise method for detecting replay attacks is Client specific.
-    validate_id_token_nonce(dataIdToken: any, local_nonce: any): boolean {
-        if (dataIdToken.nonce !== local_nonce) {
+    validate_id_token_nonce(dataIdToken: any): boolean {
+        if (!this.oidcSecurityCommon.isAuthNonceValid(dataIdToken.nonce)) {
             this.loggerService.logDebug(
                 'Validate_id_token_nonce failed, dataIdToken.nonce: ' +
-                    dataIdToken.nonce +
-                    ' local_nonce:' +
-                    local_nonce
+                    dataIdToken.nonce
             );
             return false;
         }
@@ -256,13 +256,13 @@ export class OidcSecurityValidation {
         return true;
     }
 
-    validateStateFromHashCallback(state: any, local_state: any): boolean {
-        if ((state as string) !== (local_state as string)) {
+    validateStateFromHashCallback(state: any): boolean {
+        const authStates = this.oidcSecurityCommon.getAuthStates();
+
+        if (authStates.find((validState) => validState === (state as string)) === undefined) {
             this.loggerService.logDebug(
                 'ValidateStateFromHashCallback failed, state: ' +
-                    state +
-                    ' local_state:' +
-                    local_state
+                    state
             );
             return false;
         }

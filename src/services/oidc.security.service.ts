@@ -236,11 +236,7 @@ export class OidcSecurityService {
     }
 
     setState(state: string): void {
-        this.oidcSecurityCommon.authStateControl = state;
-    }
-
-    getState(): string {
-        return this.oidcSecurityCommon.authStateControl;
+        this.oidcSecurityCommon.addAuthState(state);
     }
 
     setCustomRequestParameters(params: { [key: string]: string | number | boolean }) {
@@ -272,16 +268,13 @@ export class OidcSecurityService {
 
         this.loggerService.logDebug('BEGIN Authorize, no auth data');
 
-        let state = this.oidcSecurityCommon.authStateControl;
-        if (!state) {
-            state = Date.now() + '' + Math.random();
-            this.oidcSecurityCommon.authStateControl = state;
-        }
+        const state = Date.now() + '' + Math.random();
+        this.oidcSecurityCommon.addAuthState(state);
 
         const nonce = 'N' + Math.random() + '' + Date.now();
-        this.oidcSecurityCommon.authNonce = nonce;
+        this.oidcSecurityCommon.addAuthNonce(nonce);
         this.loggerService.logDebug(
-            'AuthorizedController created. local state: ' + this.oidcSecurityCommon.authStateControl
+            'AuthorizedController created. local state: ' + state
         );
 
         if (this.authWellKnownEndpoints) {
@@ -524,17 +517,13 @@ export class OidcSecurityService {
     refreshSession(): Observable<any> {
         this.loggerService.logDebug('BEGIN refresh session Authorize');
 
-        let state = this.oidcSecurityCommon.authStateControl;
-        if (state === '' || state === null) {
-            state = Date.now() + '' + Math.random();
-            this.oidcSecurityCommon.authStateControl = state;
-        }
+        const state = Date.now() + '' + Math.random();
+        this.oidcSecurityCommon.addAuthState(state);
 
         const nonce = 'N' + Math.random() + '' + Date.now();
-        this.oidcSecurityCommon.authNonce = nonce;
+        this.oidcSecurityCommon.addAuthNonce(nonce);
         this.loggerService.logDebug(
-            'RefreshSession created. adding myautostate: ' +
-                this.oidcSecurityCommon.authStateControl
+            `RefreshSession created. adding myautostate: ${state}`
         );
 
         let url = '';

@@ -27,8 +27,7 @@ export class StateValidationService {
         const toReturn = new ValidateStateResult('', '', false, {});
         if (
             !this.oidcSecurityValidation.validateStateFromHashCallback(
-                result.state,
-                this.oidcSecurityCommon.authStateControl
+                result.state
             )
         ) {
             this.loggerService.logWarning('authorizedCallback incorrect state');
@@ -59,8 +58,7 @@ export class StateValidationService {
 
         if (
             !this.oidcSecurityValidation.validate_id_token_nonce(
-                toReturn.decoded_id_token,
-                this.oidcSecurityCommon.authNonce
+                toReturn.decoded_id_token
             )
         ) {
             this.loggerService.logWarning('authorizedCallback incorrect nonce');
@@ -132,7 +130,7 @@ export class StateValidationService {
         // flow id_token token
         if (this.authConfiguration.response_type !== 'id_token token') {
             toReturn.authResponseIsValid = true;
-            this.handleSuccessfulValidation();
+            this.handleSuccessfulValidation(result.state);
             return toReturn;
         }
 
@@ -150,15 +148,13 @@ export class StateValidationService {
         }
 
         toReturn.authResponseIsValid = true;
-        this.handleSuccessfulValidation();
+        this.handleSuccessfulValidation(result.state);
         return toReturn;
     }
 
-    private handleSuccessfulValidation() {
-        this.oidcSecurityCommon.authNonce = '';
-
+    private handleSuccessfulValidation(state: string) {
         if (this.authConfiguration.auto_clean_state_after_authentication) {
-            this.oidcSecurityCommon.authStateControl = '';
+            this.oidcSecurityCommon.removeAuthState(state);
         }
         this.loggerService.logDebug(
             'AuthorizedCallback token(s) validated, continue'
