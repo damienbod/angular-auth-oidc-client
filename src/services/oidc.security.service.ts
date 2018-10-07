@@ -2,7 +2,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpParams } from '@angular/common/http';
 import { EventEmitter, Inject, Injectable, NgZone, Output, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, throwError as observableThrowError } from 'rxjs';
+import { BehaviorSubject, Observable, throwError as observableThrowError, timer, from } from 'rxjs';
 import { catchError, filter, map, shareReplay, switchMap, switchMapTo, take, tap, race } from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
@@ -69,9 +69,8 @@ export class OidcSecurityService {
             filter((isModuleSetup: boolean) => isModuleSetup),
             switchMap(() => {
                 if (!this.authConfiguration.silent_renew) {
-                    return this._isAuthorized.asObservable().pipe(
-                        take(1),
-                        tap((isAuthorized: boolean) => this.loggerService.logDebug(`IsAuthorizedRace: Existing token isAuthorized: ${isAuthorized}`))
+                    return from([true]).pipe(
+                        tap(() => this.loggerService.logDebug(`IsAuthorizedRace: Silent Renew Not Active. Emitting.`))
                     );
                 }
 
@@ -79,22 +78,26 @@ export class OidcSecurityService {
                     filter((isAuthorized: boolean) => isAuthorized),
                     take(1),
                     tap(() => this.loggerService.logDebug('IsAuthorizedRace: Existing token is still authorized.')),
-                    race(this.onAuthorizationResult.asObservable().pipe(
+                    race(
+                        this.onAuthorizationResult.asObservable().pipe(
                             take(1),
                             tap(() => this.loggerService.logDebug('IsAuthorizedRace: Silent Renew Refresh Session Complete')),
                             map(() => true)
+                        ),
+                        timer(5000).pipe(  // backup, if nothing happens after 5 seconds stop waiting and emit
+                            tap(() => this.loggerService.logWarning(
+                                'IsAuthorizedRace: Timeout reached. Emitting.')),
+                            map(() => true)
                         )
-                ));
+                    )
+                );
 
-                // Only check or refresh the session if the silent_renew is active
-                if (this.authConfiguration.silent_renew) {
-                    this.loggerService.logDebug('Silent Renew is active, check if token in storage is active')
-                    if (this.oidcSecurityCommon.authNonce === '' || this.oidcSecurityCommon.authNonce === undefined) {
-                        // login not running, or a second silent renew, user must login first before this will work.
-                        this.loggerService.logDebug('Silent Renew or login not running, try to refresh the session')
-                        this.refreshSession();
-                    }
-                } 
+                this.loggerService.logDebug('Silent Renew is active, check if token in storage is active');
+                if (this.oidcSecurityCommon.authNonce === '' || this.oidcSecurityCommon.authNonce === undefined) {
+                    // login not running, or a second silent renew, user must login first before this will work.
+                    this.loggerService.logDebug('Silent Renew or login not running, try to refresh the session');
+                    this.refreshSession();
+                }
 
                 return race$;
             }),
@@ -528,6 +531,10 @@ export class OidcSecurityService {
     }
 
     refreshSession(): Observable<any> {
+        if (!this.authConfiguration.silent_renew) {
+            return from([false]);
+        }
+
         this.loggerService.logDebug('BEGIN refresh session Authorize');
 
         let state = this.oidcSecurityCommon.authStateControl;
@@ -743,7 +750,7 @@ export class OidcSecurityService {
     }
 
     private runTokenValidation() {
-        if (this.runTokenValidationRunning) {
+        if (this.runTokenValidationRunning || !this.authConfiguration.silent_renew) {
             return;
         }
         this.runTokenValidationRunning = true;
