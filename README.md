@@ -316,7 +316,7 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 ```typescript
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, CanLoad, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { OidcSecurityService } from './auth/services/oidc.security.service';
