@@ -317,7 +317,7 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, CanLoad, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
-import { map } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 import { OidcSecurityService } from './auth/services/oidc.security.service';
 
@@ -341,17 +341,13 @@ export class AuthorizationGuard implements CanActivate, CanLoad {
         console.log('AuthorizationGuard, canActivate');
 
         return this.oidcSecurityService.getIsAuthorized().pipe(
-            map((isAuthorized: boolean) => {
+            tap((isAuthorized: boolean) => {
                 console.log('AuthorizationGuard, canActivate isAuthorized: ' + isAuthorized);
-
-                if (isAuthorized) {
-                    return true;
-                }
-
-                this.router.navigate(['/unauthorized']);
-                return false;
-            }),
-            take(1)
+                
+		if(!isAuthorized) {
+		    this.router.navigate(['/unauthorized']);
+	        }
+            })
         );
     }
 }
@@ -458,7 +454,7 @@ Point the `silent_renew_url` property to an HTML file which contains the followi
 };
 </script>
 ```
-
+When silent renew is enabled, `getIsAuthorized()` will attempt to perform a renew before returning the authorization state. This allows the application to authorize a user, that is already authenticated, without redirects.
 
 ## X-Frame-Options / CSP ancestor / different domains
 
