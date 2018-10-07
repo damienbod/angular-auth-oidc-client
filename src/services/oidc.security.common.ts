@@ -62,7 +62,11 @@ export class OidcSecurityCommon {
             (_createDate, _value) => _value === nonce,
             (_createDate) => (_createDate + (3600000)) < Date.now()); //1 hour expiration
 
-        return nonces.find((n) => n === nonce) !== undefined;
+        const isValid = nonces.find((n) => n === nonce) !== undefined;
+
+        if(isValid) this.removeValueFromSerializedCacheDictionary(this.storage_auth_nonce, nonce);
+
+        return isValid;
     }
 
     public addAuthNonce(value: string) {
@@ -82,9 +86,7 @@ export class OidcSecurityCommon {
     }
 
     public removeAuthState(state: string) {
-        this.getValuesFromSerializedCacheDictionary(this.storage_auth_state_control,
-            () => false,
-            (_createDate, _value) => _value === state);
+        this.removeValueFromSerializedCacheDictionary(this.storage_auth_state_control, state);
     }
 
     private storage_session_state = 'session_state';
@@ -131,6 +133,12 @@ export class OidcSecurityCommon {
         currentValue[Date.now()] = value;
 
         this.store(storageKey, JSON.stringify(currentValue));
+    }
+
+    private removeValueFromSerializedCacheDictionary(storageKey: string, value: string) {
+        this.getValuesFromSerializedCacheDictionary(storageKey,
+            () => false,
+            (_createDate, _value) => _value === value);
     }
 
     private getValuesFromSerializedCacheDictionary(storageKey: string,
