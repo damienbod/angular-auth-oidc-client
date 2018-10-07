@@ -164,6 +164,8 @@ Optional hd parameter for Google Auth with particular G Suite domain, see https:
 
 Can be used to check if the setup logic is already completed, before your component loads.
 
+*Note: See also: [getIsModuleSetup()](###getismodulesetup-observable)*
+
 ```typescript
 constructor(public oidcSecurityService: OidcSecurityService) {
 	if (this.oidcSecurityService.moduleSetup) {
@@ -178,8 +180,9 @@ constructor(public oidcSecurityService: OidcSecurityService) {
 
 ### @Output() onModuleSetup: EventEmitter<any> = new EventEmitter<any>(true);
 
-Example using:
+*Note: This will only emit once and late subscribers will never be notified. If you want a more reliable notification see: [getIsModuleSetup()](###getismodulesetup-observable)*
 
+Example using:
 
 App.module: get your json settings:
 
@@ -310,7 +313,7 @@ This boolean is set to true when the OpenID session management receives a messag
 
 ### getIsAuthorized(): Observable<boolean>
 
-Set to true if the client and user are authenticated.
+This method will return an observable that will not emit until after module setup is completed. The emitted value will be set to `true` if the client and user are authenticated, `false` otherwise. If silent renew is configured, a silent renew will be attempted before emitting `false`.
 
 Example using:
 
@@ -347,6 +350,20 @@ export class ExampleComponent implements OnInit, OnDestroy   {
     }
 
 }
+```
+
+### getIsModuleSetup(): Observable<boolean>
+
+This method will return an observable that will emit right away with a value set to `true` if the module has completed setup, `false` otherwise. It will continue to emit its last value to all late subscribers.
+
+Example using: 
+
+```typescript
+this.oidcSecurityService.getIsModuleSetup().pipe(
+    filter((isModuleSetup: boolean) => isModuleSetup)
+).subscribe((isModuleSetup: boolean) => {
+    // Do something when module setup is completed.
+});
 ```
 
 ### getIdToken()
