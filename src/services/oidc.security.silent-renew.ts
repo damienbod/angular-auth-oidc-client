@@ -8,6 +8,7 @@ const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 @Injectable()
 export class OidcSecuritySilentRenew {
     private sessionIframe: any;
+    private isRenewInitialized = false;
 
     constructor(private loggerService: LoggerService, private iFrameService: IFrameService) {}
 
@@ -19,10 +20,15 @@ export class OidcSecuritySilentRenew {
         if (!existingIFrame) {
             this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_SILENT_RENEW_IDENTIFIER);
         }
+
+        this.isRenewInitialized = true;
     }
 
     startRenew(url: string): Observable<any> {
-        this.sessionIframe = this.iFrameService.getExistingIFrame(
+        if (!this.isRenewInitialized) {
+            this.initRenew();
+        }
+ this.sessionIframe = this.iFrameService.getExistingIFrame(
             IFRAME_FOR_SILENT_RENEW_IDENTIFIER
         );
 

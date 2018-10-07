@@ -51,7 +51,6 @@ describe('EqualityHelperServiceTests', () => {
     it('doesSessionExist returns false if nothing is setup', () => {
         let result = oidcSecurityCheckSession.doesSessionExist();
         expect(result).toBe(false);
-        expect(result).toBeFalsy();
     });
 
     it('doesSessionExist returns true if document found on window.parent.document', () => {

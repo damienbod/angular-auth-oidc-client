@@ -2,8 +2,8 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpParams } from '@angular/common/http';
 import { EventEmitter, Inject, Injectable, NgZone, Output, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, throwError as observableThrowError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError as observableThrowError, timer, from } from 'rxjs';
+import { catchError, filter, map, shareReplay, switchMap, switchMapTo, take, tap, race } from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 import { AuthorizationResult } from '../models/authorization-result.enum';
@@ -31,9 +31,12 @@ export class OidcSecurityService {
 
     checkSessionChanged = false;
     moduleSetup = false;
+
+    private _isModuleSetup = new BehaviorSubject<boolean>(false);
+
     private authWellKnownEndpoints: AuthWellKnownEndpoints | undefined;
     private _isAuthorized = new BehaviorSubject<boolean>(false);
-    private _isAuthorizedValue = false;
+    private _isSetupAndAuthorized: Observable<boolean>;
 
     private lastUserData: any;
     private _userData = new BehaviorSubject<any>('');
@@ -56,7 +59,54 @@ export class OidcSecurityService {
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,
         private zone: NgZone
-    ) {}
+    ) {
+        this.onModuleSetup.pipe(take(1)).subscribe(() => {
+            this.moduleSetup = true;
+            this._isModuleSetup.next(true);
+        });
+
+        this._isSetupAndAuthorized = this._isModuleSetup.pipe(
+            filter((isModuleSetup: boolean) => isModuleSetup),
+            switchMap(() => {
+                if (!this.authConfiguration.silent_renew) {
+                    return from([true]).pipe(
+                        tap(() => this.loggerService.logDebug(`IsAuthorizedRace: Silent Renew Not Active. Emitting.`))
+                    );
+                }
+
+                const race$ = this._isAuthorized.asObservable().pipe(
+                    filter((isAuthorized: boolean) => isAuthorized),
+                    take(1),
+                    tap(() => this.loggerService.logDebug('IsAuthorizedRace: Existing token is still authorized.')),
+                    race(
+                        this.onAuthorizationResult.asObservable().pipe(
+                            take(1),
+                            tap(() => this.loggerService.logDebug('IsAuthorizedRace: Silent Renew Refresh Session Complete')),
+                            map(() => true)
+                        ),
+                        timer(5000).pipe(  // backup, if nothing happens after 5 seconds stop waiting and emit
+                            tap(() => this.loggerService.logWarning(
+                                'IsAuthorizedRace: Timeout reached. Emitting.')),
+                            map(() => true)
+                        )
+                    )
+                );
+
+                this.loggerService.logDebug('Silent Renew is active, check if token in storage is active');
+                if (this.oidcSecurityCommon.authNonce === '' || this.oidcSecurityCommon.authNonce === undefined) {
+                    // login not running, or a second silent renew, user must login first before this will work.
+                    this.loggerService.logDebug('Silent Renew or login not running, try to refresh the session');
+                    this.refreshSession();
+                }
+
+                return race$;
+            }),
+            tap(() => this.loggerService.logDebug('IsAuthorizedRace: Completed')),
+            switchMapTo(this._isAuthorized.asObservable()),
+            tap((isAuthorized: boolean) => this.loggerService.logDebug(`getIsAuthorized: ${isAuthorized}`)),
+            shareReplay(1)
+        );
+    }
 
     setupModule(
         openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration,
@@ -105,7 +155,6 @@ export class OidcSecurityService {
 
         if (isPlatformBrowser(this.platformId)) {
             // Client only code.
-            this.moduleSetup = true;
             this.onModuleSetup.emit();
 
             if (this.authConfiguration.silent_renew) {
@@ -156,7 +205,6 @@ export class OidcSecurityService {
                 });
             }
         } else {
-            this.moduleSetup = true;
             this.onModuleSetup.emit();
         }
     }
@@ -165,12 +213,16 @@ export class OidcSecurityService {
         return this._userData.asObservable();
     }
 
+    getIsModuleSetup(): Observable<boolean> {
+        return this._isModuleSetup.asObservable();
+    }
+
     getIsAuthorized(): Observable<boolean> {
-        return this._isAuthorized.asObservable();
+        return this._isSetupAndAuthorized;
     }
 
     getToken(): string {
-        if (!this._isAuthorizedValue) {
+        if (!this._isAuthorized.getValue()) {
             return '';
         }
 
@@ -179,7 +231,7 @@ export class OidcSecurityService {
     }
 
     getIdToken(): string {
-        if (!this._isAuthorizedValue) {
+        if (!this._isAuthorized.getValue()) {
             return '';
         }
 
@@ -393,7 +445,7 @@ export class OidcSecurityService {
         return new Observable<boolean>(observer => {
             // flow id_token token
             if (this.authConfiguration.response_type === 'id_token token') {
-                if (isRenewProcess) {
+                if (isRenewProcess && this._userData.value) {
                     this.oidcSecurityCommon.sessionState = result.session_state;
                     observer.next(true);
                     observer.complete();
@@ -479,6 +531,10 @@ export class OidcSecurityService {
     }
 
     refreshSession(): Observable<any> {
+        if (!this.authConfiguration.silent_renew) {
+            return from([false]);
+        }
+
         this.loggerService.logDebug('BEGIN refresh session Authorize');
 
         let state = this.oidcSecurityCommon.authStateControl;
@@ -580,7 +636,6 @@ export class OidcSecurityService {
     }
 
     private setIsAuthorized(isAuthorized: boolean): void {
-        this._isAuthorizedValue = isAuthorized;
         this._isAuthorized.next(isAuthorized);
     }
 
@@ -695,7 +750,7 @@ export class OidcSecurityService {
     }
 
     private runTokenValidation() {
-        if (this.runTokenValidationRunning) {
+        if (this.runTokenValidationRunning || !this.authConfiguration.silent_renew) {
             return;
         }
         this.runTokenValidationRunning = true;
