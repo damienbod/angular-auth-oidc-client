@@ -58,113 +58,33 @@ export class OidcSecurityCommon {
     private storage_auth_nonce = 'authNonce';
 
     public isAuthNonceValid(nonce: string): boolean {
-        const serializedValue = this.retrieve(this.storage_auth_nonce) || '{}';
+        const nonces = this.getValuesFromSerializedCacheDictionary(this.storage_auth_nonce,
+            (_createDate, _value) => _value === nonce,
+            (_createDate) => (_createDate + (3600000)) < Date.now()); //1 hour expiration
 
-        let currentValue = JSON.parse(serializedValue);
-
-        let expiredKeys: string[] = [];
-
-        let isValid = false;
-
-        for (let key in currentValue) {
-            if (currentValue.hasOwnProperty(key)) {
-                let dateAdded = Number(key);
-                if (dateAdded === NaN) continue;
-
-                if ((dateAdded + (60000 * 60)) < Date.now()) {
-                    expiredKeys.push(dateAdded.toString());
-                } else if (currentValue[key] === nonce) {
-                    isValid = true;
-                    expiredKeys.push(dateAdded.toString());
-                }
-            }
-        }
-
-        for (let key in expiredKeys.values()) {
-            delete currentValue[key];
-        }
-
-        this.store(this.storage_auth_nonce, JSON.stringify(currentValue));
-
-        return isValid;
+        return nonces.find((n) => n === nonce) !== undefined;
     }
 
     public addAuthNonce(value: string) {
-        const serializedValue = this.retrieve(this.storage_auth_nonce) || '{}';
-
-        let currentValue = JSON.parse(serializedValue);
-
-        currentValue[Date.now()] = value;
-
-        this.store(this.storage_auth_nonce, JSON.stringify(currentValue));
+        this.addValueToSerializedCacheDictionary(this.storage_auth_nonce, value);
     }
 
     private storage_auth_state_control = 'authStateControl';
 
     public getAuthStates(): string[] {
-        const serializedValue = this.retrieve(this.storage_auth_state_control) || '{}';
-
-        let currentValue = JSON.parse(serializedValue);
-
-        let expiredKeys: string[] = [];
-
-        let states: string[] = [];
-
-        for (let key in currentValue) {
-            if (currentValue.hasOwnProperty(key)) {
-                let dateAdded = Number(key);
-                if (dateAdded === NaN) continue;
-
-                if ((dateAdded + (60000 * 60)) < Date.now()) {
-                    expiredKeys.push(dateAdded.toString());
-                } else {
-                    states.push(currentValue[key]);
-                }
-            }
-        }
-
-        for (let key in expiredKeys.values()) {
-            delete currentValue[key];
-        }
-
-        this.store(this.storage_auth_state_control, JSON.stringify(currentValue));
-
-        return states;
+        return this.getValuesFromSerializedCacheDictionary(this.storage_auth_state_control,
+            () => true,
+            (createDate) => (createDate + (3600000)) < Date.now()); //1 hour expiration
     }
 
     public addAuthState(value: string) {
-        const serializedValue = this.retrieve(this.storage_auth_state_control) || '{}';
-
-        let currentValue = JSON.parse(serializedValue);
-
-        currentValue[Date.now()] = value;
-
-        this.store(this.storage_auth_state_control, JSON.stringify(currentValue));
+        this.addValueToSerializedCacheDictionary(this.storage_auth_state_control, value);
     }
 
     public removeAuthState(state: string) {
-        const serializedValue = this.retrieve(this.storage_auth_state_control) || '{}';
-
-        let currentValue = JSON.parse(serializedValue);
-
-        let expiredKeys: string[] = [];
-
-        for (let key in currentValue) {
-            if (currentValue.hasOwnProperty(key)) {
-                let dateAdded = Number(key);
-                if (dateAdded === NaN) continue;
-
-                if (currentValue[key] === state) {
-                    expiredKeys.push(dateAdded.toString());
-                }
-            }
-        }
-
-        for (let key in expiredKeys.values()) {
-            delete currentValue[key];
-        }
-
-        this.store(this.storage_auth_state_control, JSON.stringify(currentValue));
+        this.getValuesFromSerializedCacheDictionary(this.storage_auth_state_control,
+            () => false,
+            (_createDate, _value) => _value === state);
     }
 
     private storage_session_state = 'session_state';
@@ -202,6 +122,46 @@ export class OidcSecurityCommon {
     }
 
     constructor(private oidcSecurityStorage: OidcSecurityStorage) {}
+
+    private addValueToSerializedCacheDictionary(storageKey: string, value: string) {
+        const serializedValue = this.retrieve(storageKey) || '{}';
+
+        let currentValue = JSON.parse(serializedValue);
+
+        currentValue[Date.now()] = value;
+
+        this.store(storageKey, JSON.stringify(currentValue));
+    }
+
+    private getValuesFromSerializedCacheDictionary(storageKey: string,
+        getPredicate: (createDate: number, value: string) => boolean,
+        removePredicate: (createDate: number, value: string) => boolean): string[] {
+        const serializedValue = this.retrieve(storageKey) || '{}';
+        const currentValue = JSON.parse(serializedValue);
+        const keysToDelete: string[] = [];
+        const values: string[] = [];
+
+        for (let key in currentValue) {
+            if (currentValue.hasOwnProperty(key)) {
+                const dateAdded = Number(key);
+                if (dateAdded === NaN) continue;
+
+                if (removePredicate(dateAdded, currentValue[key])) {
+                    keysToDelete.push(dateAdded.toString());
+                } else if(getPredicate(dateAdded, currentValue[key])){
+                    values.push(currentValue[key]);
+                }
+            }
+        }
+
+        for (let key in keysToDelete.values()) {
+            delete currentValue[key];
+        }
+
+        this.store(storageKey, JSON.stringify(currentValue));
+
+        return values;
+    }
 
     private retrieve(key: string): any {
         return this.oidcSecurityStorage.read(key);
