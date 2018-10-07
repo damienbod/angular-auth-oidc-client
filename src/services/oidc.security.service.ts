@@ -445,7 +445,7 @@ export class OidcSecurityService {
         return new Observable<boolean>(observer => {
             // flow id_token token
             if (this.authConfiguration.response_type === 'id_token token') {
-                if (isRenewProcess) {
+                if (isRenewProcess && this._userData.value) {
                     this.oidcSecurityCommon.sessionState = result.session_state;
                     observer.next(true);
                     observer.complete();
