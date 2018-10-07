@@ -360,7 +360,8 @@ Example using:
 
 ```typescript
 this.oidcSecurityService.getIsModuleSetup().pipe(
-    filter((isModuleSetup: boolean) => isModuleSetup)
+    filter((isModuleSetup: boolean) => isModuleSetup),
+	take(1)
 ).subscribe((isModuleSetup: boolean) => {
     // Do something when module setup is completed.
 });
