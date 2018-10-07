@@ -28,7 +28,8 @@ export class OidcSecuritySilentRenew {
         if (!this.isRenewInitialized) {
             this.initRenew();
         }
- this.sessionIframe = this.iFrameService.getExistingIFrame(
+
+        this.sessionIframe = this.iFrameService.getExistingIFrame(
             IFRAME_FOR_SILENT_RENEW_IDENTIFIER
         );
 
