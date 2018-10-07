@@ -164,7 +164,7 @@ Optional hd parameter for Google Auth with particular G Suite domain, see https:
 
 Can be used to check if the setup logic is already completed, before your component loads.
 
-*Note: See also: [getIsModuleSetup()](###getismodulesetup-observable)*
+*Note: See also: [getIsModuleSetup()](#getismodulesetup-observable)*
 
 ```typescript
 constructor(public oidcSecurityService: OidcSecurityService) {
@@ -180,7 +180,7 @@ constructor(public oidcSecurityService: OidcSecurityService) {
 
 ### @Output() onModuleSetup: EventEmitter<any> = new EventEmitter<any>(true);
 
-*Note: This will only emit once and late subscribers will never be notified. If you want a more reliable notification see: [getIsModuleSetup()](###getismodulesetup-observable)*
+*Note: This will only emit once and late subscribers will never be notified. If you want a more reliable notification see: [getIsModuleSetup()](#getismodulesetup-observable)*
 
 Example using:
 
