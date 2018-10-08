@@ -38,8 +38,7 @@ describe('OidcSecurityStateValidationService', () => {
         'https://localhost:44363/Unauthorized';
     openIDImplicitFlowConfiguration.start_checksession = false;
     openIDImplicitFlowConfiguration.silent_renew = true;
-    openIDImplicitFlowConfiguration.silent_renew_url =
-        'https://localhost:44363/silent-renew.html';
+    openIDImplicitFlowConfiguration.silent_renew_url = 'https://localhost:44363/silent-renew.html';
     openIDImplicitFlowConfiguration.post_login_route = '/dataeventrecords';
     // HTTP 403
     openIDImplicitFlowConfiguration.forbidden_route = '/Forbidden';
@@ -55,29 +54,17 @@ describe('OidcSecurityStateValidationService', () => {
     authWellKnownEndpoints.issuer = 'https://localhost:44363';
     authWellKnownEndpoints.jwks_uri =
         'https://localhost:44363/.well-known/openid-configuration/jwks';
-    authWellKnownEndpoints.authorization_endpoint =
-        'https://localhost:44363/connect/authorize';
-    authWellKnownEndpoints.token_endpoint =
-        'https://localhost:44363/connect/token';
-    authWellKnownEndpoints.userinfo_endpoint =
-        'https://localhost:44363/connect/userinfo';
-    authWellKnownEndpoints.end_session_endpoint =
-        'https://localhost:44363/connect/endsession';
-    authWellKnownEndpoints.check_session_iframe =
-        'https://localhost:44363/connect/checksession';
-    authWellKnownEndpoints.revocation_endpoint =
-        'https://localhost:44363/connect/revocation';
-    authWellKnownEndpoints.introspection_endpoint =
-        'https://localhost:44363/connect/introspect';
+    authWellKnownEndpoints.authorization_endpoint = 'https://localhost:44363/connect/authorize';
+    authWellKnownEndpoints.token_endpoint = 'https://localhost:44363/connect/token';
+    authWellKnownEndpoints.userinfo_endpoint = 'https://localhost:44363/connect/userinfo';
+    authWellKnownEndpoints.end_session_endpoint = 'https://localhost:44363/connect/endsession';
+    authWellKnownEndpoints.check_session_iframe = 'https://localhost:44363/connect/checksession';
+    authWellKnownEndpoints.revocation_endpoint = 'https://localhost:44363/connect/revocation';
+    authWellKnownEndpoints.introspection_endpoint = 'https://localhost:44363/connect/introspect';
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [
-                BrowserModule,
-                HttpClientModule,
-                RouterTestingModule,
-                AuthModule.forRoot(),
-            ],
+            imports: [BrowserModule, HttpClientModule, RouterTestingModule, AuthModule.forRoot()],
             providers: [
                 StateValidationService,
                 OidcSecurityValidation,
@@ -113,24 +100,15 @@ describe('OidcSecurityStateValidationService', () => {
     });
 
     it('should return invalid result if validateStateFromHashCallback is false', () => {
-        spyOn(
-            oidcSecurityValidation,
-            'validateStateFromHashCallback'
-        ).and.returnValue(false);
+        spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
-            () => {}
-        );
+        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState('', new JwtKeys());
 
-        expect(
-            oidcSecurityValidation.validateStateFromHashCallback
-        ).toHaveBeenCalled();
+        expect(oidcSecurityValidation.validateStateFromHashCallback).toHaveBeenCalled();
 
-        expect(logWarningSpy).toHaveBeenCalledWith(
-            'authorizedCallback incorrect state'
-        );
+        expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback incorrect state');
 
         expect(state.access_token).toBe('');
         expect(state.authResponseIsValid).toBe(false);
@@ -139,35 +117,17 @@ describe('OidcSecurityStateValidationService', () => {
     });
 
     it('access_token should equal result.access_token and is valid if response_type is "id_token token"', () => {
-        spyOn(
-            oidcSecurityValidation,
-            'validateStateFromHashCallback'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
-        spyOnProperty(
-            authConfiguration,
-            'response_type',
-            'get'
-        ).and.returnValue('id_token token');
+        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
 
-        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
-            'decoded_id_token'
-        );
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_signature_id_token'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_signature_id_token').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_nonce'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_nonce').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_required_id_token'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_required_id_token').and.returnValue(true);
 
         spyOnProperty(
             authConfiguration,
@@ -175,32 +135,17 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue(0);
 
-        spyOnProperty(authConfiguration, 'client_id', 'get').and.returnValue(
-            ''
-        );
+        spyOnProperty(authConfiguration, 'client_id', 'get').and.returnValue('');
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_iat_max_offset'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_iat_max_offset').and.returnValue(true);
 
-        spyOn(oidcSecurityValidation, 'validate_id_token_aud').and.returnValue(
-            true
-        );
+        spyOn(oidcSecurityValidation, 'validate_id_token_aud').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_exp_not_expired'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_exp_not_expired').and.returnValue(true);
 
-        spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(
-            true
-        );
+        spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_at_hash'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_at_hash').and.returnValue(true);
 
         spyOnProperty(
             authConfiguration,
@@ -219,33 +164,20 @@ describe('OidcSecurityStateValidationService', () => {
         expect(state.access_token).toBe('access_tokenTEST');
         expect(state.id_token).toBe('id_tokenTEST');
         expect(state.decoded_id_token).toBe('decoded_id_token');
+        console.log('state', state);
         expect(state.authResponseIsValid).toBe(true);
     });
 
     it('should return invalid result if validate_signature_id_token is false', () => {
-        spyOn(
-            oidcSecurityValidation,
-            'validateStateFromHashCallback'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
-        spyOnProperty(
-            authConfiguration,
-            'response_type',
-            'get'
-        ).and.returnValue('id_token token');
+        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
 
-        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
-            'decoded_id_token'
-        );
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_signature_id_token'
-        ).and.returnValue(false);
+        spyOn(oidcSecurityValidation, 'validate_signature_id_token').and.returnValue(false);
 
-        let logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(
-            () => {}
-        );
+        let logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -266,34 +198,17 @@ describe('OidcSecurityStateValidationService', () => {
     });
 
     it('should return invalid result if validate_id_token_nonce is false', () => {
-        spyOn(
-            oidcSecurityValidation,
-            'validateStateFromHashCallback'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
-        spyOnProperty(
-            authConfiguration,
-            'response_type',
-            'get'
-        ).and.returnValue('id_token token');
+        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
 
-        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
-            'decoded_id_token'
-        );
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_signature_id_token'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_signature_id_token').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_nonce'
-        ).and.returnValue(false);
+        spyOn(oidcSecurityValidation, 'validate_id_token_nonce').and.returnValue(false);
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
-            () => {}
-        );
+        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -303,9 +218,7 @@ describe('OidcSecurityStateValidationService', () => {
             new JwtKeys()
         );
 
-        expect(logWarningSpy).toHaveBeenCalledWith(
-            'authorizedCallback incorrect nonce'
-        );
+        expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback incorrect nonce');
 
         expect(state.access_token).toBe('access_tokenTEST');
         expect(state.id_token).toBe('id_tokenTEST');
@@ -314,39 +227,19 @@ describe('OidcSecurityStateValidationService', () => {
     });
 
     it('should return invalid result if validate_required_id_token is false', () => {
-        spyOn(
-            oidcSecurityValidation,
-            'validateStateFromHashCallback'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
-        spyOnProperty(
-            authConfiguration,
-            'response_type',
-            'get'
-        ).and.returnValue('id_token token');
+        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
 
-        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
-            'decoded_id_token'
-        );
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_signature_id_token'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_signature_id_token').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_nonce'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_nonce').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_required_id_token'
-        ).and.returnValue(false);
+        spyOn(oidcSecurityValidation, 'validate_required_id_token').and.returnValue(false);
 
-        let logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(
-            () => {}
-        );
+        let logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -367,40 +260,19 @@ describe('OidcSecurityStateValidationService', () => {
     });
 
     it('should return invalid result if validate_id_token_iat_max_offset is false', () => {
-        spyOn(
-            oidcSecurityValidation,
-            'validateStateFromHashCallback'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
-        spyOnProperty(
-            authConfiguration,
-            'response_type',
-            'get'
-        ).and.returnValue('id_token token');
+        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
 
-        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
-            'decoded_id_token'
-        );
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_signature_id_token'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_signature_id_token').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_nonce'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_nonce').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_required_id_token'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_required_id_token').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_iat_max_offset'
-        ).and.returnValue(false);
+        spyOn(oidcSecurityValidation, 'validate_id_token_iat_max_offset').and.returnValue(false);
 
         spyOnProperty(
             authConfiguration,
@@ -408,9 +280,7 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue(0);
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
-            () => {}
-        );
+        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -431,40 +301,19 @@ describe('OidcSecurityStateValidationService', () => {
     });
 
     it('should return invalid result if validate_id_token_iss is false', () => {
-        spyOn(
-            oidcSecurityValidation,
-            'validateStateFromHashCallback'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
-        spyOnProperty(
-            authConfiguration,
-            'response_type',
-            'get'
-        ).and.returnValue('id_token token');
+        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
 
-        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
-            'decoded_id_token'
-        );
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_signature_id_token'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_signature_id_token').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_nonce'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_nonce').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_required_id_token'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_required_id_token').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_iat_max_offset'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_iat_max_offset').and.returnValue(true);
 
         spyOnProperty(
             authConfiguration,
@@ -472,13 +321,9 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue(0);
 
-        spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(
-            false
-        );
+        spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(false);
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
-            () => {}
-        );
+        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -499,40 +344,19 @@ describe('OidcSecurityStateValidationService', () => {
     });
 
     it('should return invalid result if validate_id_token_aud is false', () => {
-        spyOn(
-            oidcSecurityValidation,
-            'validateStateFromHashCallback'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
-        spyOnProperty(
-            authConfiguration,
-            'response_type',
-            'get'
-        ).and.returnValue('id_token token');
+        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
 
-        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
-            'decoded_id_token'
-        );
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_signature_id_token'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_signature_id_token').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_nonce'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_nonce').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_required_id_token'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_required_id_token').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_iat_max_offset'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_iat_max_offset').and.returnValue(true);
 
         spyOnProperty(
             authConfiguration,
@@ -540,21 +364,13 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue(0);
 
-        spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(
-            true
-        );
+        spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(true);
 
-        spyOn(oidcSecurityValidation, 'validate_id_token_aud').and.returnValue(
-            false
-        );
+        spyOn(oidcSecurityValidation, 'validate_id_token_aud').and.returnValue(false);
 
-        spyOnProperty(authConfiguration, 'client_id', 'get').and.returnValue(
-            ''
-        );
+        spyOnProperty(authConfiguration, 'client_id', 'get').and.returnValue('');
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
-            () => {}
-        );
+        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -564,9 +380,7 @@ describe('OidcSecurityStateValidationService', () => {
             new JwtKeys()
         );
 
-        expect(logWarningSpy).toHaveBeenCalledWith(
-            'authorizedCallback incorrect aud'
-        );
+        expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback incorrect aud');
 
         expect(state.access_token).toBe('access_tokenTEST');
         expect(state.id_token).toBe('id_tokenTEST');
@@ -575,40 +389,19 @@ describe('OidcSecurityStateValidationService', () => {
     });
 
     it('should return invalid result if validate_id_token_exp_not_expired is false', () => {
-        spyOn(
-            oidcSecurityValidation,
-            'validateStateFromHashCallback'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
-        spyOnProperty(
-            authConfiguration,
-            'response_type',
-            'get'
-        ).and.returnValue('id_token token');
+        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
 
-        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
-            'decoded_id_token'
-        );
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_signature_id_token'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_signature_id_token').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_nonce'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_nonce').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_required_id_token'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_required_id_token').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_iat_max_offset'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_iat_max_offset').and.returnValue(true);
 
         spyOnProperty(
             authConfiguration,
@@ -616,26 +409,15 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue(0);
 
-        spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(
-            true
-        );
+        spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(true);
 
-        spyOn(oidcSecurityValidation, 'validate_id_token_aud').and.returnValue(
-            true
-        );
+        spyOn(oidcSecurityValidation, 'validate_id_token_aud').and.returnValue(true);
 
-        spyOnProperty(authConfiguration, 'client_id', 'get').and.returnValue(
-            ''
-        );
+        spyOnProperty(authConfiguration, 'client_id', 'get').and.returnValue('');
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_exp_not_expired'
-        ).and.returnValue(false);
+        spyOn(oidcSecurityValidation, 'validate_id_token_exp_not_expired').and.returnValue(false);
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
-            () => {}
-        );
+        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -645,9 +427,7 @@ describe('OidcSecurityStateValidationService', () => {
             new JwtKeys()
         );
 
-        expect(logWarningSpy).toHaveBeenCalledWith(
-            'authorizedCallback token expired'
-        );
+        expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback token expired');
 
         expect(state.access_token).toBe('access_tokenTEST');
         expect(state.id_token).toBe('id_tokenTEST');
@@ -656,34 +436,17 @@ describe('OidcSecurityStateValidationService', () => {
     });
 
     it('Reponse is valid if authConfiguration.response_type does not equal "id_token token"', () => {
-        spyOn(
-            oidcSecurityValidation,
-            'validateStateFromHashCallback'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
-        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
-            'decoded_id_token'
-        );
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_signature_id_token'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_signature_id_token').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_nonce'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_nonce').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_required_id_token'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_required_id_token').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_iat_max_offset'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_iat_max_offset').and.returnValue(true);
 
         spyOnProperty(
             authConfiguration,
@@ -691,28 +454,17 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue(0);
 
-        spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(
-            true
+        spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(true);
+
+        spyOn(oidcSecurityValidation, 'validate_id_token_aud').and.returnValue(true);
+
+        spyOnProperty(authConfiguration, 'client_id', 'get').and.returnValue('');
+
+        spyOn(oidcSecurityValidation, 'validate_id_token_exp_not_expired').and.returnValue(true);
+
+        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue(
+            'NOT id_token token'
         );
-
-        spyOn(oidcSecurityValidation, 'validate_id_token_aud').and.returnValue(
-            true
-        );
-
-        spyOnProperty(authConfiguration, 'client_id', 'get').and.returnValue(
-            ''
-        );
-
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_exp_not_expired'
-        ).and.returnValue(true);
-
-        spyOnProperty(
-            authConfiguration,
-            'response_type',
-            'get'
-        ).and.returnValue('NOT id_token token');
 
         spyOnProperty(
             authConfiguration,
@@ -720,9 +472,7 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue('');
 
-        let logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(
-            () => {}
-        );
+        let logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -732,9 +482,7 @@ describe('OidcSecurityStateValidationService', () => {
             new JwtKeys()
         );
 
-        expect(logDebugSpy).toHaveBeenCalledWith(
-            'AuthorizedCallback token(s) validated, continue'
-        );
+        expect(logDebugSpy).toHaveBeenCalledWith('AuthorizedCallback token(s) validated, continue');
 
         // CAN THIS BE DONE VIA IF/ELSE IN THE BEGINNING?
         expect(state.access_token).toBe('');
@@ -744,34 +492,17 @@ describe('OidcSecurityStateValidationService', () => {
     });
 
     it('Reponse is invalid if validate_id_token_at_hash is false', () => {
-        spyOn(
-            oidcSecurityValidation,
-            'validateStateFromHashCallback'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
-        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
-            'decoded_id_token'
-        );
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_signature_id_token'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_signature_id_token').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_nonce'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_nonce').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_required_id_token'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_required_id_token').and.returnValue(true);
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_iat_max_offset'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_iat_max_offset').and.returnValue(true);
 
         spyOnProperty(
             authConfiguration,
@@ -779,28 +510,15 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue(0);
 
-        spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(
-            true
-        );
+        spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(true);
 
-        spyOn(oidcSecurityValidation, 'validate_id_token_aud').and.returnValue(
-            true
-        );
+        spyOn(oidcSecurityValidation, 'validate_id_token_aud').and.returnValue(true);
 
-        spyOnProperty(authConfiguration, 'client_id', 'get').and.returnValue(
-            ''
-        );
+        spyOnProperty(authConfiguration, 'client_id', 'get').and.returnValue('');
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_exp_not_expired'
-        ).and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_exp_not_expired').and.returnValue(true);
 
-        spyOnProperty(
-            authConfiguration,
-            'response_type',
-            'get'
-        ).and.returnValue('id_token token');
+        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
 
         spyOnProperty(
             authConfiguration,
@@ -808,14 +526,9 @@ describe('OidcSecurityStateValidationService', () => {
             'get'
         ).and.returnValue('');
 
-        spyOn(
-            oidcSecurityValidation,
-            'validate_id_token_at_hash'
-        ).and.returnValue(false);
+        spyOn(oidcSecurityValidation, 'validate_id_token_at_hash').and.returnValue(false);
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
-            () => {}
-        );
+        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -825,9 +538,7 @@ describe('OidcSecurityStateValidationService', () => {
             new JwtKeys()
         );
 
-        expect(logWarningSpy).toHaveBeenCalledWith(
-            'authorizedCallback incorrect at_hash'
-        );
+        expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback incorrect at_hash');
 
         // CAN THIS BE DONE VIA IF/ELSE IN THE BEGINNING?
         expect(state.access_token).toBe('access_tokenTEST');
