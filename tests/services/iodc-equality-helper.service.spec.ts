@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { IFrameService } from '../../src/services/existing-iframe.service';
 import { EqualityHelperService } from '../../src/services/oidc-equality-helper.service';
 
 describe('EqualityHelperServiceTests', () => {
@@ -6,7 +7,7 @@ describe('EqualityHelperServiceTests', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [EqualityHelperService],
+            providers: [EqualityHelperService, IFrameService],
         });
     });
 
@@ -44,18 +45,12 @@ describe('EqualityHelperServiceTests', () => {
     });
 
     it('two equal strings return true', () => {
-        const result = equalityHelperService.areEqual(
-            'somestring',
-            'somestring'
-        );
+        const result = equalityHelperService.areEqual('somestring', 'somestring');
         expect(result).toBe(true);
     });
 
     it('two equal strings but different casing returns false', () => {
-        const result = equalityHelperService.areEqual(
-            'somestring',
-            'Somestring'
-        );
+        const result = equalityHelperService.areEqual('somestring', 'Somestring');
         expect(result).toBe(false);
     });
 

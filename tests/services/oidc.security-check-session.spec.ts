@@ -6,6 +6,7 @@ import {
     OidcSecurityService,
     OidcSecurityStorage,
 } from '../../src/angular-auth-oidc-client';
+import { IFrameService } from '../../src/services/existing-iframe.service';
 import { LoggerService } from '../../src/services/oidc.logger.service';
 import { OidcSecurityCheckSession } from '../../src/services/oidc.security.check-session';
 import { OidcSecurityCommon } from '../../src/services/oidc.security.common';
@@ -24,6 +25,7 @@ describe('EqualityHelperServiceTests', () => {
                 DefaultConfiguration,
                 OidcSecurityService,
                 { provide: OidcSecurityStorage, useClass: TestStorage },
+                IFrameService,
             ],
         });
     });
