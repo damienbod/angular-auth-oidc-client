@@ -127,8 +127,8 @@ export class StateValidationService {
 
         // flow id_token token
         if (this.authConfiguration.response_type !== 'id_token token') {
-            result.authResponseIsValid = true;
-            result.state = ValidationResult.Ok;
+            toReturn.authResponseIsValid = true;
+            toReturn.state = ValidationResult.Ok;
             this.handleSuccessfulValidation();
             return toReturn;
         }
@@ -145,8 +145,8 @@ export class StateValidationService {
             return toReturn;
         }
 
-        result.authResponseIsValid = true;
-        result.state = ValidationResult.Ok;
+        toReturn.authResponseIsValid = true;
+        toReturn.state = ValidationResult.Ok;
         this.handleSuccessfulValidation();
         return toReturn;
     }
