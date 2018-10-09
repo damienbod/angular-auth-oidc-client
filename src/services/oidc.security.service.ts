@@ -506,7 +506,6 @@ export class OidcSecurityService {
             this.resetAuthorizationData(!!silentRenew);
 
             if (this.authConfiguration.trigger_authorization_result_event) {
-                console.log("401 401 401 401 401 401 401");
                 this.onAuthorizationResult.emit(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.NotSet));
             } else {
                 this.router.navigate([this.authConfiguration.unauthorized_route]);
