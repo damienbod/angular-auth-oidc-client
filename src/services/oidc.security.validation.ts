@@ -64,9 +64,7 @@ export class OidcSecurityValidation {
 
     // id_token C7: The current time MUST be before the time represented by the exp Claim (possibly allowing for some small leeway to account for clock skew).
     validate_id_token_exp_not_expired(decoded_id_token: string, offsetSeconds?: number): boolean {
-        const tokenExpirationDate = this.tokenHelperService.getTokenExpirationDate(
-            decoded_id_token
-        );
+        const tokenExpirationDate = this.tokenHelperService.getTokenExpirationDate(decoded_id_token);
         offsetSeconds = offsetSeconds || 0;
 
         if (!tokenExpirationDate) {
@@ -77,9 +75,7 @@ export class OidcSecurityValidation {
         const nowWithOffset = new Date().valueOf() + offsetSeconds * 1000;
         const tokenNotExpired = tokenExpirationValue > nowWithOffset;
 
-        this.loggerService.logDebug(
-            `Token not expired?: ${tokenExpirationValue} > ${nowWithOffset}  (${tokenNotExpired})`
-        );
+        this.loggerService.logDebug(`Token not expired?: ${tokenExpirationValue} > ${nowWithOffset}  (${tokenNotExpired})`);
 
         // Token not expired?
         return tokenNotExpired;
@@ -141,10 +137,7 @@ export class OidcSecurityValidation {
 
     // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
     // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
-    validate_id_token_iat_max_offset(
-        dataIdToken: any,
-        max_offset_allowed_in_seconds: number
-    ): boolean {
+    validate_id_token_iat_max_offset(dataIdToken: any, max_offset_allowed_in_seconds: number): boolean {
         if (!dataIdToken.hasOwnProperty('iat')) {
             return false;
         }
@@ -164,10 +157,7 @@ export class OidcSecurityValidation {
                 ' < ' +
                 max_offset_allowed_in_seconds * 1000
         );
-        return (
-            new Date().valueOf() - dateTime_iat_id_token.valueOf() <
-            max_offset_allowed_in_seconds * 1000
-        );
+        return new Date().valueOf() - dateTime_iat_id_token.valueOf() < max_offset_allowed_in_seconds * 1000;
     }
 
     // id_token C9: The value of the nonce Claim MUST be checked to verify that it is the same value as the one
@@ -175,12 +165,7 @@ export class OidcSecurityValidation {
     // The precise method for detecting replay attacks is Client specific.
     validate_id_token_nonce(dataIdToken: any, local_nonce: any): boolean {
         if (dataIdToken.nonce !== local_nonce) {
-            this.loggerService.logDebug(
-                'Validate_id_token_nonce failed, dataIdToken.nonce: ' +
-                    dataIdToken.nonce +
-                    ' local_nonce:' +
-                    local_nonce
-            );
+            this.loggerService.logDebug('Validate_id_token_nonce failed, dataIdToken.nonce: ' + dataIdToken.nonce + ' local_nonce:' + local_nonce);
             return false;
         }
 
@@ -212,23 +197,13 @@ export class OidcSecurityValidation {
             const result = this.arrayHelperService.areEqual(dataIdToken.aud, aud);
 
             if (!result) {
-                this.loggerService.logDebug(
-                    'Validate_id_token_aud  array failed, dataIdToken.aud: ' +
-                        dataIdToken.aud +
-                        ' client_id:' +
-                        aud
-                );
+                this.loggerService.logDebug('Validate_id_token_aud  array failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud);
                 return false;
             }
 
             return true;
         } else if (dataIdToken.aud !== aud) {
-            this.loggerService.logDebug(
-                'Validate_id_token_aud failed, dataIdToken.aud: ' +
-                    dataIdToken.aud +
-                    ' client_id:' +
-                    aud
-            );
+            this.loggerService.logDebug('Validate_id_token_aud failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud);
 
             return false;
         }
@@ -238,12 +213,7 @@ export class OidcSecurityValidation {
 
     validateStateFromHashCallback(state: any, local_state: any): boolean {
         if ((state as string) !== (local_state as string)) {
-            this.loggerService.logDebug(
-                'ValidateStateFromHashCallback failed, state: ' +
-                    state +
-                    ' local_state:' +
-                    local_state
-            );
+            this.loggerService.logDebug('ValidateStateFromHashCallback failed, state: ' + state + ' local_state:' + local_state);
             return false;
         }
 
@@ -252,12 +222,7 @@ export class OidcSecurityValidation {
 
     validate_userdata_sub_id_token(id_token_sub: any, userdata_sub: any): boolean {
         if ((id_token_sub as string) !== (userdata_sub as string)) {
-            this.loggerService.logDebug(
-                'validate_userdata_sub_id_token failed, id_token_sub: ' +
-                    id_token_sub +
-                    ' userdata_sub:' +
-                    userdata_sub
-            );
+            this.loggerService.logDebug('validate_userdata_sub_id_token failed, id_token_sub: ' + id_token_sub + ' userdata_sub:' + userdata_sub);
             return false;
         }
 
@@ -301,14 +266,10 @@ export class OidcSecurityValidation {
             }
 
             if (amountOfMatchingKeys === 0) {
-                this.loggerService.logWarning(
-                    'no keys found, incorrect Signature, validation failed for id_token'
-                );
+                this.loggerService.logWarning('no keys found, incorrect Signature, validation failed for id_token');
                 return false;
             } else if (amountOfMatchingKeys > 1) {
-                this.loggerService.logWarning(
-                    'no ID Token kid claim in JOSE header and multiple supplied in jwks_uri'
-                );
+                this.loggerService.logWarning('no ID Token kid claim in JOSE header and multiple supplied in jwks_uri');
                 return false;
             } else {
                 for (const key of jwtkeys.keys) {
@@ -316,9 +277,7 @@ export class OidcSecurityValidation {
                         const publickey = KEYUTIL.getKey(key);
                         isValid = KJUR.jws.JWS.verify(id_token, publickey, ['RS256']);
                         if (!isValid) {
-                            this.loggerService.logWarning(
-                                'incorrect Signature, validation failed for id_token'
-                            );
+                            this.loggerService.logWarning('incorrect Signature, validation failed for id_token');
                         }
                         return isValid;
                     }
@@ -331,9 +290,7 @@ export class OidcSecurityValidation {
                     const publickey = KEYUTIL.getKey(key);
                     isValid = KJUR.jws.JWS.verify(id_token, publickey, ['RS256']);
                     if (!isValid) {
-                        this.loggerService.logWarning(
-                            'incorrect Signature, validation failed for id_token'
-                        );
+                        this.loggerService.logWarning('incorrect Signature, validation failed for id_token');
                     }
                     return isValid;
                 }
@@ -348,9 +305,7 @@ export class OidcSecurityValidation {
             return true;
         }
 
-        this.loggerService.logWarning(
-            'module configure incorrect, invalid response_type:' + response_type
-        );
+        this.loggerService.logWarning('module configure incorrect, invalid response_type:' + response_type);
         return false;
     }
 

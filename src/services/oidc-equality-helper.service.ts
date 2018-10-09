@@ -2,10 +2,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class EqualityHelperService {
-    areEqual(
-        value1: string | any[] | object | null | undefined,
-        value2: string | any[] | object | null | undefined
-    ) {
+    areEqual(value1: string | any[] | object | null | undefined, value2: string | any[] | object | null | undefined) {
         if (!value1 || !value2) {
             return false;
         }
@@ -32,14 +29,8 @@ export class EqualityHelperService {
         }
     }
 
-    private oneValueIsStringAndTheOtherIsArray(
-        value1: string | object | any[],
-        value2: string | object | any[]
-    ) {
-        return (
-            (Array.isArray(value1) && this.valueIsString(value2)) ||
-            (Array.isArray(value2) && this.valueIsString(value1))
-        );
+    private oneValueIsStringAndTheOtherIsArray(value1: string | object | any[], value2: string | object | any[]) {
+        return (Array.isArray(value1) && this.valueIsString(value2)) || (Array.isArray(value2) && this.valueIsString(value1));
     }
 
     private bothValuesAreObjects(value1: string | object | any[], value2: string | object | any[]) {

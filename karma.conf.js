@@ -14,7 +14,7 @@ module.exports = function(config) {
             require('karma-chrome-launcher'),
             require('karma-webpack'),
             require('karma-sourcemap-loader'),
-            require('karma-spec-reporter')
+            require('karma-spec-reporter'),
         ],
 
         // list of files / patterns to load in the browser
@@ -26,29 +26,29 @@ module.exports = function(config) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            'spec.bundle.js': ['webpack']
+            'spec.bundle.js': ['webpack'],
         },
 
         // webpack
         webpack: {
             resolve: {
-                extensions: ['.ts', '.js']
+                extensions: ['.ts', '.js'],
             },
             module: {
                 rules: [
                     {
                         test: /\.ts/,
                         loaders: ['ts-loader'],
-                        exclude: /node_modules/
-                    }
+                        exclude: /node_modules/,
+                    },
                 ],
-                exprContextCritical: false
+                exprContextCritical: false,
             },
-            performance: { hints: false }
+            performance: { hints: false },
         },
 
         webpackServer: {
-            noInfo: true
+            noInfo: true,
         },
 
         // test results reporter to use
@@ -75,7 +75,7 @@ module.exports = function(config) {
 
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
-        singleRun: true
+        singleRun: true,
     };
 
     config.set(configuration);
