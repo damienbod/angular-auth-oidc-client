@@ -10,20 +10,12 @@
         "sourceMap": true,
         "rootDir": ".",
         "inlineSources": true,
-		"noUnusedLocals": true, 
-        "noUnusedParameters": true, 
-        "lib": [
-            "es6",
-            "dom"
-        ],
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "lib": ["es6", "dom"],
         "target": "es5",
         "skipLibCheck": true,
-        "types": [
-            "jasmine",
-            "node"
-        ]
+        "types": ["jasmine", "node"]
     },
-    "exclude": [
-        "node_modules"
-    ]
+    "exclude": ["node_modules"]
 }

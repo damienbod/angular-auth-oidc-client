@@ -1,5 +1,4 @@
 export class AuthWellKnownEndpoints {
-
     issuer = '';
     jwks_uri = '';
     authorization_endpoint = '';
