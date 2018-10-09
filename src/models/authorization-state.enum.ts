@@ -1,5 +1,5 @@
 export enum AuthorizationState {
-    authorized = 1,
-    forbidden = 2,
-    unauthorized = 3,
+    authorized = 'authorized',
+    forbidden = 'forbidden',
+    unauthorized = 'unauthorized'
 }
