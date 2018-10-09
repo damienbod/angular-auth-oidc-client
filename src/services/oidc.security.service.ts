@@ -3,17 +3,7 @@ import { HttpParams } from '@angular/common/http';
 import { EventEmitter, Inject, Injectable, NgZone, Output, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, from, Observable, throwError as observableThrowError, timer } from 'rxjs';
-import {
-    catchError,
-    filter,
-    map,
-    race,
-    shareReplay,
-    switchMap,
-    switchMapTo,
-    take,
-    tap,
-} from 'rxjs/operators';
+import { catchError, filter, map, race, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 import { AuthorizationResult } from '../models/authorization-result.enum';
