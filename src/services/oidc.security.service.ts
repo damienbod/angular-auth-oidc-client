@@ -6,7 +6,7 @@ import { BehaviorSubject, from, Observable, throwError as observableThrowError, 
 import { catchError, filter, map, race, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
-import { AuthorizationResult } from '../models/authorization-result.enum';
+import { AuthorizationResult } from '../models/authorization-result';
 import { AuthorizationState } from '../models/authorization-state.enum';
 import { JwtKeys } from '../models/jwtkeys';
 import { ValidateStateResult } from '../models/validate-state-result.model';
