@@ -33,9 +33,7 @@ export class OidcSecurityCheckSession {
     }
 
     doesSessionExist(): boolean {
-        const existingIFrame = this.iFrameService.getExistingIFrame(
-            IFRAME_FOR_CHECK_SESSION_IDENTIFIER
-        );
+        const existingIFrame = this.iFrameService.getExistingIFrame(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
 
         if (!existingIFrame) {
             return false;
@@ -46,16 +44,12 @@ export class OidcSecurityCheckSession {
     }
 
     init() {
-        this.sessionIframe = this.iFrameService.addIFrameToWindowBody(
-            IFRAME_FOR_CHECK_SESSION_IDENTIFIER
-        );
+        this.sessionIframe = this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
 
         if (this.authWellKnownEndpoints) {
             this.sessionIframe.src = this.authWellKnownEndpoints.check_session_iframe;
         } else {
-            this.loggerService.logWarning(
-                'init check session: authWellKnownEndpoints is undefined'
-            );
+            this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
         }
 
         this.iframeMessageEvent = this.messageHandler.bind(this);
@@ -90,20 +84,13 @@ export class OidcSecurityCheckSession {
                 this.loggerService.logDebug(this.sessionIframe);
                 const session_state = this.oidcSecurityCommon.sessionState;
                 if (session_state) {
-                    this.sessionIframe.contentWindow.postMessage(
-                        clientId + ' ' + session_state,
-                        this.authConfiguration.stsServer
-                    );
+                    this.sessionIframe.contentWindow.postMessage(clientId + ' ' + session_state, this.authConfiguration.stsServer);
                 } else {
-                    this.loggerService.logDebug(
-                        'OidcSecurityCheckSession pollServerSession session_state is blank'
-                    );
+                    this.loggerService.logDebug('OidcSecurityCheckSession pollServerSession session_state is blank');
                     this.onCheckSessionChanged.emit();
                 }
             } else {
-                this.loggerService.logWarning(
-                    'OidcSecurityCheckSession pollServerSession sessionIframe does not exist'
-                );
+                this.loggerService.logWarning('OidcSecurityCheckSession pollServerSession sessionIframe does not exist');
                 this.loggerService.logDebug(clientId);
                 this.loggerService.logDebug(this.sessionIframe);
                 // this.init();
@@ -121,11 +108,7 @@ export class OidcSecurityCheckSession {
     }
 
     private messageHandler(e: any) {
-        if (
-            this.sessionIframe &&
-            e.origin === this.authConfiguration.stsServer &&
-            e.source === this.sessionIframe.contentWindow
-        ) {
+        if (this.sessionIframe && e.origin === this.authConfiguration.stsServer && e.source === this.sessionIframe.contentWindow) {
             if (e.data === 'error') {
                 this.loggerService.logWarning('error from checksession messageHandler');
             } else if (e.data === 'changed') {

@@ -18,15 +18,10 @@ export class OidcConfigService {
             .pipe(
                 map(response => {
                     this.clientConfiguration = response;
-                    this.load_using_stsServer(
-                        this.clientConfiguration.stsServer
-                    );
+                    this.load_using_stsServer(this.clientConfiguration.stsServer);
                 }),
                 catchError(error => {
-                    console.error(
-                        `OidcConfigService 'load' threw an error on calling ${configUrl}`,
-                        error
-                    );
+                    console.error(`OidcConfigService 'load' threw an error on calling ${configUrl}`, error);
                     this.onConfigurationLoaded.emit(false);
                     return of(false);
                 })
@@ -45,10 +40,7 @@ export class OidcConfigService {
                     this.onConfigurationLoaded.emit(true);
                 }),
                 catchError(error => {
-                    console.error(
-                        `OidcConfigService 'load_using_stsServer' threw an error on calling ${stsServer}`,
-                        error
-                    );
+                    console.error(`OidcConfigService 'load_using_stsServer' threw an error on calling ${stsServer}`, error);
                     this.onConfigurationLoaded.emit(false);
                     return of(false);
                 })
@@ -65,10 +57,7 @@ export class OidcConfigService {
                     this.onConfigurationLoaded.emit(true);
                 }),
                 catchError(error => {
-                    console.error(
-                        `OidcConfigService 'load_using_custom_stsServer' threw an error on calling ${url}`,
-                        error
-                    );
+                    console.error(`OidcConfigService 'load_using_custom_stsServer' threw an error on calling ${url}`, error);
                     this.onConfigurationLoaded.emit(false);
                     return of(false);
                 })
