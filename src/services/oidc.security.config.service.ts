@@ -18,9 +18,7 @@ export class OidcConfigService {
             .pipe(
                 map(response => {
                     this.clientConfiguration = response;
-                    this.load_using_stsServer(
-                        this.clientConfiguration.stsServer
-                    );
+                    this.load_using_stsServer(this.clientConfiguration.stsServer);
                 }),
                 catchError(error => {
                     console.error(

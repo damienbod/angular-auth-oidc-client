@@ -103,9 +103,7 @@ export class OidcSecurityCommon {
         return this.retrieve(this.storage_custom_request_params);
     }
 
-    public set customRequestParams(value: {
-        [key: string]: string | number | boolean;
-    }) {
+    public set customRequestParams(value: { [key: string]: string | number | boolean }) {
         this.store(this.storage_custom_request_params, value);
     }
 

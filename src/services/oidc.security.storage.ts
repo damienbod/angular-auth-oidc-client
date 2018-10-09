@@ -31,7 +31,9 @@ export class BrowserStorage implements OidcSecurityStorage {
 
     public read(key: string): any {
         if (this.hasStorage) {
-            return JSON.parse(this.authConfiguration.storage.getItem(key + '_' + this.authConfiguration.client_id));
+            return JSON.parse(
+                this.authConfiguration.storage.getItem(key + '_' + this.authConfiguration.client_id)
+            );
         }
 
         return;
@@ -40,7 +42,10 @@ export class BrowserStorage implements OidcSecurityStorage {
     public write(key: string, value: any): void {
         if (this.hasStorage) {
             value = value === undefined ? null : value;
-            this.authConfiguration.storage.setItem(key + '_' + this.authConfiguration.client_id, JSON.stringify(value));
+            this.authConfiguration.storage.setItem(
+                key + '_' + this.authConfiguration.client_id,
+                JSON.stringify(value)
+            );
         }
     }
 }

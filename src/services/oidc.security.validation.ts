@@ -63,10 +63,7 @@ export class OidcSecurityValidation {
     }
 
     // id_token C7: The current time MUST be before the time represented by the exp Claim (possibly allowing for some small leeway to account for clock skew).
-    validate_id_token_exp_not_expired(
-        decoded_id_token: string,
-        offsetSeconds?: number
-    ): boolean {
+    validate_id_token_exp_not_expired(decoded_id_token: string, offsetSeconds?: number): boolean {
         const tokenExpirationDate = this.tokenHelperService.getTokenExpirationDate(
             decoded_id_token
         );
@@ -78,9 +75,11 @@ export class OidcSecurityValidation {
 
         const tokenExpirationValue = tokenExpirationDate.valueOf();
         const nowWithOffset = new Date().valueOf() + offsetSeconds * 1000;
-        const tokenNotExpired = ( tokenExpirationValue > nowWithOffset );
+        const tokenNotExpired = tokenExpirationValue > nowWithOffset;
 
-        this.loggerService.logDebug(`Token not expired?: ${tokenExpirationValue} > ${nowWithOffset}  (${tokenNotExpired})`)
+        this.loggerService.logDebug(
+            `Token not expired?: ${tokenExpirationValue} > ${nowWithOffset}  (${tokenNotExpired})`
+        );
 
         // Token not expired?
         return tokenNotExpired;
@@ -114,37 +113,27 @@ export class OidcSecurityValidation {
         let validated = true;
         if (!dataIdToken.hasOwnProperty('iss')) {
             validated = false;
-            this.loggerService.logWarning(
-                'iss is missing, this is required in the id_token'
-            );
+            this.loggerService.logWarning('iss is missing, this is required in the id_token');
         }
 
         if (!dataIdToken.hasOwnProperty('sub')) {
             validated = false;
-            this.loggerService.logWarning(
-                'sub is missing, this is required in the id_token'
-            );
+            this.loggerService.logWarning('sub is missing, this is required in the id_token');
         }
 
         if (!dataIdToken.hasOwnProperty('aud')) {
             validated = false;
-            this.loggerService.logWarning(
-                'aud is missing, this is required in the id_token'
-            );
+            this.loggerService.logWarning('aud is missing, this is required in the id_token');
         }
 
         if (!dataIdToken.hasOwnProperty('exp')) {
             validated = false;
-            this.loggerService.logWarning(
-                'exp is missing, this is required in the id_token'
-            );
+            this.loggerService.logWarning('exp is missing, this is required in the id_token');
         }
 
         if (!dataIdToken.hasOwnProperty('iat')) {
             validated = false;
-            this.loggerService.logWarning(
-                'iat is missing, this is required in the id_token'
-            );
+            this.loggerService.logWarning('iat is missing, this is required in the id_token');
         }
 
         return validated;
@@ -200,14 +189,8 @@ export class OidcSecurityValidation {
 
     // id_token C1: The Issuer Identifier for the OpenID Provider (which is typically obtained during Discovery)
     // MUST exactly match the value of the iss (issuer) Claim.
-    validate_id_token_iss(
-        dataIdToken: any,
-        authWellKnownEndpoints_issuer: any
-    ): boolean {
-        if (
-            (dataIdToken.iss as string) !==
-            (authWellKnownEndpoints_issuer as string)
-        ) {
+    validate_id_token_iss(dataIdToken: any, authWellKnownEndpoints_issuer: any): boolean {
+        if ((dataIdToken.iss as string) !== (authWellKnownEndpoints_issuer as string)) {
             this.loggerService.logDebug(
                 'Validate_id_token_iss failed, dataIdToken.iss: ' +
                     dataIdToken.iss +
@@ -226,10 +209,7 @@ export class OidcSecurityValidation {
     // not trusted by the Client.
     validate_id_token_aud(dataIdToken: any, aud: any): boolean {
         if (dataIdToken.aud instanceof Array) {
-            const result = this.arrayHelperService.areEqual(
-                dataIdToken.aud,
-                aud
-            );
+            const result = this.arrayHelperService.areEqual(dataIdToken.aud, aud);
 
             if (!result) {
                 this.loggerService.logDebug(
@@ -270,10 +250,7 @@ export class OidcSecurityValidation {
         return true;
     }
 
-    validate_userdata_sub_id_token(
-        id_token_sub: any,
-        userdata_sub: any
-    ): boolean {
+    validate_userdata_sub_id_token(id_token_sub: any, userdata_sub: any): boolean {
         if ((id_token_sub as string) !== (userdata_sub as string)) {
             this.loggerService.logDebug(
                 'validate_userdata_sub_id_token failed, id_token_sub: ' +
@@ -296,15 +273,9 @@ export class OidcSecurityValidation {
             return false;
         }
 
-        const header_data = this.tokenHelperService.getHeaderFromToken(
-            id_token,
-            false
-        );
+        const header_data = this.tokenHelperService.getHeaderFromToken(id_token, false);
 
-        if (
-            Object.keys(header_data).length === 0 &&
-            header_data.constructor === Object
-        ) {
+        if (Object.keys(header_data).length === 0 && header_data.constructor === Object) {
             this.loggerService.logWarning('id token has no header data');
             return false;
         }
@@ -324,10 +295,7 @@ export class OidcSecurityValidation {
             // kty	"RSA" use "sig"
             let amountOfMatchingKeys = 0;
             for (const key of jwtkeys.keys) {
-                if (
-                    (key.kty as string) === 'RSA' &&
-                    (key.use as string) === 'sig'
-                ) {
+                if ((key.kty as string) === 'RSA' && (key.use as string) === 'sig') {
                     amountOfMatchingKeys = amountOfMatchingKeys + 1;
                 }
             }
@@ -344,14 +312,9 @@ export class OidcSecurityValidation {
                 return false;
             } else {
                 for (const key of jwtkeys.keys) {
-                    if (
-                        (key.kty as string) === 'RSA' &&
-                        (key.use as string) === 'sig'
-                    ) {
+                    if ((key.kty as string) === 'RSA' && (key.use as string) === 'sig') {
                         const publickey = KEYUTIL.getKey(key);
-                        isValid = KJUR.jws.JWS.verify(id_token, publickey, [
-                            'RS256',
-                        ]);
+                        isValid = KJUR.jws.JWS.verify(id_token, publickey, ['RS256']);
                         if (!isValid) {
                             this.loggerService.logWarning(
                                 'incorrect Signature, validation failed for id_token'
@@ -366,9 +329,7 @@ export class OidcSecurityValidation {
             for (const key of jwtkeys.keys) {
                 if ((key.kid as string) === (kid as string)) {
                     const publickey = KEYUTIL.getKey(key);
-                    isValid = KJUR.jws.JWS.verify(id_token, publickey, [
-                        'RS256',
-                    ]);
+                    isValid = KJUR.jws.JWS.verify(id_token, publickey, ['RS256']);
                     if (!isValid) {
                         this.loggerService.logWarning(
                             'incorrect Signature, validation failed for id_token'
@@ -383,10 +344,7 @@ export class OidcSecurityValidation {
     }
 
     config_validate_response_type(response_type: string): boolean {
-        if (
-            response_type === 'id_token token' ||
-            response_type === 'id_token'
-        ) {
+        if (response_type === 'id_token token' || response_type === 'id_token') {
             return true;
         }
 
@@ -419,15 +377,11 @@ export class OidcSecurityValidation {
     validate_id_token_at_hash(access_token: any, at_hash: any): boolean {
         this.loggerService.logDebug('From the server:' + at_hash);
         const testdata = this.generate_at_hash('' + access_token);
-        this.loggerService.logDebug(
-            'client validation not decoded:' + testdata
-        );
+        this.loggerService.logDebug('client validation not decoded:' + testdata);
         if (testdata === (at_hash as string)) {
             return true; // isValid;
         } else {
-            const testValue = this.generate_at_hash(
-                '' + decodeURIComponent(access_token)
-            );
+            const testValue = this.generate_at_hash('' + decodeURIComponent(access_token));
             this.loggerService.logDebug('-gen access--' + testValue);
             if (testValue === (at_hash as string)) {
                 return true; // isValid
