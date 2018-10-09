@@ -6,9 +6,11 @@ import { BehaviorSubject, from, Observable, throwError as observableThrowError, 
 import { catchError, filter, map, race, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
-import { AuthorizationResult } from '../models/authorization-result.enum';
+import { AuthorizationResult } from '../models/authorization-result';
+import { AuthorizationState } from '../models/authorization-state.enum';
 import { JwtKeys } from '../models/jwtkeys';
 import { ValidateStateResult } from '../models/validate-state-result.model';
+import { ValidationResult } from '../models/validation-result.enum';
 import { AuthConfiguration, OpenIDImplicitFlowConfiguration } from '../modules/auth.configuration';
 import { StateValidationService } from './oidc-security-state-validation.service';
 import { TokenHelperService } from './oidc-token-helper.service';
@@ -294,70 +296,84 @@ export class OidcSecurityService {
         }, {});
 
         this.oidcSecurityCommon.authResult = result;
-        this.loggerService.logDebug(result);
-        this.loggerService.logDebug('authorizedCallback created, begin token validation');
-
-        this.getSigningKeys().subscribe(
-            jwtKeys => {
-                const validationResult = this.getValidatedStateResult(result, jwtKeys);
-
-                if (validationResult.authResponseIsValid) {
-                    this.setAuthorizationData(validationResult.access_token, validationResult.id_token);
-                    this.oidcSecurityCommon.silentRenewRunning = '';
-
-                    if (this.authConfiguration.auto_userinfo) {
-                        this.getUserinfo(isRenewProcess, result, validationResult.id_token, validationResult.decoded_id_token).subscribe(
-                            response => {
-                                if (response) {
-                                    this.onAuthorizationResult.emit(AuthorizationResult.authorized);
-                                    if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
-                                        this.router.navigate([this.authConfiguration.post_login_route]);
-                                    }
-                                } else {
-                                    this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
-                                    if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
-                                        this.router.navigate([this.authConfiguration.unauthorized_route]);
-                                    }
-                                }
-                            },
-                            err => {
-                                /* Something went wrong while getting signing key */
-                                this.loggerService.logWarning('Failed to retreive user info with error: ' + JSON.stringify(err));
-                            }
-                        );
-                    } else {
-                        if (!isRenewProcess) {
-                            // userData is set to the id_token decoded, auto get user data set to false
-                            this.oidcSecurityUserService.setUserData(validationResult.decoded_id_token);
-                            this.setUserData(this.oidcSecurityUserService.getUserData());
-                        }
-
-                        this.runTokenValidation();
-
-                        this.onAuthorizationResult.emit(AuthorizationResult.authorized);
-                        if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
-                            this.router.navigate([this.authConfiguration.post_login_route]);
-                        }
-                    }
-                } else {
-                    // something went wrong
-                    this.loggerService.logWarning('authorizedCallback, token(s) validation failed, resetting');
-                    this.loggerService.logWarning(window.location.hash);
-                    this.resetAuthorizationData(false);
-                    this.oidcSecurityCommon.silentRenewRunning = '';
-
-                    this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
-                    if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
-                        this.router.navigate([this.authConfiguration.unauthorized_route]);
-                    }
-                }
-            },
-            err => {
-                /* Something went wrong while getting signing key */
-                this.loggerService.logWarning('Failed to retreive siging key with error: ' + JSON.stringify(err));
-                this.oidcSecurityCommon.silentRenewRunning = '';
+        if (result.error) {
+            this.loggerService.logWarning(result);
+            if (result.error as string === 'login_required') {
+                this.onAuthorizationResult.emit(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.LoginRequired));
+            } else {
+                this.onAuthorizationResult.emit(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.SecureTokenServerError));
             }
-        );
+
+            if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
+                this.router.navigate([this.authConfiguration.unauthorized_route]);
+            }
+        } else {
+            this.loggerService.logDebug(result);
+
+            this.loggerService.logDebug('authorizedCallback created, begin token validation');
+
+            this.getSigningKeys().subscribe(
+                jwtKeys => {
+                    const validationResult = this.getValidatedStateResult(result, jwtKeys);
+
+                    if (validationResult.authResponseIsValid) {
+                        this.setAuthorizationData(validationResult.access_token, validationResult.id_token);
+                        this.oidcSecurityCommon.silentRenewRunning = '';
+
+                        if (this.authConfiguration.auto_userinfo) {
+                            this.getUserinfo(isRenewProcess, result, validationResult.id_token, validationResult.decoded_id_token).subscribe(
+                                response => {
+                                    if (response) {
+                                        this.onAuthorizationResult.emit(new AuthorizationResult(AuthorizationState.authorized, validationResult.state));
+                                        if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
+                                            this.router.navigate([this.authConfiguration.post_login_route]);
+                                        }
+                                    } else {
+                                        this.onAuthorizationResult.emit(new AuthorizationResult(AuthorizationState.unauthorized, validationResult.state));
+                                        if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
+                                            this.router.navigate([this.authConfiguration.unauthorized_route]);
+                                        }
+                                    }
+                                },
+                                err => {
+                                    /* Something went wrong while getting signing key */
+                                    this.loggerService.logWarning('Failed to retreive user info with error: ' + JSON.stringify(err));
+                                }
+                            );
+                        } else {
+                            if (!isRenewProcess) {
+                                // userData is set to the id_token decoded, auto get user data set to false
+                                this.oidcSecurityUserService.setUserData(validationResult.decoded_id_token);
+                                this.setUserData(this.oidcSecurityUserService.getUserData());
+                            }
+
+                            this.runTokenValidation();
+
+                            this.onAuthorizationResult.emit(new AuthorizationResult(AuthorizationState.authorized, validationResult.state));
+                            if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
+                                this.router.navigate([this.authConfiguration.post_login_route]);
+                            }
+                        }
+                    } else {
+                        // something went wrong
+                        this.loggerService.logWarning('authorizedCallback, token(s) validation failed, resetting');
+                        this.loggerService.logWarning(window.location.hash);
+                        this.resetAuthorizationData(false);
+                        this.oidcSecurityCommon.silentRenewRunning = '';
+
+                        this.onAuthorizationResult.emit(new AuthorizationResult(AuthorizationState.unauthorized, validationResult.state));
+                        if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
+                            this.router.navigate([this.authConfiguration.unauthorized_route]);
+                        }
+                    }
+                },
+                err => {
+                    /* Something went wrong while getting signing key */
+                    this.loggerService.logWarning('Failed to retreive siging key with error: ' + JSON.stringify(err));
+                    this.oidcSecurityCommon.silentRenewRunning = '';
+                }
+            );
+        }
     }
 
     getUserinfo(isRenewProcess = false, result?: any, id_token?: any, decoded_id_token?: any): Observable<boolean> {
@@ -480,7 +496,7 @@ export class OidcSecurityService {
         this.loggerService.logError(error);
         if (error.status === 403 || error.status === '403') {
             if (this.authConfiguration.trigger_authorization_result_event) {
-                this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
+                this.onAuthorizationResult.emit(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.NotSet));
             } else {
                 this.router.navigate([this.authConfiguration.forbidden_route]);
             }
@@ -490,7 +506,7 @@ export class OidcSecurityService {
             this.resetAuthorizationData(!!silentRenew);
 
             if (this.authConfiguration.trigger_authorization_result_event) {
-                this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
+                this.onAuthorizationResult.emit(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.NotSet));
             } else {
                 this.router.navigate([this.authConfiguration.unauthorized_route]);
             }
