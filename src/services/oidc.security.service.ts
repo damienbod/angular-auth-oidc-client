@@ -2,13 +2,24 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpParams } from '@angular/common/http';
 import { EventEmitter, Inject, Injectable, NgZone, Output, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, throwError as observableThrowError, timer, from } from 'rxjs';
-import { catchError, filter, map, shareReplay, switchMap, switchMapTo, take, tap, race } from 'rxjs/operators';
+import { BehaviorSubject, from, Observable, throwError as observableThrowError, timer } from 'rxjs';
+import {
+    catchError,
+    filter,
+    map,
+    race,
+    shareReplay,
+    switchMap,
+    switchMapTo,
+    take,
+    tap,
+} from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
-import { AuthorizationResult } from '../models/authorization-result.enum';
+import { AuthorizationResult, AuthorizationState } from '../models/authorization-result.enum';
 import { JwtKeys } from '../models/jwtkeys';
 import { ValidateStateResult } from '../models/validate-state-result.model';
+import { ValidationResult } from '../models/validation-result.enum';
 import { AuthConfiguration, OpenIDImplicitFlowConfiguration } from '../modules/auth.configuration';
 import { StateValidationService } from './oidc-security-state-validation.service';
 import { TokenHelperService } from './oidc-token-helper.service';
@@ -70,32 +81,55 @@ export class OidcSecurityService {
             switchMap(() => {
                 if (!this.authConfiguration.silent_renew) {
                     return from([true]).pipe(
-                        tap(() => this.loggerService.logDebug(`IsAuthorizedRace: Silent Renew Not Active. Emitting.`))
+                        tap(() =>
+                            this.loggerService.logDebug(
+                                `IsAuthorizedRace: Silent Renew Not Active. Emitting.`
+                            )
+                        )
                     );
                 }
 
                 const race$ = this._isAuthorized.asObservable().pipe(
                     filter((isAuthorized: boolean) => isAuthorized),
                     take(1),
-                    tap(() => this.loggerService.logDebug('IsAuthorizedRace: Existing token is still authorized.')),
+                    tap(() =>
+                        this.loggerService.logDebug(
+                            'IsAuthorizedRace: Existing token is still authorized.'
+                        )
+                    ),
                     race(
                         this.onAuthorizationResult.asObservable().pipe(
                             take(1),
-                            tap(() => this.loggerService.logDebug('IsAuthorizedRace: Silent Renew Refresh Session Complete')),
+                            tap(() =>
+                                this.loggerService.logDebug(
+                                    'IsAuthorizedRace: Silent Renew Refresh Session Complete'
+                                )
+                            ),
                             map(() => true)
                         ),
-                        timer(5000).pipe(  // backup, if nothing happens after 5 seconds stop waiting and emit
-                            tap(() => this.loggerService.logWarning(
-                                'IsAuthorizedRace: Timeout reached. Emitting.')),
+                        timer(5000).pipe(
+                            // backup, if nothing happens after 5 seconds stop waiting and emit
+                            tap(() =>
+                                this.loggerService.logWarning(
+                                    'IsAuthorizedRace: Timeout reached. Emitting.'
+                                )
+                            ),
                             map(() => true)
                         )
                     )
                 );
 
-                this.loggerService.logDebug('Silent Renew is active, check if token in storage is active');
-                if (this.oidcSecurityCommon.authNonce === '' || this.oidcSecurityCommon.authNonce === undefined) {
+                this.loggerService.logDebug(
+                    'Silent Renew is active, check if token in storage is active'
+                );
+                if (
+                    this.oidcSecurityCommon.authNonce === '' ||
+                    this.oidcSecurityCommon.authNonce === undefined
+                ) {
                     // login not running, or a second silent renew, user must login first before this will work.
-                    this.loggerService.logDebug('Silent Renew or login not running, try to refresh the session');
+                    this.loggerService.logDebug(
+                        'Silent Renew or login not running, try to refresh the session'
+                    );
                     this.refreshSession();
                 }
 
@@ -103,7 +137,9 @@ export class OidcSecurityService {
             }),
             tap(() => this.loggerService.logDebug('IsAuthorizedRace: Completed')),
             switchMapTo(this._isAuthorized.asObservable()),
-            tap((isAuthorized: boolean) => this.loggerService.logDebug(`getIsAuthorized: ${isAuthorized}`)),
+            tap((isAuthorized: boolean) =>
+                this.loggerService.logDebug(`getIsAuthorized: ${isAuthorized}`)
+            ),
             shareReplay(1)
         );
     }
@@ -350,7 +386,12 @@ export class OidcSecurityService {
                         ).subscribe(
                             response => {
                                 if (response) {
-                                    this.onAuthorizationResult.emit(AuthorizationResult.authorized);
+                                    this.onAuthorizationResult.emit(
+                                        new AuthorizationResult(
+                                            AuthorizationState.authorized,
+                                            validationResult.state
+                                        )
+                                    );
                                     if (
                                         !this.authConfiguration
                                             .trigger_authorization_result_event &&
@@ -362,7 +403,10 @@ export class OidcSecurityService {
                                     }
                                 } else {
                                     this.onAuthorizationResult.emit(
-                                        AuthorizationResult.unauthorized
+                                        new AuthorizationResult(
+                                            AuthorizationState.unauthorized,
+                                            validationResult.state
+                                        )
                                     );
                                     if (
                                         !this.authConfiguration
@@ -394,7 +438,12 @@ export class OidcSecurityService {
 
                         this.runTokenValidation();
 
-                        this.onAuthorizationResult.emit(AuthorizationResult.authorized);
+                        this.onAuthorizationResult.emit(
+                            new AuthorizationResult(
+                                AuthorizationState.authorized,
+                                validationResult.state
+                            )
+                        );
                         if (
                             !this.authConfiguration.trigger_authorization_result_event &&
                             !isRenewProcess
@@ -411,7 +460,12 @@ export class OidcSecurityService {
                     this.resetAuthorizationData(false);
                     this.oidcSecurityCommon.silentRenewRunning = '';
 
-                    this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
+                    this.onAuthorizationResult.emit(
+                        new AuthorizationResult(
+                            AuthorizationState.unauthorized,
+                            validationResult.state
+                        )
+                    );
                     if (
                         !this.authConfiguration.trigger_authorization_result_event &&
                         !isRenewProcess
@@ -571,7 +625,12 @@ export class OidcSecurityService {
         this.loggerService.logError(error);
         if (error.status === 403 || error.status === '403') {
             if (this.authConfiguration.trigger_authorization_result_event) {
-                this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
+                this.onAuthorizationResult.emit(
+                    new AuthorizationResult(
+                        AuthorizationState.unauthorized,
+                        ValidationResult.NotSet
+                    )
+                );
             } else {
                 this.router.navigate([this.authConfiguration.forbidden_route]);
             }
@@ -581,7 +640,12 @@ export class OidcSecurityService {
             this.resetAuthorizationData(!!silentRenew);
 
             if (this.authConfiguration.trigger_authorization_result_event) {
-                this.onAuthorizationResult.emit(AuthorizationResult.unauthorized);
+                this.onAuthorizationResult.emit(
+                    new AuthorizationResult(
+                        AuthorizationState.unauthorized,
+                        ValidationResult.NotSet
+                    )
+                );
             } else {
                 this.router.navigate([this.authConfiguration.unauthorized_route]);
             }
@@ -763,9 +827,10 @@ export class OidcSecurityService {
         const silentRenewHeartBeatCheck = () => {
             this.loggerService.logDebug(
                 'silentRenewHeartBeatCheck\r\n' +
-                `\tsilentRenewRunning: ${(this.oidcSecurityCommon.silentRenewRunning === 'running')}\r\n` +
-                `\tidToken: ${(this.getIdToken() != null)}\r\n` +
-                `\t_userData.value: ${(this._userData.value != null)}`
+                    `\tsilentRenewRunning: ${this.oidcSecurityCommon.silentRenewRunning ===
+                        'running'}\r\n` +
+                    `\tidToken: ${this.getIdToken() != null}\r\n` +
+                    `\t_userData.value: ${this._userData.value != null}`
             );
             if (
                 this._userData.value &&
