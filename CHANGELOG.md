@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-10-09"></a>
+### 2018-10-09 version 7.0.0
+* Adding validation state result info to authorization event result
+
 <a name="2018-10-07"></a>
 ### 2018-10-07 version 6.0.12
 * Refactoring getIsAuthorized()
