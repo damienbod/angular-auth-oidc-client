@@ -11,11 +11,7 @@ export class OidcSecurityUserService {
     private userData: any = '';
     private authWellKnownEndpoints: AuthWellKnownEndpoints | undefined;
 
-    constructor(
-        private oidcDataService: OidcDataService,
-        private oidcSecurityCommon: OidcSecurityCommon,
-        private loggerService: LoggerService
-    ) {}
+    constructor(private oidcDataService: OidcDataService, private oidcSecurityCommon: OidcSecurityCommon, private loggerService: LoggerService) {}
 
     setupModule(authWellKnownEndpoints: AuthWellKnownEndpoints) {
         this.authWellKnownEndpoints = Object.assign({}, authWellKnownEndpoints);
@@ -41,15 +37,12 @@ export class OidcSecurityUserService {
         const token = this.oidcSecurityCommon.getAccessToken();
 
         if (!this.authWellKnownEndpoints) {
-            this.loggerService.logWarning(
-                'init check session: authWellKnownEndpoints is undefined'
-            );
+            this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
 
             throw Error('authWellKnownEndpoints is undefined');
         }
 
-        const canGetUserData =
-            this.authWellKnownEndpoints && this.authWellKnownEndpoints.userinfo_endpoint;
+        const canGetUserData = this.authWellKnownEndpoints && this.authWellKnownEndpoints.userinfo_endpoint;
 
         if (!canGetUserData) {
             this.loggerService.logError(
@@ -58,9 +51,6 @@ export class OidcSecurityUserService {
             throw Error('authWellKnownEndpoints.userinfo_endpoint is undefined');
         }
 
-        return this.oidcDataService.getIdentityUserData(
-            this.authWellKnownEndpoints.userinfo_endpoint,
-            token
-        );
+        return this.oidcDataService.getIdentityUserData(this.authWellKnownEndpoints.userinfo_endpoint, token);
     }
 }

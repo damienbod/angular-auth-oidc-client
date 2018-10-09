@@ -67,9 +67,7 @@ export class TokenHelperService {
                 throw Error('Illegal base64url string!');
         }
 
-        return typeof window !== 'undefined'
-            ? window.atob(output)
-            : new Buffer(output, 'base64').toString('binary');
+        return typeof window !== 'undefined' ? window.atob(output) : new Buffer(output, 'base64').toString('binary');
     }
 
     private tokenIsValid(token: string) {
@@ -86,9 +84,7 @@ export class TokenHelperService {
         const parts = token.split('.');
 
         if (parts.length !== this.PARTS_OF_TOKEN) {
-            this.loggerService.logError(
-                `token '${token}' is not valid --> token has t have exact three dots`
-            );
+            this.loggerService.logError(`token '${token}' is not valid --> token has t have exact three dots`);
             return false;
         }
 

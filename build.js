@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 require('shelljs/global');
 const chalk = require('chalk');
@@ -50,7 +50,10 @@ exec(`node scripts/map-sources -f ${BUNDLES_DIR}/${PACKAGE}.umd.js`);
 
 echo(`Minifying`);
 cd(`${BUNDLES_DIR}`);
-exec(`uglifyjs -c --screw-ie8 --comments -o ${PACKAGE}.umd.min.js --source-map ${PACKAGE}.umd.min.js.map --source-map-include-sources ${PACKAGE}.umd.js`, { silent: true });
+exec(
+    `uglifyjs -c --screw-ie8 --comments -o ${PACKAGE}.umd.min.js --source-map ${PACKAGE}.umd.min.js.map --source-map-include-sources ${PACKAGE}.umd.js`,
+    { silent: true }
+);
 exec(`node ../../scripts/map-sources -f ${PACKAGE}.umd.min.js`);
 cd(`..`);
 cd(`..`);

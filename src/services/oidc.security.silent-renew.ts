@@ -13,9 +13,7 @@ export class OidcSecuritySilentRenew {
     constructor(private loggerService: LoggerService, private iFrameService: IFrameService) {}
 
     initRenew() {
-        const existingIFrame = this.iFrameService.getExistingIFrame(
-            IFRAME_FOR_SILENT_RENEW_IDENTIFIER
-        );
+        const existingIFrame = this.iFrameService.getExistingIFrame(IFRAME_FOR_SILENT_RENEW_IDENTIFIER);
 
         if (!existingIFrame) {
             this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_SILENT_RENEW_IDENTIFIER);
@@ -29,9 +27,7 @@ export class OidcSecuritySilentRenew {
             this.initRenew();
         }
 
-        this.sessionIframe = this.iFrameService.getExistingIFrame(
-            IFRAME_FOR_SILENT_RENEW_IDENTIFIER
-        );
+        this.sessionIframe = this.iFrameService.getExistingIFrame(IFRAME_FOR_SILENT_RENEW_IDENTIFIER);
 
         this.loggerService.logDebug('startRenew for URL:' + url);
         this.sessionIframe.src = url;
