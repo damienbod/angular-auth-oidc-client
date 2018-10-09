@@ -1,3 +1,4 @@
+import { AuthorizationState } from './authorization-state.enum';
 import { ValidationResult } from './validation-result.enum';
 
 export class AuthorizationResult {
@@ -5,10 +6,4 @@ export class AuthorizationResult {
         public authorizationState: AuthorizationState,
         public validationResult: ValidationResult
     ) {}
-}
-
-export enum AuthorizationState {
-    authorized = 1,
-    forbidden = 2,
-    unauthorized = 3,
 }

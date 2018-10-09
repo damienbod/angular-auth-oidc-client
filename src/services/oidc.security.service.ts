@@ -16,7 +16,8 @@ import {
 } from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
-import { AuthorizationResult, AuthorizationState } from '../models/authorization-result.enum';
+import { AuthorizationResult } from '../models/authorization-result.enum';
+import { AuthorizationState } from '../models/authorization-state.enum';
 import { JwtKeys } from '../models/jwtkeys';
 import { ValidateStateResult } from '../models/validate-state-result.model';
 import { ValidationResult } from '../models/validation-result.enum';
