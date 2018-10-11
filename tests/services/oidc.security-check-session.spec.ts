@@ -32,7 +32,6 @@ describe('EqualityHelperServiceTests', () => {
 
     beforeEach(() => {
         oidcSecurityCheckSession = TestBed.get(OidcSecurityCheckSession);
-        (oidcSecurityCheckSession as any).lastIFrameRefresh = 0;
     });
 
     it('should create', () => {
@@ -160,8 +159,9 @@ describe('EqualityHelperServiceTests', () => {
     });
 
     it('src of iframe is empty if authWellKnownEndpoints.check_session_iframe is not existing', () => {
+        const spy = spyOn(oidcSecurityCheckSession, 'doesSessionExist').and.returnValue(false);
         oidcSecurityCheckSession.init();
-
+        expect(spy).toHaveBeenCalled();
         expect((oidcSecurityCheckSession as any).sessionIframe.src).toBe('');
     });
 
