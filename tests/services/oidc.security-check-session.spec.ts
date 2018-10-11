@@ -32,6 +32,7 @@ describe('EqualityHelperServiceTests', () => {
 
     beforeEach(() => {
         oidcSecurityCheckSession = TestBed.get(OidcSecurityCheckSession);
+        (oidcSecurityCheckSession as any).lastIFrameRefresh = 0;
     });
 
     it('should create', () => {
