@@ -445,7 +445,15 @@ handle errors from the auth module.
  
 This event returns the result of the authorization callback. 
 
+Import the classes:
 ```typescript
+import { AuthorizationResult } from './auth/models/authorization-result';
+import { AuthorizationState } from './auth/models/authorization-state.enum';
+```
+
+Subscribe to the event:
+```typescript
+
 this.oidcSecurityService.onAuthorizationResult.subscribe(
 	(authorizationResult: AuthorizationResult) => {
 		this.onAuthorizationResultComplete(authorizationResult);
@@ -459,13 +467,12 @@ ngOnDestroy(): void {
 
 ```typescript
 private onAuthorizationResultComplete(authorizationResult: AuthorizationResult) {
-	console.log('Auth result received:' + authorizationResult);
-	if (authorizationResult === AuthorizationResult.unauthorized) {
+	console.log('Auth result received AuthorizationState:' + authorizationResult.authorizationState + ' validationResult:' + authorizationResult.validationResult);
+	if (authorizationResult.authorizationState === AuthorizationState.unauthorized) {
 		if (window.parent) {
 			// sent from the child iframe, for example the silent renew
-			window.parent.location.href = '/unauthorized';
+			this.router.navigate(['/unauthorized']);
 		} else {
-			// sent from the main window
 			window.location.href = '/unauthorized';
 		}
 	}
