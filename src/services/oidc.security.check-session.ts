@@ -17,10 +17,10 @@ export class OidcSecurityCheckSession {
     private iframeMessageEvent: any;
     private authWellKnownEndpoints: AuthWellKnownEndpoints | undefined;
     private scheduledHeartBeat: any;
-    private lastIFrameRefresh: number = 0;
-    private lastMessageResponseReceived: number = 0;
-    private heartBeatInterval: number = 3000;
-    private iframeRefreshInterval: number = 60000;
+    private lastIFrameRefresh = 0;
+    private lastMessageResponseReceived = 0;
+    private heartBeatInterval = 3000;
+    private iframeRefreshInterval = 60000;
 
     @Output()
     onCheckSessionChanged: EventEmitter<any> = new EventEmitter<any>(true);
