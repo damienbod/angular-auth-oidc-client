@@ -449,6 +449,9 @@ Import the classes:
 ```typescript
 import { AuthorizationResult } from './auth/models/authorization-result';
 import { AuthorizationState } from './auth/models/authorization-state.enum';
+
+// Use this if you need to work with the validation result.
+//import { ValidationResult } from './auth/models/validation-result.enum';
 ```
 
 Subscribe to the event:
@@ -465,9 +468,14 @@ ngOnDestroy(): void {
 	
 ```	
 
+And use the event:
 ```typescript
 private onAuthorizationResultComplete(authorizationResult: AuthorizationResult) {
-	console.log('Auth result received AuthorizationState:' + authorizationResult.authorizationState + ' validationResult:' + authorizationResult.validationResult);
+	
+	console.log('Auth result received AuthorizationState:'
+            + authorizationResult.authorizationState
+            + ' validationResult:' + authorizationResult.validationResult);
+			
 	if (authorizationResult.authorizationState === AuthorizationState.unauthorized) {
 		if (window.parent) {
 			// sent from the child iframe, for example the silent renew
