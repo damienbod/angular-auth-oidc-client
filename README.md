@@ -154,20 +154,17 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 })
 export class AppComponent implements OnInit, OnDestroy {
     constructor(public oidcSecurityService: OidcSecurityService) {
-        if (this.oidcSecurityService.moduleSetup) {
-            this.doCallbackLogicIfRequired();
-        } else {
-            this.oidcSecurityService.onModuleSetup.subscribe(() => {
-                this.doCallbackLogicIfRequired();
-            });
-        }
+	this.oidcSecurityService.getIsModuleSetup().pipe(
+	    filter((isModuleSetup: boolean) => isModuleSetup),
+	    take(1)
+	).subscribe((isModuleSetup: boolean) => {
+	    this.doCallbackLogicIfRequired();
+	});
     }
 
     ngOnInit() {}
 
-    ngOnDestroy(): void {
-        this.oidcSecurityService.onModuleSetup.unsubscribe();
-    }
+    ngOnDestroy(): void {}
 
     login() {
   
