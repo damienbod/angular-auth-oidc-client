@@ -106,6 +106,16 @@ export class OidcSecurityService {
             tap((isAuthorized: boolean) => this.loggerService.logDebug(`getIsAuthorized: ${isAuthorized}`)),
             shareReplay(1)
         );
+
+        this._isSetupAndAuthorized.pipe(
+            filter(() => this.authConfiguration.start_checksession)    
+        ).subscribe((isSetupAndAuthorized) => {
+            if (isSetupAndAuthorized) {
+                this.oidcSecurityCheckSession.startCheckingSession(this.authConfiguration.client_id);
+            } else {
+                this.oidcSecurityCheckSession.stopCheckingSession();
+            }
+        });
     }
 
     setupModule(openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration, authWellKnownEndpoints: AuthWellKnownEndpoints): void {
@@ -174,12 +184,6 @@ export class OidcSecurityService {
                         detail: instanceId,
                     })
                 );
-            }
-
-            if (this.authConfiguration.start_checksession && !this.oidcSecurityCheckSession.doesSessionExist()) {
-                this.oidcSecurityCheckSession.init().subscribe(() => {
-                    this.oidcSecurityCheckSession.pollServerSession(this.authConfiguration.client_id);
-                });
             }
         } else {
             this.onModuleSetup.emit();

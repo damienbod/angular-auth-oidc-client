@@ -49,7 +49,7 @@ describe('EqualityHelperServiceTests', () => {
     });
 
     it('doesSessionExist returns false if nothing is setup', () => {
-        let result = oidcSecurityCheckSession.doesSessionExist();
+        let result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(false);
     });
 
@@ -58,7 +58,7 @@ describe('EqualityHelperServiceTests', () => {
         node.setAttribute('id', 'myiFrameForCheckSession');
         window.parent.document.documentElement.appendChild(node);
 
-        let result = oidcSecurityCheckSession.doesSessionExist();
+        let result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(true);
         let remove = window.parent.document.getElementById('myiFrameForCheckSession');
         if (remove) {
@@ -70,7 +70,7 @@ describe('EqualityHelperServiceTests', () => {
         let node = document.createElement('iframe');
         node.setAttribute('id', 'myiFrameForCheckSession');
         window.document.documentElement.appendChild(node);
-        let result = oidcSecurityCheckSession.doesSessionExist();
+        let result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(true);
         let remove = document.getElementById('myiFrameForCheckSession');
         if (remove) {
@@ -82,7 +82,7 @@ describe('EqualityHelperServiceTests', () => {
         let node = document.createElement('iframe');
         node.setAttribute('id', 'idwhichshouldneverexist');
         window.parent.document.documentElement.appendChild(node);
-        let result = oidcSecurityCheckSession.doesSessionExist();
+        let result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(false);
         let remove = window.parent.document.getElementById('idwhichshouldneverexist');
         if (remove) {
@@ -94,7 +94,7 @@ describe('EqualityHelperServiceTests', () => {
         let node = document.createElement('iframe');
         node.setAttribute('id', 'idwhichshouldneverexist');
         window.document.documentElement.appendChild(node);
-        let result = oidcSecurityCheckSession.doesSessionExist();
+        let result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(false);
 
         let remove = document.getElementById('idwhichshouldneverexist');
@@ -108,7 +108,7 @@ describe('EqualityHelperServiceTests', () => {
         node.setAttribute('id', 'myiFrameForCheckSession');
         window.parent.document.documentElement.appendChild(node);
 
-        oidcSecurityCheckSession.doesSessionExist();
+        (oidcSecurityCheckSession as any).doesSessionExist();
         expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
         expect((oidcSecurityCheckSession as any).sessionIframe).toBe(node);
 
@@ -123,7 +123,7 @@ describe('EqualityHelperServiceTests', () => {
         node.setAttribute('id', 'myiFrameForCheckSession');
         window.document.documentElement.appendChild(node);
 
-        oidcSecurityCheckSession.doesSessionExist();
+        (oidcSecurityCheckSession as any).doesSessionExist();
         expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
         expect((oidcSecurityCheckSession as any).sessionIframe).toBe(node);
 
@@ -136,7 +136,7 @@ describe('EqualityHelperServiceTests', () => {
     it('init appends iframe on body with correct values', () => {
         expect((oidcSecurityCheckSession as any).sessionIframe).toBeFalsy();
 
-        oidcSecurityCheckSession.init();
+        (oidcSecurityCheckSession as any).init();
 
         expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
         const sessionIframe = (oidcSecurityCheckSession as any).sessionIframe;
@@ -153,26 +153,26 @@ describe('EqualityHelperServiceTests', () => {
 
         expect((oidcSecurityCheckSession as any).sessionIframe).toBeFalsy();
 
-        oidcSecurityCheckSession.init();
+        (oidcSecurityCheckSession as any).init();
 
         expect((oidcSecurityCheckSession as any).sessionIframe.src).toContain('someTestingValue');
     });
 
     it('src of iframe is empty if authWellKnownEndpoints.check_session_iframe is not existing', () => {
-        const spy = spyOn(oidcSecurityCheckSession, 'doesSessionExist').and.returnValue(false);
-        oidcSecurityCheckSession.init();
+        const spy = spyOn<any>(oidcSecurityCheckSession, 'doesSessionExist').and.returnValue(false);
+        (oidcSecurityCheckSession as any).init();
         expect(spy).toHaveBeenCalled();
         expect((oidcSecurityCheckSession as any).sessionIframe.src).toBe('');
     });
 
     it('startCheckingSession calls pollserversession with clientId if no scheduledheartbeat is set', () => {
-        const spy = spyOn(oidcSecurityCheckSession, 'pollServerSession');
+        const spy = spyOn<any>(oidcSecurityCheckSession, 'pollServerSession');
         oidcSecurityCheckSession.startCheckingSession('anyId');
         expect(spy).toHaveBeenCalledWith('anyId');
     });
 
     it('startCheckingSession does not call pollserversession if scheduledheartbeat is set', () => {
-        const spy = spyOn(oidcSecurityCheckSession, 'pollServerSession');
+        const spy = spyOn<any>(oidcSecurityCheckSession, 'pollServerSession');
         (oidcSecurityCheckSession as any).scheduledHeartBeat = () => {};
         oidcSecurityCheckSession.startCheckingSession('anyId');
         expect(spy).not.toHaveBeenCalled();

@@ -18,7 +18,7 @@ export class OidcSecurityCheckSession {
     private authWellKnownEndpoints: AuthWellKnownEndpoints | undefined;
     private scheduledHeartBeat: any;
     private lastIFrameRefresh = 0;
-    private lastMessageResponseReceived = 0;
+    private outstandingMessages = 0;
     private heartBeatInterval = 3000;
     private iframeRefreshInterval = 60000;
 
@@ -37,7 +37,7 @@ export class OidcSecurityCheckSession {
         this.authWellKnownEndpoints = Object.assign({}, authWellKnownEndpoints);
     }
 
-    doesSessionExist(): boolean {
+    private doesSessionExist(): boolean {
         const existingIFrame = this.iFrameService.getExistingIFrame(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
 
         if (!existingIFrame) {
@@ -48,7 +48,7 @@ export class OidcSecurityCheckSession {
         return true;
     }
 
-    init() {
+    private init() {
         if ((this.lastIFrameRefresh + this.iframeRefreshInterval) > Date.now()) {
             return from([this]);
         }
@@ -57,7 +57,6 @@ export class OidcSecurityCheckSession {
             this.sessionIframe = this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
             this.iframeMessageEvent = this.messageHandler.bind(this);
             window.addEventListener('message', this.iframeMessageEvent, false);
-            this.lastMessageResponseReceived = Date.now();
         }
 
         if (this.authWellKnownEndpoints) {
@@ -79,6 +78,7 @@ export class OidcSecurityCheckSession {
         if (this.scheduledHeartBeat) {
             return;
         }
+
         this.pollServerSession(clientId);
     }
 
@@ -90,7 +90,7 @@ export class OidcSecurityCheckSession {
         this.clearScheduledHeartBeat();
     }
 
-    pollServerSession(clientId: string) {
+    private pollServerSession(clientId: string) {
         const _pollServerSessionRecur = () => {
 
             this.init().pipe(take(1)).subscribe(() => {
@@ -98,6 +98,7 @@ export class OidcSecurityCheckSession {
                     this.loggerService.logDebug(this.sessionIframe);
                     const session_state = this.oidcSecurityCommon.sessionState;
                     if (session_state) {
+                        this.outstandingMessages++;
                         this.sessionIframe.contentWindow.postMessage(clientId + ' ' + session_state,
                             this.authConfiguration.stsServer);
                     } else {
@@ -114,15 +115,17 @@ export class OidcSecurityCheckSession {
                 }
 
                 // after sending three messages with no response, fail.
-                if ((this.lastMessageResponseReceived + (this.heartBeatInterval * 3)) < Date.now()) {
+                if (this.outstandingMessages > 3) {
                     this.loggerService.logError(
-                        'OidcSecurityCheckSession not receiving check session response messages. Server unreachable?');
+                        `OidcSecurityCheckSession not receiving check session response messages. Outstanding messages: ${this.outstandingMessages}. Server unreachable?`);
                     this.onCheckSessionChanged.emit();
                 }
 
                 this.scheduledHeartBeat = setTimeout(_pollServerSessionRecur, this.heartBeatInterval);
             });
         };
+
+        this.outstandingMessages = 0;
 
         this.zone.runOutsideAngular(() => {
             this.scheduledHeartBeat = setTimeout(_pollServerSessionRecur, this.heartBeatInterval);
@@ -134,7 +137,7 @@ export class OidcSecurityCheckSession {
     }
 
     private messageHandler(e: any) {
-        this.lastMessageResponseReceived = Date.now();
+        this.outstandingMessages = 0;
         if (this.sessionIframe && e.origin === this.authConfiguration.stsServer && e.source === this.sessionIframe.contentWindow) {
             if (e.data === 'error') {
                 this.loggerService.logWarning('error from checksession messageHandler');
