@@ -108,7 +108,7 @@ export class OidcSecurityService {
         );
 
         this._isSetupAndAuthorized.pipe(
-            filter(() => this.authConfiguration.start_checksession)    
+            filter(() => this.authConfiguration.start_checksession)
         ).subscribe((isSetupAndAuthorized) => {
             if (isSetupAndAuthorized) {
                 this.oidcSecurityCheckSession.startCheckingSession(this.authConfiguration.client_id);
