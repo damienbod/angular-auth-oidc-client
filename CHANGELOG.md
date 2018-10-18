@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-10-18"></a>
+### 2018-10-18 version 7.0.1
+* Check session will now be stopped when the user is logged out
+
 <a name="2018-10-14"></a>
 ### 2018-10-14 version 7.0.0
 * Adding validation state result info to authorization event result
