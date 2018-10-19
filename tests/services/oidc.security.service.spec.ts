@@ -282,6 +282,11 @@ describe('OidcSecurityService', () => {
         };
 
         (oidcSecurityService as OidcSecurityService).authorizedCallback(hash);
+
+        expect(resultSetter).not.toHaveBeenCalled();
+
+        (oidcSecurityService as any)._isModuleSetup.next(true);
+
         expect(resultSetter).toHaveBeenCalledWith(expectedResult);
 
         // with '=' chars in values
