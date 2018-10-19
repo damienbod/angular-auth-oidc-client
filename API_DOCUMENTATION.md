@@ -2,13 +2,14 @@
 
 Documentation : [Quickstart](https://github.com/damienbod/angular-auth-oidc-client) | [API Documentation](https://github.com/damienbod/angular-auth-oidc-client/blob/master/API_DOCUMENTATION.md) | [Changelog](https://github.com/damienbod/angular-auth-oidc-client/blob/master/CHANGELOG.md)
 
-## AuthConfiguration 
+## AuthConfiguration
 
 ### stsServer
 
 default value : 'https://localhost:44318';
 
 This is the URL where the security token service (STS) server is located.
+
 ### redirect_url
 
 default value : 'https://localhost:44311'
@@ -37,7 +38,7 @@ This is this scopes which are requested from the server from this client. This m
 
 default value : 'https://localhost:44311/Unauthorized'
 
-Url after a server logout if using the end session API. 
+Url after a server logout if using the end session API.
 
 ### start_checksession
 
@@ -84,7 +85,6 @@ Note: The CustomEvent does not work for older versions of IE. Add a javascript f
     </script>
 </body>
 </html>
-
 ```
 
 ### post_login_route
@@ -134,7 +134,7 @@ id_token C8: The iat Claim can be used to reject tokens that were issued too far
 default value : sessionStorage
 
 You can set the storage to localStorage, or implement a custom storage (see README).
-   
+
 ### auto_clean_state_after_authentication
 
 can be used for custom state logic handling, the state is not automatically reset, when set to false
@@ -164,7 +164,7 @@ Optional hd parameter for Google Auth with particular G Suite domain, see https:
 
 Can be used to check if the setup logic is already completed, before your component loads.
 
-*Note: See also: [getIsModuleSetup()](#getismodulesetup-observable)*
+_Note: See also: [getIsModuleSetup()](#getismodulesetup-observable)_
 
 ```typescript
 constructor(public oidcSecurityService: OidcSecurityService) {
@@ -180,7 +180,7 @@ constructor(public oidcSecurityService: OidcSecurityService) {
 
 ### @Output() onModuleSetup: EventEmitter<any> = new EventEmitter<any>(true);
 
-*Note: This will only emit once and late subscribers will never be notified. If you want a more reliable notification see: [getIsModuleSetup()](#getismodulesetup-observable)*
+_Note: This will only emit once and late subscribers will never be notified. If you want a more reliable notification see: [getIsModuleSetup()](#getismodulesetup-observable)_
 
 Example using:
 
@@ -191,7 +191,6 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
     console.log('APP_INITIALIZER STARTING');
     return () => oidcConfigService.load(`${window.location.origin}/api/ClientAppSettings`);
 }
-
 ```
 
 ```typescript
@@ -207,21 +206,15 @@ providers: [
 	OidcSecurityService,
 	...
 ],
-
 ```
 
-App.module: 
+App.module:
 Config the module, subscribe to the json get:
 
 ```typescript
 export class AppModule {
-
-    constructor(
-        private oidcSecurityService: OidcSecurityService,
-        private oidcConfigService: OidcConfigService,
-    ) {
+    constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
         this.oidcConfigService.onConfigurationLoaded.subscribe(() => {
-
             const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
             openIDImplicitFlowConfiguration.stsServer = this.oidcConfigService.clientConfiguration.stsServer;
             openIDImplicitFlowConfiguration.redirect_url = this.oidcConfigService.clientConfiguration.redirect_url;
@@ -244,8 +237,7 @@ export class AppModule {
             openIDImplicitFlowConfiguration.log_console_debug_active = this.oidcConfigService.clientConfiguration.log_console_debug_active;
             // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
             // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
-            openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds =
-                this.oidcConfigService.clientConfiguration.max_id_token_iat_offset_allowed_in_seconds;
+            openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = this.oidcConfigService.clientConfiguration.max_id_token_iat_offset_allowed_in_seconds;
 
             configuration.FileServer = this.oidcConfigService.clientConfiguration.apiFileServer;
             configuration.Server = this.oidcConfigService.clientConfiguration.apiServer;
@@ -254,7 +246,6 @@ export class AppModule {
             authWellKnownEndpoints.setWellKnownEndpoints(this.oidcConfigService.wellKnownEndpoints);
 
             this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration, authWellKnownEndpoints);
-
         });
 
         console.log('APP STARTING');
@@ -289,11 +280,11 @@ Handle the authorize callback using the event:
 This is required if you need to wait for a json configuration file to load.
 
 ### @Output() onCheckSessionChanged = new EventEmitter<boolean>();
- 
+
 This event is triggered when the check session changed event is received from the server.
- 
+
 ```typescript
-this.oidcSecurityService.onCheckSessionChanged.subscribe(
+this.subscription = this.oidcSecurityService.onCheckSessionChanged.subscribe(
 (checksession: boolean) => {
 	console.log('...recieved a check session event');
 	this.checksession = checksession;
@@ -302,13 +293,16 @@ this.oidcSecurityService.onCheckSessionChanged.subscribe(
 		window.parent.location.href = '/check_session_logic';
 	}
 });
-		
+
 ngOnDestroy(): void {
-	this.oidcSecurityService.onCheckSessionChanged.unsubscribe();
-}		
+    if(this.subscription) {
+        this.subscription.unsubscribe();
+    }
+}
 ```
+
 ### checkSessionChanged: boolean;
-	
+
 This boolean is set to true when the OpenID session management receives a message that the server session has changed.
 
 ### getIsAuthorized(): Observable<boolean>
@@ -319,36 +313,28 @@ Example using:
 
 ```typescript
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-
 
 @Component({
     selector: 'example',
-    templateUrl: 'example.component.html'
+    templateUrl: 'example.component.html',
 })
-
-export class ExampleComponent implements OnInit, OnDestroy   {
-
+export class ExampleComponent implements OnInit, OnDestroy {
     isAuthorizedSubscription: Subscription;
     isAuthorized: boolean;
 
-    constructor(
-        public oidcSecurityService: OidcSecurityService,
-    ) {
-    }
+    constructor(public oidcSecurityService: OidcSecurityService) {}
 
     ngOnInit() {
-        this.isAuthorizedSubscription = this.oidcSecurityService.getIsAuthorized().subscribe(
-            (isAuthorized: boolean) => {
-                this.isAuthorized = isAuthorized;
-            });
+        this.isAuthorizedSubscription = this.oidcSecurityService.getIsAuthorized().subscribe((isAuthorized: boolean) => {
+            this.isAuthorized = isAuthorized;
+        });
     }
 
     ngOnDestroy() {
         this.isAuthorizedSubscription.unsubscribe();
     }
-
 }
 ```
 
@@ -356,15 +342,18 @@ export class ExampleComponent implements OnInit, OnDestroy   {
 
 This method will return an observable that will emit right away with a value set to `true` if the module has completed setup, `false` otherwise. It will continue to emit its last value to all late subscribers.
 
-Example using: 
+Example using:
 
 ```typescript
-this.oidcSecurityService.getIsModuleSetup().pipe(
-    filter((isModuleSetup: boolean) => isModuleSetup),
-    take(1)
-).subscribe((isModuleSetup: boolean) => {
-    // Do something when module setup is completed.
-});
+this.oidcSecurityService
+    .getIsModuleSetup()
+    .pipe(
+        filter((isModuleSetup: boolean) => isModuleSetup),
+        take(1)
+    )
+    .subscribe((isModuleSetup: boolean) => {
+        // Do something when module setup is completed.
+    });
 ```
 
 ### getIdToken()
@@ -375,7 +364,7 @@ public function to get the id_token
 
 public function to get the access_token which can be used to access APIs on the server.
 
-### getUserData(): Observable<any> 
+### getUserData(): Observable<any>
 
 Example using:
 
@@ -384,36 +373,28 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
-
 @Component({
     selector: 'example',
-    templateUrl: 'example.component.html'
+    templateUrl: 'example.component.html',
 })
-
-export class ExampleComponent implements OnInit, OnDestroy   {
-
+export class ExampleComponent implements OnInit, OnDestroy {
     userDataSubscription: Subscription;
     userData: boolean;
 
-    constructor(
-        public oidcSecurityService: OidcSecurityService,
-    ) {
-    }
+    constructor(public oidcSecurityService: OidcSecurityService) {}
 
     ngOnInit() {
-        this.userDataSubscription = this.oidcSecurityService.getUserData().subscribe(
-            (userData: any) => {
-                 this.userData = userData
-            });
+        this.userDataSubscription = this.oidcSecurityService.getUserData().subscribe((userData: any) => {
+            this.userData = userData;
+        });
     }
 
     ngOnDestroy() {
         this.userDataSubscription.unsubscribe();
     }
-
 }
 ```
-	
+
 Gets the user data from the auth module of the logged in user.
 
 ### getUserinfo
@@ -424,13 +405,13 @@ Gets the user data direct from the STS API
 
 public function so extra parameters can be added to the authorization URL request.
 
-### authorize() 
+### authorize()
 
 Starts the OpenID Implicit Flow authentication and authorization.
 
-### authorizedCallback() 
+### authorizedCallback()
 
-Redirect after a STS server login. This method validates the id_token and the access_token if used. 
+Redirect after a STS server login. This method validates the id_token and the access_token if used.
 
 ### logoff()
 
@@ -440,12 +421,12 @@ Logs off from the client application and also from the server if the endsession 
 
 handle errors from the auth module.
 
-
 ### @Output() onAuthorizationResult: EventEmitter<AuthorizationResult>
- 
-This event returns the result of the authorization callback. 
+
+This event returns the result of the authorization callback.
 
 Import the classes:
+
 ```typescript
 import { AuthorizationResult } from './auth/models/authorization-result';
 import { AuthorizationState } from './auth/models/authorization-state.enum';
@@ -455,27 +436,27 @@ import { AuthorizationState } from './auth/models/authorization-state.enum';
 ```
 
 Subscribe to the event:
-```typescript
 
+```typescript
 this.oidcSecurityService.onAuthorizationResult.subscribe(
 	(authorizationResult: AuthorizationResult) => {
 		this.onAuthorizationResultComplete(authorizationResult);
 	});
-	
+
 ngOnDestroy(): void {
 	this.oidcSecurityService.onAuthorizationResult.unsubscribe();
 }
-	
-```	
+```
 
 And use the event:
+
 ```typescript
 private onAuthorizationResultComplete(authorizationResult: AuthorizationResult) {
-	
+
 	console.log('Auth result received AuthorizationState:'
             + authorizationResult.authorizationState
             + ' validationResult:' + authorizationResult.validationResult);
-			
+
 	if (authorizationResult.authorizationState === AuthorizationState.unauthorized) {
 		if (window.parent) {
 			// sent from the child iframe, for example the silent renew
