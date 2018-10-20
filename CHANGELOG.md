@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-10-20"></a>
+### 2018-10-20 version 7.0.2
+* authorizedCallback should wait until the module is setup before running. 
+
 <a name="2018-10-18"></a>
 ### 2018-10-18 version 7.0.1
 * Check session will now be stopped when the user is logged out
