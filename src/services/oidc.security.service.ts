@@ -287,14 +287,14 @@ export class OidcSecurityService {
     authorizedCallback(hash?: string) {
         this._isModuleSetup
             .pipe(
-                filter((isModuleSetup : boolean) => isModuleSetup), 
+                filter((isModuleSetup: boolean) => isModuleSetup),
                 take(1)
             )
             .subscribe(() => {
                 this.authorizedCallbackProcedure(hash);
             });
     }
-    
+
     private authorizedCallbackProcedure(hash?: string) {
         const silentRenew = this.oidcSecurityCommon.silentRenewRunning;
         const isRenewProcess = silentRenew === 'running';
