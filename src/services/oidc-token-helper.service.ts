@@ -70,9 +70,9 @@ export class TokenHelperService {
         let decoded = typeof window !== 'undefined' ? window.atob(output) : new Buffer(output, 'base64').toString('binary')
 
         // Going backwards: from bytestream, to percent-encoding, to original string.
-        decoded = decodeURIComponent(decoded.split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
+        decoded = decodeURIComponent(decoded.split('')
+            .map((c: string) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+            .join(''));
         
         return decoded;
     }
