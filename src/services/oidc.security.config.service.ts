@@ -1,12 +1,11 @@
 ﻿import { HttpClient } from '@angular/common/http';
-import { EventEmitter, Injectable, Output } from '@angular/core';
-import { of } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { of, Subject } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 @Injectable()
 export class OidcConfigService {
-    @Output()
-    onConfigurationLoaded = new EventEmitter<boolean>();
+    onConfigurationLoaded = new Subject<boolean>();
     clientConfiguration: any;
     wellKnownEndpoints: any;
 
@@ -22,7 +21,7 @@ export class OidcConfigService {
                 }),
                 catchError(error => {
                     console.error(`OidcConfigService 'load' threw an error on calling ${configUrl}`, error);
-                    this.onConfigurationLoaded.emit(false);
+                    this.onConfigurationLoaded.next(false);
                     return of(false);
                 })
             )
@@ -37,11 +36,11 @@ export class OidcConfigService {
             .pipe(
                 map(response => {
                     this.wellKnownEndpoints = response;
-                    this.onConfigurationLoaded.emit(true);
+                    this.onConfigurationLoaded.next(true);
                 }),
                 catchError(error => {
                     console.error(`OidcConfigService 'load_using_stsServer' threw an error on calling ${stsServer}`, error);
-                    this.onConfigurationLoaded.emit(false);
+                    this.onConfigurationLoaded.next(false);
                     return of(false);
                 })
             )
@@ -54,11 +53,11 @@ export class OidcConfigService {
             .pipe(
                 map(response => {
                     this.wellKnownEndpoints = response;
-                    this.onConfigurationLoaded.emit(true);
+                    this.onConfigurationLoaded.next(true);
                 }),
                 catchError(error => {
                     console.error(`OidcConfigService 'load_using_custom_stsServer' threw an error on calling ${url}`, error);
-                    this.onConfigurationLoaded.emit(false);
+                    this.onConfigurationLoaded.next(false);
                     return of(false);
                 })
             )

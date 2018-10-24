@@ -160,7 +160,7 @@ Optional hd parameter for Google Auth with particular G Suite domain, see https:
 
 ## OidcSecurityService
 
-### @Output() moduleSetup: boolean
+### moduleSetup: boolean
 
 Can be used to check if the setup logic is already completed, before your component loads.
 
@@ -178,7 +178,7 @@ constructor(public oidcSecurityService: OidcSecurityService) {
 }
 ```
 
-### @Output() onModuleSetup: EventEmitter<any> = new EventEmitter<any>(true);
+### onModuleSetup: BehaviourSubject<any> = new BehaviourSubject<any>(true);
 
 _Note: This will only emit once and late subscribers will never be notified. If you want a more reliable notification see: [getIsModuleSetup()](#getismodulesetup-observable)_
 
@@ -279,7 +279,7 @@ Handle the authorize callback using the event:
 
 This is required if you need to wait for a json configuration file to load.
 
-### @Output() onCheckSessionChanged = new EventEmitter<boolean>();
+### onCheckSessionChanged = new Subject<boolean>();
 
 This event is triggered when the check session changed event is received from the server.
 
@@ -421,7 +421,7 @@ Logs off from the client application and also from the server if the endsession 
 
 handle errors from the auth module.
 
-### @Output() onAuthorizationResult: EventEmitter<AuthorizationResult>
+### onAuthorizationResult: Subject<AuthorizationResult>
 
 This event returns the result of the authorization callback.
 
