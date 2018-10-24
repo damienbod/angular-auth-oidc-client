@@ -113,6 +113,15 @@ describe('TokenHelperService', () => {
             expect(expected).toEqual(result);
         });
 
+        it('returns payload if token is correct, encode is false', () => {
+            const token =
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9obiBEw7PDqyJ9.wMn-1oLWnxKJolMGb7YKnlwjqusWf4xnnjABgFaDkI4';
+            const jsonString = `{ "name" : "John D\xF3\xEB" }`;
+            const expected = JSON.parse(jsonString);
+            const result = tokenHelperService.getPayloadFromToken(token, false); 
+            expect(expected).toEqual(result);
+        });
+
         it('returns payload if token is correct, encode is true', () => {
             const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
             const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
