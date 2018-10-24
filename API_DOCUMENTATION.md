@@ -178,7 +178,7 @@ constructor(public oidcSecurityService: OidcSecurityService) {
 }
 ```
 
-### onModuleSetup: BehaviourSubject<any> = new BehaviourSubject<any>(true);
+### onModuleSetup: Observable<any>();
 
 _Note: This will only emit once and late subscribers will never be notified. If you want a more reliable notification see: [getIsModuleSetup()](#getismodulesetup-observable)_
 
