@@ -73,7 +73,7 @@ export class TokenHelperService {
         decoded = decodeURIComponent(decoded.split('')
             .map((c: string) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
             .join(''));
-        
+
         return decoded;
     }
 
