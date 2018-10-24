@@ -279,7 +279,7 @@ Handle the authorize callback using the event:
 
 This is required if you need to wait for a json configuration file to load.
 
-### onCheckSessionChanged = new Subject<boolean>();
+### onCheckSessionChanged = new Observable<boolean>();
 
 This event is triggered when the check session changed event is received from the server.
 
@@ -421,7 +421,7 @@ Logs off from the client application and also from the server if the endsession 
 
 handle errors from the auth module.
 
-### onAuthorizationResult: Subject<AuthorizationResult>
+### onAuthorizationResult: Observable<AuthorizationResult>
 
 This event returns the result of the authorization callback.
 

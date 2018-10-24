@@ -1,5 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
-import { BehaviorSubject, from, Observable, Observer } from 'rxjs';
+import { from, Observable, Observer, Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 import { AuthConfiguration } from '../modules/auth.configuration';
@@ -21,7 +21,11 @@ export class OidcSecurityCheckSession {
     private outstandingMessages = 0;
     private heartBeatInterval = 3000;
     private iframeRefreshInterval = 60000;
-    onCheckSessionChanged: BehaviorSubject<any> = new BehaviorSubject<any>(true);
+    private _onCheckSessionChanged = new Subject<any>();
+
+    public get onCheckSessionChanged(): Observable<boolean> {
+        return this._onCheckSessionChanged.asObservable();
+    }
 
     constructor(
         private authConfiguration: AuthConfiguration,
@@ -101,7 +105,7 @@ export class OidcSecurityCheckSession {
                             this.sessionIframe.contentWindow.postMessage(clientId + ' ' + session_state, this.authConfiguration.stsServer);
                         } else {
                             this.loggerService.logDebug('OidcSecurityCheckSession pollServerSession session_state is blank');
-                            this.onCheckSessionChanged.next({});
+                            this._onCheckSessionChanged.next();
                         }
                     } else {
                         this.loggerService.logWarning('OidcSecurityCheckSession pollServerSession sessionIframe does not exist');
@@ -117,7 +121,7 @@ export class OidcSecurityCheckSession {
                                 this.outstandingMessages
                             }. Server unreachable?`
                         );
-                        this.onCheckSessionChanged.next({});
+                        this._onCheckSessionChanged.next();
                     }
 
                     this.scheduledHeartBeat = setTimeout(_pollServerSessionRecur, this.heartBeatInterval);
@@ -141,7 +145,7 @@ export class OidcSecurityCheckSession {
             if (e.data === 'error') {
                 this.loggerService.logWarning('error from checksession messageHandler');
             } else if (e.data === 'changed') {
-                this.onCheckSessionChanged.next({});
+                this._onCheckSessionChanged.next();
             } else {
                 this.loggerService.logDebug(e.data + ' from checksession messageHandler');
             }

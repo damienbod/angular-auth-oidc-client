@@ -24,9 +24,21 @@ import { UriEncoder } from './uri-encoder';
 
 @Injectable()
 export class OidcSecurityService {
-    onModuleSetup = new Subject<boolean>();
-    onAuthorizationResult = new Subject<AuthorizationResult>();
-    onCheckSessionChanged = new Subject<boolean>();
+    private _onModuleSetup = new Subject<boolean>();
+    private _onCheckSessionChanged = new Subject<any>();
+    private _onAuthorizationResult = new Subject<AuthorizationResult>();
+
+    public get onModuleSetup(): Observable<boolean> {
+        return this._onModuleSetup.asObservable();
+    }
+
+    public get onAuthorizationResult(): Observable<AuthorizationResult> {
+        return this._onAuthorizationResult.asObservable();
+    }
+
+    public get onCheckSessionChanged(): Observable<boolean> {
+        return this._onCheckSessionChanged.asObservable();
+    }
 
     checkSessionChanged = false;
     moduleSetup = false;
@@ -76,7 +88,7 @@ export class OidcSecurityService {
                     take(1),
                     tap(() => this.loggerService.logDebug('IsAuthorizedRace: Existing token is still authorized.')),
                     race(
-                        this.onAuthorizationResult.asObservable().pipe(
+                        this._onAuthorizationResult.pipe(
                             take(1),
                             tap(() => this.loggerService.logDebug('IsAuthorizedRace: Silent Renew Refresh Session Complete')),
                             map(() => true)
@@ -123,7 +135,7 @@ export class OidcSecurityService {
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => {
             this.loggerService.logDebug('onCheckSessionChanged');
             this.checkSessionChanged = true;
-            this.onCheckSessionChanged.next(this.checkSessionChanged);
+            this._onCheckSessionChanged.next(this.checkSessionChanged);
         });
 
         this._userData.subscribe(() => {
@@ -152,7 +164,7 @@ export class OidcSecurityService {
 
         if (isPlatformBrowser(this.platformId)) {
             // Client only code.
-            this.onModuleSetup.next();
+            this._onModuleSetup.next();
 
             if (this.authConfiguration.silent_renew) {
                 this.oidcSecuritySilentRenew.initRenew();
@@ -181,7 +193,7 @@ export class OidcSecurityService {
                 );
             }
         } else {
-            this.onModuleSetup.next();
+            this._onModuleSetup.next();
         }
     }
 
@@ -309,9 +321,9 @@ export class OidcSecurityService {
         if (result.error) {
             this.loggerService.logWarning(result);
             if ((result.error as string) === 'login_required') {
-                this.onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.LoginRequired));
+                this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.LoginRequired));
             } else {
-                this.onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.SecureTokenServerError));
+                this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.SecureTokenServerError));
             }
 
             if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
@@ -334,14 +346,14 @@ export class OidcSecurityService {
                             this.getUserinfo(isRenewProcess, result, validationResult.id_token, validationResult.decoded_id_token).subscribe(
                                 response => {
                                     if (response) {
-                                        this.onAuthorizationResult.next(
+                                        this._onAuthorizationResult.next(
                                             new AuthorizationResult(AuthorizationState.authorized, validationResult.state)
                                         );
                                         if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
                                             this.router.navigate([this.authConfiguration.post_login_route]);
                                         }
                                     } else {
-                                        this.onAuthorizationResult.next(
+                                        this._onAuthorizationResult.next(
                                             new AuthorizationResult(AuthorizationState.unauthorized, validationResult.state)
                                         );
                                         if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
@@ -363,7 +375,7 @@ export class OidcSecurityService {
 
                             this.runTokenValidation();
 
-                            this.onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.authorized, validationResult.state));
+                            this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.authorized, validationResult.state));
                             if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
                                 this.router.navigate([this.authConfiguration.post_login_route]);
                             }
@@ -375,7 +387,7 @@ export class OidcSecurityService {
                         this.resetAuthorizationData(false);
                         this.oidcSecurityCommon.silentRenewRunning = '';
 
-                        this.onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, validationResult.state));
+                        this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, validationResult.state));
                         if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
                             this.router.navigate([this.authConfiguration.unauthorized_route]);
                         }
@@ -510,7 +522,7 @@ export class OidcSecurityService {
         this.loggerService.logError(error);
         if (error.status === 403 || error.status === '403') {
             if (this.authConfiguration.trigger_authorization_result_event) {
-                this.onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.NotSet));
+                this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.NotSet));
             } else {
                 this.router.navigate([this.authConfiguration.forbidden_route]);
             }
@@ -520,7 +532,7 @@ export class OidcSecurityService {
             this.resetAuthorizationData(!!silentRenew);
 
             if (this.authConfiguration.trigger_authorization_result_event) {
-                this.onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.NotSet));
+                this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.NotSet));
             } else {
                 this.router.navigate([this.authConfiguration.unauthorized_route]);
             }
