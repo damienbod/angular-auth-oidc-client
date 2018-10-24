@@ -25,7 +25,7 @@ import { UriEncoder } from './uri-encoder';
 @Injectable()
 export class OidcSecurityService {
     private _onModuleSetup = new Subject<boolean>();
-    private _onCheckSessionChanged = new Subject<any>();
+    private _onCheckSessionChanged = new Subject<boolean>();
     private _onAuthorizationResult = new Subject<AuthorizationResult>();
 
     public get onModuleSetup(): Observable<boolean> {

@@ -23,7 +23,7 @@ export class OidcSecurityCheckSession {
     private iframeRefreshInterval = 60000;
     private _onCheckSessionChanged = new Subject<any>();
 
-    public get onCheckSessionChanged(): Observable<boolean> {
+    public get onCheckSessionChanged(): Observable<any> {
         return this._onCheckSessionChanged.asObservable();
     }
 
