@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-10-24"></a>
+### 2018-10-20 version 7.0.3
+* Unicode special characters (accents and such) in JWT are now properly…
+
 <a name="2018-10-20"></a>
 ### 2018-10-20 version 7.0.2
 * authorizedCallback should wait until the module is setup before running. 
