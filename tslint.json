@@ -9,7 +9,6 @@
         "label-position": true,
         "max-line-length": [true, 400],
         "member-access": false,
-        "member-ordering": [true, "static-before-instance", "variables-before-functions"],
         "no-arg": true,
         "no-bitwise": true,
         "no-console": [true, "debug", "info", "time", "timeEnd", "trace"],
@@ -30,7 +29,7 @@
         "one-line": [true, "check-open-brace", "check-catch", "check-else", "check-whitespace"],
         "quotemark": [true, "single"],
         "radix": false,
-        "semicolon": ["always"],
+        "semicolon": [true, "always"],
         "triple-equals": [false, "allow-null-check"],
         "typedef-whitespace": [
             true,

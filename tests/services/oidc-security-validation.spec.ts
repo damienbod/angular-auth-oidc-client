@@ -5,6 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import {
     OidcSecurityStorage,
     OpenIDImplicitFlowConfiguration,
+    AuthModule,
 } from '../../src/angular-auth-oidc-client';
 import {
     AuthConfiguration,
@@ -15,7 +16,6 @@ import { LoggerService } from '../../src/services/oidc.logger.service';
 import { OidcSecurityValidation } from '../../src/services/oidc.security.validation';
 import { TestLogging } from '../common/test-logging.service';
 import { TestStorage } from '../common/test-storage.service';
-import { AuthModule } from './../../index';
 
 describe('OidcSecurityValidation', () => {
     let oidcSecurityValidation: OidcSecurityValidation;
