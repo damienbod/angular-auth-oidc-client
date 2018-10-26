@@ -1,5 +1,5 @@
-import { EventEmitter, Injectable, NgZone, Output } from '@angular/core';
-import { Observable, Observer, from } from 'rxjs';
+import { Injectable, NgZone } from '@angular/core';
+import { from, Observable, Observer, Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 import { AuthConfiguration } from '../modules/auth.configuration';
@@ -21,9 +21,11 @@ export class OidcSecurityCheckSession {
     private outstandingMessages = 0;
     private heartBeatInterval = 3000;
     private iframeRefreshInterval = 60000;
+    private _onCheckSessionChanged = new Subject<any>();
 
-    @Output()
-    onCheckSessionChanged: EventEmitter<any> = new EventEmitter<any>(true);
+    public get onCheckSessionChanged(): Observable<any> {
+        return this._onCheckSessionChanged.asObservable();
+    }
 
     constructor(
         private authConfiguration: AuthConfiguration,
@@ -49,7 +51,7 @@ export class OidcSecurityCheckSession {
     }
 
     private init() {
-        if ((this.lastIFrameRefresh + this.iframeRefreshInterval) > Date.now()) {
+        if (this.lastIFrameRefresh + this.iframeRefreshInterval > Date.now()) {
             return from([this]);
         }
 
@@ -92,37 +94,38 @@ export class OidcSecurityCheckSession {
 
     private pollServerSession(clientId: string) {
         const _pollServerSessionRecur = () => {
-
-            this.init().pipe(take(1)).subscribe(() => {
-                if (this.sessionIframe && clientId) {
-                    this.loggerService.logDebug(this.sessionIframe);
-                    const session_state = this.oidcSecurityCommon.sessionState;
-                    if (session_state) {
-                        this.outstandingMessages++;
-                        this.sessionIframe.contentWindow.postMessage(clientId + ' ' + session_state,
-                            this.authConfiguration.stsServer);
+            this.init()
+                .pipe(take(1))
+                .subscribe(() => {
+                    if (this.sessionIframe && clientId) {
+                        this.loggerService.logDebug(this.sessionIframe);
+                        const session_state = this.oidcSecurityCommon.sessionState;
+                        if (session_state) {
+                            this.outstandingMessages++;
+                            this.sessionIframe.contentWindow.postMessage(clientId + ' ' + session_state, this.authConfiguration.stsServer);
+                        } else {
+                            this.loggerService.logDebug('OidcSecurityCheckSession pollServerSession session_state is blank');
+                            this._onCheckSessionChanged.next();
+                        }
                     } else {
-                        this.loggerService.logDebug(
-                            'OidcSecurityCheckSession pollServerSession session_state is blank');
-                        this.onCheckSessionChanged.emit();
+                        this.loggerService.logWarning('OidcSecurityCheckSession pollServerSession sessionIframe does not exist');
+                        this.loggerService.logDebug(clientId);
+                        this.loggerService.logDebug(this.sessionIframe);
+                        // this.init();
                     }
-                } else {
-                    this.loggerService.logWarning(
-                        'OidcSecurityCheckSession pollServerSession sessionIframe does not exist');
-                    this.loggerService.logDebug(clientId);
-                    this.loggerService.logDebug(this.sessionIframe);
-                    // this.init();
-                }
 
-                // after sending three messages with no response, fail.
-                if (this.outstandingMessages > 3) {
-                    this.loggerService.logError(
-                        `OidcSecurityCheckSession not receiving check session response messages. Outstanding messages: ${this.outstandingMessages}. Server unreachable?`);
-                    this.onCheckSessionChanged.emit();
-                }
+                    // after sending three messages with no response, fail.
+                    if (this.outstandingMessages > 3) {
+                        this.loggerService.logError(
+                            `OidcSecurityCheckSession not receiving check session response messages. Outstanding messages: ${
+                                this.outstandingMessages
+                            }. Server unreachable?`
+                        );
+                        this._onCheckSessionChanged.next();
+                    }
 
-                this.scheduledHeartBeat = setTimeout(_pollServerSessionRecur, this.heartBeatInterval);
-            });
+                    this.scheduledHeartBeat = setTimeout(_pollServerSessionRecur, this.heartBeatInterval);
+                });
         };
 
         this.outstandingMessages = 0;
@@ -142,7 +145,7 @@ export class OidcSecurityCheckSession {
             if (e.data === 'error') {
                 this.loggerService.logWarning('error from checksession messageHandler');
             } else if (e.data === 'changed') {
-                this.onCheckSessionChanged.emit();
+                this._onCheckSessionChanged.next();
             } else {
                 this.loggerService.logDebug(e.data + ' from checksession messageHandler');
             }
