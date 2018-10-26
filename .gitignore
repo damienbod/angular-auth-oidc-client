@@ -6,3 +6,11 @@ $ cat .gitignore
 
 *.log
 *.tgz
+/src/models/*.js.map
+/src/models/*.js
+/src/modules/*.js
+/src/modules/*.js.map
+/src/services/*.js
+/src/services/*.js.map
+/src/data-services/*.js
+/src/data-services/*.js.map
