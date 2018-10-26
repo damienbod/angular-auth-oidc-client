@@ -67,7 +67,7 @@ export class TokenHelperService {
                 throw Error('Illegal base64url string!');
         }
 
-        let decoded = typeof window !== 'undefined' ? window.atob(output) : new Buffer(output, 'base64').toString('binary')
+        let decoded = typeof window !== 'undefined' ? window.atob(output) : new Buffer(output, 'base64').toString('binary');
 
         // Going backwards: from bytestream, to percent-encoding, to original string.
         decoded = decodeURIComponent(decoded.split('')

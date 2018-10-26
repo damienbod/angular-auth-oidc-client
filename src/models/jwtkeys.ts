@@ -9,5 +9,5 @@ export class JwtKey {
     x5t = '';
     e = '';
     n = '';
-    x5c = [];
+    x5c: any[] = [];
 }
