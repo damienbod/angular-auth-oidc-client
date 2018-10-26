@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-10-26"></a>
+### 2018-10-26 version 7.0.4
+* replaced eventemitters with Subjects/Observables and updated and docs
+
 <a name="2018-10-24"></a>
 ### 2018-10-20 version 7.0.3
 * Unicode special characters (accents and such) in JWT are now properly…
