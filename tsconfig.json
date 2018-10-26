@@ -3,19 +3,20 @@
         "baseUrl": ".",
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
+        "strict": true,
+        "strictPropertyInitialization": false,
         "module": "commonjs",
         "moduleResolution": "node",
-        "strict": true,
-        "noFallthroughCasesInSwitch": true,
-        "sourceMap": true,
         "rootDir": ".",
+        "sourceMap": true,
         "inlineSources": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "lib": ["es6", "dom"],
         "target": "es5",
         "skipLibCheck": true,
-        "types": ["jasmine", "node"]
+        "lib": ["es2015", "dom"],
+        "typeRoots": ["node_modules/@types/"],
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true
     },
     "exclude": ["node_modules"]
 }

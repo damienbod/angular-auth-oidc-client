@@ -1,0 +1,4 @@
+/**
+ * @license angular-auth-oidc-client
+ * MIT license
+ */

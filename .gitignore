@@ -2,9 +2,15 @@ $ cat .gitignore
 /node_modules
 /dist
 /documentation
+/coverage
 
 *.log
 *.tgz
-
-src/**/*.js
-src/**/*.js.map
+/src/models/*.js.map
+/src/models/*.js
+/src/modules/*.js
+/src/modules/*.js.map
+/src/services/*.js
+/src/services/*.js.map
+/src/data-services/*.js
+/src/data-services/*.js.map

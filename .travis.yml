@@ -8,9 +8,9 @@ addons:
       - google-chrome-stable
 language: node_js
 node_js:
-  - stable
+  - "8"
 before_install:
-  - npm i npm@^4 -g
+  - npm i npm@^6 -g
 install:
   - npm install
 script:

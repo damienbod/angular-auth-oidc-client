@@ -6,4 +6,9 @@
  * https://github.com/damienbod/angular-auth-oidc-client
  */
 
+/**
+ * Entry point for all public APIs of the package.
+ */
 export * from './src/angular-auth-oidc-client';
+
+// This file only reexports content of the `src` folder. Keep it that way.
