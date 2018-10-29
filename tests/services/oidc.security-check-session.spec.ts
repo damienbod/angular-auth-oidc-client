@@ -2,9 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import {
     AuthConfiguration,
     AuthWellKnownEndpoints,
-    DefaultConfiguration,
     OidcSecurityService,
-    OidcSecurityStorage,
+    OidcSecurityStorage
 } from '../../src/angular-auth-oidc-client';
 import { IFrameService } from '../../src/services/existing-iframe.service';
 import { LoggerService } from '../../src/services/oidc.logger.service';
@@ -22,7 +21,6 @@ describe('EqualityHelperServiceTests', () => {
                 AuthConfiguration,
                 OidcSecurityCommon,
                 LoggerService,
-                DefaultConfiguration,
                 OidcSecurityService,
                 { provide: OidcSecurityStorage, useClass: TestStorage },
                 IFrameService,
