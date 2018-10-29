@@ -284,7 +284,7 @@ export class OidcSecurityService {
             if (urlHandler) {
                 urlHandler(url);
             } else {
-                window.location.href = url;
+                this.redirectTo(url);
             }
         } else {
             this.loggerService.logError('authWellKnownEndpoints is undefined');
@@ -300,6 +300,10 @@ export class OidcSecurityService {
             .subscribe(() => {
                 this.authorizedCallbackProcedure(hash);
             });
+    }
+
+    private redirectTo(url: string) {
+        window.location.href = url;
     }
 
     private authorizedCallbackProcedure(hash?: string) {
@@ -475,7 +479,7 @@ export class OidcSecurityService {
                 } else if(urlHandler) {
                     urlHandler(url);  
                 } else {
-                    window.location.href = url;
+                    this.redirectTo(url);
                 }
             } else {
                 this.resetAuthorizationData(false);

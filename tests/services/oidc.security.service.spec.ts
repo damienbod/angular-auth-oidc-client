@@ -297,4 +297,36 @@ describe('OidcSecurityService', () => {
         (oidcSecurityService as OidcSecurityService).authorizedCallback(hash);
         expect(resultSetter).toHaveBeenCalledWith(expectedResult);
     });
+
+    it('logoff should call urlHandler', () => {
+        oidcSecurityService.authWellKnownEndpoints = { end_session_endpoint: 'some_endpoint' };
+
+        const logoffUrl = 'http://some_logoff_url';
+
+        spyOn(oidcSecurityService, 'createEndSessionUrl').and.returnValue(logoffUrl);
+        const redirectToSpy = spyOn(oidcSecurityService, 'redirectTo');
+
+        let hasBeenCalled = false;
+
+        (oidcSecurityService as OidcSecurityService).logoff((url: string) => {
+            expect(url).toEqual(logoffUrl);
+            hasBeenCalled = true;
+        });
+
+        expect(hasBeenCalled).toEqual(true);
+        expect(redirectToSpy).not.toHaveBeenCalled();
+    });
+
+    it('logoff should redirect', () => {
+        oidcSecurityService.authWellKnownEndpoints = { end_session_endpoint: 'some_endpoint' };
+
+        const logoffUrl = 'http://some_logoff_url';
+
+        spyOn(oidcSecurityService, 'createEndSessionUrl').and.returnValue(logoffUrl);
+        const redirectToSpy = spyOn(oidcSecurityService, 'redirectTo');
+
+        (oidcSecurityService as OidcSecurityService).logoff();
+
+        expect(redirectToSpy).toHaveBeenCalledWith(logoffUrl);
+    });
 });
