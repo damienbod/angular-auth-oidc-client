@@ -121,6 +121,16 @@ describe('TokenHelperService', () => {
             expect(expected).toEqual(result);
         });
 
+        it('returns payload if token is correct, encode is false', () => {
+            const token =
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6IkpvaG4gRF83NDc377-977-9MDEiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNTE2MjI0MjQyfQ.RqIi_sO2g592anknIvfks4p7kPy8mOcN0YZUHz-8pFw';
+            const jsonString = `{ "admin": true, "sub": "1", "iat": 1516224242 }`;
+            const expected = JSON.parse(jsonString);
+            const result = tokenHelperService.getPayloadFromToken(token, false);
+
+            expect(result).toEqual(jasmine.objectContaining(expected));
+        });
+
         it('returns payload if token is correct, encode is true', () => {
             const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
             const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
