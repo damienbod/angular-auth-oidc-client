@@ -5,6 +5,7 @@
 * replaced eventemitters with Subjects/Observables and updated and docs
 * Optional url handler for logoff function 
 * silent_renew is now off by default (false). 
+* Fix for when token contains multiple dashes or underscores
 
 <a name="2018-10-24"></a>
 ### 2018-10-20 version 7.0.3
