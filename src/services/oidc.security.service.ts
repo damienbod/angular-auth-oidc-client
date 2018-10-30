@@ -284,7 +284,7 @@ export class OidcSecurityService {
             if (urlHandler) {
                 urlHandler(url);
             } else {
-                window.location.href = url;
+                this.redirectTo(url);
             }
         } else {
             this.loggerService.logError('authWellKnownEndpoints is undefined');
@@ -300,6 +300,10 @@ export class OidcSecurityService {
             .subscribe(() => {
                 this.authorizedCallbackProcedure(hash);
             });
+    }
+
+    private redirectTo(url: string) {
+        window.location.href = url;
     }
 
     private authorizedCallbackProcedure(hash?: string) {
@@ -458,7 +462,7 @@ export class OidcSecurityService {
         });
     }
 
-    logoff() {
+    logoff(urlHandler?: (url: string) => any) {
         // /connect/endsession?id_token_hint=...&post_logout_redirect_uri=https://myapp.com
         this.loggerService.logDebug('BEGIN Authorize, no auth data');
 
@@ -472,8 +476,10 @@ export class OidcSecurityService {
 
                 if (this.authConfiguration.start_checksession && this.checkSessionChanged) {
                     this.loggerService.logDebug('only local login cleaned up, server session has changed');
+                } else if(urlHandler) {
+                    urlHandler(url);  
                 } else {
-                    window.location.href = url;
+                    this.redirectTo(url);
                 }
             } else {
                 this.resetAuthorizationData(false);
