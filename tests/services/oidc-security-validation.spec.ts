@@ -7,10 +7,7 @@ import {
     OpenIDImplicitFlowConfiguration,
     AuthModule,
 } from '../../src/angular-auth-oidc-client';
-import {
-    AuthConfiguration,
-    DefaultConfiguration,
-} from '../../src/modules/auth.configuration';
+import { AuthConfiguration } from '../../src/modules/auth.configuration';
 import { EqualityHelperService } from '../../src/services/oidc-equality-helper.service';
 import { LoggerService } from '../../src/services/oidc.logger.service';
 import { OidcSecurityValidation } from '../../src/services/oidc.security.validation';
@@ -48,9 +45,7 @@ describe('OidcSecurityValidation', () => {
     });
 
     it('validate aud string', () => {
-        const authConfiguration = new AuthConfiguration(
-            new DefaultConfiguration()
-        );
+        const authConfiguration = new AuthConfiguration();
 
         let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
         openIDImplicitFlowConfiguration.stsServer = 'https://localhost:5001';
@@ -89,9 +84,7 @@ describe('OidcSecurityValidation', () => {
     });
 
     it('validate aud array', () => {
-        const authConfiguration = new AuthConfiguration(
-            new DefaultConfiguration()
-        );
+        const authConfiguration = new AuthConfiguration();
 
         let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
         openIDImplicitFlowConfiguration.stsServer = 'https://localhost:5001';

@@ -14,7 +14,7 @@ import { OidcSecuritySilentRenew } from '../services/oidc.security.silent-renew'
 import { BrowserStorage, OidcSecurityStorage } from '../services/oidc.security.storage';
 import { OidcSecurityUserService } from '../services/oidc.security.user-service';
 import { OidcSecurityValidation } from '../services/oidc.security.validation';
-import { AuthConfiguration, DefaultConfiguration } from './auth.configuration';
+import { AuthConfiguration } from './auth.configuration';
 
 @NgModule()
 export class AuthModule {
@@ -33,7 +33,6 @@ export class AuthModule {
                 TokenHelperService,
                 LoggerService,
                 IFrameService,
-                DefaultConfiguration,
                 EqualityHelperService,
                 AuthWellKnownEndpoints,
                 OidcDataService,

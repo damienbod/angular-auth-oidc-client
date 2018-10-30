@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-export class DefaultConfiguration {
+export class OpenIDImplicitFlowConfiguration {
     stsServer = 'https://localhost:44318';
     redirect_url = 'https://localhost:44311';
     // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer identified
@@ -14,7 +14,7 @@ export class DefaultConfiguration {
     hd_param = '';
     post_logout_redirect_uri = 'https://localhost:44311/unauthorized';
     start_checksession = false;
-    silent_renew = true;
+    silent_renew = false;
     silent_renew_url = 'https://localhost:44311';
     silent_renew_offset_in_seconds = 0;
     silent_redirect_url = 'https://localhost:44311';
@@ -36,35 +36,10 @@ export class DefaultConfiguration {
     storage = typeof Storage !== 'undefined' ? sessionStorage : null;
 }
 
-export class OpenIDImplicitFlowConfiguration {
-    stsServer = 'https://localhost:44318';
-    redirect_url = 'https://localhost:44311';
-    client_id = 'angularclient';
-    response_type = 'id_token token';
-    resource = '';
-    scope = 'openid email profile';
-    hd_param = '';
-    post_logout_redirect_uri = 'https://localhost:44311/unauthorized';
-    start_checksession = false;
-    silent_renew = true;
-    silent_renew_url = 'https://localhost:44311';
-    silent_renew_offset_in_seconds = 0;
-    silent_redirect_url = 'https://localhost:44311';
-    post_login_route = '/';
-    forbidden_route = '/forbidden';
-    unauthorized_route = '/unauthorized';
-    auto_userinfo = true;
-    auto_clean_state_after_authentication = true;
-    trigger_authorization_result_event = false;
-    log_console_warning_active = true;
-    log_console_debug_active = false;
-    max_id_token_iat_offset_allowed_in_seconds = 3;
-    storage: any = typeof window !== 'undefined' ? sessionStorage : null;
-}
-
 @Injectable()
 export class AuthConfiguration {
     private openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration | undefined;
+    private defaultConfig: OpenIDImplicitFlowConfiguration;
 
     get stsServer(): string {
         if (this.openIDImplicitFlowConfiguration) {
@@ -234,7 +209,9 @@ export class AuthConfiguration {
         return this.defaultConfig.storage;
     }
 
-    constructor(private defaultConfig: DefaultConfiguration) {}
+    constructor() {
+        this.defaultConfig = new OpenIDImplicitFlowConfiguration();
+    }
 
     init(openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration) {
         this.openIDImplicitFlowConfiguration = openIDImplicitFlowConfiguration;

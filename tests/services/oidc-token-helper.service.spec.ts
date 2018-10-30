@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { AuthConfiguration, DefaultConfiguration } from '../../src/angular-auth-oidc-client';
+import { AuthConfiguration } from '../../src/angular-auth-oidc-client';
 import { TokenHelperService } from '../../src/services/oidc-token-helper.service';
 import { LoggerService } from '../../src/services/oidc.logger.service';
 import { TestLogging } from '../common/test-logging.service';
@@ -12,8 +12,7 @@ describe('TokenHelperService', () => {
             providers: [
                 TokenHelperService,
                 { provide: LoggerService, useClass: TestLogging },
-                AuthConfiguration,
-                DefaultConfiguration,
+                AuthConfiguration
             ],
         });
     });
