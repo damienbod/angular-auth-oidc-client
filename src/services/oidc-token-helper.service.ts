@@ -53,7 +53,7 @@ export class TokenHelperService {
     }
 
     private urlBase64Decode(str: string) {
-        let output = str.replace('-', '+').replace('_', '/');
+        let output = str.replace(/-/g, '+').replace(/_/g, '/');
         switch (output.length % 4) {
             case 0:
                 break;
@@ -69,12 +69,14 @@ export class TokenHelperService {
 
         let decoded = typeof window !== 'undefined' ? window.atob(output) : new Buffer(output, 'base64').toString('binary');
 
-        // Going backwards: from bytestream, to percent-encoding, to original string.
-        decoded = decodeURIComponent(decoded.split('')
-            .map((c: string) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-            .join(''));
-
-        return decoded;
+        try {
+            // Going backwards: from bytestream, to percent-encoding, to original string.
+            return decodeURIComponent(decoded.split('')
+                .map((c: string) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join(''));
+        } catch (err) {
+            return decoded;
+        }
     }
 
     private tokenIsValid(token: string) {
