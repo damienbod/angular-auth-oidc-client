@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 
 export class OpenIDImplicitFlowConfiguration {
     stsServer = 'https://localhost:44318';
@@ -215,5 +216,11 @@ export class AuthConfiguration {
 
     init(openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration) {
         this.openIDImplicitFlowConfiguration = openIDImplicitFlowConfiguration;
+        this._onConfigurationChange.next(openIDImplicitFlowConfiguration);
+    }
+
+    private _onConfigurationChange = new Subject<OpenIDImplicitFlowConfiguration>();
+    get onConfigurationChange(): Observable<OpenIDImplicitFlowConfiguration> {
+        return this._onConfigurationChange.asObservable();
     }
 }
