@@ -1,7 +1,7 @@
 ## angular-auth-oidc-client Changelog
 
-<a name="2018-10-30"></a>
-### 2018-10-30 version 8.0.0
+<a name="2018-10-31"></a>
+### 2018-10-31 version 8.0.0
 * replaced eventemitters with Subjects/Observables and updated and docs
 * Optional url handler for logoff function 
 * silent_renew is now off by default (false). 
