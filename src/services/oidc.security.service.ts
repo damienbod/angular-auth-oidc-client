@@ -476,8 +476,8 @@ export class OidcSecurityService {
 
                 if (this.authConfiguration.start_checksession && this.checkSessionChanged) {
                     this.loggerService.logDebug('only local login cleaned up, server session has changed');
-                } else if(urlHandler) {
-                    urlHandler(url);  
+                } else if (urlHandler) {
+                    urlHandler(url);
                 } else {
                     this.redirectTo(url);
                 }
