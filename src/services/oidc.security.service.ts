@@ -40,6 +40,10 @@ export class OidcSecurityService {
         return this._onCheckSessionChanged.asObservable();
     }
 
+    public get onConfigurationChange(): Observable<OpenIDImplicitFlowConfiguration> {
+        return this.authConfiguration.onConfigurationChange;
+    }
+
     checkSessionChanged = false;
     moduleSetup = false;
 
