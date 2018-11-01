@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-11-01"></a>
+### 2018-11-01 version 8.0.1
+* Adding an `onConfigurationChange` Observable to `OidcSecurityService
+
 <a name="2018-10-31"></a>
 ### 2018-10-31 version 8.0.0
 * replaced eventemitters with Subjects/Observables and updated and docs
