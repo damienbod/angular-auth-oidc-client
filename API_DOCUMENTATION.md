@@ -438,32 +438,25 @@ import { AuthorizationState } from './auth/models/authorization-state.enum';
 Subscribe to the event:
 
 ```typescript
-this.oidcSecurityService.onAuthorizationResult.subscribe(
-	(authorizationResult: AuthorizationResult) => {
-		this.onAuthorizationResultComplete(authorizationResult);
-	});
+//...
+    this.onAuthorizationResultSubscription = this.oidcSecurityService.onAuthorizationResult.pipe(
+        tap((authorizationResult: AuthorizationResult) => {
+            console.log('Auth result received AuthorizationState:'
+                + authorizationResult.authorizationState
+                + ' validationResult:' + authorizationResult.validationResult);
+        }),
+        map((authorizationResult: AuthorizationResult) => authorizationResult.authorizationState),
+        filter((authorizationState: AuthorizationState) => authorizationState === AuthorizationState.unauthorized)
+    ).subscribe(() => {
+        this.router.navigate(['/unauthorized']);
+    });
+//...
+	
+private onAuthorizationResultSubscription: Subscription;
 
 ngOnDestroy(): void {
-	this.oidcSecurityService.onAuthorizationResult.unsubscribe();
-}
-```
-
-And use the event:
-
-```typescript
-private onAuthorizationResultComplete(authorizationResult: AuthorizationResult) {
-
-	console.log('Auth result received AuthorizationState:'
-            + authorizationResult.authorizationState
-            + ' validationResult:' + authorizationResult.validationResult);
-
-	if (authorizationResult.authorizationState === AuthorizationState.unauthorized) {
-		if (window.parent) {
-			// sent from the child iframe, for example the silent renew
-			this.router.navigate(['/unauthorized']);
-		} else {
-			window.location.href = '/unauthorized';
-		}
-	}
+    if(this.onAuthorizationResultSubscription) {
+        this.onAuthorizationResultSubscription.unsubscribe();
+    }
 }
 ```
