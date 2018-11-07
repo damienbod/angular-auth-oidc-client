@@ -1,6 +1,5 @@
-import { isPlatformBrowser } from '@angular/common';
 import { HttpParams } from '@angular/common/http';
-import { Inject, Injectable, NgZone, PLATFORM_ID } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, from, Observable, Subject, throwError as observableThrowError, timer } from 'rxjs';
 import { catchError, filter, map, race, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
@@ -61,7 +60,6 @@ export class OidcSecurityService {
     private boundSilentRenewEvent: any;
 
     constructor(
-        @Inject(PLATFORM_ID) private platformId: Object,
         private oidcDataService: OidcDataService,
         private stateValidationService: StateValidationService,
         private authConfiguration: AuthConfiguration,
@@ -166,38 +164,33 @@ export class OidcSecurityService {
 
         this.loggerService.logDebug('STS server: ' + this.authConfiguration.stsServer);
 
-        if (isPlatformBrowser(this.platformId)) {
-            // Client only code.
-            this._onModuleSetup.next();
+        this._onModuleSetup.next();
 
-            if (this.authConfiguration.silent_renew) {
-                this.oidcSecuritySilentRenew.initRenew();
+        if (this.authConfiguration.silent_renew) {
+            this.oidcSecuritySilentRenew.initRenew();
 
-                // Support authorization via DOM events.
-                // Deregister if OidcSecurityService.setupModule is called again by any instance.
-                //      We only ever want the latest setup service to be reacting to this event.
-                this.boundSilentRenewEvent = this.silentRenewEventHandler.bind(this);
+            // Support authorization via DOM events.
+            // Deregister if OidcSecurityService.setupModule is called again by any instance.
+            //      We only ever want the latest setup service to be reacting to this event.
+            this.boundSilentRenewEvent = this.silentRenewEventHandler.bind(this);
 
-                const instanceId = Math.random();
+            const instanceId = Math.random();
 
-                const boundSilentRenewInitEvent = ((e: CustomEvent) => {
-                    if (e.detail !== instanceId) {
-                        window.removeEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent);
-                        window.removeEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent);
-                    }
-                }).bind(this);
+            const boundSilentRenewInitEvent = ((e: CustomEvent) => {
+                if (e.detail !== instanceId) {
+                    window.removeEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent);
+                    window.removeEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent);
+                }
+            }).bind(this);
 
-                window.addEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent, false);
-                window.addEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent, false);
+            window.addEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent, false);
+            window.addEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent, false);
 
-                window.dispatchEvent(
-                    new CustomEvent('oidc-silent-renew-init', {
-                        detail: instanceId,
-                    })
-                );
-            }
-        } else {
-            this._onModuleSetup.next();
+            window.dispatchEvent(
+                new CustomEvent('oidc-silent-renew-init', {
+                    detail: instanceId,
+                })
+            );
         }
     }
 
