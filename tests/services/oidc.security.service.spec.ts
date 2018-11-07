@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { empty } from 'rxjs';
+import { filter, skipWhile } from 'rxjs/operators';
 import { OpenIDImplicitFlowConfiguration } from '../../src/modules/auth.configuration';
 import { AuthModule } from '../../src/modules/auth.module';
 import { IFrameService } from '../../src/services/existing-iframe.service';
@@ -328,5 +329,29 @@ describe('OidcSecurityService', () => {
         (oidcSecurityService as OidcSecurityService).logoff();
 
         expect(redirectToSpy).toHaveBeenCalledWith(logoffUrl);
+    });
+
+    it('logoff should reset storage data before emitting an _isAuthorized change', () => {
+        oidcSecurityService.authWellKnownEndpoints = {  };
+
+        const resetStorageData = spyOn(oidcSecurityService.oidcSecurityCommon, 'resetStorageData');
+
+        let hasBeenCalled = false;
+        oidcSecurityService._isAuthorized
+            .pipe(
+                skipWhile((isAuthorized: boolean) => !isAuthorized),
+                filter((isAuthorized: boolean) => !isAuthorized)
+            )
+            .subscribe(() => {
+                expect(resetStorageData).toHaveBeenCalled();
+                hasBeenCalled = true;
+            });
+
+        expect(hasBeenCalled).toEqual(false);
+
+        oidcSecurityService._isAuthorized.next(true);
+        (oidcSecurityService as OidcSecurityService).logoff();
+
+        expect(hasBeenCalled).toEqual(true);
     });
 });
