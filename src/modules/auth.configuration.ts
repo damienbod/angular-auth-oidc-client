@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 
 export class OpenIDImplicitFlowConfiguration {
@@ -107,6 +108,10 @@ export class AuthConfiguration {
     }
 
     get start_checksession(): boolean {
+        if (!isPlatformBrowser(this.platformId)) {
+            return false;
+        }
+
         if (this.openIDImplicitFlowConfiguration) {
             return this.openIDImplicitFlowConfiguration.start_checksession;
         }
@@ -115,6 +120,10 @@ export class AuthConfiguration {
     }
 
     get silent_renew(): boolean {
+        if (!isPlatformBrowser(this.platformId)) {
+            return false;
+        }
+
         if (this.openIDImplicitFlowConfiguration) {
             return this.openIDImplicitFlowConfiguration.silent_renew;
         }
@@ -210,7 +219,7 @@ export class AuthConfiguration {
         return this.defaultConfig.storage;
     }
 
-    constructor() {
+    constructor(@Inject(PLATFORM_ID) private platformId: Object) {
         this.defaultConfig = new OpenIDImplicitFlowConfiguration();
     }
 

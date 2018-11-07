@@ -16,6 +16,7 @@ import { TestStorage } from '../common/test-storage.service';
 
 describe('OidcSecurityValidation', () => {
     let oidcSecurityValidation: OidcSecurityValidation;
+    let authConfiguration: AuthConfiguration;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -26,6 +27,7 @@ describe('OidcSecurityValidation', () => {
                 AuthModule.forRoot(),
             ],
             providers: [
+                AuthConfiguration,
                 EqualityHelperService,
                 OidcSecurityValidation,
                 {
@@ -42,11 +44,10 @@ describe('OidcSecurityValidation', () => {
 
     beforeEach(() => {
         oidcSecurityValidation = TestBed.get(OidcSecurityValidation);
+        authConfiguration = TestBed.get(AuthConfiguration);
     });
 
     it('validate aud string', () => {
-        const authConfiguration = new AuthConfiguration();
-
         let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
         openIDImplicitFlowConfiguration.stsServer = 'https://localhost:5001';
         openIDImplicitFlowConfiguration.redirect_url =
@@ -84,8 +85,6 @@ describe('OidcSecurityValidation', () => {
     });
 
     it('validate aud array', () => {
-        const authConfiguration = new AuthConfiguration();
-
         let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
         openIDImplicitFlowConfiguration.stsServer = 'https://localhost:5001';
         openIDImplicitFlowConfiguration.redirect_url =
