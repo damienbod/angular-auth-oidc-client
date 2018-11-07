@@ -2,7 +2,8 @@
 
 <a name="2018-11-07"></a>
 ### 2018-11-07 version 8.0.2
-* When `logOff()` is called storage should be cleared before emitting a… 
+* When `logOff()` is called storage should be cleared before emitting an authorization event.
+* AuthConfiguration object will now always return false for `start_checksession and silent_renew` properties when not running on a browser platform.
 
 <a name="2018-11-02"></a>
 ### 2018-11-02 version 8.0.1
