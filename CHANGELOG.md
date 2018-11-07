@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-11-07"></a>
+### 2018-11-07 version 8.0.2
+* When `logOff()` is called storage should be cleared before emitting a… 
+
 <a name="2018-11-02"></a>
 ### 2018-11-02 version 8.0.1
 * Adding an `onConfigurationChange` Observable to `OidcSecurityService
