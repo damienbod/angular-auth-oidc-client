@@ -20,7 +20,7 @@ export class IFrameService {
     }
 
     addIFrameToWindowBody(identifier: string) {
-        if(isPlatformBrowser(platformId)) {
+        if(isPlatformBrowser(this.platformId)) {
             const sessionIframe = window.document.createElement('iframe');
             sessionIframe.id = identifier;
             this.loggerService.logDebug(sessionIframe);
@@ -32,14 +32,14 @@ export class IFrameService {
     }
 
     private getIFrameFromParentWindow(identifier: string) {
-        if(isPlatformBrowser(platformId)) {
+        if(isPlatformBrowser(this.platformId)) {
             return window.parent.document.getElementById(identifier);
         }
         return null;
     }
 
     private getIFrameFromWindow(identifier: string) {
-        if(isPlatformBrowser(platformId)) {
+        if(isPlatformBrowser(this.platformId)) {
             return window.document.getElementById(identifier);
         }
         return null;
