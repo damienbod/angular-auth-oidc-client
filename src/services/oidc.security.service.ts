@@ -560,7 +560,7 @@ export class OidcSecurityService {
                 // Clear user data. Fixes #97.
                 this.setUserData('');
             }
-            
+
             this.oidcSecurityCommon.resetStorageData(isRenewProcess);
             this.checkSessionChanged = false;
             this.setIsAuthorized(false);
