@@ -52,7 +52,6 @@ export class OidcSecurityService {
     private _isAuthorized = new BehaviorSubject<boolean>(false);
     private _isSetupAndAuthorized: Observable<boolean>;
 
-    private lastUserData: any;
     private _userData = new BehaviorSubject<any>('');
     private authWellKnownEndpointsLoaded = false;
     private runTokenValidationRunning = false;
@@ -138,10 +137,6 @@ export class OidcSecurityService {
             this.loggerService.logDebug('onCheckSessionChanged');
             this.checkSessionChanged = true;
             this._onCheckSessionChanged.next(this.checkSessionChanged);
-        });
-
-        this._userData.subscribe(() => {
-            this.onUserDataChanged();
         });
 
         const userData = this.oidcSecurityCommon.userData;
@@ -652,16 +647,6 @@ export class OidcSecurityService {
         params = params.append('post_logout_redirect_uri', this.authConfiguration.post_logout_redirect_uri);
 
         return `${authorizationEndsessionUrl}?${params}`;
-    }
-
-    private onUserDataChanged() {
-        this.loggerService.logDebug(`onUserDataChanged: last = ${this.lastUserData}, new = ${this._userData.value}`);
-
-        if (this.lastUserData && !this._userData.value) {
-            this.loggerService.logDebug('onUserDataChanged: Logout detected.');
-            // TODO should we have an action here
-        }
-        this.lastUserData = this._userData.value;
     }
 
     private getSigningKeys(): Observable<JwtKeys> {
