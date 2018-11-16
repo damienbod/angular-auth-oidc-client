@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2018-11-16"></a>
+### 2018-11-16 version 8.0.3
+* Changed iframe to avoid changing history state for repeated silent token renewals
+
 <a name="2018-11-07"></a>
 ### 2018-11-07 version 8.0.2
 * When `logOff()` is called storage should be cleared before emitting an authorization event.
