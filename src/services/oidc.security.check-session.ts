@@ -62,7 +62,7 @@ export class OidcSecurityCheckSession {
         }
 
         if (this.authWellKnownEndpoints) {
-            this.sessionIframe.src = this.authWellKnownEndpoints.check_session_iframe;
+            this.sessionIframe.contentWindow.location.replace(this.authWellKnownEndpoints.check_session_iframe);
         } else {
             this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
         }

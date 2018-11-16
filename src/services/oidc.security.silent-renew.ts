@@ -30,7 +30,7 @@ export class OidcSecuritySilentRenew {
         this.sessionIframe = this.iFrameService.getExistingIFrame(IFRAME_FOR_SILENT_RENEW_IDENTIFIER);
 
         this.loggerService.logDebug('startRenew for URL:' + url);
-        this.sessionIframe.src = url;
+        this.sessionIframe.contentWindow.location.replace(url);
 
         return Observable.create((observer: Observer<any>) => {
             this.sessionIframe.onload = () => {

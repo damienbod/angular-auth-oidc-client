@@ -13,7 +13,7 @@ import { TestStorage } from '../common/test-storage.service';
 
 describe('EqualityHelperServiceTests', () => {
     let oidcSecurityCheckSession: OidcSecurityCheckSession;
-
+    let loggerService: LoggerService
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
@@ -30,6 +30,7 @@ describe('EqualityHelperServiceTests', () => {
 
     beforeEach(() => {
         oidcSecurityCheckSession = TestBed.get(OidcSecurityCheckSession);
+        loggerService = TestBed.get(LoggerService);
     });
 
     it('should create', () => {
@@ -144,23 +145,29 @@ describe('EqualityHelperServiceTests', () => {
         expect(iFrame).toBeDefined();
     });
 
-    it('src of iframe is set to authWellKnownEndpoints.check_session_iframe if existing', () => {
+    it('location of iframe is set to authWellKnownEndpoints.check_session_iframe if existing', (done) => {
         const authWellKnownEndpoints = new AuthWellKnownEndpoints();
         authWellKnownEndpoints.check_session_iframe = 'someTestingValue';
         (oidcSecurityCheckSession as any).authWellKnownEndpoints = authWellKnownEndpoints;
 
         expect((oidcSecurityCheckSession as any).sessionIframe).toBeFalsy();
 
-        (oidcSecurityCheckSession as any).init();
+        const loaded = (oidcSecurityCheckSession as any).init();
 
-        expect((oidcSecurityCheckSession as any).sessionIframe.src).toContain('someTestingValue');
+        loaded.subscribe(() => {
+            expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
+            expect((oidcSecurityCheckSession as any).sessionIframe.contentWindow.location.toString()).toContain('someTestingValue');
+            done();
+        });
     });
 
-    it('src of iframe is empty if authWellKnownEndpoints.check_session_iframe is not existing', () => {
+    it('log warning if authWellKnownEndpoints.check_session_iframe is not existing', () => {
         const spy = spyOn<any>(oidcSecurityCheckSession, 'doesSessionExist').and.returnValue(false);
+        const spyLogWarning = spyOn<any>(loggerService, 'logWarning');
         (oidcSecurityCheckSession as any).init();
+
         expect(spy).toHaveBeenCalled();
-        expect((oidcSecurityCheckSession as any).sessionIframe.src).toBe('');
+        expect(spyLogWarning).toHaveBeenCalledWith('init check session: authWellKnownEndpoints is undefined');
     });
 
     it('startCheckingSession calls pollserversession with clientId if no scheduledheartbeat is set', () => {
@@ -171,13 +178,13 @@ describe('EqualityHelperServiceTests', () => {
 
     it('startCheckingSession does not call pollserversession if scheduledheartbeat is set', () => {
         const spy = spyOn<any>(oidcSecurityCheckSession, 'pollServerSession');
-        (oidcSecurityCheckSession as any).scheduledHeartBeat = () => {};
+        (oidcSecurityCheckSession as any).scheduledHeartBeat = () => { };
         oidcSecurityCheckSession.startCheckingSession('anyId');
         expect(spy).not.toHaveBeenCalled();
     });
 
     it('stopCheckingSession sets heartbeat to null', () => {
-        (oidcSecurityCheckSession as any).scheduledHeartBeat = setTimeout(() => {}, 999);
+        (oidcSecurityCheckSession as any).scheduledHeartBeat = setTimeout(() => { }, 999);
         oidcSecurityCheckSession.stopCheckingSession();
         const heartBeat = (oidcSecurityCheckSession as any).scheduledHeartBeat;
         expect(heartBeat).toBeNull();
