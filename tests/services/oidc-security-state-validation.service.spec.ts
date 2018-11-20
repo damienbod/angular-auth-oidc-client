@@ -8,6 +8,7 @@ import {
     OidcSecurityStorage,
     OidcSecurityValidation,
 } from '../../src/angular-auth-oidc-client';
+import { ValidationResult } from '../../src/models/validation-result.enum';
 import { AuthWellKnownEndpoints } from '../../src/models/auth.well-known-endpoints';
 import { JwtKeys } from '../../src/models/jwtkeys';
 import { OpenIDImplicitFlowConfiguration } from '../../src/modules/auth.configuration';
@@ -545,5 +546,40 @@ describe('OidcSecurityStateValidationService', () => {
         expect(state.id_token).toBe('id_tokenTEST');
         expect(state.decoded_id_token).toBe('decoded_id_token');
         expect(state.authResponseIsValid).toBe(false);
+    });
+
+    it('should return valid result if validate_id_token_iss is false and iss_validation_off is true', () => {
+        spyOnProperty(authConfiguration, 'iss_validation_off', 'get').and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(false);
+
+        spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
+        spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
+        spyOn(oidcSecurityValidation, 'validate_signature_id_token').and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_nonce').and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_required_id_token').and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_iat_max_offset').and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_aud').and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_exp_not_expired').and.returnValue(true);
+        spyOn(oidcSecurityValidation, 'validate_id_token_at_hash').and.returnValue(true);
+        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
+        
+
+        const logDebugSpy = spyOn(loggerService, 'logDebug'); // .and.callFake(() => {});
+
+        const state = stateValidationService.validateState(
+            {
+                access_token: 'access_tokenTEST',
+                id_token: 'id_tokenTEST',
+            },
+            new JwtKeys()
+        );
+
+        expect(logDebugSpy).toHaveBeenCalledWith('iss validation is turned off, this is not recommended!');
+
+        expect(state.state).toBe(ValidationResult.Ok);
+        expect(state.access_token).toBe('access_tokenTEST');
+        expect(state.authResponseIsValid).toBe(true);
+        expect(state.decoded_id_token).toBeDefined();
+        expect(state.id_token).toBe('id_tokenTEST');
     });
 });
