@@ -314,6 +314,10 @@ export class OidcSecurityService {
         }, {});
 
         this.oidcSecurityCommon.authResult = result;
+
+        // reset the history to remove the tokens
+        window.history.replaceState({}, window.document.title, window.location.origin + window.location.pathname);
+
         if (result.error) {
             this.loggerService.logWarning(result);
             if ((result.error as string) === 'login_required') {
