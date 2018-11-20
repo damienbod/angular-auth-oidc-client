@@ -212,8 +212,6 @@ export class AuthConfiguration {
         return this.defaultConfig.iss_validation_off;
     }
 
-    
-
     get max_id_token_iat_offset_allowed_in_seconds(): number {
         if (this.openIDImplicitFlowConfiguration) {
             return this.openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds;
