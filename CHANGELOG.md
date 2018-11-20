@@ -3,6 +3,7 @@
 <a name="2018-11-16"></a>
 ### 2018-11-16 version 8.0.3
 * Changed iframe to avoid changing history state for repeated silent token renewals
+* make it possible to turn the iss validation off per configuration
 
 <a name="2018-11-07"></a>
 ### 2018-11-07 version 8.0.2

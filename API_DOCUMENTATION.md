@@ -105,6 +105,13 @@ default value : '/Unauthorized'
 
 Route, if the server returns a 401. This is an Angular route. HTTP 401
 
+### iss_validation_off
+
+Make it possible to turn the iss validation off per configuration. You should not turn this off!
+
+default value : 'false'
+
+
 ### auto_userinfo
 
 default value : 'true'
