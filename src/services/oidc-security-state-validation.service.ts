@@ -69,7 +69,10 @@ export class StateValidationService {
         }
 
         if (this.authWellKnownEndpoints) {
-            if (!this.oidcSecurityValidation.validate_id_token_iss(toReturn.decoded_id_token, this.authWellKnownEndpoints.issuer)) {
+            if (this.authConfiguration.iss_validation_off) {
+                this.loggerService.logDebug('iss validation is turned off, this is not recommended!');
+            } else if (!this.authConfiguration.iss_validation_off &&
+                !this.oidcSecurityValidation.validate_id_token_iss(toReturn.decoded_id_token, this.authWellKnownEndpoints.issuer)) {
                 this.loggerService.logWarning('authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer');
                 toReturn.state = ValidationResult.IssDoesNotMatchIssuer;
                 return toReturn;
