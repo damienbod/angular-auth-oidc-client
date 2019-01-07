@@ -270,7 +270,7 @@ describe('OidcSecurityService', () => {
         expect(value).toEqual(expectValue);
     });
 
-    it('authorizedCallback should correctly parse hash params', () => {
+    it('authorizedImplicitFlowCallback should correctly parse hash params', () => {
         spyOn(oidcSecurityService, 'getSigningKeys').and.returnValue(empty());
 
         const resultSetter = spyOnProperty(
@@ -286,7 +286,7 @@ describe('OidcSecurityService', () => {
             state: 'testState',
         };
 
-        (oidcSecurityService as OidcSecurityService).authorizedCallback(hash);
+        (oidcSecurityService as OidcSecurityService).authorizedImplicitFlowCallback(hash);
 
         expect(resultSetter).not.toHaveBeenCalled();
 
@@ -299,7 +299,7 @@ describe('OidcSecurityService', () => {
         expectedResult['access_token'] = 'ACCESS-TOKEN==';
         expectedResult['state'] = 'test=State';
 
-        (oidcSecurityService as OidcSecurityService).authorizedCallback(hash);
+        (oidcSecurityService as OidcSecurityService).authorizedImplicitFlowCallback(hash);
         expect(resultSetter).toHaveBeenCalledWith(expectedResult);
     });
 
