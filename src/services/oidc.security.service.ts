@@ -349,12 +349,10 @@ export class OidcSecurityService {
                     obj.session_state = session_state;
 
                     this.authorizedCodeFlowCallbackProcedure(obj);
-                    // this._onConfigurationLoaded.next(true);
                 }),
             catchError(error => {
-                    console.error(error);
-                    console.error(`OidcService code request ${this.authConfiguration.stsServer}`, error);
-                    // this._onConfigurationLoaded.next(false);
+                    this.loggerService.logError(error);
+                    this.loggerService.logError(`OidcService code request ${this.authConfiguration.stsServer}`);
                     return of(false);
                 })
             )
