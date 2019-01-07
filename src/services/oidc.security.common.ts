@@ -65,6 +65,16 @@ export class OidcSecurityCommon {
         this.store(this.storage_auth_nonce, value);
     }
 
+    private storage_code_verifier = 'code_verifier';
+
+    public get code_verifier(): string {
+        return this.retrieve(this.storage_code_verifier) || '';
+    }
+
+    public set code_verifier(value: string) {
+        this.store(this.storage_code_verifier, value);
+    }
+
     private storage_auth_state_control = 'authStateControl';
 
     public get authStateControl(): string {
@@ -126,6 +136,7 @@ export class OidcSecurityCommon {
             this.store(this.storage_access_token, '');
             this.store(this.storage_id_token, '');
             this.store(this.storage_user_data, '');
+            this.store(this.storage_code_verifier, '');
         }
     }
 

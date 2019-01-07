@@ -32,9 +32,10 @@ export class StateValidationService {
             return toReturn;
         }
 
-        if (this.authConfiguration.response_type === 'id_token token') {
+        if (this.authConfiguration.response_type === 'id_token token' || this.authConfiguration.response_type === 'code') {
             toReturn.access_token = result.access_token;
         }
+
         toReturn.id_token = result.id_token;
 
         toReturn.decoded_id_token = this.tokenHelperService.getPayloadFromToken(toReturn.id_token, false);
@@ -96,7 +97,7 @@ export class StateValidationService {
         }
 
         // flow id_token token
-        if (this.authConfiguration.response_type !== 'id_token token') {
+        if (this.authConfiguration.response_type !== 'id_token token' && this.authConfiguration.response_type !== 'code') {
             toReturn.authResponseIsValid = true;
             toReturn.state = ValidationResult.Ok;
             this.handleSuccessfulValidation();

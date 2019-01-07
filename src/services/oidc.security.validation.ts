@@ -305,6 +305,10 @@ export class OidcSecurityValidation {
             return true;
         }
 
+        if (response_type === 'code') {
+            return true;
+        }
+
         this.loggerService.logWarning('module configure incorrect, invalid response_type:' + response_type);
         return false;
     }
@@ -350,6 +354,13 @@ export class OidcSecurityValidation {
         const hash = KJUR.crypto.Util.hashString(access_token, 'sha256');
         const first128bits = hash.substr(0, hash.length / 2);
         const testdata = hextob64u(first128bits);
+
+        return testdata;
+    }
+
+    generate_code_verifier(code_challenge: any): string {
+        const hash = KJUR.crypto.Util.hashString(code_challenge, 'sha256');
+        const testdata = hextob64u(hash);
 
         return testdata;
     }
