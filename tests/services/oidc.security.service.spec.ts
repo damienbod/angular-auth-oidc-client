@@ -77,6 +77,7 @@ describe('OidcSecurityService', () => {
         oidcSecurityService.setupModule(openIDImplicitFlowConfiguration);
 
         let value = oidcSecurityService.createAuthorizeUrl(
+		    false, '', // Implicit Flow
             openIDImplicitFlowConfiguration.redirect_url,
             'nonce',
             'state',
@@ -113,6 +114,7 @@ describe('OidcSecurityService', () => {
         oidcSecurityService.authConfiguration.init(openIDImplicitFlowConfiguration);
 
         let value = oidcSecurityService.createAuthorizeUrl(
+		    false, '', // Implicit Flow
             openIDImplicitFlowConfiguration.redirect_url,
             'nonce',
             'state',
@@ -184,6 +186,7 @@ describe('OidcSecurityService', () => {
         });
 
         let value = oidcSecurityService.createAuthorizeUrl(
+		    false, '', // Implicit Flow
             openIDImplicitFlowConfiguration.redirect_url,
             'nonce',
             'state',
@@ -225,6 +228,7 @@ describe('OidcSecurityService', () => {
         });
 
         let value = oidcSecurityService.createAuthorizeUrl(
+		    false, '', // Implicit Flow
             openIDImplicitFlowConfiguration.redirect_url,
             'nonce',
             'state',
