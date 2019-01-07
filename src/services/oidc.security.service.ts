@@ -369,93 +369,26 @@ export class OidcSecurityService {
         this.loggerService.logDebug('BEGIN authorized Code Flow Callback, no auth data');
         this.resetAuthorizationData(isRenewProcess);
 
-        this.oidcSecurityCommon.authResult = result;
+        this.authorizedCallbackProcedure(result, isRenewProcess);
+    }
 
-        // reset the history to remove the tokens
-        window.history.replaceState({}, window.document.title, window.location.origin + window.location.pathname);
+    // Implicit Flow
+    private authorizedImplicitFlowCallbackProcedure(hash?: string) {
+        const silentRenew = this.oidcSecurityCommon.silentRenewRunning;
+        const isRenewProcess = silentRenew === 'running';
 
-        if (result.error) {
-            this.loggerService.logWarning(result);
-            if ((result.error as string) === 'login_required') {
-                this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.LoginRequired));
-            } else {
-                this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.SecureTokenServerError));
-            }
+        this.loggerService.logDebug('BEGIN authorizedCallback, no auth data');
+        this.resetAuthorizationData(isRenewProcess);
 
-            if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
-                this.router.navigate([this.authConfiguration.unauthorized_route]);
-            }
-        } else {
-            this.loggerService.logDebug(result);
+        hash = hash || window.location.hash.substr(1);
 
-            this.loggerService.logDebug('authorizedCallback created, begin token validation');
+        const result: any = hash.split('&').reduce(function (resultData: any, item: string) {
+            const parts = item.split('=');
+            resultData[<string>parts.shift()] = parts.join('=');
+            return resultData;
+        }, {});
 
-            this.getSigningKeys().subscribe(
-                jwtKeys => {
-                    const validationResult = this.getValidatedStateResult(result, jwtKeys);
-
-                    if (validationResult.authResponseIsValid) {
-                        this.setAuthorizationData(validationResult.access_token, validationResult.id_token);
-                        this.oidcSecurityCommon.silentRenewRunning = '';
-
-                        if (this.authConfiguration.auto_userinfo) {
-                            this.getUserinfo(isRenewProcess, result, validationResult.id_token, validationResult.decoded_id_token).subscribe(
-                                response => {
-                                    if (response) {
-                                        this._onAuthorizationResult.next(
-                                            new AuthorizationResult(AuthorizationState.authorized, validationResult.state)
-                                        );
-                                        if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
-                                            this.router.navigate([this.authConfiguration.post_login_route]);
-                                        }
-                                    } else {
-                                        this._onAuthorizationResult.next(
-                                            new AuthorizationResult(AuthorizationState.unauthorized, validationResult.state)
-                                        );
-                                        if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
-                                            this.router.navigate([this.authConfiguration.unauthorized_route]);
-                                        }
-                                    }
-                                },
-                                err => {
-                                    /* Something went wrong while getting signing key */
-                                    this.loggerService.logWarning('Failed to retreive user info with error: ' + JSON.stringify(err));
-                                }
-                            );
-                        } else {
-                            if (!isRenewProcess) {
-                                // userData is set to the id_token decoded, auto get user data set to false
-                                this.oidcSecurityUserService.setUserData(validationResult.decoded_id_token);
-                                this.setUserData(this.oidcSecurityUserService.getUserData());
-                            }
-
-                            this.runTokenValidation();
-
-                            this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.authorized, validationResult.state));
-                            if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
-                                this.router.navigate([this.authConfiguration.post_login_route]);
-                            }
-                        }
-                    } else {
-                        // something went wrong
-                        this.loggerService.logWarning('authorizedCallback, token(s) validation failed, resetting');
-                        this.loggerService.logWarning(window.location.hash);
-                        this.resetAuthorizationData(false);
-                        this.oidcSecurityCommon.silentRenewRunning = '';
-
-                        this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, validationResult.state));
-                        if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
-                            this.router.navigate([this.authConfiguration.unauthorized_route]);
-                        }
-                    }
-                },
-                err => {
-                    /* Something went wrong while getting signing key */
-                    this.loggerService.logWarning('Failed to retreive siging key with error: ' + JSON.stringify(err));
-                    this.oidcSecurityCommon.silentRenewRunning = '';
-                }
-            );
-        }
+        this.authorizedCallbackProcedure(result, isRenewProcess);
     }
 
     // Implicit Flow
@@ -475,21 +408,7 @@ export class OidcSecurityService {
     }
 
     // Implicit Flow
-    private authorizedImplicitFlowCallbackProcedure(hash?: string) {
-        const silentRenew = this.oidcSecurityCommon.silentRenewRunning;
-        const isRenewProcess = silentRenew === 'running';
-
-        this.loggerService.logDebug('BEGIN authorizedCallback, no auth data');
-        this.resetAuthorizationData(isRenewProcess);
-
-        hash = hash || window.location.hash.substr(1);
-
-        const result: any = hash.split('&').reduce(function(resultData: any, item: string) {
-            const parts = item.split('=');
-            resultData[<string>parts.shift()] = parts.join('=');
-            return resultData;
-        }, {});
-
+    private authorizedCallbackProcedure(result: any, isRenewProcess: boolean) {
         this.oidcSecurityCommon.authResult = result;
 
         // reset the history to remove the tokens
