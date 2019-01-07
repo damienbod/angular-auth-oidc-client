@@ -322,7 +322,10 @@ export class OidcSecurityService {
 
     // Code Flow with PCKE
     requestTokensWithCodeProcedure(code: string, state: string, session_state: string) {
-        const tokenRequestUrl = `${this.authWellKnownEndpoints.token_endpoint}`;
+        let tokenRequestUrl = '';
+        if (this.authWellKnownEndpoints && this.authWellKnownEndpoints.token_endpoint) {
+            tokenRequestUrl = `${this.authWellKnownEndpoints.token_endpoint}`;
+        }
 
         // TODO validate state early instead of waiting for the callback with the tokens
 
@@ -947,7 +950,7 @@ export class OidcSecurityService {
             const state = params.get('state');
             const session_state = params.get('session_state');
             const error = params.get('error');
-            if (code) {
+            if (code && state && session_state) {
                 this.requestTokensWithCodeProcedure(code, state, session_state);
             }
             if (error) {
