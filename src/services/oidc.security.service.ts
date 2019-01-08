@@ -309,7 +309,7 @@ export class OidcSecurityService {
     }
 
     // Code Flow
-    requestTokensWithCode(code: string, state: string, session_state: string) {
+    requestTokensWithCode(code: string, state: string, session_state: string | null) {
         this._isModuleSetup
             .pipe(
                 filter((isModuleSetup: boolean) => isModuleSetup),
@@ -321,7 +321,7 @@ export class OidcSecurityService {
     }
 
     // Code Flow with PCKE
-    requestTokensWithCodeProcedure(code: string, state: string, session_state: string) {
+    requestTokensWithCodeProcedure(code: string, state: string, session_state: string | null) {
         let tokenRequestUrl = '';
         if (this.authWellKnownEndpoints && this.authWellKnownEndpoints.token_endpoint) {
             tokenRequestUrl = `${this.authWellKnownEndpoints.token_endpoint}`;
