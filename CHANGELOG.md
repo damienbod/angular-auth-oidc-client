@@ -4,7 +4,8 @@
 ### 2019-01-08 version 9.0.0
 * Support for OpenID Connect Code Flow with PKCE
 
-Breaking changes:
+### Breaking changes:
+
 Implicit flow callback renamed from authorizedCallback() to authorizedImplicitFlowCallback()
 
 <a name="2018-11-16"></a>
