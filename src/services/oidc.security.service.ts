@@ -309,6 +309,21 @@ export class OidcSecurityService {
     }
 
     // Code Flow
+    authorizedCallbackWithCode(urlToCheck: string) {
+        const urlParts = urlToCheck.split('?');
+        const params = new HttpParams({
+            fromString: urlParts[1]
+        });
+        const code = params.get('code');
+        const state = params.get('state');
+        const session_state = params.get('session_state');
+
+        if (code && state && session_state) {
+            this.requestTokensWithCode(code, state, session_state);
+        }
+    }
+
+    // Code Flow
     requestTokensWithCode(code: string, state: string, session_state: string | null) {
         this._isModuleSetup
             .pipe(
