@@ -502,6 +502,20 @@ The event handler will send this token to the authorization callback and complet
 
 Point the `silent_renew_url` property to an HTML file which contains the following script element to enable authorization.
 
+Code Flow with PKCE
+```
+<script>
+	window.onload = function () {
+		/* The parent window hosts the Angular application */
+		var parent = window.parent;
+		/* Send the id_token information to the oidc message handler */
+		var event = new CustomEvent('oidc-silent-renew-message', { detail: window.location });
+		parent.dispatchEvent(event);
+	};
+</script>
+```
+
+Implicit Flow
 ```
 <script>
     window.onload = function () {
@@ -513,6 +527,7 @@ Point the `silent_renew_url` property to an HTML file which contains the followi
 };
 </script>
 ```
+
 When silent renew is enabled, `getIsAuthorized()` will attempt to perform a renew before returning the authorization state. This allows the application to authorize a user, that is already authenticated, without redirects.
 
 ## X-Frame-Options / CSP ancestor / different domains
