@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/damienbod/angular-auth-oidc-client.svg?branch=master)](https://travis-ci.org/damienbod/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/v/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/dm/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/l/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client)
 
-> OpenID Connect Implicit Flow
+> OpenID Code Flow with PKCE, OpenID Connect Implicit Flow
 
 ## OpenID Certification
 
@@ -13,7 +13,8 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 ## Features
 
 -   version 4.1.0 Angular 4 to Angular 5.2.10, Version 6.0.0, Angular 6 onwards
--   Supports OpenID Implicit Flow http://openid.net/specs/openid-connect-implicit-1_0.html
+-   Supports OpenID Connect Code Flow with PKCE
+-   Supports OpenID Connect Implicit Flow http://openid.net/specs/openid-connect-implicit-1_0.html
 -   Complete client side validation for REQUIRED features
 -   OpenID Connect Session Management 1.0 http://openid.net/specs/openid-connect-session-1_0.html
 -   AOT build
@@ -38,7 +39,7 @@ or with yarn
 or you can add the npm package to your package.json
 
 ```typescript
- "angular-auth-oidc-client": "8.0.3"
+ "angular-auth-oidc-client": "9.0.0"
 ```
 
 and type
@@ -93,7 +94,7 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 })
 ```
 
-Set the AuthConfiguration properties to match the server configuration. At present only the 'id_token token' or the 'id_token' flows are supported.
+Set the AuthConfiguration properties to match the server configuration. At present only the 'code' with PKCE, 'id_token token' or the 'id_token' flows are supported.
 
 ```typescript
 export class AppModule {
@@ -140,6 +141,145 @@ export class AppModule {
     }
 }
 ```
+
+## Code Flow with PKCE
+
+Create the login, logout component and use the oidcSecurityService
+
+```typescript
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
+import { OidcSecurityService } from './auth/services/oidc.security.service';
+import { LocaleService, TranslationService, Language } from 'angular-l10n';
+import './app.component.css';
+import { AuthorizationResult } from './auth/models/authorization-result';
+import { AuthorizationState } from './auth/models/authorization-state.enum';
+import { HttpParams } from '@angular/common/http';
+// import { ValidationResult } from './auth/models/validation-result.enum';
+
+@Component({
+    selector: 'app-component',
+    templateUrl: 'app.component.html',
+})
+
+export class AppComponent implements OnInit, OnDestroy {
+
+    @Language() lang = '';
+
+    title = '';
+
+    isAuthorizedSubscription: Subscription | undefined;
+    isAuthorized = false;
+
+    onChecksessionChanged: Subscription | undefined;
+    checksession = false;
+
+    constructor(
+        public oidcSecurityService: OidcSecurityService,
+        public locale: LocaleService,
+        private router: Router,
+        public translation: TranslationService
+    ) {
+        console.log('AppComponent STARTING');
+
+        if (this.oidcSecurityService.moduleSetup) {
+            this.doCallbackLogicIfRequired();
+        } else {
+            this.oidcSecurityService.onModuleSetup.subscribe(() => {
+                this.doCallbackLogicIfRequired();
+            });
+        }
+
+        this.oidcSecurityService.onCheckSessionChanged.subscribe(
+            (checksession: boolean) => {
+                console.log('...recieved a check session event');
+                this.checksession = checksession;
+            });
+
+        this.oidcSecurityService.onAuthorizationResult.subscribe(
+            (authorizationResult: AuthorizationResult) => {
+                this.onAuthorizationResultComplete(authorizationResult);
+            });
+    }
+
+    ngOnInit() {
+        this.isAuthorizedSubscription = this.oidcSecurityService.getIsAuthorized().subscribe(
+            (isAuthorized: boolean) => {
+                this.isAuthorized = isAuthorized;
+            });
+    }
+
+    changeCulture(language: string, country: string) {
+        this.locale.setDefaultLocale(language, country);
+        console.log('set language: ' + language);
+    }
+
+    ngOnDestroy(): void {
+        if (this.isAuthorizedSubscription) {
+            this.isAuthorizedSubscription.unsubscribe();
+        }
+    }
+
+    login() {
+        console.log('start login');
+
+        let culture = 'de-CH';
+        if (this.locale.getCurrentCountry()) {
+            culture = this.locale.getCurrentLanguage() + '-' + this.locale.getCurrentCountry();
+        }
+
+        this.oidcSecurityService.setCustomRequestParameters({ 'ui_locales': culture});
+
+        this.oidcSecurityService.authorize();
+    }
+
+    refreshSession() {
+        console.log('start refreshSession');
+        this.oidcSecurityService.authorize();
+    }
+
+    logout() {
+        console.log('start logoff');
+        this.oidcSecurityService.logoff();
+    }
+
+    private doCallbackLogicIfRequired() {
+        console.log(window.location);
+
+        const urlParts = window.location.toString().split('?');
+        const params = new HttpParams({
+            fromString: urlParts[1]
+        });
+        const code = params.get('code');
+        const state = params.get('state');
+        const session_state = params.get('session_state');
+
+        if (code && state && session_state) {
+            this.oidcSecurityService.requestTokensWithCode(code, state, session_state);
+        }
+    }
+
+    private onAuthorizationResultComplete(authorizationResult: AuthorizationResult) {
+
+        console.log('Auth result received AuthorizationState:'
+            + authorizationResult.authorizationState
+            + ' validationResult:' + authorizationResult.validationResult);
+
+        if (authorizationResult.authorizationState === AuthorizationState.unauthorized) {
+            if (window.parent) {
+                // sent from the child iframe, for example the silent renew
+                this.router.navigate(['/unauthorized']);
+            } else {
+                window.location.href = '/unauthorized';
+            }
+        }
+    }
+}
+
+```
+
+## Implicit Flow
 
 Create the login, logout component and use the oidcSecurityService
 
@@ -223,7 +363,7 @@ You can add any configurations to this json, as long as the stsServer is present
 	"stsServer":"https://localhost:44318",
 	"redirect_url":"https://localhost:44311",
 	"client_id":"angularclient",
-	"response_type":"id_token token",
+	"response_type":"code", // "id_token token"
 	"scope":"dataEventRecords securedFiles openid profile",
 	"post_logout_redirect_uri":"https://localhost:44311",
 	"start_checksession":true,
