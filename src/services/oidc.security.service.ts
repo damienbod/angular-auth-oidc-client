@@ -342,7 +342,11 @@ export class OidcSecurityService {
             tokenRequestUrl = `${this.authWellKnownEndpoints.token_endpoint}`;
         }
 
-        // TODO validate state early instead of waiting for the callback with the tokens
+        if (!this.oidcSecurityValidation.validateStateFromHashCallback(state, this.oidcSecurityCommon.authStateControl)) {
+            this.loggerService.logWarning('authorizedCallback incorrect state');
+            // ValidationResult.StatesDoNotMatch;
+            return;
+        }
 
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
