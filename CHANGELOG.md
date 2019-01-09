@@ -1,5 +1,13 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2019-01-08"></a>
+### 2019-01-08 version 9.0.0
+* Support for OpenID Connect Code Flow with PKCE
+
+### Breaking changes:
+
+Implicit flow callback renamed from authorizedCallback() to authorizedImplicitFlowCallback()
+
 <a name="2018-11-16"></a>
 ### 2018-11-16 version 8.0.3
 * Changed iframe to avoid changing history state for repeated silent token renewals

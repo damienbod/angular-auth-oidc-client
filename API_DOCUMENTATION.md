@@ -62,6 +62,33 @@ Example of a silent_renew.html callback html file.
 
 Note: The CustomEvent does not work for older versions of IE. Add a javascript function instead of this, if required.
 
+### Code Flow with PKCE
+```html
+<!doctype html>
+<html>
+<head>
+    <base href="./">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>silent-renew</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+</head>
+<body>
+
+    <script>
+        window.onload = function () {
+            /* The parent window hosts the Angular application */
+            var parent = window.parent;
+            /* Send the id_token information to the oidc message handler */
+            var event = new CustomEvent('oidc-silent-renew-message', { detail: window.location });
+            parent.dispatchEvent(event);
+        };
+    </script>
+</body>
+</html>
+
+```
+### Implicit Flow
 ```html
 <!doctype html>
 <html>
