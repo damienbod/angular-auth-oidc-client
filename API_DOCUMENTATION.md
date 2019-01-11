@@ -157,6 +157,12 @@ default value : false
 
 Logs all debug messages from the module to the console. This can be viewed using F12 in Chrome of Firefox.
 
+### history_cleanup_off
+
+default value : false
+
+If this is active, the history is not cleaned up at a authorize callback. This can be used, when the application needs to preserve the history.
+
 ### max_id_token_iat_offset_allowed_in_seconds
 
 default value : 3
