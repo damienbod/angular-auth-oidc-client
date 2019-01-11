@@ -31,6 +31,7 @@ export class OpenIDImplicitFlowConfiguration {
     log_console_warning_active = true;
     log_console_debug_active = false;
     iss_validation_off = false;
+    history_cleanup_off = false;
 
     // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
     // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
@@ -210,6 +211,14 @@ export class AuthConfiguration {
         }
 
         return this.defaultConfig.iss_validation_off;
+    }
+
+    get history_cleanup_off(): boolean {
+        if (this.openIDImplicitFlowConfiguration) {
+            return this.openIDImplicitFlowConfiguration.history_cleanup_off;
+        }
+
+        return this.defaultConfig.history_cleanup_off;
     }
 
     get max_id_token_iat_offset_allowed_in_seconds(): number {
