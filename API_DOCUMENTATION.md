@@ -161,7 +161,7 @@ Logs all debug messages from the module to the console. This can be viewed using
 
 default value : false
 
-If this is active, the history is not cleaned up at a authorize callback. This can be used, when the application needs to preserve the history.
+If this is active, the history is not cleaned up at an authorize callback. This can be used, when the application needs to preserve the history.
 
 ### max_id_token_iat_offset_allowed_in_seconds
 
