@@ -1,5 +1,10 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2019-01-11"></a>
+### 2019-01-11 version 9.0.1
+* Validation state in code callback redirect
+* Make it possible to turn off history clean up, so that the angular state is preserved.
+
 <a name="2019-01-08"></a>
 ### 2019-01-08 version 9.0.0
 * Support for OpenID Connect Code Flow with PKCE
