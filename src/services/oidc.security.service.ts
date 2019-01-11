@@ -432,7 +432,7 @@ export class OidcSecurityService {
             // reset the history to remove the tokens
             window.history.replaceState({}, window.document.title, window.location.origin + window.location.pathname);
         } else {
-            console.warn('history clean up inactive');
+            this.loggerService.logDebug('history clean up inactive');
         }
 
         if (result.error) {
