@@ -428,8 +428,12 @@ export class OidcSecurityService {
     private authorizedCallbackProcedure(result: any, isRenewProcess: boolean) {
         this.oidcSecurityCommon.authResult = result;
 
-        // reset the history to remove the tokens
-        window.history.replaceState({}, window.document.title, window.location.origin + window.location.pathname);
+        if (!this.authConfiguration.history_cleanup_off && !isRenewProcess) {
+            // reset the history to remove the tokens
+            window.history.replaceState({}, window.document.title, window.location.origin + window.location.pathname);
+        } else {
+            this.loggerService.logDebug('history clean up inactive');
+        }
 
         if (result.error) {
             this.loggerService.logWarning(result);
