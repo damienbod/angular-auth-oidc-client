@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2019-01-30"></a>
+### 2019-01-30 version 9.0.2
+* bug fix at_hash is optional for code flow
+
 <a name="2019-01-11"></a>
 ### 2019-01-11 version 9.0.1
 * Validation state in code callback redirect
