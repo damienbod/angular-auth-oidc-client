@@ -104,8 +104,9 @@ export class StateValidationService {
             return toReturn;
         }
 
-        if (
-            !this.oidcSecurityValidation.validate_id_token_at_hash(toReturn.access_token, toReturn.decoded_id_token.at_hash) ||
+        if (!this.oidcSecurityValidation.validate_id_token_at_hash(toReturn.access_token,
+            toReturn.decoded_id_token.at_hash,
+            this.authConfiguration.response_type === 'code') ||
             !toReturn.access_token
         ) {
             this.loggerService.logWarning('authorizedCallback incorrect at_hash');
