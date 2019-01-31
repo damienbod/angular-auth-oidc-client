@@ -117,7 +117,7 @@ export class AppModule {
             openIDImplicitFlowConfiguration.start_checksession = this.oidcConfigService.clientConfiguration.start_checksession;
             openIDImplicitFlowConfiguration.silent_renew = this.oidcConfigService.clientConfiguration.silent_renew;
             openIDImplicitFlowConfiguration.silent_renew_url = this.oidcConfigService.clientConfiguration.silent_renew_url;
-            openIDImplicitFlowConfiguration.post_login_route = this.oidcConfigService.clientConfiguration.startup_route;
+            openIDImplicitFlowConfiguration.post_login_route = this.oidcConfigService.clientConfiguration.post_login_route;
             // HTTP 403
             openIDImplicitFlowConfiguration.forbidden_route = this.oidcConfigService.clientConfiguration.forbidden_route;
             // HTTP 401
@@ -281,7 +281,7 @@ You can add any configurations to this json, as long as the stsServer is present
 	"start_checksession":true,
 	"silent_renew":true,
 	"silent_renew_url":"https://localhost:44311/silent-renew.html"
-	"startup_route":"/dataeventrecords",
+	"post_login_route":"/home",
 	"forbidden_route":"/forbidden",
 	"unauthorized_route":"/unauthorized",
 	"log_console_warning_active":true,
