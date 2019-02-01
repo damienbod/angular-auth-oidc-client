@@ -318,7 +318,7 @@ export class OidcSecurityService {
         const state = params.get('state');
         const session_state = params.get('session_state');
 
-        if (code && state && session_state) {
+        if (code && state) {
             this.requestTokensWithCode(code, state, session_state);
         }
     }
