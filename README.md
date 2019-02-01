@@ -117,7 +117,7 @@ export class AppModule {
             openIDImplicitFlowConfiguration.start_checksession = this.oidcConfigService.clientConfiguration.start_checksession;
             openIDImplicitFlowConfiguration.silent_renew = this.oidcConfigService.clientConfiguration.silent_renew;
             openIDImplicitFlowConfiguration.silent_renew_url = this.oidcConfigService.clientConfiguration.silent_renew_url;
-            openIDImplicitFlowConfiguration.post_login_route = this.oidcConfigService.clientConfiguration.startup_route;
+            openIDImplicitFlowConfiguration.post_login_route = this.oidcConfigService.clientConfiguration.post_login_route;
             // HTTP 403
             openIDImplicitFlowConfiguration.forbidden_route = this.oidcConfigService.clientConfiguration.forbidden_route;
             // HTTP 401
@@ -281,7 +281,7 @@ You can add any configurations to this json, as long as the stsServer is present
 	"start_checksession":true,
 	"silent_renew":true,
 	"silent_renew_url":"https://localhost:44311/silent-renew.html"
-	"startup_route":"/dataeventrecords",
+	"post_login_route":"/home",
 	"forbidden_route":"/forbidden",
 	"unauthorized_route":"/unauthorized",
 	"log_console_warning_active":true,
@@ -291,6 +291,9 @@ You can add any configurations to this json, as long as the stsServer is present
 	"apiFileServer":"https://localhost:44378/"
 }
 ```
+
+See [Auth documentation](https://github.com/damienbod/angular-auth-oidc-client/blob/master/API_DOCUMENTATION.md#authconfiguration) 
+for the detail of each field.
 
 ## Using without APP_INITIALIZER
 
@@ -472,9 +475,12 @@ export class AuthInterceptor implements HttpInterceptor {
 
 ## Authorizing in a popup or iframe
 
-You can call the Provider's authorization endpoint in a popup or iframe instead of navigating to it in the app's parent window. This allows you to have the Provider's consent prompt display in a popup window to avoid unloading and reloading the app, or to authorize the user silently by loading the endpoint in a hidden iframe if that supported by the Provider.
+You can call the Provider's authorization endpoint in a popup or iframe instead of navigating to it in the app's parent window. 
+This allows you to have the Provider's consent prompt display in a popup window to avoid unloading and reloading the app, 
+or to authorize the user silently by loading the endpoint in a hidden iframe if that supported by the Provider.
 
-To get the fully-formed authorization URL, pass a handler function to `OidcSecurityService.authorize` (this will also prevent the default behavior of loading the authorization endpoint in the current window):
+To get the fully-formed authorization URL, pass a handler function to `OidcSecurityService.authorize` 
+(this will also prevent the default behavior of loading the authorization endpoint in the current window):
 
 ```typescript
 login() {
@@ -487,7 +493,9 @@ login() {
 
 ## Silent Renew
 
-When silent renew is enabled, a DOM event will be automatically installed in the application's host window. The event `oidc-silent-renew-message` accepts a `CustomEvent` instance with the token returned from the OAuth server in its `detail` field.
+When silent renew is enabled, a DOM event will be automatically installed in the application's host window. 
+The event `oidc-silent-renew-message` accepts a `CustomEvent` instance with the token returned from the OAuth server 
+in its `detail` field.
 The event handler will send this token to the authorization callback and complete the validation.
 
 Point the `silent_renew_url` property to an HTML file which contains the following script element to enable authorization.
@@ -518,11 +526,30 @@ Implicit Flow
 </script>
 ```
 
-When silent renew is enabled, `getIsAuthorized()` will attempt to perform a renew before returning the authorization state. This allows the application to authorize a user, that is already authenticated, without redirects.
+When silent renew is enabled, `getIsAuthorized()` will attempt to perform a renew before returning the authorization state. 
+This allows the application to authorize a user, that is already authenticated, without redirects.
+
+Silent renew requires CSP configuration, see next section.
 
 ## X-Frame-Options / CSP ancestor / different domains
 
-If deploying the client application and the STS server application with 2 different domains, the X-Frame-Options HTTPS header needs to allow all iframes. Then use the CSP HTTPS header to only allow the required domains. The silent renew requires this.
+If deploying the client application and the STS server application with 2 different domains, 
+the X-Frame-Options HTTPS header needs to allow all iframes. Then use the CSP HTTPS header to only allow the required domains. 
+**The silent renew requires this.**
+
+Add this header to responses from the server that serves your SPA:
+```
+Content-Security-Policy: script-src 'self' 'unsafe-inline';style-src 'self' 'unsafe-inline';img-src 'self' data:;font-src 'self';frame-ancestors 'self' https://localhost:44318;block-all-mixed-content
+```
+where `https://localhost:44318` is the address of your STS server.
+
+e.g. if you use NginX to serve your Angular application, it would be 
+```
+http {
+  server {
+    ...
+    add_header Content-Security-Policy "script-src 'self' 'unsafe-inline';style-src 'self' 'unsafe-inline';img-src 'self' data:;font-src 'self';frame-ancestors 'self' https://localhost:44318;block-all-mixed-content";
+``` 
 
 ## Examples using:
 
