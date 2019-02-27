@@ -1,5 +1,10 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2019-02-27"></a>
+### 2019-02-27 version 9.0.3
+* Add TokenHelperService to public API
+* logs: use !! to display getIdToken() and _userData.value in silentRenewHeartBeatCheck()
+
 <a name="2019-02-01"></a>
 ### 2019-02-01 version 9.0.2
 * bug fix at_hash is optional for code flow
