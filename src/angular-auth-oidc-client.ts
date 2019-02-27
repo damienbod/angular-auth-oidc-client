@@ -12,3 +12,4 @@ export * from './services/oidc.security.config.service';
 export * from './services/oidc.security.service';
 export * from './services/oidc.security.storage';
 export * from './services/oidc.security.validation';
+export * from './services/oidc-token-helper.service';
