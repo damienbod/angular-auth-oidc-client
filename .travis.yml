@@ -14,7 +14,7 @@ before_install:
 install:
     - npm install
 script:
-    - npm test-lib-ci
+    - npm run test-lib-ci
     - npm run build-lib
 before_script:
     - export DISPLAY=:99.0
