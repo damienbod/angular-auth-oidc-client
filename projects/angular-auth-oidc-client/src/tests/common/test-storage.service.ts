@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { OidcSecurityStorage } from 'angular-auth-oidc-client';
+import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';
 
 @Injectable()
 export class TestStorage implements OidcSecurityStorage {
