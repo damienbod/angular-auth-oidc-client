@@ -44,15 +44,14 @@ export class AppModule {
         this.oidcConfigService.onConfigurationLoaded.subscribe(() => {
             const config = new OpenIDImplicitFlowConfiguration();
             config.stsServer = 'https://offeringsolutions-sts.azurewebsites.net';
-            config.redirect_url = window.location.origin;
+            config.redirect_url = 'https://localhost:4200';
             config.client_id = 'angularClient';
             config.scope = 'openid profile email';
             config.response_type = 'code';
-            config.storage = localStorage;
 
             config.silent_renew = true;
-            config.silent_redirect_url = window.location.origin + 'silent_renew.html';
-            config.log_console_debug_active = true;
+            config.silent_renew_url = 'https://localhost:4200/silent_renew.html';
+            //config.log_console_debug_active = true;
 
             const authWellKnownEndpoints = new AuthWellKnownEndpoints();
             authWellKnownEndpoints.setWellKnownEndpoints(this.oidcConfigService.wellKnownEndpoints);
