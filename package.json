@@ -5,7 +5,7 @@
         "ng": "ng",
         "build": "npm run build-lib",
         "watch-lib": "ng build angular-auth-oidc-client --watch",
-        "build-lib": "ng build angular-auth-oidc-client",
+        "build-lib": "npm run copy-readme-to-lib-folder && ng build angular-auth-oidc-client",
         "test-lib": "ng test angular-auth-oidc-client",
         "test-lib-ci": "ng test angular-auth-oidc-client --watch=false --browsers=ChromeHeadless",
         "lint-lib": "ng lint angular-auth-oidc-client",
@@ -14,7 +14,8 @@
         "publish-lib-next": "npm run build-lib && npm publish --tag next ./dist/angular-auth-oidc-client",
         "compodoc": "compodoc -p tsconfig.json",
         "compodoc:serve": "compodoc -s",
-        "start": "ng serve --ssl true --project sample-code-flow -o"
+        "start": "ng serve --ssl true --project sample-code-flow -o",
+        "copy-readme-to-lib-folder": "copyfiles README.md ./projects/angular-auth-oidc-client"
     },
     "private": true,
     "dependencies": {
@@ -43,6 +44,7 @@
         "@types/jasminewd2": "~2.0.3",
         "@types/node": "^8.9.5",
         "codelyzer": "~4.5.0",
+        "copyfiles": "^2.1.0",
         "jasmine-core": "~2.99.1",
         "jasmine-spec-reporter": "~4.2.1",
         "karma": "~3.1.1",
