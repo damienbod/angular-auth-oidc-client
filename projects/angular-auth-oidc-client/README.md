@@ -567,9 +567,6 @@ https://github.com/robisim74/angular-openid-connect-php/tree/angular-auth-oidc-c
 
 https://github.com/damienbod/AspNet5IdentityServerAngularImplicitFlow
 
-## Notes:
-
-This npm package was created using the https://github.com/robisim74/angular-library-starter from Roberto Simonetti.
 
 ## License
 
