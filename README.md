@@ -48,7 +48,7 @@ and type
  npm install
 ```
 
-## Using in the angular application
+## Using in the Angular application
 
 Import the module and services in your module.
 
@@ -67,7 +67,6 @@ import {
 } from 'angular-auth-oidc-client';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    console.log('APP_INITIALIZER STARTING');
     return () => oidcConfigService.load(`${window.location.origin}/api/ClientAppSettings`);
 }
 

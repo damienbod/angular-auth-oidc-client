@@ -14,10 +14,7 @@
         "typeRoots": ["node_modules/@types"],
         "lib": ["es2018", "dom"],
         "paths": {
-            "angular-auth-oidc-client": [
-                // "dist/angular-auth-oidc-client"
-                "projects/angular-auth-oidc-client/src/public_api"
-            ]
+            "angular-auth-oidc-client": ["dist/angular-auth-oidc-client"]
         }
     }
 }

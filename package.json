@@ -14,7 +14,7 @@
         "publish-lib-next": "npm run build-lib && npm publish --tag next ./dist/angular-auth-oidc-client",
         "compodoc": "compodoc -p tsconfig.json",
         "compodoc:serve": "compodoc -s",
-        "start": "ng serve --project sample-code-flow -o"
+        "start": "ng serve --ssl true --project sample-code-flow -o"
     },
     "private": true,
     "dependencies": {
