@@ -50,6 +50,10 @@ export class AppModule {
             config.response_type = 'code';
             config.storage = localStorage;
 
+            config.silent_renew = true;
+            config.silent_redirect_url = window.location.origin + 'silent_renew.html';
+            config.log_console_debug_active = true;
+
             const authWellKnownEndpoints = new AuthWellKnownEndpoints();
             authWellKnownEndpoints.setWellKnownEndpoints(this.oidcConfigService.wellKnownEndpoints);
 
