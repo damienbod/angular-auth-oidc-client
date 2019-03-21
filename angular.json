@@ -55,6 +55,7 @@
             "tsConfig": "projects/sample-code-flow/tsconfig.app.json",
             "assets": [
               "projects/sample-code-flow/src/favicon.ico",
+              "projects/sample-code-flow/src/silent-renew.html",
               "projects/sample-code-flow/src/assets"
             ],
             "styles": [
