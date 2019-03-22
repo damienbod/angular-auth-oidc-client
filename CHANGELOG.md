@@ -1,5 +1,11 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2019-03-22"></a>
+### 2019-03-22 version 9.0.3
+* Updated the Docs
+* Changed to Angular-CLI builder
+* Added a sample in this repo
+
 <a name="2019-02-27"></a>
 ### 2019-02-27 version 9.0.3
 * Add TokenHelperService to public API
