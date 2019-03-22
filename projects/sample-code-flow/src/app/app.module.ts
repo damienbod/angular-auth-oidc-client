@@ -53,6 +53,13 @@ export class AppModule {
             config.silent_renew_url = 'https://localhost:4200/silent-renew.html';
             config.log_console_debug_active = true;
 
+            //config.start_checksession = true;
+            //config.post_login_route = '/home';
+            //config.forbidden_route = '/home';
+            //config.unauthorized_route = '/home';
+            //config.max_id_token_iat_offset_allowed_in_seconds = 5;
+            //config.history_cleanup_off = true;
+
             const authWellKnownEndpoints = new AuthWellKnownEndpoints();
             authWellKnownEndpoints.setWellKnownEndpoints(this.oidcConfigService.wellKnownEndpoints);
 

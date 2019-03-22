@@ -58,7 +58,7 @@ default value : https://localhost:44311
 
 URL which can be used for a lightweight renew callback.
 
-Example of a silent_renew.html callback html file.
+Example of a silent-renew.html callback html file.
 
 Note: The CustomEvent does not work for older versions of IE. Add a javascript function instead of this, if required.
 
