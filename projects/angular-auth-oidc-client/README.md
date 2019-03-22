@@ -1,4 +1,4 @@
-# angular-auth-oidc-client
+# Angular Lib for OpenID Connect Code Flow with PKCE and Implicit Flow
 
 [![Build Status](https://travis-ci.org/damienbod/angular-auth-oidc-client.svg?branch=master)](https://travis-ci.org/damienbod/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/v/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/dm/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/l/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client)
 
@@ -22,12 +22,12 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 
 Documentation : [Quickstart](https://github.com/damienbod/angular-auth-oidc-client) | [API Documentation](https://github.com/damienbod/angular-auth-oidc-client/blob/master/API_DOCUMENTATION.md) | [Changelog](https://github.com/damienbod/angular-auth-oidc-client/blob/master/CHANGELOG.md)
 
-## <a></a>Using the package
+## Using the package
 
 Navigate to the level of your package.json and type
 
 ```typescript
- npm install angular-auth-oidc-client --save
+ npm install angular-auth-oidc-client
 ```
 
 or with yarn
@@ -48,37 +48,44 @@ and type
  npm install
 ```
 
-## Using in the angular application
+## Using in the Angular application with the APP_INITIALIZER
 
 Import the module and services in your module.
 
-The OidcSecurityService has a dependency on the HttpClientModule which needs to be imported. The angular-auth-oidc-client module supports all versions of Angular 4.3 onwards.
+The `OidcSecurityService` has a dependency on the `HttpClientModule` which needs to be imported. The angular-auth-oidc-client module supports all versions of Angular 4.3 onwards.
+
+Set the AuthConfiguration properties to match the server configuration. At present only the 'code' with PKCE, 'id_token token' or the 'id_token' flows are supported.
 
 ```typescript
-import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
-
+import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router';
 import {
     AuthModule,
+    AuthWellKnownEndpoints,
+    OidcConfigService,
     OidcSecurityService,
     OpenIDImplicitFlowConfiguration,
-    OidcConfigService,
-    AuthWellKnownEndpoints
 } from 'angular-auth-oidc-client';
+import { AppComponent } from './app.component';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    console.log('APP_INITIALIZER STARTING');
-    return () => oidcConfigService.load(`${window.location.origin}/api/ClientAppSettings`);
+    return () => oidcConfigService.load_using_stsServer('https://your_secure_token_service_url');
 }
 
 @NgModule({
+    declarations: [AppComponent],
     imports: [
-        ...
+        BrowserModule,
         HttpClientModule,
-        AuthModule.forRoot()
-    ],
-    declarations: [
-        ...
+        RouterModule.forRoot([
+            { path: '', component: AppComponent },
+            { path: 'home', component: AppComponent },
+            { path: 'forbidden', component: AppComponent },
+            { path: 'unauthorized', component: AppComponent },
+        ]),
+        AuthModule.forRoot(),
     ],
     providers: [
         OidcConfigService,
@@ -88,58 +95,32 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
             deps: [OidcConfigService],
             multi: true,
         },
-        ...
     ],
-    bootstrap:    [AppComponent],
+    bootstrap: [AppComponent],
 })
-```
 
-Set the AuthConfiguration properties to match the server configuration. At present only the 'code' with PKCE, 'id_token token' or the 'id_token' flows are supported.
-
-```typescript
 export class AppModule {
-    constructor(
-        private oidcSecurityService: OidcSecurityService,
-        private oidcConfigService: OidcConfigService
-    ) {
+    constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
         this.oidcConfigService.onConfigurationLoaded.subscribe(() => {
-            const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
-            openIDImplicitFlowConfiguration.stsServer = this.oidcConfigService.clientConfiguration.stsServer;
-            openIDImplicitFlowConfiguration.redirect_url = this.oidcConfigService.clientConfiguration.redirect_url;
-            // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer
-            // identified by the iss (issuer) Claim as an audience.
-            // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience,
-            // or if it contains additional audiences not trusted by the Client.
-            openIDImplicitFlowConfiguration.client_id = this.oidcConfigService.clientConfiguration.client_id;
-            openIDImplicitFlowConfiguration.response_type = this.oidcConfigService.clientConfiguration.response_type;
-            openIDImplicitFlowConfiguration.scope = this.oidcConfigService.clientConfiguration.scope;
-            openIDImplicitFlowConfiguration.post_logout_redirect_uri = this.oidcConfigService.clientConfiguration.post_logout_redirect_uri;
-            openIDImplicitFlowConfiguration.start_checksession = this.oidcConfigService.clientConfiguration.start_checksession;
-            openIDImplicitFlowConfiguration.silent_renew = this.oidcConfigService.clientConfiguration.silent_renew;
-            openIDImplicitFlowConfiguration.silent_renew_url = this.oidcConfigService.clientConfiguration.silent_renew_url;
-            openIDImplicitFlowConfiguration.post_login_route = this.oidcConfigService.clientConfiguration.post_login_route;
-            // HTTP 403
-            openIDImplicitFlowConfiguration.forbidden_route = this.oidcConfigService.clientConfiguration.forbidden_route;
-            // HTTP 401
-            openIDImplicitFlowConfiguration.unauthorized_route = this.oidcConfigService.clientConfiguration.unauthorized_route;
-            openIDImplicitFlowConfiguration.log_console_warning_active = this.oidcConfigService.clientConfiguration.log_console_warning_active;
-            openIDImplicitFlowConfiguration.log_console_debug_active = this.oidcConfigService.clientConfiguration.log_console_debug_active;
-            // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
-            // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
-            openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = this.oidcConfigService.clientConfiguration.max_id_token_iat_offset_allowed_in_seconds;
+            const config = new OpenIDImplicitFlowConfiguration();
+            config.stsServer = 'https://your_secure_token_service_url';
+            config.redirect_url = 'https://localhost:4200';
+            config.client_id = 'angular_code_client';
+            config.scope = 'openid profile email';
+            config.response_type = 'code';
+
+            config.silent_renew = true;
+            config.silent_renew_url = 'https://localhost:4200/silent-renew.html';
+
 
             const authWellKnownEndpoints = new AuthWellKnownEndpoints();
             authWellKnownEndpoints.setWellKnownEndpoints(this.oidcConfigService.wellKnownEndpoints);
 
-            this.oidcSecurityService.setupModule(
-                openIDImplicitFlowConfiguration,
-                authWellKnownEndpoints
-            );
+            this.oidcSecurityService.setupModule(config, authWellKnownEndpoints);
         });
-
-        console.log('APP STARTING');
     }
 }
+
 ```
 
 ## Code Flow with PKCE
@@ -147,34 +128,43 @@ export class AppModule {
 Create the login, logout component and use the oidcSecurityService
 
 ```typescript
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { filter, take } from 'rxjs/operators';
 
 @Component({
-    selector: 'my-app',
+    selector: 'app-root',
     templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit, OnDestroy {
+    isAuthenticated: boolean;
+    userData: any;
+
     constructor(public oidcSecurityService: OidcSecurityService) {
-	this.oidcSecurityService.getIsModuleSetup().pipe(
-	    filter((isModuleSetup: boolean) => isModuleSetup),
-	    take(1)
-	).subscribe((isModuleSetup: boolean) => {
-	    this.doCallbackLogicIfRequired();
-	});
+
+      if (this.oidcSecurityService.moduleSetup) {
+        this.doCallbackLogicIfRequired();
+      } else {
+        this.oidcSecurityService.onModuleSetup.subscribe(() => {
+          this.doCallbackLogicIfRequired();
+        });
+      }
+
     }
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.oidcSecurityService.getIsAuthorized().subscribe(auth => {
+            this.isAuthenticated = auth;
+        });
+
+        this.oidcSecurityService.getUserData().subscribe(userData => {
+            this.userData = userData;
+        });
+    }
 
     ngOnDestroy(): void {}
 
     login() {
-  
-        // if you need to add extra parameters to the login
-        // let culture = 'de-CH';
-        // this.oidcSecurityService.setCustomRequestParameters({ 'ui_locales': culture });
-	
         this.oidcSecurityService.authorize();
     }
 
@@ -183,12 +173,79 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private doCallbackLogicIfRequired() {
-        console.log(window.location);
         // Will do a callback, if the url has a code and state parameter.
         this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());
     }
 }
 
+```
+
+And a simple template for the component.
+
+```typescript
+<button *ngIf="!isAuthenticated" (click)="login()">Login</button>
+<button *ngIf="isAuthenticated" (click)="logout()">Logout</button>
+
+<hr />
+
+Is Authenticated: {{ isAuthenticated }}
+
+<br />
+<br />
+
+{{ userData | json }}
+
+```
+
+## Silent Renew
+
+When silent renew is enabled, a DOM event will be automatically installed in the application's host window. 
+The event `oidc-silent-renew-message` accepts a `CustomEvent` instance with the token returned from the OAuth server 
+in its `detail` field.
+The event handler will send this token to the authorization callback and complete the validation.
+
+Point the `silent_renew_url` property to an HTML file which contains the following script element to enable authorization.
+
+### Code Flow with PKCE
+```javascript
+<script>
+	window.onload = function () {
+		/* The parent window hosts the Angular application */
+		var parent = window.parent;
+		/* Send the id_token information to the oidc message handler */
+		var event = new CustomEvent('oidc-silent-renew-message', { detail: window.location });
+		parent.dispatchEvent(event);
+	};
+</script>
+```
+
+### Silent Renew Angular-CLI
+
+Add the silent-renew.html file to the angular.json assets configuration
+```javascript
+"assets": [
+              "projects/sample-code-flow/src/silent-renew.html",
+              "projects/sample-code-flow/src/favicon.ico",
+              "projects/sample-code-flow/src/assets"
+            ],
+```
+
+## Using the access_token
+
+In the http services, add the token to the header using the oidcSecurityService
+
+```typescript
+private setHeaders() {
+	this.headers = new HttpHeaders();
+	this.headers = this.headers.set('Content-Type', 'application/json');
+	this.headers = this.headers.set('Accept', 'application/json');
+
+	const token = this._securityService.getToken();
+	if (token !== '') {
+		const tokenValue = 'Bearer ' + token;
+		this.headers = this.headers.set('Authorization', tokenValue);
+	}
+}
 ```
 
 ## Implicit Flow
@@ -239,29 +296,12 @@ export class AppComponent implements OnInit, OnDestroy {
 }
 ```
 
-In the http services, add the token to the header using the oidcSecurityService
-
-```typescript
-private setHeaders() {
-	this.headers = new HttpHeaders();
-	this.headers = this.headers.set('Content-Type', 'application/json');
-	this.headers = this.headers.set('Accept', 'application/json');
-
-	const token = this._securityService.getToken();
-	if (token !== '') {
-		const tokenValue = 'Bearer ' + token;
-		this.headers = this.headers.set('Authorization', tokenValue);
-	}
-}
-```
-
 ## Loading the configuration from the server
 
 Note the configuration json must return a property stsServer for this to work.
 
 ```typescript
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    console.log('APP_INITIALIZER STARTING');
     return () => oidcConfigService.load(`${window.location.origin}/api/ClientAppSettings`);
 }
 ```
@@ -355,7 +395,6 @@ Sometimes it is required to load custom .well-known/openid-configuration. The lo
 
 ```typescript
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    console.log('APP_INITIALIZER STARTING');
     return () =>
         oidcConfigService.load_using_custom_stsServer(
             'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=b2c_1_susi'
@@ -389,16 +428,11 @@ export class AuthorizationGuard implements CanActivate, CanLoad {
     }
 
     private checkUser(): Observable<boolean> | boolean {
-        console.log(route + '' + state);
-        console.log('AuthorizationGuard, canActivate');
-
         return this.oidcSecurityService.getIsAuthorized().pipe(
             tap((isAuthorized: boolean) => {
-                console.log('AuthorizationGuard, canActivate isAuthorized: ' + isAuthorized);
-                
-		if(!isAuthorized) {
-		    this.router.navigate(['/unauthorized']);
-	        }
+                if(!isAuthorized) {
+                    this.router.navigate(['/unauthorized']);
+                }
             })
         );
     }
@@ -491,30 +525,8 @@ login() {
 }
 ```
 
-## Silent Renew
-
-When silent renew is enabled, a DOM event will be automatically installed in the application's host window. 
-The event `oidc-silent-renew-message` accepts a `CustomEvent` instance with the token returned from the OAuth server 
-in its `detail` field.
-The event handler will send this token to the authorization callback and complete the validation.
-
-Point the `silent_renew_url` property to an HTML file which contains the following script element to enable authorization.
-
-Code Flow with PKCE
-```
-<script>
-	window.onload = function () {
-		/* The parent window hosts the Angular application */
-		var parent = window.parent;
-		/* Send the id_token information to the oidc message handler */
-		var event = new CustomEvent('oidc-silent-renew-message', { detail: window.location });
-		parent.dispatchEvent(event);
-	};
-</script>
-```
-
-Implicit Flow
-```
+###  Silent Renew Implicit Flow
+```javascript
 <script>
     window.onload = function () {
     /* The parent window hosts the Angular application */
@@ -566,7 +578,6 @@ https://github.com/robisim74/angular-openid-connect-php/tree/angular-auth-oidc-c
 ### Using src code directly:
 
 https://github.com/damienbod/AspNet5IdentityServerAngularImplicitFlow
-
 
 ## License
 

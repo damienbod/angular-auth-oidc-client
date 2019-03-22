@@ -230,6 +230,24 @@ Add the silent-renew.html file to the angular.json assets configuration
             ],
 ```
 
+## Using the access_token
+
+In the http services, add the token to the header using the oidcSecurityService
+
+```typescript
+private setHeaders() {
+	this.headers = new HttpHeaders();
+	this.headers = this.headers.set('Content-Type', 'application/json');
+	this.headers = this.headers.set('Accept', 'application/json');
+
+	const token = this._securityService.getToken();
+	if (token !== '') {
+		const tokenValue = 'Bearer ' + token;
+		this.headers = this.headers.set('Authorization', tokenValue);
+	}
+}
+```
+
 ## Implicit Flow
 
 Create the login, logout component and use the oidcSecurityService
@@ -275,22 +293,6 @@ export class AppComponent implements OnInit, OnDestroy {
             this.oidcSecurityService.authorizedImplicitFlowCallback();
         }
     }
-}
-```
-
-In the http services, add the token to the header using the oidcSecurityService
-
-```typescript
-private setHeaders() {
-	this.headers = new HttpHeaders();
-	this.headers = this.headers.set('Content-Type', 'application/json');
-	this.headers = this.headers.set('Accept', 'application/json');
-
-	const token = this._securityService.getToken();
-	if (token !== '') {
-		const tokenValue = 'Bearer ' + token;
-		this.headers = this.headers.set('Authorization', tokenValue);
-	}
 }
 ```
 
