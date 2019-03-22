@@ -11,15 +11,15 @@ export class AppComponent implements OnInit, OnDestroy {
     userData: any;
 
     constructor(public oidcSecurityService: OidcSecurityService) {
-        this.oidcSecurityService
-            .getIsModuleSetup()
-            .pipe(
-                filter((isModuleSetup: boolean) => !!isModuleSetup),
-                take(1)
-            )
-            .subscribe((isModuleSetup: boolean) => {
-                this.doCallbackLogicIfRequired();
-            });
+
+      if (this.oidcSecurityService.moduleSetup) {
+        this.doCallbackLogicIfRequired();
+      } else {
+        this.oidcSecurityService.onModuleSetup.subscribe(() => {
+          this.doCallbackLogicIfRequired();
+        });
+      }
+
     }
 
     ngOnInit() {
