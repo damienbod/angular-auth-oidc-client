@@ -1,4 +1,4 @@
-# angular-auth-oidc-client
+# Angular Lib for OpenID Connect Code Flow with PKCE and Implicit Flow
 
 [![Build Status](https://travis-ci.org/damienbod/angular-auth-oidc-client.svg?branch=master)](https://travis-ci.org/damienbod/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/v/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/dm/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/l/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client)
 
@@ -22,12 +22,12 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 
 Documentation : [Quickstart](https://github.com/damienbod/angular-auth-oidc-client) | [API Documentation](https://github.com/damienbod/angular-auth-oidc-client/blob/master/API_DOCUMENTATION.md) | [Changelog](https://github.com/damienbod/angular-auth-oidc-client/blob/master/CHANGELOG.md)
 
-## <a></a>Using the package
+## Using the package
 
 Navigate to the level of your package.json and type
 
 ```typescript
- npm install angular-auth-oidc-client --save
+ npm install angular-auth-oidc-client
 ```
 
 or with yarn
@@ -48,11 +48,11 @@ and type
  npm install
 ```
 
-## Using in the angular application
+## Using in the Angular application with the APP_INITIALIZER
 
 Import the module and services in your module.
 
-The OidcSecurityService has a dependency on the HttpClientModule which needs to be imported. The angular-auth-oidc-client module supports all versions of Angular 4.3 onwards.
+The `OidcSecurityService` has a dependency on the `HttpClientModule` which needs to be imported. The angular-auth-oidc-client module supports all versions of Angular 4.3 onwards.
 
 ```typescript
 import { NgModule, APP_INITIALIZER } from '@angular/core';
@@ -67,7 +67,6 @@ import {
 } from 'angular-auth-oidc-client';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    console.log('APP_INITIALIZER STARTING');
     return () => oidcConfigService.load(`${window.location.origin}/api/ClientAppSettings`);
 }
 
@@ -136,8 +135,6 @@ export class AppModule {
                 authWellKnownEndpoints
             );
         });
-
-        console.log('APP STARTING');
     }
 }
 ```
@@ -261,7 +258,6 @@ Note the configuration json must return a property stsServer for this to work.
 
 ```typescript
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    console.log('APP_INITIALIZER STARTING');
     return () => oidcConfigService.load(`${window.location.origin}/api/ClientAppSettings`);
 }
 ```
@@ -355,7 +351,6 @@ Sometimes it is required to load custom .well-known/openid-configuration. The lo
 
 ```typescript
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    console.log('APP_INITIALIZER STARTING');
     return () =>
         oidcConfigService.load_using_custom_stsServer(
             'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=b2c_1_susi'
@@ -389,16 +384,11 @@ export class AuthorizationGuard implements CanActivate, CanLoad {
     }
 
     private checkUser(): Observable<boolean> | boolean {
-        console.log(route + '' + state);
-        console.log('AuthorizationGuard, canActivate');
-
         return this.oidcSecurityService.getIsAuthorized().pipe(
             tap((isAuthorized: boolean) => {
-                console.log('AuthorizationGuard, canActivate isAuthorized: ' + isAuthorized);
-                
-		if(!isAuthorized) {
-		    this.router.navigate(['/unauthorized']);
-	        }
+                if(!isAuthorized) {
+                    this.router.navigate(['/unauthorized']);
+                }
             })
         );
     }
@@ -500,8 +490,8 @@ The event handler will send this token to the authorization callback and complet
 
 Point the `silent_renew_url` property to an HTML file which contains the following script element to enable authorization.
 
-Code Flow with PKCE
-```
+### Code Flow with PKCE
+```javascript
 <script>
 	window.onload = function () {
 		/* The parent window hosts the Angular application */
@@ -513,8 +503,8 @@ Code Flow with PKCE
 </script>
 ```
 
-Implicit Flow
-```
+### Implicit Flow
+```javascript
 <script>
     window.onload = function () {
     /* The parent window hosts the Angular application */
@@ -566,7 +556,6 @@ https://github.com/robisim74/angular-openid-connect-php/tree/angular-auth-oidc-c
 ### Using src code directly:
 
 https://github.com/damienbod/AspNet5IdentityServerAngularImplicitFlow
-
 
 ## License
 
