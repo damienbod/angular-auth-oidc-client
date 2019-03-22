@@ -248,7 +248,46 @@ private setHeaders() {
 }
 ```
 
-## Implicit Flow
+## Using Guards
+
+```typescript
+import { Injectable } from '@angular/core';
+import { Router, CanActivate, CanLoad, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+
+import { OidcSecurityService } from './auth/services/oidc.security.service';
+
+@Injectable()
+export class AuthorizationGuard implements CanActivate, CanLoad {
+    constructor(private router: Router, private oidcSecurityService: OidcSecurityService) {}
+
+    canActivate(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot
+    ): Observable<boolean> {
+        return this.checkUser();
+    }
+
+    canLoad(state: Route): Observable<boolean> {
+        return this.checkUser();
+    }
+
+    private checkUser(): Observable<boolean> | boolean {
+        return this.oidcSecurityService.getIsAuthorized().pipe(
+            tap((isAuthorized: boolean) => {
+                if(!isAuthorized) {
+                    this.router.navigate(['/unauthorized']);
+                }
+            })
+        );
+    }
+}
+```
+
+## Implicit Flow (Not recommended)
+
+This flow is no longer recommended, but some servers only support this, and not the Code flow with PKCE
 
 Create the login, logout component and use the oidcSecurityService
 
@@ -399,43 +438,6 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
         oidcConfigService.load_using_custom_stsServer(
             'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=b2c_1_susi'
         );
-}
-```
-
-## Using Guards
-
-```typescript
-import { Injectable } from '@angular/core';
-import { Router, CanActivate, CanLoad, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
-
-import { OidcSecurityService } from './auth/services/oidc.security.service';
-
-@Injectable()
-export class AuthorizationGuard implements CanActivate, CanLoad {
-    constructor(private router: Router, private oidcSecurityService: OidcSecurityService) {}
-
-    canActivate(
-        route: ActivatedRouteSnapshot,
-        state: RouterStateSnapshot
-    ): Observable<boolean> {
-        return this.checkUser();
-    }
-
-    canLoad(state: Route): Observable<boolean> {
-        return this.checkUser();
-    }
-
-    private checkUser(): Observable<boolean> | boolean {
-        return this.oidcSecurityService.getIsAuthorized().pipe(
-            tap((isAuthorized: boolean) => {
-                if(!isAuthorized) {
-                    this.router.navigate(['/unauthorized']);
-                }
-            })
-        );
-    }
 }
 ```
 
