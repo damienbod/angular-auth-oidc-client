@@ -30,7 +30,7 @@ describe('AuthConfiguration', () => {
         });
 
         it('silent_renew and start_checksession can be set to true when using the browser platform', () => {
-            let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
+            const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
             openIDImplicitFlowConfiguration.silent_renew = true;
             openIDImplicitFlowConfiguration.start_checksession = true;
 
@@ -51,7 +51,7 @@ describe('AuthConfiguration', () => {
         });
 
         it('silent_renew and start_checksession are always false when not using the browser platform', () => {
-            let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
+            const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
             openIDImplicitFlowConfiguration.silent_renew = true;
             openIDImplicitFlowConfiguration.start_checksession = true;
 

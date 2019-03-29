@@ -1,5 +1,6 @@
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+// tslint:disable:variable-name
 import { isPlatformBrowser } from '@angular/common';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
 export class OpenIDImplicitFlowConfiguration {
@@ -44,6 +45,7 @@ export class OpenIDImplicitFlowConfiguration {
 export class AuthConfiguration {
     private openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration | undefined;
     private defaultConfig: OpenIDImplicitFlowConfiguration;
+    private onConfigurationChangeInternal = new Subject<OpenIDImplicitFlowConfiguration>();
 
     get stsServer(): string {
         if (this.openIDImplicitFlowConfiguration) {
@@ -237,17 +239,20 @@ export class AuthConfiguration {
         return this.defaultConfig.storage;
     }
 
+    // tslint:disable-next-line:ban-types
     constructor(@Inject(PLATFORM_ID) private platformId: Object) {
         this.defaultConfig = new OpenIDImplicitFlowConfiguration();
     }
+     // tslint:enable-next-line:ban-types
 
     init(openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration) {
         this.openIDImplicitFlowConfiguration = openIDImplicitFlowConfiguration;
-        this._onConfigurationChange.next(openIDImplicitFlowConfiguration);
+        this.onConfigurationChangeInternal.next(openIDImplicitFlowConfiguration);
     }
 
-    private _onConfigurationChange = new Subject<OpenIDImplicitFlowConfiguration>();
     get onConfigurationChange(): Observable<OpenIDImplicitFlowConfiguration> {
-        return this._onConfigurationChange.asObservable();
+        return this.onConfigurationChangeInternal.asObservable();
     }
 }
+
+// tslint:enable:variable-name

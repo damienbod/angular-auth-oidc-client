@@ -26,8 +26,10 @@ describe('OidcSecurityStateValidationService', () => {
 
     openIDImplicitFlowConfiguration.stsServer = 'https://localhost:44363';
     openIDImplicitFlowConfiguration.redirect_url = 'https://localhost:44363';
-    // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer identified by the iss (issuer) Claim as an audience.
-    // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences not trusted by the Client.
+    // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the
+    // Issuer identified by the iss (issuer) Claim as an audience.
+    // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience,
+    // or if it contains additional audiences not trusted by the Client.
     openIDImplicitFlowConfiguration.client_id = 'singleapp';
     openIDImplicitFlowConfiguration.response_type = 'id_token token';
     openIDImplicitFlowConfiguration.scope = 'dataEventRecords openid';
@@ -97,7 +99,7 @@ describe('OidcSecurityStateValidationService', () => {
     it('should return invalid result if validateStateFromHashCallback is false', () => {
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+        const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState('', new JwtKeys());
 
@@ -164,7 +166,7 @@ describe('OidcSecurityStateValidationService', () => {
 
         spyOn(oidcSecurityValidation, 'validate_signature_id_token').and.returnValue(false);
 
-        let logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
+        const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -193,7 +195,7 @@ describe('OidcSecurityStateValidationService', () => {
 
         spyOn(oidcSecurityValidation, 'validate_id_token_nonce').and.returnValue(false);
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+        const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -224,7 +226,7 @@ describe('OidcSecurityStateValidationService', () => {
 
         spyOn(oidcSecurityValidation, 'validate_required_id_token').and.returnValue(false);
 
-        let logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
+        const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -259,7 +261,7 @@ describe('OidcSecurityStateValidationService', () => {
 
         spyOnProperty(authConfiguration, 'max_id_token_iat_offset_allowed_in_seconds', 'get').and.returnValue(0);
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+        const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -298,7 +300,7 @@ describe('OidcSecurityStateValidationService', () => {
 
         spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(false);
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+        const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -339,7 +341,7 @@ describe('OidcSecurityStateValidationService', () => {
 
         spyOnProperty(authConfiguration, 'client_id', 'get').and.returnValue('');
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+        const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -382,7 +384,7 @@ describe('OidcSecurityStateValidationService', () => {
 
         spyOn(oidcSecurityValidation, 'validate_id_token_exp_not_expired').and.returnValue(false);
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+        const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -427,7 +429,7 @@ describe('OidcSecurityStateValidationService', () => {
 
         spyOnProperty(authConfiguration, 'auto_clean_state_after_authentication', 'get').and.returnValue('');
 
-        let logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
+        const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -475,7 +477,7 @@ describe('OidcSecurityStateValidationService', () => {
 
         spyOn(oidcSecurityValidation, 'validate_id_token_at_hash').and.returnValue(false);
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+        const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {

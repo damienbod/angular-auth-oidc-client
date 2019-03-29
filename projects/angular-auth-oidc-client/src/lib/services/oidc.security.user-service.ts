@@ -11,7 +11,11 @@ export class OidcSecurityUserService {
     private userData: any = '';
     private authWellKnownEndpoints: AuthWellKnownEndpoints | undefined;
 
-    constructor(private oidcDataService: OidcDataService, private oidcSecurityCommon: OidcSecurityCommon, private loggerService: LoggerService) {}
+    constructor(
+        private oidcDataService: OidcDataService,
+        private oidcSecurityCommon: OidcSecurityCommon,
+        private loggerService: LoggerService
+    ) {}
 
     setupModule(authWellKnownEndpoints: AuthWellKnownEndpoints) {
         this.authWellKnownEndpoints = Object.assign({}, authWellKnownEndpoints);

@@ -46,62 +46,62 @@ describe('EqualityHelperServiceTests', () => {
     });
 
     it('doesSessionExist returns false if nothing is setup', () => {
-        let result = (oidcSecurityCheckSession as any).doesSessionExist();
+        const result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(false);
     });
 
     it('doesSessionExist returns true if document found on window.parent.document', () => {
-        let node = document.createElement('iframe');
+        const node = document.createElement('iframe');
         node.setAttribute('id', 'myiFrameForCheckSession');
         window.parent.document.documentElement.appendChild(node);
 
-        let result = (oidcSecurityCheckSession as any).doesSessionExist();
+        const result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(true);
-        let remove = window.parent.document.getElementById('myiFrameForCheckSession');
+        const remove = window.parent.document.getElementById('myiFrameForCheckSession');
         if (remove) {
             window.parent.document.documentElement.removeChild(remove);
         }
     });
 
     it('doesSessionExist returns true if document found on window.document', () => {
-        let node = document.createElement('iframe');
+        const node = document.createElement('iframe');
         node.setAttribute('id', 'myiFrameForCheckSession');
         window.document.documentElement.appendChild(node);
-        let result = (oidcSecurityCheckSession as any).doesSessionExist();
+        const result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(true);
-        let remove = document.getElementById('myiFrameForCheckSession');
+        const remove = document.getElementById('myiFrameForCheckSession');
         if (remove) {
             window.document.documentElement.removeChild(remove);
         }
     });
 
     it('doesSessionExist returns false if document not found on window.parent.document given the wrong id', () => {
-        let node = document.createElement('iframe');
+        const node = document.createElement('iframe');
         node.setAttribute('id', 'idwhichshouldneverexist');
         window.parent.document.documentElement.appendChild(node);
-        let result = (oidcSecurityCheckSession as any).doesSessionExist();
+        const result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(false);
-        let remove = window.parent.document.getElementById('idwhichshouldneverexist');
+        const remove = window.parent.document.getElementById('idwhichshouldneverexist');
         if (remove) {
             window.parent.document.documentElement.removeChild(remove);
         }
     });
 
     it('doesSessionExist returns false if document not found on window.document given the wrong id', () => {
-        let node = document.createElement('iframe');
+        const node = document.createElement('iframe');
         node.setAttribute('id', 'idwhichshouldneverexist');
         window.document.documentElement.appendChild(node);
-        let result = (oidcSecurityCheckSession as any).doesSessionExist();
+        const result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(false);
 
-        let remove = document.getElementById('idwhichshouldneverexist');
+        const remove = document.getElementById('idwhichshouldneverexist');
         if (remove) {
             window.document.documentElement.removeChild(remove);
         }
     });
 
     it('existsParent is set when document was found on window.parent', () => {
-        let node = document.createElement('iframe');
+        const node = document.createElement('iframe');
         node.setAttribute('id', 'myiFrameForCheckSession');
         window.parent.document.documentElement.appendChild(node);
 
@@ -109,14 +109,14 @@ describe('EqualityHelperServiceTests', () => {
         expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
         expect((oidcSecurityCheckSession as any).sessionIframe).toBe(node);
 
-        let remove = window.parent.document.getElementById('myiFrameForCheckSession');
+        const remove = window.parent.document.getElementById('myiFrameForCheckSession');
         if (remove) {
             window.parent.document.documentElement.removeChild(remove);
         }
     });
 
     it('existsParent is set when document was found on window', () => {
-        let node = document.createElement('iframe');
+        const node = document.createElement('iframe');
         node.setAttribute('id', 'myiFrameForCheckSession');
         window.document.documentElement.appendChild(node);
 
@@ -124,7 +124,7 @@ describe('EqualityHelperServiceTests', () => {
         expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
         expect((oidcSecurityCheckSession as any).sessionIframe).toBe(node);
 
-        let remove = document.getElementById('myiFrameForCheckSession');
+        const remove = document.getElementById('myiFrameForCheckSession');
         if (remove) {
             window.document.documentElement.removeChild(remove);
         }

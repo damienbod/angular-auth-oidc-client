@@ -40,7 +40,7 @@ describe('OidcSecurityValidation', () => {
     });
 
     it('validate aud string', () => {
-        let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
+        const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
         openIDImplicitFlowConfiguration.stsServer = 'https://localhost:5001';
         openIDImplicitFlowConfiguration.redirect_url = 'https://localhost:44386';
         openIDImplicitFlowConfiguration.client_id = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
@@ -60,15 +60,15 @@ describe('OidcSecurityValidation', () => {
         authConfiguration.init(openIDImplicitFlowConfiguration);
 
         const dataIdToken = { aud: 'banana' };
-        let valueTrue = oidcSecurityValidation.validate_id_token_aud(dataIdToken, 'banana');
+        const valueTrue = oidcSecurityValidation.validate_id_token_aud(dataIdToken, 'banana');
         expect(valueTrue).toEqual(true);
 
-        let valueFalse = oidcSecurityValidation.validate_id_token_aud(dataIdToken, 'bananammmm');
+        const valueFalse = oidcSecurityValidation.validate_id_token_aud(dataIdToken, 'bananammmm');
         expect(valueFalse).toEqual(false);
     });
 
     it('validate aud array', () => {
-        let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
+        const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
         openIDImplicitFlowConfiguration.stsServer = 'https://localhost:5001';
         openIDImplicitFlowConfiguration.redirect_url = 'https://localhost:44386';
         openIDImplicitFlowConfiguration.client_id = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
@@ -90,10 +90,10 @@ describe('OidcSecurityValidation', () => {
         const dataIdToken = {
             aud: ['banana', 'apple', 'https://nice.dom'],
         };
-        let valueTrue = oidcSecurityValidation.validate_id_token_aud(dataIdToken, ['banana', 'apple', 'https://nice.dom']);
+        const valueTrue = oidcSecurityValidation.validate_id_token_aud(dataIdToken, ['banana', 'apple', 'https://nice.dom']);
         expect(valueTrue).toEqual(true);
 
-        let valueFalse = oidcSecurityValidation.validate_id_token_aud(dataIdToken, ['ooo', 'apple', 'https://nice.dom']);
+        const valueFalse = oidcSecurityValidation.validate_id_token_aud(dataIdToken, ['ooo', 'apple', 'https://nice.dom']);
         expect(valueFalse).toEqual(false);
     });
 });

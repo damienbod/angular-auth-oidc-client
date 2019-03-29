@@ -21,10 +21,10 @@ export class OidcSecurityCheckSession {
     private outstandingMessages = 0;
     private heartBeatInterval = 3000;
     private iframeRefreshInterval = 60000;
-    private _onCheckSessionChanged = new Subject<any>();
+    private onCheckSessionChangedInternal = new Subject<any>();
 
     public get onCheckSessionChanged(): Observable<any> {
-        return this._onCheckSessionChanged.asObservable();
+        return this.onCheckSessionChangedInternal.asObservable();
     }
 
     constructor(
@@ -93,19 +93,19 @@ export class OidcSecurityCheckSession {
     }
 
     private pollServerSession(clientId: string) {
-        const _pollServerSessionRecur = () => {
+        const pollServerSessionRecur = () => {
             this.init()
                 .pipe(take(1))
                 .subscribe(() => {
                     if (this.sessionIframe && clientId) {
                         this.loggerService.logDebug(this.sessionIframe);
-                        const session_state = this.oidcSecurityCommon.sessionState;
-                        if (session_state) {
+                        const sessionState = this.oidcSecurityCommon.sessionState;
+                        if (sessionState) {
                             this.outstandingMessages++;
-                            this.sessionIframe.contentWindow.postMessage(clientId + ' ' + session_state, this.authConfiguration.stsServer);
+                            this.sessionIframe.contentWindow.postMessage(clientId + ' ' + sessionState, this.authConfiguration.stsServer);
                         } else {
                             this.loggerService.logDebug('OidcSecurityCheckSession pollServerSession session_state is blank');
-                            this._onCheckSessionChanged.next();
+                            this.onCheckSessionChangedInternal.next();
                         }
                     } else {
                         this.loggerService.logWarning('OidcSecurityCheckSession pollServerSession sessionIframe does not exist');
@@ -121,17 +121,17 @@ export class OidcSecurityCheckSession {
                                 this.outstandingMessages
                             }. Server unreachable?`
                         );
-                        this._onCheckSessionChanged.next();
+                        this.onCheckSessionChangedInternal.next();
                     }
 
-                    this.scheduledHeartBeat = setTimeout(_pollServerSessionRecur, this.heartBeatInterval);
+                    this.scheduledHeartBeat = setTimeout(pollServerSessionRecur, this.heartBeatInterval);
                 });
         };
 
         this.outstandingMessages = 0;
 
         this.zone.runOutsideAngular(() => {
-            this.scheduledHeartBeat = setTimeout(_pollServerSessionRecur, this.heartBeatInterval);
+            this.scheduledHeartBeat = setTimeout(pollServerSessionRecur, this.heartBeatInterval);
         });
     }
     private clearScheduledHeartBeat() {
@@ -145,7 +145,7 @@ export class OidcSecurityCheckSession {
             if (e.data === 'error') {
                 this.loggerService.logWarning('error from checksession messageHandler');
             } else if (e.data === 'changed') {
-                this._onCheckSessionChanged.next();
+                this.onCheckSessionChangedInternal.next();
             } else {
                 this.loggerService.logDebug(e.data + ' from checksession messageHandler');
             }

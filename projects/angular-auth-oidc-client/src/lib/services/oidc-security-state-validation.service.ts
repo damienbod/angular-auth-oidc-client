@@ -64,7 +64,9 @@ export class StateValidationService {
                 this.authConfiguration.max_id_token_iat_offset_allowed_in_seconds
             )
         ) {
-            this.loggerService.logWarning('authorizedCallback Validation, iat rejected id_token was issued too far away from the current time');
+            this.loggerService.logWarning(
+                'authorizedCallback Validation, iat rejected id_token was issued too far away from the current time'
+            );
             toReturn.state = ValidationResult.MaxOffsetExpired;
             return toReturn;
         }
@@ -72,8 +74,10 @@ export class StateValidationService {
         if (this.authWellKnownEndpoints) {
             if (this.authConfiguration.iss_validation_off) {
                 this.loggerService.logDebug('iss validation is turned off, this is not recommended!');
-            } else if (!this.authConfiguration.iss_validation_off &&
-                !this.oidcSecurityValidation.validate_id_token_iss(toReturn.decoded_id_token, this.authWellKnownEndpoints.issuer)) {
+            } else if (
+                !this.authConfiguration.iss_validation_off &&
+                !this.oidcSecurityValidation.validate_id_token_iss(toReturn.decoded_id_token, this.authWellKnownEndpoints.issuer)
+            ) {
                 this.loggerService.logWarning('authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer');
                 toReturn.state = ValidationResult.IssDoesNotMatchIssuer;
                 return toReturn;
@@ -104,9 +108,12 @@ export class StateValidationService {
             return toReturn;
         }
 
-        if (!this.oidcSecurityValidation.validate_id_token_at_hash(toReturn.access_token,
-            toReturn.decoded_id_token.at_hash,
-            this.authConfiguration.response_type === 'code') ||
+        if (
+            !this.oidcSecurityValidation.validate_id_token_at_hash(
+                toReturn.access_token,
+                toReturn.decoded_id_token.at_hash,
+                this.authConfiguration.response_type === 'code'
+            ) ||
             !toReturn.access_token
         ) {
             this.loggerService.logWarning('authorizedCallback incorrect at_hash');
