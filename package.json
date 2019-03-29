@@ -15,7 +15,8 @@
         "compodoc": "compodoc -p tsconfig.json",
         "compodoc:serve": "compodoc -s",
         "start": "ng serve --ssl true --project sample-code-flow -o",
-        "copy-readme-to-lib-folder": "copyfiles README.md ./projects/angular-auth-oidc-client"
+        "copy-readme-to-lib-folder": "copyfiles README.md ./projects/angular-auth-oidc-client",
+        "build-lib-ci": "npm run lint-lib && npm run test-lib-ci && npm run build-lib"
     },
     "private": true,
     "dependencies": {
