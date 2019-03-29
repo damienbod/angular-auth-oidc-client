@@ -1,5 +1,10 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2019-03-29"></a>
+### 2019-03-29 version 9.0.4
+* Updated the Docs
+* Adding sample usage to repo
+
 <a name="2019-03-22"></a>
 ### 2019-03-22 version 9.0.3
 * Updated the Docs
