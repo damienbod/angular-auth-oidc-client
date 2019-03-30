@@ -12,7 +12,7 @@ import {
 import { AppComponent } from './app.component';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    return () => oidcConfigService.load_using_stsServer('https://localhost:44318');
+    return () => oidcConfigService.loadUsingStsServer('https://offeringsolutions-sts.azurewebsites.net');
 }
 
 @NgModule({
@@ -43,9 +43,9 @@ export class AppModule {
     constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
         this.oidcConfigService.onConfigurationLoaded.subscribe(() => {
             const config = new OpenIDImplicitFlowConfiguration();
-            config.stsServer = 'https://localhost:44318';
+            config.stsServer = 'https://offeringsolutions-sts.azurewebsites.net';
             config.redirect_url = 'https://localhost:4200';
-            config.client_id = 'angular_code_client';
+            config.client_id = 'angularClient';
             config.scope = 'openid profile email';
             config.response_type = 'code';
 

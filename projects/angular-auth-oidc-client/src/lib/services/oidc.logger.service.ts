@@ -5,8 +5,8 @@ import { AuthConfiguration } from '../modules/auth.configuration';
 export class LoggerService {
     constructor(private authConfiguration: AuthConfiguration) {}
 
-    logError(message: any) {
-        console.error(message);
+    logError(message: any, error: any = null) {
+        console.error(message, error);
     }
 
     logWarning(message: any) {
