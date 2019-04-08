@@ -71,7 +71,7 @@ import {
 import { AppComponent } from './app.component';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    return () => oidcConfigService.loadUsingStsServer('https://your_secure_token_service_url');
+    return () => oidcConfigService.load_using_stsServer('https://your_secure_token_service_url');
 }
 
 @NgModule({
@@ -359,7 +359,7 @@ You can add any configurations to this json, as long as the stsServer is present
 	"post_logout_redirect_uri":"https://localhost:44311",
 	"start_checksession":true,
 	"silent_renew":true,
-	"silent_renew_url":"https://localhost:44311/silent-renew.html"
+	"silent_renew_url":"https://localhost:44311/silent-renew.html",
 	"post_login_route":"/home",
 	"forbidden_route":"/forbidden",
 	"unauthorized_route":"/unauthorized",
