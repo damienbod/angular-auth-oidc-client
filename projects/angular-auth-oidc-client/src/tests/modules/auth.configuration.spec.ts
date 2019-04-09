@@ -1,6 +1,6 @@
 import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { OpenIDImplicitFlowConfiguration } from '../../lib/models/auth.configuration';
+import { OpenIdConfiguration } from '../../lib/models/auth.configuration';
 import { AuthModule } from '../../lib/modules/auth.module';
 import { ConfigurationProvider } from '../../lib/services/auth-configuration.provider';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
@@ -32,7 +32,7 @@ describe('AuthConfiguration', () => {
         });
 
         it('silent_renew and start_checksession can be set to true when using the browser platform', () => {
-            const config: OpenIDImplicitFlowConfiguration = {
+            const config: OpenIdConfiguration = {
                 silent_renew: true,
                 start_checksession: true,
             };
@@ -54,7 +54,7 @@ describe('AuthConfiguration', () => {
         });
 
         it('silent_renew and start_checksession are always false when not using the browser platform', () => {
-            const config: OpenIDImplicitFlowConfiguration = {
+            const config: OpenIdConfiguration = {
                 silent_renew: true,
                 start_checksession: true,
             };

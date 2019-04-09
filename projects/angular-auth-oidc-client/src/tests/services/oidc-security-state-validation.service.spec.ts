@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { OpenIDImplicitFlowConfiguration } from '../../lib/models/auth.configuration';
+import { OpenIdConfiguration } from '../../lib/models/auth.configuration';
 import { AuthWellKnownEndpoints } from '../../lib/models/auth.well-known-endpoints';
 import { JwtKeys } from '../../lib/models/jwtkeys';
 import { ValidationResult } from '../../lib/models/validation-result.enum';
@@ -22,7 +22,7 @@ describe('OidcSecurityStateValidationService', () => {
     let tokenHelperService: TokenHelperService;
     let loggerService: LoggerService;
     let configProvider: ConfigurationProvider;
-    let config: OpenIDImplicitFlowConfiguration;
+    let config: OpenIdConfiguration;
     let authWellKnownEndpoints: AuthWellKnownEndpoints;
 
     beforeEach(() => {
@@ -55,24 +55,23 @@ describe('OidcSecurityStateValidationService', () => {
     });
 
     beforeEach(() => {
-      config = {
-        stsServer: 'https://localhost:44363',
-        redirect_url: 'https://localhost:44363',
-        client_id: 'singleapp',
-        response_type: 'id_token token',
-        scope: 'dataEventRecords openid',
-        post_logout_redirect_uri: 'https://localhost:44363/Unauthorized',
-        start_checksession: false,
-        silent_renew: true,
-        silent_renew_url: 'https://localhost:44363/silent-renew.html',
-        post_login_route: '/dataeventrecords',
-        forbidden_route: '/Forbidden',
-        unauthorized_route: '/Unauthorized',
-        log_console_warning_active: true,
-        log_console_debug_active: true,
-        max_id_token_iat_offset_allowed_in_seconds: 10
-      };
-
+        config = {
+            stsServer: 'https://localhost:44363',
+            redirect_url: 'https://localhost:44363',
+            client_id: 'singleapp',
+            response_type: 'id_token token',
+            scope: 'dataEventRecords openid',
+            post_logout_redirect_uri: 'https://localhost:44363/Unauthorized',
+            start_checksession: false,
+            silent_renew: true,
+            silent_renew_url: 'https://localhost:44363/silent-renew.html',
+            post_login_route: '/dataeventrecords',
+            forbidden_route: '/Forbidden',
+            unauthorized_route: '/Unauthorized',
+            log_console_warning_active: true,
+            log_console_debug_active: true,
+            max_id_token_iat_offset_allowed_in_seconds: 10,
+        };
 
         authWellKnownEndpoints = new AuthWellKnownEndpoints();
         authWellKnownEndpoints.issuer = 'https://localhost:44363';

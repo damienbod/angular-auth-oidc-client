@@ -1,4 +1,4 @@
-export interface OpenIDImplicitFlowConfiguration {
+export interface OpenIdConfiguration {
     stsServer?: string;
     redirect_url?: string;
     client_id?: string;

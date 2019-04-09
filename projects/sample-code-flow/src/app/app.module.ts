@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { AuthModule, OidcConfigService, OidcSecurityService, OpenIDImplicitFlowConfiguration } from 'angular-auth-oidc-client';
+import { AuthModule, OidcConfigService, OidcSecurityService, OpenIdConfiguration } from 'angular-auth-oidc-client';
 import { AppComponent } from './app.component';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
@@ -36,15 +36,15 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 export class AppModule {
     constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
         this.oidcConfigService.onConfigurationLoaded.subscribe(wellKnownEndpoints => {
-            const config: OpenIDImplicitFlowConfiguration = {
-              stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
-              redirect_url: 'https://localhost:4200',
-              client_id:'angularClient',
-              scope: 'openid profile email',
-              response_type:'code',
-              silent_renew:true,
-              silent_renew_url: 'https://localhost:4200/silent-renew.html',
-              log_console_debug_active: true,
+            const config: OpenIdConfiguration = {
+                stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+                redirect_url: 'https://localhost:4200',
+                client_id: 'angularClient',
+                scope: 'openid profile email',
+                response_type: 'code',
+                silent_renew: true,
+                silent_renew_url: 'https://localhost:4200/silent-renew.html',
+                log_console_debug_active: true,
             };
 
             //config.start_checksession = true;

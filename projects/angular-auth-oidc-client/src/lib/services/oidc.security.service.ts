@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, from, Observable, of, Subject, throwError as observableThrowError, timer } from 'rxjs';
 import { catchError, filter, map, race, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
-import { OpenIDImplicitFlowConfiguration } from '../models/auth.configuration';
+import { OpenIdConfiguration } from '../models/auth.configuration';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 import { AuthorizationResult } from '../models/authorization-result';
 import { AuthorizationState } from '../models/authorization-state.enum';
@@ -40,7 +40,7 @@ export class OidcSecurityService {
         return this._onCheckSessionChanged.asObservable();
     }
 
-    public get onConfigurationChange(): Observable<OpenIDImplicitFlowConfiguration> {
+    public get onConfigurationChange(): Observable<OpenIdConfiguration> {
         return this.configurationProvider.onConfigurationChange;
     }
 
@@ -130,8 +130,8 @@ export class OidcSecurityService {
             });
     }
 
-    setupModule(openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration, authWellKnownEndpoints: AuthWellKnownEndpoints): void {
-        this.configurationProvider.setup(openIDImplicitFlowConfiguration, authWellKnownEndpoints);
+    setupModule(openIdConfiguration: OpenIdConfiguration, authWellKnownEndpoints: AuthWellKnownEndpoints): void {
+        this.configurationProvider.setup(openIdConfiguration, authWellKnownEndpoints);
 
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => {
             this.loggerService.logDebug('onCheckSessionChanged');

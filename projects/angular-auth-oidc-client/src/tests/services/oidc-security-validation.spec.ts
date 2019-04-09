@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { OpenIDImplicitFlowConfiguration } from '../../lib/models/auth.configuration';
+import { OpenIdConfiguration } from '../../lib/models/auth.configuration';
 import { AuthModule } from '../../lib/modules/auth.module';
 import { ConfigurationProvider } from '../../lib/services/auth-configuration.provider';
 import { EqualityHelperService } from '../../lib/services/oidc-equality-helper.service';
@@ -41,7 +41,7 @@ describe('OidcSecurityValidation', () => {
     });
 
     it('validate aud string', () => {
-        const config: OpenIDImplicitFlowConfiguration = {};
+        const config: OpenIdConfiguration = {};
         config.stsServer = 'https://localhost:5001';
         config.redirect_url = 'https://localhost:44386';
         config.client_id = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
@@ -69,7 +69,7 @@ describe('OidcSecurityValidation', () => {
     });
 
     it('validate aud array', () => {
-        const config: OpenIDImplicitFlowConfiguration = {};
+        const config: OpenIdConfiguration = {};
         config.stsServer = 'https://localhost:5001';
         config.redirect_url = 'https://localhost:44386';
         config.client_id = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';

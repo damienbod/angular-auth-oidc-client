@@ -1,28 +1,28 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Subject } from 'rxjs';
-import { OpenIDImplicitFlowConfiguration } from '../models/auth.configuration';
+import { OpenIdConfiguration } from '../models/auth.configuration';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigurationProvider {
     private configurationDone = new Subject();
-    private openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration = null;
+    private openIdConfiguration: OpenIdConfiguration = null;
     private authWellKnownEndpoints: AuthWellKnownEndpoints = null;
 
     get initialConfigurationDone() {
         return this.configurationDone.asObservable();
     }
 
-    get openIDConfiguration(): OpenIDImplicitFlowConfiguration {
-        return this.openIDImplicitFlowConfiguration;
+    get openIDConfiguration(): OpenIdConfiguration {
+        return this.openIdConfiguration;
     }
 
     get wellKnownEndpoints(): AuthWellKnownEndpoints {
         return this.authWellKnownEndpoints;
     }
 
-    private onConfigurationChangeInternal = new Subject<OpenIDImplicitFlowConfiguration>();
+    private onConfigurationChangeInternal = new Subject<OpenIdConfiguration>();
 
     get onConfigurationChange() {
         return this.onConfigurationChangeInternal.asObservable();
@@ -30,8 +30,8 @@ export class ConfigurationProvider {
 
     constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
-    setup(openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration, authWellKnownEndpoints: AuthWellKnownEndpoints) {
-        const defaultConfig: OpenIDImplicitFlowConfiguration = {
+    setup(openIdConfiguration: OpenIdConfiguration, authWellKnownEndpoints: AuthWellKnownEndpoints) {
+        const defaultConfig: OpenIdConfiguration = {
             stsServer: 'https://localhost:44318',
             redirect_url: 'https://localhost:44311',
             client_id: 'angularclient',
@@ -58,13 +58,13 @@ export class ConfigurationProvider {
             storage: sessionStorage,
         };
 
-        this.openIDImplicitFlowConfiguration = { ...defaultConfig, ...openIDImplicitFlowConfiguration };
-        this.setSpecialCases(this.openIDImplicitFlowConfiguration);
+        this.openIdConfiguration = { ...defaultConfig, ...openIdConfiguration };
+        this.setSpecialCases(this.openIdConfiguration);
         this.authWellKnownEndpoints = { ...authWellKnownEndpoints };
-        this.onConfigurationChangeInternal.next({ ...openIDImplicitFlowConfiguration });
+        this.onConfigurationChangeInternal.next({ ...openIdConfiguration });
     }
 
-    private setSpecialCases(currentConfig: OpenIDImplicitFlowConfiguration) {
+    private setSpecialCases(currentConfig: OpenIdConfiguration) {
         const isBrowser = isPlatformBrowser(this.platformId);
 
         if (!isBrowser) {

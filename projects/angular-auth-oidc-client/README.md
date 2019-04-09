@@ -71,7 +71,7 @@ import {
 import { AppComponent } from './app.component';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    return () => oidcConfigService.load_using_stsServer('https://your_secure_token_service_url');
+    return () => oidcConfigService.loadUsingStsServer('https://your_secure_token_service_url');
 }
 
 @NgModule({
@@ -98,7 +98,6 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
     ],
     bootstrap: [AppComponent],
 })
-
 export class AppModule {
     constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
         this.oidcConfigService.onConfigurationLoaded.subscribe(() => {
@@ -112,7 +111,6 @@ export class AppModule {
             config.silent_renew = true;
             config.silent_renew_url = 'https://localhost:4200/silent-renew.html';
 
-
             const authWellKnownEndpoints = new AuthWellKnownEndpoints();
             authWellKnownEndpoints.setWellKnownEndpoints(this.oidcConfigService.wellKnownEndpoints);
 
@@ -120,7 +118,6 @@ export class AppModule {
         });
     }
 }
-
 ```
 
 ## Code Flow with PKCE
@@ -141,15 +138,13 @@ export class AppComponent implements OnInit, OnDestroy {
     userData: any;
 
     constructor(public oidcSecurityService: OidcSecurityService) {
-
-      if (this.oidcSecurityService.moduleSetup) {
-        this.doCallbackLogicIfRequired();
-      } else {
-        this.oidcSecurityService.onModuleSetup.subscribe(() => {
-          this.doCallbackLogicIfRequired();
-        });
-      }
-
+        if (this.oidcSecurityService.moduleSetup) {
+            this.doCallbackLogicIfRequired();
+        } else {
+            this.oidcSecurityService.onModuleSetup.subscribe(() => {
+                this.doCallbackLogicIfRequired();
+            });
+        }
     }
 
     ngOnInit() {
@@ -177,7 +172,6 @@ export class AppComponent implements OnInit, OnDestroy {
         this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());
     }
 }
-
 ```
 
 And a simple template for the component.
@@ -199,14 +193,15 @@ Is Authenticated: {{ isAuthenticated }}
 
 ## Silent Renew
 
-When silent renew is enabled, a DOM event will be automatically installed in the application's host window. 
-The event `oidc-silent-renew-message` accepts a `CustomEvent` instance with the token returned from the OAuth server 
+When silent renew is enabled, a DOM event will be automatically installed in the application's host window.
+The event `oidc-silent-renew-message` accepts a `CustomEvent` instance with the token returned from the OAuth server
 in its `detail` field.
 The event handler will send this token to the authorization callback and complete the validation.
 
 Point the `silent_renew_url` property to an HTML file which contains the following script element to enable authorization.
 
 ### Code Flow with PKCE
+
 ```javascript
 <script>
 	window.onload = function () {
@@ -222,6 +217,7 @@ Point the `silent_renew_url` property to an HTML file which contains the followi
 ### Silent Renew Angular-CLI
 
 Add the silent-renew.html file to the angular.json assets configuration
+
 ```javascript
 "assets": [
               "projects/sample-code-flow/src/silent-renew.html",
@@ -262,10 +258,7 @@ import { OidcSecurityService } from './auth/services/oidc.security.service';
 export class AuthorizationGuard implements CanActivate, CanLoad {
     constructor(private router: Router, private oidcSecurityService: OidcSecurityService) {}
 
-    canActivate(
-        route: ActivatedRouteSnapshot,
-        state: RouterStateSnapshot
-    ): Observable<boolean> {
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
         return this.checkUser();
     }
 
@@ -276,7 +269,7 @@ export class AuthorizationGuard implements CanActivate, CanLoad {
     private checkUser(): Observable<boolean> | boolean {
         return this.oidcSecurityService.getIsAuthorized().pipe(
             tap((isAuthorized: boolean) => {
-                if(!isAuthorized) {
+                if (!isAuthorized) {
                     this.router.navigate(['/unauthorized']);
                 }
             })
@@ -302,12 +295,15 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 })
 export class AppComponent implements OnInit, OnDestroy {
     constructor(public oidcSecurityService: OidcSecurityService) {
-	this.oidcSecurityService.getIsModuleSetup().pipe(
-	    filter((isModuleSetup: boolean) => isModuleSetup),
-	    take(1)
-	).subscribe((isModuleSetup: boolean) => {
-	    this.doCallbackLogicIfRequired();
-	});
+        this.oidcSecurityService
+            .getIsModuleSetup()
+            .pipe(
+                filter((isModuleSetup: boolean) => isModuleSetup),
+                take(1)
+            )
+            .subscribe((isModuleSetup: boolean) => {
+                this.doCallbackLogicIfRequired();
+            });
     }
 
     ngOnInit() {}
@@ -315,11 +311,10 @@ export class AppComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {}
 
     login() {
-  
         // if you need to add extra parameters to the login
         // let culture = 'de-CH';
         // this.oidcSecurityService.setCustomRequestParameters({ 'ui_locales': culture });
-	
+
         this.oidcSecurityService.authorize();
     }
 
@@ -359,7 +354,7 @@ You can add any configurations to this json, as long as the stsServer is present
 	"post_logout_redirect_uri":"https://localhost:44311",
 	"start_checksession":true,
 	"silent_renew":true,
-	"silent_renew_url":"https://localhost:44311/silent-renew.html"
+	"silent_renew_url":"https://localhost:44311/silent-renew.html",
 	"post_login_route":"/home",
 	"forbidden_route":"/forbidden",
 	"unauthorized_route":"/unauthorized",
@@ -371,7 +366,7 @@ You can add any configurations to this json, as long as the stsServer is present
 }
 ```
 
-See [Auth documentation](https://github.com/damienbod/angular-auth-oidc-client/blob/master/API_DOCUMENTATION.md#authconfiguration) 
+See [Auth documentation](https://github.com/damienbod/angular-auth-oidc-client/blob/master/API_DOCUMENTATION.md#authconfiguration)
 for the detail of each field.
 
 ## Using without APP_INITIALIZER
@@ -388,12 +383,10 @@ export class AppModule {
         openIDImplicitFlowConfiguration.client_id = 'singleapp';
         openIDImplicitFlowConfiguration.response_type = 'code'; // 'id_token token' Implicit Flow
         openIDImplicitFlowConfiguration.scope = 'dataEventRecords openid';
-        openIDImplicitFlowConfiguration.post_logout_redirect_uri =
-            'https://localhost:44363/Unauthorized';
+        openIDImplicitFlowConfiguration.post_logout_redirect_uri = 'https://localhost:44363/Unauthorized';
         openIDImplicitFlowConfiguration.start_checksession = false;
         openIDImplicitFlowConfiguration.silent_renew = true;
-        openIDImplicitFlowConfiguration.silent_renew_url =
-            'https://localhost:44363/silent-renew.html';
+        openIDImplicitFlowConfiguration.silent_renew_url = 'https://localhost:44363/silent-renew.html';
         openIDImplicitFlowConfiguration.post_login_route = '/dataeventrecords';
         // HTTP 403
         openIDImplicitFlowConfiguration.forbidden_route = '/Forbidden';
@@ -408,22 +401,16 @@ export class AppModule {
         const authWellKnownEndpoints = new AuthWellKnownEndpoints();
         authWellKnownEndpoints.issuer = 'https://localhost:44363';
 
-        authWellKnownEndpoints.jwks_uri =
-            'https://localhost:44363/.well-known/openid-configuration/jwks';
+        authWellKnownEndpoints.jwks_uri = 'https://localhost:44363/.well-known/openid-configuration/jwks';
         authWellKnownEndpoints.authorization_endpoint = 'https://localhost:44363/connect/authorize';
         authWellKnownEndpoints.token_endpoint = 'https://localhost:44363/connect/token';
         authWellKnownEndpoints.userinfo_endpoint = 'https://localhost:44363/connect/userinfo';
         authWellKnownEndpoints.end_session_endpoint = 'https://localhost:44363/connect/endsession';
-        authWellKnownEndpoints.check_session_iframe =
-            'https://localhost:44363/connect/checksession';
+        authWellKnownEndpoints.check_session_iframe = 'https://localhost:44363/connect/checksession';
         authWellKnownEndpoints.revocation_endpoint = 'https://localhost:44363/connect/revocation';
-        authWellKnownEndpoints.introspection_endpoint =
-            'https://localhost:44363/connect/introspect';
+        authWellKnownEndpoints.introspection_endpoint = 'https://localhost:44363/connect/introspect';
 
-        this.oidcSecurityService.setupModule(
-            openIDImplicitFlowConfiguration,
-            authWellKnownEndpoints
-        );
+        this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration, authWellKnownEndpoints);
     }
 }
 ```
@@ -511,11 +498,11 @@ export class AuthInterceptor implements HttpInterceptor {
 
 ## Authorizing in a popup or iframe
 
-You can call the Provider's authorization endpoint in a popup or iframe instead of navigating to it in the app's parent window. 
-This allows you to have the Provider's consent prompt display in a popup window to avoid unloading and reloading the app, 
+You can call the Provider's authorization endpoint in a popup or iframe instead of navigating to it in the app's parent window.
+This allows you to have the Provider's consent prompt display in a popup window to avoid unloading and reloading the app,
 or to authorize the user silently by loading the endpoint in a hidden iframe if that supported by the Provider.
 
-To get the fully-formed authorization URL, pass a handler function to `OidcSecurityService.authorize` 
+To get the fully-formed authorization URL, pass a handler function to `OidcSecurityService.authorize`
 (this will also prevent the default behavior of loading the authorization endpoint in the current window):
 
 ```typescript
@@ -527,7 +514,8 @@ login() {
 }
 ```
 
-###  Silent Renew Implicit Flow
+### Silent Renew Implicit Flow
+
 ```javascript
 <script>
     window.onload = function () {
@@ -540,30 +528,33 @@ login() {
 </script>
 ```
 
-When silent renew is enabled, `getIsAuthorized()` will attempt to perform a renew before returning the authorization state. 
+When silent renew is enabled, `getIsAuthorized()` will attempt to perform a renew before returning the authorization state.
 This allows the application to authorize a user, that is already authenticated, without redirects.
 
 Silent renew requires CSP configuration, see next section.
 
 ## X-Frame-Options / CSP ancestor / different domains
 
-If deploying the client application and the STS server application with 2 different domains, 
-the X-Frame-Options HTTPS header needs to allow all iframes. Then use the CSP HTTPS header to only allow the required domains. 
+If deploying the client application and the STS server application with 2 different domains,
+the X-Frame-Options HTTPS header needs to allow all iframes. Then use the CSP HTTPS header to only allow the required domains.
 **The silent renew requires this.**
 
 Add this header to responses from the server that serves your SPA:
+
 ```
 Content-Security-Policy: script-src 'self' 'unsafe-inline';style-src 'self' 'unsafe-inline';img-src 'self' data:;font-src 'self';frame-ancestors 'self' https://localhost:44318;block-all-mixed-content
 ```
+
 where `https://localhost:44318` is the address of your STS server.
 
-e.g. if you use NginX to serve your Angular application, it would be 
+e.g. if you use NginX to serve your Angular application, it would be
+
 ```
 http {
   server {
     ...
     add_header Content-Security-Policy "script-src 'self' 'unsafe-inline';style-src 'self' 'unsafe-inline';img-src 'self' data:;font-src 'self';frame-ancestors 'self' https://localhost:44318;block-all-mixed-content";
-``` 
+```
 
 ## Examples using:
 

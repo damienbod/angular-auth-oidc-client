@@ -4,8 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { filter, skipWhile } from 'rxjs/operators';
-import { AuthWellKnownEndpoints } from '../../lib/angular-auth-oidc-client';
-import { OpenIDImplicitFlowConfiguration } from '../../lib/models/auth.configuration';
+import { AuthWellKnownEndpoints, OpenIdConfiguration } from '../../lib/angular-auth-oidc-client';
 import { AuthModule } from '../../lib/modules/auth.module';
 import { ConfigurationProvider } from '../../lib/services/auth-configuration.provider';
 import { IFrameService } from '../../lib/services/existing-iframe.service';
@@ -61,7 +60,7 @@ describe('OidcSecurityService', () => {
         // 	"code_challenge_methods_supported":["plain","S256"]}';
         // (oidcSecurityService as any).oidcSecurityCommon.store('wellknownendpoints', well);
 
-        const config: OpenIDImplicitFlowConfiguration = {};
+        const config: OpenIdConfiguration = {};
         config.stsServer = 'https://localhost:5001';
         config.redirect_url = 'https://localhost:44386';
         config.client_id = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
@@ -97,7 +96,7 @@ describe('OidcSecurityService', () => {
 
     // https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-reference-oidc
     it('createAuthorizeUrl with custom url like active-directory-b2c', () => {
-        const config: OpenIDImplicitFlowConfiguration = {};
+        const config: OpenIdConfiguration = {};
 
         config.stsServer = 'https://localhost:5001';
         config.redirect_url = 'https://localhost:44386';
@@ -133,7 +132,7 @@ describe('OidcSecurityService', () => {
     });
 
     it('createEndSessionUrl with azure-ad-b2c policy parameter', () => {
-        const config: OpenIDImplicitFlowConfiguration = {};
+        const config: OpenIdConfiguration = {};
         config.stsServer = 'https://localhost:5001';
         config.redirect_url = 'https://localhost:44386';
         config.client_id = 'myid';
@@ -164,7 +163,7 @@ describe('OidcSecurityService', () => {
     });
 
     it('createAuthorizeUrl with custom value', () => {
-        const config: OpenIDImplicitFlowConfiguration = {};
+        const config: OpenIdConfiguration = {};
         config.stsServer = 'https://localhost:5001';
         config.redirect_url = 'https://localhost:44386';
         config.client_id = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
@@ -202,7 +201,7 @@ describe('OidcSecurityService', () => {
     });
 
     it('createAuthorizeUrl with custom values', () => {
-        const config: OpenIDImplicitFlowConfiguration = {};
+        const config: OpenIdConfiguration = {};
         config.stsServer = 'https://localhost:5001';
         config.redirect_url = 'https://localhost:44386';
         config.client_id = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
@@ -243,7 +242,7 @@ describe('OidcSecurityService', () => {
     });
 
     it('createEndSessionUrl default', () => {
-        const config: OpenIDImplicitFlowConfiguration = {};
+        const config: OpenIdConfiguration = {};
         config.stsServer = 'https://localhost:5001';
         config.redirect_url = 'https://localhost:44386';
         config.client_id = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
@@ -272,7 +271,7 @@ describe('OidcSecurityService', () => {
     it('authorizedImplicitFlowCallback should correctly parse hash params', () => {
         spyOn(oidcSecurityService as any, 'getSigningKeys').and.returnValue(of(null));
 
-        const config: OpenIDImplicitFlowConfiguration = {
+        const config: OpenIdConfiguration = {
             silent_renew: false,
         };
 
