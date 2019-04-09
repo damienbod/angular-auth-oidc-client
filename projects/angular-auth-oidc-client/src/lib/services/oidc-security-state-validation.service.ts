@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 import { JwtKeys } from '../models/jwtkeys';
 import { ValidateStateResult } from '../models/validate-state-result.model';
 import { ValidationResult } from '../models/validation-result.enum';
-import { AuthConfiguration } from '../modules/auth.configuration';
+import { ConfigurationProvider } from './auth-configuration.provider';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { LoggerService } from './oidc.logger.service';
 import { OidcSecurityCommon } from './oidc.security.common';
@@ -11,18 +10,13 @@ import { OidcSecurityValidation } from './oidc.security.validation';
 
 @Injectable()
 export class StateValidationService {
-    private authWellKnownEndpoints = new AuthWellKnownEndpoints();
     constructor(
-        private authConfiguration: AuthConfiguration,
         public oidcSecurityCommon: OidcSecurityCommon,
         private oidcSecurityValidation: OidcSecurityValidation,
         private tokenHelperService: TokenHelperService,
-        private loggerService: LoggerService
+        private loggerService: LoggerService,
+        private readonly configurationProvider: ConfigurationProvider
     ) {}
-
-    setupModule(authWellKnownEndpoints: AuthWellKnownEndpoints) {
-        this.authWellKnownEndpoints = Object.assign({}, authWellKnownEndpoints);
-    }
 
     validateState(result: any, jwtKeys: JwtKeys): ValidateStateResult {
         const toReturn = new ValidateStateResult();
@@ -32,7 +26,10 @@ export class StateValidationService {
             return toReturn;
         }
 
-        if (this.authConfiguration.response_type === 'id_token token' || this.authConfiguration.response_type === 'code') {
+        if (
+            this.configurationProvider.openIDConfiguration.response_type === 'id_token token' ||
+            this.configurationProvider.openIDConfiguration.response_type === 'code'
+        ) {
             toReturn.access_token = result.access_token;
         }
 
@@ -61,7 +58,7 @@ export class StateValidationService {
         if (
             !this.oidcSecurityValidation.validate_id_token_iat_max_offset(
                 toReturn.decoded_id_token,
-                this.authConfiguration.max_id_token_iat_offset_allowed_in_seconds
+                this.configurationProvider.openIDConfiguration.max_id_token_iat_offset_allowed_in_seconds
             )
         ) {
             this.loggerService.logWarning('authorizedCallback Validation, iat rejected id_token was issued too far away from the current time');
@@ -69,11 +66,13 @@ export class StateValidationService {
             return toReturn;
         }
 
-        if (this.authWellKnownEndpoints) {
-            if (this.authConfiguration.iss_validation_off) {
+        if (this.configurationProvider.wellKnownEndpoints) {
+            if (this.configurationProvider.openIDConfiguration.iss_validation_off) {
                 this.loggerService.logDebug('iss validation is turned off, this is not recommended!');
-            } else if (!this.authConfiguration.iss_validation_off &&
-                !this.oidcSecurityValidation.validate_id_token_iss(toReturn.decoded_id_token, this.authWellKnownEndpoints.issuer)) {
+            } else if (
+                !this.configurationProvider.openIDConfiguration.iss_validation_off &&
+                !this.oidcSecurityValidation.validate_id_token_iss(toReturn.decoded_id_token, this.configurationProvider.wellKnownEndpoints.issuer)
+            ) {
                 this.loggerService.logWarning('authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer');
                 toReturn.state = ValidationResult.IssDoesNotMatchIssuer;
                 return toReturn;
@@ -84,7 +83,7 @@ export class StateValidationService {
             return toReturn;
         }
 
-        if (!this.oidcSecurityValidation.validate_id_token_aud(toReturn.decoded_id_token, this.authConfiguration.client_id)) {
+        if (!this.oidcSecurityValidation.validate_id_token_aud(toReturn.decoded_id_token, this.configurationProvider.openIDConfiguration.client_id)) {
             this.loggerService.logWarning('authorizedCallback incorrect aud');
             toReturn.state = ValidationResult.IncorrectAud;
             return toReturn;
@@ -97,16 +96,22 @@ export class StateValidationService {
         }
 
         // flow id_token token
-        if (this.authConfiguration.response_type !== 'id_token token' && this.authConfiguration.response_type !== 'code') {
+        if (
+            this.configurationProvider.openIDConfiguration.response_type !== 'id_token token' &&
+            this.configurationProvider.openIDConfiguration.response_type !== 'code'
+        ) {
             toReturn.authResponseIsValid = true;
             toReturn.state = ValidationResult.Ok;
             this.handleSuccessfulValidation();
             return toReturn;
         }
 
-        if (!this.oidcSecurityValidation.validate_id_token_at_hash(toReturn.access_token,
-            toReturn.decoded_id_token.at_hash,
-            this.authConfiguration.response_type === 'code') ||
+        if (
+            !this.oidcSecurityValidation.validate_id_token_at_hash(
+                toReturn.access_token,
+                toReturn.decoded_id_token.at_hash,
+                this.configurationProvider.openIDConfiguration.response_type === 'code'
+            ) ||
             !toReturn.access_token
         ) {
             this.loggerService.logWarning('authorizedCallback incorrect at_hash');
@@ -123,7 +128,7 @@ export class StateValidationService {
     private handleSuccessfulValidation() {
         this.oidcSecurityCommon.authNonce = '';
 
-        if (this.authConfiguration.auto_clean_state_after_authentication) {
+        if (this.configurationProvider.openIDConfiguration.auto_clean_state_after_authentication) {
             this.oidcSecurityCommon.authStateControl = '';
         }
         this.loggerService.logDebug('AuthorizedCallback token(s) validated, continue');

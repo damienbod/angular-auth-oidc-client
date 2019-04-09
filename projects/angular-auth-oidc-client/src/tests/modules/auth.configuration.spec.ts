@@ -1,12 +1,13 @@
 import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { AuthConfiguration, OpenIDImplicitFlowConfiguration } from '../../lib/modules/auth.configuration';
+import { OpenIDImplicitFlowConfiguration } from '../../lib/models/auth.configuration';
 import { AuthModule } from '../../lib/modules/auth.module';
+import { ConfigurationProvider } from '../../lib/services/auth-configuration.provider';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { TestLogging } from '../common/test-logging.service';
 
 describe('AuthConfiguration', () => {
-    let authConfiguration: AuthConfiguration;
+    let configurationProvider: ConfigurationProvider;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -16,6 +17,7 @@ describe('AuthConfiguration', () => {
                     provide: LoggerService,
                     useClass: TestLogging,
                 },
+                ConfigurationProvider,
             ],
         });
     });
@@ -26,18 +28,19 @@ describe('AuthConfiguration', () => {
                 providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
             });
 
-            authConfiguration = TestBed.get(AuthConfiguration);
+            configurationProvider = TestBed.get(ConfigurationProvider);
         });
 
         it('silent_renew and start_checksession can be set to true when using the browser platform', () => {
-            let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
-            openIDImplicitFlowConfiguration.silent_renew = true;
-            openIDImplicitFlowConfiguration.start_checksession = true;
+            const config: OpenIDImplicitFlowConfiguration = {
+                silent_renew: true,
+                start_checksession: true,
+            };
 
-            authConfiguration.init(openIDImplicitFlowConfiguration);
+            configurationProvider.setup(config, null);
 
-            expect(authConfiguration.silent_renew).toEqual(true);
-            expect(authConfiguration.start_checksession).toEqual(true);
+            expect(configurationProvider.openIDConfiguration.silent_renew).toEqual(true);
+            expect(configurationProvider.openIDConfiguration.start_checksession).toEqual(true);
         });
     });
 
@@ -47,18 +50,19 @@ describe('AuthConfiguration', () => {
                 providers: [{ provide: PLATFORM_ID, useValue: 'server' }],
             });
 
-            authConfiguration = TestBed.get(AuthConfiguration);
+            configurationProvider = TestBed.get(ConfigurationProvider);
         });
 
         it('silent_renew and start_checksession are always false when not using the browser platform', () => {
-            let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
-            openIDImplicitFlowConfiguration.silent_renew = true;
-            openIDImplicitFlowConfiguration.start_checksession = true;
+            const config: OpenIDImplicitFlowConfiguration = {
+                silent_renew: true,
+                start_checksession: true,
+            };
 
-            authConfiguration.init(openIDImplicitFlowConfiguration);
+            configurationProvider.setup(config, null);
 
-            expect(authConfiguration.silent_renew).toEqual(false);
-            expect(authConfiguration.start_checksession).toEqual(false);
+            expect(configurationProvider.openIDConfiguration.silent_renew).toEqual(false);
+            expect(configurationProvider.openIDConfiguration.start_checksession).toEqual(false);
         });
     });
 });

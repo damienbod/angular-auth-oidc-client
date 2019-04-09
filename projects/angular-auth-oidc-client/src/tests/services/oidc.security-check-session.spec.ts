@@ -1,24 +1,26 @@
-import { TestBed } from '@angular/core/testing';
+import { async, TestBed } from '@angular/core/testing';
 import { AuthWellKnownEndpoints } from '../../lib/models/auth.well-known-endpoints';
-import { AuthConfiguration } from '../../lib/modules/auth.configuration';
+import { ConfigurationProvider } from '../../lib/services/auth-configuration.provider';
 import { IFrameService } from '../../lib/services/existing-iframe.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityCheckSession } from '../../lib/services/oidc.security.check-session';
 import { OidcSecurityCommon } from '../../lib/services/oidc.security.common';
 import { OidcSecurityService } from '../../lib/services/oidc.security.service';
 import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';
+import { TestLogging } from '../common/test-logging.service';
 import { TestStorage } from '../common/test-storage.service';
 
 describe('EqualityHelperServiceTests', () => {
     let oidcSecurityCheckSession: OidcSecurityCheckSession;
     let loggerService: LoggerService;
+    let configurationProvider: ConfigurationProvider;
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
                 OidcSecurityCheckSession,
-                AuthConfiguration,
+                ConfigurationProvider,
                 OidcSecurityCommon,
-                LoggerService,
+                { provide: LoggerService, useClass: TestLogging },
                 OidcSecurityService,
                 { provide: OidcSecurityStorage, useClass: TestStorage },
                 IFrameService,
@@ -28,6 +30,7 @@ describe('EqualityHelperServiceTests', () => {
 
     beforeEach(() => {
         oidcSecurityCheckSession = TestBed.get(OidcSecurityCheckSession);
+        configurationProvider = TestBed.get(ConfigurationProvider);
         loggerService = TestBed.get(LoggerService);
     });
 
@@ -39,69 +42,69 @@ describe('EqualityHelperServiceTests', () => {
         expect((oidcSecurityCheckSession as any).authWellKnownEndpoints).toBe(undefined);
         const authWellKnownEndpoints = new AuthWellKnownEndpoints();
         authWellKnownEndpoints.issuer = 'testIssuer';
-        oidcSecurityCheckSession.setupModule(authWellKnownEndpoints);
+        configurationProvider.setup(null, authWellKnownEndpoints);
 
-        expect((oidcSecurityCheckSession as any).authWellKnownEndpoints).toBeTruthy();
-        expect((oidcSecurityCheckSession as any).authWellKnownEndpoints.issuer).toBe('testIssuer');
+        expect((oidcSecurityCheckSession as any).configurationProvider.authWellKnownEndpoints).toBeTruthy();
+        expect((oidcSecurityCheckSession as any).configurationProvider.authWellKnownEndpoints.issuer).toBe('testIssuer');
     });
 
     it('doesSessionExist returns false if nothing is setup', () => {
-        let result = (oidcSecurityCheckSession as any).doesSessionExist();
+        const result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(false);
     });
 
     it('doesSessionExist returns true if document found on window.parent.document', () => {
-        let node = document.createElement('iframe');
+        const node = document.createElement('iframe');
         node.setAttribute('id', 'myiFrameForCheckSession');
         window.parent.document.documentElement.appendChild(node);
 
-        let result = (oidcSecurityCheckSession as any).doesSessionExist();
+        const result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(true);
-        let remove = window.parent.document.getElementById('myiFrameForCheckSession');
+        const remove = window.parent.document.getElementById('myiFrameForCheckSession');
         if (remove) {
             window.parent.document.documentElement.removeChild(remove);
         }
     });
 
     it('doesSessionExist returns true if document found on window.document', () => {
-        let node = document.createElement('iframe');
+        const node = document.createElement('iframe');
         node.setAttribute('id', 'myiFrameForCheckSession');
         window.document.documentElement.appendChild(node);
-        let result = (oidcSecurityCheckSession as any).doesSessionExist();
+        const result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(true);
-        let remove = document.getElementById('myiFrameForCheckSession');
+        const remove = document.getElementById('myiFrameForCheckSession');
         if (remove) {
             window.document.documentElement.removeChild(remove);
         }
     });
 
     it('doesSessionExist returns false if document not found on window.parent.document given the wrong id', () => {
-        let node = document.createElement('iframe');
+        const node = document.createElement('iframe');
         node.setAttribute('id', 'idwhichshouldneverexist');
         window.parent.document.documentElement.appendChild(node);
-        let result = (oidcSecurityCheckSession as any).doesSessionExist();
+        const result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(false);
-        let remove = window.parent.document.getElementById('idwhichshouldneverexist');
+        const remove = window.parent.document.getElementById('idwhichshouldneverexist');
         if (remove) {
             window.parent.document.documentElement.removeChild(remove);
         }
     });
 
     it('doesSessionExist returns false if document not found on window.document given the wrong id', () => {
-        let node = document.createElement('iframe');
+        const node = document.createElement('iframe');
         node.setAttribute('id', 'idwhichshouldneverexist');
         window.document.documentElement.appendChild(node);
-        let result = (oidcSecurityCheckSession as any).doesSessionExist();
+        const result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(false);
 
-        let remove = document.getElementById('idwhichshouldneverexist');
+        const remove = document.getElementById('idwhichshouldneverexist');
         if (remove) {
             window.document.documentElement.removeChild(remove);
         }
     });
 
     it('existsParent is set when document was found on window.parent', () => {
-        let node = document.createElement('iframe');
+        const node = document.createElement('iframe');
         node.setAttribute('id', 'myiFrameForCheckSession');
         window.parent.document.documentElement.appendChild(node);
 
@@ -109,14 +112,14 @@ describe('EqualityHelperServiceTests', () => {
         expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
         expect((oidcSecurityCheckSession as any).sessionIframe).toBe(node);
 
-        let remove = window.parent.document.getElementById('myiFrameForCheckSession');
+        const remove = window.parent.document.getElementById('myiFrameForCheckSession');
         if (remove) {
             window.parent.document.documentElement.removeChild(remove);
         }
     });
 
     it('existsParent is set when document was found on window', () => {
-        let node = document.createElement('iframe');
+        const node = document.createElement('iframe');
         node.setAttribute('id', 'myiFrameForCheckSession');
         window.document.documentElement.appendChild(node);
 
@@ -124,7 +127,7 @@ describe('EqualityHelperServiceTests', () => {
         expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
         expect((oidcSecurityCheckSession as any).sessionIframe).toBe(node);
 
-        let remove = document.getElementById('myiFrameForCheckSession');
+        const remove = document.getElementById('myiFrameForCheckSession');
         if (remove) {
             window.document.documentElement.removeChild(remove);
         }
@@ -134,6 +137,7 @@ describe('EqualityHelperServiceTests', () => {
         expect((oidcSecurityCheckSession as any).sessionIframe).toBeFalsy();
 
         (oidcSecurityCheckSession as any).init();
+        spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
 
         expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
         const sessionIframe = (oidcSecurityCheckSession as any).sessionIframe;
@@ -143,10 +147,11 @@ describe('EqualityHelperServiceTests', () => {
         expect(iFrame).toBeDefined();
     });
 
-    it('location of iframe is set to authWellKnownEndpoints.check_session_iframe if existing', done => {
+    it('location of iframe is set to authWellKnownEndpoints.check_session_iframe if existing', async(() => {
         const authWellKnownEndpoints = new AuthWellKnownEndpoints();
         authWellKnownEndpoints.check_session_iframe = 'someTestingValue';
         (oidcSecurityCheckSession as any).authWellKnownEndpoints = authWellKnownEndpoints;
+        spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
 
         expect((oidcSecurityCheckSession as any).sessionIframe).toBeFalsy();
 
@@ -155,13 +160,13 @@ describe('EqualityHelperServiceTests', () => {
         loaded.subscribe(() => {
             expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
             expect((oidcSecurityCheckSession as any).sessionIframe.contentWindow.location.toString()).toContain('someTestingValue');
-            done();
         });
-    });
+    }));
 
     it('log warning if authWellKnownEndpoints.check_session_iframe is not existing', () => {
         const spy = spyOn<any>(oidcSecurityCheckSession, 'doesSessionExist').and.returnValue(false);
         const spyLogWarning = spyOn<any>(loggerService, 'logWarning');
+        spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
         (oidcSecurityCheckSession as any).init();
 
         expect(spy).toHaveBeenCalled();

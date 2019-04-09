@@ -2,11 +2,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { OpenIDImplicitFlowConfiguration } from '../../lib/models/auth.configuration';
 import { AuthWellKnownEndpoints } from '../../lib/models/auth.well-known-endpoints';
 import { JwtKeys } from '../../lib/models/jwtkeys';
 import { ValidationResult } from '../../lib/models/validation-result.enum';
-import { AuthConfiguration, OpenIDImplicitFlowConfiguration } from '../../lib/modules/auth.configuration';
 import { AuthModule } from '../../lib/modules/auth.module';
+import { ConfigurationProvider } from '../../lib/services/auth-configuration.provider';
 import { StateValidationService } from '../../lib/services/oidc-security-state-validation.service';
 import { TokenHelperService } from '../../lib/services/oidc-token-helper.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
@@ -18,44 +19,11 @@ import { TestStorage } from '../common/test-storage.service';
 describe('OidcSecurityStateValidationService', () => {
     let stateValidationService: StateValidationService;
     let oidcSecurityValidation: OidcSecurityValidation;
-    let authConfiguration: AuthConfiguration;
     let tokenHelperService: TokenHelperService;
     let loggerService: LoggerService;
-
-    const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
-
-    openIDImplicitFlowConfiguration.stsServer = 'https://localhost:44363';
-    openIDImplicitFlowConfiguration.redirect_url = 'https://localhost:44363';
-    // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer identified by the iss (issuer) Claim as an audience.
-    // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences not trusted by the Client.
-    openIDImplicitFlowConfiguration.client_id = 'singleapp';
-    openIDImplicitFlowConfiguration.response_type = 'id_token token';
-    openIDImplicitFlowConfiguration.scope = 'dataEventRecords openid';
-    openIDImplicitFlowConfiguration.post_logout_redirect_uri = 'https://localhost:44363/Unauthorized';
-    openIDImplicitFlowConfiguration.start_checksession = false;
-    openIDImplicitFlowConfiguration.silent_renew = true;
-    openIDImplicitFlowConfiguration.silent_renew_url = 'https://localhost:44363/silent-renew.html';
-    openIDImplicitFlowConfiguration.post_login_route = '/dataeventrecords';
-    // HTTP 403
-    openIDImplicitFlowConfiguration.forbidden_route = '/Forbidden';
-    // HTTP 401
-    openIDImplicitFlowConfiguration.unauthorized_route = '/Unauthorized';
-    openIDImplicitFlowConfiguration.log_console_warning_active = true;
-    openIDImplicitFlowConfiguration.log_console_debug_active = true;
-    // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
-    // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
-    openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
-
-    const authWellKnownEndpoints = new AuthWellKnownEndpoints();
-    authWellKnownEndpoints.issuer = 'https://localhost:44363';
-    authWellKnownEndpoints.jwks_uri = 'https://localhost:44363/.well-known/openid-configuration/jwks';
-    authWellKnownEndpoints.authorization_endpoint = 'https://localhost:44363/connect/authorize';
-    authWellKnownEndpoints.token_endpoint = 'https://localhost:44363/connect/token';
-    authWellKnownEndpoints.userinfo_endpoint = 'https://localhost:44363/connect/userinfo';
-    authWellKnownEndpoints.end_session_endpoint = 'https://localhost:44363/connect/endsession';
-    authWellKnownEndpoints.check_session_iframe = 'https://localhost:44363/connect/checksession';
-    authWellKnownEndpoints.revocation_endpoint = 'https://localhost:44363/connect/revocation';
-    authWellKnownEndpoints.introspection_endpoint = 'https://localhost:44363/connect/introspect';
+    let configProvider: ConfigurationProvider;
+    let config: OpenIDImplicitFlowConfiguration;
+    let authWellKnownEndpoints: AuthWellKnownEndpoints;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -63,7 +31,7 @@ describe('OidcSecurityStateValidationService', () => {
             providers: [
                 StateValidationService,
                 OidcSecurityValidation,
-                AuthConfiguration,
+                ConfigurationProvider,
                 LoggerService,
                 TokenHelperService,
                 {
@@ -81,23 +49,53 @@ describe('OidcSecurityStateValidationService', () => {
     beforeEach(() => {
         stateValidationService = TestBed.get(StateValidationService);
         oidcSecurityValidation = TestBed.get(OidcSecurityValidation);
-        authConfiguration = TestBed.get(AuthConfiguration);
+        configProvider = TestBed.get(ConfigurationProvider);
         tokenHelperService = TestBed.get(TokenHelperService);
         loggerService = TestBed.get(LoggerService);
+    });
 
-        stateValidationService.setupModule(authWellKnownEndpoints);
+    beforeEach(() => {
+      config = {
+        stsServer: 'https://localhost:44363',
+        redirect_url: 'https://localhost:44363',
+        client_id: 'singleapp',
+        response_type: 'id_token token',
+        scope: 'dataEventRecords openid',
+        post_logout_redirect_uri: 'https://localhost:44363/Unauthorized',
+        start_checksession: false,
+        silent_renew: true,
+        silent_renew_url: 'https://localhost:44363/silent-renew.html',
+        post_login_route: '/dataeventrecords',
+        forbidden_route: '/Forbidden',
+        unauthorized_route: '/Unauthorized',
+        log_console_warning_active: true,
+        log_console_debug_active: true,
+        max_id_token_iat_offset_allowed_in_seconds: 10
+      };
+
+
+        authWellKnownEndpoints = new AuthWellKnownEndpoints();
+        authWellKnownEndpoints.issuer = 'https://localhost:44363';
+        authWellKnownEndpoints.jwks_uri = 'https://localhost:44363/.well-known/openid-configuration/jwks';
+        authWellKnownEndpoints.authorization_endpoint = 'https://localhost:44363/connect/authorize';
+        authWellKnownEndpoints.token_endpoint = 'https://localhost:44363/connect/token';
+        authWellKnownEndpoints.userinfo_endpoint = 'https://localhost:44363/connect/userinfo';
+        authWellKnownEndpoints.end_session_endpoint = 'https://localhost:44363/connect/endsession';
+        authWellKnownEndpoints.check_session_iframe = 'https://localhost:44363/connect/checksession';
+        authWellKnownEndpoints.revocation_endpoint = 'https://localhost:44363/connect/revocation';
+        authWellKnownEndpoints.introspection_endpoint = 'https://localhost:44363/connect/introspect';
     });
 
     it('should create', () => {
         expect(stateValidationService).toBeTruthy();
         expect(oidcSecurityValidation).toBeTruthy();
-        expect(authConfiguration).toBeTruthy();
+        expect(configProvider).toBeTruthy();
     });
 
     it('should return invalid result if validateStateFromHashCallback is false', () => {
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+        const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState('', new JwtKeys());
 
@@ -114,8 +112,7 @@ describe('OidcSecurityStateValidationService', () => {
     it('access_token should equal result.access_token and is valid if response_type is "id_token token"', () => {
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
-        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
-
+        config.response_type = 'id_token token';
         spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
         spyOn(oidcSecurityValidation, 'validate_signature_id_token').and.returnValue(true);
@@ -124,9 +121,9 @@ describe('OidcSecurityStateValidationService', () => {
 
         spyOn(oidcSecurityValidation, 'validate_required_id_token').and.returnValue(true);
 
-        spyOnProperty(authConfiguration, 'max_id_token_iat_offset_allowed_in_seconds', 'get').and.returnValue(0);
+        config.max_id_token_iat_offset_allowed_in_seconds = 0;
 
-        spyOnProperty(authConfiguration, 'client_id', 'get').and.returnValue('');
+        config.client_id = '';
 
         spyOn(oidcSecurityValidation, 'validate_id_token_iat_max_offset').and.returnValue(true);
 
@@ -138,7 +135,9 @@ describe('OidcSecurityStateValidationService', () => {
 
         spyOn(oidcSecurityValidation, 'validate_id_token_at_hash').and.returnValue(true);
 
-        spyOnProperty(authConfiguration, 'auto_clean_state_after_authentication', 'get').and.returnValue('');
+        config.auto_clean_state_after_authentication = false;
+
+        configProvider.setup(config, authWellKnownEndpoints);
 
         const state = stateValidationService.validateState(
             {
@@ -157,14 +156,11 @@ describe('OidcSecurityStateValidationService', () => {
 
     it('should return invalid result if validate_signature_id_token is false', () => {
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
-
-        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
-
+        config.response_type = 'id_token token';
         spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-
         spyOn(oidcSecurityValidation, 'validate_signature_id_token').and.returnValue(false);
-
-        let logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
+        configProvider.setup(config, authWellKnownEndpoints);
+        const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -184,16 +180,13 @@ describe('OidcSecurityStateValidationService', () => {
 
     it('should return invalid result if validate_id_token_nonce is false', () => {
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
-
-        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
-
+        config.response_type = 'id_token token';
         spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-
         spyOn(oidcSecurityValidation, 'validate_signature_id_token').and.returnValue(true);
-
         spyOn(oidcSecurityValidation, 'validate_id_token_nonce').and.returnValue(false);
+        configProvider.setup(config, authWellKnownEndpoints);
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+        const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -214,7 +207,7 @@ describe('OidcSecurityStateValidationService', () => {
     it('should return invalid result if validate_required_id_token is false', () => {
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
-        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
+        config.response_type = 'id_token token';
 
         spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
@@ -223,8 +216,8 @@ describe('OidcSecurityStateValidationService', () => {
         spyOn(oidcSecurityValidation, 'validate_id_token_nonce').and.returnValue(true);
 
         spyOn(oidcSecurityValidation, 'validate_required_id_token').and.returnValue(false);
-
-        let logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
+        configProvider.setup(config, authWellKnownEndpoints);
+        const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -245,7 +238,7 @@ describe('OidcSecurityStateValidationService', () => {
     it('should return invalid result if validate_id_token_iat_max_offset is false', () => {
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
-        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
+        config.response_type = 'id_token token';
 
         spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
@@ -257,9 +250,9 @@ describe('OidcSecurityStateValidationService', () => {
 
         spyOn(oidcSecurityValidation, 'validate_id_token_iat_max_offset').and.returnValue(false);
 
-        spyOnProperty(authConfiguration, 'max_id_token_iat_offset_allowed_in_seconds', 'get').and.returnValue(0);
-
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+        config.max_id_token_iat_offset_allowed_in_seconds = 0;
+        configProvider.setup(config, authWellKnownEndpoints);
+        const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -282,7 +275,7 @@ describe('OidcSecurityStateValidationService', () => {
     it('should return invalid result if validate_id_token_iss is false', () => {
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
-        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
+        config.response_type = 'id_token token';
 
         spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
@@ -294,11 +287,10 @@ describe('OidcSecurityStateValidationService', () => {
 
         spyOn(oidcSecurityValidation, 'validate_id_token_iat_max_offset').and.returnValue(true);
 
-        spyOnProperty(authConfiguration, 'max_id_token_iat_offset_allowed_in_seconds', 'get').and.returnValue(0);
-
+        config.max_id_token_iat_offset_allowed_in_seconds = 0;
         spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(false);
-
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+        configProvider.setup(config, authWellKnownEndpoints);
+        const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -319,7 +311,7 @@ describe('OidcSecurityStateValidationService', () => {
     it('should return invalid result if validate_id_token_aud is false', () => {
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
-        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
+        config.response_type = 'id_token token';
 
         spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
@@ -331,15 +323,14 @@ describe('OidcSecurityStateValidationService', () => {
 
         spyOn(oidcSecurityValidation, 'validate_id_token_iat_max_offset').and.returnValue(true);
 
-        spyOnProperty(authConfiguration, 'max_id_token_iat_offset_allowed_in_seconds', 'get').and.returnValue(0);
-
+        config.max_id_token_iat_offset_allowed_in_seconds = 0;
         spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(true);
 
         spyOn(oidcSecurityValidation, 'validate_id_token_aud').and.returnValue(false);
 
-        spyOnProperty(authConfiguration, 'client_id', 'get').and.returnValue('');
-
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+        config.client_id = '';
+        configProvider.setup(config, authWellKnownEndpoints);
+        const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -360,7 +351,7 @@ describe('OidcSecurityStateValidationService', () => {
     it('should return invalid result if validate_id_token_exp_not_expired is false', () => {
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
-        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
+        config.response_type = 'id_token token';
 
         spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
@@ -372,17 +363,16 @@ describe('OidcSecurityStateValidationService', () => {
 
         spyOn(oidcSecurityValidation, 'validate_id_token_iat_max_offset').and.returnValue(true);
 
-        spyOnProperty(authConfiguration, 'max_id_token_iat_offset_allowed_in_seconds', 'get').and.returnValue(0);
-
+        config.max_id_token_iat_offset_allowed_in_seconds = 0;
         spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(true);
 
         spyOn(oidcSecurityValidation, 'validate_id_token_aud').and.returnValue(true);
 
-        spyOnProperty(authConfiguration, 'client_id', 'get').and.returnValue('');
-
+        config.client_id = '';
         spyOn(oidcSecurityValidation, 'validate_id_token_exp_not_expired').and.returnValue(false);
+        configProvider.setup(config, authWellKnownEndpoints);
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+        const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -402,32 +392,21 @@ describe('OidcSecurityStateValidationService', () => {
 
     it('Reponse is valid if authConfiguration.response_type does not equal "id_token token"', () => {
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
-
         spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-
         spyOn(oidcSecurityValidation, 'validate_signature_id_token').and.returnValue(true);
-
         spyOn(oidcSecurityValidation, 'validate_id_token_nonce').and.returnValue(true);
-
         spyOn(oidcSecurityValidation, 'validate_required_id_token').and.returnValue(true);
-
         spyOn(oidcSecurityValidation, 'validate_id_token_iat_max_offset').and.returnValue(true);
-
-        spyOnProperty(authConfiguration, 'max_id_token_iat_offset_allowed_in_seconds', 'get').and.returnValue(0);
-
+        config.max_id_token_iat_offset_allowed_in_seconds = 0;
         spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(true);
-
         spyOn(oidcSecurityValidation, 'validate_id_token_aud').and.returnValue(true);
-
-        spyOnProperty(authConfiguration, 'client_id', 'get').and.returnValue('');
-
+        config.client_id = '';
         spyOn(oidcSecurityValidation, 'validate_id_token_exp_not_expired').and.returnValue(true);
+        config.response_type = 'NOT id_token token';
+        config.auto_clean_state_after_authentication = false;
+        configProvider.setup(config, authWellKnownEndpoints);
 
-        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('NOT id_token token');
-
-        spyOnProperty(authConfiguration, 'auto_clean_state_after_authentication', 'get').and.returnValue('');
-
-        let logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
+        const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -448,34 +427,22 @@ describe('OidcSecurityStateValidationService', () => {
 
     it('Reponse is invalid if validate_id_token_at_hash is false', () => {
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
-
         spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-
         spyOn(oidcSecurityValidation, 'validate_signature_id_token').and.returnValue(true);
-
         spyOn(oidcSecurityValidation, 'validate_id_token_nonce').and.returnValue(true);
-
         spyOn(oidcSecurityValidation, 'validate_required_id_token').and.returnValue(true);
-
         spyOn(oidcSecurityValidation, 'validate_id_token_iat_max_offset').and.returnValue(true);
-
-        spyOnProperty(authConfiguration, 'max_id_token_iat_offset_allowed_in_seconds', 'get').and.returnValue(0);
-
+        config.max_id_token_iat_offset_allowed_in_seconds = 0;
         spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(true);
-
         spyOn(oidcSecurityValidation, 'validate_id_token_aud').and.returnValue(true);
-
-        spyOnProperty(authConfiguration, 'client_id', 'get').and.returnValue('');
-
+        config.client_id = '';
         spyOn(oidcSecurityValidation, 'validate_id_token_exp_not_expired').and.returnValue(true);
-
-        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
-
-        spyOnProperty(authConfiguration, 'auto_clean_state_after_authentication', 'get').and.returnValue('');
-
+        config.response_type = 'id_token token';
+        config.auto_clean_state_after_authentication = false;
         spyOn(oidcSecurityValidation, 'validate_id_token_at_hash').and.returnValue(false);
+        configProvider.setup(config, authWellKnownEndpoints);
 
-        let logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+        const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const state = stateValidationService.validateState(
             {
@@ -495,7 +462,7 @@ describe('OidcSecurityStateValidationService', () => {
     });
 
     it('should return valid result if validate_id_token_iss is false and iss_validation_off is true', () => {
-        spyOnProperty(authConfiguration, 'iss_validation_off', 'get').and.returnValue(true);
+        config.iss_validation_off = true;
         spyOn(oidcSecurityValidation, 'validate_id_token_iss').and.returnValue(false);
 
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
@@ -507,7 +474,8 @@ describe('OidcSecurityStateValidationService', () => {
         spyOn(oidcSecurityValidation, 'validate_id_token_aud').and.returnValue(true);
         spyOn(oidcSecurityValidation, 'validate_id_token_exp_not_expired').and.returnValue(true);
         spyOn(oidcSecurityValidation, 'validate_id_token_at_hash').and.returnValue(true);
-        spyOnProperty(authConfiguration, 'response_type', 'get').and.returnValue('id_token token');
+        config.response_type = 'id_token token';
+        configProvider.setup(config, authWellKnownEndpoints);
 
         const logDebugSpy = spyOn(loggerService, 'logDebug'); // .and.callFake(() => {});
 

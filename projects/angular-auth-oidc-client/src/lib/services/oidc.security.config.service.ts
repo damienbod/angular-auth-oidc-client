@@ -6,11 +6,10 @@ import { LoggerService } from './oidc.logger.service';
 
 @Injectable()
 export class OidcConfigService {
-    private configurationLoaded = new Subject<boolean>();
-    wellKnownEndpoints: any;
+    private configurationLoadedInternal = new Subject<any>();
 
-    public get onConfigurationLoaded(): Observable<boolean> {
-        return this.configurationLoaded.asObservable();
+    public get onConfigurationLoaded(): Observable<any> {
+        return this.configurationLoadedInternal.asObservable();
     }
 
     constructor(private readonly httpClient: HttpClient, private readonly loggerService: LoggerService) {}
@@ -28,7 +27,7 @@ export class OidcConfigService {
                 }),
                 catchError(error => {
                     this.loggerService.logError(`OidcConfigService 'load' threw an error on calling ${configUrl}`, error);
-                    this.configurationLoaded.next(false);
+                    this.configurationLoadedInternal.next(null);
                     return of(error);
                 })
             )
@@ -56,13 +55,12 @@ export class OidcConfigService {
             .pipe(
                 catchError(error => {
                     this.loggerService.logError(`OidcConfigService 'load_using_stsServer' threw an error on calling ${stsServer}`, error);
-                    this.configurationLoaded.next(false);
+                    this.configurationLoadedInternal.next(null);
                     return of(false);
                 })
             )
-            .subscribe(response => {
-                this.wellKnownEndpoints = response;
-                this.configurationLoaded.next(true);
+            .subscribe(wellKnownEndpoints => {
+                this.configurationLoadedInternal.next(wellKnownEndpoints);
             });
     }
 
@@ -85,13 +83,12 @@ export class OidcConfigService {
             .pipe(
                 catchError(error => {
                     this.loggerService.logError(`OidcConfigService 'load_using_custom_stsServer' threw an error on calling ${url}`, error);
-                    this.configurationLoaded.next(false);
+                    this.configurationLoadedInternal.next(null);
                     return of(error);
                 })
             )
-            .subscribe(response => {
-                this.wellKnownEndpoints = response;
-                this.configurationLoaded.next(true);
+            .subscribe(wellKnownEndpoints => {
+                this.configurationLoadedInternal.next(wellKnownEndpoints);
             });
     }
 }
