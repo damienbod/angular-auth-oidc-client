@@ -7,7 +7,7 @@ import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 @Injectable({ providedIn: 'root' })
 export class ConfigurationProvider {
     private configurationDone = new Subject();
-    private openIdConfiguration: OpenIdConfiguration = null;
+    private mergedOpenIdConfiguration: OpenIdConfiguration = null;
     private authWellKnownEndpoints: AuthWellKnownEndpoints = null;
 
     get initialConfigurationDone() {
@@ -15,7 +15,7 @@ export class ConfigurationProvider {
     }
 
     get openIDConfiguration(): OpenIdConfiguration {
-        return this.openIdConfiguration;
+        return this.mergedOpenIdConfiguration;
     }
 
     get wellKnownEndpoints(): AuthWellKnownEndpoints {
@@ -58,10 +58,10 @@ export class ConfigurationProvider {
             storage: sessionStorage,
         };
 
-        this.openIdConfiguration = { ...defaultConfig, ...openIdConfiguration };
-        this.setSpecialCases(this.openIdConfiguration);
+        this.mergedOpenIdConfiguration = { ...defaultConfig, ...openIdConfiguration };
+        this.setSpecialCases(this.mergedOpenIdConfiguration);
         this.authWellKnownEndpoints = { ...authWellKnownEndpoints };
-        this.onConfigurationChangeInternal.next({ ...openIdConfiguration });
+        this.onConfigurationChangeInternal.next({ ...this.mergedOpenIdConfiguration });
     }
 
     private setSpecialCases(currentConfig: OpenIdConfiguration) {
