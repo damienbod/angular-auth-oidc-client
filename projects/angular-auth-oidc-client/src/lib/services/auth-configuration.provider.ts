@@ -1,18 +1,14 @@
-import { isPlatformBrowser } from '@angular/common';
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { OpenIdConfiguration } from '../models/auth.configuration';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
+import { PlatformProvider } from './platform.provider';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigurationProvider {
-    private configurationDone = new Subject();
     private mergedOpenIdConfiguration: OpenIdConfiguration = null;
     private authWellKnownEndpoints: AuthWellKnownEndpoints = null;
-
-    get initialConfigurationDone() {
-        return this.configurationDone.asObservable();
-    }
+    private onConfigurationChangeInternal = new Subject<OpenIdConfiguration>();
 
     get openIDConfiguration(): OpenIdConfiguration {
         return this.mergedOpenIdConfiguration;
@@ -22,13 +18,11 @@ export class ConfigurationProvider {
         return this.authWellKnownEndpoints;
     }
 
-    private onConfigurationChangeInternal = new Subject<OpenIdConfiguration>();
-
     get onConfigurationChange() {
         return this.onConfigurationChangeInternal.asObservable();
     }
 
-    constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+    constructor(private platformProvider: PlatformProvider) {}
 
     setup(openIdConfiguration: OpenIdConfiguration, authWellKnownEndpoints: AuthWellKnownEndpoints) {
         const defaultConfig: OpenIdConfiguration = {
@@ -65,9 +59,7 @@ export class ConfigurationProvider {
     }
 
     private setSpecialCases(currentConfig: OpenIdConfiguration) {
-        const isBrowser = isPlatformBrowser(this.platformId);
-
-        if (!isBrowser) {
+        if (!this.platformProvider.isBrowser) {
             currentConfig.start_checksession = false;
             currentConfig.silent_renew = false;
         }
