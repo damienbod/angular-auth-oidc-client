@@ -1,6 +1,5 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { OidcDataService } from '../data-services/oidc-data.service';
-import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 import { IFrameService } from '../services/existing-iframe.service';
 import { EqualityHelperService } from '../services/oidc-equality-helper.service';
 import { StateValidationService } from '../services/oidc-security-state-validation.service';
@@ -32,7 +31,6 @@ export class AuthModule {
                 LoggerService,
                 IFrameService,
                 EqualityHelperService,
-                AuthWellKnownEndpoints,
                 OidcDataService,
                 StateValidationService,
                 {

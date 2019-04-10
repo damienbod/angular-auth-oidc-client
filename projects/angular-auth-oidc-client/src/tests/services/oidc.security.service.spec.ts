@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { filter, skipWhile } from 'rxjs/operators';
-import { AuthWellKnownEndpoints, OpenIdConfiguration } from '../../lib/angular-auth-oidc-client';
+import { OpenIdConfiguration } from '../../lib/angular-auth-oidc-client';
 import { AuthModule } from '../../lib/modules/auth.module';
 import { ConfigurationProvider } from '../../lib/services/auth-configuration.provider';
 import { IFrameService } from '../../lib/services/existing-iframe.service';
@@ -304,8 +304,9 @@ describe('OidcSecurityService', () => {
     });
 
     it('logoff should call urlHandler', () => {
-        const authwellknown = new AuthWellKnownEndpoints();
-        authwellknown.end_session_endpoint = 'some_endpoint';
+        const authwellknown = {
+            end_session_endpoint: 'some_endpoint',
+        };
 
         const logoffUrl = 'http://some_logoff_url';
 
@@ -326,8 +327,9 @@ describe('OidcSecurityService', () => {
     });
 
     it('logoff should redirect', () => {
-        const authwellknown = new AuthWellKnownEndpoints();
-        authwellknown.end_session_endpoint = 'some_endpoint';
+        const authwellknown = {
+            end_session_endpoint: 'some_endpoint',
+        };
 
         const logoffUrl = 'http://some_logoff_url';
 
@@ -342,7 +344,7 @@ describe('OidcSecurityService', () => {
     });
 
     it('logoff should reset storage data before emitting an _isAuthorized change', () => {
-        const authwellknown = new AuthWellKnownEndpoints();
+        const authwellknown = {};
 
         const resetStorageData = spyOn((oidcSecurityService as any).oidcSecurityCommon, 'resetStorageData');
         configurationProvider.setup(null, authwellknown);

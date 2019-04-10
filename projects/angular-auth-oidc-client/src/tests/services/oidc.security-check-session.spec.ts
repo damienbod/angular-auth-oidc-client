@@ -1,5 +1,4 @@
 import { async, TestBed } from '@angular/core/testing';
-import { AuthWellKnownEndpoints } from '../../lib/models/auth.well-known-endpoints';
 import { ConfigurationProvider } from '../../lib/services/auth-configuration.provider';
 import { IFrameService } from '../../lib/services/existing-iframe.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
@@ -40,8 +39,9 @@ describe('EqualityHelperServiceTests', () => {
 
     it('setupModule sets authWellKnownEndpoints', () => {
         expect((oidcSecurityCheckSession as any).authWellKnownEndpoints).toBe(undefined);
-        const authWellKnownEndpoints = new AuthWellKnownEndpoints();
-        authWellKnownEndpoints.issuer = 'testIssuer';
+        const authWellKnownEndpoints = {
+            issuer: 'testIssuer',
+        };
         configurationProvider.setup(null, authWellKnownEndpoints);
 
         expect((oidcSecurityCheckSession as any).configurationProvider.authWellKnownEndpoints).toBeTruthy();
@@ -148,8 +148,10 @@ describe('EqualityHelperServiceTests', () => {
     });
 
     it('location of iframe is set to authWellKnownEndpoints.check_session_iframe if existing', async(() => {
-        const authWellKnownEndpoints = new AuthWellKnownEndpoints();
-        authWellKnownEndpoints.check_session_iframe = 'someTestingValue';
+        const authWellKnownEndpoints = {
+            check_session_iframe: 'someTestingValue',
+        };
+
         (oidcSecurityCheckSession as any).authWellKnownEndpoints = authWellKnownEndpoints;
         spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
 

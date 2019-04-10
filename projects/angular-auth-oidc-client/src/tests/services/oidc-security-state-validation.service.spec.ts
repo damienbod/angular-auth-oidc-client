@@ -73,16 +73,17 @@ describe('OidcSecurityStateValidationService', () => {
             max_id_token_iat_offset_allowed_in_seconds: 10,
         };
 
-        authWellKnownEndpoints = new AuthWellKnownEndpoints();
-        authWellKnownEndpoints.issuer = 'https://localhost:44363';
-        authWellKnownEndpoints.jwks_uri = 'https://localhost:44363/.well-known/openid-configuration/jwks';
-        authWellKnownEndpoints.authorization_endpoint = 'https://localhost:44363/connect/authorize';
-        authWellKnownEndpoints.token_endpoint = 'https://localhost:44363/connect/token';
-        authWellKnownEndpoints.userinfo_endpoint = 'https://localhost:44363/connect/userinfo';
-        authWellKnownEndpoints.end_session_endpoint = 'https://localhost:44363/connect/endsession';
-        authWellKnownEndpoints.check_session_iframe = 'https://localhost:44363/connect/checksession';
-        authWellKnownEndpoints.revocation_endpoint = 'https://localhost:44363/connect/revocation';
-        authWellKnownEndpoints.introspection_endpoint = 'https://localhost:44363/connect/introspect';
+        authWellKnownEndpoints = {
+            issuer: 'https://localhost:44363',
+            jwks_uri: 'https://localhost:44363/well-known/openid-configuration/jwks',
+            authorization_endpoint: 'https://localhost:44363/connect/authorize',
+            token_endpoint: 'https://localhost:44363/connect/token',
+            userinfo_endpoint: 'https://localhost:44363/connect/userinfo',
+            end_session_endpoint: 'https://localhost:44363/connect/endsession',
+            check_session_iframe: 'https://localhost:44363/connect/checksession',
+            revocation_endpoint: 'https://localhost:44363/connect/revocation',
+            introspection_endpoint: 'https://localhost:44363/connect/introspect',
+        };
     });
 
     it('should create', () => {
