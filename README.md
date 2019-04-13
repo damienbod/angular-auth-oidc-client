@@ -146,7 +146,7 @@ At present only the 'code' with PKCE, 'id_token token' or the 'id_token' flows a
 
 >Note the configuration json must have a property stsServer for this to work.
 
-### Configuration without APP_INITIALIZER
+### Approach 2. `Configuration without APP_INITIALIZER`
 
 ```typescript
 export class AppModule {
