@@ -252,34 +252,36 @@ private setHeaders() {
 
 ```typescript
 import { Injectable } from '@angular/core';
-import { Router, CanActivate, CanLoad, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 
 import { OidcSecurityService } from './auth/services/oidc.security.service';
 
 @Injectable()
-export class AuthorizationGuard implements CanActivate, CanLoad {
-    constructor(private router: Router, private oidcSecurityService: OidcSecurityService) {}
+export class AuthorizationGuard implements CanActivate {
 
-    canActivate(
-        route: ActivatedRouteSnapshot,
-        state: RouterStateSnapshot
-    ): Observable<boolean> {
-        return this.checkUser();
-    }
+    constructor(
+        private router: Router,
+        private oidcSecurityService: OidcSecurityService
+    ) { }
 
-    canLoad(state: Route): Observable<boolean> {
-        return this.checkUser();
-    }
+    public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
+        console.log(route + '' + state);
+        console.log('AuthorizationGuard, canActivate');
 
-    private checkUser(): Observable<boolean> | boolean {
         return this.oidcSecurityService.getIsAuthorized().pipe(
-            tap((isAuthorized: boolean) => {
-                if(!isAuthorized) {
-                    this.router.navigate(['/unauthorized']);
+            map((isAuthorized: boolean) => {
+                console.log('AuthorizationGuard, canActivate isAuthorized: ' + isAuthorized);
+
+                if (isAuthorized) {
+                    return true;
                 }
-            })
+
+                this.router.navigate(['/unauthorized']);
+                return false;
+            }),
+            take(1)
         );
     }
 }
