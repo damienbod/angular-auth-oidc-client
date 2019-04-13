@@ -71,7 +71,7 @@ import {
 import { AppComponent } from './app.component';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    return () => oidcConfigService.loadUsingStsServer('https://your_secure_token_service_url');
+    return () => oidcConfigService.load_using_stsServer('https://your_secure_token_service_url');
 }
 
 @NgModule({
