@@ -12,7 +12,7 @@ import {
 import { AppComponent } from './app.component';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    return () => oidcConfigService.loadUsingStsServer('https://offeringsolutions-sts.azurewebsites.net');
+    return () => oidcConfigService.load_using_stsServer('https://offeringsolutions-sts.azurewebsites.net');
 }
 
 @NgModule({
