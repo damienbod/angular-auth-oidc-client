@@ -5,8 +5,8 @@ import { ConfigurationProvider } from './auth-configuration.provider';
 export class LoggerService {
     constructor(private configurationProvider: ConfigurationProvider) {}
 
-    logError(message: any, error: any = null) {
-        console.error(message, error);
+    logError(message: any) {
+        console.error(message);
     }
 
     logWarning(message: any) {

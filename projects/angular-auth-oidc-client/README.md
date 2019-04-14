@@ -71,7 +71,7 @@ import {
 import { AppComponent } from './app.component';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    return () => oidcConfigService.loadUsingStsServer('https://your_secure_token_service_url');
+    return () => oidcConfigService.load_using_stsServer('https://your_secure_token_service_url');
 }
 
 @NgModule({
@@ -266,12 +266,14 @@ export class AuthorizationGuard implements CanActivate, CanLoad {
         return this.checkUser();
     }
 
-    private checkUser(): Observable<boolean> | boolean {
+    private checkUser(): Observable<boolean> {
         return this.oidcSecurityService.getIsAuthorized().pipe(
-            tap((isAuthorized: boolean) => {
+            map((isAuthorized: boolean) => {
                 if (!isAuthorized) {
                     this.router.navigate(['/unauthorized']);
+                    return false;
                 }
+                return true;
             })
         );
     }
@@ -374,29 +376,29 @@ for the detail of each field.
 ```typescript
 export class AppModule {
     constructor(public oidcSecurityService: OidcSecurityService) {
-        const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
+        const config = new OpenIDImplicitFlowConfiguration();
 
-        openIDImplicitFlowConfiguration.stsServer = 'https://localhost:44363';
-        openIDImplicitFlowConfiguration.redirect_url = 'https://localhost:44363';
+        config.stsServer = 'https://localhost:44363';
+        config.redirect_url = 'https://localhost:44363';
         // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer identified by the iss (issuer) Claim as an audience.
         // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences not trusted by the Client.
-        openIDImplicitFlowConfiguration.client_id = 'singleapp';
-        openIDImplicitFlowConfiguration.response_type = 'code'; // 'id_token token' Implicit Flow
-        openIDImplicitFlowConfiguration.scope = 'dataEventRecords openid';
-        openIDImplicitFlowConfiguration.post_logout_redirect_uri = 'https://localhost:44363/Unauthorized';
-        openIDImplicitFlowConfiguration.start_checksession = false;
-        openIDImplicitFlowConfiguration.silent_renew = true;
-        openIDImplicitFlowConfiguration.silent_renew_url = 'https://localhost:44363/silent-renew.html';
-        openIDImplicitFlowConfiguration.post_login_route = '/dataeventrecords';
-        // HTTP 403
-        openIDImplicitFlowConfiguration.forbidden_route = '/Forbidden';
+        config.client_id = 'singleapp';
+        config.response_type = 'code'; // 'id_token token' Implicit Flow
+        config.scope = 'dataEventRecords openid';
+        config.post_logout_redirect_uri = 'https://localhost:44363/Unauthorized';
+        config.start_checksession = false;
+        config.silent_renew = true;
+        config.silent_renew_url = 'https://localhost:44363/silent-renew.html';
+        config.post_login_route = '/dataeventrecords';
+
+        config.forbidden_route = '/Forbidden';
         // HTTP 401
-        openIDImplicitFlowConfiguration.unauthorized_route = '/Unauthorized';
-        openIDImplicitFlowConfiguration.log_console_warning_active = true;
-        openIDImplicitFlowConfiguration.log_console_debug_active = true;
+        config.unauthorized_route = '/Unauthorized';
+        config.log_console_warning_active = true;
+        config.log_console_debug_active = true;
         // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
         // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
-        openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
+        config.max_id_token_iat_offset_allowed_in_seconds = 10;
 
         const authWellKnownEndpoints = new AuthWellKnownEndpoints();
         authWellKnownEndpoints.issuer = 'https://localhost:44363';

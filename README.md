@@ -39,7 +39,7 @@ or with yarn
 or you can add the npm package to your package.json
 
 ```typescript
- "angular-auth-oidc-client": "9.0.4"
+ "angular-auth-oidc-client": "^9.0.4"
 ```
 
 and type
@@ -48,13 +48,15 @@ and type
  npm install
 ```
 
-## Using in the Angular application with the APP_INITIALIZER
+## Configuration
+
+### Approach 1: `APP_INITIALIZER`
 
 Import the module and services in your module.
 
 The `OidcSecurityService` has a dependency on the `HttpClientModule` which needs to be imported. The angular-auth-oidc-client module supports all versions of Angular 4.3 onwards.
 
-Set the AuthConfiguration properties to match the server configuration. At present only the 'code' with PKCE, 'id_token token' or the 'id_token' flows are supported.
+## Loading the configuration from the server
 
 ```typescript
 import { HttpClientModule } from '@angular/common/http';
@@ -70,8 +72,12 @@ import {
 } from 'angular-auth-oidc-client';
 import { AppComponent } from './app.component';
 
+const oidc_configuration = 'assets/auth.clientConfiguration.json';
+// if your config is on server side
+// const oidc_configuration = ${window.location.origin}/api/ClientAppSettings
+
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    return () => oidcConfigService.loadUsingStsServer('https://your_secure_token_service_url');
+    return () => oidcConfigService.load(oidc_configuration);
 }
 
 @NgModule({
@@ -101,26 +107,111 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 export class AppModule {
     constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
         this.oidcConfigService.onConfigurationLoaded.subscribe(() => {
-            const config = new OpenIDImplicitFlowConfiguration();
-            config.stsServer = 'https://your_secure_token_service_url';
-            config.redirect_url = 'https://localhost:4200';
-            config.client_id = 'angular_code_client';
-            config.scope = 'openid profile email';
-            config.response_type = 'code';
-
-            config.silent_renew = true;
-            config.silent_renew_url = 'https://localhost:4200/silent-renew.html';
-
-            const authWellKnownEndpoints = new AuthWellKnownEndpoints();
-            authWellKnownEndpoints.setWellKnownEndpoints(this.oidcConfigService.wellKnownEndpoints);
-
-            this.oidcSecurityService.setupModule(config, authWellKnownEndpoints);
+          const oidcFlowConfig = new OpenIDImplicitFlowConfiguration();
+          //merge configuration loaded from assets/auth.clientConfiguration.json
+          Object.assign(oidcFlowConfig, this.oidcConfigService.clientConfiguration);
+          this.oidcSecurityService.setupModule(config, this.oidcConfigService.wellKnownEndpoints);
         });
     }
 }
 ```
 
-## Code Flow with PKCE
+#### assets/auth.clientConfiguration.json
+
+See [Auth documentation](https://github.com/damienbod/angular-auth-oidc-client/blob/master/API_DOCUMENTATION.md#authconfiguration)
+for the detail of each field.
+
+```json
+{
+	"stsServer": "https://localhost:44318",
+	"redirect_url": "https://localhost:44311",
+	"client_id": "angularclient",
+	"response_type": "code",
+	"scope": "dataEventRecords securedFiles openid profile",
+	"post_logout_redirect_uri": "https://localhost:44311",
+	"start_checksession": true,
+	"silent_renew": true,
+	"silent_renew_url": "https://localhost:44311/silent-renew.html",
+	"post_login_route": "/home",
+	"forbidden_route": "/forbidden",
+	"unauthorized_route": "/unauthorized",
+	"log_console_warning_active": true,
+	"log_console_debug_active": true,
+	"max_id_token_iat_offset_allowed_in_seconds": 10,
+}
+```
+At present only the 'code' with PKCE, 'id_token token' or the 'id_token' flows are supported:
+
+`"response_type": ["code" | "id_token token" | "id_token" ]`
+
+>Note the configuration json must have a property stsServer for this to work.
+
+### Approach 2. `Configuration without APP_INITIALIZER`
+
+```typescript
+export class AppModule {
+    constructor(public oidcSecurityService: OidcSecurityService) {
+        const config = new OpenIDImplicitFlowConfiguration();
+
+        config.stsServer = 'https://localhost:44363';
+        config.redirect_url = 'https://localhost:44363';
+        // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer identified by the iss (issuer) Claim as an audience.
+        // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences not trusted by the Client.
+        config.client_id = 'singleapp';
+        config.response_type = 'code'; // 'id_token token' Implicit Flow
+        config.scope = 'dataEventRecords openid';
+        config.post_logout_redirect_uri = 'https://localhost:44363/Unauthorized';
+        config.start_checksession = false;
+        config.silent_renew = true;
+        config.silent_renew_url = 'https://localhost:44363/silent-renew.html';
+        config.post_login_route = '/dataeventrecords';
+
+        config.forbidden_route = '/Forbidden';
+        // HTTP 401
+        config.unauthorized_route = '/Unauthorized';
+        config.log_console_warning_active = true;
+        config.log_console_debug_active = true;
+        // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
+        // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
+        config.max_id_token_iat_offset_allowed_in_seconds = 10;
+
+        const authWellKnownEndpoints = new AuthWellKnownEndpoints();
+        authWellKnownEndpoints.issuer = 'https://localhost:44363';
+
+        authWellKnownEndpoints.jwks_uri = 'https://localhost:44363/.well-known/openid-configuration/jwks';
+        authWellKnownEndpoints.authorization_endpoint = 'https://localhost:44363/connect/authorize';
+        authWellKnownEndpoints.token_endpoint = 'https://localhost:44363/connect/token';
+        authWellKnownEndpoints.userinfo_endpoint = 'https://localhost:44363/connect/userinfo';
+        authWellKnownEndpoints.end_session_endpoint = 'https://localhost:44363/connect/endsession';
+        authWellKnownEndpoints.check_session_iframe = 'https://localhost:44363/connect/checksession';
+        authWellKnownEndpoints.revocation_endpoint = 'https://localhost:44363/connect/revocation';
+        authWellKnownEndpoints.introspection_endpoint = 'https://localhost:44363/connect/introspect';
+
+        this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration, authWellKnownEndpoints);
+    }
+}
+```
+
+### Custom STS server well known configuration
+
+Sometimes it is required to load custom .well-known/openid-configuration. The load_using_custom_stsServer can be used for this.
+
+```typescript
+export function loadConfig(oidcConfigService: OidcConfigService) {
+    return () =>
+        oidcConfigService.load_using_custom_stsServer(
+            'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=b2c_1_susi'
+        );
+}
+```
+
+
+## Usage
+
+### Code Flow with PKCE
+> It is recomended flow in SPA applications, see [SECURELY USING THE OIDC AUTHORIZATION CODE FLOW AND A PUBLIC CLIENT WITH SINGLE PAGE APPLICATIONS](https://medium.com/@robert.broeckelmann/securely-using-the-oidc-authorization-code-flow-and-a-public-client-with-single-page-applications-55e0a648ab3a). 
+> 
+> Not all security service providers and servers support it yet. 
 
 Create the login, logout component and use the oidcSecurityService
 
@@ -174,6 +265,21 @@ export class AppComponent implements OnInit, OnDestroy {
 }
 ```
 
+#### Implicit Flow (Not recommended)
+
+This flow is no longer recommended, but some servers support this flow only, and not the Code flow with PKCE.
+
+Create the login, logout component and use the oidcSecurityService
+
+```typescript
+private doCallbackLogicIfRequired() {
+  if (window.location.hash) {
+    this.oidcSecurityService.authorizedImplicitFlowCallback();
+  }
+  }
+```
+
+
 And a simple template for the component.
 
 ```typescript
@@ -213,6 +319,8 @@ Point the `silent_renew_url` property to an HTML file which contains the followi
 	};
 </script>
 ```
+
+
 
 ### Silent Renew Angular-CLI
 
@@ -266,167 +374,21 @@ export class AuthorizationGuard implements CanActivate, CanLoad {
         return this.checkUser();
     }
 
-    private checkUser(): Observable<boolean> | boolean {
+    private checkUser(): Observable<boolean> {
         return this.oidcSecurityService.getIsAuthorized().pipe(
-            tap((isAuthorized: boolean) => {
+            map((isAuthorized: boolean) => {
                 if (!isAuthorized) {
                     this.router.navigate(['/unauthorized']);
+                    return false;
                 }
+                return true;
             })
         );
     }
 }
 ```
 
-## Implicit Flow (Not recommended)
 
-This flow is no longer recommended, but some servers only support this, and not the Code flow with PKCE
-
-Create the login, logout component and use the oidcSecurityService
-
-```typescript
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
-
-@Component({
-    selector: 'my-app',
-    templateUrl: 'app.component.html',
-})
-export class AppComponent implements OnInit, OnDestroy {
-    constructor(public oidcSecurityService: OidcSecurityService) {
-        this.oidcSecurityService
-            .getIsModuleSetup()
-            .pipe(
-                filter((isModuleSetup: boolean) => isModuleSetup),
-                take(1)
-            )
-            .subscribe((isModuleSetup: boolean) => {
-                this.doCallbackLogicIfRequired();
-            });
-    }
-
-    ngOnInit() {}
-
-    ngOnDestroy(): void {}
-
-    login() {
-        // if you need to add extra parameters to the login
-        // let culture = 'de-CH';
-        // this.oidcSecurityService.setCustomRequestParameters({ 'ui_locales': culture });
-
-        this.oidcSecurityService.authorize();
-    }
-
-    logout() {
-        this.oidcSecurityService.logoff();
-    }
-
-    private doCallbackLogicIfRequired() {
-        if (window.location.hash) {
-            this.oidcSecurityService.authorizedImplicitFlowCallback();
-        }
-    }
-}
-```
-
-## Loading the configuration from the server
-
-Note the configuration json must return a property stsServer for this to work.
-
-```typescript
-export function loadConfig(oidcConfigService: OidcConfigService) {
-    return () => oidcConfigService.load(`${window.location.origin}/api/ClientAppSettings`);
-}
-```
-
-Example:
-
-You can add any configurations to this json, as long as the stsServer is present. This is REQUIRED. Then you can map the properties in the AppModule.
-
-```typescript
-{
-	"stsServer":"https://localhost:44318",
-	"redirect_url":"https://localhost:44311",
-	"client_id":"angularclient",
-	"response_type":"code", // "id_token token"
-	"scope":"dataEventRecords securedFiles openid profile",
-	"post_logout_redirect_uri":"https://localhost:44311",
-	"start_checksession":true,
-	"silent_renew":true,
-	"silent_renew_url":"https://localhost:44311/silent-renew.html",
-	"post_login_route":"/home",
-	"forbidden_route":"/forbidden",
-	"unauthorized_route":"/unauthorized",
-	"log_console_warning_active":true,
-	"log_console_debug_active":true,
-	"max_id_token_iat_offset_allowed_in_seconds":"10",
-	"apiServer":"https://localhost:44390/",
-	"apiFileServer":"https://localhost:44378/"
-}
-```
-
-See [Auth documentation](https://github.com/damienbod/angular-auth-oidc-client/blob/master/API_DOCUMENTATION.md#authconfiguration)
-for the detail of each field.
-
-## Using without APP_INITIALIZER
-
-```typescript
-export class AppModule {
-    constructor(public oidcSecurityService: OidcSecurityService) {
-        const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
-
-        openIDImplicitFlowConfiguration.stsServer = 'https://localhost:44363';
-        openIDImplicitFlowConfiguration.redirect_url = 'https://localhost:44363';
-        // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer identified by the iss (issuer) Claim as an audience.
-        // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences not trusted by the Client.
-        openIDImplicitFlowConfiguration.client_id = 'singleapp';
-        openIDImplicitFlowConfiguration.response_type = 'code'; // 'id_token token' Implicit Flow
-        openIDImplicitFlowConfiguration.scope = 'dataEventRecords openid';
-        openIDImplicitFlowConfiguration.post_logout_redirect_uri = 'https://localhost:44363/Unauthorized';
-        openIDImplicitFlowConfiguration.start_checksession = false;
-        openIDImplicitFlowConfiguration.silent_renew = true;
-        openIDImplicitFlowConfiguration.silent_renew_url = 'https://localhost:44363/silent-renew.html';
-        openIDImplicitFlowConfiguration.post_login_route = '/dataeventrecords';
-        // HTTP 403
-        openIDImplicitFlowConfiguration.forbidden_route = '/Forbidden';
-        // HTTP 401
-        openIDImplicitFlowConfiguration.unauthorized_route = '/Unauthorized';
-        openIDImplicitFlowConfiguration.log_console_warning_active = true;
-        openIDImplicitFlowConfiguration.log_console_debug_active = true;
-        // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
-        // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
-        openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
-
-        const authWellKnownEndpoints = new AuthWellKnownEndpoints();
-        authWellKnownEndpoints.issuer = 'https://localhost:44363';
-
-        authWellKnownEndpoints.jwks_uri = 'https://localhost:44363/.well-known/openid-configuration/jwks';
-        authWellKnownEndpoints.authorization_endpoint = 'https://localhost:44363/connect/authorize';
-        authWellKnownEndpoints.token_endpoint = 'https://localhost:44363/connect/token';
-        authWellKnownEndpoints.userinfo_endpoint = 'https://localhost:44363/connect/userinfo';
-        authWellKnownEndpoints.end_session_endpoint = 'https://localhost:44363/connect/endsession';
-        authWellKnownEndpoints.check_session_iframe = 'https://localhost:44363/connect/checksession';
-        authWellKnownEndpoints.revocation_endpoint = 'https://localhost:44363/connect/revocation';
-        authWellKnownEndpoints.introspection_endpoint = 'https://localhost:44363/connect/introspect';
-
-        this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration, authWellKnownEndpoints);
-    }
-}
-```
-
-## Custom STS server well known configuration
-
-Sometimes it is required to load custom .well-known/openid-configuration. The load_using_custom_stsServer can be used for this.
-
-```typescript
-export function loadConfig(oidcConfigService: OidcConfigService) {
-    return () =>
-        oidcConfigService.load_using_custom_stsServer(
-            'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=b2c_1_susi'
-        );
-}
-```
 
 ## Custom Storage
 
