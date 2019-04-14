@@ -61,7 +61,8 @@ export class StateValidationService {
         if (
             !this.oidcSecurityValidation.validate_id_token_iat_max_offset(
                 toReturn.decoded_id_token,
-                this.authConfiguration.max_id_token_iat_offset_allowed_in_seconds
+                this.authConfiguration.max_id_token_iat_offset_allowed_in_seconds,
+                this.authConfiguration.disable_iat_offset_validation
             )
         ) {
             this.loggerService.logWarning('authorizedCallback Validation, iat rejected id_token was issued too far away from the current time');

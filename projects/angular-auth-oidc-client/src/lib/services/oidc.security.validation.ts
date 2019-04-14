@@ -137,7 +137,14 @@ export class OidcSecurityValidation {
 
     // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
     // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
-    validate_id_token_iat_max_offset(dataIdToken: any, max_offset_allowed_in_seconds: number): boolean {
+    validate_id_token_iat_max_offset(dataIdToken: any,
+        max_offset_allowed_in_seconds: number,
+        disable_iat_offset_validation: boolean): boolean {
+
+        if (disable_iat_offset_validation) {
+            return true;
+        }
+
         if (!dataIdToken.hasOwnProperty('iat')) {
             return false;
         }
