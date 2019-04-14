@@ -130,7 +130,7 @@ export class OidcSecurityService {
             });
     }
 
-    setupModule(openIdConfiguration: OpenIdConfiguration, authWellKnownEndpoints: AuthWellKnownEndpoints): void {
+    setupModule(openIdConfiguration: OpenIdConfiguration, authWellKnownEndpoints?: AuthWellKnownEndpoints): void {
         this.configurationProvider.setup(openIdConfiguration, authWellKnownEndpoints);
 
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => {
