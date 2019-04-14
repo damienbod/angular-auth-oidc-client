@@ -107,7 +107,7 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 export class AppModule {
     constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
         this.oidcConfigService.onConfigurationLoaded.subscribe(() => {
-          const config = new OpenIDImplicitFlowConfiguration();
+          const implicitFlowConfig = new OpenIDImplicitFlowConfiguration();
           //merge configuration loaded from assets/auth.clientConfiguration.json
           Object.assign(implicitFlowConfig, this.oidcConfigService.clientConfiguration);
           this.oidcSecurityService.setupModule(config, this.oidcConfigService.wellKnownEndpoints);
@@ -142,7 +142,7 @@ for the detail of each field.
 ```
 At present only the 'code' with PKCE, 'id_token token' or the 'id_token' flows are supported:
 
-`"response_type": ["code" | "id_token token" | "id_token" | "token" ]`
+`"response_type": ["code" | "id_token token" | "id_token" ]`
 
 >Note the configuration json must have a property stsServer for this to work.
 
