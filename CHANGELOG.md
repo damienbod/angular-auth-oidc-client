@@ -1,5 +1,10 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2019-04-14"></a>
+### 2019-04-14 version 9.0.5
+* Added disable_iat_offset_validation configuration for clients with clock problems
+* Updated the Docs
+
 <a name="2019-03-29"></a>
 ### 2019-03-29 version 9.0.4
 * Updated the Docs
