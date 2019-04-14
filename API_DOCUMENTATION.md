@@ -167,6 +167,12 @@ If this is active, the history is not cleaned up at an authorize callback. This 
 
 default value : 3
 
+### disable_iat_offset_validation
+
+default value : false
+
+This allows the application to disable the iat offset validation check. 
+
 id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time, limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
 
 ### storage
