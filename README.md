@@ -107,9 +107,9 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 export class AppModule {
     constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
         this.oidcConfigService.onConfigurationLoaded.subscribe(() => {
-          const implicitFlowConfig = new OpenIDImplicitFlowConfiguration();
+          const oidcFlowConfig = new OpenIDImplicitFlowConfiguration();
           //merge configuration loaded from assets/auth.clientConfiguration.json
-          Object.assign(implicitFlowConfig, this.oidcConfigService.clientConfiguration);
+          Object.assign(oidcFlowConfig, this.oidcConfigService.clientConfiguration);
           this.oidcSecurityService.setupModule(config, this.oidcConfigService.wellKnownEndpoints);
         });
     }
@@ -137,7 +137,7 @@ for the detail of each field.
 	"unauthorized_route": "/unauthorized",
 	"log_console_warning_active": true,
 	"log_console_debug_active": true,
-  "max_id_token_iat_offset_allowed_in_seconds": 10,
+	"max_id_token_iat_offset_allowed_in_seconds": 10,
 }
 ```
 At present only the 'code' with PKCE, 'id_token token' or the 'id_token' flows are supported:
