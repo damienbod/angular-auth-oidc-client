@@ -187,7 +187,7 @@ export class AppModule {
         authWellKnownEndpoints.revocation_endpoint = 'https://localhost:44363/connect/revocation';
         authWellKnownEndpoints.introspection_endpoint = 'https://localhost:44363/connect/introspect';
 
-        this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration, authWellKnownEndpoints);
+        this.oidcSecurityService.setupModule(config, authWellKnownEndpoints);
     }
 }
 ```
