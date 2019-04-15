@@ -30,6 +30,7 @@ export class ConfigurationProvider {
         iss_validation_off: false,
         history_cleanup_off: false,
         max_id_token_iat_offset_allowed_in_seconds: 3,
+        disable_iat_offset_validation: false,
         storage: sessionStorage,
     };
 

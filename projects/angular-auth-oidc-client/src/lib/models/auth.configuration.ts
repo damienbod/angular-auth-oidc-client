@@ -22,5 +22,6 @@ export interface OpenIdConfiguration {
     iss_validation_off?: boolean;
     history_cleanup_off?: boolean;
     max_id_token_iat_offset_allowed_in_seconds?: number;
+    disable_iat_offset_validation?: boolean;
     storage?: any;
 }
