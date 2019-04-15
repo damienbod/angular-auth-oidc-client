@@ -44,4 +44,4 @@ testem.log
 Thumbs.db
 
 /.vs
-/.angulardoc.json
+.angulardoc.json
