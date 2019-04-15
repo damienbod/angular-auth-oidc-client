@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { AuthModule, OidcConfigService, OidcSecurityService, OpenIdConfiguration } from 'angular-auth-oidc-client';
+import { AuthModule, ConfigResult, OidcConfigService, OidcSecurityService, OpenIdConfiguration } from 'angular-auth-oidc-client';
 import { AppComponent } from './app.component';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
@@ -35,9 +35,9 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 })
 export class AppModule {
     constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
-        this.oidcConfigService.onConfigurationLoaded.subscribe(wellKnownEndpoints => {
+        this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
             const config: OpenIdConfiguration = {
-                stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+                stsServer: configResult.customConfig.stsServer,
                 redirect_url: 'https://localhost:4200',
                 client_id: 'angularClient',
                 scope: 'openid profile email',
@@ -54,7 +54,7 @@ export class AppModule {
             //config.max_id_token_iat_offset_allowed_in_seconds = 5;
             //config.history_cleanup_off = true;
 
-            this.oidcSecurityService.setupModule(config, wellKnownEndpoints);
+            this.oidcSecurityService.setupModule(config, configResult.customAuthWellknownEndpoints);
         });
     }
 }
