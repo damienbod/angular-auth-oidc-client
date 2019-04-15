@@ -87,21 +87,39 @@ describe('OidcConfigService', () => {
     describe(`method 'load_using_stsServer' tests`, () => {
         it(`should call error message when called with empty string`, async(() => {
             const configUrl = '';
-            const returnedClientConfig = {
-                stsServer: '',
+
+            expect(() => {
+                oidcConfigService.load_using_stsServer(configUrl);
+            }).toThrowError();
+        }));
+
+        it(`should have correct response when passing the correc 'stsServer' property`, async(() => {
+            const stsServer = 'myStsServerAdress';
+
+            const authWellKnownEndPoints = {
+                authwellknown: 'endpoints',
             };
 
-            const spy = spyOn(console, 'error');
-            const expectedErrorMessage = `Property 'stsServer' is not present of passed config ${JSON.stringify(returnedClientConfig)}`;
+            const expectedResult = {
+                customAuthWellknownEndpoints: authWellKnownEndPoints,
+                customConfig: { stsServer },
+            };
 
-            oidcConfigService.load_using_stsServer(configUrl).then(result => {
-                expect(result).toBe(false);
-                expect(spy).toHaveBeenCalledWith(expectedErrorMessage, returnedClientConfig);
+            const spy = spyOn((oidcConfigService as any).configurationLoadedInternal, 'next');
+
+            oidcConfigService.load_using_stsServer(stsServer).then(result => {
+                expect(result).toBe(true);
             });
 
-            const req = httpMock.expectOne(configUrl);
+            oidcConfigService.onConfigurationLoaded.subscribe(result => {
+                expect(spy).toHaveBeenCalledWith(expectedResult);
+                expect(result).toEqual(expectedResult);
+            });
+
+            const url = `myStsServerAdress/.well-known/openid-configuration`;
+            const req = httpMock.expectOne(url);
             expect(req.request.method).toBe('GET');
-            req.flush(returnedClientConfig);
+            req.flush(authWellKnownEndPoints);
         }));
     });
 });
