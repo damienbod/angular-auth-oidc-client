@@ -110,7 +110,7 @@ export class AppModule {
           const oidcFlowConfig = new OpenIDImplicitFlowConfiguration();
           //merge configuration loaded from assets/auth.clientConfiguration.json
           Object.assign(oidcFlowConfig, this.oidcConfigService.clientConfiguration);
-          this.oidcSecurityService.setupModule(config, this.oidcConfigService.wellKnownEndpoints);
+          this.oidcSecurityService.setupModule(oidcFlowConfig, this.oidcConfigService.wellKnownEndpoints);
         });
     }
 }
