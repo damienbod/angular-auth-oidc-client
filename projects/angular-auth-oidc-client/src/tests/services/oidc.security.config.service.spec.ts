@@ -62,14 +62,14 @@ describe('OidcConfigService', () => {
                 customConfig: returnedClientConfig,
             };
 
-            const spy = spyOn((oidcConfigService as any).configurationLoadedInternal, 'next');
+            const spy = spyOn((oidcConfigService as any).configurationLoadedInternal, 'next').and.callThrough();
 
             oidcConfigService.load(configUrl).then(result => {
                 expect(result).toBe(true);
+                expect(spy).toHaveBeenCalledWith(expectedResult);
             });
 
             oidcConfigService.onConfigurationLoaded.subscribe(result => {
-                expect(spy).toHaveBeenCalledWith(expectedResult);
                 expect(result).toEqual(expectedResult);
             });
 
@@ -105,18 +105,49 @@ describe('OidcConfigService', () => {
                 customConfig: { stsServer },
             };
 
-            const spy = spyOn((oidcConfigService as any).configurationLoadedInternal, 'next');
+            const spy = spyOn((oidcConfigService as any).configurationLoadedInternal, 'next').and.callThrough();
 
             oidcConfigService.load_using_stsServer(stsServer).then(result => {
                 expect(result).toBe(true);
+                expect(spy).toHaveBeenCalledWith(expectedResult);
             });
 
             oidcConfigService.onConfigurationLoaded.subscribe(result => {
-                expect(spy).toHaveBeenCalledWith(expectedResult);
                 expect(result).toEqual(expectedResult);
             });
 
             const url = `myStsServerAdress/.well-known/openid-configuration`;
+            const req = httpMock.expectOne(url);
+            expect(req.request.method).toBe('GET');
+            req.flush(authWellKnownEndPoints);
+        }));
+    });
+
+    describe(`method 'load_using_custom_stsServer' tests`, () => {
+        it(`should have correct response when passing the correct 'stsServer' property`, async(() => {
+            const stsServer = 'myCompleteStsServerAdress';
+
+            const authWellKnownEndPoints = {
+                authwellknown: 'endpoints',
+            };
+
+            const expectedResult = {
+                customAuthWellknownEndpoints: authWellKnownEndPoints,
+                customConfig: { stsServer },
+            };
+
+            const spy = spyOn((oidcConfigService as any).configurationLoadedInternal, 'next').and.callThrough();
+
+            oidcConfigService.load_using_custom_stsServer(stsServer).then(result => {
+                expect(result).toBe(true);
+                expect(spy).toHaveBeenCalledWith(expectedResult);
+            });
+
+            oidcConfigService.onConfigurationLoaded.subscribe(result => {
+                expect(result).toEqual(expectedResult);
+            });
+
+            const url = `myCompleteStsServerAdress`;
             const req = httpMock.expectOne(url);
             expect(req.request.method).toBe('GET');
             req.flush(authWellKnownEndPoints);

@@ -1,7 +1,7 @@
 ﻿import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, Subject } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 
 export interface ConfigResult {
     customAuthWellknownEndpoints: any;
@@ -39,13 +39,13 @@ export class OidcConfigService {
     }
 
     load_using_custom_stsServer(url: string) {
-        this.httpClient
+        return this.httpClient
             .get(url)
             .pipe(
-                map(authWellKnownEndpoints => {
+                switchMap(authWellKnownEndpoints => {
                     this.configurationLoadedInternal.next({
                         customAuthWellknownEndpoints: authWellKnownEndpoints,
-                        customConfig: null,
+                        customConfig: { stsServer: url },
                     });
                     return of(true);
                 }),
