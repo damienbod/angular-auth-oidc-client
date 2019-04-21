@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2019-04-22"></a>
+### 2019-04-22 version 9.0.6
+* session_state is optional for code flow
+
 <a name="2019-04-14"></a>
 ### 2019-04-14 version 9.0.5
 * Added disable_iat_offset_validation configuration for clients with clock problems
