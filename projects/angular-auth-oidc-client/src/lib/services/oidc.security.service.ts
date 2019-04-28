@@ -259,7 +259,7 @@ export class OidcSecurityService {
 
         let state = this.oidcSecurityCommon.authStateControl;
         if (!state) {
-            state = Date.now() + '' + Math.random();
+            state = Date.now() + '' + Math.random() + Math.random();
             this.oidcSecurityCommon.authStateControl = state;
         }
 
@@ -612,7 +612,7 @@ export class OidcSecurityService {
 
         let state = this.oidcSecurityCommon.authStateControl;
         if (state === '' || state === null) {
-            state = Date.now() + '' + Math.random();
+            state = Date.now() + '' + Math.random() + Math.random();
             this.oidcSecurityCommon.authStateControl = state;
         }
 
