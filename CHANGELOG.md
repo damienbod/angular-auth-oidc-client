@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2019-04-28"></a>
+### 2019-04-28 version 9.0.7
+* increased length of state value for OIDC authorize request
+
 <a name="2019-04-22"></a>
 ### 2019-04-22 version 9.0.6
 * session_state is optional for code flow
