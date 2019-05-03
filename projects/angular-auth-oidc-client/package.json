@@ -27,6 +27,6 @@
         "typescript"
     ],
     "license": "MIT",
-    "version": "9.0.5",
+    "version": "9.0.7",
     "description": "An OpenID Connect Code Flow with PKCE,Implicit Flow client for Angular"
 }

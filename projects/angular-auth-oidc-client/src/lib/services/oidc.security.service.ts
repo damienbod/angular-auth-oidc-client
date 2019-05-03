@@ -263,7 +263,7 @@ export class OidcSecurityService {
 
         let state = this.oidcSecurityCommon.authStateControl;
         if (!state) {
-            state = Date.now() + '' + Math.random();
+            state = Date.now() + '' + Math.random() + Math.random();
             this.oidcSecurityCommon.authStateControl = state;
         }
 
@@ -629,7 +629,7 @@ export class OidcSecurityService {
 
         let state = this.oidcSecurityCommon.authStateControl;
         if (state === '' || state === null) {
-            state = Date.now() + '' + Math.random();
+            state = Date.now() + '' + Math.random() + Math.random();
             this.oidcSecurityCommon.authStateControl = state;
         }
 
@@ -921,7 +921,7 @@ export class OidcSecurityService {
             const state = params.get('state');
             const session_state = params.get('session_state');
             const error = params.get('error');
-            if (code && state && session_state) {
+            if (code && state) {
                 this.requestTokensWithCodeProcedure(code, state, session_state);
             }
             if (error) {
