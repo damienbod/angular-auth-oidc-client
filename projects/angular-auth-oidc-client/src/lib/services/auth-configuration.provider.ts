@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { OpenIdConfiguration, OpenIdInternalConfiguration } from '../models/auth.configuration';
-import { AuthWellKnownEndpoints, InternalAuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
+import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 import { PlatformProvider } from './platform.provider';
 
 @Injectable({ providedIn: 'root' })
@@ -34,28 +34,15 @@ export class ConfigurationProvider {
         storage: sessionStorage,
     };
 
-    private DEFAULT_AUTH_WELL_KNOWN: InternalAuthWellKnownEndpoints = {
-        issuer: '',
-        jwks_uri: '',
-        authorization_endpoint: '',
-        token_endpoint: '',
-        userinfo_endpoint: '',
-        end_session_endpoint: '',
-        check_session_iframe: '',
-        revocation_endpoint: '',
-        introspection_endpoint: '',
-    };
-
-
     private mergedOpenIdConfiguration: OpenIdInternalConfiguration = this.DEFAULT_CONFIG;
-    private authWellKnownEndpoints: InternalAuthWellKnownEndpoints = this.DEFAULT_AUTH_WELL_KNOWN;
+    private authWellKnownEndpoints: AuthWellKnownEndpoints;
     private onConfigurationChangeInternal = new Subject<OpenIdConfiguration>();
 
     get openIDConfiguration(): OpenIdInternalConfiguration {
         return this.mergedOpenIdConfiguration;
     }
 
-    get wellKnownEndpoints(): InternalAuthWellKnownEndpoints {
+    get wellKnownEndpoints(): AuthWellKnownEndpoints {
         return this.authWellKnownEndpoints;
     }
 
@@ -68,7 +55,7 @@ export class ConfigurationProvider {
     setup(passedOpenIfConfiguration: OpenIdConfiguration, passedAuthWellKnownEndpoints: AuthWellKnownEndpoints) {
         this.mergedOpenIdConfiguration = { ...this.mergedOpenIdConfiguration, ...passedOpenIfConfiguration };
         this.setSpecialCases(this.mergedOpenIdConfiguration);
-        this.authWellKnownEndpoints = { ...this.authWellKnownEndpoints, ...passedAuthWellKnownEndpoints };
+        this.authWellKnownEndpoints = { ...passedAuthWellKnownEndpoints };
         this.onConfigurationChangeInternal.next({ ...this.mergedOpenIdConfiguration });
     }
 

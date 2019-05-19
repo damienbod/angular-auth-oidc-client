@@ -9,7 +9,7 @@ import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';
 import { TestLogging } from '../common/test-logging.service';
 import { TestStorage } from '../common/test-storage.service';
 
-describe('EqualityHelperServiceTests', () => {
+describe('SecurityCheckSessionTests', () => {
     let oidcSecurityCheckSession: OidcSecurityCheckSession;
     let loggerService: LoggerService;
     let configurationProvider: ConfigurationProvider;

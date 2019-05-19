@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { OpenIdConfiguration } from '../../lib/models/auth.configuration';
+import { OpenIdConfiguration, OpenIdInternalConfiguration } from '../../lib/models/auth.configuration';
 import { ConfigurationProvider } from '../../lib/services/auth-configuration.provider';
 import { PlatformProvider } from '../../lib/services/platform.provider';
 
@@ -49,7 +49,7 @@ describe('ConfigurationProviderTests', () => {
     });
 
     it('setup defines default openIDConfiguration', () => {
-        const defaultConfig: OpenIdConfiguration = {
+        const defaultConfig: OpenIdInternalConfiguration = {
             stsServer: 'https://localhost:44318',
             redirect_url: 'https://localhost:44311',
             client_id: 'angularclient',
