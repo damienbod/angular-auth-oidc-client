@@ -52,6 +52,6 @@ export class OidcSecurityUserService {
             throw Error('authWellKnownEndpoints.userinfo_endpoint is undefined');
         }
 
-        return this.oidcDataService.getIdentityUserData(this.configurationProvider.wellKnownEndpoints.userinfo_endpoint, token);
+        return this.oidcDataService.getIdentityUserData(this.configurationProvider.wellKnownEndpoints.userinfo_endpoint || '', token);
     }
 }

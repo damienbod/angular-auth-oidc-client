@@ -287,7 +287,7 @@ export class OidcSecurityService {
                     this.configurationProvider.openIDConfiguration.redirect_url,
                     nonce,
                     state,
-                    this.configurationProvider.wellKnownEndpoints.authorization_endpoint
+                    this.configurationProvider.wellKnownEndpoints.authorization_endpoint || ''
                 );
             } else {
                 this.loggerService.logError('authWellKnownEndpoints is undefined');
@@ -302,7 +302,7 @@ export class OidcSecurityService {
                     this.configurationProvider.openIDConfiguration.redirect_url,
                     nonce,
                     state,
-                    this.configurationProvider.wellKnownEndpoints.authorization_endpoint
+                    this.configurationProvider.wellKnownEndpoints.authorization_endpoint || ''
                 );
             } else {
                 this.loggerService.logError('authWellKnownEndpoints is undefined');
@@ -654,7 +654,7 @@ export class OidcSecurityService {
                     this.configurationProvider.openIDConfiguration.silent_redirect_url,
                     nonce,
                     state,
-                    this.configurationProvider.wellKnownEndpoints.authorization_endpoint,
+                    this.configurationProvider.wellKnownEndpoints.authorization_endpoint || '',
                     'none'
                 );
             } else {
@@ -668,7 +668,7 @@ export class OidcSecurityService {
                     this.configurationProvider.openIDConfiguration.silent_redirect_url,
                     nonce,
                     state,
-                    this.configurationProvider.wellKnownEndpoints.authorization_endpoint,
+                    this.configurationProvider.wellKnownEndpoints.authorization_endpoint || '',
                     'none'
                 );
             } else {
@@ -831,7 +831,7 @@ export class OidcSecurityService {
             this.loggerService.logDebug('jwks_uri: ' + this.configurationProvider.wellKnownEndpoints.jwks_uri);
 
             return this.oidcDataService
-                .get<JwtKeys>(this.configurationProvider.wellKnownEndpoints.jwks_uri)
+                .get<JwtKeys>(this.configurationProvider.wellKnownEndpoints.jwks_uri || '')
                 .pipe(catchError(this.handleErrorGetSigningKeys));
         } else {
             this.loggerService.logWarning('getSigningKeys: authWellKnownEndpoints is undefined');
