@@ -27,7 +27,7 @@ export class OidcConfigService {
                 }),
                 catchError(error => {
                     console.error(`OidcConfigService 'load' threw an error on calling ${configUrl}`, error);
-                    this.configurationLoadedInternal.next(null);
+                    this.configurationLoadedInternal.next(undefined);
                     return of(false);
                 })
             )
@@ -51,7 +51,7 @@ export class OidcConfigService {
                 }),
                 catchError(error => {
                     console.error(`OidcConfigService 'load_using_custom_stsServer' threw an error on calling ${url}`, error);
-                    this.configurationLoadedInternal.next(null);
+                    this.configurationLoadedInternal.next(undefined);
                     return of(false);
                 })
             )
@@ -76,7 +76,7 @@ export class OidcConfigService {
             }),
             catchError(error => {
                 console.error(`OidcConfigService 'load_using_stsServer' threw an error on calling ${url}`, error);
-                this.configurationLoadedInternal.next(null);
+                this.configurationLoadedInternal.next(undefined);
                 return of(false);
             })
         );

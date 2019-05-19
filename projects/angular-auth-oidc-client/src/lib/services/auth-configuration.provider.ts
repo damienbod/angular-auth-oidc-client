@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { OpenIdConfiguration } from '../models/auth.configuration';
-import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
+import { OpenIdConfiguration, OpenIdInternalConfiguration } from '../models/auth.configuration';
+import { AuthWellKnownEndpoints, InternalAuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 import { PlatformProvider } from './platform.provider';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigurationProvider {
-    private DEFAULT_CONFIG: OpenIdConfiguration = {
+    private DEFAULT_CONFIG: OpenIdInternalConfiguration = {
         stsServer: 'https://localhost:44318',
         redirect_url: 'https://localhost:44311',
         client_id: 'angularclient',
@@ -34,15 +34,28 @@ export class ConfigurationProvider {
         storage: sessionStorage,
     };
 
-    private mergedOpenIdConfiguration: OpenIdConfiguration = this.DEFAULT_CONFIG;
-    private authWellKnownEndpoints: AuthWellKnownEndpoints = {};
+    private DEFAULT_AUTH_WELL_KNOWN: InternalAuthWellKnownEndpoints = {
+        issuer: '',
+        jwks_uri: '',
+        authorization_endpoint: '',
+        token_endpoint: '',
+        userinfo_endpoint: '',
+        end_session_endpoint: '',
+        check_session_iframe: '',
+        revocation_endpoint: '',
+        introspection_endpoint: '',
+    };
+
+
+    private mergedOpenIdConfiguration: OpenIdInternalConfiguration = this.DEFAULT_CONFIG;
+    private authWellKnownEndpoints: InternalAuthWellKnownEndpoints = this.DEFAULT_AUTH_WELL_KNOWN;
     private onConfigurationChangeInternal = new Subject<OpenIdConfiguration>();
 
-    get openIDConfiguration(): OpenIdConfiguration {
-        return this.mergedOpenIdConfiguration as OpenIdConfiguration;
+    get openIDConfiguration(): OpenIdInternalConfiguration {
+        return this.mergedOpenIdConfiguration;
     }
 
-    get wellKnownEndpoints(): AuthWellKnownEndpoints {
+    get wellKnownEndpoints(): InternalAuthWellKnownEndpoints {
         return this.authWellKnownEndpoints;
     }
 
@@ -52,10 +65,10 @@ export class ConfigurationProvider {
 
     constructor(private platformProvider: PlatformProvider) {}
 
-    setup(openIdConfiguration: OpenIdConfiguration, authWellKnownEndpoints: AuthWellKnownEndpoints) {
-        this.mergedOpenIdConfiguration = { ...this.mergedOpenIdConfiguration, ...openIdConfiguration };
+    setup(passedOpenIfConfiguration: OpenIdConfiguration, passedAuthWellKnownEndpoints: AuthWellKnownEndpoints) {
+        this.mergedOpenIdConfiguration = { ...this.mergedOpenIdConfiguration, ...passedOpenIfConfiguration };
         this.setSpecialCases(this.mergedOpenIdConfiguration);
-        this.authWellKnownEndpoints = { ...authWellKnownEndpoints };
+        this.authWellKnownEndpoints = { ...this.authWellKnownEndpoints, ...passedAuthWellKnownEndpoints };
         this.onConfigurationChangeInternal.next({ ...this.mergedOpenIdConfiguration });
     }
 
