@@ -34,12 +34,12 @@ export class ConfigurationProvider {
         storage: sessionStorage,
     };
 
-    private mergedOpenIdConfiguration: OpenIdConfiguration;
-    private authWellKnownEndpoints: AuthWellKnownEndpoints;
+    private mergedOpenIdConfiguration: OpenIdConfiguration = this.DEFAULT_CONFIG;
+    private authWellKnownEndpoints: AuthWellKnownEndpoints = {};
     private onConfigurationChangeInternal = new Subject<OpenIdConfiguration>();
 
     get openIDConfiguration(): OpenIdConfiguration {
-        return this.mergedOpenIdConfiguration;
+        return this.mergedOpenIdConfiguration as OpenIdConfiguration;
     }
 
     get wellKnownEndpoints(): AuthWellKnownEndpoints {
@@ -53,7 +53,7 @@ export class ConfigurationProvider {
     constructor(private platformProvider: PlatformProvider) {}
 
     setup(openIdConfiguration: OpenIdConfiguration, authWellKnownEndpoints: AuthWellKnownEndpoints) {
-        this.mergedOpenIdConfiguration = { ...this.DEFAULT_CONFIG, ...openIdConfiguration };
+        this.mergedOpenIdConfiguration = { ...this.mergedOpenIdConfiguration, ...openIdConfiguration };
         this.setSpecialCases(this.mergedOpenIdConfiguration);
         this.authWellKnownEndpoints = { ...authWellKnownEndpoints };
         this.onConfigurationChangeInternal.next({ ...this.mergedOpenIdConfiguration });
