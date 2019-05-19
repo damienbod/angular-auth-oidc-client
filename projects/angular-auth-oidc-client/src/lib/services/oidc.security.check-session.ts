@@ -55,7 +55,6 @@ export class OidcSecurityCheckSession {
             window.addEventListener('message', this.iframeMessageEvent, false);
         }
 
-        console.log("@@@@@", this.configurationProvider.wellKnownEndpoints)
         if (this.configurationProvider.wellKnownEndpoints) {
             this.sessionIframe.contentWindow.location.replace(this.configurationProvider.wellKnownEndpoints.check_session_iframe);
         } else {
