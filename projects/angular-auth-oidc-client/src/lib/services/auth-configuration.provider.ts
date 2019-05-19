@@ -34,8 +34,8 @@ export class ConfigurationProvider {
         storage: sessionStorage,
     };
 
-    private mergedOpenIdConfiguration: OpenIdConfiguration = null;
-    private authWellKnownEndpoints: AuthWellKnownEndpoints = null;
+    private mergedOpenIdConfiguration: OpenIdConfiguration;
+    private authWellKnownEndpoints: AuthWellKnownEndpoints;
     private onConfigurationChangeInternal = new Subject<OpenIdConfiguration>();
 
     get openIDConfiguration(): OpenIdConfiguration {
