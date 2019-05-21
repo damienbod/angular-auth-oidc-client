@@ -29,6 +29,7 @@ export class StateValidationService {
         if (!this.oidcSecurityValidation.validateStateFromHashCallback(result.state, this.oidcSecurityCommon.authStateControl)) {
             this.loggerService.logWarning('authorizedCallback incorrect state');
             toReturn.state = ValidationResult.StatesDoNotMatch;
+            this.handleUnsuccessfulValidation();
             return toReturn;
         }
 
@@ -43,18 +44,21 @@ export class StateValidationService {
         if (!this.oidcSecurityValidation.validate_signature_id_token(toReturn.id_token, jwtKeys)) {
             this.loggerService.logDebug('authorizedCallback Signature validation failed id_token');
             toReturn.state = ValidationResult.SignatureFailed;
+            this.handleUnsuccessfulValidation();
             return toReturn;
         }
 
         if (!this.oidcSecurityValidation.validate_id_token_nonce(toReturn.decoded_id_token, this.oidcSecurityCommon.authNonce)) {
             this.loggerService.logWarning('authorizedCallback incorrect nonce');
             toReturn.state = ValidationResult.IncorrectNonce;
+            this.handleUnsuccessfulValidation();
             return toReturn;
         }
 
         if (!this.oidcSecurityValidation.validate_required_id_token(toReturn.decoded_id_token)) {
             this.loggerService.logDebug('authorizedCallback Validation, one of the REQUIRED properties missing from id_token');
             toReturn.state = ValidationResult.RequiredPropertyMissing;
+            this.handleUnsuccessfulValidation();
             return toReturn;
         }
 
@@ -67,6 +71,7 @@ export class StateValidationService {
         ) {
             this.loggerService.logWarning('authorizedCallback Validation, iat rejected id_token was issued too far away from the current time');
             toReturn.state = ValidationResult.MaxOffsetExpired;
+            this.handleUnsuccessfulValidation();
             return toReturn;
         }
 
@@ -77,23 +82,27 @@ export class StateValidationService {
                 !this.oidcSecurityValidation.validate_id_token_iss(toReturn.decoded_id_token, this.authWellKnownEndpoints.issuer)) {
                 this.loggerService.logWarning('authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer');
                 toReturn.state = ValidationResult.IssDoesNotMatchIssuer;
+                this.handleUnsuccessfulValidation();
                 return toReturn;
             }
         } else {
             this.loggerService.logWarning('authWellKnownEndpoints is undefined');
             toReturn.state = ValidationResult.NoAuthWellKnownEndPoints;
+            this.handleUnsuccessfulValidation();
             return toReturn;
         }
 
         if (!this.oidcSecurityValidation.validate_id_token_aud(toReturn.decoded_id_token, this.authConfiguration.client_id)) {
             this.loggerService.logWarning('authorizedCallback incorrect aud');
             toReturn.state = ValidationResult.IncorrectAud;
+            this.handleUnsuccessfulValidation();
             return toReturn;
         }
 
         if (!this.oidcSecurityValidation.validate_id_token_exp_not_expired(toReturn.decoded_id_token)) {
             this.loggerService.logWarning('authorizedCallback token expired');
             toReturn.state = ValidationResult.TokenExpired;
+            this.handleUnsuccessfulValidation();
             return toReturn;
         }
 
@@ -102,6 +111,7 @@ export class StateValidationService {
             toReturn.authResponseIsValid = true;
             toReturn.state = ValidationResult.Ok;
             this.handleSuccessfulValidation();
+            this.handleUnsuccessfulValidation();
             return toReturn;
         }
 
@@ -112,6 +122,7 @@ export class StateValidationService {
         ) {
             this.loggerService.logWarning('authorizedCallback incorrect at_hash');
             toReturn.state = ValidationResult.IncorrectAtHash;
+            this.handleUnsuccessfulValidation();
             return toReturn;
         }
 
@@ -128,5 +139,14 @@ export class StateValidationService {
             this.oidcSecurityCommon.authStateControl = '';
         }
         this.loggerService.logDebug('AuthorizedCallback token(s) validated, continue');
+    }
+
+    private handleUnsuccessfulValidation() {
+        this.oidcSecurityCommon.authNonce = '';
+
+        if (this.authConfiguration.auto_clean_state_after_authentication) {
+            this.oidcSecurityCommon.authStateControl = '';
+        }
+        this.loggerService.logDebug('AuthorizedCallback token(s) invalid');
     }
 }
