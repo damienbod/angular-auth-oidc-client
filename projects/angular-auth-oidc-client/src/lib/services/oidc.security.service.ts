@@ -440,12 +440,20 @@ export class OidcSecurityService {
         }
 
         if (result.error) {
-            this.loggerService.logWarning(result);
+            if (isRenewProcess) {
+                this.loggerService.logDebug(result);
+            } else {
+                this.loggerService.logWarning(result);
+            }
+
             if ((result.error as string) === 'login_required') {
                 this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.LoginRequired));
             } else {
                 this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.SecureTokenServerError));
             }
+
+            this.resetAuthorizationData(false);
+            this.oidcSecurityCommon.authNonce = '';
 
             if (!this.authConfiguration.trigger_authorization_result_event && !isRenewProcess) {
                 this.router.navigate([this.authConfiguration.unauthorized_route]);
