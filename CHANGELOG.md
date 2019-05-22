@@ -1,5 +1,10 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2019-05-21"></a>
+### 2019-05-21 version 9.0.8
+* authNonce not cleared in storage after unsuccessful login and logout
+* Should 5 seconds timeout on silent_renew be configurable? => fails fast now if server responds
+
 <a name="2019-04-28"></a>
 ### 2019-04-28 version 9.0.7
 * increased length of state value for OIDC authorize request
