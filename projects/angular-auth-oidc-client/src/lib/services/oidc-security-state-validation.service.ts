@@ -149,7 +149,7 @@ export class StateValidationService {
     private handleUnsuccessfulValidation() {
         this.oidcSecurityCommon.authNonce = '';
 
-        if (this.authConfiguration.auto_clean_state_after_authentication) {
+        if (this.configurationProvider.openIDConfiguration.auto_clean_state_after_authentication) {
             this.oidcSecurityCommon.authStateControl = '';
         }
         this.loggerService.logDebug('AuthorizedCallback token(s) invalid');
