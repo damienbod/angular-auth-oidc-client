@@ -34,7 +34,7 @@ export class ConfigurationProvider {
         storage: sessionStorage,
     };
 
-    private DEFAULT_AUTHWELLKNOWN: AuthWellKnownEndpoints = {
+    private INITIAL_AUTHWELLKNOWN: AuthWellKnownEndpoints = {
         issuer: '',
         jwks_uri: '',
         authorization_endpoint: '',
@@ -47,7 +47,7 @@ export class ConfigurationProvider {
     };
 
     private mergedOpenIdConfiguration: OpenIdInternalConfiguration = this.DEFAULT_CONFIG;
-    private authWellKnownEndpoints: AuthWellKnownEndpoints = this.DEFAULT_AUTHWELLKNOWN;
+    private authWellKnownEndpoints: AuthWellKnownEndpoints = this.INITIAL_AUTHWELLKNOWN;
 
     private onConfigurationChangeInternal = new Subject<OpenIdConfiguration>();
 
