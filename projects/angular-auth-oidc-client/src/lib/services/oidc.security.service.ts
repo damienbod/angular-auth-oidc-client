@@ -372,7 +372,7 @@ export class OidcSecurityService {
             data =
                 `grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}` +
                 `&code_verifier=${this.oidcSecurityCommon.code_verifier}&code=${code}&redirect_uri=${
-                    this.configurationProvider.openIDConfiguration.silent_redirect_url
+                    this.configurationProvider.openIDConfiguration.silent_renew_url
                 }`;
         }
 
@@ -661,7 +661,7 @@ export class OidcSecurityService {
                 url = this.createAuthorizeUrl(
                     true,
                     code_challenge,
-                    this.configurationProvider.openIDConfiguration.silent_redirect_url,
+                    this.configurationProvider.openIDConfiguration.silent_renew_url,
                     nonce,
                     state,
                     this.configurationProvider.wellKnownEndpoints.authorization_endpoint || '',
@@ -675,7 +675,7 @@ export class OidcSecurityService {
                 url = this.createAuthorizeUrl(
                     false,
                     '',
-                    this.configurationProvider.openIDConfiguration.silent_redirect_url,
+                    this.configurationProvider.openIDConfiguration.silent_renew_url,
                     nonce,
                     state,
                     this.configurationProvider.wellKnownEndpoints.authorization_endpoint || '',

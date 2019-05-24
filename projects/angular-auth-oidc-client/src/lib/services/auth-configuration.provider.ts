@@ -17,7 +17,6 @@ export class ConfigurationProvider {
         start_checksession: false,
         silent_renew: false,
         silent_renew_url: 'https://please_set',
-        silent_redirect_url: 'https://please_set',
         silent_renew_offset_in_seconds: 0,
         post_login_route: '/',
         forbidden_route: '/forbidden',
