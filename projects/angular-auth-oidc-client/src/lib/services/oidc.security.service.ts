@@ -180,7 +180,7 @@ export class OidcSecurityService {
 
             const instanceId = Math.random();
 
-            const boundSilentRenewInitEvent = ((e: CustomEvent) => {
+            const boundSilentRenewInitEvent: any = ((e: CustomEvent) => {
                 if (e.detail !== instanceId) {
                     window.removeEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent);
                     window.removeEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent);
