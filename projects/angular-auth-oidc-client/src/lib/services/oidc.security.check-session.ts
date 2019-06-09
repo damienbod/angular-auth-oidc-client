@@ -54,8 +54,14 @@ export class OidcSecurityCheckSession {
             this.iframeMessageEvent = this.messageHandler.bind(this);
             window.addEventListener('message', this.iframeMessageEvent, false);
         }
+        console.log('@@@@ this.configurationProvider.wellKnownEndpoints', this.configurationProvider.wellKnownEndpoints);
 
-        if (this.configurationProvider.wellKnownEndpoints) {
+        if (!this.configurationProvider.wellKnownEndpoints) {
+            this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined. Returning.');
+            return;
+        }
+
+        if (this.configurationProvider.wellKnownEndpoints.check_session_iframe) {
             this.sessionIframe.contentWindow.location.replace(this.configurationProvider.wellKnownEndpoints.check_session_iframe);
         } else {
             this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
