@@ -54,7 +54,6 @@ export class OidcSecurityCheckSession {
             this.iframeMessageEvent = this.messageHandler.bind(this);
             window.addEventListener('message', this.iframeMessageEvent, false);
         }
-        console.log('@@@@ this.configurationProvider.wellKnownEndpoints', this.configurationProvider.wellKnownEndpoints);
 
         if (!this.configurationProvider.wellKnownEndpoints) {
             this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined. Returning.');
