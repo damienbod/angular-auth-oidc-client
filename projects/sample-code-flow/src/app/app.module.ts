@@ -54,7 +54,7 @@ export class AppModule {
             //config.max_id_token_iat_offset_allowed_in_seconds = 5;
             //config.history_cleanup_off = true;
 
-            this.oidcSecurityService.setupModule(config, configResult.customAuthWellknownEndpoints);
+            this.oidcSecurityService.setupModule(config, configResult.authWellknownEndpoints);
         });
     }
 }

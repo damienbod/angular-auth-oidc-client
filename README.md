@@ -116,7 +116,7 @@ export class AppModule {
                 // all other properties you want to set
             };
 
-            this.oidcSecurityService.setupModule(config, configResult.customAuthWellknownEndpoints);
+            this.oidcSecurityService.setupModule(config, configResult.authWellknownEndpoints);
         });
     }
 }

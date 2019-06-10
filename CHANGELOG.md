@@ -94,7 +94,7 @@ export class AppModule {
                 // disable_iat_offset_validation: true
             };
 
-            this.oidcSecurityService.setupModule(config, configResult.customAuthWellknownEndpoints);
+            this.oidcSecurityService.setupModule(config, configResult.authWellknownEndpoints);
         });
     }
 }

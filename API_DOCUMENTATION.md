@@ -286,7 +286,7 @@ export class AppModule {
                 max_id_token_iat_offset_allowed_in_seconds = configResult.max_id_token_iat_offset_allowed_in_seconds;
             };
 
-            this.oidcSecurityService.setupModule(config, configResult.customAuthWellknownEndpoints);
+            this.oidcSecurityService.setupModule(config, configResult.authWellknownEndpoints);
         });
 
         console.log('APP STARTING');
