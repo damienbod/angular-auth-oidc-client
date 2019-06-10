@@ -63,14 +63,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import {
-    AuthModule,
-    ConfigResult,
-    AuthWellKnownEndpoints,
-    OidcConfigService,
-    OidcSecurityService,
-    OpenIDImplicitFlowConfiguration,
-} from 'angular-auth-oidc-client';
+import { AuthModule, ConfigResult, OidcConfigService, OidcSecurityService, OpenIdConfiguration } from 'angular-auth-oidc-client';
 import { AppComponent } from './app.component';
 
 const oidc_configuration = 'assets/auth.clientConfiguration.json';
@@ -108,6 +101,9 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 export class AppModule {
     constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
         this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
+		
+			// Use the configResult to set the configurations
+			
             const config: OpenIdConfiguration = {
                 stsServer: configResult.customConfig.stsServer,
                 redirect_url: 'https://localhost:4200',
