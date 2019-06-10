@@ -31,6 +31,15 @@ this.oidcConfigService.onConfigurationLoaded.subscribe(() => {
 
 After
 ```
+
+import {
+    AuthModule,
+    OidcSecurityService,
+    ConfigResult,
+    OidcConfigService,
+    OpenIdConfiguration
+} from 'angular-auth-oidc-client';
+
 export function loadConfig(oidcConfigService: OidcConfigService) {
     console.log('APP_INITIALIZER STARTING');
     return () => oidcConfigService.load(`${window.location.origin}/api/ClientAppSettings`);
