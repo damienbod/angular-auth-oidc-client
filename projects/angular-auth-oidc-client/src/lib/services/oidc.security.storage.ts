@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AuthConfiguration } from '../modules/auth.configuration';
+import { ConfigurationProvider } from './auth-configuration.provider';
 
 /**
  * Implement this class-interface to create a custom storage.
@@ -25,13 +25,13 @@ export abstract class OidcSecurityStorage {
 export class BrowserStorage implements OidcSecurityStorage {
     private hasStorage: boolean;
 
-    constructor(private authConfiguration: AuthConfiguration) {
+    constructor(private configProvider: ConfigurationProvider) {
         this.hasStorage = typeof Storage !== 'undefined';
     }
 
     public read(key: string): any {
         if (this.hasStorage) {
-            return JSON.parse(this.authConfiguration.storage.getItem(key + '_' + this.authConfiguration.client_id));
+            return JSON.parse(this.configProvider.openIDConfiguration.storage.getItem(key + '_' + this.configProvider.openIDConfiguration.client_id));
         }
 
         return;
@@ -40,7 +40,10 @@ export class BrowserStorage implements OidcSecurityStorage {
     public write(key: string, value: any): void {
         if (this.hasStorage) {
             value = value === undefined ? null : value;
-            this.authConfiguration.storage.setItem(key + '_' + this.authConfiguration.client_id, JSON.stringify(value));
+            this.configProvider.openIDConfiguration.storage.setItem(
+                key + '_' + this.configProvider.openIDConfiguration.client_id,
+                JSON.stringify(value)
+            );
         }
     }
 }

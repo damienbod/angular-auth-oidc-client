@@ -2,20 +2,20 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
-import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
+import { ConfigurationProvider } from './auth-configuration.provider';
 import { LoggerService } from './oidc.logger.service';
 import { OidcSecurityCommon } from './oidc.security.common';
 
 @Injectable()
 export class OidcSecurityUserService {
     private userData: any = '';
-    private authWellKnownEndpoints: AuthWellKnownEndpoints | undefined;
 
-    constructor(private oidcDataService: OidcDataService, private oidcSecurityCommon: OidcSecurityCommon, private loggerService: LoggerService) {}
-
-    setupModule(authWellKnownEndpoints: AuthWellKnownEndpoints) {
-        this.authWellKnownEndpoints = Object.assign({}, authWellKnownEndpoints);
-    }
+    constructor(
+        private oidcDataService: OidcDataService,
+        private oidcSecurityCommon: OidcSecurityCommon,
+        private loggerService: LoggerService,
+        private readonly configurationProvider: ConfigurationProvider
+    ) {}
 
     initUserData() {
         return this.getIdentityUserData().pipe(map((data: any) => (this.userData = data)));
@@ -36,13 +36,14 @@ export class OidcSecurityUserService {
     private getIdentityUserData(): Observable<any> {
         const token = this.oidcSecurityCommon.getAccessToken();
 
-        if (!this.authWellKnownEndpoints) {
+        if (!this.configurationProvider.wellKnownEndpoints) {
             this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
 
             throw Error('authWellKnownEndpoints is undefined');
         }
 
-        const canGetUserData = this.authWellKnownEndpoints && this.authWellKnownEndpoints.userinfo_endpoint;
+        const canGetUserData =
+            this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.userinfo_endpoint;
 
         if (!canGetUserData) {
             this.loggerService.logError(
@@ -51,6 +52,6 @@ export class OidcSecurityUserService {
             throw Error('authWellKnownEndpoints.userinfo_endpoint is undefined');
         }
 
-        return this.oidcDataService.getIdentityUserData(this.authWellKnownEndpoints.userinfo_endpoint, token);
+        return this.oidcDataService.getIdentityUserData(this.configurationProvider.wellKnownEndpoints.userinfo_endpoint || '', token);
     }
 }

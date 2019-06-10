@@ -1,6 +1,98 @@
 ## angular-auth-oidc-client Changelog
 
 <a name="2019-05-21"></a>
+### 2019-05-24 version 10.0.0
+* remove silent_redirect_url only use silent_renew_url
+* refactored configuration for module, angular style
+* rename OpenIDImplicitFlowConfiguration to OpenIDConfiguration 
+
+## Breaking changes
+
+Before
+```
+this.oidcConfigService.onConfigurationLoaded.subscribe(() => {
+
+	const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
+	openIDImplicitFlowConfiguration.stsServer = this.oidcConfigService.clientConfiguration.stsServer;
+	openIDImplicitFlowConfiguration.redirect_url = this.oidcConfigService.clientConfiguration.redirect_url;
+	openIDImplicitFlowConfiguration.client_id = this.oidcConfigService.clientConfiguration.client_id;
+	openIDImplicitFlowConfiguration.response_type = this.oidcConfigService.clientConfiguration.response_type;
+	
+	...
+	
+	configuration.FileServer = this.oidcConfigService.clientConfiguration.apiFileServer;
+	configuration.Server = this.oidcConfigService.clientConfiguration.apiServer;
+
+	const authWellKnownEndpoints = new AuthWellKnownEndpoints();
+	authWellKnownEndpoints.setWellKnownEndpoints(this.oidcConfigService.wellKnownEndpoints);
+
+	this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration, authWellKnownEndpoints);
+```
+
+After
+```
+export function loadConfig(oidcConfigService: OidcConfigService) {
+    console.log('APP_INITIALIZER STARTING');
+    return () => oidcConfigService.load(`${window.location.origin}/api/ClientAppSettings`);
+}
+
+@NgModule({
+    imports: [
+        ...
+        HttpClientModule,
+        AuthModule.forRoot(),
+    ],
+    providers: [
+        OidcConfigService,
+        OidcSecurityService,
+        {
+            provide: APP_INITIALIZER,
+            useFactory: loadConfig,
+            deps: [OidcConfigService],
+            multi: true
+        }
+    ],
+    bootstrap: [AppComponent],
+})
+
+export class AppModule {
+
+    constructor(
+        private oidcSecurityService: OidcSecurityService,
+        private oidcConfigService: OidcConfigService,
+    ) {
+
+        this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
+
+            const config: OpenIdConfiguration = {
+                stsServer: configResult.customConfig.stsServer,
+                redirect_url: configResult.customConfig.redirect_url,
+                client_id: configResult.customConfig.client_id,
+                response_type: configResult.customConfig.response_type,
+                scope: configResult.customConfig.scope,
+                post_logout_redirect_uri: configResult.customConfig.post_logout_redirect_uri,
+                start_checksession: configResult.customConfig.start_checksession,
+                silent_renew: configResult.customConfig.silent_renew,
+                silent_renew_url: configResult.customConfig.redirect_url + '/silent-renew.html',
+                post_login_route: configResult.customConfig.startup_route,
+                forbidden_route: configResult.customConfig.forbidden_route,
+                unauthorized_route: configResult.customConfig.unauthorized_route,
+                log_console_warning_active: configResult.customConfig.log_console_warning_active,
+                log_console_debug_active: configResult.customConfig.log_console_debug_active,
+                max_id_token_iat_offset_allowed_in_seconds: configResult.customConfig.max_id_token_iat_offset_allowed_in_seconds,
+                history_cleanup_off: true
+                // iss_validation_off: false
+                // disable_iat_offset_validation: true
+            };
+
+            this.oidcSecurityService.setupModule(config, configResult.customAuthWellknownEndpoints);
+        });
+    }
+}
+
+```
+
+<a name="2019-05-21"></a>
 ### 2019-05-21 version 9.0.8
 * authNonce not cleared in storage after unsuccessful login and logout
 * Should 5 seconds timeout on silent_renew be configurable? => fails fast now if server responds

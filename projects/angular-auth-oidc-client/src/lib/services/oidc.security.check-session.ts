@@ -1,8 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
 import { from, Observable, Observer, Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
-import { AuthConfiguration } from '../modules/auth.configuration';
+import { ConfigurationProvider } from './auth-configuration.provider';
 import { IFrameService } from './existing-iframe.service';
 import { LoggerService } from './oidc.logger.service';
 import { OidcSecurityCommon } from './oidc.security.common';
@@ -15,7 +14,6 @@ const IFRAME_FOR_CHECK_SESSION_IDENTIFIER = 'myiFrameForCheckSession';
 export class OidcSecurityCheckSession {
     private sessionIframe: any;
     private iframeMessageEvent: any;
-    private authWellKnownEndpoints: AuthWellKnownEndpoints | undefined;
     private scheduledHeartBeat: any;
     private lastIFrameRefresh = 0;
     private outstandingMessages = 0;
@@ -28,16 +26,12 @@ export class OidcSecurityCheckSession {
     }
 
     constructor(
-        private authConfiguration: AuthConfiguration,
         private oidcSecurityCommon: OidcSecurityCommon,
         private loggerService: LoggerService,
         private iFrameService: IFrameService,
-        private zone: NgZone
+        private zone: NgZone,
+        private readonly configurationProvider: ConfigurationProvider
     ) {}
-
-    setupModule(authWellKnownEndpoints: AuthWellKnownEndpoints) {
-        this.authWellKnownEndpoints = Object.assign({}, authWellKnownEndpoints);
-    }
 
     private doesSessionExist(): boolean {
         const existingIFrame = this.iFrameService.getExistingIFrame(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
@@ -61,8 +55,13 @@ export class OidcSecurityCheckSession {
             window.addEventListener('message', this.iframeMessageEvent, false);
         }
 
-        if (this.authWellKnownEndpoints) {
-            this.sessionIframe.contentWindow.location.replace(this.authWellKnownEndpoints.check_session_iframe);
+        if (!this.configurationProvider.wellKnownEndpoints) {
+            this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined. Returning.');
+            return;
+        }
+
+        if (this.configurationProvider.wellKnownEndpoints.check_session_iframe) {
+            this.sessionIframe.contentWindow.location.replace(this.configurationProvider.wellKnownEndpoints.check_session_iframe);
         } else {
             this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
         }
@@ -102,7 +101,10 @@ export class OidcSecurityCheckSession {
                         const session_state = this.oidcSecurityCommon.sessionState;
                         if (session_state) {
                             this.outstandingMessages++;
-                            this.sessionIframe.contentWindow.postMessage(clientId + ' ' + session_state, this.authConfiguration.stsServer);
+                            this.sessionIframe.contentWindow.postMessage(
+                                clientId + ' ' + session_state,
+                                this.configurationProvider.openIDConfiguration.stsServer
+                            );
                         } else {
                             this.loggerService.logDebug('OidcSecurityCheckSession pollServerSession session_state is blank');
                             this._onCheckSessionChanged.next();
@@ -141,7 +143,11 @@ export class OidcSecurityCheckSession {
 
     private messageHandler(e: any) {
         this.outstandingMessages = 0;
-        if (this.sessionIframe && e.origin === this.authConfiguration.stsServer && e.source === this.sessionIframe.contentWindow) {
+        if (
+            this.sessionIframe &&
+            e.origin === this.configurationProvider.openIDConfiguration.stsServer &&
+            e.source === this.sessionIframe.contentWindow
+        ) {
             if (e.data === 'error') {
                 this.loggerService.logWarning('error from checksession messageHandler');
             } else if (e.data === 'changed') {

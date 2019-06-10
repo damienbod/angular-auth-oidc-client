@@ -1,9 +1,10 @@
 {
     "name": "angular-auth-oidc-client",
-    "version": "0.0.0",
+    "version": "10.0.0",
     "scripts": {
         "ng": "ng",
         "build": "npm run build-lib",
+        "build-app": "ng build sample-code-flow",
         "watch-lib": "ng build angular-auth-oidc-client --watch",
         "build-lib": "npm run copy-readme-to-lib-folder && ng build angular-auth-oidc-client",
         "test-lib": "ng test angular-auth-oidc-client",

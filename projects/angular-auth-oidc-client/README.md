@@ -39,7 +39,7 @@ or with yarn
 or you can add the npm package to your package.json
 
 ```typescript
- "angular-auth-oidc-client": "^9.0.8"
+ "angular-auth-oidc-client": "^10.0.0"
 ```
 
 and type
@@ -63,13 +63,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import {
-    AuthModule,
-    AuthWellKnownEndpoints,
-    OidcConfigService,
-    OidcSecurityService,
-    OpenIDImplicitFlowConfiguration,
-} from 'angular-auth-oidc-client';
+import { AuthModule, ConfigResult, OidcConfigService, OidcSecurityService, OpenIdConfiguration } from 'angular-auth-oidc-client';
 import { AppComponent } from './app.component';
 
 const oidc_configuration = 'assets/auth.clientConfiguration.json';
@@ -106,11 +100,23 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 })
 export class AppModule {
     constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
-        this.oidcConfigService.onConfigurationLoaded.subscribe(() => {
-          const oidcFlowConfig = new OpenIDImplicitFlowConfiguration();
-          //merge configuration loaded from assets/auth.clientConfiguration.json
-          Object.assign(oidcFlowConfig, this.oidcConfigService.clientConfiguration);
-          this.oidcSecurityService.setupModule(oidcFlowConfig, this.oidcConfigService.wellKnownEndpoints);
+        this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
+		
+			// Use the configResult to set the configurations
+			
+            const config: OpenIdConfiguration = {
+                stsServer: configResult.customConfig.stsServer,
+                redirect_url: 'https://localhost:4200',
+                client_id: 'angularClient',
+                scope: 'openid profile email',
+                response_type: 'code',
+                silent_renew: true,
+                silent_renew_url: 'https://localhost:4200/silent-renew.html',
+                log_console_debug_active: true,
+                // all other properties you want to set
+            };
+
+            this.oidcSecurityService.setupModule(config, configResult.customAuthWellknownEndpoints);
         });
     }
 }
@@ -123,69 +129,69 @@ for the detail of each field.
 
 ```json
 {
-	"stsServer": "https://localhost:44318",
-	"redirect_url": "https://localhost:44311",
-	"client_id": "angularclient",
-	"response_type": "code",
-	"scope": "dataEventRecords securedFiles openid profile",
-	"post_logout_redirect_uri": "https://localhost:44311",
-	"start_checksession": true,
-	"silent_renew": true,
-	"silent_renew_url": "https://localhost:44311/silent-renew.html",
-	"post_login_route": "/home",
-	"forbidden_route": "/forbidden",
-	"unauthorized_route": "/unauthorized",
-	"log_console_warning_active": true,
-	"log_console_debug_active": true,
-	"max_id_token_iat_offset_allowed_in_seconds": 10,
+    "stsServer": "https://localhost:44318",
+    "redirect_url": "https://localhost:44311",
+    "client_id": "angularclient",
+    "response_type": "code",
+    "scope": "dataEventRecords securedFiles openid profile",
+    "post_logout_redirect_uri": "https://localhost:44311",
+    "start_checksession": true,
+    "silent_renew": true,
+    "silent_renew_url": "https://localhost:44311/silent-renew.html",
+    "post_login_route": "/home",
+    "forbidden_route": "/forbidden",
+    "unauthorized_route": "/unauthorized",
+    "log_console_warning_active": true,
+    "log_console_debug_active": true,
+    "max_id_token_iat_offset_allowed_in_seconds": 10
 }
 ```
+
 At present only the 'code' with PKCE, 'id_token token' or the 'id_token' flows are supported:
 
 `"response_type": ["code" | "id_token token" | "id_token" ]`
 
->Note the configuration json must have a property stsServer for this to work.
+> Note the configuration json must have a property stsServer for this to work.
 
 ### Approach 2. `Configuration without APP_INITIALIZER`
 
 ```typescript
 export class AppModule {
     constructor(public oidcSecurityService: OidcSecurityService) {
-        const config = new OpenIDImplicitFlowConfiguration();
+        const config: OpenIdConfiguration = {
+            stsServer: 'https://localhost:44363',
+            redirect_url: 'https://localhost:44363',
+            // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer identified by the iss (issuer) Claim as an audience.
+            // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences not trusted by the Client.
+            client_id: 'singleapp',
+            response_type: 'code', // 'id_token token' Implicit Flow
+            scope: 'dataEventRecords openid',
+            post_logout_redirect_uri: 'https://localhost:44363/Unauthorized',
+            start_checksession: false,
+            silent_renew: true,
+            silent_renew_url: 'https://localhost:44363/silent-renew.html',
+            post_login_route: '/dataeventrecords',
 
-        config.stsServer = 'https://localhost:44363';
-        config.redirect_url = 'https://localhost:44363';
-        // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer identified by the iss (issuer) Claim as an audience.
-        // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences not trusted by the Client.
-        config.client_id = 'singleapp';
-        config.response_type = 'code'; // 'id_token token' Implicit Flow
-        config.scope = 'dataEventRecords openid';
-        config.post_logout_redirect_uri = 'https://localhost:44363/Unauthorized';
-        config.start_checksession = false;
-        config.silent_renew = true;
-        config.silent_renew_url = 'https://localhost:44363/silent-renew.html';
-        config.post_login_route = '/dataeventrecords';
+            forbidden_route: '/Forbidden',
+            // HTTP 401
+            unauthorized_route: '/Unauthorized',
+            log_console_warning_active: true,
+            log_console_debug_active: true,
+            // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
+            // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
+            max_id_token_iat_offset_allowed_in_seconds: 10,
+        };
 
-        config.forbidden_route = '/Forbidden';
-        // HTTP 401
-        config.unauthorized_route = '/Unauthorized';
-        config.log_console_warning_active = true;
-        config.log_console_debug_active = true;
-        // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
-        // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
-        config.max_id_token_iat_offset_allowed_in_seconds = 10;
-
-        const authWellKnownEndpoints = new AuthWellKnownEndpoints();
-        authWellKnownEndpoints.issuer = 'https://localhost:44363';
-
-        authWellKnownEndpoints.jwks_uri = 'https://localhost:44363/.well-known/openid-configuration/jwks';
-        authWellKnownEndpoints.authorization_endpoint = 'https://localhost:44363/connect/authorize';
-        authWellKnownEndpoints.token_endpoint = 'https://localhost:44363/connect/token';
-        authWellKnownEndpoints.userinfo_endpoint = 'https://localhost:44363/connect/userinfo';
-        authWellKnownEndpoints.end_session_endpoint = 'https://localhost:44363/connect/endsession';
-        authWellKnownEndpoints.check_session_iframe = 'https://localhost:44363/connect/checksession';
-        authWellKnownEndpoints.revocation_endpoint = 'https://localhost:44363/connect/revocation';
-        authWellKnownEndpoints.introspection_endpoint = 'https://localhost:44363/connect/introspect';
+        const authWellKnownEndpoints: AuthWellKnownEndpoints = {
+            issuer: 'https://localhost:44363/.well-known/openid-configuration/jwks',
+            authorization_endpoint: 'https://localhost:44363/connect/authorize',
+            token_endpoint: 'https://localhost:44363/connect/token',
+            userinfo_endpoint: 'https://localhost:44363/connect/userinfo',
+            end_session_endpoint: 'https://localhost:44363/connect/endsession',
+            check_session_iframe: 'https://localhost:44363/connect/checksession',
+            revocation_endpoint: 'https://localhost:44363/connect/revocation',
+            introspection_endpoint: 'https://localhost:44363/connect/introspect',
+        };
 
         this.oidcSecurityService.setupModule(config, authWellKnownEndpoints);
     }
@@ -205,13 +211,13 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 }
 ```
 
-
 ## Usage
 
 ### Code Flow with PKCE
-> It is recomended flow in SPA applications, see [SECURELY USING THE OIDC AUTHORIZATION CODE FLOW AND A PUBLIC CLIENT WITH SINGLE PAGE APPLICATIONS](https://medium.com/@robert.broeckelmann/securely-using-the-oidc-authorization-code-flow-and-a-public-client-with-single-page-applications-55e0a648ab3a). 
-> 
-> Not all security service providers and servers support it yet. 
+
+> It is recomended flow in SPA applications, see [SECURELY USING THE OIDC AUTHORIZATION CODE FLOW AND A PUBLIC CLIENT WITH SINGLE PAGE APPLICATIONS](https://medium.com/@robert.broeckelmann/securely-using-the-oidc-authorization-code-flow-and-a-public-client-with-single-page-applications-55e0a648ab3a).
+>
+> Not all security service providers and servers support it yet.
 
 Create the login, logout component and use the oidcSecurityService
 
@@ -279,7 +285,6 @@ private doCallbackLogicIfRequired() {
   }
 ```
 
-
 And a simple template for the component.
 
 ```typescript
@@ -319,8 +324,6 @@ Point the `silent_renew_url` property to an HTML file which contains the followi
 	};
 </script>
 ```
-
-
 
 ### Silent Renew Angular-CLI
 
@@ -387,8 +390,6 @@ export class AuthorizationGuard implements CanActivate, CanLoad {
     }
 }
 ```
-
-
 
 ## Custom Storage
 
