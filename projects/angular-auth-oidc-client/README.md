@@ -102,7 +102,7 @@ export class AppModule {
     constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
         this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
 		
-			// Use the configResult to set the configurations
+            // Use the configResult to set the configurations
 			
             const config: OpenIdConfiguration = {
                 stsServer: configResult.customConfig.stsServer,
