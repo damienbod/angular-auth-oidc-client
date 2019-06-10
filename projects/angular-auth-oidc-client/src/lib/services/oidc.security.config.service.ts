@@ -4,7 +4,7 @@ import { Observable, of, Subject } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 
 export interface ConfigResult {
-    customAuthWellknownEndpoints: any;
+    authWellknownEndpoints: any;
     customConfig: any;
 }
 
@@ -42,9 +42,9 @@ export class OidcConfigService {
         return this.httpClient
             .get(url)
             .pipe(
-                switchMap(authWellKnownEndpoints => {
+                switchMap(wellKnownEndpoints => {
                     this.configurationLoadedInternal.next({
-                        customAuthWellknownEndpoints: authWellKnownEndpoints,
+                        authWellknownEndpoints: wellKnownEndpoints,
                         customConfig: { stsServer: url },
                     });
                     return of(true);
@@ -67,9 +67,9 @@ export class OidcConfigService {
         const url = `${clientConfig.stsServer}/.well-known/openid-configuration`;
 
         return this.httpClient.get(url).pipe(
-            switchMap(authWellKnownEndpoints => {
+            switchMap(wellKnownEndpoints => {
                 this.configurationLoadedInternal.next({
-                    customAuthWellknownEndpoints: authWellKnownEndpoints,
+                    authWellknownEndpoints: wellKnownEndpoints,
                     customConfig: clientConfig,
                 });
                 return of(true);
