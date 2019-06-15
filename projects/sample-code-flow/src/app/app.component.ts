@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { filter, take } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -11,15 +10,13 @@ export class AppComponent implements OnInit, OnDestroy {
     userData: any;
 
     constructor(public oidcSecurityService: OidcSecurityService) {
-
-      if (this.oidcSecurityService.moduleSetup) {
-        this.doCallbackLogicIfRequired();
-      } else {
-        this.oidcSecurityService.onModuleSetup.subscribe(() => {
-          this.doCallbackLogicIfRequired();
-        });
-      }
-
+        if (this.oidcSecurityService.moduleSetup) {
+            this.doCallbackLogicIfRequired();
+        } else {
+            this.oidcSecurityService.onModuleSetup.subscribe(() => {
+                this.doCallbackLogicIfRequired();
+            });
+        }
     }
 
     ngOnInit() {

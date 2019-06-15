@@ -63,54 +63,54 @@ Example of a silent-renew.html callback html file.
 Note: The CustomEvent does not work for older versions of IE. Add a javascript function instead of this, if required.
 
 ### Code Flow with PKCE
-```html
-<!doctype html>
-<html>
-<head>
-    <base href="./">
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>silent-renew</title>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-</head>
-<body>
 
-    <script>
-        window.onload = function () {
-            /* The parent window hosts the Angular application */
-            var parent = window.parent;
-            /* Send the id_token information to the oidc message handler */
-            var event = new CustomEvent('oidc-silent-renew-message', { detail: window.location });
-            parent.dispatchEvent(event);
-        };
-    </script>
-</body>
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <base href="./" />
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>silent-renew</title>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    </head>
+    <body>
+        <script>
+            window.onload = function() {
+                /* The parent window hosts the Angular application */
+                var parent = window.parent;
+                /* Send the id_token information to the oidc message handler */
+                var event = new CustomEvent('oidc-silent-renew-message', { detail: window.location });
+                parent.dispatchEvent(event);
+            };
+        </script>
+    </body>
 </html>
-
 ```
-### Implicit Flow
-```html
-<!doctype html>
-<html>
-<head>
-    <base href="./">
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>silent_renew</title>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-</head>
-<body>
 
-    <script>
-        window.onload = function () {
-            /* The parent window hosts the Angular application */
-            var parent = window.parent;
-            /* Send the id_token information to the oidc message handler */
-            var event = new CustomEvent('oidc-silent-renew-message', { detail: window.location.hash.substr(1) });
-            parent.dispatchEvent(event);
-        };
-    </script>
-</body>
+### Implicit Flow
+
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <base href="./" />
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>silent_renew</title>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    </head>
+    <body>
+        <script>
+            window.onload = function() {
+                /* The parent window hosts the Angular application */
+                var parent = window.parent;
+                /* Send the id_token information to the oidc message handler */
+                var event = new CustomEvent('oidc-silent-renew-message', { detail: window.location.hash.substr(1) });
+                parent.dispatchEvent(event);
+            };
+        </script>
+    </body>
 </html>
 ```
 
@@ -137,7 +137,6 @@ Route, if the server returns a 401. This is an Angular route. HTTP 401
 Make it possible to turn the iss validation off per configuration. You should not turn this off!
 
 default value : 'false'
-
 
 ### auto_userinfo
 
@@ -171,7 +170,7 @@ default value : 3
 
 default value : false
 
-This allows the application to disable the iat offset validation check. 
+This allows the application to disable the iat offset validation check.
 
 id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time, limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
 
@@ -260,38 +259,34 @@ Config the module, subscribe to the json get:
 ```typescript
 export class AppModule {
     constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
-        this.oidcConfigService.onConfigurationLoaded.subscribe(() => {
-            const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
-            openIDImplicitFlowConfiguration.stsServer = this.oidcConfigService.clientConfiguration.stsServer;
-            openIDImplicitFlowConfiguration.redirect_url = this.oidcConfigService.clientConfiguration.redirect_url;
-            // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer
-            // identified by the iss (issuer) Claim as an audience.
-            // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience,
-            // or if it contains additional audiences not trusted by the Client.
-            openIDImplicitFlowConfiguration.client_id = this.oidcConfigService.clientConfiguration.client_id;
-            openIDImplicitFlowConfiguration.response_type = this.oidcConfigService.clientConfiguration.response_type;
-            openIDImplicitFlowConfiguration.scope = this.oidcConfigService.clientConfiguration.scope;
-            openIDImplicitFlowConfiguration.post_logout_redirect_uri = this.oidcConfigService.clientConfiguration.post_logout_redirect_uri;
-            openIDImplicitFlowConfiguration.start_checksession = this.oidcConfigService.clientConfiguration.start_checksession;
-            openIDImplicitFlowConfiguration.silent_renew = this.oidcConfigService.clientConfiguration.silent_renew;
-            openIDImplicitFlowConfiguration.post_login_route = this.oidcConfigService.clientConfiguration.startup_route;
-            // HTTP 403
-            openIDImplicitFlowConfiguration.forbidden_route = this.oidcConfigService.clientConfiguration.forbidden_route;
-            // HTTP 401
-            openIDImplicitFlowConfiguration.unauthorized_route = this.oidcConfigService.clientConfiguration.unauthorized_route;
-            openIDImplicitFlowConfiguration.log_console_warning_active = this.oidcConfigService.clientConfiguration.log_console_warning_active;
-            openIDImplicitFlowConfiguration.log_console_debug_active = this.oidcConfigService.clientConfiguration.log_console_debug_active;
-            // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
-            // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
-            openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = this.oidcConfigService.clientConfiguration.max_id_token_iat_offset_allowed_in_seconds;
+        this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
 
-            configuration.FileServer = this.oidcConfigService.clientConfiguration.apiFileServer;
-            configuration.Server = this.oidcConfigService.clientConfiguration.apiServer;
+            const config: OpenIdConfiguration = {
+                stsServer = configResult.stsServer;
+                redirect_url = configResult.redirect_url;
+                // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer
+                // identified by the iss (issuer) Claim as an audience.
+                // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience,
+                // or if it contains additional audiences not trusted by the Client.
+                client_id = configResult.client_id;
+                response_type = configResult.response_type;
+                scope = configResult.scope;
+                post_logout_redirect_uri = configResult.post_logout_redirect_uri;
+                start_checksession = configResult.start_checksession;
+                silent_renew = configResult.silent_renew;
+                post_login_route = configResult.startup_route;
+                // HTTP 403
+                forbidden_route = configResult.forbidden_route;
+                // HTTP 401
+                unauthorized_route = configResult.unauthorized_route;
+                log_console_warning_active = configResult.log_console_warning_active;
+                log_console_debug_active = configResult.log_console_debug_active;
+                // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
+                // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
+                max_id_token_iat_offset_allowed_in_seconds = configResult.max_id_token_iat_offset_allowed_in_seconds;
+            };
 
-            const authWellKnownEndpoints = new AuthWellKnownEndpoints();
-            authWellKnownEndpoints.setWellKnownEndpoints(this.oidcConfigService.wellKnownEndpoints);
-
-            this.oidcSecurityService.setupModule(openIDImplicitFlowConfiguration, authWellKnownEndpoints);
+            this.oidcSecurityService.setupModule(config, configResult.authWellknownEndpoints);
         });
 
         console.log('APP STARTING');
@@ -497,7 +492,7 @@ Subscribe to the event:
         this.router.navigate(['/unauthorized']);
     });
 //...
-	
+
 private onAuthorizationResultSubscription: Subscription;
 
 ngOnDestroy(): void {

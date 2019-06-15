@@ -1,12 +1,14 @@
-import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { AuthConfiguration, OpenIDImplicitFlowConfiguration } from '../../lib/modules/auth.configuration';
+import { OpenIdConfiguration } from '../../lib/models/auth.configuration';
 import { AuthModule } from '../../lib/modules/auth.module';
+import { ConfigurationProvider } from '../../lib/services/auth-configuration.provider';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
+import { PlatformProvider } from '../../lib/services/platform.provider';
 import { TestLogging } from '../common/test-logging.service';
 
 describe('AuthConfiguration', () => {
-    let authConfiguration: AuthConfiguration;
+    let configurationProvider: ConfigurationProvider;
+    let platformProvider: PlatformProvider;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -16,49 +18,40 @@ describe('AuthConfiguration', () => {
                     provide: LoggerService,
                     useClass: TestLogging,
                 },
+                ConfigurationProvider,
+                PlatformProvider,
             ],
         });
+
+        configurationProvider = TestBed.get(ConfigurationProvider);
+        platformProvider = TestBed.get(PlatformProvider);
     });
 
-    describe('browser', () => {
-        beforeEach(() => {
-            TestBed.configureTestingModule({
-                providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
-            });
+    it('silent_renew and start_checksession can be set to true when using the browser platform', () => {
+        const config: OpenIdConfiguration = {
+            silent_renew: true,
+            start_checksession: true,
+        };
 
-            authConfiguration = TestBed.get(AuthConfiguration);
-        });
+        spyOnProperty(platformProvider, 'isBrowser').and.returnValue(true);
 
-        it('silent_renew and start_checksession can be set to true when using the browser platform', () => {
-            let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
-            openIDImplicitFlowConfiguration.silent_renew = true;
-            openIDImplicitFlowConfiguration.start_checksession = true;
+        configurationProvider.setup(config, null);
 
-            authConfiguration.init(openIDImplicitFlowConfiguration);
-
-            expect(authConfiguration.silent_renew).toEqual(true);
-            expect(authConfiguration.start_checksession).toEqual(true);
-        });
+        expect(configurationProvider.openIDConfiguration.silent_renew).toEqual(true);
+        expect(configurationProvider.openIDConfiguration.start_checksession).toEqual(true);
     });
 
-    describe('server', () => {
-        beforeEach(() => {
-            TestBed.configureTestingModule({
-                providers: [{ provide: PLATFORM_ID, useValue: 'server' }],
-            });
+    it('silent_renew and start_checksession are always false when not using the browser platform', () => {
+        const config: OpenIdConfiguration = {
+            silent_renew: true,
+            start_checksession: true,
+        };
 
-            authConfiguration = TestBed.get(AuthConfiguration);
-        });
+        spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
 
-        it('silent_renew and start_checksession are always false when not using the browser platform', () => {
-            let openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
-            openIDImplicitFlowConfiguration.silent_renew = true;
-            openIDImplicitFlowConfiguration.start_checksession = true;
+        configurationProvider.setup(config, null);
 
-            authConfiguration.init(openIDImplicitFlowConfiguration);
-
-            expect(authConfiguration.silent_renew).toEqual(false);
-            expect(authConfiguration.start_checksession).toEqual(false);
-        });
+        expect(configurationProvider.openIDConfiguration.silent_renew).toEqual(false);
+        expect(configurationProvider.openIDConfiguration.start_checksession).toEqual(false);
     });
 });

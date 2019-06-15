@@ -1,70 +1,84 @@
 ﻿import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, Subject } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
+
+export interface ConfigResult {
+    authWellknownEndpoints: any;
+    customConfig: any;
+}
 
 @Injectable()
 export class OidcConfigService {
-    private _onConfigurationLoaded = new Subject<boolean>();
-    clientConfiguration: any;
-    wellKnownEndpoints: any;
+    private configurationLoadedInternal = new Subject<ConfigResult>();
 
-    public get onConfigurationLoaded(): Observable<boolean> {
-        return this._onConfigurationLoaded.asObservable();
+    public get onConfigurationLoaded(): Observable<ConfigResult> {
+        return this.configurationLoadedInternal.asObservable();
     }
 
     constructor(private readonly httpClient: HttpClient) {}
 
     load(configUrl: string) {
-        this.httpClient
+        return this.httpClient
             .get(configUrl)
             .pipe(
-                map(response => {
-                    this.clientConfiguration = response;
-                    this.load_using_stsServer(this.clientConfiguration.stsServer);
+                switchMap(clientConfiguration => {
+                    return this.loadUsingConfiguration(clientConfiguration);
                 }),
                 catchError(error => {
                     console.error(`OidcConfigService 'load' threw an error on calling ${configUrl}`, error);
-                    this._onConfigurationLoaded.next(false);
+                    this.configurationLoadedInternal.next(undefined);
                     return of(false);
                 })
             )
-            .subscribe();
+            .toPromise();
     }
 
     load_using_stsServer(stsServer: string) {
-        const url = `${stsServer}/.well-known/openid-configuration`;
-
-        this.httpClient
-            .get(url)
-            .pipe(
-                map(response => {
-                    this.wellKnownEndpoints = response;
-                    this._onConfigurationLoaded.next(true);
-                }),
-                catchError(error => {
-                    console.error(`OidcConfigService 'load_using_stsServer' threw an error on calling ${stsServer}`, error);
-                    this._onConfigurationLoaded.next(false);
-                    return of(false);
-                })
-            )
-            .subscribe();
+        return this.loadUsingConfiguration({ stsServer }).toPromise();
     }
 
     load_using_custom_stsServer(url: string) {
-        this.httpClient
+        return this.httpClient
             .get(url)
             .pipe(
-                map(response => {
-                    this.wellKnownEndpoints = response;
-                    this._onConfigurationLoaded.next(true);
+                switchMap(wellKnownEndpoints => {
+                    this.configurationLoadedInternal.next({
+                        authWellknownEndpoints: wellKnownEndpoints,
+                        customConfig: { stsServer: url },
+                    });
+                    return of(true);
                 }),
                 catchError(error => {
                     console.error(`OidcConfigService 'load_using_custom_stsServer' threw an error on calling ${url}`, error);
-                    this._onConfigurationLoaded.next(false);
+                    this.configurationLoadedInternal.next(undefined);
                     return of(false);
                 })
             )
-            .subscribe();
+            .toPromise();
+    }
+
+    private loadUsingConfiguration(clientConfig: any) {
+        if (!clientConfig.stsServer) {
+            console.error(`Property 'stsServer' is not present of passed config ${JSON.stringify(clientConfig)}`, clientConfig);
+            throw new Error(`Property 'stsServer' is not present of passed config ${JSON.stringify(clientConfig)}`);
+        }
+
+        const url = `${clientConfig.stsServer}/.well-known/openid-configuration`;
+
+        return this.httpClient.get(url).pipe(
+            switchMap(wellKnownEndpoints => {
+                this.configurationLoadedInternal.next({
+                    authWellknownEndpoints: wellKnownEndpoints,
+                    customConfig: clientConfig,
+                });
+                return of(true);
+            }),
+            catchError(error => {
+                console.error(`OidcConfigService 'load_using_stsServer' threw an error on calling ${url}`, error);
+                this.configurationLoadedInternal.next(undefined);
+                return of(false);
+            })
+        );
     }
 }
