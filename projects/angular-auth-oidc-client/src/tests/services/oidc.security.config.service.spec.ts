@@ -58,7 +58,7 @@ describe('OidcConfigService', () => {
             };
 
             const expectedResult = {
-                customAuthWellknownEndpoints: authWellKnownEndPoints,
+                authWellknownEndpoints: authWellKnownEndPoints,
                 customConfig: returnedClientConfig,
             };
 
@@ -101,7 +101,7 @@ describe('OidcConfigService', () => {
             };
 
             const expectedResult = {
-                customAuthWellknownEndpoints: authWellKnownEndPoints,
+                authWellknownEndpoints: authWellKnownEndPoints,
                 customConfig: { stsServer },
             };
 
@@ -132,7 +132,7 @@ describe('OidcConfigService', () => {
             };
 
             const expectedResult = {
-                customAuthWellknownEndpoints: authWellKnownEndPoints,
+                authWellknownEndpoints: authWellKnownEndPoints,
                 customConfig: { stsServer },
             };
 
