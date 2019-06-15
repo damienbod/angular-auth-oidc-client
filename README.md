@@ -529,8 +529,6 @@ https://github.com/damienbod/angular-auth-oidc-sample-google-openid
 
 https://github.com/HWouters/ad-b2c-oidc-angular
 
-https://github.com/robisim74/angular-openid-connect-php/tree/angular-auth-oidc-client
-
 ### Using src code directly:
 
 https://github.com/damienbod/AspNet5IdentityServerAngularImplicitFlow
