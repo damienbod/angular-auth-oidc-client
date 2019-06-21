@@ -1,7 +1,7 @@
 ## angular-auth-oidc-client Changelog
 
 <a name="2019-06-21"></a>
-### 2019-06-21 version 10.0.0
+### 2019-06-21 version 10.0.1
 * revert angular build to angular 7, fix npm dist
 
 
