@@ -39,7 +39,7 @@ or with yarn
 or you can add the npm package to your package.json
 
 ```typescript
- "angular-auth-oidc-client": "^10.0.0"
+ "angular-auth-oidc-client": "^10.0.1"
 ```
 
 and type
@@ -528,8 +528,6 @@ https://github.com/damienbod/dotnet-template-angular
 https://github.com/damienbod/angular-auth-oidc-sample-google-openid
 
 https://github.com/HWouters/ad-b2c-oidc-angular
-
-https://github.com/robisim74/angular-openid-connect-php/tree/angular-auth-oidc-client
 
 ### Using src code directly:
 
