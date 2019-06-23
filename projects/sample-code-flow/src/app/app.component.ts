@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { ConfigResult, OidcConfigService, OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
     selector: 'app-root',
@@ -7,9 +7,10 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 })
 export class AppComponent implements OnInit, OnDestroy {
     isAuthenticated: boolean;
+    isConfigurationLoaded: boolean;
     userData: any;
 
-    constructor(public oidcSecurityService: OidcSecurityService) {
+    constructor(private oidcConfigService: OidcConfigService, public oidcSecurityService: OidcSecurityService) {
         if (this.oidcSecurityService.moduleSetup) {
             this.doCallbackLogicIfRequired();
         } else {
@@ -20,6 +21,10 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.oidcConfigService.onConfigurationLoaded.subscribe((value: ConfigResult) => {
+            this.isConfigurationLoaded = true;
+        });
+
         this.oidcSecurityService.getIsAuthorized().subscribe(auth => {
             this.isAuthenticated = auth;
         });
