@@ -1,6 +1,6 @@
 ﻿import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 
 export interface ConfigResult {
@@ -10,13 +10,13 @@ export interface ConfigResult {
 
 @Injectable()
 export class OidcConfigService {
-    private configurationLoadedInternal = new Subject<ConfigResult>();
+    private configurationLoadedInternal = new ReplaySubject<ConfigResult>(1);
 
     public get onConfigurationLoaded(): Observable<ConfigResult> {
         return this.configurationLoadedInternal.asObservable();
     }
 
-    constructor(private readonly httpClient: HttpClient) {}
+    constructor(private readonly httpClient: HttpClient) { }
 
     load(configUrl: string) {
         return this.httpClient
