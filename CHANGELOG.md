@@ -1,5 +1,10 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2019-06-25"></a>
+### 2019-06-25 version 10.0.2
+* bug fix: onConfigurationLoaded does not fired 
+* bug fix: [SSR] Session storage is not defined
+
 <a name="2019-06-21"></a>
 ### 2019-06-21 version 10.0.1
 * revert angular build to angular 7, fix npm dist
