@@ -25,7 +25,11 @@ export class IFrameService {
     }
 
     private getIFrameFromParentWindow(identifier: string) {
-        return window.parent.document.getElementById(identifier);
+        try {
+            return window.parent.document.getElementById(identifier);
+        } catch (e) {
+            return null;
+        }
     }
 
     private getIFrameFromWindow(identifier: string) {
