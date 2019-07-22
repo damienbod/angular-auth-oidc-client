@@ -4,7 +4,7 @@ import { LoggerService } from './oidc.logger.service';
 @Injectable()
 export class TokenHelperService {
     private PARTS_OF_TOKEN = 3;
-    constructor(private readonly loggerService: LoggerService) {}
+    constructor(private readonly loggerService: LoggerService) { }
 
     getTokenExpirationDate(dataIdToken: any): Date {
         if (!dataIdToken.hasOwnProperty('exp')) {
@@ -93,7 +93,7 @@ export class TokenHelperService {
         const parts = token.split('.');
 
         if (parts.length !== this.PARTS_OF_TOKEN) {
-            this.loggerService.logError(`token '${token}' is not valid --> token has t have exact three dots`);
+            this.loggerService.logError(`token '${token}' is not valid --> token has to have exactly ${this.PARTS_OF_TOKEN} dots`);
             return false;
         }
 

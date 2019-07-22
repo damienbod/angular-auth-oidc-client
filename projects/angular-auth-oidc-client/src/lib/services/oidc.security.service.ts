@@ -154,7 +154,7 @@ export class OidcSecurityService {
             this.loggerService.logDebug(this.oidcSecurityCommon.idToken);
             if (
                 this.oidcSecurityValidation.isTokenExpired(
-                    this.oidcSecurityCommon.idToken,
+                    this.oidcSecurityCommon.idToken || this.oidcSecurityCommon.accessToken,
                     this.configurationProvider.openIDConfiguration.silent_renew_offset_in_seconds
                 )
             ) {
@@ -225,6 +225,15 @@ export class OidcSecurityService {
         }
 
         const token = this.oidcSecurityCommon.getIdToken();
+        return decodeURIComponent(token);
+    }
+
+    getRefreshToken(): string {
+        if (!this._isAuthorized.getValue()) {
+            return '';
+        }
+
+        const token = this.oidcSecurityCommon.getRefreshToken();
         return decodeURIComponent(token);
     }
 
@@ -347,6 +356,39 @@ export class OidcSecurityService {
             });
     }
 
+    // Refresh Token
+    refreshTokensWithCodeProcedure(code: string, state: string): Observable<any> {
+        let tokenRequestUrl: string;
+        if (this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.token_endpoint) {
+            tokenRequestUrl = `${this.configurationProvider.wellKnownEndpoints.token_endpoint}`;
+        }
+
+        let headers: HttpHeaders = new HttpHeaders();
+        headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
+
+        const data =
+            `grant_type=refresh_token&client_id=${this.configurationProvider.openIDConfiguration.client_id}` +
+            `&refresh_token=${code}`;
+
+        return this.httpClient
+            .post(tokenRequestUrl, data, { headers })
+            .pipe(
+                map(response => {
+                    this.loggerService.logDebug('token refresh response: ' + JSON.stringify(response));
+                    let obj: any = new Object();
+                    obj = response;
+                    obj.state = state;
+
+                    this.authorizedCodeFlowCallbackProcedure(obj);
+                }),
+                catchError(error => {
+                    this.loggerService.logError(error);
+                    this.loggerService.logError(`OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}`);
+                    return of(false);
+                })
+            );
+    }
+
     // Code Flow with PCKE
     requestTokensWithCodeProcedure(code: string, state: string, session_state: string | null) {
         let tokenRequestUrl = '';
@@ -366,13 +408,13 @@ export class OidcSecurityService {
         let data =
             `grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}` +
             `&code_verifier=${this.oidcSecurityCommon.code_verifier}&code=${code}&redirect_uri=${
-                this.configurationProvider.openIDConfiguration.redirect_url
+            this.configurationProvider.openIDConfiguration.redirect_url
             }`;
         if (this.oidcSecurityCommon.silentRenewRunning === 'running') {
             data =
                 `grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}` +
                 `&code_verifier=${this.oidcSecurityCommon.code_verifier}&code=${code}&redirect_uri=${
-                    this.configurationProvider.openIDConfiguration.silent_renew_url
+                this.configurationProvider.openIDConfiguration.silent_renew_url
                 }`;
         }
 
@@ -416,7 +458,7 @@ export class OidcSecurityService {
 
         hash = hash || window.location.hash.substr(1);
 
-        const result: any = hash.split('&').reduce(function(resultData: any, item: string) {
+        const result: any = hash.split('&').reduce(function (resultData: any, item: string) {
             const parts = item.split('=');
             resultData[<string>parts.shift()] = parts.join('=');
             return resultData;
@@ -651,6 +693,15 @@ export class OidcSecurityService {
 
         // Code Flow
         if (this.configurationProvider.openIDConfiguration.response_type === 'code') {
+            // try using refresh token
+            const refresh_token = this.oidcSecurityCommon.getRefreshToken();
+            if (refresh_token) {
+                this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
+                return this.refreshTokensWithCodeProcedure(refresh_token, state);
+            } else {
+                this.loggerService.logDebug('no refresh token found, using silent renew');
+            }
+
             // code_challenge with "S256"
             const code_verifier = 'C' + Math.random() + '' + Date.now() + '' + Date.now() + Math.random();
             const code_challenge = this.oidcSecurityValidation.generate_code_verifier(code_verifier);
@@ -871,15 +922,15 @@ export class OidcSecurityService {
         this.loggerService.logDebug('runTokenValidation silent-renew running');
 
         /**
-            First time: delay 10 seconds to call silentRenewHeartBeatCheck
-            Afterwards: Run this check in a 5 second interval only AFTER the previous operation ends.
+         *   First time: delay 10 seconds to call silentRenewHeartBeatCheck
+         *   Afterwards: Run this check in a 5 second interval only AFTER the previous operation ends.
          */
         const silentRenewHeartBeatCheck = () => {
             this.loggerService.logDebug(
                 'silentRenewHeartBeatCheck\r\n' +
-                    `\tsilentRenewRunning: ${this.oidcSecurityCommon.silentRenewRunning === 'running'}\r\n` +
-                    `\tidToken: ${!!this.getIdToken()}\r\n` +
-                    `\t_userData.value: ${!!this._userData.value}`
+                `\tsilentRenewRunning: ${this.oidcSecurityCommon.silentRenewRunning === 'running'}\r\n` +
+                `\tidToken: ${!!this.getIdToken()}\r\n` +
+                `\t_userData.value: ${!!this._userData.value}`
             );
             if (this._userData.value && this.oidcSecurityCommon.silentRenewRunning !== 'running' && this.getIdToken()) {
                 if (
@@ -900,7 +951,7 @@ export class OidcSecurityService {
                                 this._scheduledHeartBeat = setTimeout(silentRenewHeartBeatCheck, 3000);
                             }
                         );
-                        /* In this situation, we schedule a heatbeat check only when silentRenew is finished.
+                        /* In this situation, we schedule a heartbeat check only when silentRenew is finished.
                         We don't want to schedule another check so we have to return here */
                         return;
                     } else {

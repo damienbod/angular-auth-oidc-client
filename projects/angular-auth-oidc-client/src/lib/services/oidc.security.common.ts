@@ -117,7 +117,7 @@ export class OidcSecurityCommon {
         this.store(this.storage_custom_request_params, value);
     }
 
-    constructor(private oidcSecurityStorage: OidcSecurityStorage) {}
+    constructor(private oidcSecurityStorage: OidcSecurityStorage) { }
 
     private retrieve(key: string): any {
         return this.oidcSecurityStorage.read(key);
@@ -146,5 +146,9 @@ export class OidcSecurityCommon {
 
     getIdToken(): any {
         return this.retrieve(this.storage_id_token);
+    }
+
+    getRefreshToken(): any {
+        return this.authResult.refresh_token;
     }
 }
