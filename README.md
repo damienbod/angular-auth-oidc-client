@@ -395,6 +395,14 @@ export class AuthorizationGuard implements CanActivate, CanLoad {
 
 The guard should only be applied to protected URLs. The guard should not be active on the default route, where the authorization request is processed.
 
+## Adding custom parameters to the authoriazation request
+
+Custom parameters can be added to the auth request by using the setCustomRequestParameters method. Here you could add ui_locale, acr or whatever you request for your token server.
+
+```typescript
+this.oidcSecurityService.setCustomRequestParameters({ 'ui_locales': culture});
+```
+
 ## Custom Storage
 
 If you need, you can create a custom storage (for example to use cookies).
