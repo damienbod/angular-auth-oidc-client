@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2019-07-30"></a>
+### 2019-07-30 version 10.0.3
+* Added a try catch to handle the CORS error that is thrown if the parent has a different origin htne the iframe. Issue #466
+
 <a name="2019-06-25"></a>
 ### 2019-06-25 version 10.0.2
 * bug fix: onConfigurationLoaded does not fired 
