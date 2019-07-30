@@ -391,6 +391,10 @@ export class AuthorizationGuard implements CanActivate, CanLoad {
 }
 ```
 
+### Note about Guards
+
+The guard should only be applied to protected URLs. The guard should not be active on the default route, where the authorization request is processed.
+
 ## Custom Storage
 
 If you need, you can create a custom storage (for example to use cookies).
