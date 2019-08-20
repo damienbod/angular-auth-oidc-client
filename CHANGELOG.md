@@ -1,5 +1,10 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2019-08-20"></a>
+### 2019-08-30 version 10.0.4
+* Added support for refresh tokens in code flow
+
+
 <a name="2019-07-30"></a>
 ### 2019-07-30 version 10.0.3
 * Added a try catch to handle the CORS error that is thrown if the parent has a different origin htne the iframe. Issue #466
