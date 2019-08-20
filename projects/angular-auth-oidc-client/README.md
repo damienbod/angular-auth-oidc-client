@@ -39,7 +39,7 @@ or with yarn
 or you can add the npm package to your package.json
 
 ```typescript
- "angular-auth-oidc-client": "^10.0.3"
+ "angular-auth-oidc-client": "^10.0.4"
 ```
 
 and type
@@ -395,7 +395,7 @@ export class AuthorizationGuard implements CanActivate, CanLoad {
 
 The guard should only be applied to protected URLs. The guard should not be active on the default route, where the authorization request is processed.
 
-## Adding custom parameters to the authoriazation request
+## Adding custom parameters to the authorization request
 
 Custom parameters can be added to the auth request by using the setCustomRequestParameters method. Here you could add ui_locale, acr or whatever you request for your token server.
 
