@@ -910,7 +910,7 @@ export class OidcSecurityService {
         } else {
             errMsg = error.message ? error.message : error.toString();
         }
-        console.error(errMsg);
+        this.loggerService.logError(errMsg);
         return observableThrowError(errMsg);
     }
 

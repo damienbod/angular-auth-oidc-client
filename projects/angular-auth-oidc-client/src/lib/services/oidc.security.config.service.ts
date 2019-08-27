@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
+import { LoggerService } from './oidc.logger.service';
 
 export interface ConfigResult {
     authWellknownEndpoints: any;
@@ -16,7 +17,7 @@ export class OidcConfigService {
         return this.configurationLoadedInternal.asObservable();
     }
 
-    constructor(private readonly httpClient: HttpClient) { }
+    constructor(private readonly loggerService: LoggerService, private readonly httpClient: HttpClient) { }
 
     load(configUrl: string) {
         return this.httpClient
@@ -26,7 +27,7 @@ export class OidcConfigService {
                     return this.loadUsingConfiguration(clientConfiguration);
                 }),
                 catchError(error => {
-                    console.error(`OidcConfigService 'load' threw an error on calling ${configUrl}`, error);
+                    this.loggerService.logError(`OidcConfigService 'load' threw an error on calling ${configUrl}`, error);
                     this.configurationLoadedInternal.next(undefined);
                     return of(false);
                 })
@@ -50,7 +51,7 @@ export class OidcConfigService {
                     return of(true);
                 }),
                 catchError(error => {
-                    console.error(`OidcConfigService 'load_using_custom_stsServer' threw an error on calling ${url}`, error);
+                    this.loggerService.logError(`OidcConfigService 'load_using_custom_stsServer' threw an error on calling ${url}`, error);
                     this.configurationLoadedInternal.next(undefined);
                     return of(false);
                 })
@@ -60,7 +61,7 @@ export class OidcConfigService {
 
     private loadUsingConfiguration(clientConfig: any) {
         if (!clientConfig.stsServer) {
-            console.error(`Property 'stsServer' is not present of passed config ${JSON.stringify(clientConfig)}`, clientConfig);
+            this.loggerService.logError(`Property 'stsServer' is not present of passed config ${JSON.stringify(clientConfig)}`, clientConfig);
             throw new Error(`Property 'stsServer' is not present of passed config ${JSON.stringify(clientConfig)}`);
         }
 
@@ -75,7 +76,7 @@ export class OidcConfigService {
                 return of(true);
             }),
             catchError(error => {
-                console.error(`OidcConfigService 'load_using_stsServer' threw an error on calling ${url}`, error);
+                this.loggerService.logError(`OidcConfigService 'load_using_stsServer' threw an error on calling ${url}`, error);
                 this.configurationLoadedInternal.next(undefined);
                 return of(false);
             })
