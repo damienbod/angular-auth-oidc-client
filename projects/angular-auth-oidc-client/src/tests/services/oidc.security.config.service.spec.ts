@@ -2,21 +2,31 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { async, TestBed } from '@angular/core/testing';
 import { AuthModule } from '../../lib/modules/auth.module';
 import { OidcConfigService } from '../../lib/services/oidc.security.config.service';
+import { LoggerService } from '../../lib/angular-auth-oidc-client';
+import { TestLogging } from '../common/test-logging.service';
 
 describe('OidcConfigService', () => {
     let oidcConfigService: OidcConfigService;
     let httpMock: HttpTestingController;
+    let loggerService: LoggerService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule, AuthModule.forRoot()],
-            providers: [OidcConfigService],
+            providers: [
+                OidcConfigService,
+                {
+                  provide: LoggerService,
+                  useClass: TestLogging,
+                },
+            ],
         });
     });
 
     beforeEach(() => {
         oidcConfigService = TestBed.get(OidcConfigService);
         httpMock = TestBed.get(HttpTestingController);
+        loggerService = TestBed.get(LoggerService);
     });
 
     afterEach(() => {
@@ -34,7 +44,7 @@ describe('OidcConfigService', () => {
                 notStsServer: 'anyvalue',
             };
 
-            const spy = spyOn(console, 'error');
+            const spy = spyOn(loggerService, 'logError');
             const expectedErrorMessage = `Property 'stsServer' is not present of passed config ${JSON.stringify(returnedClientConfig)}`;
 
             oidcConfigService.load(configUrl).then(result => {
