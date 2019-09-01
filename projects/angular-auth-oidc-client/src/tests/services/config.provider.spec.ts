@@ -61,6 +61,7 @@ describe('ConfigurationProviderTests', () => {
             silent_renew: false,
             silent_renew_url: 'https://please_set',
             silent_renew_offset_in_seconds: 0,
+			use_refresh_token: false,
             post_login_route: '/',
             forbidden_route: '/forbidden',
             unauthorized_route: '/unauthorized',
@@ -98,6 +99,7 @@ describe('ConfigurationProviderTests', () => {
             silent_renew: false,
             silent_renew_url: 'https://please_set',
             silent_renew_offset_in_seconds: 0,
+			use_refresh_token: false,
             post_login_route: '/',
             forbidden_route: '/forbidden',
             unauthorized_route: '/unauthorized',
@@ -137,6 +139,7 @@ describe('ConfigurationProviderTests', () => {
             silent_renew: false,
             silent_renew_url: 'https://please_set',
             silent_renew_offset_in_seconds: 0,
+			use_refresh_token: false,
             post_login_route: '/',
             forbidden_route: '/forbidden',
             unauthorized_route: '/unauthorized',
@@ -164,6 +167,7 @@ describe('ConfigurationProviderTests', () => {
             stsServer: 'stsServer',
             start_checksession: true,
             silent_renew: true,
+			use_refresh_token: false
         };
 
         const spy = spyOn(configurationProvider as any, 'setSpecialCases');
@@ -178,6 +182,7 @@ describe('ConfigurationProviderTests', () => {
             stsServer: 'stsServer',
             start_checksession: true,
             silent_renew: true,
+			use_refresh_token: false
         };
 
         const spy = spyOn((configurationProvider as any).onConfigurationChangeInternal, 'next');
