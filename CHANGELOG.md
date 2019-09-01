@@ -1,10 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
-<a name="2019-08-28"></a>
-### 2019-08-28 version 10.0.4
+<a name="2019-09-01"></a>
+### 2019-09-01 version 10.0.4
 * Added support for refresh tokens in code flow
 * expose logger service
-
 
 <a name="2019-07-30"></a>
 ### 2019-07-30 version 10.0.3
