@@ -10,6 +10,7 @@ export interface OpenIdConfiguration {
   silent_renew?: boolean;
   silent_renew_url?: string;
   silent_renew_offset_in_seconds?: number;
+  use_refresh_token?: boolean;
   post_login_route?: string;
   forbidden_route?: string;
   unauthorized_route?: string;
@@ -37,6 +38,7 @@ export interface OpenIdInternalConfiguration {
   silent_renew: boolean;
   silent_renew_url: string;
   silent_renew_offset_in_seconds: number;
+  use_refresh_token: boolean;
   post_login_route: string;
   forbidden_route: string;
   unauthorized_route: string;

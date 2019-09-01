@@ -358,7 +358,7 @@ export class OidcSecurityService {
 
     // Refresh Token
     refreshTokensWithCodeProcedure(code: string, state: string): Observable<any> {
-        let tokenRequestUrl = '';
+        let tokenRequestUrl  = '';
         if (this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.token_endpoint) {
             tokenRequestUrl = `${this.configurationProvider.wellKnownEndpoints.token_endpoint}`;
         }
@@ -693,15 +693,16 @@ export class OidcSecurityService {
 
         // Code Flow
         if (this.configurationProvider.openIDConfiguration.response_type === 'code') {
-            // try using refresh token
-            const refresh_token = this.oidcSecurityCommon.getRefreshToken();
-            if (refresh_token) {
-                this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
-                return this.refreshTokensWithCodeProcedure(refresh_token, state);
-            } else {
-                this.loggerService.logDebug('no refresh token found, using silent renew');
+            if (this.configurationProvider.openIDConfiguration.use_refresh_token) {
+                // try using refresh token
+                const refresh_token = this.oidcSecurityCommon.getRefreshToken();
+                if (refresh_token) {
+                    this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
+                    return this.refreshTokensWithCodeProcedure(refresh_token, state);
+                } else {
+                    this.loggerService.logDebug('no refresh token found, using silent renew');
+                }
             }
-
             // code_challenge with "S256"
             const code_verifier = 'C' + Math.random() + '' + Date.now() + '' + Date.now() + Math.random();
             const code_challenge = this.oidcSecurityValidation.generate_code_verifier(code_verifier);
