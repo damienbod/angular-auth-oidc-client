@@ -358,7 +358,7 @@ export class OidcSecurityService {
 
     // Refresh Token
     refreshTokensWithCodeProcedure(code: string, state: string): Observable<any> {
-        let tokenRequestUrl: string;
+        let tokenRequestUrl = '';
         if (this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.token_endpoint) {
             tokenRequestUrl = `${this.configurationProvider.wellKnownEndpoints.token_endpoint}`;
         }
