@@ -21,6 +21,7 @@ import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
 import { OidcSecurityUserService } from './oidc.security.user-service';
 import { OidcSecurityValidation } from './oidc.security.validation';
 import { UriEncoder } from './uri-encoder';
+import { UrlParserService } from './url-parser.service';
 
 @Injectable()
 export class OidcSecurityService {
@@ -71,7 +72,8 @@ export class OidcSecurityService {
         private loggerService: LoggerService,
         private zone: NgZone,
         private readonly httpClient: HttpClient,
-        private readonly configurationProvider: ConfigurationProvider
+        private readonly configurationProvider: ConfigurationProvider,
+        private readonly urlParserService: UrlParserService
     ) {
         this.onModuleSetup.pipe(take(1)).subscribe(() => {
             this.moduleSetup = true;
@@ -331,34 +333,29 @@ export class OidcSecurityService {
 
     // Code Flow
     authorizedCallbackWithCode(urlToCheck: string) {
-        const urlParts = urlToCheck.split('?');
-        const params = new HttpParams({
-            fromString: urlParts[1],
-        });
-        const code = params.get('code');
-        const state = params.get('state');
-        const session_state = params.get('session_state');
-
-        if (code && state) {
-            this.requestTokensWithCode(code, state, session_state);
+        const code = this.urlParserService.getUrlParameter(urlToCheck, 'code');
+        const state = this.urlParserService.getUrlParameter(urlToCheck, 'state');
+        const sessionState = this.urlParserService.getUrlParameter(urlToCheck, 'session_state');
+        if (!!code && !!state) {
+            this.requestTokensWithCode(code, state, sessionState || null);
         }
     }
 
     // Code Flow
-    requestTokensWithCode(code: string, state: string, session_state: string | null) {
+    requestTokensWithCode(code: string, state: string, sessionState: string | null) {
         this._isModuleSetup
             .pipe(
                 filter((isModuleSetup: boolean) => isModuleSetup),
                 take(1)
             )
             .subscribe(() => {
-                this.requestTokensWithCodeProcedure(code, state, session_state);
+                this.requestTokensWithCodeProcedure(code, state, sessionState);
             });
     }
 
     // Refresh Token
     refreshTokensWithCodeProcedure(code: string, state: string): Observable<any> {
-        let tokenRequestUrl  = '';
+        let tokenRequestUrl = '';
         if (this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.token_endpoint) {
             tokenRequestUrl = `${this.configurationProvider.wellKnownEndpoints.token_endpoint}`;
         }
@@ -366,27 +363,23 @@ export class OidcSecurityService {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-        const data =
-            `grant_type=refresh_token&client_id=${this.configurationProvider.openIDConfiguration.client_id}` +
-            `&refresh_token=${code}`;
+        const data = `grant_type=refresh_token&client_id=${this.configurationProvider.openIDConfiguration.client_id}` + `&refresh_token=${code}`;
 
-        return this.httpClient
-            .post(tokenRequestUrl, data, { headers })
-            .pipe(
-                map(response => {
-                    this.loggerService.logDebug('token refresh response: ' + JSON.stringify(response));
-                    let obj: any = new Object();
-                    obj = response;
-                    obj.state = state;
+        return this.httpClient.post(tokenRequestUrl, data, { headers }).pipe(
+            map(response => {
+                this.loggerService.logDebug('token refresh response: ' + JSON.stringify(response));
+                let obj: any = new Object();
+                obj = response;
+                obj.state = state;
 
-                    this.authorizedCodeFlowCallbackProcedure(obj);
-                }),
-                catchError(error => {
-                    this.loggerService.logError(error);
-                    this.loggerService.logError(`OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}`);
-                    return of(false);
-                })
-            );
+                this.authorizedCodeFlowCallbackProcedure(obj);
+            }),
+            catchError(error => {
+                this.loggerService.logError(error);
+                this.loggerService.logError(`OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}`);
+                return of(false);
+            })
+        );
     }
 
     // Code Flow with PCKE
@@ -407,15 +400,11 @@ export class OidcSecurityService {
 
         let data =
             `grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}` +
-            `&code_verifier=${this.oidcSecurityCommon.code_verifier}&code=${code}&redirect_uri=${
-            this.configurationProvider.openIDConfiguration.redirect_url
-            }`;
+            `&code_verifier=${this.oidcSecurityCommon.code_verifier}&code=${code}&redirect_uri=${this.configurationProvider.openIDConfiguration.redirect_url}`;
         if (this.oidcSecurityCommon.silentRenewRunning === 'running') {
             data =
                 `grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}` +
-                `&code_verifier=${this.oidcSecurityCommon.code_verifier}&code=${code}&redirect_uri=${
-                this.configurationProvider.openIDConfiguration.silent_renew_url
-                }`;
+                `&code_verifier=${this.oidcSecurityCommon.code_verifier}&code=${code}&redirect_uri=${this.configurationProvider.openIDConfiguration.silent_renew_url}`;
         }
 
         this.httpClient
@@ -458,7 +447,7 @@ export class OidcSecurityService {
 
         hash = hash || window.location.hash.substr(1);
 
-        const result: any = hash.split('&').reduce(function (resultData: any, item: string) {
+        const result: any = hash.split('&').reduce(function(resultData: any, item: string) {
             const parts = item.split('=');
             resultData[<string>parts.shift()] = parts.join('=');
             return resultData;
@@ -929,9 +918,9 @@ export class OidcSecurityService {
         const silentRenewHeartBeatCheck = () => {
             this.loggerService.logDebug(
                 'silentRenewHeartBeatCheck\r\n' +
-                `\tsilentRenewRunning: ${this.oidcSecurityCommon.silentRenewRunning === 'running'}\r\n` +
-                `\tidToken: ${!!this.getIdToken()}\r\n` +
-                `\t_userData.value: ${!!this._userData.value}`
+                    `\tsilentRenewRunning: ${this.oidcSecurityCommon.silentRenewRunning === 'running'}\r\n` +
+                    `\tidToken: ${!!this.getIdToken()}\r\n` +
+                    `\t_userData.value: ${!!this._userData.value}`
             );
             if (this._userData.value && this.oidcSecurityCommon.silentRenewRunning !== 'running' && this.getIdToken()) {
                 if (

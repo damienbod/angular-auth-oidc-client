@@ -296,8 +296,8 @@ describe('OidcSecurityService', () => {
 
         // with '=' chars in values
         hash = 'access_token=ACCESS-TOKEN==&token_type=bearer&state=test=State';
-        expectedResult['access_token'] = 'ACCESS-TOKEN==';
-        expectedResult['state'] = 'test=State';
+        expectedResult.access_token = 'ACCESS-TOKEN==';
+        expectedResult.state = 'test=State';
 
         (oidcSecurityService as OidcSecurityService).authorizedImplicitFlowCallback(hash);
         expect(resultSetter).toHaveBeenCalledWith(expectedResult);
@@ -365,5 +365,14 @@ describe('OidcSecurityService', () => {
         (oidcSecurityService as OidcSecurityService).logoff();
 
         expect(hasBeenCalled).toEqual(true);
+    });
+
+    it('authorizedCallbackWithCode handles url correctly when hash at the end', () => {
+        const urlToCheck = 'https://www.example.com/signin?code=thisisacode&state=0000.1234.000#';
+
+        const spy = spyOn(oidcSecurityService, 'requestTokensWithCode').and.callThrough();
+        oidcSecurityService.authorizedCallbackWithCode(urlToCheck);
+
+        expect(spy).toHaveBeenCalledWith('thisisacode', '0000.1234.000', null);
     });
 });
