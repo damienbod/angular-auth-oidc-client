@@ -366,4 +366,13 @@ describe('OidcSecurityService', () => {
 
         expect(hasBeenCalled).toEqual(true);
     });
+
+    it('authorizedCallbackWithCode handles url correctly when hash at the end', () => {
+      const urlToCheck = 'https://www.example.com/signin?code=thisisacode&state=0000.1234.000#';
+
+      const spy = spyOn(oidcSecurityService, 'requestTokensWithCode').and.callThrough();
+      oidcSecurityService.authorizedCallbackWithCode(urlToCheck);
+
+      expect(spy).toHaveBeenCalledWith('thisisacode', '0000.1234.000', null);
+  });
 });
