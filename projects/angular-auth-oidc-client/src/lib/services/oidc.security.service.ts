@@ -335,7 +335,7 @@ export class OidcSecurityService {
     authorizedCallbackWithCode(urlToCheck: string) {
         const code = this.urlParserService.getUrlParameter(urlToCheck, 'code');
         const state = this.urlParserService.getUrlParameter(urlToCheck, 'state');
-        const sessionState = this.urlParserService.getUrlParameter(urlToCheck, 'session_state');
+        const sessionState = this.urlParserService.getUrlParameter(urlToCheck, 'session_state') || null;
 
         if (!!code && !!state) {
             this.requestTokensWithCode(code, state, sessionState);
