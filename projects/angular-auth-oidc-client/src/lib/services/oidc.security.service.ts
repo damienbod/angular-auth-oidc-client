@@ -337,7 +337,7 @@ export class OidcSecurityService {
         const state = this.urlParserService.getUrlParameter(urlToCheck, 'state');
         const sessionState = this.urlParserService.getUrlParameter(urlToCheck, 'session_state');
 
-        if (code && state) {
+        if (!!code && !!state) {
             this.requestTokensWithCode(code, state, sessionState);
         }
     }
