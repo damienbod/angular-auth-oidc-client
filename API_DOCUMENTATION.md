@@ -26,7 +26,7 @@ The Client MUST validate that the aud (audience) Claim contains its client_id va
 
 default value : 'id_token token'
 
-'id_token token' or i'd_token' Name of the flow which can be configured. You must use the 'id_token token' flow, if you want to access an API or get user data from the server. The access_token is required for this, and only returned with this flow.
+'id_token token' or 'id_token' Name of the flow which can be configured. You must use the 'id_token token' flow, if you want to access an API or get user data from the server. The access_token is required for this, and only returned with this flow.
 
 ### scope
 
@@ -148,13 +148,13 @@ Automatically get user info after authentication.
 
 default value : true
 
-Logs all warnings from the module to the console. This can be viewed using F12 in Chrome of Firefox.
+Logs all warnings from the module to the console. This can be viewed using F12 in Chrome or Firefox.
 
 ### log_console_debug_active
 
 default value : false
 
-Logs all debug messages from the module to the console. This can be viewed using F12 in Chrome of Firefox.
+Logs all debug messages from the module to the console. This can be viewed using F12 in Chrome or Firefox.
 
 ### history_cleanup_off
 
@@ -172,32 +172,32 @@ default value : false
 
 This allows the application to disable the iat offset validation check.
 
-id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time, limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
+id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time, limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is client specific.
 
 ### storage
 
 default value : sessionStorage
 
-You can set the storage to localStorage, or implement a custom storage (see README).
+You can set the storage to `localStorage`, or implement a custom storage (see README).
 
 ### auto_clean_state_after_authentication
 
-can be used for custom state logic handling, the state is not automatically reset, when set to false
+can be used for custom state logic handling, the state is not automatically reset, when set to false.
 
 ### trigger_authorization_result_event
 
-This can be set to true which emits an event instead of an angular route change.
+default value : false
+
+This can be set to `true` which emits an event instead of an angular route change.
 
 Instead of forcing the application consuming this library to automatically redirect to one of the 3 hard-configured routes (start, unauthorized, forbidden), this modification will add an extra configuration option to override such behavior and trigger an event that will allow to subscribe to it and let the application perform other actions.
 This would be useful to allow the application to save an initial return url so that the user is redirected to it after a successful login on the STS (ie: saving the return url previously on sessionStorage and then retrieving it during the triggering of the event).
 
-default value : false;
-
 ### silent_renew_offset_in_seconds
 
-Makes it possible to add an offset to the silent renew check in seconds. By entering a value, you can renew the tokens, before the tokens expire.
+default value : 0
 
-default value : 0;
+Makes it possible to add an offset to the silent renew check in seconds. By entering a value, you can renew the tokens, before the tokens expire.
 
 ### hd_param
 
@@ -229,7 +229,7 @@ _Note: This will only emit once and late subscribers will never be notified. If 
 
 Example using:
 
-App.module: get your json settings:
+`app.module`: get your json settings:
 
 ```typescript
 export function loadConfig(oidcConfigService: OidcConfigService) {
@@ -253,7 +253,7 @@ providers: [
 ],
 ```
 
-App.module:
+`app.module`:
 Config the module, subscribe to the json get:
 
 ```typescript
@@ -294,7 +294,7 @@ export class AppModule {
 }
 ```
 
-AppComponent, subscribe to the onModuleSetup event:
+`AppComponent`, subscribe to the onModuleSetup event:
 
 ```typescript
 constructor(public oidcSecurityService: OidcSecurityService) {
@@ -399,11 +399,11 @@ this.oidcSecurityService
 
 ### getIdToken()
 
-public function to get the id_token
+public function to get the `id_token`
 
 ### getToken()
 
-public function to get the access_token which can be used to access APIs on the server.
+public function to get the `access_token` which can be used to access APIs on the server.
 
 ### getUserData(): Observable<any>
 
