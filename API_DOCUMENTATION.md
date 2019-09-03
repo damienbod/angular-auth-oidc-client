@@ -504,4 +504,4 @@ ngOnDestroy(): void {
 
 ### use_refresh_token
 
-boolean property set to false. Standard silent renew mode used per defualt. refresh tokens can be activated.
+boolean property set to false. Standard silent renew mode used per default. Refresh tokens can be activated.
