@@ -21,6 +21,7 @@ import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
 import { OidcSecurityUserService } from './oidc.security.user-service';
 import { OidcSecurityValidation } from './oidc.security.validation';
 import { UriEncoder } from './uri-encoder';
+import { UrlParserService } from './url-parser.service';
 
 @Injectable()
 export class OidcSecurityService {
@@ -71,7 +72,8 @@ export class OidcSecurityService {
         private loggerService: LoggerService,
         private zone: NgZone,
         private readonly httpClient: HttpClient,
-        private readonly configurationProvider: ConfigurationProvider
+        private readonly configurationProvider: ConfigurationProvider,
+        private readonly urlParserService: UrlParserService,
     ) {
         this.onModuleSetup.pipe(take(1)).subscribe(() => {
             this.moduleSetup = true;
@@ -331,28 +333,24 @@ export class OidcSecurityService {
 
     // Code Flow
     authorizedCallbackWithCode(urlToCheck: string) {
-        const urlParts = urlToCheck.split('?');
-        const params = new HttpParams({
-            fromString: urlParts[1],
-        });
-        const code = params.get('code');
-        const state = params.get('state');
-        const session_state = params.get('session_state');
+        const code = this.urlParserService.getUrlParameter(urlToCheck, 'code');
+        const state = this.urlParserService.getUrlParameter(urlToCheck, 'state');
+        const sessionState = this.urlParserService.getUrlParameter(urlToCheck, 'session_state') || null;
 
-        if (code && state) {
-            this.requestTokensWithCode(code, state, session_state);
+        if (!!code && !!state) {
+            this.requestTokensWithCode(code, state, sessionState);
         }
     }
 
     // Code Flow
-    requestTokensWithCode(code: string, state: string, session_state: string | null) {
+    requestTokensWithCode(code: string, state: string, sessionState: string | null) {
         this._isModuleSetup
             .pipe(
                 filter((isModuleSetup: boolean) => isModuleSetup),
                 take(1)
             )
             .subscribe(() => {
-                this.requestTokensWithCodeProcedure(code, state, session_state);
+                this.requestTokensWithCodeProcedure(code, state, sessionState);
             });
     }
 
