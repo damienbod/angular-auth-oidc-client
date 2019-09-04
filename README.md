@@ -363,7 +363,7 @@ import { Router, Route, CanActivate, CanLoad, ActivatedRouteSnapshot, RouterStat
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { OidcSecurityService } from './auth/services/oidc.security.service';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate, CanLoad {
