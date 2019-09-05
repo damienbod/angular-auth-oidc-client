@@ -450,9 +450,13 @@ public function so extra parameters can be added to the authorization URL reques
 
 Starts the OpenID Implicit Flow authentication and authorization.
 
-### authorizedCallback()
+### authorizedCallbackWithCode()
 
-Redirect after a STS server login. This method validates the id_token and the access_token if used.
+Redirect after a STS server login for the code flow. This method validates the id_token and the access_token if used.
+
+### authorizedImplicitFlowCallback()
+
+Redirect after a STS server login for the implicit flow. This method validates the id_token and the access_token if used.
 
 ### logoff()
 
