@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class UrlParserService {
-    getUrlParameter(urlToCheck, name): string {
+    getUrlParameter(urlToCheck: any, name: any): string {
         if (!urlToCheck) {
             return '';
         }
