@@ -1,7 +1,12 @@
 ## angular-auth-oidc-client Changelog
 
 <a name="2019-09-05"></a>
-### 2019-09-05 version 10.0.5
+### 2019-09-05 version 10.0.6
+* fixing url parse wo format
+* documentation fixes
+
+<a name="2019-09-03"></a>
+### 2019-09-03 version 10.0.5
 * use_refresh_token configuration added.
 
 <a name="2019-09-01"></a>
