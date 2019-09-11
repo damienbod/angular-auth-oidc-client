@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2019-09-11"></a>
+### 2019-09-11 version 10.0.7
+* Ability to change the amount of seconds for the IsAuthorizedRace to do a Timeout
+
 <a name="2019-09-05"></a>
 ### 2019-09-05 version 10.0.6
 * fixing url parse wo format
