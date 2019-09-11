@@ -73,6 +73,7 @@ describe('ConfigurationProviderTests', () => {
             iss_validation_off: false,
             history_cleanup_off: false,
             max_id_token_iat_offset_allowed_in_seconds: 3,
+            isauthorizedrace_timeout_in_seconds: 5,
             disable_iat_offset_validation: false,
             storage: sessionStorage,
         };
@@ -111,6 +112,7 @@ describe('ConfigurationProviderTests', () => {
             iss_validation_off: false,
             history_cleanup_off: false,
             max_id_token_iat_offset_allowed_in_seconds: 3,
+            isauthorizedrace_timeout_in_seconds: 5,
             disable_iat_offset_validation: false,
             storage: sessionStorage,
         };
@@ -151,6 +153,7 @@ describe('ConfigurationProviderTests', () => {
             iss_validation_off: false,
             history_cleanup_off: false,
             max_id_token_iat_offset_allowed_in_seconds: 3,
+            isauthorizedrace_timeout_in_seconds: 5,
             disable_iat_offset_validation: false,
             storage: sessionStorage,
         };

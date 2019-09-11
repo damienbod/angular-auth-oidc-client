@@ -98,8 +98,8 @@ export class OidcSecurityService {
                             tap(() => this.loggerService.logDebug('IsAuthorizedRace: Silent Renew Refresh Session Complete')),
                             map(() => true)
                         ),
-                        timer(5000).pipe(
-                            // backup, if nothing happens after 5 seconds stop waiting and emit
+                        timer(this.configurationProvider.openIDConfiguration.isauthorizedrace_timeout_in_seconds * 1000).pipe(
+                            // backup, if nothing happens after X seconds stop waiting and emit (5s Default)
                             tap(() => {
                                 this.resetAuthorizationData(false);
                                 this.oidcSecurityCommon.authNonce = '';

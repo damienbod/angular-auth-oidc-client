@@ -166,6 +166,10 @@ If this is active, the history is not cleaned up at an authorize callback. This 
 
 default value : 3
 
+### isauthorizedrace_timeout_in_seconds
+
+default value : 5
+
 ### disable_iat_offset_validation
 
 default value : false
