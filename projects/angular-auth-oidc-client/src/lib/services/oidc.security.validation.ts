@@ -48,6 +48,9 @@ import { LoggerService } from './oidc.logger.service';
 
 @Injectable()
 export class OidcSecurityValidation {
+
+    static RefreshTokenNoncePlaceholder = '--RefreshToken--';
+
     constructor(
         private arrayHelperService: EqualityHelperService,
         private tokenHelperService: TokenHelperService,
@@ -138,8 +141,8 @@ export class OidcSecurityValidation {
     // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
     // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
     validate_id_token_iat_max_offset(dataIdToken: any,
-        max_offset_allowed_in_seconds: number,
-        disable_iat_offset_validation: boolean): boolean {
+                                     max_offset_allowed_in_seconds: number,
+                                     disable_iat_offset_validation: boolean): boolean {
 
         if (disable_iat_offset_validation) {
             return true;
@@ -171,7 +174,8 @@ export class OidcSecurityValidation {
     // that was sent in the Authentication Request.The Client SHOULD check the nonce value for replay attacks.
     // The precise method for detecting replay attacks is Client specific.
     validate_id_token_nonce(dataIdToken: any, local_nonce: any): boolean {
-        if (dataIdToken.nonce !== local_nonce) {
+        const isFromRefreshToken = dataIdToken.nonce === undefined && local_nonce === OidcSecurityValidation.RefreshTokenNoncePlaceholder;
+        if (!isFromRefreshToken && dataIdToken.nonce !== local_nonce) {
             this.loggerService.logDebug('Validate_id_token_nonce failed, dataIdToken.nonce: ' + dataIdToken.nonce + ' local_nonce:' + local_nonce);
             return false;
         }
