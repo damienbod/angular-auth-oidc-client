@@ -7,5 +7,5 @@
             "jsrsasign": "jsrsasign"
         }
     },
-    "whitelistedNonPeerDependencies": ["jsrsasign"]
+    "whitelistedNonPeerDependencies": ["jsrsasign-reduced"]
 }
