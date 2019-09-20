@@ -1,5 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
-import { hextob64u, KEYUTIL, KJUR } from 'jsrsasign';
+import { hextob64u, KEYUTIL, KJUR } from 'jsrsasign-reduced';
 import { EqualityHelperService } from './oidc-equality-helper.service';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { LoggerService } from './oidc.logger.service';

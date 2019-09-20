@@ -1,6 +1,6 @@
 {
     "name": "angular-auth-oidc-client",
-    "version": "10.0.7",
+    "version": "10.0.8",
     "scripts": {
         "ng": "ng",
         "build": "npm run build-lib",
@@ -32,7 +32,7 @@
         "rxjs": "~6.3.3",
         "tslib": "^1.9.0",
         "zone.js": "~0.8.26",
-        "jsrsasign": "8.0.12"
+        "jsrsasign-reduced": "8.0.12"
     },
     "devDependencies": {
         "@angular-devkit/build-angular": "~0.13.0",
