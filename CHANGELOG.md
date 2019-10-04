@@ -1,5 +1,11 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2019-10-04"></a>
+### 2019-10-04 version 10.0.9
+* generic OidcSecurityService.getUserData
+* OidcSecurityService with some observables
+* Do not check idToken nonce when using refreshToken
+
 <a name="2019-09-20"></a>
 ### 2019-09-20 version 10.0.8
 * reduce size of the package

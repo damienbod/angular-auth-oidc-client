@@ -424,12 +424,12 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 })
 export class ExampleComponent implements OnInit, OnDestroy {
     userDataSubscription: Subscription;
-    userData: boolean;
+    userData: { name: string };
 
     constructor(public oidcSecurityService: OidcSecurityService) {}
 
     ngOnInit() {
-        this.userDataSubscription = this.oidcSecurityService.getUserData().subscribe((userData: any) => {
+        this.userDataSubscription = this.oidcSecurityService.getUserData<{ name: string }>().subscribe(userData => {
             this.userData = userData;
         });
     }
