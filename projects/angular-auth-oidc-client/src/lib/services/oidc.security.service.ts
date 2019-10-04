@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, from, Observable, of, Subject, throwError as observableThrowError, timer } from 'rxjs';
+import { BehaviorSubject, from, Observable, of, Subject, throwError, timer } from 'rxjs';
 import { catchError, filter, map, race, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
 import { OpenIdConfiguration } from '../models/auth.configuration';
@@ -73,7 +73,7 @@ export class OidcSecurityService {
         private zone: NgZone,
         private readonly httpClient: HttpClient,
         private readonly configurationProvider: ConfigurationProvider,
-        private readonly urlParserService: UrlParserService,
+        private readonly urlParserService: UrlParserService
     ) {
         this.onModuleSetup.pipe(take(1)).subscribe(() => {
             this.moduleSetup = true;
@@ -333,30 +333,40 @@ export class OidcSecurityService {
 
     // Code Flow
     authorizedCallbackWithCode(urlToCheck: string) {
+        this.authorizedCallbackWithCode$(urlToCheck).subscribe();
+    }
+    authorizedCallbackWithCode$(urlToCheck: string): Observable<void> {
         const code = this.urlParserService.getUrlParameter(urlToCheck, 'code');
         const state = this.urlParserService.getUrlParameter(urlToCheck, 'state');
         const sessionState = this.urlParserService.getUrlParameter(urlToCheck, 'session_state') || null;
 
-        if (!!code && !!state) {
-            this.requestTokensWithCode(code, state, sessionState);
+        if (!state) {
+            return throwError(new Error('no state in url'));
         }
+        if (!code) {
+            return throwError(new Error('no code in url'));
+        }
+        return this.requestTokensWithCode$(code, state, sessionState);
     }
 
     // Code Flow
-    requestTokensWithCode(code: string, state: string, sessionState: string | null) {
-        this._isModuleSetup
-            .pipe(
-                filter((isModuleSetup: boolean) => isModuleSetup),
-                take(1)
-            )
-            .subscribe(() => {
-                this.requestTokensWithCodeProcedure(code, state, sessionState);
-            });
+    requestTokensWithCode(code: string, state: string, sessionState: string | null): void {
+        this.requestTokensWithCode$(code, state, sessionState).subscribe();
+    }
+
+    requestTokensWithCode$(code: string, state: string, sessionState: string | null): Observable<void> {
+        return this._isModuleSetup.pipe(
+            filter(isModuleSetup => !!isModuleSetup),
+            take(1),
+            switchMap(() => {
+                return this.requestTokensWithCodeProcedure$(code, state, sessionState);
+            })
+        );
     }
 
     // Refresh Token
     refreshTokensWithCodeProcedure(code: string, state: string): Observable<any> {
-        let tokenRequestUrl  = '';
+        let tokenRequestUrl = '';
         if (this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.token_endpoint) {
             tokenRequestUrl = `${this.configurationProvider.wellKnownEndpoints.token_endpoint}`;
         }
@@ -364,31 +374,31 @@ export class OidcSecurityService {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-        const data =
-            `grant_type=refresh_token&client_id=${this.configurationProvider.openIDConfiguration.client_id}` +
-            `&refresh_token=${code}`;
+        const data = `grant_type=refresh_token&client_id=${this.configurationProvider.openIDConfiguration.client_id}` + `&refresh_token=${code}`;
 
-        return this.httpClient
-            .post(tokenRequestUrl, data, { headers })
-            .pipe(
-                map(response => {
-                    this.loggerService.logDebug('token refresh response: ' + JSON.stringify(response));
-                    let obj: any = new Object();
-                    obj = response;
-                    obj.state = state;
+        return this.httpClient.post(tokenRequestUrl, data, { headers }).pipe(
+            map(response => {
+                this.loggerService.logDebug('token refresh response: ' + JSON.stringify(response));
+                let obj: any = new Object();
+                obj = response;
+                obj.state = state;
 
-                    this.authorizedCodeFlowCallbackProcedure(obj);
-                }),
-                catchError(error => {
-                    this.loggerService.logError(error);
-                    this.loggerService.logError(`OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}`);
-                    return of(false);
-                })
-            );
+                this.authorizedCodeFlowCallbackProcedure(obj);
+            }),
+            catchError(error => {
+                this.loggerService.logError(error);
+                this.loggerService.logError(`OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}`);
+                return of(false);
+            })
+        );
+    }
+
+    requestTokensWithCodeProcedure(code: string, state: string, session_state: string | null): void {
+        this.requestTokensWithCodeProcedure$(code, state, session_state).subscribe();
     }
 
     // Code Flow with PCKE
-    requestTokensWithCodeProcedure(code: string, state: string, session_state: string | null) {
+    requestTokensWithCodeProcedure$(code: string, state: string, session_state: string | null): Observable<void> {
         let tokenRequestUrl = '';
         if (this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.token_endpoint) {
             tokenRequestUrl = `${this.configurationProvider.wellKnownEndpoints.token_endpoint}`;
@@ -397,7 +407,7 @@ export class OidcSecurityService {
         if (!this.oidcSecurityValidation.validateStateFromHashCallback(state, this.oidcSecurityCommon.authStateControl)) {
             this.loggerService.logWarning('authorizedCallback incorrect state');
             // ValidationResult.StatesDoNotMatch;
-            return;
+            return throwError(new Error('incorrect state'));
         }
 
         let headers: HttpHeaders = new HttpHeaders();
@@ -405,35 +415,30 @@ export class OidcSecurityService {
 
         let data =
             `grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}` +
-            `&code_verifier=${this.oidcSecurityCommon.code_verifier}&code=${code}&redirect_uri=${
-            this.configurationProvider.openIDConfiguration.redirect_url
-            }`;
+            `&code_verifier=${this.oidcSecurityCommon.code_verifier}&code=${code}&redirect_uri=${this.configurationProvider.openIDConfiguration.redirect_url}`;
         if (this.oidcSecurityCommon.silentRenewRunning === 'running') {
             data =
                 `grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}` +
-                `&code_verifier=${this.oidcSecurityCommon.code_verifier}&code=${code}&redirect_uri=${
-                this.configurationProvider.openIDConfiguration.silent_renew_url
-                }`;
+                `&code_verifier=${this.oidcSecurityCommon.code_verifier}&code=${code}&redirect_uri=${this.configurationProvider.openIDConfiguration.silent_renew_url}`;
         }
 
-        this.httpClient
-            .post(tokenRequestUrl, data, { headers: headers })
-            .pipe(
-                map(response => {
-                    let obj: any = new Object();
-                    obj = response;
-                    obj.state = state;
-                    obj.session_state = session_state;
+        return this.httpClient.post(tokenRequestUrl, data, { headers: headers }).pipe(
+            map(response => {
+                let obj: any = new Object();
+                obj = response;
+                obj.state = state;
+                obj.session_state = session_state;
 
-                    this.authorizedCodeFlowCallbackProcedure(obj);
-                }),
-                catchError(error => {
-                    this.loggerService.logError(error);
-                    this.loggerService.logError(`OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}`);
-                    return of(false);
-                })
-            )
-            .subscribe();
+                this.authorizedCodeFlowCallbackProcedure(obj);
+
+                return undefined;
+            }),
+            catchError(error => {
+                this.loggerService.logError(error);
+                this.loggerService.logError(`OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}`);
+                return throwError(error);
+            })
+        );
     }
 
     // Code Flow
@@ -456,7 +461,7 @@ export class OidcSecurityService {
 
         hash = hash || window.location.hash.substr(1);
 
-        const result: any = hash.split('&').reduce(function (resultData: any, item: string) {
+        const result: any = hash.split('&').reduce(function(resultData: any, item: string) {
             const parts = item.split('=');
             resultData[<string>parts.shift()] = parts.join('=');
             return resultData;
@@ -912,7 +917,7 @@ export class OidcSecurityService {
             errMsg = error.message ? error.message : error.toString();
         }
         this.loggerService.logError(errMsg);
-        return observableThrowError(errMsg);
+        return throwError(errMsg);
     }
 
     private runTokenValidation() {
@@ -929,9 +934,9 @@ export class OidcSecurityService {
         const silentRenewHeartBeatCheck = () => {
             this.loggerService.logDebug(
                 'silentRenewHeartBeatCheck\r\n' +
-                `\tsilentRenewRunning: ${this.oidcSecurityCommon.silentRenewRunning === 'running'}\r\n` +
-                `\tidToken: ${!!this.getIdToken()}\r\n` +
-                `\t_userData.value: ${!!this._userData.value}`
+                    `\tsilentRenewRunning: ${this.oidcSecurityCommon.silentRenewRunning === 'running'}\r\n` +
+                    `\tidToken: ${!!this.getIdToken()}\r\n` +
+                    `\t_userData.value: ${!!this._userData.value}`
             );
             if (this._userData.value && this.oidcSecurityCommon.silentRenewRunning !== 'running' && this.getIdToken()) {
                 if (
