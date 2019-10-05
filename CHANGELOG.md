@@ -6,6 +6,7 @@
 * OidcSecurityService with some observables
 * Do not check idToken nonce when using refreshToken
 * strictNullChecks
+* safer-silent-renew
 
 <a name="2019-09-20"></a>
 ### 2019-09-20 version 10.0.8
