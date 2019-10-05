@@ -66,7 +66,10 @@ export class ConfigurationProvider {
 
     constructor(private platformProvider: PlatformProvider) {}
 
-    setup(passedOpenIfConfiguration: OpenIdConfiguration, passedAuthWellKnownEndpoints: AuthWellKnownEndpoints) {
+    setup(
+        passedOpenIfConfiguration: OpenIdConfiguration | null | undefined,
+        passedAuthWellKnownEndpoints: AuthWellKnownEndpoints | null | undefined
+    ) {
         this.mergedOpenIdConfiguration = { ...this.mergedOpenIdConfiguration, ...passedOpenIfConfiguration };
         this.setSpecialCases(this.mergedOpenIdConfiguration);
         this.authWellKnownEndpoints = { ...passedAuthWellKnownEndpoints };

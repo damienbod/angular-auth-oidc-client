@@ -169,7 +169,7 @@ describe('SecurityCheckSessionTests', () => {
         const spy = spyOn<any>(oidcSecurityCheckSession, 'doesSessionExist').and.returnValue(false);
         const spyLogWarning = spyOn<any>(loggerService, 'logWarning');
         spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
-        configurationProvider.setup(null, { check_session_iframe: null });
+        configurationProvider.setup(null, { check_session_iframe: undefined });
         (oidcSecurityCheckSession as any).init();
 
         expect(spy).toHaveBeenCalled();
