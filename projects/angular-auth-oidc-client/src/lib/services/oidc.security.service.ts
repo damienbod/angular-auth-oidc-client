@@ -114,7 +114,7 @@ export class OidcSecurityService {
                 if (this.oidcSecurityCommon.authNonce === '' || this.oidcSecurityCommon.authNonce === undefined) {
                     // login not running, or a second silent renew, user must login first before this will work.
                     this.loggerService.logDebug('Silent Renew or login not running, try to refresh the session');
-                    this.refreshSession();
+                    this.refreshSession().subscribe();
                 }
 
                 return race$;
@@ -675,9 +675,9 @@ export class OidcSecurityService {
         }
     }
 
-    refreshSession(): Observable<any> {
+    refreshSession(): Observable<boolean> {
         if (!this.configurationProvider.openIDConfiguration.silent_renew) {
-            return from([false]);
+            return of(false);
         }
 
         this.loggerService.logDebug('BEGIN refresh session Authorize');
@@ -744,7 +744,7 @@ export class OidcSecurityService {
         }
 
         this.oidcSecurityCommon.silentRenewRunning = 'running';
-        return this.oidcSecuritySilentRenew.startRenew(url);
+        return this.oidcSecuritySilentRenew.startRenew(url).pipe(map(() => true));
     }
 
     handleError(error: any) {
