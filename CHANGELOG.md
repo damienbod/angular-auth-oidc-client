@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2019-10-07"></a>
+### 2019-10-07 version 10.0.10
+* bug fix logging, code flow callback
+
 <a name="2019-10-05"></a>
 ### 2019-10-05 version 10.0.9
 * generic OidcSecurityService.getUserData
