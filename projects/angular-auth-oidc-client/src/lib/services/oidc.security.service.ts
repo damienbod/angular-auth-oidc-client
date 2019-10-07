@@ -341,11 +341,14 @@ export class OidcSecurityService {
         const sessionState = this.urlParserService.getUrlParameter(urlToCheck, 'session_state') || null;
 
         if (!state) {
-            return throwError(new Error('no state in url'));
+            this.loggerService.logDebug('no state in url');
+            return of();
         }
         if (!code) {
-            return throwError(new Error('no code in url'));
+            this.loggerService.logDebug('no code in url');
+            return of();
         }
+        this.loggerService.logDebug('running validation for callback' + urlToCheck);
         return this.requestTokensWithCode$(code, state, sessionState);
     }
 
