@@ -333,7 +333,7 @@ export class OidcSecurityService {
 
     // Code Flow
     authorizedCallbackWithCode(urlToCheck: string) {
-        this.authorizedCallbackWithCode$(urlToCheck).subscribe();
+        this.authorizedCallbackWithCode$(urlToCheck).subscribe(() => {}, () => {});
     }
     authorizedCallbackWithCode$(urlToCheck: string): Observable<void> {
         const code = this.urlParserService.getUrlParameter(urlToCheck, 'code');
@@ -342,11 +342,11 @@ export class OidcSecurityService {
 
         if (!state) {
             this.loggerService.logDebug('no state in url');
-            return of();
+            return throwError(new Error('no state in url'));
         }
         if (!code) {
             this.loggerService.logDebug('no code in url');
-            return of();
+            return throwError(new Error('no code in url'));
         }
         this.loggerService.logDebug('running validation for callback' + urlToCheck);
         return this.requestTokensWithCode$(code, state, sessionState);
@@ -354,7 +354,7 @@ export class OidcSecurityService {
 
     // Code Flow
     requestTokensWithCode(code: string, state: string, sessionState: string | null): void {
-        this.requestTokensWithCode$(code, state, sessionState).subscribe();
+        this.requestTokensWithCode$(code, state, sessionState).subscribe(() => {}, () => {});
     }
 
     requestTokensWithCode$(code: string, state: string, sessionState: string | null): Observable<void> {
@@ -397,7 +397,7 @@ export class OidcSecurityService {
     }
 
     requestTokensWithCodeProcedure(code: string, state: string, session_state: string | null): void {
-        this.requestTokensWithCodeProcedure$(code, state, session_state).subscribe();
+        this.requestTokensWithCodeProcedure$(code, state, session_state).subscribe(() => {}, () => {});
     }
 
     // Code Flow with PCKE
