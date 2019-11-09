@@ -492,7 +492,8 @@ Subscribe to the event:
         tap((authorizationResult: AuthorizationResult) => {
             console.log('Auth result received AuthorizationState:'
                 + authorizationResult.authorizationState
-                + ' validationResult:' + authorizationResult.validationResult);
+                + ' validationResult:' + authorizationResult.validationResult
+                + ' isRenewProcess:' + authorizationResult.isRenewProcess);
         }),
         map((authorizationResult: AuthorizationResult) => authorizationResult.authorizationState),
         filter((authorizationState: AuthorizationState) => authorizationState === AuthorizationState.unauthorized)
