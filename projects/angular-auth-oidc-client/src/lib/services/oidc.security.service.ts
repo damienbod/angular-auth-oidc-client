@@ -413,17 +413,12 @@ export class OidcSecurityService {
             return throwError(new Error('incorrect state'));
         }
 
-        let headers: HttpHeaders = new HttpHeaders();
-        headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
+        const headers: HttpHeaders = new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded');
 
-        let data =
+        const data =
             `grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}` +
             `&code_verifier=${this.oidcSecurityCommon.code_verifier}&code=${code}&redirect_uri=${this.configurationProvider.openIDConfiguration.redirect_url}`;
-        if (this.oidcSecurityCommon.silentRenewRunning === 'running') {
-            data =
-                `grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}` +
-                `&code_verifier=${this.oidcSecurityCommon.code_verifier}&code=${code}&redirect_uri=${this.configurationProvider.openIDConfiguration.silent_renew_url}`;
-        }
 
         return this.httpClient.post(tokenRequestUrl, data, { headers: headers }).pipe(
             map(response => {
