@@ -317,7 +317,7 @@ Handle the authorize callback using the event:
 ```typescript
  private onModuleSetup() {
         if (window.location.hash) {
-            this.oidcSecurityService.authorizedCallback();
+            this.oidcSecurityService.authorizedImplicitFlowCallback();
         }
     }
 ```
