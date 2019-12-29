@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2019-12-29"></a>
+### 2019-12-29 version 10.0.11
+* Added renew process denotation to AuthorizationResu
+
 <a name="2019-10-07"></a>
 ### 2019-10-07 version 10.0.10
 * bug fix logging, code flow callback
