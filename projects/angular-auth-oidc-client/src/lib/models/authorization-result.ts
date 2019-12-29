@@ -4,6 +4,7 @@ import { ValidationResult } from './validation-result.enum';
 export class AuthorizationResult {
     constructor(
         public authorizationState: AuthorizationState,
-        public validationResult: ValidationResult
+        public validationResult: ValidationResult,
+        public isRenewProcess: boolean = false
     ) {}
 }
