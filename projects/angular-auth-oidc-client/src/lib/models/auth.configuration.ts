@@ -25,6 +25,7 @@ export interface OpenIdConfiguration {
   isauthorizedrace_timeout_in_seconds?: number;
   disable_iat_offset_validation?: boolean;
   storage?: any;
+  custom_discovery_url?: string;
 }
 
 export interface OpenIdInternalConfiguration {
