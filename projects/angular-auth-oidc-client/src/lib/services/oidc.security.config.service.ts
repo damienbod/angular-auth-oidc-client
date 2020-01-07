@@ -19,7 +19,7 @@ export class OidcConfigService {
 
     constructor(private readonly loggerService: LoggerService, private readonly httpClient: HttpClient) { }
 
-    load(configUrl: string) {
+    load(configUrl: string): Promise<boolean> {
         return this.httpClient
             .get(configUrl)
             .pipe(
@@ -35,11 +35,11 @@ export class OidcConfigService {
             .toPromise();
     }
 
-    load_using_stsServer(stsServer: string) {
+    load_using_stsServer(stsServer: string): Promise<boolean> {
         return this.loadUsingConfiguration({ stsServer }).toPromise();
     }
 
-    load_using_custom_stsServer(url: string) {
+    load_using_custom_stsServer(url: string): Promise<boolean> {
         return this.httpClient
             .get(url)
             .pipe(
@@ -59,7 +59,7 @@ export class OidcConfigService {
             .toPromise();
     }
 
-    private loadUsingConfiguration(clientConfig: any) {
+    private loadUsingConfiguration(clientConfig: any): Observable<boolean> {
         if (!clientConfig.stsServer) {
             this.loggerService.logError(`Property 'stsServer' is not present of passed config ${JSON.stringify(clientConfig)}`, clientConfig);
             throw new Error(`Property 'stsServer' is not present of passed config ${JSON.stringify(clientConfig)}`);
