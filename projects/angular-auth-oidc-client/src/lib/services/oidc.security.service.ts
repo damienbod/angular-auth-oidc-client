@@ -507,9 +507,13 @@ export class OidcSecurityService {
             }
 
             if ((result.error as string) === 'login_required') {
-                this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.LoginRequired, isRenewProcess));
+                this._onAuthorizationResult.next(
+                    new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.LoginRequired, isRenewProcess)
+                );
             } else {
-                this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.SecureTokenServerError, isRenewProcess));
+                this._onAuthorizationResult.next(
+                    new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.SecureTokenServerError, isRenewProcess)
+                );
             }
 
             this.resetAuthorizationData(false);
@@ -564,7 +568,9 @@ export class OidcSecurityService {
 
                             this.runTokenValidation();
 
-                            this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.authorized, validationResult.state, isRenewProcess));
+                            this._onAuthorizationResult.next(
+                                new AuthorizationResult(AuthorizationState.authorized, validationResult.state, isRenewProcess)
+                            );
                             if (!this.configurationProvider.openIDConfiguration.trigger_authorization_result_event && !isRenewProcess) {
                                 this.router.navigate([this.configurationProvider.openIDConfiguration.post_login_route]);
                             }
@@ -576,7 +582,9 @@ export class OidcSecurityService {
                         this.resetAuthorizationData(false);
                         this.oidcSecurityCommon.silentRenewRunning = '';
 
-                        this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, validationResult.state, isRenewProcess));
+                        this._onAuthorizationResult.next(
+                            new AuthorizationResult(AuthorizationState.unauthorized, validationResult.state, isRenewProcess)
+                        );
                         if (!this.configurationProvider.openIDConfiguration.trigger_authorization_result_event && !isRenewProcess) {
                             this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorized_route]);
                         }
@@ -704,7 +712,7 @@ export class OidcSecurityService {
                 const refresh_token = this.oidcSecurityCommon.getRefreshToken();
                 if (refresh_token) {
                     this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
-                    // Nonce is not used with refresh tokens
+                    // Nonce is not used with refresh tokens; but Keycloak may send it anyway
                     this.oidcSecurityCommon.authNonce = OidcSecurityValidation.RefreshTokenNoncePlaceholder;
                     return this.refreshTokensWithCodeProcedure(refresh_token, state);
                 } else {
