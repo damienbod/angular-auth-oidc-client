@@ -88,8 +88,12 @@ describe('OidcSecurityService', () => {
             'http://example'
         );
 
-        let expectValue =
-            'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flocalhost%3A44386&response_type=id_token%20token&scope=openid%20email%20profile&nonce=nonce&state=state';
+        const expectValue = `http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com
+          &redirect_uri=https%3A%2F%2Flocalhost%3A44386
+          &response_type=id_token%20token
+          &scope=openid%20email%20profile
+          &nonce=nonce
+          &state=state`;
 
         expect(value).toEqual(expectValue);
     });
@@ -125,8 +129,13 @@ describe('OidcSecurityService', () => {
             'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=b2c_1_sign_in'
         );
 
-        let expectValue =
-            'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=b2c_1_sign_in&client_id=myid&redirect_uri=https%3A%2F%2Flocalhost%3A44386&response_type=id_token%20token&scope=openid%20email%20profile&nonce=nonce&state=state';
+        const expectValue = `https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=b2c_1_sign_in
+          &client_id=myid
+          &redirect_uri=https%3A%2F%2Flocalhost%3A44386
+          &response_type=id_token%20token
+          &scope=openid%20email%20profile
+          &nonce=nonce
+          &state=state`;
 
         expect(value).toEqual(expectValue);
     });
@@ -151,13 +160,14 @@ describe('OidcSecurityService', () => {
 
         configurationProvider.setup(config, null);
 
-        let value = (oidcSecurityService as any).createEndSessionUrl(
+        const value = (oidcSecurityService as any).createEndSessionUrl(
             'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in',
             'UzI1NiIsImtpZCI6Il'
         );
 
-        let expectValue =
-            'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in&id_token_hint=UzI1NiIsImtpZCI6Il&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
+        const expectValue = `https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in
+          &id_token_hint=UzI1NiIsImtpZCI6Il
+          &post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized`;
 
         expect(value).toEqual(expectValue);
     });
@@ -194,8 +204,14 @@ describe('OidcSecurityService', () => {
             'state',
             'http://example'
         );
-        let expectValue =
-            'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flocalhost%3A44386&response_type=id_token%20token&scope=openid%20email%20profile&nonce=nonce&state=state&testcustom=customvalue';
+
+        const expectValue = `http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com
+        &redirect_uri=https%3A%2F%2Flocalhost%3A44386
+          &response_type=id_token%20token
+          &scope=openid%20email%20profile
+          &nonce=nonce
+          &state=state
+          &testcustom=customvalue`;
 
         expect(value).toEqual(expectValue);
     });
@@ -235,8 +251,13 @@ describe('OidcSecurityService', () => {
             'state',
             'http://example'
         );
-        let expectValue =
-            'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flocalhost%3A44386&response_type=id_token%20token&scope=openid%20email%20profile&nonce=nonce&state=state&t4=ABC%20abc%20123&t3=%23&t2=-_.!~*()&t1=%3B%2C%2F%3F%3A%40%26%3D%2B%24';
+
+        const expectValue = `http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com
+          &redirect_uri=https%3A%2F%2Flocalhost%3A44386
+          &response_type=id_token%20token
+          &scope=openid%20email%20profile
+          &nonce=nonce
+          &state=state&t4=ABC%20abc%20123&t3=%23&t2=-_.!~*()&t1=%3B%2C%2F%3F%3A%40%26%3D%2B%24`;
 
         expect(value).toEqual(expectValue);
     });
@@ -263,7 +284,7 @@ describe('OidcSecurityService', () => {
 
         const value = (oidcSecurityService as any).createEndSessionUrl('http://example', 'mytoken');
 
-        let expectValue = 'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
+        const expectValue = 'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
 
         expect(value).toEqual(expectValue);
     });
@@ -296,8 +317,8 @@ describe('OidcSecurityService', () => {
 
         // with '=' chars in values
         hash = 'access_token=ACCESS-TOKEN==&token_type=bearer&state=test=State';
-        expectedResult['access_token'] = 'ACCESS-TOKEN==';
-        expectedResult['state'] = 'test=State';
+        expectedResult.access_token = 'ACCESS-TOKEN==';
+        expectedResult.state = 'test=State';
 
         (oidcSecurityService as OidcSecurityService).authorizedImplicitFlowCallback(hash);
         expect(resultSetter).toHaveBeenCalledWith(expectedResult);
@@ -368,11 +389,11 @@ describe('OidcSecurityService', () => {
     });
 
     it('authorizedCallbackWithCode handles url correctly when hash at the end', () => {
-      const urlToCheck = 'https://www.example.com/signin?code=thisisacode&state=0000.1234.000#';
+        const urlToCheck = 'https://www.example.com/signin?code=thisisacode&state=0000.1234.000#';
 
-      const spy = spyOn(oidcSecurityService, 'requestTokensWithCode$').and.callThrough();
-      oidcSecurityService.authorizedCallbackWithCode(urlToCheck);
+        const spy = spyOn(oidcSecurityService, 'requestTokensWithCode$').and.callThrough();
+        oidcSecurityService.authorizedCallbackWithCode(urlToCheck);
 
-      expect(spy).toHaveBeenCalledWith('thisisacode', '0000.1234.000', null);
-  });
+        expect(spy).toHaveBeenCalledWith('thisisacode', '0000.1234.000', null);
+    });
 });

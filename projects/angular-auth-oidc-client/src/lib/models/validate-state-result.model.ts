@@ -1,5 +1,6 @@
 import { ValidationResult } from './validation-result.enum';
 
+// tslint:disable: variable-name
 export class ValidateStateResult {
     constructor(
         public access_token = '',
