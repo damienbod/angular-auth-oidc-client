@@ -16,7 +16,9 @@
         "compodoc": "compodoc -p tsconfig.json",
         "compodoc:serve": "compodoc -s",
         "start": "ng serve --ssl true --project sample-code-flow -o",
-        "copy-readme-to-lib-folder": "copyfiles README.md ./projects/angular-auth-oidc-client"
+        "copy-readme-to-lib-folder": "copyfiles README.md ./projects/angular-auth-oidc-client",
+        "lint-prettier": "prettier --check \"projects/angular-auth-oidc-client/**/*.ts\"",
+        "fix-prettier": "prettier --write  \"projects/angular-auth-oidc-client/**/*.ts\""
     },
     "private": true,
     "dependencies": {
@@ -29,10 +31,10 @@
         "@angular/platform-browser-dynamic": "~7.2.0",
         "@angular/router": "~7.2.0",
         "core-js": "^2.5.4",
+        "jsrsasign-reduced": "8.0.12",
         "rxjs": "~6.3.3",
         "tslib": "^1.9.0",
-        "zone.js": "~0.8.26",
-        "jsrsasign-reduced": "8.0.12"
+        "zone.js": "~0.8.26"
     },
     "devDependencies": {
         "@angular-devkit/build-angular": "~0.13.0",
@@ -54,6 +56,7 @@
         "karma-jasmine": "~1.1.2",
         "karma-jasmine-html-reporter": "^0.2.2",
         "ng-packagr": "^4.2.0",
+        "prettier": "^1.19.1",
         "protractor": "~5.4.0",
         "ts-node": "~7.0.0",
         "tsickle": ">=0.34.0",

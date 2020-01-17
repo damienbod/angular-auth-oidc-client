@@ -42,8 +42,7 @@ export class OidcSecurityUserService {
             throw Error('authWellKnownEndpoints is undefined');
         }
 
-        const canGetUserData =
-            this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.userinfo_endpoint;
+        const canGetUserData = this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.userinfo_endpoint;
 
         if (!canGetUserData) {
             this.loggerService.logError(
