@@ -5,119 +5,119 @@ export type SilentRenewState = 'running' | '';
 
 @Injectable()
 export class OidcSecurityCommon {
-    private storage_auth_result = 'authorizationResult';
+    private storageAuthResult = 'authorizationResult';
 
     public get authResult(): any {
-        return this.retrieve(this.storage_auth_result);
+        return this.retrieve(this.storageAuthResult);
     }
 
     public set authResult(value: any) {
-        this.store(this.storage_auth_result, value);
+        this.store(this.storageAuthResult, value);
     }
 
-    private storage_access_token = 'authorizationData';
+    private storageAccessToken = 'authorizationData';
 
     public get accessToken(): string {
-        return this.retrieve(this.storage_access_token) || '';
+        return this.retrieve(this.storageAccessToken) || '';
     }
 
     public set accessToken(value: string) {
-        this.store(this.storage_access_token, value);
+        this.store(this.storageAccessToken, value);
     }
 
-    private storage_id_token = 'authorizationDataIdToken';
+    private storageIdToken = 'authorizationDataIdToken';
 
     public get idToken(): string {
-        return this.retrieve(this.storage_id_token) || '';
+        return this.retrieve(this.storageIdToken) || '';
     }
 
     public set idToken(value: string) {
-        this.store(this.storage_id_token, value);
+        this.store(this.storageIdToken, value);
     }
 
-    private storage_is_authorized = '_isAuthorized';
+    private storageIsAuthorized = '_isAuthorized';
 
     public get isAuthorized(): boolean | undefined {
-        return this.retrieve(this.storage_is_authorized);
+        return this.retrieve(this.storageIsAuthorized);
     }
 
     public set isAuthorized(value: boolean | undefined) {
-        this.store(this.storage_is_authorized, value);
+        this.store(this.storageIsAuthorized, value);
     }
 
-    private storage_user_data = 'userData';
+    private storageUserData = 'userData';
 
     public get userData(): any {
-        return this.retrieve(this.storage_user_data);
+        return this.retrieve(this.storageUserData);
     }
 
     public set userData(value: any) {
-        this.store(this.storage_user_data, value);
+        this.store(this.storageUserData, value);
     }
 
-    private storage_auth_nonce = 'authNonce';
+    private storageAuthNonce = 'authNonce';
 
     public get authNonce(): string {
-        return this.retrieve(this.storage_auth_nonce) || '';
+        return this.retrieve(this.storageAuthNonce) || '';
     }
 
     public set authNonce(value: string) {
-        this.store(this.storage_auth_nonce, value);
+        this.store(this.storageAuthNonce, value);
     }
 
-    private storage_code_verifier = 'code_verifier';
+    private storageCodeVerifier = 'code_verifier';
 
     public get code_verifier(): string {
-        return this.retrieve(this.storage_code_verifier) || '';
+        return this.retrieve(this.storageCodeVerifier) || '';
     }
 
     public set code_verifier(value: string) {
-        this.store(this.storage_code_verifier, value);
+        this.store(this.storageCodeVerifier, value);
     }
 
-    private storage_auth_state_control = 'authStateControl';
+    private storageAuthStateControl = 'authStateControl';
 
     public get authStateControl(): string {
-        return this.retrieve(this.storage_auth_state_control) || '';
+        return this.retrieve(this.storageAuthStateControl) || '';
     }
 
     public set authStateControl(value: string) {
-        this.store(this.storage_auth_state_control, value);
+        this.store(this.storageAuthStateControl, value);
     }
 
-    private storage_session_state = 'session_state';
+    private storageSessionState = 'session_state';
 
     public get sessionState(): any {
-        return this.retrieve(this.storage_session_state);
+        return this.retrieve(this.storageSessionState);
     }
 
     public set sessionState(value: any) {
-        this.store(this.storage_session_state, value);
+        this.store(this.storageSessionState, value);
     }
 
-    private storage_silent_renew_running = 'storage_silent_renew_running';
+    private storageSilentRenewRunning = 'storage_silent_renew_running';
 
     public get silentRenewRunning(): SilentRenewState {
-        return this.retrieve(this.storage_silent_renew_running) || '';
+        return this.retrieve(this.storageSilentRenewRunning) || '';
     }
 
     public set silentRenewRunning(value: SilentRenewState) {
-        this.store(this.storage_silent_renew_running, value);
+        this.store(this.storageSilentRenewRunning, value);
     }
 
-    private storage_custom_request_params = 'storage_custom_request_params';
+    private storageCustomRequestParams = 'storage_custom_request_params';
 
     public get customRequestParams(): {
         [key: string]: string | number | boolean;
     } {
-        return this.retrieve(this.storage_custom_request_params);
+        return this.retrieve(this.storageCustomRequestParams);
     }
 
     public set customRequestParams(value: { [key: string]: string | number | boolean }) {
-        this.store(this.storage_custom_request_params, value);
+        this.store(this.storageCustomRequestParams, value);
     }
 
-    constructor(private oidcSecurityStorage: OidcSecurityStorage) { }
+    constructor(private oidcSecurityStorage: OidcSecurityStorage) {}
 
     private retrieve(key: string): any {
         return this.oidcSecurityStorage.read(key);
@@ -129,23 +129,23 @@ export class OidcSecurityCommon {
 
     resetStorageData(isRenewProcess: boolean) {
         if (!isRenewProcess) {
-            this.store(this.storage_auth_result, '');
-            this.store(this.storage_session_state, '');
-            this.store(this.storage_silent_renew_running, '');
-            this.store(this.storage_is_authorized, false);
-            this.store(this.storage_access_token, '');
-            this.store(this.storage_id_token, '');
-            this.store(this.storage_user_data, '');
-            this.store(this.storage_code_verifier, '');
+            this.store(this.storageAuthResult, '');
+            this.store(this.storageSessionState, '');
+            this.store(this.storageSilentRenewRunning, '');
+            this.store(this.storageIsAuthorized, false);
+            this.store(this.storageAccessToken, '');
+            this.store(this.storageIdToken, '');
+            this.store(this.storageUserData, '');
+            this.store(this.storageCodeVerifier, '');
         }
     }
 
     getAccessToken(): any {
-        return this.retrieve(this.storage_access_token);
+        return this.retrieve(this.storageAccessToken);
     }
 
     getIdToken(): any {
-        return this.retrieve(this.storage_id_token);
+        return this.retrieve(this.storageIdToken);
     }
 
     getRefreshToken(): any {

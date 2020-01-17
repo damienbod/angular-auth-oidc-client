@@ -8,14 +8,12 @@ import { ConfigurationProvider } from './auth-configuration.provider';
 export abstract class OidcSecurityStorage {
     /**
      * This method must contain the logic to read the storage.
-     * @param key
      * @return The value of the given key
      */
     public abstract read(key: string): any;
 
     /**
      * This method must contain the logic to write the storage.
-     * @param key
      * @param value The value for the given key
      */
     public abstract write(key: string, value: any): void;
