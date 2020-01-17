@@ -16,7 +16,7 @@ export class StateValidationService {
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,
         private readonly configurationProvider: ConfigurationProvider
-    ) { }
+    ) {}
 
     validateState(result: any, jwtKeys: JwtKeys): ValidateStateResult {
         const toReturn = new ValidateStateResult();
@@ -80,7 +80,8 @@ export class StateValidationService {
                     !this.configurationProvider.openIDConfiguration.iss_validation_off &&
                     !this.oidcSecurityValidation.validate_id_token_iss(
                         toReturn.decoded_id_token,
-                        this.configurationProvider.wellKnownEndpoints.issuer)
+                        this.configurationProvider.wellKnownEndpoints.issuer
+                    )
                 ) {
                     this.loggerService.logWarning('authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer');
                     toReturn.state = ValidationResult.IssDoesNotMatchIssuer;
@@ -94,9 +95,12 @@ export class StateValidationService {
                 return toReturn;
             }
 
-            if (!this.oidcSecurityValidation.validate_id_token_aud(
-                toReturn.decoded_id_token,
-                this.configurationProvider.openIDConfiguration.client_id)) {
+            if (
+                !this.oidcSecurityValidation.validate_id_token_aud(
+                    toReturn.decoded_id_token,
+                    this.configurationProvider.openIDConfiguration.client_id
+                )
+            ) {
                 this.loggerService.logWarning('authorizedCallback incorrect aud');
                 toReturn.state = ValidationResult.IncorrectAud;
                 this.handleUnsuccessfulValidation();

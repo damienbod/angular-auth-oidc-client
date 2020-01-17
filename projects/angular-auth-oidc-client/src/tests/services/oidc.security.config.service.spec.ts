@@ -16,8 +16,8 @@ describe('OidcConfigService', () => {
             providers: [
                 OidcConfigService,
                 {
-                  provide: LoggerService,
-                  useClass: TestLogging,
+                    provide: LoggerService,
+                    useClass: TestLogging,
                 },
             ],
         });

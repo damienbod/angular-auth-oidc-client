@@ -17,7 +17,7 @@ export class OidcConfigService {
         return this.configurationLoadedInternal.asObservable();
     }
 
-    constructor(private readonly loggerService: LoggerService, private readonly httpClient: HttpClient) { }
+    constructor(private readonly loggerService: LoggerService, private readonly httpClient: HttpClient) {}
 
     load(configUrl: string): Promise<boolean> {
         return this.httpClient

@@ -12,5 +12,5 @@ export enum ValidationResult {
     IncorrectAtHash = 'IncorrectAtHash',
     Ok = 'Ok',
     LoginRequired = 'LoginRequired',
-    SecureTokenServerError = 'SecureTokenServerError'
+    SecureTokenServerError = 'SecureTokenServerError',
 }
