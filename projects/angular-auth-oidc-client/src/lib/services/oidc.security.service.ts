@@ -507,9 +507,13 @@ export class OidcSecurityService {
             }
 
             if ((result.error as string) === 'login_required') {
-                this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.LoginRequired, isRenewProcess));
+                this._onAuthorizationResult.next(
+                    new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.LoginRequired, isRenewProcess)
+                );
             } else {
-                this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.SecureTokenServerError, isRenewProcess));
+                this._onAuthorizationResult.next(
+                    new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.SecureTokenServerError, isRenewProcess)
+                );
             }
 
             this.resetAuthorizationData(false);
@@ -564,7 +568,9 @@ export class OidcSecurityService {
 
                             this.runTokenValidation();
 
-                            this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.authorized, validationResult.state, isRenewProcess));
+                            this._onAuthorizationResult.next(
+                                new AuthorizationResult(AuthorizationState.authorized, validationResult.state, isRenewProcess)
+                            );
                             if (!this.configurationProvider.openIDConfiguration.trigger_authorization_result_event && !isRenewProcess) {
                                 this.router.navigate([this.configurationProvider.openIDConfiguration.post_login_route]);
                             }
@@ -576,7 +582,9 @@ export class OidcSecurityService {
                         this.resetAuthorizationData(false);
                         this.oidcSecurityCommon.silentRenewRunning = '';
 
-                        this._onAuthorizationResult.next(new AuthorizationResult(AuthorizationState.unauthorized, validationResult.state, isRenewProcess));
+                        this._onAuthorizationResult.next(
+                            new AuthorizationResult(AuthorizationState.unauthorized, validationResult.state, isRenewProcess)
+                        );
                         if (!this.configurationProvider.openIDConfiguration.trigger_authorization_result_event && !isRenewProcess) {
                             this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorized_route]);
                         }
@@ -684,6 +692,7 @@ export class OidcSecurityService {
         }
 
         this.loggerService.logDebug('BEGIN refresh session Authorize');
+        this.oidcSecurityCommon.silentRenewRunning = 'running';
 
         let state = this.oidcSecurityCommon.authStateControl;
         if (state === '' || state === null) {
@@ -746,7 +755,6 @@ export class OidcSecurityService {
             }
         }
 
-        this.oidcSecurityCommon.silentRenewRunning = 'running';
         return this.oidcSecuritySilentRenew.startRenew(url).pipe(map(() => true));
     }
 

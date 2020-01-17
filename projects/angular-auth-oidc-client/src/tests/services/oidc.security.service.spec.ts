@@ -13,10 +13,12 @@ import { OidcSecurityService } from '../../lib/services/oidc.security.service';
 import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';
 import { TestLogging } from '../common/test-logging.service';
 import { TestStorage } from '../common/test-storage.service';
+import { OidcSecurityCommon } from '../../lib/services/oidc.security.common';
 
 describe('OidcSecurityService', () => {
     let oidcSecurityService: OidcSecurityService;
     let configurationProvider: ConfigurationProvider;
+    let oidcSecurityCommon: OidcSecurityCommon;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -37,6 +39,7 @@ describe('OidcSecurityService', () => {
     beforeEach(() => {
         oidcSecurityService = TestBed.get(OidcSecurityService);
         configurationProvider = TestBed.get(ConfigurationProvider);
+        oidcSecurityCommon = TestBed.get(OidcSecurityCommon);
     });
 
     it('should create', () => {
@@ -368,11 +371,26 @@ describe('OidcSecurityService', () => {
     });
 
     it('authorizedCallbackWithCode handles url correctly when hash at the end', () => {
-      const urlToCheck = 'https://www.example.com/signin?code=thisisacode&state=0000.1234.000#';
+        const urlToCheck = 'https://www.example.com/signin?code=thisisacode&state=0000.1234.000#';
 
-      const spy = spyOn(oidcSecurityService, 'requestTokensWithCode$').and.callThrough();
-      oidcSecurityService.authorizedCallbackWithCode(urlToCheck);
+        const spy = spyOn(oidcSecurityService, 'requestTokensWithCode$').and.callThrough();
+        oidcSecurityService.authorizedCallbackWithCode(urlToCheck);
 
-      expect(spy).toHaveBeenCalledWith('thisisacode', '0000.1234.000', null);
-  });
+        expect(spy).toHaveBeenCalledWith('thisisacode', '0000.1234.000', null);
+    });
+    it('refresh session with refresh token should call authorized callback with isRenew running to true', done => {
+        const config: OpenIdConfiguration = {};
+        config.response_type = 'code';
+        config.silent_renew = true;
+        config.use_refresh_token = true;
+        config.silent_renew_offset_in_seconds = 0;
+        configurationProvider.setup(config, null);
+
+        spyOn(oidcSecurityService as any, 'refreshTokensWithCodeProcedure').and.returnValue(of(true));
+        spyOn(oidcSecurityCommon as any, 'getRefreshToken').and.returnValue('refresh token');
+        oidcSecurityService.refreshSession().subscribe(() => {
+            expect(oidcSecurityCommon.silentRenewRunning).toBe('running');
+            done();
+        });
+    });
 });
