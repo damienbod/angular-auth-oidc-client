@@ -4,7 +4,7 @@ import { LoggerService } from './oidc.logger.service';
 @Injectable()
 export class TokenHelperService {
     private PARTS_OF_TOKEN = 3;
-    constructor(private readonly loggerService: LoggerService) { }
+    constructor(private readonly loggerService: LoggerService) {}
 
     getTokenExpirationDate(dataIdToken: any): Date {
         if (!dataIdToken.hasOwnProperty('exp')) {
@@ -48,6 +48,8 @@ export class TokenHelperService {
             return partOfToken;
         }
 
+        console.log('@@@@@@', partOfToken);
+
         const result = this.urlBase64Decode(partOfToken);
         return JSON.parse(result);
     }
@@ -71,9 +73,12 @@ export class TokenHelperService {
 
         try {
             // Going backwards: from bytestream, to percent-encoding, to original string.
-            return decodeURIComponent(decoded.split('')
-                .map((c: string) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                .join(''));
+            return decodeURIComponent(
+                decoded
+                    .split('')
+                    .map((c: string) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                    .join('')
+            );
         } catch (err) {
             return decoded;
         }
