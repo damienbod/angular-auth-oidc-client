@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { OpenIdConfiguration, OpenIdInternalConfiguration } from '../../lib/models/auth.configuration';
+import { OpenIdInternalConfiguration } from '../../lib/models/auth.configuration';
 import { ConfigurationProvider } from '../../lib/services/auth-configuration.provider';
 import { PlatformProvider } from '../../lib/services/platform.provider';
 

@@ -31,7 +31,7 @@ describe('AuthConfiguration', () => {
         const config: OpenIdConfiguration = {
             silent_renew: true,
             start_checksession: true,
-			use_refresh_token: false
+            use_refresh_token: false,
         };
 
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(true);
@@ -46,7 +46,7 @@ describe('AuthConfiguration', () => {
         const config: OpenIdConfiguration = {
             silent_renew: true,
             start_checksession: true,
-			use_refresh_token: false
+            use_refresh_token: false,
         };
 
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
