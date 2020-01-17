@@ -171,8 +171,13 @@ export class OidcSecurityValidation {
     // id_token C9: The value of the nonce Claim MUST be checked to verify that it is the same value as the one
     // that was sent in the Authentication Request.The Client SHOULD check the nonce value for replay attacks.
     // The precise method for detecting replay attacks is Client specific.
-    validate_id_token_nonce(dataIdToken: any, localNonce: any): boolean {
-        const isFromRefreshToken = dataIdToken.nonce === undefined && localNonce === OidcSecurityValidation.RefreshTokenNoncePlaceholder;
+
+    // However the nonce claim SHOULD not be present for the refesh_token grant type
+    // https://bitbucket.org/openid/connect/issues/1025/ambiguity-with-how-nonce-is-handled-on
+    // The current spec is ambiguous and Keycloak does send it.
+    validate_id_token_nonce(dataIdToken: any, localNonce: any, ignoreNonceAfterRefresh: boolean): boolean {
+        const isFromRefreshToken =
+            (dataIdToken.nonce === undefined || ignoreNonceAfterRefresh) && localNonce === OidcSecurityValidation.RefreshTokenNoncePlaceholder;
         if (!isFromRefreshToken && dataIdToken.nonce !== localNonce) {
             this.loggerService.logDebug('Validate_id_token_nonce failed, dataIdToken.nonce: ' + dataIdToken.nonce + ' local_nonce:' + localNonce);
             return false;

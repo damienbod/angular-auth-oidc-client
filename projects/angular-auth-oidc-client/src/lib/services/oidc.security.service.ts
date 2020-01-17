@@ -717,7 +717,7 @@ export class OidcSecurityService {
                 const refresh_token = this.oidcSecurityCommon.getRefreshToken();
                 if (refresh_token) {
                     this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
-                    // Nonce is not used with refresh tokens
+                    // Nonce is not used with refresh tokens; but Keycloak may send it anyway
                     this.oidcSecurityCommon.authNonce = OidcSecurityValidation.RefreshTokenNoncePlaceholder;
                     return this.refreshTokensWithCodeProcedure(refresh_token, state);
                 } else {
