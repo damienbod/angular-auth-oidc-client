@@ -11,7 +11,7 @@ export class OidcDataService {
         headers = headers.set('Accept', 'application/json');
 
         return this.httpClient.get<T>(url, {
-            headers: headers,
+            headers,
         });
     }
 
@@ -21,7 +21,7 @@ export class OidcDataService {
         headers = headers.set('Authorization', 'Bearer ' + decodeURIComponent(token));
 
         return this.httpClient.get<T>(url, {
-            headers: headers,
+            headers,
         });
     }
 
@@ -30,7 +30,7 @@ export class OidcDataService {
         headers = headers.set('Accept', 'application/json');
 
         return this.httpClient.get<T>(url, {
-            headers: headers,
+            headers,
         });
     }
 }
