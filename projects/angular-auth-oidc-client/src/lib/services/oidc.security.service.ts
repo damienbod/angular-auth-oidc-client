@@ -697,6 +697,7 @@ export class OidcSecurityService {
         }
 
         this.loggerService.logDebug('BEGIN refresh session Authorize');
+        this.oidcSecurityCommon.silentRenewRunning = 'running';
 
         let state = this.oidcSecurityCommon.authStateControl;
         if (state === '' || state === null) {
@@ -759,7 +760,6 @@ export class OidcSecurityService {
             }
         }
 
-        this.oidcSecurityCommon.silentRenewRunning = 'running';
         return this.oidcSecuritySilentRenew.startRenew(url).pipe(map(() => true));
     }
 
