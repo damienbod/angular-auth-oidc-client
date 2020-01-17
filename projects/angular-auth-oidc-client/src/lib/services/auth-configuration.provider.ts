@@ -19,6 +19,7 @@ export class ConfigurationProvider {
         silent_renew_url: 'https://please_set',
         silent_renew_offset_in_seconds: 0,
         use_refresh_token: false,
+        ignore_nonce_after_refresh: false,
         post_login_route: '/',
         forbidden_route: '/forbidden',
         unauthorized_route: '/unauthorized',

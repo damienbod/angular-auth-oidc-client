@@ -514,3 +514,7 @@ ngOnDestroy(): void {
 ### use_refresh_token
 
 boolean property set to false. Standard silent renew mode used per default. Refresh tokens can be activated.
+
+### ignore_nonce_after_refresh
+
+A token obtained by using a refresh token normally doesn't contain a nonce value. The library checks it is not there. However some oidc endpoint implementations do send one. Setting ignore_nonce_after_refresh to true disables the check if a nonce is present. Please note that the nonce value, if present, will not be verified. Default is false.

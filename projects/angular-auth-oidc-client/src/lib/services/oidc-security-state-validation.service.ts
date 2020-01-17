@@ -46,7 +46,13 @@ export class StateValidationService {
                 return toReturn;
             }
 
-            if (!this.oidcSecurityValidation.validate_id_token_nonce(toReturn.decoded_id_token, this.oidcSecurityCommon.authNonce)) {
+            if (
+                !this.oidcSecurityValidation.validate_id_token_nonce(
+                    toReturn.decoded_id_token,
+                    this.oidcSecurityCommon.authNonce,
+                    this.configurationProvider.openIDConfiguration.ignore_nonce_after_refresh
+                )
+            ) {
                 this.loggerService.logWarning('authorizedCallback incorrect nonce');
                 toReturn.state = ValidationResult.IncorrectNonce;
                 this.handleUnsuccessfulValidation();

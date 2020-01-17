@@ -97,4 +97,36 @@ describe('OidcSecurityValidation', () => {
         const valueFalse = oidcSecurityValidation.validate_id_token_aud(dataIdToken, ['ooo', 'apple', 'https://nice.dom']);
         expect(valueFalse).toEqual(false);
     });
+
+    it('should validate id token nonce after code grant when match', () => {
+        expect(oidcSecurityValidation.validate_id_token_nonce({ nonce: 'test1' }, 'test1', false)).toBe(true);
+    });
+
+    it('should not validate id token nonce after code grant when no match', () => {
+        expect(oidcSecurityValidation.validate_id_token_nonce({ nonce: 'test1' }, 'test2', false)).toBe(false);
+    });
+
+    it('should validate id token nonce after refresh token grant when undefined and no ignore', () => {
+        expect(oidcSecurityValidation.validate_id_token_nonce({ nonce: undefined }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, false)).toBe(
+            true
+        );
+    });
+
+    it('should validate id token nonce after refresh token grant when undefined and ignore', () => {
+        expect(oidcSecurityValidation.validate_id_token_nonce({ nonce: undefined }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, true)).toBe(
+            true
+        );
+    });
+
+    it('should validate id token nonce after refresh token grant when defined and ignore', () => {
+        expect(oidcSecurityValidation.validate_id_token_nonce({ nonce: 'test1' }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, true)).toBe(
+            true
+        );
+    });
+
+    it('should not validate id token nonce after refresh token grant when defined and no ignore', () => {
+        expect(oidcSecurityValidation.validate_id_token_nonce({ nonce: 'test1' }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, false)).toBe(
+            false
+        );
+    });
 });
