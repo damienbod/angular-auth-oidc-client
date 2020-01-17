@@ -48,14 +48,14 @@ export class TokenHelperService {
             return partOfToken;
         }
 
-        console.log('@@@@@@', partOfToken);
-
         const result = this.urlBase64Decode(partOfToken);
         return JSON.parse(result);
     }
 
     private urlBase64Decode(str: string) {
         let output = str.replace(/-/g, '+').replace(/_/g, '/');
+
+        console.log('@@@@@@', output);
         switch (output.length % 4) {
             case 0:
                 break;
