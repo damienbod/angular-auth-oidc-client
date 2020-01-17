@@ -55,7 +55,6 @@ export class TokenHelperService {
     private urlBase64Decode(str: string) {
         let output = str.replace(/-/g, '+').replace(/_/g, '/');
 
-        console.log('@@@@@@', output);
         switch (output.length % 4) {
             case 0:
                 break;
