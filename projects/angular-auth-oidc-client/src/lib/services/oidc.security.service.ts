@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, from, Observable, of, Subject, throwError, timer } from 'rxjs';
+import { BehaviorSubject, from, Observable, of, Subject, throwError, timer, fromEventPattern } from 'rxjs';
 import { catchError, filter, map, race, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
 import { OpenIdConfiguration } from '../models/auth.configuration';
@@ -22,6 +22,7 @@ import { OidcSecurityUserService } from './oidc.security.user-service';
 import { OidcSecurityValidation } from './oidc.security.validation';
 import { UriEncoder } from './uri-encoder';
 import { UrlParserService } from './url-parser.service';
+import { oneLine } from 'common-tags';
 
 // tslint:disable: variable-name
 @Injectable()
@@ -379,7 +380,7 @@ export class OidcSecurityService {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-        const data = `grant_type=refresh_token&client_id=${this.configurationProvider.openIDConfiguration.client_id}` + `&refresh_token=${code}`;
+        const data = `grant_type=refresh_token&client_id=${this.configurationProvider.openIDConfiguration.client_id}&refresh_token=${code}`;
 
         return this.httpClient.post(tokenRequestUrl, data, { headers }).pipe(
             map(response => {
@@ -418,12 +419,12 @@ export class OidcSecurityService {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-        let data = `grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}
+        let data = oneLine`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}
             &code_verifier=${this.oidcSecurityCommon.code_verifier}
             &code=${code}&redirect_uri=${this.configurationProvider.openIDConfiguration.redirect_url}`;
 
         if (this.oidcSecurityCommon.silentRenewRunning === 'running') {
-            data = `grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}
+            data = oneLine`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}
                 &code_verifier=${this.oidcSecurityCommon.code_verifier}
                 &code=${code}
                 &redirect_uri=${this.configurationProvider.openIDConfiguration.silent_renew_url}`;
