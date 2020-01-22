@@ -22,7 +22,7 @@ import { OidcSecurityUserService } from './oidc.security.user-service';
 import { OidcSecurityValidation } from './oidc.security.validation';
 import { UriEncoder } from './uri-encoder';
 import { UrlParserService } from './url-parser.service';
-import { oneLine } from 'common-tags';
+import { oneLineTrim } from 'common-tags';
 
 // tslint:disable: variable-name
 @Injectable()
@@ -419,12 +419,12 @@ export class OidcSecurityService {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-        let data = oneLine`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}
+        let data = oneLineTrim`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}
             &code_verifier=${this.oidcSecurityCommon.code_verifier}
             &code=${code}&redirect_uri=${this.configurationProvider.openIDConfiguration.redirect_url}`;
 
         if (this.oidcSecurityCommon.silentRenewRunning === 'running') {
-            data = oneLine`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}
+            data = oneLineTrim`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}
                 &code_verifier=${this.oidcSecurityCommon.code_verifier}
                 &code=${code}
                 &redirect_uri=${this.configurationProvider.openIDConfiguration.silent_renew_url}`;
