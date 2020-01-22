@@ -22,6 +22,7 @@ import { OidcSecurityUserService } from './oidc.security.user-service';
 import { OidcSecurityValidation } from './oidc.security.validation';
 import { UriEncoder } from './uri-encoder';
 import { UrlParserService } from './url-parser.service';
+import { oneLineTrim } from 'common-tags';
 
 // tslint:disable: variable-name
 @Injectable()
@@ -379,7 +380,7 @@ export class OidcSecurityService {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-        const data = `grant_type=refresh_token&client_id=${this.configurationProvider.openIDConfiguration.client_id}` + `&refresh_token=${code}`;
+        const data = `grant_type=refresh_token&client_id=${this.configurationProvider.openIDConfiguration.client_id}&refresh_token=${code}`;
 
         return this.httpClient.post(tokenRequestUrl, data, { headers }).pipe(
             map(response => {
@@ -418,12 +419,12 @@ export class OidcSecurityService {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-        let data = `grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}
+        let data = oneLineTrim`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}
             &code_verifier=${this.oidcSecurityCommon.code_verifier}
             &code=${code}&redirect_uri=${this.configurationProvider.openIDConfiguration.redirect_url}`;
 
         if (this.oidcSecurityCommon.silentRenewRunning === 'running') {
-            data = `grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}
+            data = oneLineTrim`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.client_id}
                 &code_verifier=${this.oidcSecurityCommon.code_verifier}
                 &code=${code}
                 &redirect_uri=${this.configurationProvider.openIDConfiguration.silent_renew_url}`;
