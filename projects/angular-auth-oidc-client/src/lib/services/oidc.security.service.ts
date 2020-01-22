@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, from, Observable, of, Subject, throwError, timer, fromEventPattern } from 'rxjs';
+import { BehaviorSubject, from, Observable, of, Subject, throwError, timer } from 'rxjs';
 import { catchError, filter, map, race, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
 import { OpenIdConfiguration } from '../models/auth.configuration';
