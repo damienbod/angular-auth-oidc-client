@@ -22,7 +22,7 @@ after_success:
     - ls
     - ng new testProject
     - cd ./testProject
-    - npm install ../../../angular-auth-oidc-client
+    - npm install ../../angular-auth-oidc-client
     - npm test -- --watch=false --browsers=ChromeHeadless
 notifications:
     email: false
