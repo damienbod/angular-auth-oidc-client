@@ -8,5 +8,5 @@
             "common-tags": "common-tags"
         }
     },
-    "whitelistedNonPeerDependencies": ["jsrsasign-reduced"]
+    "whitelistedNonPeerDependencies": ["jsrsasign-reduced", "common-tags"]
 }
