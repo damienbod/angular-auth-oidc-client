@@ -1,6 +1,6 @@
 {
     "name": "angular-auth-oidc-client",
-    "version": "10.0.11",
+    "version": "10.0.12",
     "scripts": {
         "ng": "ng",
         "build": "npm run build-lib",
