@@ -1,7 +1,7 @@
 ## angular-auth-oidc-client Changelog
 
 <a name="2020-01-24"></a>
-### 2020-01-24 version 10.0.13
+### 2020-01-24 version 10.0.14
 * 552-add-config-ignore-nonce-after-refresh
 * bug-xmlurlencode-has-newlines
 * clean up some file formats
