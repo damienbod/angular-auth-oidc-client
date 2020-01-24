@@ -1,5 +1,11 @@
 ## angular-auth-oidc-client Changelog
 
+<a name="2020-01-24"></a>
+### 2020-01-24 version 10.0.12
+* 552-add-config-ignore-nonce-after-refresh
+* bug-xmlurlencode-has-newlines
+* clean up some file formats
+
 <a name="2020-01-03"></a>
 ### 2020-01-03 version 10.0.11
 * Added renew process denotation to AuthorizationResult
