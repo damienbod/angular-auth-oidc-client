@@ -19,6 +19,7 @@ before_script:
     - sleep 3
 after_success:
     - cd ../..
+    - ls
     - ng new testProject
     - cd ./testProject
     - npm install ../../../angular-auth-oidc-client
