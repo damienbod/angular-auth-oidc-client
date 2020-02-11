@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, from, Observable, of, Subject, throwError, timer } from 'rxjs';
-import { catchError, filter, map, race, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
+import { catchError, filter, map, race, shareReplay, switchMap, switchMapTo, take, tap, first } from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
 import { OpenIdConfiguration } from '../models/auth.configuration';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
@@ -761,7 +761,12 @@ export class OidcSecurityService {
             }
         }
 
-        return this.oidcSecuritySilentRenew.startRenew(url).pipe(map(() => true));
+        return this.getIsAuthorized().pipe(
+            first(isAuthorized => isAuthorized),
+            switchMap(() => {
+                return this.oidcSecuritySilentRenew.startRenew(url).pipe(map(() => true));
+            })
+        );
     }
 
     handleError(error: any) {
@@ -953,9 +958,9 @@ export class OidcSecurityService {
         const silentRenewHeartBeatCheck = () => {
             this.loggerService.logDebug(
                 'silentRenewHeartBeatCheck\r\n' +
-                    `\tsilentRenewRunning: ${this.oidcSecurityCommon.silentRenewRunning === 'running'}\r\n` +
-                    `\tidToken: ${!!this.getIdToken()}\r\n` +
-                    `\t_userData.value: ${!!this._userData.value}`
+                `\tsilentRenewRunning: ${this.oidcSecurityCommon.silentRenewRunning === 'running'}\r\n` +
+                `\tidToken: ${!!this.getIdToken()}\r\n` +
+                `\t_userData.value: ${!!this._userData.value}`
             );
             if (this._userData.value && this.oidcSecurityCommon.silentRenewRunning !== 'running' && this.getIdToken()) {
                 if (
