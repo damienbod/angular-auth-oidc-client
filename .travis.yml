@@ -4,7 +4,7 @@ addons:
     chrome: stable
 language: node_js
 node_js:
-    - '11'
+    - '12'
 before_install:
     - npm i npm@^6 -g
 install:
@@ -18,3 +18,5 @@ before_script:
     - sleep 3
 notifications:
     email: false
+notifications:
+  slack: damienandfabian:jBlE2pSSKe18mysZZh1vtPUM
