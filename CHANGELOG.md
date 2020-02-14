@@ -1,5 +1,9 @@
 ## angular-auth-oidc-client Changelog
 
+### 2020-02-14 version 10.0.15
+* Subscribe startRenew after isAuthorized is true
+* check session origin check improvement, support for non-domain urls
+
 <a name="2020-01-24"></a>
 ### 2020-01-24 version 10.0.14
 * 552-add-config-ignore-nonce-after-refresh

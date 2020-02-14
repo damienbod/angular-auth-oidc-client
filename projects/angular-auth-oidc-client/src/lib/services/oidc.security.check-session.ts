@@ -144,7 +144,7 @@ export class OidcSecurityCheckSession {
         this.outstandingMessages = 0;
         if (
             this.sessionIframe &&
-            e.origin === this.configurationProvider.openIDConfiguration.stsServer &&
+            this.configurationProvider.openIDConfiguration.stsServer.startsWith(e.origin) &&
             e.source === this.sessionIframe.contentWindow
         ) {
             if (e.data === 'error') {
