@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, from, Observable, of, Subject, throwError, timer } from 'rxjs';
+import { BehaviorSubject, from, Observable, of, Subject, throwError, timer, forkJoin } from 'rxjs';
 import { catchError, filter, map, race, shareReplay, switchMap, switchMapTo, take, tap, first } from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
 import { OpenIdConfiguration } from '../models/auth.configuration';
@@ -52,10 +52,10 @@ export class OidcSecurityService {
 
     private _isModuleSetup = new BehaviorSubject<boolean>(false);
 
-    private _isAuthorized = new BehaviorSubject<boolean>(false);
+    private _isAuthorized = new Subject<boolean>();
     private _isSetupAndAuthorized: Observable<boolean>;
 
-    private _userData = new BehaviorSubject<any>('');
+    private _userData = new Subject<any>();
     private authWellKnownEndpointsLoaded = false;
     private runTokenValidationRunning = false;
     private _scheduledHeartBeat: any;
@@ -215,31 +215,34 @@ export class OidcSecurityService {
         return this._isSetupAndAuthorized;
     }
 
-    getToken(): string {
-        if (!this._isAuthorized.getValue()) {
-            return '';
-        }
-
-        const token = this.oidcSecurityCommon.getAccessToken();
-        return decodeURIComponent(token);
+    getToken(): Observable<string> {
+        return this._isAuthorized.pipe(
+            filter(isAuthorized => isAuthorized),
+            map(isAuthorized => {
+                const token = this.oidcSecurityCommon.getAccessToken();
+                return decodeURIComponent(token);
+            })
+        );
     }
 
-    getIdToken(): string {
-        if (!this._isAuthorized.getValue()) {
-            return '';
-        }
-
-        const token = this.oidcSecurityCommon.getIdToken();
-        return decodeURIComponent(token);
+    getIdToken(): Observable<string> {
+        return this._isAuthorized.pipe(
+            filter(isAuthorized => isAuthorized),
+            map(isAuthorized => {
+                const token = this.oidcSecurityCommon.getIdToken();
+                return decodeURIComponent(token);
+            })
+        );
     }
 
-    getRefreshToken(): string {
-        if (!this._isAuthorized.getValue()) {
-            return '';
-        }
-
-        const token = this.oidcSecurityCommon.getRefreshToken();
-        return decodeURIComponent(token);
+    getRefreshToken(): Observable<string> {
+        return this._isAuthorized.pipe(
+            filter(isAuthorized => isAuthorized),
+            map(isAuthorized => {
+                const token = this.oidcSecurityCommon.getRefreshToken();
+                return decodeURIComponent(token);
+            })
+        );
     }
 
     getPayloadFromIdToken(encode = false): any {
@@ -610,42 +613,40 @@ export class OidcSecurityService {
         id_token = id_token ? id_token : this.oidcSecurityCommon.idToken;
         decoded_id_token = decoded_id_token ? decoded_id_token : this.tokenHelperService.getPayloadFromToken(id_token, false);
 
-        return new Observable<boolean>(observer => {
-            // flow id_token token
-            if (
-                this.configurationProvider.openIDConfiguration.response_type === 'id_token token' ||
-                this.configurationProvider.openIDConfiguration.response_type === 'code'
-            ) {
-                if (isRenewProcess && this._userData.value) {
-                    this.oidcSecurityCommon.sessionState = result.session_state;
-                    observer.next(true);
-                    observer.complete();
-                } else {
-                    this.oidcSecurityUserService.initUserData().subscribe(() => {
-                        this.loggerService.logDebug('authorizedCallback (id_token token || code) flow');
+        return this.getUserData().pipe(
+            switchMap((userData: any) => {
+                // flow id_token token
+                if (
+                    this.configurationProvider.openIDConfiguration.response_type === 'id_token token' ||
+                    this.configurationProvider.openIDConfiguration.response_type === 'code'
+                ) {
+                    if (isRenewProcess && userData) {
+                        this.oidcSecurityCommon.sessionState = result.session_state;
+                        return of(true);
+                    } else {
+                        this.oidcSecurityUserService.initUserData().subscribe(() => {
+                            this.loggerService.logDebug('authorizedCallback (id_token token || code) flow');
 
-                        const userData = this.oidcSecurityUserService.getUserData();
+                            if (this.oidcSecurityValidation.validate_userdata_sub_id_token(decoded_id_token.sub, userData.sub)) {
+                                this.setUserData(userData);
+                                this.loggerService.logDebug(this.oidcSecurityCommon.accessToken);
+                                this.loggerService.logDebug(this.oidcSecurityUserService.getUserData());
 
-                        if (this.oidcSecurityValidation.validate_userdata_sub_id_token(decoded_id_token.sub, userData.sub)) {
-                            this.setUserData(userData);
-                            this.loggerService.logDebug(this.oidcSecurityCommon.accessToken);
-                            this.loggerService.logDebug(this.oidcSecurityUserService.getUserData());
+                                this.oidcSecurityCommon.sessionState = result.session_state;
 
-                            this.oidcSecurityCommon.sessionState = result.session_state;
-
-                            this.runTokenValidation();
-                            observer.next(true);
-                        } else {
-                            // something went wrong, userdata sub does not match that from id_token
-                            this.loggerService.logWarning('authorizedCallback, User data sub does not match sub in id_token');
-                            this.loggerService.logDebug('authorizedCallback, token(s) validation failed, resetting');
-                            this.resetAuthorizationData(false);
-                            observer.next(false);
-                        }
-                        observer.complete();
-                    });
+                                this.runTokenValidation();
+                                return of(true);
+                            } else {
+                                // something went wrong, userdata sub does not match that from id_token
+                                this.loggerService.logWarning('authorizedCallback, User data sub does not match sub in id_token');
+                                this.loggerService.logDebug('authorizedCallback, token(s) validation failed, resetting');
+                                this.resetAuthorizationData(false);
+                                return of(false);
+                            }
+                        });
+                    }
                 }
-            } else {
+
                 // flow id_token
                 this.loggerService.logDebug('authorizedCallback id_token flow');
                 this.loggerService.logDebug(this.oidcSecurityCommon.accessToken);
@@ -658,10 +659,9 @@ export class OidcSecurityService {
 
                 this.runTokenValidation();
 
-                observer.next(true);
-                observer.complete();
-            }
-        });
+                return of(true);
+            })
+        );
     }
 
     logoff(urlHandler?: (url: string) => any) {
@@ -956,39 +956,46 @@ export class OidcSecurityService {
          *   Afterwards: Run this check in a 5 second interval only AFTER the previous operation ends.
          */
         const silentRenewHeartBeatCheck = () => {
-            this.loggerService.logDebug(
-                'silentRenewHeartBeatCheck\r\n' +
-                `\tsilentRenewRunning: ${this.oidcSecurityCommon.silentRenewRunning === 'running'}\r\n` +
-                `\tidToken: ${!!this.getIdToken()}\r\n` +
-                `\t_userData.value: ${!!this._userData.value}`
-            );
-            if (this._userData.value && this.oidcSecurityCommon.silentRenewRunning !== 'running' && this.getIdToken()) {
-                if (
-                    this.oidcSecurityValidation.isTokenExpired(
-                        this.oidcSecurityCommon.idToken,
-                        this.configurationProvider.openIDConfiguration.silent_renew_offset_in_seconds
-                    )
-                ) {
-                    this.loggerService.logDebug('IsAuthorized: id_token isTokenExpired, start silent renew if active');
+            forkJoin([this.getUserData(), this.getIdToken()])
+                .pipe(
+                    filter(([userdata, idToken]) => {
+                        return !!userdata && !!idToken && this.oidcSecurityCommon.silentRenewRunning !== 'running';
+                    })
+                )
+                .subscribe(([userdata, idToken]) => {
+                    this.loggerService.logDebug(
+                        'silentRenewHeartBeatCheck\r\n' +
+                            `\tsilentRenewRunning: ${this.oidcSecurityCommon.silentRenewRunning === 'running'}\r\n` +
+                            `\tidToken: ${!!this.getIdToken()}\r\n` +
+                            `\t_userData: ${userdata}`
+                    );
 
-                    if (this.configurationProvider.openIDConfiguration.silent_renew) {
-                        this.refreshSession().subscribe(
-                            () => {
-                                this._scheduledHeartBeat = setTimeout(silentRenewHeartBeatCheck, 3000);
-                            },
-                            (err: any) => {
-                                this.loggerService.logError('Error: ' + err);
-                                this._scheduledHeartBeat = setTimeout(silentRenewHeartBeatCheck, 3000);
-                            }
-                        );
-                        /* In this situation, we schedule a heartbeat check only when silentRenew is finished.
-                        We don't want to schedule another check so we have to return here */
-                        return;
-                    } else {
-                        this.resetAuthorizationData(false);
+                    if (
+                        this.oidcSecurityValidation.isTokenExpired(
+                            this.oidcSecurityCommon.idToken,
+                            this.configurationProvider.openIDConfiguration.silent_renew_offset_in_seconds
+                        )
+                    ) {
+                        this.loggerService.logDebug('IsAuthorized: id_token isTokenExpired, start silent renew if active');
+
+                        if (this.configurationProvider.openIDConfiguration.silent_renew) {
+                            this.refreshSession().subscribe(
+                                () => {
+                                    this._scheduledHeartBeat = setTimeout(silentRenewHeartBeatCheck, 3000);
+                                },
+                                (err: any) => {
+                                    this.loggerService.logError('Error: ' + err);
+                                    this._scheduledHeartBeat = setTimeout(silentRenewHeartBeatCheck, 3000);
+                                }
+                            );
+                            /* In this situation, we schedule a heartbeat check only when silentRenew is finished.
+                               We don't want to schedule another check so we have to return here */
+                            return;
+                        } else {
+                            this.resetAuthorizationData(false);
+                        }
                     }
-                }
-            }
+                });
 
             /* Delay 3 seconds and do the next check */
             this._scheduledHeartBeat = setTimeout(silentRenewHeartBeatCheck, 3000);

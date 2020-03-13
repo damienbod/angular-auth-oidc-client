@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
 import { ConfigurationProvider } from './auth-configuration.provider';
 import { LoggerService } from './oidc.logger.service';
@@ -17,8 +17,8 @@ export class OidcSecurityUserService {
         private readonly configurationProvider: ConfigurationProvider
     ) {}
 
-    initUserData() {
-        return this.getIdentityUserData().pipe(map((data: any) => (this.userData = data)));
+    initUserData(): Observable<any> {
+        return this.getIdentityUserData().pipe(tap((data: any) => (this.userData = data)));
     }
 
     getUserData(): any {
