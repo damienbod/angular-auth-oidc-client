@@ -77,6 +77,7 @@ describe('ConfigurationProviderTests', () => {
             isauthorizedrace_timeout_in_seconds: 5,
             disable_iat_offset_validation: false,
             storage: sessionStorage,
+            audience: 'https://please_set',
         };
 
         configurationProvider.setup({}, null);
@@ -117,6 +118,7 @@ describe('ConfigurationProviderTests', () => {
             isauthorizedrace_timeout_in_seconds: 5,
             disable_iat_offset_validation: false,
             storage: sessionStorage,
+            audience: 'https://please_set',
         };
 
         configurationProvider.setup(config, null);
@@ -159,6 +161,7 @@ describe('ConfigurationProviderTests', () => {
             isauthorizedrace_timeout_in_seconds: 5,
             disable_iat_offset_validation: false,
             storage: sessionStorage,
+            audience: 'https://please_set',
         };
 
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);

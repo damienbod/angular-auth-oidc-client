@@ -305,7 +305,9 @@ export class OidcSecurityService {
                     this.configurationProvider.openIDConfiguration.redirect_url,
                     nonce,
                     state,
-                    this.configurationProvider.wellKnownEndpoints.authorization_endpoint || ''
+                    this.configurationProvider.wellKnownEndpoints.authorization_endpoint || '',
+                    '',
+                    this.configurationProvider.openIDConfiguration.audience
                 );
             } else {
                 this.loggerService.logError('authWellKnownEndpoints is undefined');
@@ -865,7 +867,8 @@ export class OidcSecurityService {
         nonce: string,
         state: string,
         authorization_endpoint: string,
-        prompt?: string
+        prompt?: string,
+        audience?: string,
     ): string {
         const urlParts = authorization_endpoint.split('?');
         const authorizationUrl = urlParts[0];
@@ -887,6 +890,10 @@ export class OidcSecurityService {
 
         if (prompt) {
             params = params.append('prompt', prompt);
+        }
+
+        if (audience) {
+            params = params.append('audience', audience);
         }
 
         if (this.configurationProvider.openIDConfiguration.hd_param) {

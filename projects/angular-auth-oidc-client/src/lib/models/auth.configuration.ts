@@ -26,6 +26,7 @@ export interface OpenIdConfiguration {
     isauthorizedrace_timeout_in_seconds?: number;
     disable_iat_offset_validation?: boolean;
     storage?: any;
+    audience?: string;
 }
 
 export interface OpenIdInternalConfiguration {
@@ -56,4 +57,5 @@ export interface OpenIdInternalConfiguration {
     isauthorizedrace_timeout_in_seconds: number;
     disable_iat_offset_validation: boolean;
     storage: any;
+    audience: string;
 }

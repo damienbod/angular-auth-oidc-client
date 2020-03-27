@@ -34,6 +34,7 @@ export class ConfigurationProvider {
         isauthorizedrace_timeout_in_seconds: 5,
         disable_iat_offset_validation: false,
         storage: typeof Storage !== 'undefined' ? sessionStorage : null,
+        audience: 'https://please_set',
     };
 
     private INITIAL_AUTHWELLKNOWN: AuthWellKnownEndpoints = {
