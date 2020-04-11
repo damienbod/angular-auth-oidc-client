@@ -1,5 +1,8 @@
 ## angular-auth-oidc-client Changelog
 
+### 2020-04-11 version 10.0.16 WIP
+* Use the race observable instead of the deprecated RxJS race operator 
+
 ### 2020-02-14 version 10.0.15
 * Subscribe startRenew after isAuthorized is true
 * check session origin check improvement, support for non-domain urls
