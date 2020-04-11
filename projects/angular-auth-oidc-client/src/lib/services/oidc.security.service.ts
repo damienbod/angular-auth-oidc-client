@@ -1,8 +1,8 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, from, Observable, of, Subject, throwError, timer } from 'rxjs';
-import { catchError, filter, map, race, shareReplay, switchMap, switchMapTo, take, tap, first } from 'rxjs/operators';
+import { BehaviorSubject, from, Observable, of, Subject, throwError, timer, race } from 'rxjs';
+import { catchError, filter, map, shareReplay, switchMap, switchMapTo, take, tap, first } from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
 import { OpenIdConfiguration } from '../models/auth.configuration';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
@@ -90,27 +90,26 @@ export class OidcSecurityService {
                     return from([true]);
                 }
 
-                const race$ = this._isAuthorized.asObservable().pipe(
+                const race$ = race(
+                  this._isAuthorized.asObservable().pipe(
                     filter((isAuthorized: boolean) => isAuthorized),
                     take(1),
-                    tap(() => this.loggerService.logDebug('IsAuthorizedRace: Existing token is still authorized.')),
-                    // tslint:disable-next-line: deprecation
-                    race(
-                        this._onAuthorizationResult.pipe(
-                            take(1),
-                            tap(() => this.loggerService.logDebug('IsAuthorizedRace: Silent Renew Refresh Session Complete')),
-                            map(() => true)
-                        ),
-                        timer(this.configurationProvider.openIDConfiguration.isauthorizedrace_timeout_in_seconds * 1000).pipe(
-                            // backup, if nothing happens after X seconds stop waiting and emit (5s Default)
-                            tap(() => {
-                                this.resetAuthorizationData(false);
-                                this.oidcSecurityCommon.authNonce = '';
-                                this.loggerService.logWarning('IsAuthorizedRace: Timeout reached. Emitting.');
-                            }),
-                            map(() => true)
-                        )
-                    )
+                    tap(() => this.loggerService.logDebug('IsAuthorizedRace: Existing token is still authorized.'))
+                  ),
+                  this._onAuthorizationResult.pipe(
+                      take(1),
+                      tap(() => this.loggerService.logDebug('IsAuthorizedRace: Silent Renew Refresh Session Complete')),
+                      map(() => true)
+                  ),
+                  timer(this.configurationProvider.openIDConfiguration.isauthorizedrace_timeout_in_seconds * 1000).pipe(
+                      // backup, if nothing happens after X seconds stop waiting and emit (5s Default)
+                      tap(() => {
+                          this.resetAuthorizationData(false);
+                          this.oidcSecurityCommon.authNonce = '';
+                          this.loggerService.logWarning('IsAuthorizedRace: Timeout reached. Emitting.');
+                      }),
+                      map(() => true)
+                  )
                 );
 
                 this.loggerService.logDebug('Silent Renew is active, check if token in storage is active');
