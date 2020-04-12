@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
   selector: 'app-auto-login',
@@ -7,9 +8,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AutoLoginComponent implements OnInit {
 
-  constructor() { }
+    constructor(public oidcSecurityService: OidcSecurityService
+    ) {
+        this.oidcSecurityService.onModuleSetup.subscribe(() => { this.onModuleSetup(); });
+    }
 
-  ngOnInit() {
-  }
+    ngOnInit() {
+        if (this.oidcSecurityService.moduleSetup) {
+            this.onModuleSetup();
+        }
+    }
 
+    private onModuleSetup() {
+        this.oidcSecurityService.authorize();
+    }
 }
