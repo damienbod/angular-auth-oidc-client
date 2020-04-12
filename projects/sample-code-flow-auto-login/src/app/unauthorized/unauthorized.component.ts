@@ -1,15 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-unauthorized',
-  templateUrl: './unauthorized.component.html',
-  styleUrls: ['./unauthorized.component.css']
+    selector: 'app-unauthorized',
+    templateUrl: 'unauthorized.component.html'
 })
+
 export class UnauthorizedComponent implements OnInit {
 
-  constructor() { }
+    public message: string;
+    public values: any[];
 
-  ngOnInit() {
-  }
+    constructor() {
+        this.message = 'UnauthorizedComponent constructor';
+    }
 
+    ngOnInit() {
+    }
 }

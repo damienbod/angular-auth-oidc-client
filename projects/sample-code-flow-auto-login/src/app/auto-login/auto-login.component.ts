@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
-  selector: 'app-auto-login',
-  templateUrl: './auto-login.component.html',
-  styleUrls: ['./auto-login.component.css']
+    selector: 'app-auto-component',
+    templateUrl: './auto-login.component.html'
 })
-export class AutoLoginComponent implements OnInit {
+
+export class AutoLoginComponent implements OnInit, OnDestroy {
+    lang: any;
 
     constructor(public oidcSecurityService: OidcSecurityService
     ) {
@@ -17,6 +18,9 @@ export class AutoLoginComponent implements OnInit {
         if (this.oidcSecurityService.moduleSetup) {
             this.onModuleSetup();
         }
+    }
+
+    ngOnDestroy(): void {
     }
 
     private onModuleSetup() {
