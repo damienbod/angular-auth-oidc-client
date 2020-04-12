@@ -1,8 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterModule } from '@angular/router';
-
+import { routing } from './app.routes';
 import { AppComponent } from './app.component';
 import { AuthModule,
   ConfigResult,
@@ -20,22 +19,20 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 }
 
 @NgModule({
-    declarations: [
-      AppComponent,
-      ForbiddenComponent,
-      AutoLoginComponent,
-      UnauthorizedComponent,
-      NavigationComponent,
-      HomeComponent ],
-    imports: [
-      BrowserModule,
-      HttpClientModule,
-      RouterModule.forRoot([
-          { path: '', component: AppComponent },
-          { path: 'home', component: AppComponent },
-          { path: 'forbidden', component: AppComponent },
-          { path: 'unauthorized', component: AppComponent },
-      ])],
+      imports: [
+          BrowserModule,
+          routing,
+          HttpClientModule,
+          AuthModule.forRoot(),
+      ],
+      declarations: [
+          AppComponent,
+          ForbiddenComponent,
+          HomeComponent,
+          AutoLoginComponent,
+          NavigationComponent,
+          UnauthorizedComponent
+      ],
       providers: [
         OidcConfigService,
         {
