@@ -12,7 +12,7 @@ describe('EqualityHelperServiceTests', () => {
     });
 
     beforeEach(() => {
-        equalityHelperService = TestBed.get(EqualityHelperService);
+        equalityHelperService = TestBed.inject(EqualityHelperService);
     });
 
     it('should create', () => {

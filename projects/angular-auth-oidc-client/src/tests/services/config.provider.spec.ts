@@ -14,8 +14,8 @@ describe('ConfigurationProviderTests', () => {
     });
 
     beforeEach(() => {
-        configurationProvider = TestBed.get(ConfigurationProvider);
-        platformProvider = TestBed.get(PlatformProvider);
+        configurationProvider = TestBed.inject(ConfigurationProvider);
+        platformProvider = TestBed.inject(PlatformProvider);
     });
 
     it('should create', () => {

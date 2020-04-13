@@ -13,6 +13,7 @@ describe('SecurityCheckSessionTests', () => {
     let oidcSecurityCheckSession: OidcSecurityCheckSession;
     let loggerService: LoggerService;
     let configurationProvider: ConfigurationProvider;
+    let iFrameService: IFrameService;
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
@@ -28,13 +29,30 @@ describe('SecurityCheckSessionTests', () => {
     });
 
     beforeEach(() => {
-        oidcSecurityCheckSession = TestBed.get(OidcSecurityCheckSession);
-        configurationProvider = TestBed.get(ConfigurationProvider);
-        loggerService = TestBed.get(LoggerService);
+        oidcSecurityCheckSession = TestBed.inject(OidcSecurityCheckSession);
+        configurationProvider = TestBed.inject(ConfigurationProvider);
+        loggerService = TestBed.inject(LoggerService);
+        iFrameService = TestBed.inject(IFrameService);
+    });
+
+    afterEach(() => {
+        const iFrameIdwhichshouldneverexist = window.document.getElementById('idwhichshouldneverexist');
+        if (iFrameIdwhichshouldneverexist) {
+            iFrameIdwhichshouldneverexist.parentNode.removeChild(iFrameIdwhichshouldneverexist);
+        }
+        const myiFrameForCheckSession = window.document.getElementById('myiFrameForCheckSession');
+        if (myiFrameForCheckSession) {
+            myiFrameForCheckSession.parentNode.removeChild(myiFrameForCheckSession);
+        }
     });
 
     it('should create', () => {
         expect(oidcSecurityCheckSession).toBeTruthy();
+    });
+
+    it('doesSessionExist returns false if nothing is setup', () => {
+        const result = (oidcSecurityCheckSession as any).doesSessionExist();
+        expect(result).toBe(false);
     });
 
     it('setupModule sets authWellKnownEndpoints', () => {
@@ -48,89 +66,46 @@ describe('SecurityCheckSessionTests', () => {
         expect((oidcSecurityCheckSession as any).configurationProvider.authWellKnownEndpoints.issuer).toBe('testIssuer');
     });
 
-    it('doesSessionExist returns false if nothing is setup', () => {
-        const result = (oidcSecurityCheckSession as any).doesSessionExist();
-        expect(result).toBe(false);
-    });
-
     it('doesSessionExist returns true if document found on window.parent.document', () => {
-        const node = document.createElement('iframe');
-        node.setAttribute('id', 'myiFrameForCheckSession');
-        window.parent.document.documentElement.appendChild(node);
+        iFrameService.addIFrameToWindowBody('myiFrameForCheckSession');
 
         const result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(true);
-        const remove = window.parent.document.getElementById('myiFrameForCheckSession');
-        if (remove) {
-            window.parent.document.documentElement.removeChild(remove);
-        }
     });
 
     it('doesSessionExist returns true if document found on window.document', () => {
-        const node = document.createElement('iframe');
-        node.setAttribute('id', 'myiFrameForCheckSession');
-        window.document.documentElement.appendChild(node);
+        iFrameService.addIFrameToWindowBody('myiFrameForCheckSession');
+
         const result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(true);
-        const remove = document.getElementById('myiFrameForCheckSession');
-        if (remove) {
-            window.document.documentElement.removeChild(remove);
-        }
     });
 
     it('doesSessionExist returns false if document not found on window.parent.document given the wrong id', () => {
-        const node = document.createElement('iframe');
-        node.setAttribute('id', 'idwhichshouldneverexist');
-        window.parent.document.documentElement.appendChild(node);
+        iFrameService.addIFrameToWindowBody('idwhichshouldneverexist');
         const result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(false);
-        const remove = window.parent.document.getElementById('idwhichshouldneverexist');
-        if (remove) {
-            window.parent.document.documentElement.removeChild(remove);
-        }
     });
 
     it('doesSessionExist returns false if document not found on window.document given the wrong id', () => {
-        const node = document.createElement('iframe');
-        node.setAttribute('id', 'idwhichshouldneverexist');
-        window.document.documentElement.appendChild(node);
+        iFrameService.addIFrameToWindowBody('idwhichshouldneverexist');
         const result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(false);
-
-        const remove = document.getElementById('idwhichshouldneverexist');
-        if (remove) {
-            window.document.documentElement.removeChild(remove);
-        }
     });
 
     it('existsParent is set when document was found on window.parent', () => {
-        const node = document.createElement('iframe');
-        node.setAttribute('id', 'myiFrameForCheckSession');
-        window.parent.document.documentElement.appendChild(node);
+        const node = iFrameService.addIFrameToWindowBody('myiFrameForCheckSession');
 
         (oidcSecurityCheckSession as any).doesSessionExist();
         expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
-        expect((oidcSecurityCheckSession as any).sessionIframe).toBe(node);
-
-        const remove = window.parent.document.getElementById('myiFrameForCheckSession');
-        if (remove) {
-            window.parent.document.documentElement.removeChild(remove);
-        }
+        expect((oidcSecurityCheckSession as any).sessionIframe).toEqual(node);
     });
 
     it('existsParent is set when document was found on window', () => {
-        const node = document.createElement('iframe');
-        node.setAttribute('id', 'myiFrameForCheckSession');
-        window.document.documentElement.appendChild(node);
+        const node = iFrameService.addIFrameToWindowBody('myiFrameForCheckSession');
 
         (oidcSecurityCheckSession as any).doesSessionExist();
         expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
-        expect((oidcSecurityCheckSession as any).sessionIframe).toBe(node);
-
-        const remove = document.getElementById('myiFrameForCheckSession');
-        if (remove) {
-            window.document.documentElement.removeChild(remove);
-        }
+        expect((oidcSecurityCheckSession as any).sessionIframe).toEqual(node);
     });
 
     it('init appends iframe on body with correct values', () => {

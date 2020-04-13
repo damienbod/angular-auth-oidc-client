@@ -47,11 +47,11 @@ describe('OidcSecurityStateValidationService', () => {
     });
 
     beforeEach(() => {
-        stateValidationService = TestBed.get(StateValidationService);
-        oidcSecurityValidation = TestBed.get(OidcSecurityValidation);
-        configProvider = TestBed.get(ConfigurationProvider);
-        tokenHelperService = TestBed.get(TokenHelperService);
-        loggerService = TestBed.get(LoggerService);
+        stateValidationService = TestBed.inject(StateValidationService);
+        oidcSecurityValidation = TestBed.inject(OidcSecurityValidation);
+        configProvider = TestBed.inject(ConfigurationProvider);
+        tokenHelperService = TestBed.inject(TokenHelperService);
+        loggerService = TestBed.inject(LoggerService);
     });
 
     beforeEach(() => {
