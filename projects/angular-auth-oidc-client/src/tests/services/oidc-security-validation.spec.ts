@@ -43,90 +43,90 @@ describe('OidcSecurityValidation', () => {
     it('validate aud string', () => {
         const config: OpenIdConfiguration = {};
         config.stsServer = 'https://localhost:5001';
-        config.redirect_url = 'https://localhost:44386';
-        config.client_id = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-        config.response_type = 'id_token token';
+        config.redirectUrl = 'https://localhost:44386';
+        config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+        config.responseType = 'id_token token';
         config.scope = 'openid email profile';
-        config.post_logout_redirect_uri = 'https://localhost:44386/Unauthorized';
-        config.post_login_route = '/home';
-        config.forbidden_route = '/Forbidden';
-        config.unauthorized_route = '/Unauthorized';
-        config.start_checksession = false;
-        config.silent_renew = false;
-        config.silent_renew_offset_in_seconds = 0;
-        config.log_console_warning_active = true;
-        config.log_console_debug_active = true;
-        config.max_id_token_iat_offset_allowed_in_seconds = 10;
+        config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        config.postLoginRoute = '/home';
+        config.forbiddenRoute = '/Forbidden';
+        config.unauthorizedRoute = '/Unauthorized';
+        config.startCheckSession = false;
+        config.silentRenew = false;
+        config.silentRenewOffsetInSeconds = 0;
+        config.logConsoleWarningActive = true;
+        config.logConsoleDebugActive = true;
+        config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configProvider.setup(config, null);
 
         const dataIdToken = { aud: 'banana' };
-        const valueTrue = oidcSecurityValidation.validate_id_token_aud(dataIdToken, 'banana');
+        const valueTrue = oidcSecurityValidation.validateIdTokenAud(dataIdToken, 'banana');
         expect(valueTrue).toEqual(true);
 
-        const valueFalse = oidcSecurityValidation.validate_id_token_aud(dataIdToken, 'bananammmm');
+        const valueFalse = oidcSecurityValidation.validateIdTokenAud(dataIdToken, 'bananammmm');
         expect(valueFalse).toEqual(false);
     });
 
     it('validate aud array', () => {
         const config: OpenIdConfiguration = {};
         config.stsServer = 'https://localhost:5001';
-        config.redirect_url = 'https://localhost:44386';
-        config.client_id = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-        config.response_type = 'id_token token';
+        config.redirectUrl = 'https://localhost:44386';
+        config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+        config.responseType = 'id_token token';
         config.scope = 'openid email profile';
-        config.post_logout_redirect_uri = 'https://localhost:44386/Unauthorized';
-        config.post_login_route = '/home';
-        config.forbidden_route = '/Forbidden';
-        config.unauthorized_route = '/Unauthorized';
-        config.start_checksession = false;
-        config.silent_renew = false;
-        config.silent_renew_offset_in_seconds = 0;
-        config.log_console_warning_active = true;
-        config.log_console_debug_active = true;
-        config.max_id_token_iat_offset_allowed_in_seconds = 10;
+        config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        config.postLoginRoute = '/home';
+        config.forbiddenRoute = '/Forbidden';
+        config.unauthorizedRoute = '/Unauthorized';
+        config.startCheckSession = false;
+        config.silentRenew = false;
+        config.silentRenewOffsetInSeconds = 0;
+        config.logConsoleWarningActive = true;
+        config.logConsoleDebugActive = true;
+        config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configProvider.setup(config, null);
 
         const dataIdToken = {
             aud: ['banana', 'apple', 'https://nice.dom'],
         };
-        const valueTrue = oidcSecurityValidation.validate_id_token_aud(dataIdToken, ['banana', 'apple', 'https://nice.dom']);
+        const valueTrue = oidcSecurityValidation.validateIdTokenAud(dataIdToken, ['banana', 'apple', 'https://nice.dom']);
         expect(valueTrue).toEqual(true);
 
-        const valueFalse = oidcSecurityValidation.validate_id_token_aud(dataIdToken, ['ooo', 'apple', 'https://nice.dom']);
+        const valueFalse = oidcSecurityValidation.validateIdTokenAud(dataIdToken, ['ooo', 'apple', 'https://nice.dom']);
         expect(valueFalse).toEqual(false);
     });
 
     it('should validate id token nonce after code grant when match', () => {
-        expect(oidcSecurityValidation.validate_id_token_nonce({ nonce: 'test1' }, 'test1', false)).toBe(true);
+        expect(oidcSecurityValidation.validateIdTokenNonce({ nonce: 'test1' }, 'test1', false)).toBe(true);
     });
 
     it('should not validate id token nonce after code grant when no match', () => {
-        expect(oidcSecurityValidation.validate_id_token_nonce({ nonce: 'test1' }, 'test2', false)).toBe(false);
+        expect(oidcSecurityValidation.validateIdTokenNonce({ nonce: 'test1' }, 'test2', false)).toBe(false);
     });
 
     it('should validate id token nonce after refresh token grant when undefined and no ignore', () => {
-        expect(oidcSecurityValidation.validate_id_token_nonce({ nonce: undefined }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, false)).toBe(
-            true
-        );
+        expect(
+            oidcSecurityValidation.validateIdTokenNonce({ nonce: undefined }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, false)
+        ).toBe(true);
     });
 
     it('should validate id token nonce after refresh token grant when undefined and ignore', () => {
-        expect(oidcSecurityValidation.validate_id_token_nonce({ nonce: undefined }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, true)).toBe(
-            true
-        );
+        expect(
+            oidcSecurityValidation.validateIdTokenNonce({ nonce: undefined }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, true)
+        ).toBe(true);
     });
 
     it('should validate id token nonce after refresh token grant when defined and ignore', () => {
-        expect(oidcSecurityValidation.validate_id_token_nonce({ nonce: 'test1' }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, true)).toBe(
-            true
-        );
+        expect(
+            oidcSecurityValidation.validateIdTokenNonce({ nonce: 'test1' }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, true)
+        ).toBe(true);
     });
 
     it('should not validate id token nonce after refresh token grant when defined and no ignore', () => {
-        expect(oidcSecurityValidation.validate_id_token_nonce({ nonce: 'test1' }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, false)).toBe(
-            false
-        );
+        expect(
+            oidcSecurityValidation.validateIdTokenNonce({ nonce: 'test1' }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, false)
+        ).toBe(false);
     });
 });

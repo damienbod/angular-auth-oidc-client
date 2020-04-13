@@ -6,7 +6,5 @@ export class PlatformProvider {
     get isBrowser() {
         return isPlatformBrowser(this.platformId);
     }
-
-    // tslint:disable-next-line: ban-types
-    constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+    constructor(@Inject(PLATFORM_ID) private platformId: string) {}
 }

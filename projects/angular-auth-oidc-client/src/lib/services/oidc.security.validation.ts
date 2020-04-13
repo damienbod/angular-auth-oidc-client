@@ -21,7 +21,8 @@ import { LoggerService } from './oidc.logger.service';
 // id_token C5: The Client MUST validate the signature of the ID Token according to JWS [JWS] using the algorithm specified in the
 // alg Header Parameter of the JOSE Header.The Client MUST use the keys provided by the Issuer.
 //
-// id_token C6: The alg value SHOULD be RS256. Validation of tokens using other signing algorithms is described in the OpenID Connect Core 1.0
+// id_token C6: The alg value SHOULD be RS256. Validation of tokens using other signing algorithms is described in the OpenID Connect
+// Core 1.0
 // [OpenID.Core] specification.
 //
 // id_token C7: The current time MUST be before the time represented by the exp Claim (possibly allowing for some small leeway to account
@@ -44,7 +45,8 @@ import { LoggerService } from './oidc.logger.service';
 // access_token C1: Hash the octets of the ASCII representation of the access_token with the hash algorithm specified in JWA[JWA]
 // for the alg Header Parameter of the ID Token's JOSE Header. For instance, if the alg is RS256, the hash algorithm used is SHA-256.
 // access_token C2: Take the left- most half of the hash and base64url- encode it.
-// access_token C3: The value of at_hash in the ID Token MUST match the value produced in the previous step if at_hash is present in the ID Token.
+// access_token C3: The value of at_hash in the ID Token MUST match the value produced in the previous step if at_hash is present
+// in the ID Token.
 
 @Injectable()
 export class OidcSecurityValidation {
@@ -62,14 +64,13 @@ export class OidcSecurityValidation {
         let decoded: any;
         decoded = this.tokenHelperService.getPayloadFromToken(token, false);
 
-        return !this.validate_id_token_exp_not_expired(decoded, offsetSeconds);
+        return !this.validateIdTokenExpNotExpired(decoded, offsetSeconds);
     }
 
     // id_token C7: The current time MUST be before the time represented by the exp Claim
     // (possibly allowing for some small leeway to account for clock skew).
-    // tslint:disable-next-line: variable-name
-    validate_id_token_exp_not_expired(decoded_id_token: string, offsetSeconds?: number): boolean {
-        const tokenExpirationDate = this.tokenHelperService.getTokenExpirationDate(decoded_id_token);
+    validateIdTokenExpNotExpired(decodedIdToken: string, offsetSeconds?: number): boolean {
+        const tokenExpirationDate = this.tokenHelperService.getTokenExpirationDate(decodedIdToken);
         offsetSeconds = offsetSeconds || 0;
 
         if (!tokenExpirationDate) {
@@ -97,7 +98,8 @@ export class OidcSecurityValidation {
     // It MUST NOT exceed 255 ASCII characters in length.The sub value is a case-sensitive string.
     //
     // aud
-    // REQUIRED. Audience(s) that this ID Token is intended for. It MUST contain the OAuth 2.0 client_id of the Relying Party as an audience value.
+    // REQUIRED. Audience(s) that this ID Token is intended for. It MUST contain the OAuth 2.0 client_id of the Relying Party as an
+    // audience value.
     // It MAY also contain identifiers for other audiences.In the general case, the aud value is an array of case-sensitive strings.
     // In the common special case when there is one audience, the aud value MAY be a single case-sensitive string.
     //
@@ -105,14 +107,15 @@ export class OidcSecurityValidation {
     // REQUIRED. Expiration time on or after which the ID Token MUST NOT be accepted for processing.
     // The processing of this parameter requires that the current date/ time MUST be before the expiration date/ time listed in the value.
     // Implementers MAY provide for some small leeway, usually no more than a few minutes, to account for clock skew.
-    // Its value is a JSON [RFC7159] number representing the number of seconds from 1970- 01 - 01T00: 00:00Z as measured in UTC until the date/ time.
+    // Its value is a JSON [RFC7159] number representing the number of seconds from 1970- 01 - 01T00: 00:00Z as measured in UTC until
+    // the date/ time.
     // See RFC 3339 [RFC3339] for details regarding date/ times in general and UTC in particular.
     //
     // iat
     // REQUIRED. Time at which the JWT was issued. Its value is a JSON number representing the number of seconds from
     // 1970- 01 - 01T00: 00: 00Z as measured
     // in UTC until the date/ time.
-    validate_required_id_token(dataIdToken: any): boolean {
+    validateRequiredIdToken(dataIdToken: any): boolean {
         let validated = true;
         if (!dataIdToken.hasOwnProperty('iss')) {
             validated = false;
@@ -144,7 +147,7 @@ export class OidcSecurityValidation {
 
     // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
     // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
-    validate_id_token_iat_max_offset(dataIdToken: any, maxOffsetAllowedInSeconds: number, disableIatOffsetValidation: boolean): boolean {
+    validateIdTokenIatMaxOffset(dataIdToken: any, maxOffsetAllowedInSeconds: number, disableIatOffsetValidation: boolean): boolean {
         if (disableIatOffsetValidation) {
             return true;
         }
@@ -163,7 +166,10 @@ export class OidcSecurityValidation {
         }
 
         this.loggerService.logDebug(
-            'validate_id_token_iat_max_offset: ' + (new Date().valueOf() - dateTimeIatIdToken.valueOf()) + ' < ' + maxOffsetAllowedInSeconds * 1000
+            'validate_id_token_iat_max_offset: ' +
+                (new Date().valueOf() - dateTimeIatIdToken.valueOf()) +
+                ' < ' +
+                maxOffsetAllowedInSeconds * 1000
         );
         return new Date().valueOf() - dateTimeIatIdToken.valueOf() < maxOffsetAllowedInSeconds * 1000;
     }
@@ -175,11 +181,14 @@ export class OidcSecurityValidation {
     // However the nonce claim SHOULD not be present for the refesh_token grant type
     // https://bitbucket.org/openid/connect/issues/1025/ambiguity-with-how-nonce-is-handled-on
     // The current spec is ambiguous and Keycloak does send it.
-    validate_id_token_nonce(dataIdToken: any, localNonce: any, ignoreNonceAfterRefresh: boolean): boolean {
+    validateIdTokenNonce(dataIdToken: any, localNonce: any, ignoreNonceAfterRefresh: boolean): boolean {
         const isFromRefreshToken =
-            (dataIdToken.nonce === undefined || ignoreNonceAfterRefresh) && localNonce === OidcSecurityValidation.RefreshTokenNoncePlaceholder;
+            (dataIdToken.nonce === undefined || ignoreNonceAfterRefresh) &&
+            localNonce === OidcSecurityValidation.RefreshTokenNoncePlaceholder;
         if (!isFromRefreshToken && dataIdToken.nonce !== localNonce) {
-            this.loggerService.logDebug('Validate_id_token_nonce failed, dataIdToken.nonce: ' + dataIdToken.nonce + ' local_nonce:' + localNonce);
+            this.loggerService.logDebug(
+                'Validate_id_token_nonce failed, dataIdToken.nonce: ' + dataIdToken.nonce + ' local_nonce:' + localNonce
+            );
             return false;
         }
 
@@ -188,14 +197,13 @@ export class OidcSecurityValidation {
 
     // id_token C1: The Issuer Identifier for the OpenID Provider (which is typically obtained during Discovery)
     // MUST exactly match the value of the iss (issuer) Claim.
-    // tslint:disable-next-line: variable-name
-    validate_id_token_iss(dataIdToken: any, authWellKnownEndpoints_issuer: any): boolean {
-        if ((dataIdToken.iss as string) !== (authWellKnownEndpoints_issuer as string)) {
+    validateIdTokenIss(dataIdToken: any, authWellKnownEndpointsIssuer: any): boolean {
+        if ((dataIdToken.iss as string) !== (authWellKnownEndpointsIssuer as string)) {
             this.loggerService.logDebug(
                 'Validate_id_token_iss failed, dataIdToken.iss: ' +
                     dataIdToken.iss +
                     ' authWellKnownEndpoints issuer:' +
-                    authWellKnownEndpoints_issuer
+                    authWellKnownEndpointsIssuer
             );
             return false;
         }
@@ -207,12 +215,14 @@ export class OidcSecurityValidation {
     // by the iss (issuer) Claim as an audience.
     // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences
     // not trusted by the Client.
-    validate_id_token_aud(dataIdToken: any, aud: any): boolean {
+    validateIdTokenAud(dataIdToken: any, aud: any): boolean {
         if (dataIdToken.aud instanceof Array) {
             const result = this.arrayHelperService.areEqual(dataIdToken.aud, aud);
 
             if (!result) {
-                this.loggerService.logDebug('Validate_id_token_aud  array failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud);
+                this.loggerService.logDebug(
+                    'Validate_id_token_aud  array failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud
+                );
                 return false;
             }
 
@@ -235,9 +245,11 @@ export class OidcSecurityValidation {
         return true;
     }
 
-    validate_userdata_sub_id_token(idTokenSub: any, userdataSub: any): boolean {
+    validateUserdataSubIdToken(idTokenSub: any, userdataSub: any): boolean {
         if ((idTokenSub as string) !== (userdataSub as string)) {
-            this.loggerService.logDebug('validate_userdata_sub_id_token failed, id_token_sub: ' + idTokenSub + ' userdata_sub:' + userdataSub);
+            this.loggerService.logDebug(
+                'validate_userdata_sub_id_token failed, id_token_sub: ' + idTokenSub + ' userdata_sub:' + userdataSub
+            );
             return false;
         }
 
@@ -248,7 +260,7 @@ export class OidcSecurityValidation {
     // Header Parameter of the JOSE Header.The Client MUST use the keys provided by the Issuer.
     // id_token C6: The alg value SHOULD be RS256. Validation of tokens using other signing algorithms is described in the
     // OpenID Connect Core 1.0 [OpenID.Core] specification.
-    validate_signature_id_token(idToken: any, jwtkeys: any): boolean {
+    validateSignatureIdToken(idToken: any, jwtkeys: any): boolean {
         if (!jwtkeys || !jwtkeys.keys) {
             return false;
         }
@@ -315,7 +327,7 @@ export class OidcSecurityValidation {
         return isValid;
     }
 
-    config_validate_response_type(responseType: string): boolean {
+    configValidateResponseType(responseType: string): boolean {
         if (responseType === 'id_token token' || responseType === 'id_token') {
             return true;
         }
@@ -348,7 +360,7 @@ export class OidcSecurityValidation {
     // access_token C2: Take the left- most half of the hash and base64url- encode it.
     // access_token C3: The value of at_hash in the ID Token MUST match the value produced in the previous step if at_hash
     // is present in the ID Token.
-    validate_id_token_at_hash(accessToken: any, atHash: any, isCodeFlow: boolean): boolean {
+    validateIdTokenAtHash(accessToken: any, atHash: any, isCodeFlow: boolean): boolean {
         this.loggerService.logDebug('at_hash from the server:' + atHash);
 
         // The at_hash is optional for the code flow
@@ -359,12 +371,12 @@ export class OidcSecurityValidation {
             }
         }
 
-        const testdata = this.generate_at_hash('' + accessToken);
+        const testdata = this.generateAtHash('' + accessToken);
         this.loggerService.logDebug('at_hash client validation not decoded:' + testdata);
         if (testdata === (atHash as string)) {
             return true; // isValid;
         } else {
-            const testValue = this.generate_at_hash('' + decodeURIComponent(accessToken));
+            const testValue = this.generateAtHash('' + decodeURIComponent(accessToken));
             this.loggerService.logDebug('-gen access--' + testValue);
             if (testValue === (atHash as string)) {
                 return true; // isValid
@@ -374,7 +386,7 @@ export class OidcSecurityValidation {
         return false;
     }
 
-    private generate_at_hash(accessToken: any): string {
+    private generateAtHash(accessToken: any): string {
         const hash = KJUR.crypto.Util.hashString(accessToken, 'sha256');
         const first128bits = hash.substr(0, hash.length / 2);
         const testdata = hextob64u(first128bits);
@@ -382,7 +394,7 @@ export class OidcSecurityValidation {
         return testdata;
     }
 
-    generate_code_verifier(codeChallenge: any): string {
+    generateCodeVerifier(codeChallenge: any): string {
         const hash = KJUR.crypto.Util.hashString(codeChallenge, 'sha256');
         const testdata = hextob64u(hash);
 

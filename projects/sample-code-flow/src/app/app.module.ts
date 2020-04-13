@@ -38,13 +38,13 @@ export class AppModule {
         this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
             const config: OpenIdConfiguration = {
                 stsServer: configResult.customConfig.stsServer,
-                redirect_url: 'https://localhost:4200',
-                client_id: 'angularClient',
+                redirectUrl: 'https://localhost:4200',
+                clientId: 'angularClient',
                 scope: 'openid profile email',
-                response_type: 'code',
-                silent_renew: true,
-                silent_renew_url: 'https://localhost:4200/silent-renew.html',
-                log_console_debug_active: true,
+                responseType: 'code',
+                silentRenew: true,
+                silentRenewUrl: 'https://localhost:4200/silent-renew.html',
+                logConsoleDebugActive: true,
             };
 
             // config.start_checksession = true;

@@ -9,11 +9,11 @@ import { AuthModule } from '../../lib/modules/auth.module';
 import { ConfigurationProvider } from '../../lib/services/auth-configuration.provider';
 import { IFrameService } from '../../lib/services/existing-iframe.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
+import { OidcSecurityCommon } from '../../lib/services/oidc.security.common';
 import { OidcSecurityService } from '../../lib/services/oidc.security.service';
 import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';
 import { TestLogging } from '../common/test-logging.service';
 import { TestStorage } from '../common/test-storage.service';
-import { OidcSecurityCommon } from '../../lib/services/oidc.security.common';
 
 describe('OidcSecurityService', () => {
     let oidcSecurityService: OidcSecurityService;
@@ -54,38 +54,40 @@ describe('OidcSecurityService', () => {
         // 	"userinfo_endpoint":"https://www.googleapis.com/oauth2/v3/userinfo",
         // 	"revocation_endpoint":"https://accounts.google.com/o/oauth2/revoke",
         // 	"jwks_uri":"https://www.googleapis.com/oauth2/v3/certs",
-        // 	"response_types_supported":[ "code", "token", "id_token", "codetoken", "codeid_token", "tokenid_token", "codetokenid_token", "none" ],
+        // 	"response_types_supported":[ "code", "token", "id_token", "codetoken", "codeid_token", "tokenid_token", "codetokenid_token",
+        // "none" ],
         // 	"subject_types_supported":[ "public" ],
         // 	"id_token_signing_alg_values_supported":[ "RS256" ],
         // 	"scopes_supported":[ "openid", "email", "profile" ],
         // 	"token_endpoint_auth_methods_supported":[ "client_secret_post", "client_secret_basic" ],
-        // 	"claims_supported":[ "aud", "email", "email_verified", "exp", "family_name", "given_name", "iat", "iss","locale","name","picture","sub"],
+        // 	"claims_supported":[ "aud", "email", "email_verified", "exp", "family_name", "given_name", "iat", "iss","locale",
+        // "name", "picture", "sub"],
         // 	"code_challenge_methods_supported":["plain","S256"]}';
         // (oidcSecurityService as any).oidcSecurityCommon.store('wellknownendpoints', well);
 
         const config: OpenIdConfiguration = {};
         config.stsServer = 'https://localhost:5001';
-        config.redirect_url = 'https://localhost:44386';
-        config.client_id = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-        config.response_type = 'id_token token';
+        config.redirectUrl = 'https://localhost:44386';
+        config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+        config.responseType = 'id_token token';
         config.scope = 'openid email profile';
-        config.post_logout_redirect_uri = 'https://localhost:44386/Unauthorized';
-        config.post_login_route = '/home';
-        config.forbidden_route = '/Forbidden';
-        config.unauthorized_route = '/Unauthorized';
-        config.start_checksession = false;
-        config.silent_renew = false;
-        config.silent_renew_offset_in_seconds = 0;
-        config.log_console_warning_active = true;
-        config.log_console_debug_active = true;
-        config.max_id_token_iat_offset_allowed_in_seconds = 10;
+        config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        config.postLoginRoute = '/home';
+        config.forbiddenRoute = '/Forbidden';
+        config.unauthorizedRoute = '/Unauthorized';
+        config.startCheckSession = false;
+        config.silentRenew = false;
+        config.silentRenewOffsetInSeconds = 0;
+        config.logConsoleWarningActive = true;
+        config.logConsoleDebugActive = true;
+        config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configurationProvider.setup(config, null);
 
         const value = (oidcSecurityService as any).createAuthorizeUrl(
             false,
             '', // Implicit Flow
-            config.redirect_url,
+            config.redirectUrl,
             'nonce',
             'state',
             'http://example'
@@ -107,27 +109,27 @@ describe('OidcSecurityService', () => {
         const config: OpenIdConfiguration = {};
 
         config.stsServer = 'https://localhost:5001';
-        config.redirect_url = 'https://localhost:44386';
-        config.client_id = 'myid';
-        config.response_type = 'id_token token';
+        config.redirectUrl = 'https://localhost:44386';
+        config.clientId = 'myid';
+        config.responseType = 'id_token token';
         config.scope = 'openid email profile';
-        config.post_logout_redirect_uri = 'https://localhost:44386/Unauthorized';
-        config.post_login_route = '/home';
-        config.forbidden_route = '/Forbidden';
-        config.unauthorized_route = '/Unauthorized';
-        config.start_checksession = false;
-        config.silent_renew = false;
-        config.silent_renew_offset_in_seconds = 0;
-        config.log_console_warning_active = true;
-        config.log_console_debug_active = true;
-        config.max_id_token_iat_offset_allowed_in_seconds = 10;
+        config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        config.postLoginRoute = '/home';
+        config.forbiddenRoute = '/Forbidden';
+        config.unauthorizedRoute = '/Unauthorized';
+        config.startCheckSession = false;
+        config.silentRenew = false;
+        config.silentRenewOffsetInSeconds = 0;
+        config.logConsoleWarningActive = true;
+        config.logConsoleDebugActive = true;
+        config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configurationProvider.setup(config, null);
 
         const value = (oidcSecurityService as any).createAuthorizeUrl(
             false,
             '', // Implicit Flow
-            config.redirect_url,
+            config.redirectUrl,
             'nonce',
             'state',
             'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=b2c_1_sign_in'
@@ -148,20 +150,20 @@ describe('OidcSecurityService', () => {
     it('createEndSessionUrl with azure-ad-b2c policy parameter', () => {
         const config: OpenIdConfiguration = {};
         config.stsServer = 'https://localhost:5001';
-        config.redirect_url = 'https://localhost:44386';
-        config.client_id = 'myid';
-        config.response_type = 'id_token token';
+        config.redirectUrl = 'https://localhost:44386';
+        config.clientId = 'myid';
+        config.responseType = 'id_token token';
         config.scope = 'openid email profile';
-        config.post_logout_redirect_uri = 'https://localhost:44386/Unauthorized';
-        config.post_login_route = '/home';
-        config.forbidden_route = '/Forbidden';
-        config.unauthorized_route = '/Unauthorized';
-        config.start_checksession = false;
-        config.silent_renew = false;
-        config.silent_renew_offset_in_seconds = 0;
-        config.log_console_warning_active = true;
-        config.log_console_debug_active = true;
-        config.max_id_token_iat_offset_allowed_in_seconds = 10;
+        config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        config.postLoginRoute = '/home';
+        config.forbiddenRoute = '/Forbidden';
+        config.unauthorizedRoute = '/Unauthorized';
+        config.startCheckSession = false;
+        config.silentRenew = false;
+        config.silentRenewOffsetInSeconds = 0;
+        config.logConsoleWarningActive = true;
+        config.logConsoleDebugActive = true;
+        config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configurationProvider.setup(config, null);
 
@@ -181,20 +183,20 @@ describe('OidcSecurityService', () => {
     it('createAuthorizeUrl with custom value', () => {
         const config: OpenIdConfiguration = {};
         config.stsServer = 'https://localhost:5001';
-        config.redirect_url = 'https://localhost:44386';
-        config.client_id = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-        config.response_type = 'id_token token';
+        config.redirectUrl = 'https://localhost:44386';
+        config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+        config.responseType = 'id_token token';
         config.scope = 'openid email profile';
-        config.post_logout_redirect_uri = 'https://localhost:44386/Unauthorized';
-        config.post_login_route = '/home';
-        config.forbidden_route = '/Forbidden';
-        config.unauthorized_route = '/Unauthorized';
-        config.start_checksession = false;
-        config.silent_renew = false;
-        config.silent_renew_offset_in_seconds = 0;
-        config.log_console_warning_active = true;
-        config.log_console_debug_active = true;
-        config.max_id_token_iat_offset_allowed_in_seconds = 10;
+        config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        config.postLoginRoute = '/home';
+        config.forbiddenRoute = '/Forbidden';
+        config.unauthorizedRoute = '/Unauthorized';
+        config.startCheckSession = false;
+        config.silentRenew = false;
+        config.silentRenewOffsetInSeconds = 0;
+        config.logConsoleWarningActive = true;
+        config.logConsoleDebugActive = true;
+        config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         oidcSecurityService.setCustomRequestParameters({
             testcustom: 'customvalue',
@@ -205,7 +207,7 @@ describe('OidcSecurityService', () => {
         const value = (oidcSecurityService as any).createAuthorizeUrl(
             false,
             '', // Implicit Flow
-            config.redirect_url,
+            config.redirectUrl,
             'nonce',
             'state',
             'http://example'
@@ -226,20 +228,20 @@ describe('OidcSecurityService', () => {
     it('createAuthorizeUrl with custom values', () => {
         const config: OpenIdConfiguration = {};
         config.stsServer = 'https://localhost:5001';
-        config.redirect_url = 'https://localhost:44386';
-        config.client_id = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-        config.response_type = 'id_token token';
+        config.redirectUrl = 'https://localhost:44386';
+        config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+        config.responseType = 'id_token token';
         config.scope = 'openid email profile';
-        config.post_logout_redirect_uri = 'https://localhost:44386/Unauthorized';
-        config.post_login_route = '/home';
-        config.forbidden_route = '/Forbidden';
-        config.unauthorized_route = '/Unauthorized';
-        config.start_checksession = false;
-        config.silent_renew = false;
-        config.silent_renew_offset_in_seconds = 0;
-        config.log_console_warning_active = true;
-        config.log_console_debug_active = true;
-        config.max_id_token_iat_offset_allowed_in_seconds = 10;
+        config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        config.postLoginRoute = '/home';
+        config.forbiddenRoute = '/Forbidden';
+        config.unauthorizedRoute = '/Unauthorized';
+        config.startCheckSession = false;
+        config.silentRenew = false;
+        config.silentRenewOffsetInSeconds = 0;
+        config.logConsoleWarningActive = true;
+        config.logConsoleDebugActive = true;
+        config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configurationProvider.setup(config, null);
 
@@ -253,7 +255,7 @@ describe('OidcSecurityService', () => {
         const value = (oidcSecurityService as any).createAuthorizeUrl(
             false,
             '', // Implicit Flow
-            config.redirect_url,
+            config.redirectUrl,
             'nonce',
             'state',
             'http://example'
@@ -273,20 +275,20 @@ describe('OidcSecurityService', () => {
     it('createEndSessionUrl default', () => {
         const config: OpenIdConfiguration = {};
         config.stsServer = 'https://localhost:5001';
-        config.redirect_url = 'https://localhost:44386';
-        config.client_id = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-        config.response_type = 'id_token token';
+        config.redirectUrl = 'https://localhost:44386';
+        config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+        config.responseType = 'id_token token';
         config.scope = 'openid email profile';
-        config.post_logout_redirect_uri = 'https://localhost:44386/Unauthorized';
-        config.post_login_route = '/home';
-        config.forbidden_route = '/Forbidden';
-        config.unauthorized_route = '/Unauthorized';
-        config.start_checksession = false;
-        config.silent_renew = false;
-        config.silent_renew_offset_in_seconds = 0;
-        config.log_console_warning_active = true;
-        config.log_console_debug_active = true;
-        config.max_id_token_iat_offset_allowed_in_seconds = 10;
+        config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        config.postLoginRoute = '/home';
+        config.forbiddenRoute = '/Forbidden';
+        config.unauthorizedRoute = '/Unauthorized';
+        config.startCheckSession = false;
+        config.silentRenew = false;
+        config.silentRenewOffsetInSeconds = 0;
+        config.logConsoleWarningActive = true;
+        config.logConsoleDebugActive = true;
+        config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configurationProvider.setup(config, null);
 
@@ -301,7 +303,7 @@ describe('OidcSecurityService', () => {
         spyOn(oidcSecurityService as any, 'getSigningKeys').and.returnValue(of(null));
 
         const config: OpenIdConfiguration = {
-            silent_renew: false,
+            silentRenew: false,
         };
 
         const resultSetter = spyOnProperty((oidcSecurityService as any).oidcSecurityCommon, 'authResult', 'set');
@@ -319,7 +321,7 @@ describe('OidcSecurityService', () => {
 
         expect(resultSetter).not.toHaveBeenCalled();
 
-        (oidcSecurityService as any)._isModuleSetup.next(true);
+        (oidcSecurityService as any).isModuleSetupInternal.next(true);
 
         expect(resultSetter).toHaveBeenCalledWith(expectedResult);
 
@@ -334,7 +336,7 @@ describe('OidcSecurityService', () => {
 
     it('logoff should call urlHandler', () => {
         const authwellknown = {
-            end_session_endpoint: 'some_endpoint',
+            endSessionEndpoint: 'some_endpoint',
         };
 
         const logoffUrl = 'http://some_logoff_url';
@@ -357,7 +359,7 @@ describe('OidcSecurityService', () => {
 
     it('logoff should redirect', () => {
         const authwellknown = {
-            end_session_endpoint: 'some_endpoint',
+            endSessionEndpoint: 'some_endpoint',
         };
 
         const logoffUrl = 'http://some_logoff_url';
@@ -372,13 +374,13 @@ describe('OidcSecurityService', () => {
         expect(redirectToSpy).toHaveBeenCalledWith(logoffUrl);
     });
 
-    it('logoff should reset storage data before emitting an _isAuthorized change', () => {
+    it('logoff should reset storage data before emitting an isAuthorizedInternal change', () => {
         const authwellknown = {};
 
         const resetStorageData = spyOn((oidcSecurityService as any).oidcSecurityCommon, 'resetStorageData');
         configurationProvider.setup(null, authwellknown);
         let hasBeenCalled = false;
-        (oidcSecurityService as any)._isAuthorized
+        (oidcSecurityService as any).isAuthorizedInternal
             .pipe(
                 skipWhile((isAuthorized: boolean) => !isAuthorized),
                 filter((isAuthorized: boolean) => !isAuthorized)
@@ -390,7 +392,7 @@ describe('OidcSecurityService', () => {
 
         expect(hasBeenCalled).toEqual(false);
 
-        (oidcSecurityService as any)._isAuthorized.next(true);
+        (oidcSecurityService as any).isAuthorizedInternal.next(true);
         (oidcSecurityService as OidcSecurityService).logoff();
 
         expect(hasBeenCalled).toEqual(true);
@@ -404,12 +406,12 @@ describe('OidcSecurityService', () => {
 
         expect(spy).toHaveBeenCalledWith('thisisacode', '0000.1234.000', null);
     });
-    it('refresh session with refresh token should call authorized callback with isRenew running to true', done => {
+    it('refresh session with refresh token should call authorized callback with isRenew running to true', (done) => {
         const config: OpenIdConfiguration = {};
-        config.response_type = 'code';
-        config.silent_renew = true;
-        config.use_refresh_token = true;
-        config.silent_renew_offset_in_seconds = 0;
+        config.responseType = 'code';
+        config.silentRenew = true;
+        config.useRefreshToken = true;
+        config.silentRenewOffsetInSeconds = 0;
         configurationProvider.setup(config, null);
 
         spyOn(oidcSecurityService as any, 'refreshTokensWithCodeProcedure').and.returnValue(of(true));

@@ -23,10 +23,10 @@ export class OidcConfigService {
         return this.httpClient
             .get(configUrl)
             .pipe(
-                switchMap(clientConfiguration => {
+                switchMap((clientConfiguration) => {
                     return this.loadUsingConfiguration(clientConfiguration);
                 }),
-                catchError(error => {
+                catchError((error) => {
                     this.loggerService.logError(`OidcConfigService 'load' threw an error on calling ${configUrl}`, error);
                     this.configurationLoadedInternal.next(undefined);
                     return of(false);
@@ -35,22 +35,22 @@ export class OidcConfigService {
             .toPromise();
     }
 
-    load_using_stsServer(stsServer: string): Promise<boolean> {
+    loadUsingStsServer(stsServer: string): Promise<boolean> {
         return this.loadUsingConfiguration({ stsServer }).toPromise();
     }
 
-    load_using_custom_stsServer(url: string): Promise<boolean> {
+    loadUsingCustomStsServer(url: string): Promise<boolean> {
         return this.httpClient
             .get(url)
             .pipe(
-                switchMap(wellKnownEndpoints => {
+                switchMap((wellKnownEndpoints) => {
                     this.configurationLoadedInternal.next({
                         authWellknownEndpoints: wellKnownEndpoints,
                         customConfig: { stsServer: url },
                     });
                     return of(true);
                 }),
-                catchError(error => {
+                catchError((error) => {
                     this.loggerService.logError(`OidcConfigService 'load_using_custom_stsServer' threw an error on calling ${url}`, error);
                     this.configurationLoadedInternal.next(undefined);
                     return of(false);
@@ -61,21 +61,24 @@ export class OidcConfigService {
 
     private loadUsingConfiguration(clientConfig: any): Observable<boolean> {
         if (!clientConfig.stsServer) {
-            this.loggerService.logError(`Property 'stsServer' is not present of passed config ${JSON.stringify(clientConfig)}`, clientConfig);
+            this.loggerService.logError(
+                `Property 'stsServer' is not present of passed config ${JSON.stringify(clientConfig)}`,
+                clientConfig
+            );
             throw new Error(`Property 'stsServer' is not present of passed config ${JSON.stringify(clientConfig)}`);
         }
 
         const url = `${clientConfig.stsServer}/.well-known/openid-configuration`;
 
         return this.httpClient.get(url).pipe(
-            switchMap(wellKnownEndpoints => {
+            switchMap((wellKnownEndpoints) => {
                 this.configurationLoadedInternal.next({
                     authWellknownEndpoints: wellKnownEndpoints,
                     customConfig: clientConfig,
                 });
                 return of(true);
             }),
-            catchError(error => {
+            catchError((error) => {
                 this.loggerService.logError(`OidcConfigService 'load_using_stsServer' threw an error on calling ${url}`, error);
                 this.configurationLoadedInternal.next(undefined);
                 return of(false);
