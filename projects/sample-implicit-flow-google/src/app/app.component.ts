@@ -1,7 +1,6 @@
 ﻿import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthorizationResult, AuthorizationState, OidcSecurityService } from 'angular-auth-oidc-client';
-import './app.component.css';
 
 @Component({
     selector: 'app-root',

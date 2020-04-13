@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { AuthModule, ConfigResult, OidcConfigService, OidcSecurityService, OpenIdConfiguration } from 'angular-auth-oidc-client';
 import { AppComponent } from './app.component';
-import { Configuration } from './app.constants';
 import { routing } from './app.routes';
 import { AutoLoginComponent } from './auto-login/auto-login.component';
 import { ForbiddenComponent } from './forbidden/forbidden.component';
@@ -29,7 +28,6 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
             deps: [OidcConfigService],
             multi: true,
         },
-        Configuration,
     ],
     bootstrap: [AppComponent],
 })
