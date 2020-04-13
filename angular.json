@@ -320,6 +320,8 @@
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
                         "browserTarget": "sample-code-flow-http-config:build"
+						"sslKey": "certs/dev_localhost.key",
+                        "sslCert": "certs/dev_localhost.pem",
                     },
                     "configurations": {
                         "production": {

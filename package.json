@@ -20,6 +20,7 @@
         "fix-prettier": "prettier --write  \"projects/angular-auth-oidc-client/**/*.ts\"",
         "start": "ng serve --ssl true --project sample-code-flow -o",
         "start-sample-code-flow-auto-login": "ng serve sample-code-flow-auto-login"
+		"start-sample-code-flow-http-config": "ng serve sample-code-flow-http-config"
     },
     "private": true,
     "dependencies": {
