@@ -60,8 +60,8 @@ export class OidcSecurityCheckSession {
             return;
         }
 
-        if (this.configurationProvider.wellKnownEndpoints.check_session_iframe) {
-            this.sessionIframe.contentWindow.location.replace(this.configurationProvider.wellKnownEndpoints.check_session_iframe);
+        if (this.configurationProvider.wellKnownEndpoints.checkSessionIframe) {
+            this.sessionIframe.contentWindow.location.replace(this.configurationProvider.wellKnownEndpoints.checkSessionIframe);
         } else {
             this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
         }

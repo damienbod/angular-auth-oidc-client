@@ -10,13 +10,13 @@ export class LoggerService {
     }
 
     logWarning(message: any) {
-        if (this.configurationProvider.openIDConfiguration.log_console_warning_active) {
+        if (this.configurationProvider.openIDConfiguration.logConsoleWarningActive) {
             console.warn(message);
         }
     }
 
     logDebug(message: any) {
-        if (this.configurationProvider.openIDConfiguration.log_console_debug_active) {
+        if (this.configurationProvider.openIDConfiguration.logConsoleDebugActive) {
             console.log(message);
         }
     }

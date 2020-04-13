@@ -42,7 +42,8 @@ export class OidcSecurityUserService {
             throw Error('authWellKnownEndpoints is undefined');
         }
 
-        const canGetUserData = this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.userinfo_endpoint;
+        const canGetUserData =
+            this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.userinfoEndpoint;
 
         if (!canGetUserData) {
             this.loggerService.logError(
@@ -51,6 +52,6 @@ export class OidcSecurityUserService {
             throw Error('authWellKnownEndpoints.userinfo_endpoint is undefined');
         }
 
-        return this.oidcDataService.getIdentityUserData(this.configurationProvider.wellKnownEndpoints.userinfo_endpoint || '', token);
+        return this.oidcDataService.getIdentityUserData(this.configurationProvider.wellKnownEndpoints.userinfoEndpoint || '', token);
     }
 }

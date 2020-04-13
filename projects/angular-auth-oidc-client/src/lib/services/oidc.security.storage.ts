@@ -29,7 +29,9 @@ export class BrowserStorage implements OidcSecurityStorage {
 
     public read(key: string): any {
         if (this.hasStorage) {
-            return JSON.parse(this.configProvider.openIDConfiguration.storage.getItem(key + '_' + this.configProvider.openIDConfiguration.client_id));
+            return JSON.parse(
+                this.configProvider.openIDConfiguration.storage.getItem(key + '_' + this.configProvider.openIDConfiguration.clientId)
+            );
         }
 
         return;
@@ -39,7 +41,7 @@ export class BrowserStorage implements OidcSecurityStorage {
         if (this.hasStorage) {
             value = value === undefined ? null : value;
             this.configProvider.openIDConfiguration.storage.setItem(
-                key + '_' + this.configProvider.openIDConfiguration.client_id,
+                key + '_' + this.configProvider.openIDConfiguration.clientId,
                 JSON.stringify(value)
             );
         }

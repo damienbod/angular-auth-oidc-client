@@ -1,8 +1,8 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, TestBed } from '@angular/core/testing';
+import { LoggerService } from '../../lib/angular-auth-oidc-client';
 import { AuthModule } from '../../lib/modules/auth.module';
 import { OidcConfigService } from '../../lib/services/oidc.security.config.service';
-import { LoggerService } from '../../lib/angular-auth-oidc-client';
 import { TestLogging } from '../common/test-logging.service';
 
 describe('OidcConfigService', () => {
@@ -47,7 +47,7 @@ describe('OidcConfigService', () => {
             const spy = spyOn(loggerService, 'logError');
             const expectedErrorMessage = `Property 'stsServer' is not present of passed config ${JSON.stringify(returnedClientConfig)}`;
 
-            oidcConfigService.load(configUrl).then(result => {
+            oidcConfigService.load(configUrl).then((result) => {
                 expect(result).toBe(false);
                 expect(spy).toHaveBeenCalledWith(expectedErrorMessage, returnedClientConfig);
             });
@@ -74,12 +74,12 @@ describe('OidcConfigService', () => {
 
             const spy = spyOn((oidcConfigService as any).configurationLoadedInternal, 'next').and.callThrough();
 
-            oidcConfigService.load(configUrl).then(result => {
+            oidcConfigService.load(configUrl).then((result) => {
                 expect(result).toBe(true);
                 expect(spy).toHaveBeenCalledWith(expectedResult);
             });
 
-            oidcConfigService.onConfigurationLoaded.subscribe(result => {
+            oidcConfigService.onConfigurationLoaded.subscribe((result) => {
                 expect(result).toEqual(expectedResult);
             });
 
@@ -117,12 +117,12 @@ describe('OidcConfigService', () => {
 
             const spy = spyOn((oidcConfigService as any).configurationLoadedInternal, 'next').and.callThrough();
 
-            oidcConfigService.load_using_stsServer(stsServer).then(result => {
+            oidcConfigService.load_using_stsServer(stsServer).then((result) => {
                 expect(result).toBe(true);
                 expect(spy).toHaveBeenCalledWith(expectedResult);
             });
 
-            oidcConfigService.onConfigurationLoaded.subscribe(result => {
+            oidcConfigService.onConfigurationLoaded.subscribe((result) => {
                 expect(result).toEqual(expectedResult);
             });
 
@@ -148,12 +148,12 @@ describe('OidcConfigService', () => {
 
             const spy = spyOn((oidcConfigService as any).configurationLoadedInternal, 'next').and.callThrough();
 
-            oidcConfigService.load_using_custom_stsServer(stsServer).then(result => {
+            oidcConfigService.load_using_custom_stsServer(stsServer).then((result) => {
                 expect(result).toBe(true);
                 expect(spy).toHaveBeenCalledWith(expectedResult);
             });
 
-            oidcConfigService.onConfigurationLoaded.subscribe(result => {
+            oidcConfigService.onConfigurationLoaded.subscribe((result) => {
                 expect(result).toEqual(expectedResult);
             });
 

@@ -28,18 +28,18 @@ export class StateValidationService {
         }
 
         if (
-            this.configurationProvider.openIDConfiguration.response_type === 'id_token token' ||
-            this.configurationProvider.openIDConfiguration.response_type === 'code'
+            this.configurationProvider.openIDConfiguration.responseType === 'id_token token' ||
+            this.configurationProvider.openIDConfiguration.responseType === 'code'
         ) {
-            toReturn.access_token = result.access_token;
+            toReturn.accessToken = result.access_token;
         }
 
         if (result.id_token) {
-            toReturn.id_token = result.id_token;
+            toReturn.idToken = result.id_token;
 
-            toReturn.decoded_id_token = this.tokenHelperService.getPayloadFromToken(toReturn.id_token, false);
+            toReturn.decodedIdToken = this.tokenHelperService.getPayloadFromToken(toReturn.idToken, false);
 
-            if (!this.oidcSecurityValidation.validate_signature_id_token(toReturn.id_token, jwtKeys)) {
+            if (!this.oidcSecurityValidation.validate_signature_id_token(toReturn.idToken, jwtKeys)) {
                 this.loggerService.logDebug('authorizedCallback Signature validation failed id_token');
                 toReturn.state = ValidationResult.SignatureFailed;
                 this.handleUnsuccessfulValidation();
@@ -48,9 +48,9 @@ export class StateValidationService {
 
             if (
                 !this.oidcSecurityValidation.validate_id_token_nonce(
-                    toReturn.decoded_id_token,
+                    toReturn.decodedIdToken,
                     this.oidcSecurityCommon.authNonce,
-                    this.configurationProvider.openIDConfiguration.ignore_nonce_after_refresh
+                    this.configurationProvider.openIDConfiguration.ignoreNonceAfterRefresh
                 )
             ) {
                 this.loggerService.logWarning('authorizedCallback incorrect nonce');
@@ -59,7 +59,7 @@ export class StateValidationService {
                 return toReturn;
             }
 
-            if (!this.oidcSecurityValidation.validate_required_id_token(toReturn.decoded_id_token)) {
+            if (!this.oidcSecurityValidation.validate_required_id_token(toReturn.decodedIdToken)) {
                 this.loggerService.logDebug('authorizedCallback Validation, one of the REQUIRED properties missing from id_token');
                 toReturn.state = ValidationResult.RequiredPropertyMissing;
                 this.handleUnsuccessfulValidation();
@@ -68,24 +68,26 @@ export class StateValidationService {
 
             if (
                 !this.oidcSecurityValidation.validate_id_token_iat_max_offset(
-                    toReturn.decoded_id_token,
-                    this.configurationProvider.openIDConfiguration.max_id_token_iat_offset_allowed_in_seconds,
-                    this.configurationProvider.openIDConfiguration.disable_iat_offset_validation
+                    toReturn.decodedIdToken,
+                    this.configurationProvider.openIDConfiguration.maxIdTokenIatOffsetAllowedInSeconds,
+                    this.configurationProvider.openIDConfiguration.disableIatOffsetValidation
                 )
             ) {
-                this.loggerService.logWarning('authorizedCallback Validation, iat rejected id_token was issued too far away from the current time');
+                this.loggerService.logWarning(
+                    'authorizedCallback Validation, iat rejected id_token was issued too far away from the current time'
+                );
                 toReturn.state = ValidationResult.MaxOffsetExpired;
                 this.handleUnsuccessfulValidation();
                 return toReturn;
             }
 
             if (this.configurationProvider.wellKnownEndpoints) {
-                if (this.configurationProvider.openIDConfiguration.iss_validation_off) {
+                if (this.configurationProvider.openIDConfiguration.issValidationOff) {
                     this.loggerService.logDebug('iss validation is turned off, this is not recommended!');
                 } else if (
-                    !this.configurationProvider.openIDConfiguration.iss_validation_off &&
+                    !this.configurationProvider.openIDConfiguration.issValidationOff &&
                     !this.oidcSecurityValidation.validate_id_token_iss(
-                        toReturn.decoded_id_token,
+                        toReturn.decodedIdToken,
                         this.configurationProvider.wellKnownEndpoints.issuer
                     )
                 ) {
@@ -103,8 +105,8 @@ export class StateValidationService {
 
             if (
                 !this.oidcSecurityValidation.validate_id_token_aud(
-                    toReturn.decoded_id_token,
-                    this.configurationProvider.openIDConfiguration.client_id
+                    toReturn.decodedIdToken,
+                    this.configurationProvider.openIDConfiguration.clientId
                 )
             ) {
                 this.loggerService.logWarning('authorizedCallback incorrect aud');
@@ -113,7 +115,7 @@ export class StateValidationService {
                 return toReturn;
             }
 
-            if (!this.oidcSecurityValidation.validate_id_token_exp_not_expired(toReturn.decoded_id_token)) {
+            if (!this.oidcSecurityValidation.validate_id_token_exp_not_expired(toReturn.decodedIdToken)) {
                 this.loggerService.logWarning('authorizedCallback token expired');
                 toReturn.state = ValidationResult.TokenExpired;
                 this.handleUnsuccessfulValidation();
@@ -125,8 +127,8 @@ export class StateValidationService {
 
         // flow id_token token
         if (
-            this.configurationProvider.openIDConfiguration.response_type !== 'id_token token' &&
-            this.configurationProvider.openIDConfiguration.response_type !== 'code'
+            this.configurationProvider.openIDConfiguration.responseType !== 'id_token token' &&
+            this.configurationProvider.openIDConfiguration.responseType !== 'code'
         ) {
             toReturn.authResponseIsValid = true;
             toReturn.state = ValidationResult.Ok;
@@ -137,11 +139,11 @@ export class StateValidationService {
 
         if (
             !this.oidcSecurityValidation.validate_id_token_at_hash(
-                toReturn.access_token,
-                toReturn.decoded_id_token.at_hash,
-                this.configurationProvider.openIDConfiguration.response_type === 'code'
+                toReturn.accessToken,
+                toReturn.decodedIdToken.at_hash,
+                this.configurationProvider.openIDConfiguration.responseType === 'code'
             ) ||
-            !toReturn.access_token
+            !toReturn.accessToken
         ) {
             this.loggerService.logWarning('authorizedCallback incorrect at_hash');
             toReturn.state = ValidationResult.IncorrectAtHash;
@@ -158,7 +160,7 @@ export class StateValidationService {
     private handleSuccessfulValidation() {
         this.oidcSecurityCommon.authNonce = '';
 
-        if (this.configurationProvider.openIDConfiguration.auto_clean_state_after_authentication) {
+        if (this.configurationProvider.openIDConfiguration.autoCleanStateAfterAuthentication) {
             this.oidcSecurityCommon.authStateControl = '';
         }
         this.loggerService.logDebug('AuthorizedCallback token(s) validated, continue');
@@ -167,7 +169,7 @@ export class StateValidationService {
     private handleUnsuccessfulValidation() {
         this.oidcSecurityCommon.authNonce = '';
 
-        if (this.configurationProvider.openIDConfiguration.auto_clean_state_after_authentication) {
+        if (this.configurationProvider.openIDConfiguration.autoCleanStateAfterAuthentication) {
             this.oidcSecurityCommon.authStateControl = '';
         }
         this.loggerService.logDebug('AuthorizedCallback token(s) invalid');
