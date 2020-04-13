@@ -1,46 +1,25 @@
-import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { AuthModule, ConfigResult, OidcConfigService, OidcSecurityService, OpenIdConfiguration } from 'angular-auth-oidc-client';
 import { AppComponent } from './app.component';
 import { Configuration } from './app.constants';
 import { routing } from './app.routes';
-import { HttpClientModule } from '@angular/common/http';
+import { AutoLoginComponent } from './auto-login/auto-login.component';
 import { ForbiddenComponent } from './forbidden/forbidden.component';
 import { HomeComponent } from './home/home.component';
-import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 import { NavigationComponent } from './navigation/navigation.component';
-import { AutoLoginComponent } from './auto-login/auto-login.component';
-
-import {
-    AuthModule,
-    OidcSecurityService,
-    ConfigResult,
-    OidcConfigService,
-    OpenIdConfiguration
-} from 'angular-auth-oidc-client';
+import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
     console.log('APP_INITIALIZER STARTING');
-    return () => oidcConfigService.load_using_stsServer('https://accounts.google.com');
+    return () => oidcConfigService.loadUsingStsServer('https://accounts.google.com');
 }
 
 @NgModule({
-    imports: [
-        BrowserModule,
-        FormsModule,
-        routing,
-        HttpClientModule,
-        AuthModule.forRoot(),
-    ],
-    declarations: [
-        AppComponent,
-        ForbiddenComponent,
-        HomeComponent,
-        AutoLoginComponent,
-        NavigationComponent,
-        UnauthorizedComponent
-    ],
+    imports: [BrowserModule, FormsModule, routing, HttpClientModule, AuthModule.forRoot()],
+    declarations: [AppComponent, ForbiddenComponent, HomeComponent, AutoLoginComponent, NavigationComponent, UnauthorizedComponent],
     providers: [
         OidcSecurityService,
         OidcConfigService,
@@ -48,39 +27,33 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
             provide: APP_INITIALIZER,
             useFactory: loadConfig,
             deps: [OidcConfigService],
-            multi: true
+            multi: true,
         },
-        Configuration
+        Configuration,
     ],
-    bootstrap:    [AppComponent],
+    bootstrap: [AppComponent],
 })
-
 export class AppModule {
-    constructor(
-        private oidcSecurityService: OidcSecurityService,
-        private oidcConfigService: OidcConfigService,
-    ) {
-
+    constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
         this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
-
             const config: OpenIdConfiguration = {
                 stsServer: 'https://accounts.google.com',
-                redirect_url: 'https://localhost:44386',
-                client_id: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
-                response_type: 'id_token token',
+                redirectUrl: 'https://localhost:44386',
+                clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
+                responseType: 'id_token token',
                 scope: 'openid email profile',
-                trigger_authorization_result_event: true,
-                post_logout_redirect_uri: 'https://localhost:44386/unauthorized',
-                start_checksession: false,
-                silent_renew: false,
-                silent_renew_url: 'https://localhost:44386/silent-renew.html',
-                post_login_route: '/home',
-                forbidden_route: '/forbidden',
-                unauthorized_route: '/unauthorized',
-                log_console_warning_active: true,
-                log_console_debug_active: true,
-                max_id_token_iat_offset_allowed_in_seconds: 30,
-                history_cleanup_off: true
+                triggerAuthorizationResultEvent: true,
+                postLogoutRedirectUri: 'https://localhost:44386/unauthorized',
+                startCheckSession: false,
+                silentRenew: false,
+                silentRenewUrl: 'https://localhost:44386/silent-renew.html',
+                postLoginRoute: '/home',
+                forbiddenRoute: '/forbidden',
+                unauthorizedRoute: '/unauthorized',
+                logConsoleWarningActive: true,
+                logConsoleDebugActive: true,
+                maxIdTokenIatOffsetAllowedInSeconds: 30,
+                historyCleanupOff: true,
                 // iss_validation_off: false
                 // disable_iat_offset_validation: true
             };

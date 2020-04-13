@@ -1,20 +1,14 @@
-﻿import { Component, OnInit, OnDestroy } from '@angular/core';
+﻿import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-
-import { OidcSecurityService, AuthorizationResult, AuthorizationState} from 'angular-auth-oidc-client';
-
+import { AuthorizationResult, AuthorizationState, OidcSecurityService } from 'angular-auth-oidc-client';
 import './app.component.css';
 
 @Component({
-    selector: 'app-component',
-    templateUrl: 'app.component.html'
+    selector: 'app-root',
+    templateUrl: 'app.component.html',
 })
-
 export class AppComponent implements OnInit, OnDestroy {
-
-    constructor(public oidcSecurityService: OidcSecurityService,
-        private router: Router
-    ) {
+    constructor(public oidcSecurityService: OidcSecurityService, private router: Router) {
         if (this.oidcSecurityService.moduleSetup) {
             this.onOidcModuleSetup();
         } else {
@@ -23,17 +17,14 @@ export class AppComponent implements OnInit, OnDestroy {
             });
         }
 
-        this.oidcSecurityService.onAuthorizationResult.subscribe(
-            (authorizationResult: AuthorizationResult) => {
-                this.onAuthorizationResultComplete(authorizationResult);
-            });
+        this.oidcSecurityService.onAuthorizationResult.subscribe((authorizationResult: AuthorizationResult) => {
+            this.onAuthorizationResultComplete(authorizationResult);
+        });
     }
 
-    ngOnInit() {
-    }
+    ngOnInit() {}
 
-    ngOnDestroy(): void {
-    }
+    ngOnDestroy(): void {}
 
     login() {
         console.log('start login');
@@ -67,11 +58,13 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private onAuthorizationResultComplete(authorizationResult: AuthorizationResult) {
-
         const path = this.read('redirect');
-        console.log('Auth result received AuthorizationState:'
-            + authorizationResult.authorizationState
-            + ' validationResult:' + authorizationResult.validationResult);
+        console.log(
+            'Auth result received AuthorizationState:' +
+                authorizationResult.authorizationState +
+                ' validationResult:' +
+                authorizationResult.validationResult
+        );
 
         if (authorizationResult.authorizationState === AuthorizationState.authorized) {
             this.router.navigate([path]);
