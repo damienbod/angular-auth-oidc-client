@@ -268,7 +268,7 @@ export class OidcSecurityService {
             return;
         }
 
-        if (!this.oidcSecurityValidation.config_validate_response_type(this.configurationProvider.openIDConfiguration.responseType)) {
+        if (!this.oidcSecurityValidation.configValidateResponseType(this.configurationProvider.openIDConfiguration.responseType)) {
             // invalid response_type
             return;
         }
@@ -292,9 +292,9 @@ export class OidcSecurityService {
         if (this.configurationProvider.openIDConfiguration.responseType === 'code') {
             // code_challenge with "S256"
             const codeVerifier = 'C' + Math.random() + '' + Date.now() + '' + Date.now() + Math.random();
-            const codeChallenge = this.oidcSecurityValidation.generate_code_verifier(codeVerifier);
+            const codeChallenge = this.oidcSecurityValidation.generateCodeVerifier(codeVerifier);
 
-            this.oidcSecurityCommon.code_verifier = codeVerifier;
+            this.oidcSecurityCommon.codeVerifier = codeVerifier;
 
             if (this.configurationProvider.wellKnownEndpoints) {
                 url = this.createAuthorizeUrl(
@@ -418,12 +418,12 @@ export class OidcSecurityService {
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
         let data = oneLineTrim`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.clientId}
-            &code_verifier=${this.oidcSecurityCommon.code_verifier}
+            &code_verifier=${this.oidcSecurityCommon.codeVerifier}
             &code=${code}&redirect_uri=${this.configurationProvider.openIDConfiguration.redirectUrl}`;
 
         if (this.oidcSecurityCommon.silentRenewRunning === 'running') {
             data = oneLineTrim`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.clientId}
-                &code_verifier=${this.oidcSecurityCommon.code_verifier}
+                &code_verifier=${this.oidcSecurityCommon.codeVerifier}
                 &code=${code}
                 &redirect_uri=${this.configurationProvider.openIDConfiguration.silentRenewUrl}`;
         }
@@ -630,7 +630,7 @@ export class OidcSecurityService {
 
                         const userData = this.oidcSecurityUserService.getUserData();
 
-                        if (this.oidcSecurityValidation.validate_userdata_sub_id_token(decodedIdToken.sub, userData.sub)) {
+                        if (this.oidcSecurityValidation.validateUserdataSubIdToken(decodedIdToken.sub, userData.sub)) {
                             this.setUserData(userData);
                             this.loggerService.logDebug(this.oidcSecurityCommon.accessToken);
                             this.loggerService.logDebug(this.oidcSecurityUserService.getUserData());
@@ -732,9 +732,9 @@ export class OidcSecurityService {
             }
             // code_challenge with "S256"
             const codeVerifier = 'C' + Math.random() + '' + Date.now() + '' + Date.now() + Math.random();
-            const codeChallenge = this.oidcSecurityValidation.generate_code_verifier(codeVerifier);
+            const codeChallenge = this.oidcSecurityValidation.generateCodeVerifier(codeVerifier);
 
-            this.oidcSecurityCommon.code_verifier = codeVerifier;
+            this.oidcSecurityCommon.codeVerifier = codeVerifier;
 
             if (this.configurationProvider.wellKnownEndpoints) {
                 url = this.createAuthorizeUrl(

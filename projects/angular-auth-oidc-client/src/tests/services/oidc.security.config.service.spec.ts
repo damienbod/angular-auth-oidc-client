@@ -99,7 +99,7 @@ describe('OidcConfigService', () => {
             const configUrl = '';
 
             expect(() => {
-                oidcConfigService.load_using_stsServer(configUrl);
+                oidcConfigService.loadUsingStsServer(configUrl);
             }).toThrowError();
         }));
 
@@ -117,7 +117,7 @@ describe('OidcConfigService', () => {
 
             const spy = spyOn((oidcConfigService as any).configurationLoadedInternal, 'next').and.callThrough();
 
-            oidcConfigService.load_using_stsServer(stsServer).then((result) => {
+            oidcConfigService.loadUsingStsServer(stsServer).then((result) => {
                 expect(result).toBe(true);
                 expect(spy).toHaveBeenCalledWith(expectedResult);
             });
@@ -148,7 +148,7 @@ describe('OidcConfigService', () => {
 
             const spy = spyOn((oidcConfigService as any).configurationLoadedInternal, 'next').and.callThrough();
 
-            oidcConfigService.load_using_custom_stsServer(stsServer).then((result) => {
+            oidcConfigService.loadUsingCustomStsServer(stsServer).then((result) => {
                 expect(result).toBe(true);
                 expect(spy).toHaveBeenCalledWith(expectedResult);
             });

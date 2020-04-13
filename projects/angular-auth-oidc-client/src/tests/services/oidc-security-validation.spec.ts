@@ -61,10 +61,10 @@ describe('OidcSecurityValidation', () => {
         configProvider.setup(config, null);
 
         const dataIdToken = { aud: 'banana' };
-        const valueTrue = oidcSecurityValidation.validate_id_token_aud(dataIdToken, 'banana');
+        const valueTrue = oidcSecurityValidation.validateIdTokenAud(dataIdToken, 'banana');
         expect(valueTrue).toEqual(true);
 
-        const valueFalse = oidcSecurityValidation.validate_id_token_aud(dataIdToken, 'bananammmm');
+        const valueFalse = oidcSecurityValidation.validateIdTokenAud(dataIdToken, 'bananammmm');
         expect(valueFalse).toEqual(false);
     });
 
@@ -91,42 +91,42 @@ describe('OidcSecurityValidation', () => {
         const dataIdToken = {
             aud: ['banana', 'apple', 'https://nice.dom'],
         };
-        const valueTrue = oidcSecurityValidation.validate_id_token_aud(dataIdToken, ['banana', 'apple', 'https://nice.dom']);
+        const valueTrue = oidcSecurityValidation.validateIdTokenAud(dataIdToken, ['banana', 'apple', 'https://nice.dom']);
         expect(valueTrue).toEqual(true);
 
-        const valueFalse = oidcSecurityValidation.validate_id_token_aud(dataIdToken, ['ooo', 'apple', 'https://nice.dom']);
+        const valueFalse = oidcSecurityValidation.validateIdTokenAud(dataIdToken, ['ooo', 'apple', 'https://nice.dom']);
         expect(valueFalse).toEqual(false);
     });
 
     it('should validate id token nonce after code grant when match', () => {
-        expect(oidcSecurityValidation.validate_id_token_nonce({ nonce: 'test1' }, 'test1', false)).toBe(true);
+        expect(oidcSecurityValidation.validateIdTokenNonce({ nonce: 'test1' }, 'test1', false)).toBe(true);
     });
 
     it('should not validate id token nonce after code grant when no match', () => {
-        expect(oidcSecurityValidation.validate_id_token_nonce({ nonce: 'test1' }, 'test2', false)).toBe(false);
+        expect(oidcSecurityValidation.validateIdTokenNonce({ nonce: 'test1' }, 'test2', false)).toBe(false);
     });
 
     it('should validate id token nonce after refresh token grant when undefined and no ignore', () => {
         expect(
-            oidcSecurityValidation.validate_id_token_nonce({ nonce: undefined }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, false)
+            oidcSecurityValidation.validateIdTokenNonce({ nonce: undefined }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, false)
         ).toBe(true);
     });
 
     it('should validate id token nonce after refresh token grant when undefined and ignore', () => {
         expect(
-            oidcSecurityValidation.validate_id_token_nonce({ nonce: undefined }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, true)
+            oidcSecurityValidation.validateIdTokenNonce({ nonce: undefined }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, true)
         ).toBe(true);
     });
 
     it('should validate id token nonce after refresh token grant when defined and ignore', () => {
         expect(
-            oidcSecurityValidation.validate_id_token_nonce({ nonce: 'test1' }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, true)
+            oidcSecurityValidation.validateIdTokenNonce({ nonce: 'test1' }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, true)
         ).toBe(true);
     });
 
     it('should not validate id token nonce after refresh token grant when defined and no ignore', () => {
         expect(
-            oidcSecurityValidation.validate_id_token_nonce({ nonce: 'test1' }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, false)
+            oidcSecurityValidation.validateIdTokenNonce({ nonce: 'test1' }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, false)
         ).toBe(false);
     });
 });

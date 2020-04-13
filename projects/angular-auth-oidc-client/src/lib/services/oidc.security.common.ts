@@ -65,13 +65,13 @@ export class OidcSecurityCommon {
         this.store(this.storageAuthNonce, value);
     }
 
-    private storageCodeVerifier = 'code_verifier';
+    private storageCodeVerifier = 'codeVerifier';
 
-    public get code_verifier(): string {
+    public get codeVerifier(): string {
         return this.retrieve(this.storageCodeVerifier) || '';
     }
 
-    public set code_verifier(value: string) {
+    public set codeVerifier(value: string) {
         this.store(this.storageCodeVerifier, value);
     }
 

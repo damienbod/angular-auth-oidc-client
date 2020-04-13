@@ -64,12 +64,12 @@ export class OidcSecurityValidation {
         let decoded: any;
         decoded = this.tokenHelperService.getPayloadFromToken(token, false);
 
-        return !this.validate_id_token_exp_not_expired(decoded, offsetSeconds);
+        return !this.validateIdTokenExpNotExpired(decoded, offsetSeconds);
     }
 
     // id_token C7: The current time MUST be before the time represented by the exp Claim
     // (possibly allowing for some small leeway to account for clock skew).
-    validate_id_token_exp_not_expired(decodedIdToken: string, offsetSeconds?: number): boolean {
+    validateIdTokenExpNotExpired(decodedIdToken: string, offsetSeconds?: number): boolean {
         const tokenExpirationDate = this.tokenHelperService.getTokenExpirationDate(decodedIdToken);
         offsetSeconds = offsetSeconds || 0;
 
@@ -115,7 +115,7 @@ export class OidcSecurityValidation {
     // REQUIRED. Time at which the JWT was issued. Its value is a JSON number representing the number of seconds from
     // 1970- 01 - 01T00: 00: 00Z as measured
     // in UTC until the date/ time.
-    validate_required_id_token(dataIdToken: any): boolean {
+    validateRequiredIdToken(dataIdToken: any): boolean {
         let validated = true;
         if (!dataIdToken.hasOwnProperty('iss')) {
             validated = false;
@@ -147,7 +147,7 @@ export class OidcSecurityValidation {
 
     // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
     // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
-    validate_id_token_iat_max_offset(dataIdToken: any, maxOffsetAllowedInSeconds: number, disableIatOffsetValidation: boolean): boolean {
+    validateIdTokenIatMaxOffset(dataIdToken: any, maxOffsetAllowedInSeconds: number, disableIatOffsetValidation: boolean): boolean {
         if (disableIatOffsetValidation) {
             return true;
         }
@@ -181,7 +181,7 @@ export class OidcSecurityValidation {
     // However the nonce claim SHOULD not be present for the refesh_token grant type
     // https://bitbucket.org/openid/connect/issues/1025/ambiguity-with-how-nonce-is-handled-on
     // The current spec is ambiguous and Keycloak does send it.
-    validate_id_token_nonce(dataIdToken: any, localNonce: any, ignoreNonceAfterRefresh: boolean): boolean {
+    validateIdTokenNonce(dataIdToken: any, localNonce: any, ignoreNonceAfterRefresh: boolean): boolean {
         const isFromRefreshToken =
             (dataIdToken.nonce === undefined || ignoreNonceAfterRefresh) &&
             localNonce === OidcSecurityValidation.RefreshTokenNoncePlaceholder;
@@ -197,7 +197,7 @@ export class OidcSecurityValidation {
 
     // id_token C1: The Issuer Identifier for the OpenID Provider (which is typically obtained during Discovery)
     // MUST exactly match the value of the iss (issuer) Claim.
-    validate_id_token_iss(dataIdToken: any, authWellKnownEndpointsIssuer: any): boolean {
+    validateIdTokenIss(dataIdToken: any, authWellKnownEndpointsIssuer: any): boolean {
         if ((dataIdToken.iss as string) !== (authWellKnownEndpointsIssuer as string)) {
             this.loggerService.logDebug(
                 'Validate_id_token_iss failed, dataIdToken.iss: ' +
@@ -215,7 +215,7 @@ export class OidcSecurityValidation {
     // by the iss (issuer) Claim as an audience.
     // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences
     // not trusted by the Client.
-    validate_id_token_aud(dataIdToken: any, aud: any): boolean {
+    validateIdTokenAud(dataIdToken: any, aud: any): boolean {
         if (dataIdToken.aud instanceof Array) {
             const result = this.arrayHelperService.areEqual(dataIdToken.aud, aud);
 
@@ -245,7 +245,7 @@ export class OidcSecurityValidation {
         return true;
     }
 
-    validate_userdata_sub_id_token(idTokenSub: any, userdataSub: any): boolean {
+    validateUserdataSubIdToken(idTokenSub: any, userdataSub: any): boolean {
         if ((idTokenSub as string) !== (userdataSub as string)) {
             this.loggerService.logDebug(
                 'validate_userdata_sub_id_token failed, id_token_sub: ' + idTokenSub + ' userdata_sub:' + userdataSub
@@ -260,7 +260,7 @@ export class OidcSecurityValidation {
     // Header Parameter of the JOSE Header.The Client MUST use the keys provided by the Issuer.
     // id_token C6: The alg value SHOULD be RS256. Validation of tokens using other signing algorithms is described in the
     // OpenID Connect Core 1.0 [OpenID.Core] specification.
-    validate_signature_id_token(idToken: any, jwtkeys: any): boolean {
+    validateSignatureIdToken(idToken: any, jwtkeys: any): boolean {
         if (!jwtkeys || !jwtkeys.keys) {
             return false;
         }
@@ -327,7 +327,7 @@ export class OidcSecurityValidation {
         return isValid;
     }
 
-    config_validate_response_type(responseType: string): boolean {
+    configValidateResponseType(responseType: string): boolean {
         if (responseType === 'id_token token' || responseType === 'id_token') {
             return true;
         }
@@ -360,7 +360,7 @@ export class OidcSecurityValidation {
     // access_token C2: Take the left- most half of the hash and base64url- encode it.
     // access_token C3: The value of at_hash in the ID Token MUST match the value produced in the previous step if at_hash
     // is present in the ID Token.
-    validate_id_token_at_hash(accessToken: any, atHash: any, isCodeFlow: boolean): boolean {
+    validateIdTokenAtHash(accessToken: any, atHash: any, isCodeFlow: boolean): boolean {
         this.loggerService.logDebug('at_hash from the server:' + atHash);
 
         // The at_hash is optional for the code flow
@@ -371,12 +371,12 @@ export class OidcSecurityValidation {
             }
         }
 
-        const testdata = this.generate_at_hash('' + accessToken);
+        const testdata = this.generateAtHash('' + accessToken);
         this.loggerService.logDebug('at_hash client validation not decoded:' + testdata);
         if (testdata === (atHash as string)) {
             return true; // isValid;
         } else {
-            const testValue = this.generate_at_hash('' + decodeURIComponent(accessToken));
+            const testValue = this.generateAtHash('' + decodeURIComponent(accessToken));
             this.loggerService.logDebug('-gen access--' + testValue);
             if (testValue === (atHash as string)) {
                 return true; // isValid
@@ -386,7 +386,7 @@ export class OidcSecurityValidation {
         return false;
     }
 
-    private generate_at_hash(accessToken: any): string {
+    private generateAtHash(accessToken: any): string {
         const hash = KJUR.crypto.Util.hashString(accessToken, 'sha256');
         const first128bits = hash.substr(0, hash.length / 2);
         const testdata = hextob64u(first128bits);
@@ -394,7 +394,7 @@ export class OidcSecurityValidation {
         return testdata;
     }
 
-    generate_code_verifier(codeChallenge: any): string {
+    generateCodeVerifier(codeChallenge: any): string {
         const hash = KJUR.crypto.Util.hashString(codeChallenge, 'sha256');
         const testdata = hextob64u(hash);
 

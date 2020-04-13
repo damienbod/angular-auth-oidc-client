@@ -35,11 +35,11 @@ export class OidcConfigService {
             .toPromise();
     }
 
-    load_using_stsServer(stsServer: string): Promise<boolean> {
+    loadUsingStsServer(stsServer: string): Promise<boolean> {
         return this.loadUsingConfiguration({ stsServer }).toPromise();
     }
 
-    load_using_custom_stsServer(url: string): Promise<boolean> {
+    loadUsingCustomStsServer(url: string): Promise<boolean> {
         return this.httpClient
             .get(url)
             .pipe(
