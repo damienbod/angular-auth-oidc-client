@@ -35,16 +35,8 @@ export class OidcConfigService {
             return;
         }
 
-        let customConfig$ = null;
-
-        if (config.customConfigServer) {
-            customConfig$ = this.httpClient.get(config.customConfigServer).pipe(map((result) => mappingFunction(result)));
-        } else {
-            customConfig$ = of(config as OpenIdConfiguration);
-        }
-
-        const url = `${config.stsServer}/${this.STS_SERVER_SUFFIX}`;
-        const stsServerConfig$ = this.httpClient.get<any>(url);
+        const customConfig$ = this.getCustomConfig(config);
+        const stsServerConfig$ = this.getWellKnownDocument(config);
 
         const loadConfig$ = combineLatest([customConfig$, stsServerConfig$]).pipe(
             map(([customConfig, wellKnownEndpoints]: [OpenIdConfiguration, any]) => {
@@ -67,5 +59,18 @@ export class OidcConfigService {
         );
 
         return loadConfig$.toPromise();
+    }
+
+    private getCustomConfig(config: OpenIdConfiguration, mappingFunction?: any) {
+        if (config.customConfigServer) {
+            return this.httpClient.get(config.customConfigServer).pipe(map((result) => mappingFunction(result)));
+        } else {
+            return of(config);
+        }
+    }
+
+    private getWellKnownDocument(config: OpenIdConfiguration) {
+        const url = `${config.stsServer}/${this.STS_SERVER_SUFFIX}`;
+        return this.httpClient.get<any>(url);
     }
 }

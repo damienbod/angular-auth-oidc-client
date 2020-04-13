@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { OpenIdConfiguration } from '../../lib/models/auth.configuration';
-import { ConfigurationProvider } from '../../lib/services/auth-configuration.provider';
+import { ConfigurationProvider } from '../../lib/services/config.provider';
 import { PlatformProvider } from '../../lib/services/platform.provider';
 
 describe('ConfigurationProviderTests', () => {
@@ -23,7 +23,7 @@ describe('ConfigurationProviderTests', () => {
     });
 
     it('setup defines openIDConfiguration', () => {
-        configurationProvider.setup({}, null);
+        configurationProvider.setConfig({ stsServer: 'hello' }, null);
 
         expect(configurationProvider.openIDConfiguration).toBeDefined();
     });
@@ -43,7 +43,7 @@ describe('ConfigurationProviderTests', () => {
 
         const expected = { ...toPass };
 
-        configurationProvider.setup({}, toPass);
+        configurationProvider.setConfig(null, toPass);
 
         expect(configurationProvider.wellKnownEndpoints).toEqual(expected);
     });
@@ -79,7 +79,7 @@ describe('ConfigurationProviderTests', () => {
             storage: sessionStorage,
         };
 
-        configurationProvider.setup({}, null);
+        configurationProvider.setConfig({ stsServer: 'https://please_set' }, null);
 
         expect(configurationProvider.openIDConfiguration).toEqual(defaultConfig);
     });
@@ -119,7 +119,7 @@ describe('ConfigurationProviderTests', () => {
             storage: sessionStorage,
         };
 
-        configurationProvider.setup(config, null);
+        configurationProvider.setConfig(config, null);
 
         expect(configurationProvider.openIDConfiguration).toEqual(expected);
     });
@@ -163,7 +163,7 @@ describe('ConfigurationProviderTests', () => {
 
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
 
-        configurationProvider.setup(config, null);
+        configurationProvider.setConfig(config, null);
 
         expect(configurationProvider.openIDConfiguration).toEqual(expected);
     });
@@ -178,22 +178,7 @@ describe('ConfigurationProviderTests', () => {
 
         const spy = spyOn(configurationProvider as any, 'setSpecialCases');
 
-        configurationProvider.setup(config, null);
-
-        expect(spy).toHaveBeenCalled();
-    });
-
-    it('onConfigurationChange gets called when config is set', () => {
-        const config = {
-            stsServer: 'stsServer',
-            startCheckSession: true,
-            silentRenew: true,
-            useRefreshToken: false,
-        };
-
-        const spy = spyOn((configurationProvider as any).onConfigurationChangeInternal, 'next');
-
-        configurationProvider.setup(config, null);
+        configurationProvider.setConfig(config, null);
 
         expect(spy).toHaveBeenCalled();
     });

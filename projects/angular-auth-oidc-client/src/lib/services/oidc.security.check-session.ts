@@ -1,7 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
 import { from, Observable, Observer, Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { ConfigurationProvider } from './auth-configuration.provider';
+import { ConfigurationProvider } from './config.provider';
 import { IFrameService } from './existing-iframe.service';
 import { LoggerService } from './oidc.logger.service';
 import { OidcSecurityCommon } from './oidc.security.common';

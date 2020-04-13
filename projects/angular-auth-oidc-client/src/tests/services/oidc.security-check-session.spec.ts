@@ -1,5 +1,5 @@
 import { async, TestBed } from '@angular/core/testing';
-import { ConfigurationProvider } from '../../lib/services/auth-configuration.provider';
+import { ConfigurationProvider } from '../../lib/services/config.provider';
 import { IFrameService } from '../../lib/services/existing-iframe.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityCheckSession } from '../../lib/services/oidc.security.check-session';
@@ -53,17 +53,6 @@ describe('SecurityCheckSessionTests', () => {
     it('doesSessionExist returns false if nothing is setup', () => {
         const result = (oidcSecurityCheckSession as any).doesSessionExist();
         expect(result).toBe(false);
-    });
-
-    it('setupModule sets authWellKnownEndpoints', () => {
-        expect((oidcSecurityCheckSession as any).authWellKnownEndpoints).toBe(undefined);
-        const authWellKnownEndpoints = {
-            issuer: 'testIssuer',
-        };
-        configurationProvider.setup(null, authWellKnownEndpoints);
-
-        expect((oidcSecurityCheckSession as any).configurationProvider.authWellKnownEndpoints).toBeTruthy();
-        expect((oidcSecurityCheckSession as any).configurationProvider.authWellKnownEndpoints.issuer).toBe('testIssuer');
     });
 
     it('doesSessionExist returns true if document found on window.parent.document', () => {
@@ -124,10 +113,10 @@ describe('SecurityCheckSessionTests', () => {
 
     it('location of iframe is set to authWellKnownEndpoints.check_session_iframe if existing', async(() => {
         const authWellKnownEndpoints = {
-            check_session_iframe: 'someTestingValue',
+            checkSessionIframe: 'someTestingValue',
         };
 
-        (oidcSecurityCheckSession as any).authWellKnownEndpoints = authWellKnownEndpoints;
+        configurationProvider.setConfig(null, authWellKnownEndpoints);
         spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
 
         expect((oidcSecurityCheckSession as any).sessionIframe).toBeFalsy();
@@ -144,7 +133,7 @@ describe('SecurityCheckSessionTests', () => {
         const spy = spyOn<any>(oidcSecurityCheckSession, 'doesSessionExist').and.returnValue(false);
         const spyLogWarning = spyOn<any>(loggerService, 'logWarning');
         spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
-        configurationProvider.setup(null, { checkSessionIframe: undefined });
+        configurationProvider.setConfig(null, { checkSessionIframe: undefined });
         (oidcSecurityCheckSession as any).init();
 
         expect(spy).toHaveBeenCalled();

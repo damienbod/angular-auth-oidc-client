@@ -6,7 +6,7 @@ import { of } from 'rxjs';
 import { filter, skipWhile } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../../lib/angular-auth-oidc-client';
 import { AuthModule } from '../../lib/modules/auth.module';
-import { ConfigurationProvider } from '../../lib/services/auth-configuration.provider';
+import { ConfigurationProvider } from '../../lib/services/config.provider';
 import { IFrameService } from '../../lib/services/existing-iframe.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityCommon } from '../../lib/services/oidc.security.common';
@@ -65,8 +65,7 @@ describe('OidcSecurityService', () => {
         // 	"code_challenge_methods_supported":["plain","S256"]}';
         // (oidcSecurityService as any).oidcSecurityCommon.store('wellknownendpoints', well);
 
-        const config: OpenIdConfiguration = {};
-        config.stsServer = 'https://localhost:5001';
+        const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
         config.redirectUrl = 'https://localhost:44386';
         config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
         config.responseType = 'id_token token';
@@ -82,7 +81,7 @@ describe('OidcSecurityService', () => {
         config.logConsoleDebugActive = true;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
-        configurationProvider.setup(config, null);
+        configurationProvider.setConfig(config, null);
 
         const value = (oidcSecurityService as any).createAuthorizeUrl(
             false,
@@ -106,9 +105,7 @@ describe('OidcSecurityService', () => {
 
     // https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-reference-oidc
     it('createAuthorizeUrl with custom url like active-directory-b2c', () => {
-        const config: OpenIdConfiguration = {};
-
-        config.stsServer = 'https://localhost:5001';
+        const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
         config.redirectUrl = 'https://localhost:44386';
         config.clientId = 'myid';
         config.responseType = 'id_token token';
@@ -124,7 +121,7 @@ describe('OidcSecurityService', () => {
         config.logConsoleDebugActive = true;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
-        configurationProvider.setup(config, null);
+        configurationProvider.setConfig(config, null);
 
         const value = (oidcSecurityService as any).createAuthorizeUrl(
             false,
@@ -148,8 +145,7 @@ describe('OidcSecurityService', () => {
     });
 
     it('createEndSessionUrl with azure-ad-b2c policy parameter', () => {
-        const config: OpenIdConfiguration = {};
-        config.stsServer = 'https://localhost:5001';
+        const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
         config.redirectUrl = 'https://localhost:44386';
         config.clientId = 'myid';
         config.responseType = 'id_token token';
@@ -165,7 +161,7 @@ describe('OidcSecurityService', () => {
         config.logConsoleDebugActive = true;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
-        configurationProvider.setup(config, null);
+        configurationProvider.setConfig(config, null);
 
         const value = (oidcSecurityService as any).createEndSessionUrl(
             'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in',
@@ -181,8 +177,7 @@ describe('OidcSecurityService', () => {
     });
 
     it('createAuthorizeUrl with custom value', () => {
-        const config: OpenIdConfiguration = {};
-        config.stsServer = 'https://localhost:5001';
+        const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
         config.redirectUrl = 'https://localhost:44386';
         config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
         config.responseType = 'id_token token';
@@ -202,7 +197,7 @@ describe('OidcSecurityService', () => {
             testcustom: 'customvalue',
         });
 
-        configurationProvider.setup(config, null);
+        configurationProvider.setConfig(config, null);
 
         const value = (oidcSecurityService as any).createAuthorizeUrl(
             false,
@@ -226,8 +221,7 @@ describe('OidcSecurityService', () => {
     });
 
     it('createAuthorizeUrl with custom values', () => {
-        const config: OpenIdConfiguration = {};
-        config.stsServer = 'https://localhost:5001';
+        const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
         config.redirectUrl = 'https://localhost:44386';
         config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
         config.responseType = 'id_token token';
@@ -243,7 +237,7 @@ describe('OidcSecurityService', () => {
         config.logConsoleDebugActive = true;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
-        configurationProvider.setup(config, null);
+        configurationProvider.setConfig(config, null);
 
         oidcSecurityService.setCustomRequestParameters({
             t4: 'ABC abc 123',
@@ -273,8 +267,7 @@ describe('OidcSecurityService', () => {
     });
 
     it('createEndSessionUrl default', () => {
-        const config: OpenIdConfiguration = {};
-        config.stsServer = 'https://localhost:5001';
+        const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
         config.redirectUrl = 'https://localhost:44386';
         config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
         config.responseType = 'id_token token';
@@ -290,7 +283,7 @@ describe('OidcSecurityService', () => {
         config.logConsoleDebugActive = true;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
-        configurationProvider.setup(config, null);
+        configurationProvider.setConfig(config, null);
 
         const value = (oidcSecurityService as any).createEndSessionUrl('http://example', 'mytoken');
 
@@ -302,8 +295,9 @@ describe('OidcSecurityService', () => {
     it('authorizedImplicitFlowCallback should correctly parse hash params', () => {
         spyOn(oidcSecurityService as any, 'getSigningKeys').and.returnValue(of(null));
 
-        const config: OpenIdConfiguration = {
+        const config = {
             silentRenew: false,
+            stsServer: 'https://localhost:5001',
         };
 
         const resultSetter = spyOnProperty((oidcSecurityService as any).oidcSecurityCommon, 'authResult', 'set');
@@ -315,7 +309,7 @@ describe('OidcSecurityService', () => {
             state: 'testState',
         };
 
-        configurationProvider.setup(config, null);
+        configurationProvider.setConfig(config, null);
 
         (oidcSecurityService as OidcSecurityService).authorizedImplicitFlowCallback(hash);
 
@@ -341,7 +335,7 @@ describe('OidcSecurityService', () => {
 
         const logoffUrl = 'http://some_logoff_url';
 
-        configurationProvider.setup(null, authwellknown);
+        configurationProvider.setConfig(null, authwellknown);
 
         spyOn(oidcSecurityService as any, 'createEndSessionUrl').and.returnValue(logoffUrl);
         const redirectToSpy = spyOn(oidcSecurityService as any, 'redirectTo');
@@ -364,7 +358,7 @@ describe('OidcSecurityService', () => {
 
         const logoffUrl = 'http://some_logoff_url';
 
-        configurationProvider.setup(null, authwellknown);
+        configurationProvider.setConfig(null, authwellknown);
 
         spyOn(oidcSecurityService as any, 'createEndSessionUrl').and.returnValue(logoffUrl);
         const redirectToSpy = spyOn(oidcSecurityService as any, 'redirectTo');
@@ -378,7 +372,7 @@ describe('OidcSecurityService', () => {
         const authwellknown = {};
 
         const resetStorageData = spyOn((oidcSecurityService as any).oidcSecurityCommon, 'resetStorageData');
-        configurationProvider.setup(null, authwellknown);
+        configurationProvider.setConfig(null, authwellknown);
         let hasBeenCalled = false;
         (oidcSecurityService as any).isAuthorizedInternal
             .pipe(
@@ -407,12 +401,13 @@ describe('OidcSecurityService', () => {
         expect(spy).toHaveBeenCalledWith('thisisacode', '0000.1234.000', null);
     });
     it('refresh session with refresh token should call authorized callback with isRenew running to true', (done) => {
-        const config: OpenIdConfiguration = {};
+        const config = {} as OpenIdConfiguration;
         config.responseType = 'code';
         config.silentRenew = true;
         config.useRefreshToken = true;
+        config.stsServer = 'https://localhost:5001';
         config.silentRenewOffsetInSeconds = 0;
-        configurationProvider.setup(config, null);
+        configurationProvider.setConfig(config, null);
 
         spyOn(oidcSecurityService as any, 'refreshTokensWithCodeProcedure').and.returnValue(of(true));
         spyOn(oidcSecurityCommon as any, 'getRefreshToken').and.returnValue('refresh token');

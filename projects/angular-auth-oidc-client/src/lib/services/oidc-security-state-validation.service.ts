@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { JwtKeys } from '../models/jwtkeys';
 import { ValidateStateResult } from '../models/validate-state-result.model';
 import { ValidationResult } from '../models/validation-result.enum';
-import { ConfigurationProvider } from './auth-configuration.provider';
+import { ConfigurationProvider } from './config.provider';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { LoggerService } from './oidc.logger.service';
 import { OidcSecurityCommon } from './oidc.security.common';
