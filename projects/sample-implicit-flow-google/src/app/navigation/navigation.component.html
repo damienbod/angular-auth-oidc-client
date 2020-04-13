@@ -1,16 +1,25 @@
 <nav class="bg-dark mb-4 navbar navbar-dark navbar-expand-md">
     <a [routerLink]="['/home']" class="navbar-brand">
-        <em>Angular OIDC google STS</em>
+        <em>Angular OIDC Google Implicit Flow Auto Login</em>
     </a>
-    <button aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#topNavbarCollapse" data-toggle="collapse" type="button">
+    <button
+        aria-controls="navbarCollapse"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+        class="navbar-toggler"
+        data-target="#topNavbarCollapse"
+        data-toggle="collapse"
+        type="button"
+    >
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="topNavbarCollapse">
         <ul class="mr-auto navbar-nav">
             <li class="nav-item"><a class="nav-link" *ngIf="!isAuthorized" (click)="login()">Login</a></li>
             <li class="nav-item"><a class="nav-link" *ngIf="isAuthorized" (click)="logout()">Logout</a></li>
-            <li class="nav-item"><a class="nav-link" *ngIf="oidcSecurityService.checkSessionChanged" (click)="refreshSession()">Refresh Session</a></li>
-
+            <li class="nav-item">
+                <a class="nav-link" *ngIf="oidcSecurityService.checkSessionChanged" (click)="refreshSession()">Refresh Session</a>
+            </li>
         </ul>
         <ul class="navbar-nav"></ul>
     </div>
