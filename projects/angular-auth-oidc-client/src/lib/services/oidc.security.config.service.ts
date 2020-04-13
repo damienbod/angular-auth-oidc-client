@@ -2,10 +2,11 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
+import { AuthWellKnownEndpoints } from '../angular-auth-oidc-client';
 import { LoggerService } from './oidc.logger.service';
 
 export interface ConfigResult {
-    authWellknownEndpoints: any;
+    authWellknownEndpoints: AuthWellKnownEndpoints;
     customConfig: any;
 }
 
@@ -45,7 +46,7 @@ export class OidcConfigService {
             .pipe(
                 switchMap((wellKnownEndpoints) => {
                     this.configurationLoadedInternal.next({
-                        authWellknownEndpoints: wellKnownEndpoints,
+                        authWellknownEndpoints: this.mapWellKnownEnpointProperties(wellKnownEndpoints),
                         customConfig: { stsServer: url },
                     });
                     return of(true);
@@ -73,7 +74,7 @@ export class OidcConfigService {
         return this.httpClient.get(url).pipe(
             switchMap((wellKnownEndpoints) => {
                 this.configurationLoadedInternal.next({
-                    authWellknownEndpoints: wellKnownEndpoints,
+                    authWellknownEndpoints: this.mapWellKnownEnpointProperties(wellKnownEndpoints),
                     customConfig: clientConfig,
                 });
                 return of(true);
@@ -84,5 +85,21 @@ export class OidcConfigService {
                 return of(false);
             })
         );
+    }
+
+    private mapWellKnownEnpointProperties(wellKnownEndpoints: any): AuthWellKnownEndpoints {
+        const config: AuthWellKnownEndpoints = {
+            issuer: wellKnownEndpoints.issuer,
+            jwksUri: wellKnownEndpoints.jwks_uri,
+            authorizationEndpoint: wellKnownEndpoints.authorization_endpoint,
+            tokenEndpoint: wellKnownEndpoints.token_endpoint,
+            userinfoEndpoint: wellKnownEndpoints.userinfo_endpoint,
+            endSessionEndpoint: wellKnownEndpoints.end_session_endpoint,
+            checkSessionIframe: wellKnownEndpoints.check_session_iframe,
+            revocationEndpoint: wellKnownEndpoints.revocation_endpoint,
+            introspectionEndpoint: wellKnownEndpoints.introspection_endpoint,
+            // wellKnownEndpoints.device_authorization_endpoint,
+        };
+        return config;
     }
 }
