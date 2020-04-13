@@ -11,7 +11,7 @@ import { NavigationComponent } from './navigation/navigation.component';
 import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    return () => oidcConfigService.load_using_stsServer('https://offeringsolutions-sts.azurewebsites.net');
+    return () => oidcConfigService.loadUsingStsServer('https://offeringsolutions-sts.azurewebsites.net');
 }
 
 @NgModule({

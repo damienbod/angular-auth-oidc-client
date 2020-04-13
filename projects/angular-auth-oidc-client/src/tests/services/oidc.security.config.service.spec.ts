@@ -94,7 +94,7 @@ describe('OidcConfigService', () => {
         }));
     });
 
-    describe(`method 'load_using_stsServer' tests`, () => {
+    describe(`method 'loadUsingStsServer' tests`, () => {
         it(`should call error message when called with empty string`, async(() => {
             const configUrl = '';
 
@@ -133,7 +133,7 @@ describe('OidcConfigService', () => {
         }));
     });
 
-    describe(`method 'load_using_custom_stsServer' tests`, () => {
+    describe(`method 'loadUsingCustomStsServer' tests`, () => {
         it(`should have correct response when passing the correct 'stsServer' property`, async(() => {
             const stsServer = 'myCompleteStsServerAdress';
 

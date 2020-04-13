@@ -35,7 +35,7 @@ export class OidcSecurityCommon {
         this.store(this.storageIdToken, value);
     }
 
-    private storageIsAuthorized = '_isAuthorized';
+    private storageIsAuthorized = 'storageIsAuthorized';
 
     public get isAuthorized(): boolean | undefined {
         return this.retrieve(this.storageIsAuthorized);
@@ -95,7 +95,7 @@ export class OidcSecurityCommon {
         this.store(this.storageSessionState, value);
     }
 
-    private storageSilentRenewRunning = 'storage_silent_renew_running';
+    private storageSilentRenewRunning = 'storageSilentRenewRunning';
 
     public get silentRenewRunning(): SilentRenewState {
         return this.retrieve(this.storageSilentRenewRunning) || '';
@@ -105,7 +105,7 @@ export class OidcSecurityCommon {
         this.store(this.storageSilentRenewRunning, value);
     }
 
-    private storageCustomRequestParams = 'storage_custom_request_params';
+    private storageCustomRequestParams = 'storageCustomRequestParams';
 
     public get customRequestParams(): {
         [key: string]: string | number | boolean;
