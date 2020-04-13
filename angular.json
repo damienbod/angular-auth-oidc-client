@@ -438,7 +438,7 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "sample-implicit-flow-google:build"
+                        "browserTarget": "sample-implicit-flow-google:build",
                         "sslKey": "certs/dev_localhost.key",
                         "sslCert": "certs/dev_localhost.pem"
                     },
