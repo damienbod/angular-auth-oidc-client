@@ -32,22 +32,26 @@ export class AppModule {
     constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
         this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
             const config: OpenIdConfiguration = {
-                stsServer: configResult.customConfig.stsServer,
+                stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
                 redirectUrl: 'https://localhost:4200',
                 clientId: 'angularClient',
                 scope: 'openid profile email',
                 responseType: 'code',
-                silentRenew: true,
+                triggerAuthorizationResultEvent: true,
+                postLogoutRedirectUri: 'https://localhost:4200/unauthorized',
+                startCheckSession: false,
+                silentRenew: false,
                 silentRenewUrl: 'https://localhost:4200/silent-renew.html',
+                postLoginRoute: '/home',
+                forbiddenRoute: '/forbidden',
+                unauthorizedRoute: '/unauthorized',
+                logConsoleWarningActive: true,
                 logConsoleDebugActive: true,
+                maxIdTokenIatOffsetAllowedInSeconds: 30,
+                historyCleanupOff: true,
+                // iss_validation_off: false
+                // disable_iat_offset_validation: true
             };
-
-            // config.start_checksession = true;
-            // config.post_login_route = '/home';
-            // config.forbidden_route = '/home';
-            // config.unauthorized_route = '/home';
-            // config.max_id_token_iat_offset_allowed_in_seconds = 5;
-            // config.history_cleanup_off = true;
 
             this.oidcSecurityService.setupModule(config, configResult.authWellknownEndpoints);
         });
