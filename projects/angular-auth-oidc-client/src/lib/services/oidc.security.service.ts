@@ -132,6 +132,11 @@ export class OidcSecurityService {
     }
 
     setupModule(): void {
+        if (!this.configurationProvider.hasValidConfig()) {
+            this.loggerService.logError('Please provide a configuration before setting up the module');
+            return;
+        }
+
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => {
             this.loggerService.logDebug('onCheckSessionChanged');
             this.checkSessionChanged = true;

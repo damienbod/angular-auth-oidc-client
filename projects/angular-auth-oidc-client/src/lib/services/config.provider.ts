@@ -46,6 +46,10 @@ export class ConfigurationProvider {
         return this.wellKnownEndpointsInternal || null;
     }
 
+    hasValidConfig() {
+        return !!this.wellKnownEndpointsInternal && this.openIdConfigurationInternal;
+    }
+
     constructor(private platformProvider: PlatformProvider) {}
 
     setConfig(configuration: OpenIdConfiguration, wellKnownEndpoints: AuthWellKnownEndpoints) {
