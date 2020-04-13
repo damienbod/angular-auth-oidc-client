@@ -5,14 +5,12 @@ import { oneLineTrim } from 'common-tags';
 import { BehaviorSubject, from, Observable, of, race, Subject, throwError, timer } from 'rxjs';
 import { catchError, filter, first, map, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { OidcDataService } from '../data-services/oidc-data.service';
-import { OpenIdConfiguration } from '../models/auth.configuration';
-import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 import { AuthorizationResult } from '../models/authorization-result';
 import { AuthorizationState } from '../models/authorization-state.enum';
 import { JwtKeys } from '../models/jwtkeys';
 import { ValidateStateResult } from '../models/validate-state-result.model';
 import { ValidationResult } from '../models/validation-result.enum';
-import { ConfigurationProvider } from './auth-configuration.provider';
+import { ConfigurationProvider } from './config.provider';
 import { StateValidationService } from './oidc-security-state-validation.service';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { LoggerService } from './oidc.logger.service';
@@ -40,10 +38,6 @@ export class OidcSecurityService {
 
     public get onCheckSessionChanged(): Observable<boolean> {
         return this.onCheckSessionChangedInternal.asObservable();
-    }
-
-    public get onConfigurationChange(): Observable<OpenIdConfiguration> {
-        return this.configurationProvider.onConfigurationChange;
     }
 
     checkSessionChanged = false;
@@ -137,9 +131,7 @@ export class OidcSecurityService {
             });
     }
 
-    setupModule(openIdConfiguration: OpenIdConfiguration, authWellKnownEndpoints: AuthWellKnownEndpoints): void {
-        this.configurationProvider.setup(openIdConfiguration, authWellKnownEndpoints);
-
+    setupModule(): void {
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => {
             this.loggerService.logDebug('onCheckSessionChanged');
             this.checkSessionChanged = true;

@@ -1,104 +1,71 @@
 ﻿import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, ReplaySubject } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
-import { AuthWellKnownEndpoints } from '../angular-auth-oidc-client';
+import { combineLatest, Observable, of, ReplaySubject } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+import { OpenIdConfiguration } from '../models/auth.configuration';
+import { ConfigResult, ConfigurationProvider } from './config.provider';
 import { LoggerService } from './oidc.logger.service';
-
-export interface ConfigResult {
-    authWellknownEndpoints: AuthWellKnownEndpoints;
-    customConfig: any;
-}
 
 @Injectable()
 export class OidcConfigService {
+    private STS_SERVER_SUFFIX = `/.well-known/openid-configuration`;
     private configurationLoadedInternal = new ReplaySubject<ConfigResult>(1);
 
+    // TODO ERASE THIS
     public get onConfigurationLoaded(): Observable<ConfigResult> {
         return this.configurationLoadedInternal.asObservable();
     }
 
-    constructor(private readonly loggerService: LoggerService, private readonly httpClient: HttpClient) {}
+    constructor(
+        private readonly loggerService: LoggerService,
+        private readonly httpClient: HttpClient,
+        private configurationProvider: ConfigurationProvider
+    ) {}
 
-    load(configUrl: string): Promise<boolean> {
-        return this.httpClient
-            .get(configUrl)
-            .pipe(
-                switchMap((clientConfiguration) => {
-                    return this.loadUsingConfiguration(clientConfiguration);
-                }),
-                catchError((error) => {
-                    this.loggerService.logError(`OidcConfigService 'load' threw an error on calling ${configUrl}`, error);
-                    this.configurationLoadedInternal.next(undefined);
-                    return of(false);
-                })
-            )
-            .toPromise();
-    }
-
-    loadUsingStsServer(stsServer: string): Promise<boolean> {
-        return this.loadUsingConfiguration({ stsServer }).toPromise();
-    }
-
-    loadUsingCustomStsServer(url: string): Promise<boolean> {
-        return this.httpClient
-            .get(url)
-            .pipe(
-                switchMap((wellKnownEndpoints) => {
-                    this.configurationLoadedInternal.next({
-                        authWellknownEndpoints: this.mapWellKnownEnpointProperties(wellKnownEndpoints),
-                        customConfig: { stsServer: url },
-                    });
-                    return of(true);
-                }),
-                catchError((error) => {
-                    this.loggerService.logError(`OidcConfigService 'load_using_custom_stsServer' threw an error on calling ${url}`, error);
-                    this.configurationLoadedInternal.next(undefined);
-                    return of(false);
-                })
-            )
-            .toPromise();
-    }
-
-    private loadUsingConfiguration(clientConfig: any): Observable<boolean> {
-        if (!clientConfig.stsServer) {
-            this.loggerService.logError(
-                `Property 'stsServer' is not present of passed config ${JSON.stringify(clientConfig)}`,
-                clientConfig
-            );
-            throw new Error(`Property 'stsServer' is not present of passed config ${JSON.stringify(clientConfig)}`);
+    withConfig(config: OpenIdConfiguration, mappingFunction?: any) {
+        if (!config.stsServer) {
+            this.loggerService.logError('please provide at least an stsServer');
+            return;
         }
 
-        const url = `${clientConfig.stsServer}/.well-known/openid-configuration`;
+        if (config.customConfigServer && !mappingFunction) {
+            this.loggerService.logError(
+                'If you have given a custom config server then please provide a mapping method as second param, too '
+            );
+            return;
+        }
 
-        return this.httpClient.get(url).pipe(
-            switchMap((wellKnownEndpoints) => {
-                this.configurationLoadedInternal.next({
-                    authWellknownEndpoints: this.mapWellKnownEnpointProperties(wellKnownEndpoints),
-                    customConfig: clientConfig,
-                });
-                return of(true);
+        let customConfig$ = null;
+
+        if (config.customConfigServer) {
+            customConfig$ = this.httpClient.get(config.customConfigServer).pipe(map((result) => mappingFunction(result)));
+        } else {
+            customConfig$ = of(config as OpenIdConfiguration);
+        }
+
+        const url = `${config.stsServer}/${this.STS_SERVER_SUFFIX}`;
+        const stsServerConfig$ = this.httpClient.get<any>(url);
+
+        const loadConfig$ = combineLatest([customConfig$, stsServerConfig$]).pipe(
+            map(([customConfig, wellKnownEndpoints]: [OpenIdConfiguration, any]) => {
+                return {
+                    customConfig,
+                    wellKnownEndpoints: {
+                        issuer: wellKnownEndpoints.issuer,
+                        jwksUri: wellKnownEndpoints.jwks_uri,
+                        authorizationEndpoint: wellKnownEndpoints.authorization_endpoint,
+                        tokenEndpoint: wellKnownEndpoints.token_endpoint,
+                        userinfoEndpoint: wellKnownEndpoints.userinfo_endpoint,
+                        endSessionEndpoint: wellKnownEndpoints.end_session_endpoint,
+                        checkSessionIframe: wellKnownEndpoints.check_session_iframe,
+                        revocationEndpoint: wellKnownEndpoints.revocation_endpoint,
+                        introspectionEndpoint: wellKnownEndpoints.introspection_endpoint,
+                    },
+                };
             }),
-            catchError((error) => {
-                this.loggerService.logError(`OidcConfigService 'load_using_stsServer' threw an error on calling ${url}`, error);
-                this.configurationLoadedInternal.next(undefined);
-                return of(false);
-            })
+            tap((configuration) => this.configurationProvider.setConfig(configuration.customConfig, configuration.wellKnownEndpoints))
         );
-    }
 
-    private mapWellKnownEnpointProperties(wellKnownEndpoints: any): AuthWellKnownEndpoints {
-        return {
-            issuer: wellKnownEndpoints.issuer,
-            jwksUri: wellKnownEndpoints.jwks_uri,
-            authorizationEndpoint: wellKnownEndpoints.authorization_endpoint,
-            tokenEndpoint: wellKnownEndpoints.token_endpoint,
-            userinfoEndpoint: wellKnownEndpoints.userinfo_endpoint,
-            endSessionEndpoint: wellKnownEndpoints.end_session_endpoint,
-            checkSessionIframe: wellKnownEndpoints.check_session_iframe,
-            revocationEndpoint: wellKnownEndpoints.revocation_endpoint,
-            introspectionEndpoint: wellKnownEndpoints.introspection_endpoint,
-            // wellKnownEndpoints.device_authorization_endpoint,
-        };
+        return loadConfig$.toPromise();
     }
 }
