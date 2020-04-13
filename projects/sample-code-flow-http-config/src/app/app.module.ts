@@ -6,7 +6,8 @@ import { AuthModule, ConfigResult, OidcConfigService, OidcSecurityService, OpenI
 import { AppComponent } from './app.component';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    return () => oidcConfigService.loadUsingStsServer('https://offeringsolutions-sts.azurewebsites.net');
+    console.log('APP_INITIALIZER STARTING');
+    return () => oidcConfigService.load(`https://offeringsolutions-sts.azurewebsites.net/api/ClientAppSettings`);
 }
 
 @NgModule({
@@ -35,26 +36,33 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 })
 export class AppModule {
     constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
-        this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
-            const config: OpenIdConfiguration = {
+
+      this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
+
+             const config: OpenIdConfiguration = {
                 stsServer: configResult.customConfig.stsServer,
-                redirectUrl: 'https://localhost:4200',
-                clientId: 'angularClient',
-                scope: 'openid profile email',
-                responseType: 'code',
-                silentRenew: true,
-                silentRenewUrl: 'https://localhost:4200/silent-renew.html',
-                logConsoleDebugActive: true,
+                redirectUrl: configResult.customConfig.redirect_url,
+                clientId: configResult.customConfig.client_id,
+                responseType: configResult.customConfig.response_type,
+                scope: configResult.customConfig.scope,
+                postLogoutRedirectUri: configResult.customConfig.post_logout_redirect_uri,
+                startCheckSession: configResult.customConfig.start_checksession,
+                silentRenew: configResult.customConfig.silent_renew,
+                silentRenewUrl: configResult.customConfig.redirect_url + '/silent-renew.html',
+                postLoginRoute: configResult.customConfig.startup_route,
+                forbiddenRoute: configResult.customConfig.forbidden_route,
+                unauthorizedRoute: configResult.customConfig.unauthorized_route,
+                logConsoleWarningActive: configResult.customConfig.log_console_warning_active,
+                logConsoleDebugActive: configResult.customConfig.log_console_debug_active,
+                maxIdTokenIatOffsetAllowedInSeconds: configResult.customConfig.max_id_token_iat_offset_allowed_in_seconds,
+                historyCleanupOff: true
             };
 
-            // config.start_checksession = true;
-            // config.post_login_route = '/home';
-            // config.forbidden_route = '/home';
-            // config.unauthorized_route = '/home';
-            // config.max_id_token_iat_offset_allowed_in_seconds = 5;
-            // config.history_cleanup_off = true;
-
+            console.log("from server: " +configResult.customConfig.apiServer)
             this.oidcSecurityService.setupModule(config, configResult.authWellknownEndpoints);
         });
+
+
+
     }
 }
