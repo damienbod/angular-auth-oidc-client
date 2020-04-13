@@ -15,10 +15,10 @@
         "publish-lib-next": "npm run build-lib && npm publish --tag next ./dist/angular-auth-oidc-client",
         "compodoc": "compodoc -p tsconfig.json",
         "compodoc:serve": "compodoc -s",
-        "start": "ng serve --ssl true --project sample-code-flow -o",
         "copy-readme-to-lib-folder": "copyfiles README.md ./projects/angular-auth-oidc-client",
         "check-prettier": "prettier --check \"projects/angular-auth-oidc-client/**/*.ts\"",
         "fix-prettier": "prettier --write  \"projects/angular-auth-oidc-client/**/*.ts\"",
+        "start": "ng serve --ssl true --project sample-code-flow -o",
         "start-sample-code-flow-auto-login": "ng serve sample-code-flow-auto-login"
     },
     "private": true,

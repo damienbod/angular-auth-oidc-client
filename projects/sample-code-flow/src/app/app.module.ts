@@ -6,7 +6,7 @@ import { AuthModule, ConfigResult, OidcConfigService, OidcSecurityService, OpenI
 import { AppComponent } from './app.component';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    return () => oidcConfigService.load_using_stsServer('https://offeringsolutions-sts.azurewebsites.net');
+    return () => oidcConfigService.loadUsingStsServer('https://offeringsolutions-sts.azurewebsites.net');
 }
 
 @NgModule({
