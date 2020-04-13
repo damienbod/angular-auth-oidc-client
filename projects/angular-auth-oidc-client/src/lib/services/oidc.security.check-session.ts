@@ -66,7 +66,7 @@ export class OidcSecurityCheckSession {
             this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
         }
 
-        return Observable.create((observer: Observer<OidcSecurityCheckSession>) => {
+        return new Observable((observer: Observer<OidcSecurityCheckSession>) => {
             this.sessionIframe.onload = () => {
                 this.lastIFrameRefresh = Date.now();
                 observer.next(this);

@@ -14,7 +14,7 @@ describe('TokenHelperService', () => {
     });
 
     beforeEach(() => {
-        tokenHelperService = TestBed.get(TokenHelperService);
+        tokenHelperService = TestBed.inject(TokenHelperService);
     });
 
     it('should create', () => {

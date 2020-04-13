@@ -23,8 +23,8 @@ describe('AuthConfiguration', () => {
             ],
         });
 
-        configurationProvider = TestBed.get(ConfigurationProvider);
-        platformProvider = TestBed.get(PlatformProvider);
+        configurationProvider = TestBed.inject(ConfigurationProvider);
+        platformProvider = TestBed.inject(PlatformProvider);
     });
 
     it('silent_renew and start_checksession can be set to true when using the browser platform', () => {

@@ -11,7 +11,7 @@ describe('ConfigurationProviderTests', () => {
     });
 
     beforeEach(() => {
-        service = TestBed.get(UrlParserService);
+        service = TestBed.inject(UrlParserService);
     });
 
     it('should create', () => {

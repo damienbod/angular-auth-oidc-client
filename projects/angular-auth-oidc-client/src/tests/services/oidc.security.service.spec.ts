@@ -37,9 +37,9 @@ describe('OidcSecurityService', () => {
     });
 
     beforeEach(() => {
-        oidcSecurityService = TestBed.get(OidcSecurityService);
-        configurationProvider = TestBed.get(ConfigurationProvider);
-        oidcSecurityCommon = TestBed.get(OidcSecurityCommon);
+        oidcSecurityService = TestBed.inject(OidcSecurityService);
+        configurationProvider = TestBed.inject(ConfigurationProvider);
+        oidcSecurityCommon = TestBed.inject(OidcSecurityCommon);
     });
 
     it('should create', () => {

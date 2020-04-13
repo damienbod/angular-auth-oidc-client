@@ -36,8 +36,8 @@ describe('OidcSecurityValidation', () => {
     });
 
     beforeEach(() => {
-        oidcSecurityValidation = TestBed.get(OidcSecurityValidation);
-        configProvider = TestBed.get(ConfigurationProvider);
+        oidcSecurityValidation = TestBed.inject(OidcSecurityValidation);
+        configProvider = TestBed.inject(ConfigurationProvider);
     });
 
     it('validate aud string', () => {

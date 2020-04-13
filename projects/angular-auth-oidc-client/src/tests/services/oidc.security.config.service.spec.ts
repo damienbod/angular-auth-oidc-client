@@ -24,9 +24,9 @@ describe('OidcConfigService', () => {
     });
 
     beforeEach(() => {
-        oidcConfigService = TestBed.get(OidcConfigService);
-        httpMock = TestBed.get(HttpTestingController);
-        loggerService = TestBed.get(LoggerService);
+        oidcConfigService = TestBed.inject(OidcConfigService);
+        httpMock = TestBed.inject(HttpTestingController);
+        loggerService = TestBed.inject(LoggerService);
     });
 
     afterEach(() => {
