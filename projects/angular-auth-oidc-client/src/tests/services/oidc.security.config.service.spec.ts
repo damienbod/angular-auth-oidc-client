@@ -44,7 +44,8 @@ describe('OidcConfigService', () => {
         //             notStsServer: 'anyvalue',
         //         };
         //         const spy = spyOn(loggerService, 'logError');
-        //         const expectedErrorMessage = `Property 'stsServer' is not present of passed config ${JSON.stringify(returnedClientConfig)}`;
+        //         const expectedErrorMessage = `Property 'stsServer' is not present of passed config
+        // ${ JSON.stringify(returnedClientConfig) }`;
         //         oidcConfigService.load(configUrl).then((result) => {
         //             expect(result).toBe(false);
         //             expect(spy).toHaveBeenCalledWith(expectedErrorMessage, returnedClientConfig);
