@@ -1,6 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, TestBed } from '@angular/core/testing';
-import { LoggerService } from '../../lib/angular-auth-oidc-client';
+import { AuthWellKnownEndpoints, LoggerService } from '../../lib/angular-auth-oidc-client';
 import { AuthModule } from '../../lib/modules/auth.module';
 import { OidcConfigService } from '../../lib/services/oidc.security.config.service';
 import { TestLogging } from '../common/test-logging.service';
@@ -68,7 +68,7 @@ describe('OidcConfigService', () => {
             };
 
             const expectedResult = {
-                authWellknownEndpoints: authWellKnownEndPoints,
+                authWellknownEndpoints: mapWellKnownEnpointProperties(authWellKnownEndPoints),
                 customConfig: returnedClientConfig,
             };
 
@@ -106,12 +106,12 @@ describe('OidcConfigService', () => {
         it(`should have correct response when passing the correc 'stsServer' property`, async(() => {
             const stsServer = 'myStsServerAdress';
 
-            const authWellKnownEndPoints = {
+            const authWellknownEndpoints = {
                 authwellknown: 'endpoints',
             };
 
             const expectedResult = {
-                authWellknownEndpoints: authWellKnownEndPoints,
+                authWellknownEndpoints: mapWellKnownEnpointProperties(authWellknownEndpoints),
                 customConfig: { stsServer },
             };
 
@@ -129,7 +129,7 @@ describe('OidcConfigService', () => {
             const url = `myStsServerAdress/.well-known/openid-configuration`;
             const req = httpMock.expectOne(url);
             expect(req.request.method).toBe('GET');
-            req.flush(authWellKnownEndPoints);
+            req.flush(authWellknownEndpoints);
         }));
     });
 
@@ -142,7 +142,7 @@ describe('OidcConfigService', () => {
             };
 
             const expectedResult = {
-                authWellknownEndpoints: authWellKnownEndPoints,
+                authWellknownEndpoints: mapWellKnownEnpointProperties(authWellKnownEndPoints),
                 customConfig: { stsServer },
             };
 
@@ -163,4 +163,19 @@ describe('OidcConfigService', () => {
             req.flush(authWellKnownEndPoints);
         }));
     });
+
+    function mapWellKnownEnpointProperties(wellKnownEndpoints: any): AuthWellKnownEndpoints {
+        return {
+            issuer: wellKnownEndpoints.issuer,
+            jwksUri: wellKnownEndpoints.jwks_uri,
+            authorizationEndpoint: wellKnownEndpoints.authorization_endpoint,
+            tokenEndpoint: wellKnownEndpoints.token_endpoint,
+            userinfoEndpoint: wellKnownEndpoints.userinfo_endpoint,
+            endSessionEndpoint: wellKnownEndpoints.end_session_endpoint,
+            checkSessionIframe: wellKnownEndpoints.check_session_iframe,
+            revocationEndpoint: wellKnownEndpoints.revocation_endpoint,
+            introspectionEndpoint: wellKnownEndpoints.introspection_endpoint,
+            // wellKnownEndpoints.device_authorization_endpoint,
+        };
+    }
 });

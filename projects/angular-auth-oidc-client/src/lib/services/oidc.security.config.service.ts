@@ -88,7 +88,7 @@ export class OidcConfigService {
     }
 
     private mapWellKnownEnpointProperties(wellKnownEndpoints: any): AuthWellKnownEndpoints {
-        const config: AuthWellKnownEndpoints = {
+        return {
             issuer: wellKnownEndpoints.issuer,
             jwksUri: wellKnownEndpoints.jwks_uri,
             authorizationEndpoint: wellKnownEndpoints.authorization_endpoint,
@@ -100,6 +100,5 @@ export class OidcConfigService {
             introspectionEndpoint: wellKnownEndpoints.introspection_endpoint,
             // wellKnownEndpoints.device_authorization_endpoint,
         };
-        return config;
     }
 }
