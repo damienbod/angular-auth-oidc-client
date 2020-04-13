@@ -39,15 +39,17 @@ export class AppComponent {
     }
 
     private onOidcModuleSetup() {
-        console.log('AppComponent:onModuleSetup');
+        console.log('AppComponent:onOidcModuleSetup begin');
         console.log(window.location.toString());
-        if (this.oidcSecurityService.moduleSetup) {
+        if (this.oidcSecurityService.moduleSetup && window.location.toString().includes('?code')) {
+            console.log('AppComponent:onOidcModuleSetup true');
             this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());
         } else {
             if ('/autologin' !== window.location.pathname) {
+                console.log(window.location.pathname);
                 this.write('redirect', window.location.pathname);
             }
-            console.log('AppComponent:onModuleSetup');
+            console.log('AppComponent:onOidcModuleSetup false');
             this.oidcSecurityService.getIsAuthorized().subscribe((authorized: boolean) => {
                 if (!authorized) {
                     this.router.navigate(['/autologin']);
