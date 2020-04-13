@@ -66,9 +66,13 @@ export class AppComponent implements OnInit, OnDestroy {
         );
 
         if (authorizationResult.authorizationState === AuthorizationState.authorized) {
-            this.router.navigate([path]);
+            if (path.toString().includes('/unauthorized')) {
+                this.router.navigate(['/']);
+            } else {
+                this.router.navigate([path]);
+            }
         } else {
-            this.router.navigate(['/Unauthorized']);
+            this.router.navigate(['/unauthorized']);
         }
     }
 
