@@ -1,23 +1,15 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-
-import { OidcSecurityService,
-  AuthorizationResult,
-  AuthorizationState} from 'angular-auth-oidc-client';
-
+import { AuthorizationResult, AuthorizationState, OidcSecurityService } from 'angular-auth-oidc-client';
 import './app.component.css';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css'],
 })
-
 export class AppComponent {
-
-    constructor(public oidcSecurityService: OidcSecurityService,
-                private router: Router
-    ) {
+    constructor(public oidcSecurityService: OidcSecurityService, private router: Router) {
         if (this.oidcSecurityService.moduleSetup) {
             this.onOidcModuleSetup();
         } else {
@@ -26,10 +18,9 @@ export class AppComponent {
             });
         }
 
-        this.oidcSecurityService.onAuthorizationResult.subscribe(
-            (authorizationResult: AuthorizationResult) => {
-                this.onAuthorizationResultComplete(authorizationResult);
-            });
+        this.oidcSecurityService.onAuthorizationResult.subscribe((authorizationResult: AuthorizationResult) => {
+            this.onAuthorizationResultComplete(authorizationResult);
+        });
     }
 
     login() {
@@ -48,8 +39,10 @@ export class AppComponent {
     }
 
     private onOidcModuleSetup() {
-        if (window.location.hash) {
-            this.oidcSecurityService.authorizedImplicitFlowCallback();
+        console.log('AppComponent:onModuleSetup');
+        console.log(window.location.toString());
+        if (this.oidcSecurityService.moduleSetup) {
+            this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());
         } else {
             if ('/autologin' !== window.location.pathname) {
                 this.write('redirect', window.location.pathname);
@@ -64,11 +57,13 @@ export class AppComponent {
     }
 
     private onAuthorizationResultComplete(authorizationResult: AuthorizationResult) {
-
         const path = this.read('redirect');
-        console.log('Auth result received AuthorizationState:'
-            + authorizationResult.authorizationState
-            + ' validationResult:' + authorizationResult.validationResult);
+        console.log(
+            'Auth result received AuthorizationState:' +
+                authorizationResult.authorizationState +
+                ' validationResult:' +
+                authorizationResult.validationResult
+        );
 
         if (authorizationResult.authorizationState === AuthorizationState.authorized) {
             this.router.navigate([path]);
