@@ -98,7 +98,7 @@
                     "options": {
                         "browserTarget": "sample-code-flow:build",
 						"sslKey": "certs/dev_localhost.key",
-                        "sslCert": "certs/dev_localhost.pem",
+                        "sslCert": "certs/dev_localhost.pem"
                     },
                     "configurations": {
                         "production": {
@@ -209,7 +209,7 @@
                     "options": {
                         "browserTarget": "sample-code-flow-auto-login:build",
 						"sslKey": "certs/dev_localhost.key",
-                        "sslCert": "certs/dev_localhost.pem",
+                        "sslCert": "certs/dev_localhost.pem"
                     },
                     "configurations": {
                         "production": {
@@ -319,9 +319,9 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "sample-code-flow-http-config:build"
-						"sslKey": "certs/dev_localhost.key",
-                        "sslCert": "certs/dev_localhost.pem",
+                        "browserTarget": "sample-code-flow-http-config:build",
+						             "sslKey": "certs/dev_localhost.key",
+                        "sslCert": "certs/dev_localhost.pem"
                     },
                     "configurations": {
                         "production": {
