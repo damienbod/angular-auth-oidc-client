@@ -440,7 +440,8 @@
                     "options": {
                         "browserTarget": "sample-implicit-flow-google:build",
                         "sslKey": "certs/dev_localhost.key",
-                        "sslCert": "certs/dev_localhost.pem"
+                        "sslCert": "certs/dev_localhost.pem", 
+						"port": 44386
                     },
                     "configurations": {
                         "production": {
