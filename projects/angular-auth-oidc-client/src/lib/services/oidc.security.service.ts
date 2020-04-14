@@ -75,6 +75,10 @@ export class OidcSecurityService {
             this.isModuleSetupInternal.next(true);
         });
 
+        this.checkSetupAndAuthorizedInternal();
+    }
+
+    private checkSetupAndAuthorizedInternal() {
         this.isSetupAndAuthorizedInternal = this.isModuleSetupInternal.pipe(
             filter((isModuleSetup: boolean) => isModuleSetup),
             switchMap(() => {
@@ -82,7 +86,6 @@ export class OidcSecurityService {
                     this.loggerService.logDebug(`IsAuthorizedRace: Silent Renew Not Active. Emitting.`);
                     return from([true]);
                 }
-
                 const race$ = race(
                     this.isAuthorizedInternal.asObservable().pipe(
                         filter((isAuthorized: boolean) => isAuthorized),
@@ -104,14 +107,12 @@ export class OidcSecurityService {
                         map(() => true)
                     )
                 );
-
                 this.loggerService.logDebug('Silent Renew is active, check if token in storage is active');
                 if (this.oidcSecurityCommon.authNonce === '' || this.oidcSecurityCommon.authNonce === undefined) {
                     // login not running, or a second silent renew, user must login first before this will work.
                     this.loggerService.logDebug('Silent Renew or login not running, try to refresh the session');
                     this.refreshSession().subscribe();
                 }
-
                 return race$;
             }),
             tap(() => this.loggerService.logDebug('IsAuthorizedRace: Completed')),
@@ -119,7 +120,6 @@ export class OidcSecurityService {
             tap((isAuthorized: boolean) => this.loggerService.logDebug(`getIsAuthorized: ${isAuthorized}`)),
             shareReplay(1)
         );
-
         this.isSetupAndAuthorizedInternal
             .pipe(filter(() => this.configurationProvider.openIDConfiguration.startCheckSession))
             .subscribe((isSetupAndAuthorized) => {
@@ -198,6 +198,8 @@ export class OidcSecurityService {
                 })
             );
         }
+
+        this.checkSetupAndAuthorizedInternal();
     }
 
     getUserData<T = any>(): Observable<T> {
