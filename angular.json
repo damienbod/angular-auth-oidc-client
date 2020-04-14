@@ -517,7 +517,8 @@
                         "aot": true,
                         "assets": [
                             "projects/sample-implicit-flow-azuread/src/favicon.ico",
-                            "projects/sample-implicit-flow-azuread/src/assets"
+                            "projects/sample-implicit-flow-azuread/src/assets",
+							"projects/sample-implicit-flow-azuread/src/silent-renew.html"
                         ],
                         "styles": [
                             "projects/sample-implicit-flow-azuread/src/styles.css"
