@@ -13,16 +13,6 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { ProtectedComponent } from './protected/protected.component';
 import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 
-//export function loadConfig(oidcConfigService: OidcConfigService) {
-//    console.log('APP_INITIALIZER STARTING');
-//    // https://login.microsoftonline.com/damienbod.onmicrosoft.com/.well-known/openid-configuration
-//    // jwt keys: https://login.microsoftonline.com/common/discovery/keys
-//    // Azure AD does not support CORS, so you need to download the OIDC configuration, and use these from the application.
-//    // The jwt keys needs to be configured in the well-known-openid-configuration.json
-//   return () => oidcConfigService.load(`${window.location.origin}/api/config/configuration`);
-//    //return () => oidcConfigService.load_using_custom_stsServer('https://localhost:44347/well-known-openid-configuration.json');
-//}
-
 export function loadConfig(oidcConfigService: OidcConfigService) {
     return () => oidcConfigService.loadUsingStsServer('https://login.microsoftonline.com/damienbod.onmicrosoft.com/v2.0');
 }
