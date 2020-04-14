@@ -36,12 +36,6 @@ export class OidcConfigService {
         }
 
         const loadConfig$ = this.getCustomConfig(passedConfig, mappingFunction).pipe(
-            map((libConfig: OpenIdConfiguration) => {
-                libConfig.wellKnown = passedConfig.wellKnown || passedConfig.stsServer || libConfig.stsServer;
-                return {
-                    libConfig,
-                };
-            }),
             switchMap(({ libConfig }) =>
                 this.getWellKnownDocument(passedConfig.stsServer || libConfig.stsServer).pipe(
                     map((wellKnownEndpoints) => {
