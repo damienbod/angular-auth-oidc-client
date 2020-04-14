@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config/config.provider';
-import { EventTypes } from '../events';
+import { EventTypes } from '../events/event-types';
 import { EventsService } from '../events/events.service';
 import { OpenIdConfiguration } from '../models/auth.configuration';
 import { LoggerService } from '../services/oidc.logger.service';
@@ -60,7 +60,7 @@ export class OidcConfigService {
                 };
             }),
             tap(({ customConfig, wellKnownEndpoints }) => this.configurationProvider.setConfig(customConfig, wellKnownEndpoints)),
-            tap((bothConfigs) => this.eventsService.fireEvent(EventTypes.ConfigurationLoaded, bothConfigs))
+            tap((config) => this.eventsService.fireEvent(EventTypes.ConfigLoaded, config))
         );
 
         return loadConfig$.toPromise();

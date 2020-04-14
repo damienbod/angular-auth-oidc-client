@@ -1,3 +1,7 @@
 export enum EventTypes {
-    ConfigurationLoaded,
+    /**
+     *  This only works in the AppModule Constructor
+     */
+    ConfigLoaded,
+    ModuleSetup,
 }

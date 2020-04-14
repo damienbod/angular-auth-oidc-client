@@ -5,16 +5,16 @@ import { EventTypes } from './event-types';
 @Injectable({ providedIn: 'root' })
 export class EventsService {
     private registeredEvents = [];
-
-    notiyWhen = new Subject<any>();
+    private notify = new Subject<any>();
 
     fireEvent(type: EventTypes, data: any) {
         if (this.registeredEvents.includes(type)) {
-            this.notiyWhen.next(data);
+            this.notify.next(data);
         }
     }
 
     registerFor(events: EventTypes[] | EventTypes) {
         this.registeredEvents = Array.isArray(events) ? events : [events];
+        return this.notify.asObservable();
     }
 }

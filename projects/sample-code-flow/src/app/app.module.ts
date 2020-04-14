@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { AuthModule, OidcConfigService } from 'angular-auth-oidc-client';
+import { AuthModule, EventsService, EventTypes, OidcConfigService } from 'angular-auth-oidc-client';
 import { AppComponent } from './app.component';
 
 export function configureAuth(oidcConfigService: OidcConfigService) {
@@ -44,4 +44,10 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
     ],
     bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+    constructor(private readonly eventService: EventsService) {
+        this.eventService.registerFor(EventTypes.ConfigLoaded).subscribe((config) => {
+            console.log('ConfigLoaded', config);
+        });
+    }
+}
