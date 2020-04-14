@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../models/auth.configuration';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
-import { PlatformProvider } from './platform.provider';
+import { PlatformProvider } from '../services/platform.provider';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigurationProvider {
@@ -65,9 +65,4 @@ export class ConfigurationProvider {
             currentConfig.useRefreshToken = false;
         }
     }
-}
-
-export interface ConfigResult {
-    wellKnownEndpoints: AuthWellKnownEndpoints;
-    openIDConfiguration: OpenIdConfiguration;
 }

@@ -1,18 +1,18 @@
 ﻿import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable, of, ReplaySubject } from 'rxjs';
+import { combineLatest, of, Subject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+import { ConfigurationProvider } from '../config/config.provider';
 import { OpenIdConfiguration } from '../models/auth.configuration';
-import { ConfigResult, ConfigurationProvider } from './config.provider';
-import { LoggerService } from './oidc.logger.service';
+import { LoggerService } from '../services/oidc.logger.service';
 
 @Injectable()
 export class OidcConfigService {
     private STS_SERVER_SUFFIX = `/.well-known/openid-configuration`;
-    private configurationLoadedInternal = new ReplaySubject<ConfigResult>(1);
+    private configurationLoadedInternal = new Subject();
 
-    // TODO ERASE THIS
-    public get onConfigurationLoaded(): Observable<ConfigResult> {
+    // TODO DO WE NEED THIS?
+    public get onConfigurationLoaded() {
         return this.configurationLoadedInternal.asObservable();
     }
 

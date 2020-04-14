@@ -4,13 +4,13 @@ import { Router } from '@angular/router';
 import { oneLineTrim } from 'common-tags';
 import { BehaviorSubject, from, Observable, of, race, Subject, throwError, timer } from 'rxjs';
 import { catchError, filter, first, map, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
-import { OidcDataService } from '../data-services/oidc-data.service';
+import { OidcDataService } from '../api/oidc-data.service';
+import { ConfigurationProvider } from '../config';
 import { AuthorizationResult } from '../models/authorization-result';
 import { AuthorizationState } from '../models/authorization-state.enum';
 import { JwtKeys } from '../models/jwtkeys';
 import { ValidateStateResult } from '../models/validate-state-result.model';
 import { ValidationResult } from '../models/validation-result.enum';
-import { ConfigurationProvider } from './config.provider';
 import { StateValidationService } from './oidc-security-state-validation.service';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { LoggerService } from './oidc.logger.service';
@@ -136,6 +136,8 @@ export class OidcSecurityService {
             this.loggerService.logError('Please provide a configuration before setting up the module');
             return;
         }
+
+        console.log(this.configurationProvider);
 
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => {
             this.loggerService.logDebug('onCheckSessionChanged');

@@ -1,8 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { LoggerService } from '../../lib/angular-auth-oidc-client';
-import { AuthModule } from '../../lib/modules/auth.module';
-import { OidcConfigService } from '../../lib/services/oidc.security.config.service';
+import { AuthModule, LoggerService, OidcConfigService } from '../../lib/angular-auth-oidc-client';
 import { TestLogging } from '../common/test-logging.service';
 
 describe('OidcConfigService', () => {

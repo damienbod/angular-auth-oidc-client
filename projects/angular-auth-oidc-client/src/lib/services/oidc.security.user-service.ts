@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { OidcDataService } from '../data-services/oidc-data.service';
-import { ConfigurationProvider } from './config.provider';
+import { OidcDataService } from '../api/oidc-data.service';
+import { ConfigurationProvider } from '../config';
 import { LoggerService } from './oidc.logger.service';
 import { OidcSecurityCommon } from './oidc.security.common';
 

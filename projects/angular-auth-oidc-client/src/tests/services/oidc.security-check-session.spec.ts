@@ -1,5 +1,5 @@
 import { async, TestBed } from '@angular/core/testing';
-import { ConfigurationProvider } from '../../lib/services/config.provider';
+import { ConfigurationProvider } from '../../lib/config';
 import { IFrameService } from '../../lib/services/existing-iframe.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityCheckSession } from '../../lib/services/oidc.security.check-session';

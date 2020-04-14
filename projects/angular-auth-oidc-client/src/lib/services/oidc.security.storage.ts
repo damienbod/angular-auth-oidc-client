@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ConfigurationProvider } from './config.provider';
+import { ConfigurationProvider } from '../config';
 
 /**
  * Implement this class-interface to create a custom storage.

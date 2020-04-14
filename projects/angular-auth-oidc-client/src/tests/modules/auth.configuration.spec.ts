@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
+import { AuthModule } from '../../lib/auth.module';
+import { ConfigurationProvider } from '../../lib/config';
 import { OpenIdConfiguration } from '../../lib/models/auth.configuration';
-import { AuthModule } from '../../lib/modules/auth.module';
-import { ConfigurationProvider } from '../../lib/services/config.provider';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { PlatformProvider } from '../../lib/services/platform.provider';
 import { TestLogging } from '../common/test-logging.service';
