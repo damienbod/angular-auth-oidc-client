@@ -1,7 +1,7 @@
 ﻿import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { combineLatest, of, Subject } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { of, Subject } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config/config.provider';
 import { OpenIdConfiguration } from '../models/auth.configuration';
 import { LoggerService } from '../services/oidc.logger.service';
@@ -22,26 +22,33 @@ export class OidcConfigService {
         private configurationProvider: ConfigurationProvider
     ) {}
 
-    withConfig(config: OpenIdConfiguration, mappingFunction?: any) {
-        if (!config.stsServer) {
-            this.loggerService.logError('please provide at least an stsServer');
+    withConfig(passedConfig: OpenIdConfiguration, mappingFunction?: any) {
+        if (!passedConfig.customConfigServer && !passedConfig.stsServer) {
+            this.loggerService.logError('please provide at least an stsServer or a custom config');
             return;
         }
 
-        if (config.customConfigServer && !mappingFunction) {
+        if (passedConfig.customConfigServer && !mappingFunction) {
             this.loggerService.logError(
                 'If you have given a custom config server then please provide a mapping method as second param, too '
             );
             return;
         }
 
-        const customConfig$ = this.getCustomConfig(config);
-        const stsServerConfig$ = this.getWellKnownDocument(config);
-
-        const loadConfig$ = combineLatest([customConfig$, stsServerConfig$]).pipe(
-            map(([customConfig, wellKnownEndpoints]: [OpenIdConfiguration, any]) => {
+        const loadConfig$ = this.getCustomConfig(passedConfig, mappingFunction).pipe(
+            switchMap((libConfig: OpenIdConfiguration) =>
+                this.getWellKnownDocument(passedConfig.stsServer || libConfig.stsServer).pipe(
+                    map((wellKnownEndpoints) => {
+                        return {
+                            libConfig,
+                            wellKnownEndpoints,
+                        };
+                    })
+                )
+            ),
+            map(({ libConfig, wellKnownEndpoints }) => {
                 return {
-                    customConfig,
+                    customConfig: libConfig,
                     wellKnownEndpoints: {
                         issuer: wellKnownEndpoints.issuer,
                         jwksUri: wellKnownEndpoints.jwks_uri,
@@ -55,7 +62,7 @@ export class OidcConfigService {
                     },
                 };
             }),
-            tap((configuration) => this.configurationProvider.setConfig(configuration.customConfig, configuration.wellKnownEndpoints))
+            tap(({ customConfig, wellKnownEndpoints }) => this.configurationProvider.setConfig(customConfig, wellKnownEndpoints))
         );
 
         return loadConfig$.toPromise();
@@ -69,8 +76,8 @@ export class OidcConfigService {
         }
     }
 
-    private getWellKnownDocument(config: OpenIdConfiguration) {
-        const url = `${config.stsServer}/${this.STS_SERVER_SUFFIX}`;
+    private getWellKnownDocument(stsServerAdress: string) {
+        const url = `${stsServerAdress}/${this.STS_SERVER_SUFFIX}`;
         return this.httpClient.get<any>(url);
     }
 }
