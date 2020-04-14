@@ -4,17 +4,21 @@ import { EventTypes } from './event-types';
 
 @Injectable({ providedIn: 'root' })
 export class EventsService {
-    private registeredEvents = [];
-    private notify = new Subject<any>();
+    private notify = new Subject<Notification>();
 
-    fireEvent(type: EventTypes, data: any) {
-        if (this.registeredEvents.includes(type)) {
-            this.notify.next(data);
-        }
+    constructor() {
+        console.log('@@@@ new Instance');
+    }
+    fireEvent(type: EventTypes, value: any) {
+        this.notify.next({ type, value });
     }
 
-    registerFor(events: EventTypes[] | EventTypes) {
-        this.registeredEvents = Array.isArray(events) ? events : [events];
+    registerForEvents() {
         return this.notify.asObservable();
     }
+}
+
+export interface Notification {
+    type: EventTypes;
+    value: any;
 }

@@ -3,6 +3,7 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { AuthModule, EventsService, EventTypes, OidcConfigService } from 'angular-auth-oidc-client';
+import { filter } from 'rxjs/operators';
 import { AppComponent } from './app.component';
 
 export function configureAuth(oidcConfigService: OidcConfigService) {
@@ -46,8 +47,11 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
 })
 export class AppModule {
     constructor(private readonly eventService: EventsService) {
-        this.eventService.registerFor(EventTypes.ConfigLoaded).subscribe((config) => {
-            console.log('ConfigLoaded', config);
-        });
+        this.eventService
+            .registerForEvents()
+            .pipe(filter((notification) => notification.type === EventTypes.ConfigLoaded))
+            .subscribe((config) => {
+                console.log('ConfigLoaded', config);
+            });
     }
 }

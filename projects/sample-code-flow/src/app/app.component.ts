@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { EventsService, EventTypes, OidcSecurityService } from 'angular-auth-oidc-client';
+import { filter } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -7,16 +8,10 @@ import { EventsService, EventTypes, OidcSecurityService } from 'angular-auth-oid
 })
 export class AppComponent implements OnInit, OnDestroy {
     isAuthenticated: boolean;
-    isConfigurationLoaded: boolean;
+    isModuleSetUp: any;
     userData: any;
 
     constructor(public oidcSecurityService: OidcSecurityService, private readonly eventService: EventsService) {
-        this.eventService.registerFor(EventTypes.ModuleSetup).subscribe((moduleLoaded) => {
-            this.isConfigurationLoaded = moduleLoaded;
-        });
-
-        this.oidcSecurityService.setupModule();
-
         if (this.oidcSecurityService.moduleSetup) {
             this.doCallbackLogicIfRequired();
         } else {
@@ -27,6 +22,12 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.eventService
+            .registerForEvents()
+            .pipe(filter((notification) => notification.type === EventTypes.ModuleSetup))
+            .subscribe((notification) => (this.isModuleSetUp = notification.value));
+
+        this.oidcSecurityService.setupModule();
         this.oidcSecurityService.getIsAuthorized().subscribe((auth) => {
             this.isAuthenticated = auth;
         });
