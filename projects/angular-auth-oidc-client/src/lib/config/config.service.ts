@@ -46,7 +46,6 @@ export class OidcConfigService {
                     })
                 )
             ),
-            tap(console.log),
             map(({ libConfig, wellKnownEndpoints }) => {
                 return {
                     customConfig: libConfig,
