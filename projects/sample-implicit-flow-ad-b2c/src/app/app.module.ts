@@ -56,6 +56,7 @@ export class AppModule {
             const config: OpenIdConfiguration = {
                 stsServer: 'https://login.microsoftonline.com/damienbod.onmicrosoft.com/v2.0',
                 redirectUrl: 'https://localhost:65328',
+                postLogoutRedirectUri: 'https://localhost:65328',
                 clientId: 'f1934a6e-958d-4198-9f36-6127cfc4cdb3',
                 scope: 'openid https://damienbod.onmicrosoft.com/testapi/demo.read',
                 responseType: 'id_token token',
