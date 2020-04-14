@@ -278,7 +278,8 @@
                         "aot": true,
                         "assets": [
                             "projects/sample-code-flow-http-config/src/favicon.ico",
-                            "projects/sample-code-flow-http-config/src/assets"
+                            "projects/sample-code-flow-http-config/src/assets",
+							"projects/sample-code-flow-http-config/src/silent-renew.html"
                         ],
                         "styles": [
                             "projects/sample-code-flow-http-config/src/styles.css"
