@@ -9,7 +9,7 @@ const appRoutes: Routes = [
     { path: 'home', component: HomeComponent },
     { path: 'autologin', component: AutoLoginComponent },
     { path: 'forbidden', component: ForbiddenComponent },
-    { path: 'Uunauthorized', component: UnauthorizedComponent },
+    { path: 'unauthorized', component: UnauthorizedComponent },
 ];
 
 export const routing = RouterModule.forRoot(appRoutes);
