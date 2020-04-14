@@ -1,25 +1,22 @@
 ﻿import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { of, Subject } from 'rxjs';
+import { of } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config/config.provider';
+import { EventTypes } from '../events';
+import { EventsService } from '../events/events.service';
 import { OpenIdConfiguration } from '../models/auth.configuration';
 import { LoggerService } from '../services/oidc.logger.service';
 
 @Injectable()
 export class OidcConfigService {
     private STS_SERVER_SUFFIX = `/.well-known/openid-configuration`;
-    private configurationLoadedInternal = new Subject();
-
-    // TODO DO WE NEED THIS?
-    public get onConfigurationLoaded() {
-        return this.configurationLoadedInternal.asObservable();
-    }
 
     constructor(
         private readonly loggerService: LoggerService,
         private readonly httpClient: HttpClient,
-        private readonly configurationProvider: ConfigurationProvider
+        private readonly configurationProvider: ConfigurationProvider,
+        private readonly eventsService: EventsService
     ) {}
 
     withConfig(passedConfig: OpenIdConfiguration, mappingFunction?: any) {
@@ -62,7 +59,8 @@ export class OidcConfigService {
                     },
                 };
             }),
-            tap(({ customConfig, wellKnownEndpoints }) => this.configurationProvider.setConfig(customConfig, wellKnownEndpoints))
+            tap(({ customConfig, wellKnownEndpoints }) => this.configurationProvider.setConfig(customConfig, wellKnownEndpoints)),
+            tap((bothConfigs) => this.eventsService.fireEvent(EventTypes.ConfigurationLoaded, bothConfigs))
         );
 
         return loadConfig$.toPromise();

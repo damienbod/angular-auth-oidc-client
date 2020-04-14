@@ -2,6 +2,7 @@
 
 export * from './auth.module';
 export * from './config/config.service';
+export * from './events';
 export * from './models/auth.configuration';
 export * from './models/auth.well-known-endpoints';
 export * from './models/authorization-result';
