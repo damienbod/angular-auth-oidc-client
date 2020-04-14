@@ -8,6 +8,8 @@ import { AuthorizationResult, AuthorizationState, OidcSecurityService } from 'an
 })
 export class AppComponent implements OnInit, OnDestroy {
     constructor(public oidcSecurityService: OidcSecurityService, private router: Router) {
+        this.oidcSecurityService.setupModule();
+
         if (this.oidcSecurityService.moduleSetup) {
             this.onOidcModuleSetup();
         } else {

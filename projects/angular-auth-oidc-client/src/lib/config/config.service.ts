@@ -19,7 +19,7 @@ export class OidcConfigService {
     constructor(
         private readonly loggerService: LoggerService,
         private readonly httpClient: HttpClient,
-        private configurationProvider: ConfigurationProvider
+        private readonly configurationProvider: ConfigurationProvider
     ) {}
 
     withConfig(passedConfig: OpenIdConfiguration, mappingFunction?: any) {
@@ -36,7 +36,13 @@ export class OidcConfigService {
         }
 
         const loadConfig$ = this.getCustomConfig(passedConfig, mappingFunction).pipe(
-            switchMap((libConfig: OpenIdConfiguration) =>
+            map((libConfig: OpenIdConfiguration) => {
+                libConfig.wellKnown = passedConfig.wellKnown || passedConfig.stsServer || libConfig.stsServer;
+                return {
+                    libConfig,
+                };
+            }),
+            switchMap(({ libConfig }) =>
                 this.getWellKnownDocument(passedConfig.stsServer || libConfig.stsServer).pipe(
                     map((wellKnownEndpoints) => {
                         return {
@@ -77,7 +83,12 @@ export class OidcConfigService {
     }
 
     private getWellKnownDocument(stsServerAdress: string) {
-        const url = `${stsServerAdress}/${this.STS_SERVER_SUFFIX}`;
+        let url = stsServerAdress;
+
+        if (!stsServerAdress.endsWith(this.STS_SERVER_SUFFIX)) {
+            url = `${stsServerAdress}/${this.STS_SERVER_SUFFIX}`;
+        }
+
         return this.httpClient.get<any>(url);
     }
 }
