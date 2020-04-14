@@ -36,7 +36,7 @@ export class OidcConfigService {
         }
 
         const loadConfig$ = this.getCustomConfig(passedConfig, mappingFunction).pipe(
-            switchMap(({ libConfig }) =>
+            switchMap((libConfig) =>
                 this.getWellKnownDocument(passedConfig.stsServer || libConfig.stsServer).pipe(
                     map((wellKnownEndpoints) => {
                         return {
@@ -46,6 +46,7 @@ export class OidcConfigService {
                     })
                 )
             ),
+            tap(console.log),
             map(({ libConfig, wellKnownEndpoints }) => {
                 return {
                     customConfig: libConfig,
@@ -80,7 +81,7 @@ export class OidcConfigService {
         let url = stsServerAdress;
 
         if (!stsServerAdress.endsWith(this.STS_SERVER_SUFFIX)) {
-            url = `${stsServerAdress}/${this.STS_SERVER_SUFFIX}`;
+            url = `${stsServerAdress}${this.STS_SERVER_SUFFIX}`;
         }
 
         return this.httpClient.get<any>(url);
