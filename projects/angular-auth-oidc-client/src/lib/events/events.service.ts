@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 import { EventTypes } from './event-types';
+import { OidcClientNotification } from './notification';
 
 @Injectable({ providedIn: 'root' })
 export class EventsService {
-    private notify = new Subject<Notification>();
+    private notify = new ReplaySubject<OidcClientNotification>(1);
 
-    constructor() {
-        console.log('@@@@ new Instance');
-    }
     fireEvent(type: EventTypes, value: any) {
         this.notify.next({ type, value });
     }
@@ -16,9 +14,4 @@ export class EventsService {
     registerForEvents() {
         return this.notify.asObservable();
     }
-}
-
-export interface Notification {
-    type: EventTypes;
-    value: any;
 }
