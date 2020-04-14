@@ -74,8 +74,10 @@ export class AppModule {
 
             this.oidcSecurityService.setupModule(config, configResult.authWellknownEndpoints);
 
-            this.oidcSecurityService.setCustomRequestParameters(configResult.customConfig.additional_login_parameters);
-            this.oidcSecurityService.setCustomRequestParameters({ response_mode: 'fragment' });
+            this.oidcSecurityService.setCustomRequestParameters({
+                response_mode: 'fragment',
+                prompt: 'consent',
+            });
         });
 
         console.log('APP STARTING');
