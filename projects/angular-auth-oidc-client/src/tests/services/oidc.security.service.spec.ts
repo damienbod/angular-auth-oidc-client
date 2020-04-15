@@ -192,10 +192,9 @@ describe('OidcSecurityService', () => {
         config.logConsoleWarningActive = true;
         config.logConsoleDebugActive = true;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
-
-        oidcSecurityService.setCustomRequestParameters({
+        config.customParams = {
             testcustom: 'customvalue',
-        });
+        };
 
         configurationProvider.setConfig(config, null);
 
@@ -236,15 +235,14 @@ describe('OidcSecurityService', () => {
         config.logConsoleWarningActive = true;
         config.logConsoleDebugActive = true;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
-
-        configurationProvider.setConfig(config, null);
-
-        oidcSecurityService.setCustomRequestParameters({
+        config.customParams = {
             t4: 'ABC abc 123',
             t3: '#',
             t2: '-_.!~*()',
             t1: ';,/?:@&=+$',
-        });
+        };
+
+        configurationProvider.setConfig(config, null);
 
         const value = (oidcSecurityService as any).createAuthorizeUrl(
             false,

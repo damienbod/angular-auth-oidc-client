@@ -1,86 +1,62 @@
-﻿import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { of } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+﻿import { Injectable } from '@angular/core';
+import { map, tap } from 'rxjs/operators';
+import { HttpBaseService } from '../api/http-base.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { EventTypes } from '../events/event-types';
 import { EventsService } from '../events/events.service';
-import { OpenIdConfiguration } from '../models/auth.configuration';
 import { LoggerService } from '../services/oidc.logger.service';
+import { OpenIdConfiguration } from './openid-configuration';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class OidcConfigService {
-    private STS_SERVER_SUFFIX = `/.well-known/openid-configuration`;
-
+    private WELL_KNOWN_SUFFIX = `/.well-known/openid-configuration`;
     constructor(
         private readonly loggerService: LoggerService,
-        private readonly httpClient: HttpClient,
+        private readonly http: HttpBaseService,
         private readonly configurationProvider: ConfigurationProvider,
         private readonly eventsService: EventsService
     ) {}
 
-    withConfig(passedConfig: OpenIdConfiguration, mappingFunction?: any) {
-        if (!passedConfig.customConfigServer && !passedConfig.stsServer) {
-            this.loggerService.logError('please provide at least an stsServer or a custom config');
+    withConfig(passedConfig: OpenIdConfiguration) {
+        if (!passedConfig.stsServer) {
+            this.loggerService.logError('please provide at least an stsServer');
             return;
         }
 
-        if (passedConfig.customConfigServer && !mappingFunction) {
-            this.loggerService.logError(
-                'If you have given a custom config server then please provide a mapping method as second param, too '
-            );
-            return;
+        if (!passedConfig.authWellknownEndpoint) {
+            passedConfig.authWellknownEndpoint = passedConfig.stsServer;
         }
 
-        const loadConfig$ = this.getCustomConfig(passedConfig, mappingFunction).pipe(
-            switchMap((libConfig) =>
-                this.getWellKnownDocument(passedConfig.stsServer || libConfig.stsServer).pipe(
-                    map((wellKnownEndpoints) => {
-                        return {
-                            libConfig,
-                            wellKnownEndpoints,
-                        };
-                    })
-                )
-            ),
-            map(({ libConfig, wellKnownEndpoints }) => {
+        const loadConfig$ = this.getWellKnownDocument(passedConfig.authWellknownEndpoint).pipe(
+            map((wellKnownEndpoints) => {
                 return {
-                    customConfig: libConfig,
-                    wellKnownEndpoints: {
-                        issuer: wellKnownEndpoints.issuer,
-                        jwksUri: wellKnownEndpoints.jwks_uri,
-                        authorizationEndpoint: wellKnownEndpoints.authorization_endpoint,
-                        tokenEndpoint: wellKnownEndpoints.token_endpoint,
-                        userinfoEndpoint: wellKnownEndpoints.userinfo_endpoint,
-                        endSessionEndpoint: wellKnownEndpoints.end_session_endpoint,
-                        checkSessionIframe: wellKnownEndpoints.check_session_iframe,
-                        revocationEndpoint: wellKnownEndpoints.revocation_endpoint,
-                        introspectionEndpoint: wellKnownEndpoints.introspection_endpoint,
-                    },
+                    issuer: wellKnownEndpoints.issuer,
+                    jwksUri: wellKnownEndpoints.jwks_uri,
+                    authorizationEndpoint: wellKnownEndpoints.authorization_endpoint,
+                    tokenEndpoint: wellKnownEndpoints.token_endpoint,
+                    userinfoEndpoint: wellKnownEndpoints.userinfo_endpoint,
+                    endSessionEndpoint: wellKnownEndpoints.end_session_endpoint,
+                    checkSessionIframe: wellKnownEndpoints.check_session_iframe,
+                    revocationEndpoint: wellKnownEndpoints.revocation_endpoint,
+                    introspectionEndpoint: wellKnownEndpoints.introspection_endpoint,
                 };
             }),
-            tap(({ customConfig, wellKnownEndpoints }) => this.configurationProvider.setConfig(customConfig, wellKnownEndpoints)),
-            tap((config) => this.eventsService.fireEvent(EventTypes.ConfigLoaded, config))
+            tap((mappedWellKnownEndpoints) =>
+                this.eventsService.fireEvent(EventTypes.ConfigLoaded, { passedConfig, mappedWellKnownEndpoints })
+            ),
+            tap((mappedWellKnownEndpoints) => this.configurationProvider.setConfig(passedConfig, mappedWellKnownEndpoints))
         );
 
         return loadConfig$.toPromise();
     }
 
-    private getCustomConfig(config: OpenIdConfiguration, mappingFunction?: any) {
-        if (config.customConfigServer) {
-            return this.httpClient.get(config.customConfigServer).pipe(map((result) => mappingFunction(result)));
-        } else {
-            return of(config);
-        }
-    }
+    private getWellKnownDocument(wellKnownEndpoint: string) {
+        let url = wellKnownEndpoint;
 
-    private getWellKnownDocument(stsServerAdress: string) {
-        let url = stsServerAdress;
-
-        if (!stsServerAdress.endsWith(this.STS_SERVER_SUFFIX)) {
-            url = `${stsServerAdress}${this.STS_SERVER_SUFFIX}`;
+        if (!wellKnownEndpoint.includes(this.WELL_KNOWN_SUFFIX)) {
+            url = `${wellKnownEndpoint}${this.WELL_KNOWN_SUFFIX}`;
         }
 
-        return this.httpClient.get<any>(url);
+        return this.http.get<any>(url);
     }
 }

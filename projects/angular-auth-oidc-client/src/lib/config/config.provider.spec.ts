@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { ConfigurationProvider } from '../../lib/config';
-import { OpenIdConfiguration } from '../../lib/models/auth.configuration';
-import { PlatformProvider } from '../../lib/services/platform.provider';
+import { PlatformProvider } from '../services/platform.provider';
+import { ConfigurationProvider } from './config.provider';
+import { OpenIdConfiguration } from './openid-configuration';
 
 describe('ConfigurationProviderTests', () => {
     let configurationProvider: ConfigurationProvider;
@@ -51,6 +51,7 @@ describe('ConfigurationProviderTests', () => {
     it('setup defines default openIDConfiguration', () => {
         const defaultConfig: OpenIdConfiguration = {
             stsServer: 'https://please_set',
+            authWellknownEndpoint: '',
             redirectUrl: 'https://please_set',
             clientId: 'please_set',
             responseType: 'code',
@@ -77,6 +78,7 @@ describe('ConfigurationProviderTests', () => {
             isauthorizedRaceTimeoutInSeconds: 5,
             disableIatOffsetValidation: false,
             storage: sessionStorage,
+            customParams: {},
         };
 
         configurationProvider.setConfig({ stsServer: 'https://please_set' }, null);
@@ -91,6 +93,7 @@ describe('ConfigurationProviderTests', () => {
 
         const expected = {
             stsServer: config.stsServer,
+            authWellknownEndpoint: '',
             redirectUrl: 'https://please_set',
             clientId: 'please_set',
             responseType: 'code',
@@ -117,6 +120,7 @@ describe('ConfigurationProviderTests', () => {
             isauthorizedRaceTimeoutInSeconds: 5,
             disableIatOffsetValidation: false,
             storage: sessionStorage,
+            customParams: {},
         };
 
         configurationProvider.setConfig(config, null);
@@ -133,6 +137,7 @@ describe('ConfigurationProviderTests', () => {
 
         const expected = {
             stsServer: config.stsServer,
+            authWellknownEndpoint: '',
             redirectUrl: 'https://please_set',
             clientId: 'please_set',
             responseType: 'code',
@@ -159,6 +164,7 @@ describe('ConfigurationProviderTests', () => {
             isauthorizedRaceTimeoutInSeconds: 5,
             disableIatOffsetValidation: false,
             storage: sessionStorage,
+            customParams: {},
         };
 
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);

@@ -1,6 +1,6 @@
 export interface OpenIdConfiguration {
     stsServer?: string;
-    customConfigServer?: string;
+    authWellknownEndpoint?: string;
     redirectUrl?: string;
     clientId?: string;
     responseType?: string;
@@ -27,4 +27,5 @@ export interface OpenIdConfiguration {
     isauthorizedRaceTimeoutInSeconds?: number;
     disableIatOffsetValidation?: boolean;
     storage?: any;
+    customParams?: { [key: string]: string | number | boolean };
 }

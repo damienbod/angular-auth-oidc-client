@@ -1,10 +1,11 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { HttpBaseService } from './http-base.service';
 
 @Injectable()
 export class OidcDataService {
-    constructor(private httpClient: HttpClient) {}
+    constructor(private httpClient: HttpBaseService) {}
 
     getWellknownEndpoints<T>(url: string): Observable<T> {
         let headers = new HttpHeaders();

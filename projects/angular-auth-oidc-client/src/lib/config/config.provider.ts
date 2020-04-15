@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { OpenIdConfiguration } from '../models/auth.configuration';
 import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 import { PlatformProvider } from '../services/platform.provider';
+import { OpenIdConfiguration } from './openid-configuration';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigurationProvider {
     private DEFAULT_CONFIG: OpenIdConfiguration = {
         stsServer: 'https://please_set',
+        authWellknownEndpoint: '',
         redirectUrl: 'https://please_set',
         clientId: 'please_set',
         responseType: 'code',
@@ -33,6 +34,7 @@ export class ConfigurationProvider {
         isauthorizedRaceTimeoutInSeconds: 5,
         disableIatOffsetValidation: false,
         storage: typeof Storage !== 'undefined' ? sessionStorage : null,
+        customParams: {},
     };
 
     private wellKnownEndpointsInternal: AuthWellKnownEndpoints;
