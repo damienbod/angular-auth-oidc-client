@@ -28,7 +28,7 @@ describe('Events Service', () => {
         eventsService.fireEvent(EventTypes.ConfigLoaded, { myKey: 'myValue' });
     }));
 
-    fit('registering to single event with mutliple same event emit works', async(() => {
+    it('registering to single event with mutliple same event emit works', async(() => {
         const spy = jasmine.createSpy('spy');
         eventsService.registerForEvents().subscribe((firedEvent) => {
             spy(firedEvent);
