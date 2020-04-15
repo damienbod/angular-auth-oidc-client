@@ -3,8 +3,7 @@
 
 <hr />
 
-Is Configuration loaded: {{ isConfigurationLoaded }}
-
+Is module set up: {{ isModuleSetUp$ | async | json }}
 <br />
 <br />
 
@@ -13,4 +12,4 @@ Is Authenticated: {{ isAuthenticated }}
 <br />
 <br />
 
-{{ userData | json }}
+<pre>{{ userData | json }}</pre>

@@ -1,9 +1,10 @@
 // Public classes.
 
 export * from './auth.module';
+export * from './config/auth-well-known-endpoints';
 export * from './config/config.service';
 export * from './config/openid-configuration';
-export * from './models/auth.well-known-endpoints';
+export * from './events';
 export * from './models/authorization-result';
 export * from './models/authorization-state.enum';
 export * from './models/jwtkeys';

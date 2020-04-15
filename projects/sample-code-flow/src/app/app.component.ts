@@ -1,5 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { OidcConfigService, OidcSecurityService } from 'angular-auth-oidc-client';
+import { EventsService, EventTypes, OidcClientNotification, OidcSecurityService } from 'angular-auth-oidc-client';
+import { Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -7,12 +9,10 @@ import { OidcConfigService, OidcSecurityService } from 'angular-auth-oidc-client
 })
 export class AppComponent implements OnInit, OnDestroy {
     isAuthenticated: boolean;
-    isConfigurationLoaded: boolean;
+    isModuleSetUp$: Observable<OidcClientNotification>;
     userData: any;
 
-    constructor(private oidcConfigService: OidcConfigService, public oidcSecurityService: OidcSecurityService) {
-        this.oidcSecurityService.setupModule();
-
+    constructor(public oidcSecurityService: OidcSecurityService, private readonly eventService: EventsService) {
         if (this.oidcSecurityService.moduleSetup) {
             this.doCallbackLogicIfRequired();
         } else {
@@ -23,10 +23,11 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.oidcConfigService.onConfigurationLoaded.subscribe((value) => {
-            this.isConfigurationLoaded = true;
-        });
+        this.isModuleSetUp$ = this.eventService
+            .registerForEvents()
+            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.ModuleSetup));
 
+        this.oidcSecurityService.setupModule();
         this.oidcSecurityService.getIsAuthorized().subscribe((auth) => {
             this.isAuthenticated = auth;
         });

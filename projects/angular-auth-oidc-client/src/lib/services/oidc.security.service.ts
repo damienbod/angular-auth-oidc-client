@@ -6,6 +6,8 @@ import { BehaviorSubject, from, Observable, of, race, Subject, throwError, timer
 import { catchError, filter, first, map, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { OidcDataService } from '../api/oidc-data.service';
 import { ConfigurationProvider } from '../config';
+import { EventTypes } from '../events';
+import { EventsService } from '../events/events.service';
 import { AuthorizationResult } from '../models/authorization-result';
 import { AuthorizationState } from '../models/authorization-state.enum';
 import { JwtKeys } from '../models/jwtkeys';
@@ -68,7 +70,8 @@ export class OidcSecurityService {
         private zone: NgZone,
         private readonly httpClient: HttpClient,
         private readonly configurationProvider: ConfigurationProvider,
-        private readonly urlParserService: UrlParserService
+        private readonly urlParserService: UrlParserService,
+        private readonly eventsService: EventsService
     ) {
         this.onModuleSetup.pipe(take(1)).subscribe(() => {
             this.moduleSetup = true;
@@ -137,8 +140,6 @@ export class OidcSecurityService {
             return;
         }
 
-        console.log(this.configurationProvider);
-
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => {
             this.loggerService.logDebug('onCheckSessionChanged');
             this.checkSessionChanged = true;
@@ -198,6 +199,8 @@ export class OidcSecurityService {
                 })
             );
         }
+
+        this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
 
         this.checkSetupAndAuthorizedInternal();
     }
