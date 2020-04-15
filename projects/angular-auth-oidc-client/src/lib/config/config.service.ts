@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config/config.provider';
-import { OpenIdConfiguration } from '../models/auth.configuration';
 import { LoggerService } from '../services/oidc.logger.service';
+import { OpenIdConfiguration } from './openid-configuration';
 
 @Injectable({ providedIn: 'root' })
 export class OidcConfigService {

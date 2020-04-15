@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthModule } from '../../lib/auth.module';
 import { ConfigurationProvider } from '../../lib/config';
-import { OpenIdConfiguration } from '../../lib/models/auth.configuration';
+import { OpenIdConfiguration } from '../../lib/config/openid-configuration';
 import { AuthWellKnownEndpoints } from '../../lib/models/auth.well-known-endpoints';
 import { JwtKeys } from '../../lib/models/jwtkeys';
 import { ValidationResult } from '../../lib/models/validation-result.enum';

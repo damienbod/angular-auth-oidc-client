@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../../lib/config';
-import { OpenIdConfiguration } from '../../lib/models/auth.configuration';
+import { OpenIdConfiguration } from '../../lib/config/openid-configuration';
 import { PlatformProvider } from '../../lib/services/platform.provider';
 
 describe('ConfigurationProviderTests', () => {
@@ -78,6 +78,7 @@ describe('ConfigurationProviderTests', () => {
             isauthorizedRaceTimeoutInSeconds: 5,
             disableIatOffsetValidation: false,
             storage: sessionStorage,
+            customParams: {},
         };
 
         configurationProvider.setConfig({ stsServer: 'https://please_set' }, null);
@@ -119,6 +120,7 @@ describe('ConfigurationProviderTests', () => {
             isauthorizedRaceTimeoutInSeconds: 5,
             disableIatOffsetValidation: false,
             storage: sessionStorage,
+            customParams: {},
         };
 
         configurationProvider.setConfig(config, null);
@@ -162,6 +164,7 @@ describe('ConfigurationProviderTests', () => {
             isauthorizedRaceTimeoutInSeconds: 5,
             disableIatOffsetValidation: false,
             storage: sessionStorage,
+            customParams: {},
         };
 
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);

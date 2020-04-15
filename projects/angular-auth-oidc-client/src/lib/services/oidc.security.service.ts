@@ -254,10 +254,6 @@ export class OidcSecurityService {
         return this.oidcSecurityCommon.authStateControl;
     }
 
-    setCustomRequestParameters(params: { [key: string]: string | number | boolean }) {
-        this.oidcSecurityCommon.customRequestParams = params;
-    }
-
     // Code Flow with PCKE or Implicit Flow
     authorize(urlHandler?: (url: string) => any) {
         if (this.configurationProvider.wellKnownEndpoints) {
@@ -902,11 +898,11 @@ export class OidcSecurityService {
             params = params.append('hd', this.configurationProvider.openIDConfiguration.hdParam);
         }
 
-        const customParams = Object.assign({}, this.oidcSecurityCommon.customRequestParams);
+        const customParams = { ...this.configurationProvider.openIDConfiguration.customParams };
 
-        Object.keys(customParams).forEach((key) => {
-            params = params.append(key, customParams[key].toString());
-        });
+        for (const [key, value] of Object.entries(customParams)) {
+            params = params.append(key, value.toString());
+        }
 
         return `${authorizationUrl}?${params}`;
     }

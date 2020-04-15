@@ -2,7 +2,7 @@
 
 export * from './auth.module';
 export * from './config/config.service';
-export * from './models/auth.configuration';
+export * from './config/openid-configuration';
 export * from './models/auth.well-known-endpoints';
 export * from './models/authorization-result';
 export * from './models/authorization-state.enum';
