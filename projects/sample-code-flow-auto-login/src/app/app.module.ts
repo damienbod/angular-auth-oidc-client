@@ -21,7 +21,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
             triggerAuthorizationResultEvent: true,
             postLogoutRedirectUri: 'https://localhost:4200/unauthorized',
             startCheckSession: false,
-            silentRenew: false,
+            silentRenew: true,
             silentRenewUrl: 'https://localhost:4200/silent-renew.html',
             postLoginRoute: '/home',
             forbiddenRoute: '/forbidden',
