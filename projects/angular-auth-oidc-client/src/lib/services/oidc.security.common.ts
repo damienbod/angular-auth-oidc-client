@@ -1,10 +1,13 @@
 ﻿import { Injectable } from '@angular/core';
+import { ConfigurationProvider } from './config/auth-configuration.provider';
 import { OidcSecurityStorage } from './oidc.security.storage';
 
 export type SilentRenewState = 'running' | '';
 
 @Injectable()
 export class OidcSecurityCommon {
+    constructor(private oidcSecurityStorage: OidcSecurityStorage, private readonly configurationProvider: ConfigurationProvider) {}
+
     private storageAuthResult = 'authorizationResult';
 
     public get authResult(): any {
@@ -105,14 +108,14 @@ export class OidcSecurityCommon {
         this.store(this.storageSilentRenewRunning, value);
     }
 
-    constructor(private oidcSecurityStorage: OidcSecurityStorage) {}
-
     private retrieve(key: string): any {
-        return this.oidcSecurityStorage.read(key);
+        const prefix = this.configurationProvider.openIDConfiguration.clientId;
+        return this.oidcSecurityStorage.read(prefix + key);
     }
 
     private store(key: string, value: any) {
-        this.oidcSecurityStorage.write(key, value);
+        const prefix = this.configurationProvider.openIDConfiguration.clientId;
+        this.oidcSecurityStorage.write(prefix + key, value);
     }
 
     resetStorageData(isRenewProcess: boolean) {
