@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { AuthModule, ConfigResult, OidcConfigService, OidcSecurityService, OpenIdConfiguration } from 'angular-auth-oidc-client';
+import { AuthModule, OidcConfigService, OidcSecurityService } from 'angular-auth-oidc-client';
 import { AppComponent } from './app.component';
 import { routing } from './app.routes';
 import { AuthorizationGuard } from './authorization.guard';
@@ -15,9 +15,25 @@ import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
     return () =>
-        oidcConfigService.loadUsingCustomStsServer(
-            'https://damienbod.b2clogin.com/damienbod.onmicrosoft.com/B2C_1_b2cpolicydamien/v2.0/.well-known/openid-configuration'
-        );
+        oidcConfigService.withConfig({
+            stsServer: 'https://login.microsoftonline.com/damienbod.onmicrosoft.com/v2.0',
+            authWellknownEndpoint:
+                'https://damienbod.b2clogin.com/damienbod.onmicrosoft.com/B2C_1_b2cpolicydamien/v2.0/.well-known/openid-configuration',
+            redirectUrl: 'https://localhost:65328',
+            postLogoutRedirectUri: 'https://localhost:65328',
+            clientId: 'f1934a6e-958d-4198-9f36-6127cfc4cdb3',
+            scope: 'openid https://damienbod.onmicrosoft.com/testapi/demo.read',
+            responseType: 'id_token token',
+            silentRenew: false,
+            autoUserinfo: false,
+            silentRenewUrl: 'https://localhost:65328/silent-renew.html',
+            logConsoleDebugActive: true,
+            maxIdTokenIatOffsetAllowedInSeconds: 500,
+            customParams: {
+                response_mode: 'fragment',
+                prompt: 'consent',
+            },
+        });
 }
 
 @NgModule({
@@ -50,31 +66,4 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
     ],
     bootstrap: [AppComponent],
 })
-export class AppModule {
-    constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
-        this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
-            const config: OpenIdConfiguration = {
-                stsServer: 'https://login.microsoftonline.com/damienbod.onmicrosoft.com/v2.0',
-                redirectUrl: 'https://localhost:65328',
-                postLogoutRedirectUri: 'https://localhost:65328',
-                clientId: 'f1934a6e-958d-4198-9f36-6127cfc4cdb3',
-                scope: 'openid https://damienbod.onmicrosoft.com/testapi/demo.read',
-                responseType: 'id_token token',
-                silentRenew: false,
-                autoUserinfo: false,
-                silentRenewUrl: 'https://localhost:65328/silent-renew.html',
-                logConsoleDebugActive: true,
-                maxIdTokenIatOffsetAllowedInSeconds: 500,
-            };
-
-            this.oidcSecurityService.setupModule(config, configResult.authWellknownEndpoints);
-
-            this.oidcSecurityService.setCustomRequestParameters({
-                response_mode: 'fragment',
-                prompt: 'consent',
-            });
-        });
-
-        console.log('APP STARTING');
-    }
-}
+export class AppModule {}
