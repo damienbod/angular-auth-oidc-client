@@ -1,7 +1,7 @@
-﻿import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+import { HttpBaseService } from '../api/http-base.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../services/oidc.logger.service';
 import { OpenIdConfiguration } from './openid-configuration';
@@ -18,7 +18,7 @@ export class OidcConfigService {
 
     constructor(
         private readonly loggerService: LoggerService,
-        private readonly httpClient: HttpClient,
+        private readonly http: HttpBaseService,
         private readonly configurationProvider: ConfigurationProvider
     ) {}
 
@@ -59,6 +59,6 @@ export class OidcConfigService {
             url = `${wellKnownEndpoint}${this.WELL_KNOWN_SUFFIX}`;
         }
 
-        return this.httpClient.get<any>(url);
+        return this.http.get<any>(url);
     }
 }

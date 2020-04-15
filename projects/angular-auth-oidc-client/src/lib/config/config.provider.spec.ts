@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { ConfigurationProvider } from '../../lib/config';
-import { OpenIdConfiguration } from '../../lib/config/openid-configuration';
-import { PlatformProvider } from '../../lib/services/platform.provider';
+import { PlatformProvider } from '../services/platform.provider';
+import { ConfigurationProvider } from './config.provider';
+import { OpenIdConfiguration } from './openid-configuration';
 
 describe('ConfigurationProviderTests', () => {
     let configurationProvider: ConfigurationProvider;
