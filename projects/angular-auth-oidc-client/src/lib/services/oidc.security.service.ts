@@ -4,15 +4,13 @@ import { Router } from '@angular/router';
 import { oneLineTrim } from 'common-tags';
 import { BehaviorSubject, from, Observable, of, race, Subject, throwError, timer } from 'rxjs';
 import { catchError, filter, first, map, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
-import { OidcDataService } from '../data-services/oidc-data.service';
-import { OpenIdConfiguration } from '../models/auth.configuration';
-import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
+import { OidcDataService } from '../api/oidc-data.service';
+import { ConfigurationProvider } from '../config';
 import { AuthorizationResult } from '../models/authorization-result';
 import { AuthorizationState } from '../models/authorization-state.enum';
 import { JwtKeys } from '../models/jwtkeys';
 import { ValidateStateResult } from '../models/validate-state-result.model';
 import { ValidationResult } from '../models/validation-result.enum';
-import { ConfigurationProvider } from './auth-configuration.provider';
 import { StateValidationService } from './oidc-security-state-validation.service';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { LoggerService } from './oidc.logger.service';
@@ -40,10 +38,6 @@ export class OidcSecurityService {
 
     public get onCheckSessionChanged(): Observable<boolean> {
         return this.onCheckSessionChangedInternal.asObservable();
-    }
-
-    public get onConfigurationChange(): Observable<OpenIdConfiguration> {
-        return this.configurationProvider.onConfigurationChange;
     }
 
     checkSessionChanged = false;
@@ -81,6 +75,10 @@ export class OidcSecurityService {
             this.isModuleSetupInternal.next(true);
         });
 
+        this.checkSetupAndAuthorizedInternal();
+    }
+
+    private checkSetupAndAuthorizedInternal() {
         this.isSetupAndAuthorizedInternal = this.isModuleSetupInternal.pipe(
             filter((isModuleSetup: boolean) => isModuleSetup),
             switchMap(() => {
@@ -88,7 +86,6 @@ export class OidcSecurityService {
                     this.loggerService.logDebug(`IsAuthorizedRace: Silent Renew Not Active. Emitting.`);
                     return from([true]);
                 }
-
                 const race$ = race(
                     this.isAuthorizedInternal.asObservable().pipe(
                         filter((isAuthorized: boolean) => isAuthorized),
@@ -110,14 +107,12 @@ export class OidcSecurityService {
                         map(() => true)
                     )
                 );
-
                 this.loggerService.logDebug('Silent Renew is active, check if token in storage is active');
                 if (this.oidcSecurityCommon.authNonce === '' || this.oidcSecurityCommon.authNonce === undefined) {
                     // login not running, or a second silent renew, user must login first before this will work.
                     this.loggerService.logDebug('Silent Renew or login not running, try to refresh the session');
                     this.refreshSession().subscribe();
                 }
-
                 return race$;
             }),
             tap(() => this.loggerService.logDebug('IsAuthorizedRace: Completed')),
@@ -125,7 +120,6 @@ export class OidcSecurityService {
             tap((isAuthorized: boolean) => this.loggerService.logDebug(`getIsAuthorized: ${isAuthorized}`)),
             shareReplay(1)
         );
-
         this.isSetupAndAuthorizedInternal
             .pipe(filter(() => this.configurationProvider.openIDConfiguration.startCheckSession))
             .subscribe((isSetupAndAuthorized) => {
@@ -137,8 +131,13 @@ export class OidcSecurityService {
             });
     }
 
-    setupModule(openIdConfiguration: OpenIdConfiguration, authWellKnownEndpoints: AuthWellKnownEndpoints): void {
-        this.configurationProvider.setup(openIdConfiguration, authWellKnownEndpoints);
+    setupModule(): void {
+        if (!this.configurationProvider.hasValidConfig()) {
+            this.loggerService.logError('Please provide a configuration before setting up the module');
+            return;
+        }
+
+        console.log(this.configurationProvider);
 
         this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => {
             this.loggerService.logDebug('onCheckSessionChanged');
@@ -199,6 +198,8 @@ export class OidcSecurityService {
                 })
             );
         }
+
+        this.checkSetupAndAuthorizedInternal();
     }
 
     getUserData<T = any>(): Observable<T> {

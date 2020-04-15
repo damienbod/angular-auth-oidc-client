@@ -2,9 +2,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AuthModule } from '../../lib/auth.module';
+import { ConfigurationProvider } from '../../lib/config';
 import { OpenIdConfiguration } from '../../lib/models/auth.configuration';
-import { AuthModule } from '../../lib/modules/auth.module';
-import { ConfigurationProvider } from '../../lib/services/auth-configuration.provider';
 import { EqualityHelperService } from '../../lib/services/oidc-equality-helper.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';
@@ -41,8 +41,7 @@ describe('OidcSecurityValidation', () => {
     });
 
     it('validate aud string', () => {
-        const config: OpenIdConfiguration = {};
-        config.stsServer = 'https://localhost:5001';
+        const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
         config.redirectUrl = 'https://localhost:44386';
         config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
         config.responseType = 'id_token token';
@@ -58,7 +57,7 @@ describe('OidcSecurityValidation', () => {
         config.logConsoleDebugActive = true;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
-        configProvider.setup(config, null);
+        configProvider.setConfig(config, null);
 
         const dataIdToken = { aud: 'banana' };
         const valueTrue = oidcSecurityValidation.validateIdTokenAud(dataIdToken, 'banana');
@@ -69,8 +68,7 @@ describe('OidcSecurityValidation', () => {
     });
 
     it('validate aud array', () => {
-        const config: OpenIdConfiguration = {};
-        config.stsServer = 'https://localhost:5001';
+        const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
         config.redirectUrl = 'https://localhost:44386';
         config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
         config.responseType = 'id_token token';
@@ -86,7 +84,7 @@ describe('OidcSecurityValidation', () => {
         config.logConsoleDebugActive = true;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
-        configProvider.setup(config, null);
+        configProvider.setConfig(config, null);
 
         const dataIdToken = {
             aud: ['banana', 'apple', 'https://nice.dom'],

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ConfigurationProvider } from './auth-configuration.provider';
+import { ConfigurationProvider } from '../config/config.provider';
 
 @Injectable()
 export class LoggerService {
