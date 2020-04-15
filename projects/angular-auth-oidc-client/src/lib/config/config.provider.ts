@@ -7,6 +7,7 @@ import { PlatformProvider } from '../services/platform.provider';
 export class ConfigurationProvider {
     private DEFAULT_CONFIG: OpenIdConfiguration = {
         stsServer: 'https://please_set',
+        authWellknownEndpoint: '',
         redirectUrl: 'https://please_set',
         clientId: 'please_set',
         responseType: 'code',

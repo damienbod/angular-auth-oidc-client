@@ -51,6 +51,7 @@ describe('ConfigurationProviderTests', () => {
     it('setup defines default openIDConfiguration', () => {
         const defaultConfig: OpenIdConfiguration = {
             stsServer: 'https://please_set',
+            authWellknownEndpoint: '',
             redirectUrl: 'https://please_set',
             clientId: 'please_set',
             responseType: 'code',
@@ -91,6 +92,7 @@ describe('ConfigurationProviderTests', () => {
 
         const expected = {
             stsServer: config.stsServer,
+            authWellknownEndpoint: '',
             redirectUrl: 'https://please_set',
             clientId: 'please_set',
             responseType: 'code',
@@ -133,6 +135,7 @@ describe('ConfigurationProviderTests', () => {
 
         const expected = {
             stsServer: config.stsServer,
+            authWellknownEndpoint: '',
             redirectUrl: 'https://please_set',
             clientId: 'please_set',
             responseType: 'code',
