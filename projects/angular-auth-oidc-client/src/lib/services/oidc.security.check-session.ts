@@ -2,7 +2,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { from, Observable, Observer, Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config';
-import { OidcSecurityCommon } from '../storage';
+import { StoragePersistanceService } from '../storage';
 import { IFrameService } from './existing-iframe.service';
 import { LoggerService } from './oidc.logger.service';
 
@@ -26,7 +26,7 @@ export class OidcSecurityCheckSession {
     }
 
     constructor(
-        private oidcSecurityCommon: OidcSecurityCommon,
+        private oidcSecurityCommon: StoragePersistanceService,
         private loggerService: LoggerService,
         private iFrameService: IFrameService,
         private zone: NgZone,

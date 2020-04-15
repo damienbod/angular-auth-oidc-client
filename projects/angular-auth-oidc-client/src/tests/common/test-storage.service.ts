@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { OidcSecurityStorage } from '../../lib/storage';
+import { AbstractSecurityStorage } from '../../lib/storage';
 
 @Injectable()
-export class TestStorage implements OidcSecurityStorage {
+export class TestStorage implements AbstractSecurityStorage {
     store: { [key: string]: any } = {};
 
     read(key: string): any {

@@ -10,14 +10,14 @@ import { ConfigurationProvider } from '../../lib/config';
 import { IFrameService } from '../../lib/services/existing-iframe.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityService } from '../../lib/services/oidc.security.service';
-import { OidcSecurityCommon, OidcSecurityStorage } from '../../lib/storage';
+import { AbstractSecurityStorage, StoragePersistanceService } from '../../lib/storage';
 import { TestLogging } from '../common/test-logging.service';
 import { TestStorage } from '../common/test-storage.service';
 
 describe('OidcSecurityService', () => {
     let oidcSecurityService: OidcSecurityService;
     let configurationProvider: ConfigurationProvider;
-    let oidcSecurityCommon: OidcSecurityCommon;
+    let oidcSecurityCommon: StoragePersistanceService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -25,7 +25,7 @@ describe('OidcSecurityService', () => {
             providers: [
                 OidcSecurityService,
                 {
-                    provide: OidcSecurityStorage,
+                    provide: AbstractSecurityStorage,
                     useClass: TestStorage,
                 },
                 { provide: LoggerService, useClass: TestLogging },
@@ -38,7 +38,7 @@ describe('OidcSecurityService', () => {
     beforeEach(() => {
         oidcSecurityService = TestBed.inject(OidcSecurityService);
         configurationProvider = TestBed.inject(ConfigurationProvider);
-        oidcSecurityCommon = TestBed.inject(OidcSecurityCommon);
+        oidcSecurityCommon = TestBed.inject(StoragePersistanceService);
     });
 
     it('should create', () => {

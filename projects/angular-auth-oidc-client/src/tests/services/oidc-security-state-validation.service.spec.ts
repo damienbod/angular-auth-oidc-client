@@ -12,7 +12,7 @@ import { StateValidationService } from '../../lib/services/oidc-security-state-v
 import { TokenHelperService } from '../../lib/services/oidc-token-helper.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityValidation } from '../../lib/services/oidc.security.validation';
-import { OidcSecurityStorage } from '../../lib/storage';
+import { AbstractSecurityStorage } from '../../lib/storage';
 import { TestLogging } from '../common/test-logging.service';
 import { TestStorage } from '../common/test-storage.service';
 
@@ -35,7 +35,7 @@ describe('OidcSecurityStateValidationService', () => {
                 LoggerService,
                 TokenHelperService,
                 {
-                    provide: OidcSecurityStorage,
+                    provide: AbstractSecurityStorage,
                     useClass: TestStorage,
                 },
                 {

@@ -4,7 +4,7 @@ import { IFrameService } from '../../lib/services/existing-iframe.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityCheckSession } from '../../lib/services/oidc.security.check-session';
 import { OidcSecurityService } from '../../lib/services/oidc.security.service';
-import { OidcSecurityCommon, OidcSecurityStorage } from '../../lib/storage';
+import { AbstractSecurityStorage, StoragePersistanceService } from '../../lib/storage';
 import { TestLogging } from '../common/test-logging.service';
 import { TestStorage } from '../common/test-storage.service';
 
@@ -18,10 +18,10 @@ describe('SecurityCheckSessionTests', () => {
             providers: [
                 OidcSecurityCheckSession,
                 ConfigurationProvider,
-                OidcSecurityCommon,
+                StoragePersistanceService,
                 { provide: LoggerService, useClass: TestLogging },
                 OidcSecurityService,
-                { provide: OidcSecurityStorage, useClass: TestStorage },
+                { provide: AbstractSecurityStorage, useClass: TestStorage },
                 IFrameService,
             ],
         });

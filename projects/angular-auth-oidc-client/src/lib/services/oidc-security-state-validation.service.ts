@@ -3,7 +3,7 @@ import { ConfigurationProvider } from '../config';
 import { JwtKeys } from '../models/jwtkeys';
 import { ValidateStateResult } from '../models/validate-state-result.model';
 import { ValidationResult } from '../models/validation-result.enum';
-import { OidcSecurityCommon } from '../storage';
+import { StoragePersistanceService } from '../storage';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { LoggerService } from './oidc.logger.service';
 import { OidcSecurityValidation } from './oidc.security.validation';
@@ -11,7 +11,7 @@ import { OidcSecurityValidation } from './oidc.security.validation';
 @Injectable()
 export class StateValidationService {
     constructor(
-        public oidcSecurityCommon: OidcSecurityCommon,
+        public oidcSecurityCommon: StoragePersistanceService,
         private oidcSecurityValidation: OidcSecurityValidation,
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,

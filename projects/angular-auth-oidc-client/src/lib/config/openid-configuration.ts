@@ -26,6 +26,6 @@ export interface OpenIdConfiguration {
     maxIdTokenIatOffsetAllowedInSeconds?: number;
     isauthorizedRaceTimeoutInSeconds?: number;
     disableIatOffsetValidation?: boolean;
-    storage?: any;
+    storage?: Storage;
     customParams?: { [key: string]: string | number | boolean };
 }
