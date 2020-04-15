@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AuthWellKnownEndpoints } from '../models/auth.well-known-endpoints';
 import { PlatformProvider } from '../services/platform.provider';
+import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 import { OpenIdConfiguration } from './openid-configuration';
 
 @Injectable({ providedIn: 'root' })
