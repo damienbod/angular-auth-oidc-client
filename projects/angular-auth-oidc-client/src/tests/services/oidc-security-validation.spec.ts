@@ -8,7 +8,7 @@ import { OpenIdConfiguration } from '../../lib/config/openid-configuration';
 import { EqualityHelperService } from '../../lib/services/oidc-equality-helper.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityValidation } from '../../lib/services/oidc.security.validation';
-import { OidcSecurityStorage } from '../../lib/storage/oidc.security.storage';
+import { OidcSecurityStorage } from '../../lib/storage';
 import { TestLogging } from '../common/test-logging.service';
 import { TestStorage } from '../common/test-storage.service';
 

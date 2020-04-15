@@ -4,8 +4,7 @@ import { IFrameService } from '../../lib/services/existing-iframe.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityCheckSession } from '../../lib/services/oidc.security.check-session';
 import { OidcSecurityService } from '../../lib/services/oidc.security.service';
-import { OidcSecurityCommon } from '../../lib/storage/oidc.security.common';
-import { OidcSecurityStorage } from '../../lib/storage/oidc.security.storage';
+import { OidcSecurityCommon, OidcSecurityStorage } from '../../lib/storage';
 import { TestLogging } from '../common/test-logging.service';
 import { TestStorage } from '../common/test-storage.service';
 

@@ -11,8 +11,7 @@ import { OidcSecurityService } from './services/oidc.security.service';
 import { OidcSecuritySilentRenew } from './services/oidc.security.silent-renew';
 import { OidcSecurityUserService } from './services/oidc.security.user-service';
 import { OidcSecurityValidation } from './services/oidc.security.validation';
-import { OidcSecurityCommon } from './storage/oidc.security.common';
-import { BrowserStorage, OidcSecurityStorage } from './storage/oidc.security.storage';
+import { BrowserStorage, OidcSecurityCommon, OidcSecurityStorage } from './storage';
 
 @NgModule()
 export class AuthModule {
