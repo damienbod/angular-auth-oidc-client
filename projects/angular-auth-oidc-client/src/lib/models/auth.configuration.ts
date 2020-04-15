@@ -1,6 +1,5 @@
 export interface OpenIdConfiguration {
     stsServer?: string;
-    customConfigServer?: string;
     redirectUrl?: string;
     clientId?: string;
     responseType?: string;
