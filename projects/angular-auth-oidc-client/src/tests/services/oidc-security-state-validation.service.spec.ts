@@ -11,8 +11,8 @@ import { ValidationResult } from '../../lib/models/validation-result.enum';
 import { StateValidationService } from '../../lib/services/oidc-security-state-validation.service';
 import { TokenHelperService } from '../../lib/services/oidc-token-helper.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
-import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';
 import { OidcSecurityValidation } from '../../lib/services/oidc.security.validation';
+import { OidcSecurityStorage } from '../../lib/storage/oidc.security.storage';
 import { TestLogging } from '../common/test-logging.service';
 import { TestStorage } from '../common/test-storage.service';
 

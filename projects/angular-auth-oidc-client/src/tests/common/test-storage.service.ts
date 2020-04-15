@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';
+import { OidcSecurityStorage } from '../../lib/storage/oidc.security.storage';
 
 @Injectable()
 export class TestStorage implements OidcSecurityStorage {

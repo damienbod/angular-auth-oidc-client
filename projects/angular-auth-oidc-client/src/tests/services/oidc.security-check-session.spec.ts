@@ -5,7 +5,7 @@ import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityCheckSession } from '../../lib/services/oidc.security.check-session';
 import { OidcSecurityCommon } from '../../lib/services/oidc.security.common';
 import { OidcSecurityService } from '../../lib/services/oidc.security.service';
-import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';
+import { OidcSecurityStorage } from '../../lib/storage/oidc.security.storage';
 import { TestLogging } from '../common/test-logging.service';
 import { TestStorage } from '../common/test-storage.service';
 
