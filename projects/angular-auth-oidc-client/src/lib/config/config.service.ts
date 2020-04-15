@@ -1,14 +1,14 @@
-﻿import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+import { HttpBaseService } from '../api/http-base.service';
 import { ConfigurationProvider } from '../config/config.provider';
-import { OpenIdConfiguration } from '../models/auth.configuration';
 import { LoggerService } from '../services/oidc.logger.service';
+import { OpenIdConfiguration } from './openid-configuration';
 
 @Injectable({ providedIn: 'root' })
 export class OidcConfigService {
-    private STS_SERVER_SUFFIX = `/.well-known/openid-configuration`;
+    private WELL_KNOWN_SUFFIX = `/.well-known/openid-configuration`;
     private configurationLoadedInternal = new Subject();
 
     // TODO DO WE NEED THIS?
@@ -18,7 +18,7 @@ export class OidcConfigService {
 
     constructor(
         private readonly loggerService: LoggerService,
-        private readonly httpClient: HttpClient,
+        private readonly http: HttpBaseService,
         private readonly configurationProvider: ConfigurationProvider
     ) {}
 
@@ -28,7 +28,11 @@ export class OidcConfigService {
             return;
         }
 
-        const loadConfig$ = this.getWellKnownDocument(passedConfig.stsServer).pipe(
+        if (!passedConfig.authWellknownEndpoint) {
+            passedConfig.authWellknownEndpoint = passedConfig.stsServer;
+        }
+
+        const loadConfig$ = this.getWellKnownDocument(passedConfig.authWellknownEndpoint).pipe(
             map((wellKnownEndpoints) => {
                 return {
                     issuer: wellKnownEndpoints.issuer,
@@ -48,13 +52,13 @@ export class OidcConfigService {
         return loadConfig$.toPromise();
     }
 
-    private getWellKnownDocument(stsServerAdress: string) {
-        let url = stsServerAdress;
+    private getWellKnownDocument(wellKnownEndpoint: string) {
+        let url = wellKnownEndpoint;
 
-        if (!stsServerAdress.endsWith(this.STS_SERVER_SUFFIX)) {
-            url = `${stsServerAdress}${this.STS_SERVER_SUFFIX}`;
+        if (!wellKnownEndpoint.includes(this.WELL_KNOWN_SUFFIX)) {
+            url = `${wellKnownEndpoint}${this.WELL_KNOWN_SUFFIX}`;
         }
 
-        return this.httpClient.get<any>(url);
+        return this.http.get<any>(url);
     }
 }

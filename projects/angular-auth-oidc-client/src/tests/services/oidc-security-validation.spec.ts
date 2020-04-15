@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthModule } from '../../lib/auth.module';
 import { ConfigurationProvider } from '../../lib/config';
-import { OpenIdConfiguration } from '../../lib/models/auth.configuration';
+import { OpenIdConfiguration } from '../../lib/config/openid-configuration';
 import { EqualityHelperService } from '../../lib/services/oidc-equality-helper.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';

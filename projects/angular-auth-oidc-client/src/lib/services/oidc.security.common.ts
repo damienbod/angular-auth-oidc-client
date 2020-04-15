@@ -105,18 +105,6 @@ export class OidcSecurityCommon {
         this.store(this.storageSilentRenewRunning, value);
     }
 
-    private storageCustomRequestParams = 'storageCustomRequestParams';
-
-    public get customRequestParams(): {
-        [key: string]: string | number | boolean;
-    } {
-        return this.retrieve(this.storageCustomRequestParams);
-    }
-
-    public set customRequestParams(value: { [key: string]: string | number | boolean }) {
-        this.store(this.storageCustomRequestParams, value);
-    }
-
     constructor(private oidcSecurityStorage: OidcSecurityStorage) {}
 
     private retrieve(key: string): any {
