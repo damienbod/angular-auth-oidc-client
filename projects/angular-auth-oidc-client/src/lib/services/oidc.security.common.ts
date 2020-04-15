@@ -1,5 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
-import { ConfigurationProvider } from './config/auth-configuration.provider';
+import { ConfigurationProvider } from '../config';
 import { OidcSecurityStorage } from './oidc.security.storage';
 
 export type SilentRenewState = 'running' | '';
