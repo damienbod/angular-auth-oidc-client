@@ -7,11 +7,11 @@ import { StateValidationService } from './services/oidc-security-state-validatio
 import { TokenHelperService } from './services/oidc-token-helper.service';
 import { LoggerService } from './services/oidc.logger.service';
 import { OidcSecurityCheckSession } from './services/oidc.security.check-session';
-import { OidcSecurityCommon } from './services/oidc.security.common';
 import { OidcSecurityService } from './services/oidc.security.service';
 import { OidcSecuritySilentRenew } from './services/oidc.security.silent-renew';
 import { OidcSecurityUserService } from './services/oidc.security.user-service';
 import { OidcSecurityValidation } from './services/oidc.security.validation';
+import { OidcSecurityCommon } from './storage/oidc.security.common';
 import { BrowserStorage, OidcSecurityStorage } from './storage/oidc.security.storage';
 
 @NgModule()
