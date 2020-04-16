@@ -7,12 +7,12 @@ import { filter, skipWhile } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../../lib/angular-auth-oidc-client';
 import { AuthModule } from '../../lib/auth.module';
 import { ConfigurationProvider } from '../../lib/config';
+import { LoggerService } from '../../lib/logging/logger.service';
+import { TestLogging } from '../../lib/logging/logger.service-mock';
 import { IFrameService } from '../../lib/services/existing-iframe.service';
-import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityCommon } from '../../lib/services/oidc.security.common';
 import { OidcSecurityService } from '../../lib/services/oidc.security.service';
 import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';
-import { TestLogging } from '../common/test-logging.service';
 import { TestStorage } from '../common/test-storage.service';
 
 describe('OidcSecurityService', () => {

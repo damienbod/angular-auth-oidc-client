@@ -1,3 +1,5 @@
+import { LogLevel } from '../logging/log-level';
+
 export interface OpenIdConfiguration {
     stsServer?: string;
     authWellknownEndpoint?: string;
@@ -19,8 +21,7 @@ export interface OpenIdConfiguration {
     autoUserinfo?: boolean;
     autoCleanStateAfterAuthentication?: boolean;
     triggerAuthorizationResultEvent?: boolean;
-    logConsoleWarningActive?: boolean;
-    logConsoleDebugActive?: boolean;
+    logLevel?: LogLevel;
     issValidationOff?: boolean;
     historyCleanupOff?: boolean;
     maxIdTokenIatOffsetAllowedInSeconds?: number;

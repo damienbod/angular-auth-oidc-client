@@ -6,14 +6,14 @@ import { AuthModule } from '../../lib/auth.module';
 import { ConfigurationProvider } from '../../lib/config';
 import { AuthWellKnownEndpoints } from '../../lib/config/auth-well-known-endpoints';
 import { OpenIdConfiguration } from '../../lib/config/openid-configuration';
+import { LoggerService } from '../../lib/logging/logger.service';
+import { TestLogging } from '../../lib/logging/logger.service-mock';
 import { JwtKeys } from '../../lib/models/jwtkeys';
 import { ValidationResult } from '../../lib/models/validation-result.enum';
 import { StateValidationService } from '../../lib/services/oidc-security-state-validation.service';
 import { TokenHelperService } from '../../lib/services/oidc-token-helper.service';
-import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';
 import { OidcSecurityValidation } from '../../lib/services/oidc.security.validation';
-import { TestLogging } from '../common/test-logging.service';
 import { TestStorage } from '../common/test-storage.service';
 
 describe('OidcSecurityStateValidationService', () => {

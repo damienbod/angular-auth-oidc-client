@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { TestLogging } from '../../tests/common/test-logging.service';
 import { HttpBaseService } from '../api/http-base.service';
-import { LoggerService } from '../services/oidc.logger.service';
+import { LoggerService } from '../logging/logger.service';
+import { TestLogging } from '../logging/logger.service-mock';
 import { ConfigurationProvider } from './config.provider';
 import { OidcConfigService } from './config.service';
 

@@ -2,8 +2,8 @@ import { Injectable, NgZone } from '@angular/core';
 import { from, Observable, Observer, Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config';
+import { LoggerService } from '../logging/logger.service';
 import { IFrameService } from './existing-iframe.service';
-import { LoggerService } from './oidc.logger.service';
 import { OidcSecurityCommon } from './oidc.security.common';
 
 const IFRAME_FOR_CHECK_SESSION_IDENTIFIER = 'myiFrameForCheckSession';

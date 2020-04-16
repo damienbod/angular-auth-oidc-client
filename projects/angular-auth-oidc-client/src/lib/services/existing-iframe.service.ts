@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LoggerService } from './oidc.logger.service';
+import { LoggerService } from '../logging/logger.service';
 
 @Injectable()
 export class IFrameService {

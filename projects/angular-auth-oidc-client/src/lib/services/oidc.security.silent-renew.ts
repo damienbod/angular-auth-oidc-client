@@ -1,7 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { LoggerService } from '../logging/logger.service';
 import { IFrameService } from './existing-iframe.service';
-import { LoggerService } from './oidc.logger.service';
 
 const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 
@@ -20,7 +20,7 @@ export class OidcSecuritySilentRenew {
     startRenew(url: string): Observable<void> {
         const sessionIframe = this.initRenew();
         this.loggerService.logDebug('startRenew for URL:' + url);
-        return new Observable<void>(observer => {
+        return new Observable<void>((observer) => {
             const onLoadHandler = () => {
                 sessionIframe.removeEventListener('load', onLoadHandler);
                 observer.next(undefined);

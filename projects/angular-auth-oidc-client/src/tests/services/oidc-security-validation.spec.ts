@@ -5,11 +5,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AuthModule } from '../../lib/auth.module';
 import { ConfigurationProvider } from '../../lib/config';
 import { OpenIdConfiguration } from '../../lib/config/openid-configuration';
+import { LoggerService } from '../../lib/logging/logger.service';
+import { TestLogging } from '../../lib/logging/logger.service-mock';
 import { EqualityHelperService } from '../../lib/services/oidc-equality-helper.service';
-import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';
 import { OidcSecurityValidation } from '../../lib/services/oidc.security.validation';
-import { TestLogging } from '../common/test-logging.service';
 import { TestStorage } from '../common/test-storage.service';
 
 describe('OidcSecurityValidation', () => {

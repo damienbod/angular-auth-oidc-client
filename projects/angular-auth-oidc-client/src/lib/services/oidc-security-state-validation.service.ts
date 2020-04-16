@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { ConfigurationProvider } from '../config';
+import { LoggerService } from '../logging/logger.service';
 import { JwtKeys } from '../models/jwtkeys';
 import { ValidateStateResult } from '../models/validate-state-result.model';
 import { ValidationResult } from '../models/validation-result.enum';
 import { TokenHelperService } from './oidc-token-helper.service';
-import { LoggerService } from './oidc.logger.service';
 import { OidcSecurityCommon } from './oidc.security.common';
 import { OidcSecurityValidation } from './oidc.security.validation';
 

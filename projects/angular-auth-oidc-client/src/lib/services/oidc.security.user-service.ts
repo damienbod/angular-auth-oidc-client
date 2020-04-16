@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { OidcDataService } from '../api/oidc-data.service';
 import { ConfigurationProvider } from '../config';
-import { LoggerService } from './oidc.logger.service';
+import { LoggerService } from '../logging/logger.service';
 import { OidcSecurityCommon } from './oidc.security.common';
 
 @Injectable()

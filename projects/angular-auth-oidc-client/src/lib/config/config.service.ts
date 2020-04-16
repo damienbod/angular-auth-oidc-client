@@ -4,7 +4,7 @@ import { HttpBaseService } from '../api/http-base.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { EventTypes } from '../events/event-types';
 import { EventsService } from '../events/events.service';
-import { LoggerService } from '../services/oidc.logger.service';
+import { LoggerService } from '../logging/logger.service';
 import { OpenIdConfiguration } from './openid-configuration';
 
 @Injectable({ providedIn: 'root' })
