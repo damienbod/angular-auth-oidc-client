@@ -12,7 +12,7 @@ import { TokenValidationService } from './token-validation.service';
 export class StateValidationService {
     constructor(
         private storagePersistanceService: StoragePersistanceService,
-        private oidcSecurityValidation: TokenValidationService,
+        private tokenValidationService: TokenValidationService,
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,
         private readonly configurationProvider: ConfigurationProvider
@@ -20,7 +20,7 @@ export class StateValidationService {
 
     validateState(result: any, jwtKeys: JwtKeys): ValidateStateResult {
         const toReturn = new ValidateStateResult();
-        if (!this.oidcSecurityValidation.validateStateFromHashCallback(result.state, this.storagePersistanceService.authStateControl)) {
+        if (!this.tokenValidationService.validateStateFromHashCallback(result.state, this.storagePersistanceService.authStateControl)) {
             this.loggerService.logWarning('authorizedCallback incorrect state');
             toReturn.state = ValidationResult.StatesDoNotMatch;
             this.handleUnsuccessfulValidation();
@@ -39,7 +39,7 @@ export class StateValidationService {
 
             toReturn.decodedIdToken = this.tokenHelperService.getPayloadFromToken(toReturn.idToken, false);
 
-            if (!this.oidcSecurityValidation.validateSignatureIdToken(toReturn.idToken, jwtKeys)) {
+            if (!this.tokenValidationService.validateSignatureIdToken(toReturn.idToken, jwtKeys)) {
                 this.loggerService.logDebug('authorizedCallback Signature validation failed id_token');
                 toReturn.state = ValidationResult.SignatureFailed;
                 this.handleUnsuccessfulValidation();
@@ -47,7 +47,7 @@ export class StateValidationService {
             }
 
             if (
-                !this.oidcSecurityValidation.validateIdTokenNonce(
+                !this.tokenValidationService.validateIdTokenNonce(
                     toReturn.decodedIdToken,
                     this.storagePersistanceService.authNonce,
                     this.configurationProvider.openIDConfiguration.ignoreNonceAfterRefresh
@@ -59,7 +59,7 @@ export class StateValidationService {
                 return toReturn;
             }
 
-            if (!this.oidcSecurityValidation.validateRequiredIdToken(toReturn.decodedIdToken)) {
+            if (!this.tokenValidationService.validateRequiredIdToken(toReturn.decodedIdToken)) {
                 this.loggerService.logDebug('authorizedCallback Validation, one of the REQUIRED properties missing from id_token');
                 toReturn.state = ValidationResult.RequiredPropertyMissing;
                 this.handleUnsuccessfulValidation();
@@ -67,7 +67,7 @@ export class StateValidationService {
             }
 
             if (
-                !this.oidcSecurityValidation.validateIdTokenIatMaxOffset(
+                !this.tokenValidationService.validateIdTokenIatMaxOffset(
                     toReturn.decodedIdToken,
                     this.configurationProvider.openIDConfiguration.maxIdTokenIatOffsetAllowedInSeconds,
                     this.configurationProvider.openIDConfiguration.disableIatOffsetValidation
@@ -86,7 +86,7 @@ export class StateValidationService {
                     this.loggerService.logDebug('iss validation is turned off, this is not recommended!');
                 } else if (
                     !this.configurationProvider.openIDConfiguration.issValidationOff &&
-                    !this.oidcSecurityValidation.validateIdTokenIss(
+                    !this.tokenValidationService.validateIdTokenIss(
                         toReturn.decodedIdToken,
                         this.configurationProvider.wellKnownEndpoints.issuer
                     )
@@ -104,7 +104,7 @@ export class StateValidationService {
             }
 
             if (
-                !this.oidcSecurityValidation.validateIdTokenAud(
+                !this.tokenValidationService.validateIdTokenAud(
                     toReturn.decodedIdToken,
                     this.configurationProvider.openIDConfiguration.clientId
                 )
@@ -115,7 +115,7 @@ export class StateValidationService {
                 return toReturn;
             }
 
-            if (!this.oidcSecurityValidation.validateIdTokenExpNotExpired(toReturn.decodedIdToken)) {
+            if (!this.tokenValidationService.validateIdTokenExpNotExpired(toReturn.decodedIdToken)) {
                 this.loggerService.logWarning('authorizedCallback token expired');
                 toReturn.state = ValidationResult.TokenExpired;
                 this.handleUnsuccessfulValidation();
@@ -138,7 +138,7 @@ export class StateValidationService {
         }
 
         if (
-            !this.oidcSecurityValidation.validateIdTokenAtHash(
+            !this.tokenValidationService.validateIdTokenAtHash(
                 toReturn.accessToken,
                 toReturn.decodedIdToken.at_hash,
                 this.configurationProvider.openIDConfiguration.responseType === 'code'

@@ -63,7 +63,7 @@ export class OidcSecurityService {
         private oidcSecuritySilentRenew: OidcSecuritySilentRenew,
         private oidcSecurityUserService: OidcSecurityUserService,
         private storagePersistanceService: StoragePersistanceService,
-        private oidcSecurityValidation: TokenValidationService,
+        private tokenValidationService: TokenValidationService,
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,
         private zone: NgZone,
@@ -155,7 +155,7 @@ export class OidcSecurityService {
             this.loggerService.logDebug('IsAuthorized setup module');
             this.loggerService.logDebug(this.storagePersistanceService.idToken);
             if (
-                this.oidcSecurityValidation.isTokenExpired(
+                this.tokenValidationService.isTokenExpired(
                     this.storagePersistanceService.idToken || this.storagePersistanceService.accessToken,
                     this.configurationProvider.openIDConfiguration.silentRenewOffsetInSeconds
                 )
@@ -267,7 +267,7 @@ export class OidcSecurityService {
             return;
         }
 
-        if (!this.oidcSecurityValidation.configValidateResponseType(this.configurationProvider.openIDConfiguration.responseType)) {
+        if (!this.tokenValidationService.configValidateResponseType(this.configurationProvider.openIDConfiguration.responseType)) {
             // invalid response_type
             return;
         }
@@ -291,7 +291,7 @@ export class OidcSecurityService {
         if (this.configurationProvider.openIDConfiguration.responseType === 'code') {
             // code_challenge with "S256"
             const codeVerifier = 'C' + Math.random() + '' + Date.now() + '' + Date.now() + Math.random();
-            const codeChallenge = this.oidcSecurityValidation.generateCodeVerifier(codeVerifier);
+            const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
 
             this.storagePersistanceService.codeVerifier = codeVerifier;
 
@@ -398,7 +398,7 @@ export class OidcSecurityService {
             tokenRequestUrl = `${this.configurationProvider.wellKnownEndpoints.tokenEndpoint}`;
         }
 
-        if (!this.oidcSecurityValidation.validateStateFromHashCallback(state, this.storagePersistanceService.authStateControl)) {
+        if (!this.tokenValidationService.validateStateFromHashCallback(state, this.storagePersistanceService.authStateControl)) {
             this.loggerService.logWarning('authorizedCallback incorrect state');
             // ValidationResult.StatesDoNotMatch;
             return throwError(new Error('incorrect state'));
@@ -620,7 +620,7 @@ export class OidcSecurityService {
 
                         const userData = this.oidcSecurityUserService.getUserData();
 
-                        if (this.oidcSecurityValidation.validateUserdataSubIdToken(decodedIdToken.sub, userData.sub)) {
+                        if (this.tokenValidationService.validateUserdataSubIdToken(decodedIdToken.sub, userData.sub)) {
                             this.setUserData(userData);
                             this.loggerService.logDebug(this.storagePersistanceService.accessToken);
                             this.loggerService.logDebug(this.oidcSecurityUserService.getUserData());
@@ -722,7 +722,7 @@ export class OidcSecurityService {
             }
             // code_challenge with "S256"
             const codeVerifier = 'C' + Math.random() + '' + Date.now() + '' + Date.now() + Math.random();
-            const codeChallenge = this.oidcSecurityValidation.generateCodeVerifier(codeVerifier);
+            const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
 
             this.storagePersistanceService.codeVerifier = codeVerifier;
 
@@ -899,7 +899,7 @@ export class OidcSecurityService {
             );
             if (this.userDataInternal.value && this.storagePersistanceService.silentRenewRunning !== 'running' && this.getIdToken()) {
                 if (
-                    this.oidcSecurityValidation.isTokenExpired(
+                    this.tokenValidationService.isTokenExpired(
                         this.storagePersistanceService.idToken,
                         this.configurationProvider.openIDConfiguration.silentRenewOffsetInSeconds
                     )
