@@ -12,7 +12,7 @@ export class OidcSecurityUserService {
 
     constructor(
         private oidcDataService: OidcDataService,
-        private oidcSecurityCommon: StoragePersistanceService,
+        private storagePersistanceService: StoragePersistanceService,
         private loggerService: LoggerService,
         private readonly configurationProvider: ConfigurationProvider
     ) {}
@@ -34,7 +34,7 @@ export class OidcSecurityUserService {
     }
 
     private getIdentityUserData(): Observable<any> {
-        const token = this.oidcSecurityCommon.getAccessToken();
+        const token = this.storagePersistanceService.getAccessToken();
 
         if (!this.configurationProvider.wellKnownEndpoints) {
             this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');

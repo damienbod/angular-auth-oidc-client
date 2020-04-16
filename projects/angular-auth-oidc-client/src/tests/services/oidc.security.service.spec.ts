@@ -17,7 +17,7 @@ import { TestLogging } from '../common/test-logging.service';
 describe('OidcSecurityService', () => {
     let oidcSecurityService: OidcSecurityService;
     let configurationProvider: ConfigurationProvider;
-    let oidcSecurityCommon: StoragePersistanceService;
+    let storagePersistanceService: StoragePersistanceService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -38,7 +38,7 @@ describe('OidcSecurityService', () => {
     beforeEach(() => {
         oidcSecurityService = TestBed.inject(OidcSecurityService);
         configurationProvider = TestBed.inject(ConfigurationProvider);
-        oidcSecurityCommon = TestBed.inject(StoragePersistanceService);
+        storagePersistanceService = TestBed.inject(StoragePersistanceService);
     });
 
     it('should create', () => {
@@ -297,7 +297,7 @@ describe('OidcSecurityService', () => {
             stsServer: 'https://localhost:5001',
         };
 
-        const resultSetter = spyOnProperty((oidcSecurityService as any).oidcSecurityCommon, 'authResult', 'set');
+        const resultSetter = spyOnProperty((oidcSecurityService as any).storagePersistanceService, 'authResult', 'set');
 
         let hash = 'access_token=ACCESS-TOKEN&token_type=bearer&state=testState';
         const expectedResult = {
@@ -368,7 +368,7 @@ describe('OidcSecurityService', () => {
     it('logoff should reset storage data before emitting an isAuthorizedInternal change', () => {
         const authwellknown = {};
 
-        const resetStorageData = spyOn((oidcSecurityService as any).oidcSecurityCommon, 'resetStorageData');
+        const resetStorageData = spyOn((oidcSecurityService as any).storagePersistanceService, 'resetStorageData');
         configurationProvider.setConfig(null, authwellknown);
         let hasBeenCalled = false;
         (oidcSecurityService as any).isAuthorizedInternal
@@ -407,9 +407,9 @@ describe('OidcSecurityService', () => {
         configurationProvider.setConfig(config, null);
 
         spyOn(oidcSecurityService as any, 'refreshTokensWithCodeProcedure').and.returnValue(of(true));
-        spyOn(oidcSecurityCommon as any, 'getRefreshToken').and.returnValue('refresh token');
+        spyOn(storagePersistanceService as any, 'getRefreshToken').and.returnValue('refresh token');
         oidcSecurityService.refreshSession().subscribe(() => {
-            expect(oidcSecurityCommon.silentRenewRunning).toBe('running');
+            expect(storagePersistanceService.silentRenewRunning).toBe('running');
             done();
         });
     });

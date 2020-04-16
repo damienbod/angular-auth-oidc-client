@@ -26,7 +26,7 @@ export class OidcSecurityCheckSession {
     }
 
     constructor(
-        private oidcSecurityCommon: StoragePersistanceService,
+        private storagePersistanceService: StoragePersistanceService,
         private loggerService: LoggerService,
         private iFrameService: IFrameService,
         private zone: NgZone,
@@ -98,7 +98,7 @@ export class OidcSecurityCheckSession {
                 .subscribe(() => {
                     if (this.sessionIframe && clientId) {
                         this.loggerService.logDebug(this.sessionIframe);
-                        const sessionState = this.oidcSecurityCommon.sessionState;
+                        const sessionState = this.storagePersistanceService.sessionState;
                         if (sessionState) {
                             this.outstandingMessages++;
                             this.sessionIframe.contentWindow.postMessage(
