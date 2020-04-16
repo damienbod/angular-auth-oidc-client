@@ -198,7 +198,7 @@ export class OidcSecurityService {
                 })
             );
         }
-
+        this.moduleSetup = true;
         this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
 
         this.checkSetupAndAuthorizedInternal();

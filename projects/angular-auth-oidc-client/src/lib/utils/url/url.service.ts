@@ -1,11 +1,12 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ConfigurationProvider } from '../../config';
+import { LoggerService } from '../../logging/logger.service';
 import { UriEncoder } from './uri-encoder';
 
 @Injectable({ providedIn: 'root' })
 export class UrlService {
-    constructor(private readonly configurationProvider: ConfigurationProvider) {}
+    constructor(private readonly configurationProvider: ConfigurationProvider, private readonly loggerService: LoggerService) {}
 
     getUrlParameter(urlToCheck: any, name: any): string {
         if (!urlToCheck) {
@@ -23,6 +24,13 @@ export class UrlService {
     }
 
     createAuthorizeUrl(codeChallenge: string, redirectUrl: string, nonce: string, state: string, prompt?: string): string {
+        const authorizationEndpoint = this.getAuthorizationEndpoint();
+
+        if (!authorizationEndpoint) {
+            this.loggerService.logError(`Can not create an authorize url when authorizationEndpoint is '${authorizationEndpoint}'`);
+            return '';
+        }
+
         const urlParts = this.getAuthorizationEndpoint().split('?');
         const authorizationUrl = urlParts[0];
 
@@ -80,6 +88,7 @@ export class UrlService {
     }
 
     private getAuthorizationEndpoint() {
-        return this.configurationProvider.wellKnownEndpoints.authorizationEndpoint || '';
+        // this.configurationProvider.wellKnownEndpoints.authorizationEndpoint
+        return this.configurationProvider?.wellKnownEndpoints?.authorizationEndpoint;
     }
 }
