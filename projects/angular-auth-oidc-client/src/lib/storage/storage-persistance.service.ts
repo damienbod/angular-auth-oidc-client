@@ -145,6 +145,10 @@ export class StoragePersistanceService {
     }
 
     getRefreshToken(): any {
+        if (!this.authResult) {
+            return null;
+        }
+
         return this.authResult.refresh_token;
     }
 
