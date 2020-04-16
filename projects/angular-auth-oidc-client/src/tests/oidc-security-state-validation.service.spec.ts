@@ -2,19 +2,20 @@ import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AuthModule } from '../../lib/auth.module';
-import { ConfigurationProvider } from '../../lib/config';
-import { AuthWellKnownEndpoints } from '../../lib/config/auth-well-known-endpoints';
-import { OpenIdConfiguration } from '../../lib/config/openid-configuration';
-import { JwtKeys } from '../../lib/models/jwtkeys';
-import { ValidationResult } from '../../lib/models/validation-result.enum';
-import { StateValidationService } from '../../lib/services/oidc-security-state-validation.service';
-import { TokenHelperService } from '../../lib/services/oidc-token-helper.service';
-import { LoggerService } from '../../lib/services/oidc.logger.service';
-import { OidcSecurityValidation } from '../../lib/services/oidc.security.validation';
-import { AbstractSecurityStorage } from '../../lib/storage';
-import { BrowserStorageMock } from '../../lib/storage/browser-storage.service-mock';
-import { TestLogging } from '../common/test-logging.service';
+import { AuthModule } from '../lib/auth.module';
+import { ConfigurationProvider } from '../lib/config';
+import { AuthWellKnownEndpoints } from '../lib/config/auth-well-known-endpoints';
+import { OpenIdConfiguration } from '../lib/config/openid-configuration';
+import { LogLevel } from '../lib/logging/log-level';
+import { LoggerService } from '../lib/logging/logger.service';
+import { TestLogging } from '../lib/logging/logger.service-mock';
+import { JwtKeys } from '../lib/models/jwtkeys';
+import { ValidationResult } from '../lib/models/validation-result.enum';
+import { StateValidationService } from '../lib/services/oidc-security-state-validation.service';
+import { TokenHelperService } from '../lib/services/oidc-token-helper.service';
+import { OidcSecurityValidation } from '../lib/services/oidc.security.validation';
+import { AbstractSecurityStorage } from '../lib/storage';
+import { BrowserStorageMock } from '../lib/storage/browser-storage.service-mock';
 
 describe('OidcSecurityStateValidationService', () => {
     let stateValidationService: StateValidationService;
@@ -68,8 +69,7 @@ describe('OidcSecurityStateValidationService', () => {
             postLoginRoute: '/dataeventrecords',
             forbiddenRoute: '/Forbidden',
             unauthorizedRoute: '/Unauthorized',
-            logConsoleWarningActive: true,
-            logConsoleDebugActive: true,
+            logLevel: LogLevel.Debug,
             maxIdTokenIatOffsetAllowedInSeconds: 10,
         };
 

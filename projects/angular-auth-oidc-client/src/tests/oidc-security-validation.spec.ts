@@ -2,15 +2,16 @@ import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AuthModule } from '../../lib/auth.module';
-import { ConfigurationProvider } from '../../lib/config';
-import { OpenIdConfiguration } from '../../lib/config/openid-configuration';
-import { EqualityHelperService } from '../../lib/services/oidc-equality-helper.service';
-import { LoggerService } from '../../lib/services/oidc.logger.service';
-import { OidcSecurityValidation } from '../../lib/services/oidc.security.validation';
-import { AbstractSecurityStorage } from '../../lib/storage';
-import { BrowserStorageMock } from '../../lib/storage/browser-storage.service-mock';
-import { TestLogging } from '../common/test-logging.service';
+import { AuthModule } from '../lib/auth.module';
+import { ConfigurationProvider } from '../lib/config';
+import { OpenIdConfiguration } from '../lib/config/openid-configuration';
+import { LogLevel } from '../lib/logging/log-level';
+import { LoggerService } from '../lib/logging/logger.service';
+import { TestLogging } from '../lib/logging/logger.service-mock';
+import { EqualityHelperService } from '../lib/services/oidc-equality-helper.service';
+import { OidcSecurityValidation } from '../lib/services/oidc.security.validation';
+import { AbstractSecurityStorage } from '../lib/storage';
+import { BrowserStorageMock } from '../lib/storage/browser-storage.service-mock';
 
 describe('OidcSecurityValidation', () => {
     let oidcSecurityValidation: OidcSecurityValidation;
@@ -53,8 +54,7 @@ describe('OidcSecurityValidation', () => {
         config.startCheckSession = false;
         config.silentRenew = false;
         config.silentRenewOffsetInSeconds = 0;
-        config.logConsoleWarningActive = true;
-        config.logConsoleDebugActive = true;
+        config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configProvider.setConfig(config, null);
@@ -80,8 +80,7 @@ describe('OidcSecurityValidation', () => {
         config.startCheckSession = false;
         config.silentRenew = false;
         config.silentRenewOffsetInSeconds = 0;
-        config.logConsoleWarningActive = true;
-        config.logConsoleDebugActive = true;
+        config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configProvider.setConfig(config, null);

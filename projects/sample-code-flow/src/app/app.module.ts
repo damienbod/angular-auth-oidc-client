@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { AuthModule, EventsService, EventTypes, OidcConfigService } from 'angular-auth-oidc-client';
+import { AuthModule, EventsService, EventTypes, LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
 import { filter } from 'rxjs/operators';
 import { AppComponent } from './app.component';
 
@@ -17,7 +17,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
             responseType: 'code',
             silentRenew: true,
             silentRenewUrl: 'https://localhost:4200/silent-renew.html',
-            logConsoleDebugActive: true,
+            logLevel: LogLevel.Debug,
         });
 }
 

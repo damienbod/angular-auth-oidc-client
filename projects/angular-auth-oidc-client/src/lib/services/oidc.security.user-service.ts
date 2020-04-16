@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators';
 import { OidcDataService } from '../api/oidc-data.service';
 import { ConfigurationProvider } from '../config';
 import { StoragePersistanceService } from '../storage';
-import { LoggerService } from './oidc.logger.service';
+import { LoggerService } from '../logging/logger.service';
 
 @Injectable()
 export class OidcSecurityUserService {

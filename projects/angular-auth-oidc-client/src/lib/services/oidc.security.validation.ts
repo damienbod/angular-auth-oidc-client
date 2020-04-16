@@ -1,8 +1,8 @@
 ﻿import { Injectable } from '@angular/core';
 import { hextob64u, KEYUTIL, KJUR } from 'jsrsasign-reduced';
+import { LoggerService } from '../logging/logger.service';
 import { EqualityHelperService } from './oidc-equality-helper.service';
 import { TokenHelperService } from './oidc-token-helper.service';
-import { LoggerService } from './oidc.logger.service';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 

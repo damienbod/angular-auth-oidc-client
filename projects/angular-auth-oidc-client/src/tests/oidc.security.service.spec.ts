@@ -4,15 +4,16 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { filter, skipWhile } from 'rxjs/operators';
-import { OpenIdConfiguration } from '../../lib/angular-auth-oidc-client';
-import { AuthModule } from '../../lib/auth.module';
-import { ConfigurationProvider } from '../../lib/config';
-import { IFrameService } from '../../lib/services/existing-iframe.service';
-import { LoggerService } from '../../lib/services/oidc.logger.service';
-import { OidcSecurityService } from '../../lib/services/oidc.security.service';
-import { AbstractSecurityStorage, StoragePersistanceService } from '../../lib/storage';
-import { BrowserStorageMock } from '../../lib/storage/browser-storage.service-mock';
-import { TestLogging } from '../common/test-logging.service';
+import { OpenIdConfiguration } from '../lib/angular-auth-oidc-client';
+import { AuthModule } from '../lib/auth.module';
+import { ConfigurationProvider } from '../lib/config';
+import { LogLevel } from '../lib/logging/log-level';
+import { LoggerService } from '../lib/logging/logger.service';
+import { TestLogging } from '../lib/logging/logger.service-mock';
+import { IFrameService } from '../lib/services/existing-iframe.service';
+import { OidcSecurityService } from '../lib/services/oidc.security.service';
+import { AbstractSecurityStorage, StoragePersistanceService } from '../lib/storage';
+import { BrowserStorageMock } from '../lib/storage/browser-storage.service-mock';
 
 describe('OidcSecurityService', () => {
     let oidcSecurityService: OidcSecurityService;
@@ -76,8 +77,7 @@ describe('OidcSecurityService', () => {
         config.startCheckSession = false;
         config.silentRenew = false;
         config.silentRenewOffsetInSeconds = 0;
-        config.logConsoleWarningActive = true;
-        config.logConsoleDebugActive = true;
+        config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configurationProvider.setConfig(config, null);
@@ -116,8 +116,7 @@ describe('OidcSecurityService', () => {
         config.startCheckSession = false;
         config.silentRenew = false;
         config.silentRenewOffsetInSeconds = 0;
-        config.logConsoleWarningActive = true;
-        config.logConsoleDebugActive = true;
+        config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configurationProvider.setConfig(config, null);
@@ -156,8 +155,7 @@ describe('OidcSecurityService', () => {
         config.startCheckSession = false;
         config.silentRenew = false;
         config.silentRenewOffsetInSeconds = 0;
-        config.logConsoleWarningActive = true;
-        config.logConsoleDebugActive = true;
+        config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configurationProvider.setConfig(config, null);
@@ -188,8 +186,7 @@ describe('OidcSecurityService', () => {
         config.startCheckSession = false;
         config.silentRenew = false;
         config.silentRenewOffsetInSeconds = 0;
-        config.logConsoleWarningActive = true;
-        config.logConsoleDebugActive = true;
+        config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
         config.customParams = {
             testcustom: 'customvalue',
@@ -231,8 +228,7 @@ describe('OidcSecurityService', () => {
         config.startCheckSession = false;
         config.silentRenew = false;
         config.silentRenewOffsetInSeconds = 0;
-        config.logConsoleWarningActive = true;
-        config.logConsoleDebugActive = true;
+        config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
         config.customParams = {
             t4: 'ABC abc 123',
@@ -276,8 +272,7 @@ describe('OidcSecurityService', () => {
         config.startCheckSession = false;
         config.silentRenew = false;
         config.silentRenewOffsetInSeconds = 0;
-        config.logConsoleWarningActive = true;
-        config.logConsoleDebugActive = true;
+        config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configurationProvider.setConfig(config, null);
