@@ -744,7 +744,8 @@
                         "aot": true,
                         "assets": [
                             "projects/sample-implicit-flow-silent-renew/src/favicon.ico",
-                            "projects/sample-implicit-flow-silent-renew/src/assets"
+                            "projects/sample-implicit-flow-silent-renew/src/assets",
+                            "projects/sample-implicit-flow-silent-renew/src/silent-renew.html"
                         ],
                         "styles": ["projects/sample-implicit-flow-silent-renew/src/styles.css"],
                         "scripts": []
@@ -786,7 +787,7 @@
                         "browserTarget": "sample-implicit-flow-silent-renew:build",
                         "sslKey": "certs/dev_localhost.key",
                         "sslCert": "certs/dev_localhost.pem",
-                        "port": 4203
+                        "port": 4202
                     },
                     "configurations": {
                         "production": {

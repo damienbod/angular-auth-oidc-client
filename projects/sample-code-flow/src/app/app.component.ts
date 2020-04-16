@@ -13,6 +13,7 @@ export class AppComponent implements OnInit, OnDestroy {
     userData: any;
 
     constructor(public oidcSecurityService: OidcSecurityService, private readonly eventService: EventsService) {
+        this.oidcSecurityService.setupModule();
         if (this.oidcSecurityService.moduleSetup) {
             this.doCallbackLogicIfRequired();
         } else {
