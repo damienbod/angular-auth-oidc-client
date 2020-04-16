@@ -1,2 +1,2 @@
 export * from './platform-provider/platform.provider';
-export * from './url-parser/url-parser.service';
+export * from './url/url.service';
