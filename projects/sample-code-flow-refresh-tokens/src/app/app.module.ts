@@ -13,7 +13,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
             redirectUrl: 'https://localhost:4204',
             postLogoutRedirectUri: 'https://localhost:4204',
             clientId: 'angularCodeRefreshTokens',
-            scope: 'openid profile email taler_api',
+            scope: 'openid profile email taler_api offline_access',
             responseType: 'code',
             useRefreshToken: true,
             logLevel: LogLevel.Debug,
