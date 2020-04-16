@@ -2,16 +2,16 @@ import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AuthModule } from '../../lib/auth.module';
-import { ConfigurationProvider } from '../../lib/config';
-import { OpenIdConfiguration } from '../../lib/config/openid-configuration';
-import { LogLevel } from '../../lib/logging/log-level';
-import { LoggerService } from '../../lib/logging/logger.service';
-import { TestLogging } from '../../lib/logging/logger.service-mock';
-import { EqualityHelperService } from '../../lib/services/oidc-equality-helper.service';
-import { OidcSecurityValidation } from '../../lib/services/oidc.security.validation';
-import { AbstractSecurityStorage } from '../../lib/storage';
-import { BrowserStorageMock } from '../../lib/storage/browser-storage.service-mock';
+import { AuthModule } from '../lib/auth.module';
+import { ConfigurationProvider } from '../lib/config';
+import { OpenIdConfiguration } from '../lib/config/openid-configuration';
+import { LogLevel } from '../lib/logging/log-level';
+import { LoggerService } from '../lib/logging/logger.service';
+import { TestLogging } from '../lib/logging/logger.service-mock';
+import { EqualityHelperService } from '../lib/services/oidc-equality-helper.service';
+import { OidcSecurityValidation } from '../lib/services/oidc.security.validation';
+import { AbstractSecurityStorage } from '../lib/storage';
+import { BrowserStorageMock } from '../lib/storage/browser-storage.service-mock';
 
 describe('OidcSecurityValidation', () => {
     let oidcSecurityValidation: OidcSecurityValidation;

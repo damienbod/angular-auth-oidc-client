@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { UrlParserService } from './../../lib/services/url-parser.service';
+import { UrlParserService } from '../lib/services/url-parser.service';
 
 describe('ConfigurationProviderTests', () => {
     let service: UrlParserService;

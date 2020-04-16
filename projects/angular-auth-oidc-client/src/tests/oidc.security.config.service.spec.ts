@@ -1,7 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { AuthModule, LoggerService, OidcConfigService } from '../../lib/angular-auth-oidc-client';
-import { TestLogging } from '../../lib/logging/logger.service-mock';
+import { AuthModule, LoggerService, OidcConfigService } from '../lib/angular-auth-oidc-client';
+import { TestLogging } from '../lib/logging/logger.service-mock';
 
 describe('OidcConfigService', () => {
     let oidcConfigService: OidcConfigService;
