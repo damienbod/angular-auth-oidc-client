@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { IFrameService } from '../lib/services/existing-iframe.service';
-import { EqualityHelperService } from '../lib/services/oidc-equality-helper.service';
+import { IFrameService } from '../../services/existing-iframe.service';
+import { EqualityHelperService } from './oidc-equality-helper.service';
 
 describe('EqualityHelperServiceTests', () => {
     let equalityHelperService: EqualityHelperService;
