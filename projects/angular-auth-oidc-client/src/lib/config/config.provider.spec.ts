@@ -188,4 +188,36 @@ describe('ConfigurationProviderTests', () => {
 
         expect(spy).toHaveBeenCalled();
     });
+
+    it('silent_renew and start_checksession can be set to true when using the browser platform', () => {
+        const config: OpenIdConfiguration = {
+            silentRenew: true,
+            stsServer: '',
+            startCheckSession: true,
+            useRefreshToken: false,
+        };
+
+        spyOnProperty(platformProvider, 'isBrowser').and.returnValue(true);
+
+        configurationProvider.setConfig(config, null);
+
+        expect(configurationProvider.openIDConfiguration.silentRenew).toEqual(true);
+        expect(configurationProvider.openIDConfiguration.startCheckSession).toEqual(true);
+    });
+
+    it('silent_renew and start_checksession are always false when not using the browser platform', () => {
+        const config: OpenIdConfiguration = {
+            silentRenew: true,
+            stsServer: '',
+            startCheckSession: true,
+            useRefreshToken: false,
+        };
+
+        spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
+
+        configurationProvider.setConfig(config, null);
+
+        expect(configurationProvider.openIDConfiguration.silentRenew).toEqual(false);
+        expect(configurationProvider.openIDConfiguration.startCheckSession).toEqual(false);
+    });
 });

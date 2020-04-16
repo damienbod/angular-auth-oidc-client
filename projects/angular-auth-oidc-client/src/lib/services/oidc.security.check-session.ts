@@ -2,9 +2,9 @@ import { Injectable, NgZone } from '@angular/core';
 import { from, Observable, Observer, Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config';
+import { StoragePersistanceService } from '../storage';
 import { IFrameService } from './existing-iframe.service';
 import { LoggerService } from './oidc.logger.service';
-import { OidcSecurityCommon } from './oidc.security.common';
 
 const IFRAME_FOR_CHECK_SESSION_IDENTIFIER = 'myiFrameForCheckSession';
 
@@ -26,7 +26,7 @@ export class OidcSecurityCheckSession {
     }
 
     constructor(
-        private oidcSecurityCommon: OidcSecurityCommon,
+        private storagePersistanceService: StoragePersistanceService,
         private loggerService: LoggerService,
         private iFrameService: IFrameService,
         private zone: NgZone,
@@ -98,7 +98,7 @@ export class OidcSecurityCheckSession {
                 .subscribe(() => {
                     if (this.sessionIframe && clientId) {
                         this.loggerService.logDebug(this.sessionIframe);
-                        const sessionState = this.oidcSecurityCommon.sessionState;
+                        const sessionState = this.storagePersistanceService.sessionState;
                         if (sessionState) {
                             this.outstandingMessages++;
                             this.sessionIframe.contentWindow.postMessage(

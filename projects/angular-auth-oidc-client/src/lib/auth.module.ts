@@ -7,12 +7,11 @@ import { StateValidationService } from './services/oidc-security-state-validatio
 import { TokenHelperService } from './services/oidc-token-helper.service';
 import { LoggerService } from './services/oidc.logger.service';
 import { OidcSecurityCheckSession } from './services/oidc.security.check-session';
-import { OidcSecurityCommon } from './services/oidc.security.common';
 import { OidcSecurityService } from './services/oidc.security.service';
 import { OidcSecuritySilentRenew } from './services/oidc.security.silent-renew';
-import { BrowserStorage, OidcSecurityStorage } from './services/oidc.security.storage';
 import { OidcSecurityUserService } from './services/oidc.security.user-service';
 import { OidcSecurityValidation } from './services/oidc.security.validation';
+import { AbstractSecurityStorage, BrowserStorageService, StoragePersistanceService } from './storage';
 
 @NgModule()
 export class AuthModule {
@@ -26,7 +25,7 @@ export class AuthModule {
                 OidcSecurityCheckSession,
                 OidcSecuritySilentRenew,
                 OidcSecurityUserService,
-                OidcSecurityCommon,
+                StoragePersistanceService,
                 TokenHelperService,
                 LoggerService,
                 IFrameService,
@@ -34,8 +33,8 @@ export class AuthModule {
                 OidcDataService,
                 StateValidationService,
                 {
-                    provide: OidcSecurityStorage,
-                    useClass: token.storage || BrowserStorage,
+                    provide: AbstractSecurityStorage,
+                    useClass: token.storage || BrowserStorageService,
                 },
             ],
         };

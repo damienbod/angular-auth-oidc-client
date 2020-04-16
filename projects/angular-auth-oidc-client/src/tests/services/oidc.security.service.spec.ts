@@ -9,16 +9,15 @@ import { AuthModule } from '../../lib/auth.module';
 import { ConfigurationProvider } from '../../lib/config';
 import { IFrameService } from '../../lib/services/existing-iframe.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
-import { OidcSecurityCommon } from '../../lib/services/oidc.security.common';
 import { OidcSecurityService } from '../../lib/services/oidc.security.service';
-import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';
+import { AbstractSecurityStorage, StoragePersistanceService } from '../../lib/storage';
+import { BrowserStorageMock } from '../../lib/storage/browser-storage.service-mock';
 import { TestLogging } from '../common/test-logging.service';
-import { TestStorage } from '../common/test-storage.service';
 
 describe('OidcSecurityService', () => {
     let oidcSecurityService: OidcSecurityService;
     let configurationProvider: ConfigurationProvider;
-    let oidcSecurityCommon: OidcSecurityCommon;
+    let storagePersistanceService: StoragePersistanceService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -26,8 +25,8 @@ describe('OidcSecurityService', () => {
             providers: [
                 OidcSecurityService,
                 {
-                    provide: OidcSecurityStorage,
-                    useClass: TestStorage,
+                    provide: AbstractSecurityStorage,
+                    useClass: BrowserStorageMock,
                 },
                 { provide: LoggerService, useClass: TestLogging },
                 ConfigurationProvider,
@@ -39,7 +38,7 @@ describe('OidcSecurityService', () => {
     beforeEach(() => {
         oidcSecurityService = TestBed.inject(OidcSecurityService);
         configurationProvider = TestBed.inject(ConfigurationProvider);
-        oidcSecurityCommon = TestBed.inject(OidcSecurityCommon);
+        storagePersistanceService = TestBed.inject(StoragePersistanceService);
     });
 
     it('should create', () => {
@@ -298,7 +297,7 @@ describe('OidcSecurityService', () => {
             stsServer: 'https://localhost:5001',
         };
 
-        const resultSetter = spyOnProperty((oidcSecurityService as any).oidcSecurityCommon, 'authResult', 'set');
+        const resultSetter = spyOnProperty((oidcSecurityService as any).storagePersistanceService, 'authResult', 'set');
 
         let hash = 'access_token=ACCESS-TOKEN&token_type=bearer&state=testState';
         const expectedResult = {
@@ -369,7 +368,7 @@ describe('OidcSecurityService', () => {
     it('logoff should reset storage data before emitting an isAuthorizedInternal change', () => {
         const authwellknown = {};
 
-        const resetStorageData = spyOn((oidcSecurityService as any).oidcSecurityCommon, 'resetStorageData');
+        const resetStorageData = spyOn((oidcSecurityService as any).storagePersistanceService, 'resetStorageData');
         configurationProvider.setConfig(null, authwellknown);
         let hasBeenCalled = false;
         (oidcSecurityService as any).isAuthorizedInternal
@@ -408,9 +407,9 @@ describe('OidcSecurityService', () => {
         configurationProvider.setConfig(config, null);
 
         spyOn(oidcSecurityService as any, 'refreshTokensWithCodeProcedure').and.returnValue(of(true));
-        spyOn(oidcSecurityCommon as any, 'getRefreshToken').and.returnValue('refresh token');
+        spyOn(storagePersistanceService as any, 'getRefreshToken').and.returnValue('refresh token');
         oidcSecurityService.refreshSession().subscribe(() => {
-            expect(oidcSecurityCommon.silentRenewRunning).toBe('running');
+            expect(storagePersistanceService.silentRenewRunning).toBe('running');
             done();
         });
     });

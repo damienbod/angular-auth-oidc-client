@@ -11,10 +11,10 @@ import { ValidationResult } from '../../lib/models/validation-result.enum';
 import { StateValidationService } from '../../lib/services/oidc-security-state-validation.service';
 import { TokenHelperService } from '../../lib/services/oidc-token-helper.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
-import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';
 import { OidcSecurityValidation } from '../../lib/services/oidc.security.validation';
+import { AbstractSecurityStorage } from '../../lib/storage';
+import { BrowserStorageMock } from '../../lib/storage/browser-storage.service-mock';
 import { TestLogging } from '../common/test-logging.service';
-import { TestStorage } from '../common/test-storage.service';
 
 describe('OidcSecurityStateValidationService', () => {
     let stateValidationService: StateValidationService;
@@ -35,8 +35,8 @@ describe('OidcSecurityStateValidationService', () => {
                 LoggerService,
                 TokenHelperService,
                 {
-                    provide: OidcSecurityStorage,
-                    useClass: TestStorage,
+                    provide: AbstractSecurityStorage,
+                    useClass: BrowserStorageMock,
                 },
                 {
                     provide: LoggerService,

@@ -3,11 +3,10 @@ import { ConfigurationProvider } from '../../lib/config';
 import { IFrameService } from '../../lib/services/existing-iframe.service';
 import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityCheckSession } from '../../lib/services/oidc.security.check-session';
-import { OidcSecurityCommon } from '../../lib/services/oidc.security.common';
 import { OidcSecurityService } from '../../lib/services/oidc.security.service';
-import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';
+import { AbstractSecurityStorage, StoragePersistanceService } from '../../lib/storage';
+import { BrowserStorageMock } from '../../lib/storage/browser-storage.service-mock';
 import { TestLogging } from '../common/test-logging.service';
-import { TestStorage } from '../common/test-storage.service';
 
 describe('SecurityCheckSessionTests', () => {
     let oidcSecurityCheckSession: OidcSecurityCheckSession;
@@ -19,10 +18,10 @@ describe('SecurityCheckSessionTests', () => {
             providers: [
                 OidcSecurityCheckSession,
                 ConfigurationProvider,
-                OidcSecurityCommon,
+                StoragePersistanceService,
                 { provide: LoggerService, useClass: TestLogging },
                 OidcSecurityService,
-                { provide: OidcSecurityStorage, useClass: TestStorage },
+                { provide: AbstractSecurityStorage, useClass: BrowserStorageMock },
                 IFrameService,
             ],
         });

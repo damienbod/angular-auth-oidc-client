@@ -3,15 +3,15 @@ import { ConfigurationProvider } from '../config';
 import { JwtKeys } from '../models/jwtkeys';
 import { ValidateStateResult } from '../models/validate-state-result.model';
 import { ValidationResult } from '../models/validation-result.enum';
+import { StoragePersistanceService } from '../storage';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { LoggerService } from './oidc.logger.service';
-import { OidcSecurityCommon } from './oidc.security.common';
 import { OidcSecurityValidation } from './oidc.security.validation';
 
 @Injectable()
 export class StateValidationService {
     constructor(
-        public oidcSecurityCommon: OidcSecurityCommon,
+        private storagePersistanceService: StoragePersistanceService,
         private oidcSecurityValidation: OidcSecurityValidation,
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,
@@ -20,7 +20,7 @@ export class StateValidationService {
 
     validateState(result: any, jwtKeys: JwtKeys): ValidateStateResult {
         const toReturn = new ValidateStateResult();
-        if (!this.oidcSecurityValidation.validateStateFromHashCallback(result.state, this.oidcSecurityCommon.authStateControl)) {
+        if (!this.oidcSecurityValidation.validateStateFromHashCallback(result.state, this.storagePersistanceService.authStateControl)) {
             this.loggerService.logWarning('authorizedCallback incorrect state');
             toReturn.state = ValidationResult.StatesDoNotMatch;
             this.handleUnsuccessfulValidation();
@@ -49,7 +49,7 @@ export class StateValidationService {
             if (
                 !this.oidcSecurityValidation.validateIdTokenNonce(
                     toReturn.decodedIdToken,
-                    this.oidcSecurityCommon.authNonce,
+                    this.storagePersistanceService.authNonce,
                     this.configurationProvider.openIDConfiguration.ignoreNonceAfterRefresh
                 )
             ) {
@@ -158,19 +158,19 @@ export class StateValidationService {
     }
 
     private handleSuccessfulValidation() {
-        this.oidcSecurityCommon.authNonce = '';
+        this.storagePersistanceService.authNonce = '';
 
         if (this.configurationProvider.openIDConfiguration.autoCleanStateAfterAuthentication) {
-            this.oidcSecurityCommon.authStateControl = '';
+            this.storagePersistanceService.authStateControl = '';
         }
         this.loggerService.logDebug('AuthorizedCallback token(s) validated, continue');
     }
 
     private handleUnsuccessfulValidation() {
-        this.oidcSecurityCommon.authNonce = '';
+        this.storagePersistanceService.authNonce = '';
 
         if (this.configurationProvider.openIDConfiguration.autoCleanStateAfterAuthentication) {
-            this.oidcSecurityCommon.authStateControl = '';
+            this.storagePersistanceService.authStateControl = '';
         }
         this.loggerService.logDebug('AuthorizedCallback token(s) invalid');
     }
