@@ -1,6 +1,6 @@
-import { ValidationResult } from './validation-result.enum';
+import { ValidationResult } from './validation-result';
 
-export class ValidateStateResult {
+export class StateValidationResult {
     constructor(
         public accessToken = '',
         public idToken = '',

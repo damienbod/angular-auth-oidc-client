@@ -9,13 +9,13 @@ import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LogLevel } from '../logging/log-level';
 import { LoggerService } from '../logging/logger.service';
 import { TestLogging } from '../logging/logger.service-mock';
-import { JwtKeys } from '../models/jwtkeys';
-import { ValidationResult } from '../models/validation-result.enum';
 import { TokenHelperService } from '../services/oidc-token-helper.service';
 import { AbstractSecurityStorage } from '../storage';
 import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
+import { JwtKeys } from './jwtkeys';
 import { StateValidationService } from './state-validation.service';
 import { TokenValidationService } from './token-validation.service';
+import { ValidationResult } from './validation-result';
 
 describe('yStateValidationService', () => {
     let stateValidationService: StateValidationService;

@@ -11,13 +11,12 @@ import { EventsService } from '../events/events.service';
 import { LoggerService } from '../logging/logger.service';
 import { AuthorizationResult } from '../models/authorization-result';
 import { AuthorizationState } from '../models/authorization-state.enum';
-import { JwtKeys } from '../models/jwtkeys';
-import { ValidateStateResult } from '../models/validate-state-result.model';
-import { ValidationResult } from '../models/validation-result.enum';
 import { StoragePersistanceService } from '../storage';
 import { UrlService } from '../utils';
+import { JwtKeys } from '../validation/jwtkeys';
 import { StateValidationService } from '../validation/state-validation.service';
 import { TokenValidationService } from '../validation/token-validation.service';
+import { ValidationResult } from '../validation/validation-result';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { OidcSecurityCheckSession } from './oidc.security.check-session';
 import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
@@ -523,7 +522,7 @@ export class OidcSecurityService {
 
             this.getSigningKeys().subscribe(
                 (jwtKeys) => {
-                    const validationResult = this.getValidatedStateResult(result, jwtKeys);
+                    const validationResult = this.stateValidationService.getValidatedStateResult(result, jwtKeys);
 
                     if (validationResult.authResponseIsValid) {
                         this.setAuthorizationData(validationResult.accessToken, validationResult.idToken);
@@ -821,14 +820,6 @@ export class OidcSecurityService {
         }
     }
 
-    private getValidatedStateResult(result: any, jwtKeys: JwtKeys): ValidateStateResult {
-        if (result.error) {
-            return new ValidateStateResult('', '', false, {});
-        }
-
-        return this.stateValidationService.validateState(result, jwtKeys);
-    }
-
     private setUserData(userData: any): void {
         this.storagePersistanceService.userData = userData;
         this.userDataInternal.next(userData);
@@ -879,6 +870,7 @@ export class OidcSecurityService {
         return throwError(errMsg);
     }
 
+    // TODO MOVE THIS METHOD INTO CORRESPONDING SERVICE `validation/token.validation.service.ts`
     private runTokenValidation() {
         if (this.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
             return;

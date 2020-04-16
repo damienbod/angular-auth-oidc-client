@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { ConfigurationProvider } from '../config';
 import { LoggerService } from '../logging/logger.service';
-import { JwtKeys } from '../models/jwtkeys';
-import { ValidateStateResult } from '../models/validate-state-result.model';
-import { ValidationResult } from '../models/validation-result.enum';
 import { TokenHelperService } from '../services/oidc-token-helper.service';
 import { StoragePersistanceService } from '../storage';
+import { JwtKeys } from './jwtkeys';
+import { StateValidationResult } from './state-validation-result';
 import { TokenValidationService } from './token-validation.service';
+import { ValidationResult } from './validation-result';
 
 @Injectable()
 export class StateValidationService {
@@ -18,8 +18,16 @@ export class StateValidationService {
         private readonly configurationProvider: ConfigurationProvider
     ) {}
 
-    validateState(result: any, jwtKeys: JwtKeys): ValidateStateResult {
-        const toReturn = new ValidateStateResult();
+    getValidatedStateResult(result: any, jwtKeys: JwtKeys): StateValidationResult {
+        if (result.error) {
+            return new StateValidationResult('', '', false, {});
+        }
+
+        return this.validateState(result, jwtKeys);
+    }
+
+    validateState(result: any, jwtKeys: JwtKeys): StateValidationResult {
+        const toReturn = new StateValidationResult();
         if (!this.tokenValidationService.validateStateFromHashCallback(result.state, this.storagePersistanceService.authStateControl)) {
             this.loggerService.logWarning('authorizedCallback incorrect state');
             toReturn.state = ValidationResult.StatesDoNotMatch;
