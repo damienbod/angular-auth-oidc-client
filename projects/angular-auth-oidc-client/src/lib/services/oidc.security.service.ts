@@ -15,6 +15,7 @@ import { JwtKeys } from '../models/jwtkeys';
 import { ValidateStateResult } from '../models/validate-state-result.model';
 import { ValidationResult } from '../models/validation-result.enum';
 import { StoragePersistanceService } from '../storage';
+import { UrlParserService } from '../urlParser/url-parser.service';
 import { StateValidationService } from './oidc-security-state-validation.service';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { OidcSecurityCheckSession } from './oidc.security.check-session';
@@ -22,7 +23,6 @@ import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
 import { OidcSecurityUserService } from './oidc.security.user-service';
 import { OidcSecurityValidation } from './oidc.security.validation';
 import { UriEncoder } from './uri-encoder';
-import { UrlParserService } from './url-parser.service';
 
 @Injectable()
 export class OidcSecurityService {
