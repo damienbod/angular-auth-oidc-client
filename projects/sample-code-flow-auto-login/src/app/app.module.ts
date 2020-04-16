@@ -1,7 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { AuthModule, OidcConfigService } from 'angular-auth-oidc-client';
+import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
 import { AppComponent } from './app.component';
 import { routing } from './app.routes';
 import { AutoLoginComponent } from './auto-login/auto-login.component';
@@ -26,8 +26,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
             postLoginRoute: '/home',
             forbiddenRoute: '/forbidden',
             unauthorizedRoute: '/unauthorized',
-            logConsoleWarningActive: true,
-            logConsoleDebugActive: true,
+            logLevel: LogLevel.Debug,
             maxIdTokenIatOffsetAllowedInSeconds: 30,
             historyCleanupOff: true,
             // iss_validation_off: false

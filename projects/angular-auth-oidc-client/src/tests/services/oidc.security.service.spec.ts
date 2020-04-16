@@ -7,6 +7,7 @@ import { filter, skipWhile } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../../lib/angular-auth-oidc-client';
 import { AuthModule } from '../../lib/auth.module';
 import { ConfigurationProvider } from '../../lib/config';
+import { LogLevel } from '../../lib/logging/log-level';
 import { LoggerService } from '../../lib/logging/logger.service';
 import { TestLogging } from '../../lib/logging/logger.service-mock';
 import { IFrameService } from '../../lib/services/existing-iframe.service';
@@ -76,8 +77,7 @@ describe('OidcSecurityService', () => {
         config.startCheckSession = false;
         config.silentRenew = false;
         config.silentRenewOffsetInSeconds = 0;
-        config.logConsoleWarningActive = true;
-        config.logConsoleDebugActive = true;
+        config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configurationProvider.setConfig(config, null);
@@ -116,8 +116,7 @@ describe('OidcSecurityService', () => {
         config.startCheckSession = false;
         config.silentRenew = false;
         config.silentRenewOffsetInSeconds = 0;
-        config.logConsoleWarningActive = true;
-        config.logConsoleDebugActive = true;
+        config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configurationProvider.setConfig(config, null);
@@ -156,8 +155,7 @@ describe('OidcSecurityService', () => {
         config.startCheckSession = false;
         config.silentRenew = false;
         config.silentRenewOffsetInSeconds = 0;
-        config.logConsoleWarningActive = true;
-        config.logConsoleDebugActive = true;
+        config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configurationProvider.setConfig(config, null);
@@ -188,8 +186,7 @@ describe('OidcSecurityService', () => {
         config.startCheckSession = false;
         config.silentRenew = false;
         config.silentRenewOffsetInSeconds = 0;
-        config.logConsoleWarningActive = true;
-        config.logConsoleDebugActive = true;
+        config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
         config.customParams = {
             testcustom: 'customvalue',
@@ -231,8 +228,7 @@ describe('OidcSecurityService', () => {
         config.startCheckSession = false;
         config.silentRenew = false;
         config.silentRenewOffsetInSeconds = 0;
-        config.logConsoleWarningActive = true;
-        config.logConsoleDebugActive = true;
+        config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
         config.customParams = {
             t4: 'ABC abc 123',
@@ -276,8 +272,7 @@ describe('OidcSecurityService', () => {
         config.startCheckSession = false;
         config.silentRenew = false;
         config.silentRenewOffsetInSeconds = 0;
-        config.logConsoleWarningActive = true;
-        config.logConsoleDebugActive = true;
+        config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configurationProvider.setConfig(config, null);

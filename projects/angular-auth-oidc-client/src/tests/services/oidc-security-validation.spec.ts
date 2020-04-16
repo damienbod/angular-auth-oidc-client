@@ -5,6 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AuthModule } from '../../lib/auth.module';
 import { ConfigurationProvider } from '../../lib/config';
 import { OpenIdConfiguration } from '../../lib/config/openid-configuration';
+import { LogLevel } from '../../lib/logging/log-level';
 import { LoggerService } from '../../lib/logging/logger.service';
 import { TestLogging } from '../../lib/logging/logger.service-mock';
 import { EqualityHelperService } from '../../lib/services/oidc-equality-helper.service';
@@ -53,8 +54,7 @@ describe('OidcSecurityValidation', () => {
         config.startCheckSession = false;
         config.silentRenew = false;
         config.silentRenewOffsetInSeconds = 0;
-        config.logConsoleWarningActive = true;
-        config.logConsoleDebugActive = true;
+        config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configProvider.setConfig(config, null);
@@ -80,8 +80,7 @@ describe('OidcSecurityValidation', () => {
         config.startCheckSession = false;
         config.silentRenew = false;
         config.silentRenewOffsetInSeconds = 0;
-        config.logConsoleWarningActive = true;
-        config.logConsoleDebugActive = true;
+        config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
         configProvider.setConfig(config, null);

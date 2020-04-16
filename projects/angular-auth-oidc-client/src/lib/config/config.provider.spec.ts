@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { LogLevel } from '../logging/log-level';
 import { PlatformProvider } from '../services/platform.provider';
 import { ConfigurationProvider } from './config.provider';
 import { OpenIdConfiguration } from './openid-configuration';
@@ -70,8 +71,7 @@ describe('ConfigurationProviderTests', () => {
             autoUserinfo: true,
             autoCleanStateAfterAuthentication: true,
             triggerAuthorizationResultEvent: false,
-            logConsoleWarningActive: true,
-            logConsoleDebugActive: false,
+            logLevel: LogLevel.Warn,
             issValidationOff: false,
             historyCleanupOff: false,
             maxIdTokenIatOffsetAllowedInSeconds: 3,
@@ -112,8 +112,7 @@ describe('ConfigurationProviderTests', () => {
             autoUserinfo: true,
             autoCleanStateAfterAuthentication: true,
             triggerAuthorizationResultEvent: false,
-            logConsoleWarningActive: true,
-            logConsoleDebugActive: false,
+            logLevel: LogLevel.Warn,
             issValidationOff: false,
             historyCleanupOff: false,
             maxIdTokenIatOffsetAllowedInSeconds: 3,
@@ -156,8 +155,7 @@ describe('ConfigurationProviderTests', () => {
             autoUserinfo: true,
             autoCleanStateAfterAuthentication: true,
             triggerAuthorizationResultEvent: false,
-            logConsoleWarningActive: true,
-            logConsoleDebugActive: false,
+            logLevel: LogLevel.Warn,
             issValidationOff: false,
             historyCleanupOff: false,
             maxIdTokenIatOffsetAllowedInSeconds: 3,

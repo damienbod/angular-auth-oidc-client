@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { AuthModule, OidcConfigService, OidcSecurityService } from 'angular-auth-oidc-client';
+import { AuthModule, LogLevel, OidcConfigService, OidcSecurityService } from 'angular-auth-oidc-client';
 import { AppComponent } from './app.component';
 import { routing } from './app.routes';
 import { AuthorizationGuard } from './authorization.guard';
@@ -27,7 +27,7 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
             silentRenew: false,
             autoUserinfo: false,
             silentRenewUrl: 'https://localhost:65328/silent-renew.html',
-            logConsoleDebugActive: true,
+            logLevel: LogLevel.Debug,
             maxIdTokenIatOffsetAllowedInSeconds: 500,
             customParams: {
                 response_mode: 'fragment',

@@ -6,6 +6,7 @@ import { AuthModule } from '../../lib/auth.module';
 import { ConfigurationProvider } from '../../lib/config';
 import { AuthWellKnownEndpoints } from '../../lib/config/auth-well-known-endpoints';
 import { OpenIdConfiguration } from '../../lib/config/openid-configuration';
+import { LogLevel } from '../../lib/logging/log-level';
 import { LoggerService } from '../../lib/logging/logger.service';
 import { TestLogging } from '../../lib/logging/logger.service-mock';
 import { JwtKeys } from '../../lib/models/jwtkeys';
@@ -68,8 +69,7 @@ describe('OidcSecurityStateValidationService', () => {
             postLoginRoute: '/dataeventrecords',
             forbiddenRoute: '/Forbidden',
             unauthorizedRoute: '/Unauthorized',
-            logConsoleWarningActive: true,
-            logConsoleDebugActive: true,
+            logLevel: LogLevel.Debug,
             maxIdTokenIatOffsetAllowedInSeconds: 10,
         };
 
