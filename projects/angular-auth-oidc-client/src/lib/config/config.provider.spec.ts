@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { LogLevel } from '../logging/log-level';
-import { PlatformProvider } from '../services/platform.provider';
+import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { ConfigurationProvider } from './config.provider';
 import { OpenIdConfiguration } from './openid-configuration';
 

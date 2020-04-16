@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LogLevel } from '../logging/log-level';
-import { PlatformProvider } from '../services/platform.provider';
+import { PlatformProvider } from '../utils';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 import { OpenIdConfiguration } from './openid-configuration';
 
