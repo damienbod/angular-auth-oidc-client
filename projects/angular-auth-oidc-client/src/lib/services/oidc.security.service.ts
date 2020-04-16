@@ -15,14 +15,13 @@ import { JwtKeys } from '../models/jwtkeys';
 import { ValidateStateResult } from '../models/validate-state-result.model';
 import { ValidationResult } from '../models/validation-result.enum';
 import { StoragePersistanceService } from '../storage';
-import { UrlParserService } from '../utils';
+import { UrlService } from '../utils';
 import { StateValidationService } from './oidc-security-state-validation.service';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { OidcSecurityCheckSession } from './oidc.security.check-session';
 import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
 import { OidcSecurityUserService } from './oidc.security.user-service';
 import { OidcSecurityValidation } from './oidc.security.validation';
-import { UriEncoder } from './uri-encoder';
 
 @Injectable()
 export class OidcSecurityService {
@@ -70,8 +69,8 @@ export class OidcSecurityService {
         private zone: NgZone,
         private readonly httpClient: HttpClient,
         private readonly configurationProvider: ConfigurationProvider,
-        private readonly urlParserService: UrlParserService,
-        private readonly eventsService: EventsService
+        private readonly eventsService: EventsService,
+        private readonly urlService: UrlService
     ) {
         this.onModuleSetup.pipe(take(1)).subscribe(() => {
             this.moduleSetup = true;
@@ -199,7 +198,7 @@ export class OidcSecurityService {
                 })
             );
         }
-
+        this.moduleSetup = true;
         this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
 
         this.checkSetupAndAuthorizedInternal();
@@ -297,13 +296,11 @@ export class OidcSecurityService {
             this.storagePersistanceService.codeVerifier = codeVerifier;
 
             if (this.configurationProvider.wellKnownEndpoints) {
-                url = this.createAuthorizeUrl(
-                    true,
+                url = this.urlService.createAuthorizeUrl(
                     codeChallenge,
                     this.configurationProvider.openIDConfiguration.redirectUrl,
                     nonce,
-                    state,
-                    this.configurationProvider.wellKnownEndpoints.authorizationEndpoint || ''
+                    state
                 );
             } else {
                 this.loggerService.logError('authWellKnownEndpoints is undefined');
@@ -312,14 +309,7 @@ export class OidcSecurityService {
             // Implicit Flow
 
             if (this.configurationProvider.wellKnownEndpoints) {
-                url = this.createAuthorizeUrl(
-                    false,
-                    '',
-                    this.configurationProvider.openIDConfiguration.redirectUrl,
-                    nonce,
-                    state,
-                    this.configurationProvider.wellKnownEndpoints.authorizationEndpoint || ''
-                );
+                url = this.urlService.createAuthorizeUrl('', this.configurationProvider.openIDConfiguration.redirectUrl, nonce, state);
             } else {
                 this.loggerService.logError('authWellKnownEndpoints is undefined');
             }
@@ -337,9 +327,9 @@ export class OidcSecurityService {
         this.authorizedCallbackWithCode$(urlToCheck).subscribe();
     }
     authorizedCallbackWithCode$(urlToCheck: string): Observable<void> {
-        const code = this.urlParserService.getUrlParameter(urlToCheck, 'code');
-        const state = this.urlParserService.getUrlParameter(urlToCheck, 'state');
-        const sessionState = this.urlParserService.getUrlParameter(urlToCheck, 'session_state') || null;
+        const code = this.urlService.getUrlParameter(urlToCheck, 'code');
+        const state = this.urlService.getUrlParameter(urlToCheck, 'state');
+        const sessionState = this.urlService.getUrlParameter(urlToCheck, 'session_state') || null;
 
         if (!state) {
             this.loggerService.logDebug('no state in url');
@@ -676,7 +666,7 @@ export class OidcSecurityService {
             if (this.configurationProvider.wellKnownEndpoints.endSessionEndpoint) {
                 const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.endSessionEndpoint;
                 const idTokenHint = this.storagePersistanceService.idToken;
-                const url = this.createEndSessionUrl(endSessionEndpoint, idTokenHint);
+                const url = this.urlService.createEndSessionUrl(endSessionEndpoint, idTokenHint);
 
                 this.resetAuthorizationData(false);
 
@@ -737,13 +727,11 @@ export class OidcSecurityService {
             this.storagePersistanceService.codeVerifier = codeVerifier;
 
             if (this.configurationProvider.wellKnownEndpoints) {
-                url = this.createAuthorizeUrl(
-                    true,
+                url = this.urlService.createAuthorizeUrl(
                     codeChallenge,
                     this.configurationProvider.openIDConfiguration.silentRenewUrl,
                     nonce,
                     state,
-                    this.configurationProvider.wellKnownEndpoints.authorizationEndpoint || '',
                     'none'
                 );
             } else {
@@ -751,13 +739,11 @@ export class OidcSecurityService {
             }
         } else {
             if (this.configurationProvider.wellKnownEndpoints) {
-                url = this.createAuthorizeUrl(
-                    false,
+                url = this.urlService.createAuthorizeUrl(
                     '',
                     this.configurationProvider.openIDConfiguration.silentRenewUrl,
                     nonce,
                     state,
-                    this.configurationProvider.wellKnownEndpoints.authorizationEndpoint || '',
                     'none'
                 );
             } else {
@@ -830,7 +816,7 @@ export class OidcSecurityService {
             if (this.configurationProvider.wellKnownEndpoints.endSessionEndpoint) {
                 const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.endSessionEndpoint;
                 const idTokenHint = this.storagePersistanceService.idToken;
-                return this.createEndSessionUrl(endSessionEndpoint, idTokenHint);
+                return this.urlService.createEndSessionUrl(endSessionEndpoint, idTokenHint);
             }
         }
     }
@@ -864,65 +850,6 @@ export class OidcSecurityService {
         this.storagePersistanceService.idToken = idToken;
         this.setIsAuthorized(true);
         this.storagePersistanceService.isAuthorized = true;
-    }
-
-    private createAuthorizeUrl(
-        isCodeFlow: boolean,
-        codeChallenge: string,
-        redirectUrl: string,
-        nonce: string,
-        state: string,
-        authorizationEndpoint: string,
-        prompt?: string
-    ): string {
-        const urlParts = authorizationEndpoint.split('?');
-        const authorizationUrl = urlParts[0];
-        let params = new HttpParams({
-            fromString: urlParts[1],
-            encoder: new UriEncoder(),
-        });
-        params = params.set('client_id', this.configurationProvider.openIDConfiguration.clientId);
-        params = params.append('redirect_uri', redirectUrl);
-        params = params.append('response_type', this.configurationProvider.openIDConfiguration.responseType);
-        params = params.append('scope', this.configurationProvider.openIDConfiguration.scope);
-        params = params.append('nonce', nonce);
-        params = params.append('state', state);
-
-        if (isCodeFlow) {
-            params = params.append('code_challenge', codeChallenge);
-            params = params.append('code_challenge_method', 'S256');
-        }
-
-        if (prompt) {
-            params = params.append('prompt', prompt);
-        }
-
-        if (this.configurationProvider.openIDConfiguration.hdParam) {
-            params = params.append('hd', this.configurationProvider.openIDConfiguration.hdParam);
-        }
-
-        const customParams = { ...this.configurationProvider.openIDConfiguration.customParams };
-
-        for (const [key, value] of Object.entries(customParams)) {
-            params = params.append(key, value.toString());
-        }
-
-        return `${authorizationUrl}?${params}`;
-    }
-
-    private createEndSessionUrl(endSessionEndpoint: string, idTokenHint: string) {
-        const urlParts = endSessionEndpoint.split('?');
-
-        const authorizationEndsessionUrl = urlParts[0];
-
-        let params = new HttpParams({
-            fromString: urlParts[1],
-            encoder: new UriEncoder(),
-        });
-        params = params.set('id_token_hint', idTokenHint);
-        params = params.append('post_logout_redirect_uri', this.configurationProvider.openIDConfiguration.postLogoutRedirectUri);
-
-        return `${authorizationEndsessionUrl}?${params}`;
     }
 
     private getSigningKeys(): Observable<JwtKeys> {
