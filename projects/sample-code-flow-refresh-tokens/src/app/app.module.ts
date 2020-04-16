@@ -15,6 +15,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
             clientId: 'angularCodeRefreshTokens',
             scope: 'openid profile email taler_api offline_access',
             responseType: 'code',
+            silentRenew: true,
             useRefreshToken: true,
             logLevel: LogLevel.Debug,
         });
