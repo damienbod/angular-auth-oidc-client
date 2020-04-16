@@ -13,7 +13,7 @@ import { AuthorizationState } from '../models/authorization-state.enum';
 import { JwtKeys } from '../models/jwtkeys';
 import { ValidateStateResult } from '../models/validate-state-result.model';
 import { ValidationResult } from '../models/validation-result.enum';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
+import { StoragePersistanceService } from '../storage';
 import { StateValidationService } from './oidc-security-state-validation.service';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { LoggerService } from './oidc.logger.service';

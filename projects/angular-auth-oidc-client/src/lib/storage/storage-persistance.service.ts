@@ -8,7 +8,10 @@ export type SilentRenewState = 'running' | '';
 export class StoragePersistanceService {
     private STORAGE_PREFIX = this.configurationProvider.openIDConfiguration.clientId;
 
-    constructor(private oidcSecurityStorage: AbstractSecurityStorage, private readonly configurationProvider: ConfigurationProvider) {}
+    constructor(
+        private readonly oidcSecurityStorage: AbstractSecurityStorage,
+        private readonly configurationProvider: ConfigurationProvider
+    ) {}
 
     private storageAuthResult = 'authorizationResult';
 

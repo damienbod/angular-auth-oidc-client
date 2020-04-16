@@ -13,8 +13,8 @@ import { TokenHelperService } from '../../lib/services/oidc-token-helper.service
 import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityValidation } from '../../lib/services/oidc.security.validation';
 import { AbstractSecurityStorage } from '../../lib/storage';
+import { BrowserStorageMock } from '../../lib/storage/browser-storage.service-mock';
 import { TestLogging } from '../common/test-logging.service';
-import { TestStorage } from '../common/test-storage.service';
 
 describe('OidcSecurityStateValidationService', () => {
     let stateValidationService: StateValidationService;
@@ -36,7 +36,7 @@ describe('OidcSecurityStateValidationService', () => {
                 TokenHelperService,
                 {
                     provide: AbstractSecurityStorage,
-                    useClass: TestStorage,
+                    useClass: BrowserStorageMock,
                 },
                 {
                     provide: LoggerService,

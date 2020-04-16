@@ -41,7 +41,7 @@ export class ConfigurationProvider {
     private openIdConfigurationInternal: OpenIdConfiguration;
 
     get openIDConfiguration(): OpenIdConfiguration {
-        return this.openIdConfigurationInternal || null;
+        return this.openIdConfigurationInternal || this.DEFAULT_CONFIG;
     }
 
     get wellKnownEndpoints(): AuthWellKnownEndpoints {

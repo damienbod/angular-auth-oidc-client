@@ -9,8 +9,8 @@ import { EqualityHelperService } from '../../lib/services/oidc-equality-helper.s
 import { LoggerService } from '../../lib/services/oidc.logger.service';
 import { OidcSecurityValidation } from '../../lib/services/oidc.security.validation';
 import { AbstractSecurityStorage } from '../../lib/storage';
+import { BrowserStorageMock } from '../../lib/storage/browser-storage.service-mock';
 import { TestLogging } from '../common/test-logging.service';
-import { TestStorage } from '../common/test-storage.service';
 
 describe('OidcSecurityValidation', () => {
     let oidcSecurityValidation: OidcSecurityValidation;
@@ -25,7 +25,7 @@ describe('OidcSecurityValidation', () => {
                 OidcSecurityValidation,
                 {
                     provide: AbstractSecurityStorage,
-                    useClass: TestStorage,
+                    useClass: BrowserStorageMock,
                 },
                 {
                     provide: LoggerService,
