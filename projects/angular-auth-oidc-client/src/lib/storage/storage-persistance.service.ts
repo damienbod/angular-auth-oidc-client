@@ -1,10 +1,18 @@
 ﻿import { Injectable } from '@angular/core';
-import { OidcSecurityStorage } from './oidc.security.storage';
+import { ConfigurationProvider } from '../config';
+import { AbstractSecurityStorage } from './abstract-security-storage';
 
 export type SilentRenewState = 'running' | '';
 
 @Injectable()
-export class OidcSecurityCommon {
+export class StoragePersistanceService {
+    private STORAGE_PREFIX = this.configurationProvider.openIDConfiguration.clientId;
+
+    constructor(
+        private readonly oidcSecurityStorage: AbstractSecurityStorage,
+        private readonly configurationProvider: ConfigurationProvider
+    ) {}
+
     private storageAuthResult = 'authorizationResult';
 
     public get authResult(): any {
@@ -105,14 +113,14 @@ export class OidcSecurityCommon {
         this.store(this.storageSilentRenewRunning, value);
     }
 
-    constructor(private oidcSecurityStorage: OidcSecurityStorage) {}
-
     private retrieve(key: string): any {
-        return this.oidcSecurityStorage.read(key);
+        const keyToRead = this.createKeyWithPrefix(key);
+        return this.oidcSecurityStorage.read(keyToRead);
     }
 
     private store(key: string, value: any) {
-        this.oidcSecurityStorage.write(key, value);
+        const keyToStore = this.createKeyWithPrefix(key);
+        this.oidcSecurityStorage.write(keyToStore, value);
     }
 
     resetStorageData(isRenewProcess: boolean) {
@@ -138,5 +146,9 @@ export class OidcSecurityCommon {
 
     getRefreshToken(): any {
         return this.authResult.refresh_token;
+    }
+
+    private createKeyWithPrefix(key: string) {
+        return `${this.STORAGE_PREFIX}_${key}`;
     }
 }

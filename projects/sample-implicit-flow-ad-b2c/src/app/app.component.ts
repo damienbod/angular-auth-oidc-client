@@ -11,6 +11,7 @@ export class AppComponent {
     title = 'app';
 
     constructor(public oidcSecurityService: OidcSecurityService, private router: Router) {
+        this.oidcSecurityService.setupModule();
         if (this.oidcSecurityService.moduleSetup) {
             this.onOidcModuleSetup();
         } else {

@@ -3,8 +3,8 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { OidcDataService } from '../api/oidc-data.service';
 import { ConfigurationProvider } from '../config';
+import { StoragePersistanceService } from '../storage';
 import { LoggerService } from '../logging/logger.service';
-import { OidcSecurityCommon } from './oidc.security.common';
 
 @Injectable()
 export class OidcSecurityUserService {
@@ -12,7 +12,7 @@ export class OidcSecurityUserService {
 
     constructor(
         private oidcDataService: OidcDataService,
-        private oidcSecurityCommon: OidcSecurityCommon,
+        private storagePersistanceService: StoragePersistanceService,
         private loggerService: LoggerService,
         private readonly configurationProvider: ConfigurationProvider
     ) {}
@@ -34,7 +34,7 @@ export class OidcSecurityUserService {
     }
 
     private getIdentityUserData(): Observable<any> {
-        const token = this.oidcSecurityCommon.getAccessToken();
+        const token = this.storagePersistanceService.getAccessToken();
 
         if (!this.configurationProvider.wellKnownEndpoints) {
             this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');

@@ -12,9 +12,9 @@ import { JwtKeys } from '../../lib/models/jwtkeys';
 import { ValidationResult } from '../../lib/models/validation-result.enum';
 import { StateValidationService } from '../../lib/services/oidc-security-state-validation.service';
 import { TokenHelperService } from '../../lib/services/oidc-token-helper.service';
-import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';
 import { OidcSecurityValidation } from '../../lib/services/oidc.security.validation';
-import { TestStorage } from '../common/test-storage.service';
+import { AbstractSecurityStorage } from '../../lib/storage';
+import { BrowserStorageMock } from '../../lib/storage/browser-storage.service-mock';
 
 describe('OidcSecurityStateValidationService', () => {
     let stateValidationService: StateValidationService;
@@ -35,8 +35,8 @@ describe('OidcSecurityStateValidationService', () => {
                 LoggerService,
                 TokenHelperService,
                 {
-                    provide: OidcSecurityStorage,
-                    useClass: TestStorage,
+                    provide: AbstractSecurityStorage,
+                    useClass: BrowserStorageMock,
                 },
                 {
                     provide: LoggerService,

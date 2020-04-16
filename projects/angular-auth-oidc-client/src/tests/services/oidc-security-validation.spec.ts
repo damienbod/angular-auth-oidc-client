@@ -8,9 +8,9 @@ import { OpenIdConfiguration } from '../../lib/config/openid-configuration';
 import { LoggerService } from '../../lib/logging/logger.service';
 import { TestLogging } from '../../lib/logging/logger.service-mock';
 import { EqualityHelperService } from '../../lib/services/oidc-equality-helper.service';
-import { OidcSecurityStorage } from '../../lib/services/oidc.security.storage';
 import { OidcSecurityValidation } from '../../lib/services/oidc.security.validation';
-import { TestStorage } from '../common/test-storage.service';
+import { AbstractSecurityStorage } from '../../lib/storage';
+import { BrowserStorageMock } from '../../lib/storage/browser-storage.service-mock';
 
 describe('OidcSecurityValidation', () => {
     let oidcSecurityValidation: OidcSecurityValidation;
@@ -24,8 +24,8 @@ describe('OidcSecurityValidation', () => {
                 EqualityHelperService,
                 OidcSecurityValidation,
                 {
-                    provide: OidcSecurityStorage,
-                    useClass: TestStorage,
+                    provide: AbstractSecurityStorage,
+                    useClass: BrowserStorageMock,
                 },
                 {
                     provide: LoggerService,

@@ -13,5 +13,5 @@ export * from './models/validate-state-result.model';
 export * from './models/validation-result.enum';
 export * from './services/oidc-token-helper.service';
 export * from './services/oidc.security.service';
-export * from './services/oidc.security.storage';
 export * from './services/oidc.security.validation';
+export * from './storage';
