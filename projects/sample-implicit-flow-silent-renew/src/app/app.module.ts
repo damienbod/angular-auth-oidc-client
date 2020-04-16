@@ -15,6 +15,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
             clientId: 'angularImplicitClient',
             scope: 'openid profile email',
             responseType: 'id_token token',
+            startCheckSession: true,
             silentRenew: true,
             silentRenewUrl: 'https://localhost:4202/silent-renew.html',
             logLevel: LogLevel.Debug,
