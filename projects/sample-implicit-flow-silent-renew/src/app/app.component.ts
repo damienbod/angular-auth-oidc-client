@@ -1,24 +1,26 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { EventsService, EventTypes, OidcClientNotification, OidcSecurityService } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
-    templateUrl: 'app.component.html',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css'],
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit {
     isAuthenticated: boolean;
     isModuleSetUp$: Observable<OidcClientNotification>;
     userData: any;
 
     constructor(public oidcSecurityService: OidcSecurityService, private readonly eventService: EventsService) {
         this.oidcSecurityService.setupModule();
+
         if (this.oidcSecurityService.moduleSetup) {
-            this.doCallbackLogicIfRequired();
+            this.onOidcModuleSetup();
         } else {
             this.oidcSecurityService.onModuleSetup.subscribe(() => {
-                this.doCallbackLogicIfRequired();
+                this.onOidcModuleSetup();
             });
         }
     }
@@ -37,18 +39,25 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
-    ngOnDestroy(): void {}
-
     login() {
+        console.log('start login');
+        this.oidcSecurityService.authorize();
+    }
+
+    refreshSession() {
+        console.log('start refreshSession');
         this.oidcSecurityService.authorize();
     }
 
     logout() {
+        console.log('start logoff');
         this.oidcSecurityService.logoff();
     }
 
-    private doCallbackLogicIfRequired() {
-        // Will do a callback, if the url has a code and state parameter.
-        this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());
+    private onOidcModuleSetup() {
+        console.log('AppComponent:onOidcModuleSetup');
+        if (window.location.hash) {
+            this.oidcSecurityService.authorizedImplicitFlowCallback();
+        }
     }
 }

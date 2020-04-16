@@ -725,6 +725,121 @@
                     }
                 }
             }
+        },
+        "sample-implicit-flow-silent-renew": {
+            "projectType": "application",
+            "schematics": {},
+            "root": "projects/sample-implicit-flow-silent-renew",
+            "sourceRoot": "projects/sample-implicit-flow-silent-renew/src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "outputPath": "dist/sample-implicit-flow-silent-renew",
+                        "index": "projects/sample-implicit-flow-silent-renew/src/index.html",
+                        "main": "projects/sample-implicit-flow-silent-renew/src/main.ts",
+                        "polyfills": "projects/sample-implicit-flow-silent-renew/src/polyfills.ts",
+                        "tsConfig": "projects/sample-implicit-flow-silent-renew/tsconfig.app.json",
+                        "aot": true,
+                        "assets": [
+                            "projects/sample-implicit-flow-silent-renew/src/favicon.ico",
+                            "projects/sample-implicit-flow-silent-renew/src/assets",
+                            "projects/sample-implicit-flow-silent-renew/src/silent-renew.html"
+                        ],
+                        "styles": ["projects/sample-implicit-flow-silent-renew/src/styles.css"],
+                        "scripts": []
+                    },
+                    "configurations": {
+                        "production": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "projects/sample-implicit-flow-silent-renew/src/environments/environment.ts",
+                                    "with": "projects/sample-implicit-flow-silent-renew/src/environments/environment.prod.ts"
+                                }
+                            ],
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true,
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "2mb",
+                                    "maximumError": "5mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb",
+                                    "maximumError": "10kb"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "options": {
+                        "browserTarget": "sample-implicit-flow-silent-renew:build",
+                        "sslKey": "certs/dev_localhost.key",
+                        "sslCert": "certs/dev_localhost.pem",
+                        "port": 4202
+                    },
+                    "configurations": {
+                        "production": {
+                            "browserTarget": "sample-implicit-flow-silent-renew:build:production"
+                        }
+                    }
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "browserTarget": "sample-implicit-flow-silent-renew:build"
+                    }
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "main": "projects/sample-implicit-flow-silent-renew/src/test.ts",
+                        "polyfills": "projects/sample-implicit-flow-silent-renew/src/polyfills.ts",
+                        "tsConfig": "projects/sample-implicit-flow-silent-renew/tsconfig.spec.json",
+                        "karmaConfig": "projects/sample-implicit-flow-silent-renew/karma.conf.js",
+                        "assets": [
+                            "projects/sample-implicit-flow-silent-renew/src/favicon.ico",
+                            "projects/sample-implicit-flow-silent-renew/src/assets"
+                        ],
+                        "styles": ["projects/sample-implicit-flow-silent-renew/src/styles.css"],
+                        "scripts": []
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "projects/sample-implicit-flow-silent-renew/tsconfig.app.json",
+                            "projects/sample-implicit-flow-silent-renew/tsconfig.spec.json",
+                            "projects/sample-implicit-flow-silent-renew/e2e/tsconfig.json"
+                        ],
+                        "exclude": ["**/node_modules/**"]
+                    }
+                },
+                "e2e": {
+                    "builder": "@angular-devkit/build-angular:protractor",
+                    "options": {
+                        "protractorConfig": "projects/sample-implicit-flow-silent-renew/e2e/protractor.conf.js",
+                        "devServerTarget": "sample-implicit-flow-silent-renew:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "sample-implicit-flow-silent-renew:serve:production"
+                        }
+                    }
+                }
+            }
         }
     },
     "cli": {
