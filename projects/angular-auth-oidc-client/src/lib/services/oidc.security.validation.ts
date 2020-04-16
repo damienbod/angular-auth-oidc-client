@@ -1,7 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { hextob64u, KEYUTIL, KJUR } from 'jsrsasign-reduced';
 import { LoggerService } from '../logging/logger.service';
-import { EqualityHelperService } from './oidc-equality-helper.service';
+import { EqualityService } from '../utils/equality/equality.service';
 import { TokenHelperService } from './oidc-token-helper.service';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
@@ -53,7 +53,7 @@ export class OidcSecurityValidation {
     static RefreshTokenNoncePlaceholder = '--RefreshToken--';
 
     constructor(
-        private arrayHelperService: EqualityHelperService,
+        private arrayHelperService: EqualityService,
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService
     ) {}

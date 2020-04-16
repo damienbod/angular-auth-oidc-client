@@ -8,10 +8,10 @@ import { OpenIdConfiguration } from '../lib/config/openid-configuration';
 import { LogLevel } from '../lib/logging/log-level';
 import { LoggerService } from '../lib/logging/logger.service';
 import { TestLogging } from '../lib/logging/logger.service-mock';
-import { EqualityHelperService } from '../lib/services/oidc-equality-helper.service';
 import { OidcSecurityValidation } from '../lib/services/oidc.security.validation';
 import { AbstractSecurityStorage } from '../lib/storage';
 import { BrowserStorageMock } from '../lib/storage/browser-storage.service-mock';
+import { EqualityService } from '../lib/utils/equality/equality.service';
 
 describe('OidcSecurityValidation', () => {
     let oidcSecurityValidation: OidcSecurityValidation;
@@ -22,7 +22,7 @@ describe('OidcSecurityValidation', () => {
             imports: [BrowserModule, HttpClientModule, RouterTestingModule, AuthModule.forRoot()],
             providers: [
                 ConfigurationProvider,
-                EqualityHelperService,
+                EqualityService,
                 OidcSecurityValidation,
                 {
                     provide: AbstractSecurityStorage,

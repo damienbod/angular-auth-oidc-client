@@ -1,6 +1,6 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ConfigurationProvider } from '../../config';
+import { ConfigurationProvider } from '../../config/config.provider';
 import { LoggerService } from '../../logging/logger.service';
 import { UriEncoder } from './uri-encoder';
 

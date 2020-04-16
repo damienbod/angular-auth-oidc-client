@@ -1,18 +1,18 @@
 import { TestBed } from '@angular/core/testing';
-import { IFrameService } from '../lib/services/existing-iframe.service';
-import { EqualityHelperService } from '../lib/services/oidc-equality-helper.service';
+import { IFrameService } from '../../services/existing-iframe.service';
+import { EqualityService } from './equality.service';
 
-describe('EqualityHelperServiceTests', () => {
-    let equalityHelperService: EqualityHelperService;
+describe('EqualityService Tests', () => {
+    let equalityHelperService: EqualityService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [EqualityHelperService, IFrameService],
+            providers: [EqualityService, IFrameService],
         });
     });
 
     beforeEach(() => {
-        equalityHelperService = TestBed.inject(EqualityHelperService);
+        equalityHelperService = TestBed.inject(EqualityService);
     });
 
     it('should create', () => {
