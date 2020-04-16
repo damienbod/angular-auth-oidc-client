@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { UrlParserService } from '../lib/services/url-parser.service';
+import { UrlParserService } from './url-parser.service';
 
 describe('ConfigurationProviderTests', () => {
     let service: UrlParserService;
@@ -18,7 +18,7 @@ describe('ConfigurationProviderTests', () => {
         expect(service).toBeTruthy();
     });
 
-    it('parses Url correctly', () => {
+    it('parses Url correctly with hash in the end', () => {
         const urlToCheck = 'https://www.example.com/signin?code=thisisacode&state=0000.1234.000#';
         const code = service.getUrlParameter(urlToCheck, 'code');
         const state = service.getUrlParameter(urlToCheck, 'state');
@@ -27,7 +27,7 @@ describe('ConfigurationProviderTests', () => {
         expect(state).toBe('0000.1234.000');
     });
 
-    it('parses Url correctly 2', () => {
+    it('parses url with special chars in param and hash in the end', () => {
         const urlToCheck = 'https://www.example.com/signin?code=thisisa$-_.+!*(),code&state=0000.1234.000#';
         const code = service.getUrlParameter(urlToCheck, 'code');
         const state = service.getUrlParameter(urlToCheck, 'state');
@@ -36,7 +36,7 @@ describe('ConfigurationProviderTests', () => {
         expect(state).toBe('0000.1234.000');
     });
 
-    it('parses Url correctly 3', () => {
+    it('parses Url correctly with number&delimiter in params', () => {
         const urlToCheck = 'https://www.example.com/signin?code=thisisacode&state=0000.1234.000';
         const code = service.getUrlParameter(urlToCheck, 'code');
         const state = service.getUrlParameter(urlToCheck, 'state');
@@ -45,7 +45,7 @@ describe('ConfigurationProviderTests', () => {
         expect(state).toBe('0000.1234.000');
     });
 
-    it('parses Url correctly negative', () => {
+    it('gets correct param if params divided vith slash', () => {
         const urlToCheck = 'https://www.example.com/signin?state=0000.1234.000&ui_locales=de&code=thisisacode#lang=de';
         const code = service.getUrlParameter(urlToCheck, 'code');
         const state = service.getUrlParameter(urlToCheck, 'state');
