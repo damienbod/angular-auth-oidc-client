@@ -28,7 +28,6 @@ export class AppComponent implements OnInit, OnDestroy {
             .registerForEvents()
             .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.ModuleSetup));
 
-        this.oidcSecurityService.setupModule();
         this.oidcSecurityService.getIsAuthorized().subscribe((auth) => {
             this.isAuthenticated = auth;
         });
