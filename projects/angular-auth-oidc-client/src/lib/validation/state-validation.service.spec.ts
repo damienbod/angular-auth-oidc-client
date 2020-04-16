@@ -2,24 +2,24 @@ import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AuthModule } from '../lib/auth.module';
-import { ConfigurationProvider } from '../lib/config';
-import { AuthWellKnownEndpoints } from '../lib/config/auth-well-known-endpoints';
-import { OpenIdConfiguration } from '../lib/config/openid-configuration';
-import { LogLevel } from '../lib/logging/log-level';
-import { LoggerService } from '../lib/logging/logger.service';
-import { TestLogging } from '../lib/logging/logger.service-mock';
-import { JwtKeys } from '../lib/models/jwtkeys';
-import { ValidationResult } from '../lib/models/validation-result.enum';
-import { StateValidationService } from '../lib/services/oidc-security-state-validation.service';
-import { TokenHelperService } from '../lib/services/oidc-token-helper.service';
-import { OidcSecurityValidation } from '../lib/services/oidc.security.validation';
-import { AbstractSecurityStorage } from '../lib/storage';
-import { BrowserStorageMock } from '../lib/storage/browser-storage.service-mock';
+import { AuthModule } from '../auth.module';
+import { ConfigurationProvider } from '../config';
+import { AuthWellKnownEndpoints } from '../config/auth-well-known-endpoints';
+import { OpenIdConfiguration } from '../config/openid-configuration';
+import { LogLevel } from '../logging/log-level';
+import { LoggerService } from '../logging/logger.service';
+import { TestLogging } from '../logging/logger.service-mock';
+import { JwtKeys } from '../models/jwtkeys';
+import { ValidationResult } from '../models/validation-result.enum';
+import { TokenHelperService } from '../services/oidc-token-helper.service';
+import { AbstractSecurityStorage } from '../storage';
+import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
+import { StateValidationService } from './state-validation.service';
+import { TokenValidationService } from './token-validation.service';
 
-describe('OidcSecurityStateValidationService', () => {
+describe('yStateValidationService', () => {
     let stateValidationService: StateValidationService;
-    let oidcSecurityValidation: OidcSecurityValidation;
+    let oidcSecurityValidation: TokenValidationService;
     let tokenHelperService: TokenHelperService;
     let loggerService: LoggerService;
     let configProvider: ConfigurationProvider;
@@ -31,7 +31,7 @@ describe('OidcSecurityStateValidationService', () => {
             imports: [BrowserModule, HttpClientModule, RouterTestingModule, AuthModule.forRoot()],
             providers: [
                 StateValidationService,
-                OidcSecurityValidation,
+                TokenValidationService,
                 ConfigurationProvider,
                 LoggerService,
                 TokenHelperService,
@@ -49,7 +49,7 @@ describe('OidcSecurityStateValidationService', () => {
 
     beforeEach(() => {
         stateValidationService = TestBed.inject(StateValidationService);
-        oidcSecurityValidation = TestBed.inject(OidcSecurityValidation);
+        oidcSecurityValidation = TestBed.inject(TokenValidationService);
         configProvider = TestBed.inject(ConfigurationProvider);
         tokenHelperService = TestBed.inject(TokenHelperService);
         loggerService = TestBed.inject(LoggerService);

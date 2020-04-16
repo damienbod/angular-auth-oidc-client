@@ -4,15 +4,15 @@ import { LoggerService } from '../logging/logger.service';
 import { JwtKeys } from '../models/jwtkeys';
 import { ValidateStateResult } from '../models/validate-state-result.model';
 import { ValidationResult } from '../models/validation-result.enum';
+import { TokenHelperService } from '../services/oidc-token-helper.service';
 import { StoragePersistanceService } from '../storage';
-import { TokenHelperService } from './oidc-token-helper.service';
-import { OidcSecurityValidation } from './oidc.security.validation';
+import { TokenValidationService } from './token-validation.service';
 
 @Injectable()
 export class StateValidationService {
     constructor(
         private storagePersistanceService: StoragePersistanceService,
-        private oidcSecurityValidation: OidcSecurityValidation,
+        private oidcSecurityValidation: TokenValidationService,
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,
         private readonly configurationProvider: ConfigurationProvider

@@ -16,12 +16,12 @@ import { ValidateStateResult } from '../models/validate-state-result.model';
 import { ValidationResult } from '../models/validation-result.enum';
 import { StoragePersistanceService } from '../storage';
 import { UrlService } from '../utils';
-import { StateValidationService } from './oidc-security-state-validation.service';
+import { StateValidationService } from '../validation/state-validation.service';
+import { TokenValidationService } from '../validation/token-validation.service';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { OidcSecurityCheckSession } from './oidc.security.check-session';
 import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
 import { OidcSecurityUserService } from './oidc.security.user-service';
-import { OidcSecurityValidation } from './oidc.security.validation';
 
 @Injectable()
 export class OidcSecurityService {
@@ -63,7 +63,7 @@ export class OidcSecurityService {
         private oidcSecuritySilentRenew: OidcSecuritySilentRenew,
         private oidcSecurityUserService: OidcSecurityUserService,
         private storagePersistanceService: StoragePersistanceService,
-        private oidcSecurityValidation: OidcSecurityValidation,
+        private oidcSecurityValidation: TokenValidationService,
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,
         private zone: NgZone,
@@ -714,7 +714,7 @@ export class OidcSecurityService {
                 if (refreshToken) {
                     this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
                     // Nonce is not used with refresh tokens; but Keycloak may send it anyway
-                    this.storagePersistanceService.authNonce = OidcSecurityValidation.RefreshTokenNoncePlaceholder;
+                    this.storagePersistanceService.authNonce = TokenValidationService.RefreshTokenNoncePlaceholder;
                     return this.refreshTokensWithCodeProcedure(refreshToken, state);
                 } else {
                     this.loggerService.logDebug('no refresh token found, using silent renew');

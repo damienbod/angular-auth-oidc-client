@@ -2,19 +2,19 @@ import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AuthModule } from '../lib/auth.module';
-import { ConfigurationProvider } from '../lib/config';
-import { OpenIdConfiguration } from '../lib/config/openid-configuration';
-import { LogLevel } from '../lib/logging/log-level';
-import { LoggerService } from '../lib/logging/logger.service';
-import { TestLogging } from '../lib/logging/logger.service-mock';
-import { OidcSecurityValidation } from '../lib/services/oidc.security.validation';
-import { AbstractSecurityStorage } from '../lib/storage';
-import { BrowserStorageMock } from '../lib/storage/browser-storage.service-mock';
-import { EqualityService } from '../lib/utils/equality/equality.service';
+import { AuthModule } from '../auth.module';
+import { ConfigurationProvider } from '../config';
+import { OpenIdConfiguration } from '../config/openid-configuration';
+import { LogLevel } from '../logging/log-level';
+import { LoggerService } from '../logging/logger.service';
+import { TestLogging } from '../logging/logger.service-mock';
+import { AbstractSecurityStorage } from '../storage';
+import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
+import { EqualityService } from '../utils/equality/equality.service';
+import { TokenValidationService } from './token-validation.service';
 
-describe('OidcSecurityValidation', () => {
-    let oidcSecurityValidation: OidcSecurityValidation;
+describe('TokenValidationService', () => {
+    let tokenvalidationService: TokenValidationService;
     let configProvider: ConfigurationProvider;
 
     beforeEach(() => {
@@ -23,7 +23,7 @@ describe('OidcSecurityValidation', () => {
             providers: [
                 ConfigurationProvider,
                 EqualityService,
-                OidcSecurityValidation,
+                TokenValidationService,
                 {
                     provide: AbstractSecurityStorage,
                     useClass: BrowserStorageMock,
@@ -37,7 +37,7 @@ describe('OidcSecurityValidation', () => {
     });
 
     beforeEach(() => {
-        oidcSecurityValidation = TestBed.inject(OidcSecurityValidation);
+        tokenvalidationService = TestBed.inject(TokenValidationService);
         configProvider = TestBed.inject(ConfigurationProvider);
     });
 
@@ -60,10 +60,10 @@ describe('OidcSecurityValidation', () => {
         configProvider.setConfig(config, null);
 
         const dataIdToken = { aud: 'banana' };
-        const valueTrue = oidcSecurityValidation.validateIdTokenAud(dataIdToken, 'banana');
+        const valueTrue = tokenvalidationService.validateIdTokenAud(dataIdToken, 'banana');
         expect(valueTrue).toEqual(true);
 
-        const valueFalse = oidcSecurityValidation.validateIdTokenAud(dataIdToken, 'bananammmm');
+        const valueFalse = tokenvalidationService.validateIdTokenAud(dataIdToken, 'bananammmm');
         expect(valueFalse).toEqual(false);
     });
 
@@ -88,42 +88,42 @@ describe('OidcSecurityValidation', () => {
         const dataIdToken = {
             aud: ['banana', 'apple', 'https://nice.dom'],
         };
-        const valueTrue = oidcSecurityValidation.validateIdTokenAud(dataIdToken, ['banana', 'apple', 'https://nice.dom']);
+        const valueTrue = tokenvalidationService.validateIdTokenAud(dataIdToken, ['banana', 'apple', 'https://nice.dom']);
         expect(valueTrue).toEqual(true);
 
-        const valueFalse = oidcSecurityValidation.validateIdTokenAud(dataIdToken, ['ooo', 'apple', 'https://nice.dom']);
+        const valueFalse = tokenvalidationService.validateIdTokenAud(dataIdToken, ['ooo', 'apple', 'https://nice.dom']);
         expect(valueFalse).toEqual(false);
     });
 
     it('should validate id token nonce after code grant when match', () => {
-        expect(oidcSecurityValidation.validateIdTokenNonce({ nonce: 'test1' }, 'test1', false)).toBe(true);
+        expect(tokenvalidationService.validateIdTokenNonce({ nonce: 'test1' }, 'test1', false)).toBe(true);
     });
 
     it('should not validate id token nonce after code grant when no match', () => {
-        expect(oidcSecurityValidation.validateIdTokenNonce({ nonce: 'test1' }, 'test2', false)).toBe(false);
+        expect(tokenvalidationService.validateIdTokenNonce({ nonce: 'test1' }, 'test2', false)).toBe(false);
     });
 
     it('should validate id token nonce after refresh token grant when undefined and no ignore', () => {
         expect(
-            oidcSecurityValidation.validateIdTokenNonce({ nonce: undefined }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, false)
+            tokenvalidationService.validateIdTokenNonce({ nonce: undefined }, TokenValidationService.RefreshTokenNoncePlaceholder, false)
         ).toBe(true);
     });
 
     it('should validate id token nonce after refresh token grant when undefined and ignore', () => {
         expect(
-            oidcSecurityValidation.validateIdTokenNonce({ nonce: undefined }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, true)
+            tokenvalidationService.validateIdTokenNonce({ nonce: undefined }, TokenValidationService.RefreshTokenNoncePlaceholder, true)
         ).toBe(true);
     });
 
     it('should validate id token nonce after refresh token grant when defined and ignore', () => {
         expect(
-            oidcSecurityValidation.validateIdTokenNonce({ nonce: 'test1' }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, true)
+            tokenvalidationService.validateIdTokenNonce({ nonce: 'test1' }, TokenValidationService.RefreshTokenNoncePlaceholder, true)
         ).toBe(true);
     });
 
     it('should not validate id token nonce after refresh token grant when defined and no ignore', () => {
         expect(
-            oidcSecurityValidation.validateIdTokenNonce({ nonce: 'test1' }, OidcSecurityValidation.RefreshTokenNoncePlaceholder, false)
+            tokenvalidationService.validateIdTokenNonce({ nonce: 'test1' }, TokenValidationService.RefreshTokenNoncePlaceholder, false)
         ).toBe(false);
     });
 });
