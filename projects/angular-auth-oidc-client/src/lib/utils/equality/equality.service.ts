@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 @Injectable()
-export class EqualityHelperService {
+export class EqualityService {
     areEqual(value1: string | any[] | object | null | undefined, value2: string | any[] | object | null | undefined) {
         if (!value1 || !value2) {
             return false;

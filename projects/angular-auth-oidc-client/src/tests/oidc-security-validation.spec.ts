@@ -11,7 +11,7 @@ import { TestLogging } from '../lib/logging/logger.service-mock';
 import { OidcSecurityValidation } from '../lib/services/oidc.security.validation';
 import { AbstractSecurityStorage } from '../lib/storage';
 import { BrowserStorageMock } from '../lib/storage/browser-storage.service-mock';
-import { EqualityHelperService } from '../lib/utils/equality/oidc-equality-helper.service';
+import { EqualityService } from '../lib/utils/equality/equality.service';
 
 describe('OidcSecurityValidation', () => {
     let oidcSecurityValidation: OidcSecurityValidation;
@@ -22,7 +22,7 @@ describe('OidcSecurityValidation', () => {
             imports: [BrowserModule, HttpClientModule, RouterTestingModule, AuthModule.forRoot()],
             providers: [
                 ConfigurationProvider,
-                EqualityHelperService,
+                EqualityService,
                 OidcSecurityValidation,
                 {
                     provide: AbstractSecurityStorage,

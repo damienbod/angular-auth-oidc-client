@@ -11,7 +11,7 @@ import { OidcSecuritySilentRenew } from './services/oidc.security.silent-renew';
 import { OidcSecurityUserService } from './services/oidc.security.user-service';
 import { OidcSecurityValidation } from './services/oidc.security.validation';
 import { AbstractSecurityStorage, BrowserStorageService, StoragePersistanceService } from './storage';
-import { EqualityHelperService } from './utils/equality/oidc-equality-helper.service';
+import { EqualityService } from './utils/equality/equality.service';
 
 @NgModule()
 export class AuthModule {
@@ -29,7 +29,7 @@ export class AuthModule {
                 TokenHelperService,
                 LoggerService,
                 IFrameService,
-                EqualityHelperService,
+                EqualityService,
                 OidcDataService,
                 StateValidationService,
                 {
