@@ -3,15 +3,15 @@ import { OidcDataService } from './api/oidc-data.service';
 import { OidcConfigService } from './config';
 import { LoggerService } from './logging/logger.service';
 import { IFrameService } from './services/existing-iframe.service';
-import { StateValidationService } from './services/oidc-security-state-validation.service';
 import { TokenHelperService } from './services/oidc-token-helper.service';
 import { OidcSecurityCheckSession } from './services/oidc.security.check-session';
 import { OidcSecurityService } from './services/oidc.security.service';
 import { OidcSecuritySilentRenew } from './services/oidc.security.silent-renew';
 import { OidcSecurityUserService } from './services/oidc.security.user-service';
-import { OidcSecurityValidation } from './services/oidc.security.validation';
 import { AbstractSecurityStorage, BrowserStorageService, StoragePersistanceService } from './storage';
 import { EqualityService } from './utils/equality/equality.service';
+import { StateValidationService } from './validation/state-validation.service';
+import { TokenValidationService } from './validation/token-validation.service';
 
 @NgModule()
 export class AuthModule {
@@ -21,7 +21,7 @@ export class AuthModule {
             providers: [
                 OidcConfigService,
                 OidcSecurityService,
-                OidcSecurityValidation,
+                TokenValidationService,
                 OidcSecurityCheckSession,
                 OidcSecuritySilentRenew,
                 OidcSecurityUserService,

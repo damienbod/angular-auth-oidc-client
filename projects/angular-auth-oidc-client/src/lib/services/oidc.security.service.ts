@@ -11,17 +11,16 @@ import { EventsService } from '../events/events.service';
 import { LoggerService } from '../logging/logger.service';
 import { AuthorizationResult } from '../models/authorization-result';
 import { AuthorizationState } from '../models/authorization-state.enum';
-import { JwtKeys } from '../models/jwtkeys';
-import { ValidateStateResult } from '../models/validate-state-result.model';
-import { ValidationResult } from '../models/validation-result.enum';
 import { StoragePersistanceService } from '../storage';
 import { UrlService } from '../utils';
-import { StateValidationService } from './oidc-security-state-validation.service';
+import { JwtKeys } from '../validation/jwtkeys';
+import { StateValidationService } from '../validation/state-validation.service';
+import { TokenValidationService } from '../validation/token-validation.service';
+import { ValidationResult } from '../validation/validation-result';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { OidcSecurityCheckSession } from './oidc.security.check-session';
 import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
 import { OidcSecurityUserService } from './oidc.security.user-service';
-import { OidcSecurityValidation } from './oidc.security.validation';
 
 @Injectable()
 export class OidcSecurityService {
@@ -63,7 +62,7 @@ export class OidcSecurityService {
         private oidcSecuritySilentRenew: OidcSecuritySilentRenew,
         private oidcSecurityUserService: OidcSecurityUserService,
         private storagePersistanceService: StoragePersistanceService,
-        private oidcSecurityValidation: OidcSecurityValidation,
+        private tokenValidationService: TokenValidationService,
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,
         private zone: NgZone,
@@ -155,7 +154,7 @@ export class OidcSecurityService {
             this.loggerService.logDebug('IsAuthorized setup module');
             this.loggerService.logDebug(this.storagePersistanceService.idToken);
             if (
-                this.oidcSecurityValidation.isTokenExpired(
+                this.tokenValidationService.isTokenExpired(
                     this.storagePersistanceService.idToken || this.storagePersistanceService.accessToken,
                     this.configurationProvider.openIDConfiguration.silentRenewOffsetInSeconds
                 )
@@ -267,7 +266,7 @@ export class OidcSecurityService {
             return;
         }
 
-        if (!this.oidcSecurityValidation.configValidateResponseType(this.configurationProvider.openIDConfiguration.responseType)) {
+        if (!this.tokenValidationService.configValidateResponseType(this.configurationProvider.openIDConfiguration.responseType)) {
             // invalid response_type
             return;
         }
@@ -291,7 +290,7 @@ export class OidcSecurityService {
         if (this.configurationProvider.openIDConfiguration.responseType === 'code') {
             // code_challenge with "S256"
             const codeVerifier = 'C' + Math.random() + '' + Date.now() + '' + Date.now() + Math.random();
-            const codeChallenge = this.oidcSecurityValidation.generateCodeVerifier(codeVerifier);
+            const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
 
             this.storagePersistanceService.codeVerifier = codeVerifier;
 
@@ -398,7 +397,7 @@ export class OidcSecurityService {
             tokenRequestUrl = `${this.configurationProvider.wellKnownEndpoints.tokenEndpoint}`;
         }
 
-        if (!this.oidcSecurityValidation.validateStateFromHashCallback(state, this.storagePersistanceService.authStateControl)) {
+        if (!this.tokenValidationService.validateStateFromHashCallback(state, this.storagePersistanceService.authStateControl)) {
             this.loggerService.logWarning('authorizedCallback incorrect state');
             // ValidationResult.StatesDoNotMatch;
             return throwError(new Error('incorrect state'));
@@ -523,7 +522,7 @@ export class OidcSecurityService {
 
             this.getSigningKeys().subscribe(
                 (jwtKeys) => {
-                    const validationResult = this.getValidatedStateResult(result, jwtKeys);
+                    const validationResult = this.stateValidationService.getValidatedStateResult(result, jwtKeys);
 
                     if (validationResult.authResponseIsValid) {
                         this.setAuthorizationData(validationResult.accessToken, validationResult.idToken);
@@ -620,7 +619,7 @@ export class OidcSecurityService {
 
                         const userData = this.oidcSecurityUserService.getUserData();
 
-                        if (this.oidcSecurityValidation.validateUserdataSubIdToken(decodedIdToken.sub, userData.sub)) {
+                        if (this.tokenValidationService.validateUserdataSubIdToken(decodedIdToken.sub, userData.sub)) {
                             this.setUserData(userData);
                             this.loggerService.logDebug(this.storagePersistanceService.accessToken);
                             this.loggerService.logDebug(this.oidcSecurityUserService.getUserData());
@@ -714,7 +713,7 @@ export class OidcSecurityService {
                 if (refreshToken) {
                     this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
                     // Nonce is not used with refresh tokens; but Keycloak may send it anyway
-                    this.storagePersistanceService.authNonce = OidcSecurityValidation.RefreshTokenNoncePlaceholder;
+                    this.storagePersistanceService.authNonce = TokenValidationService.RefreshTokenNoncePlaceholder;
                     return this.refreshTokensWithCodeProcedure(refreshToken, state);
                 } else {
                     this.loggerService.logDebug('no refresh token found, using silent renew');
@@ -722,7 +721,7 @@ export class OidcSecurityService {
             }
             // code_challenge with "S256"
             const codeVerifier = 'C' + Math.random() + '' + Date.now() + '' + Date.now() + Math.random();
-            const codeChallenge = this.oidcSecurityValidation.generateCodeVerifier(codeVerifier);
+            const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
 
             this.storagePersistanceService.codeVerifier = codeVerifier;
 
@@ -821,14 +820,6 @@ export class OidcSecurityService {
         }
     }
 
-    private getValidatedStateResult(result: any, jwtKeys: JwtKeys): ValidateStateResult {
-        if (result.error) {
-            return new ValidateStateResult('', '', false, {});
-        }
-
-        return this.stateValidationService.validateState(result, jwtKeys);
-    }
-
     private setUserData(userData: any): void {
         this.storagePersistanceService.userData = userData;
         this.userDataInternal.next(userData);
@@ -879,6 +870,7 @@ export class OidcSecurityService {
         return throwError(errMsg);
     }
 
+    // TODO MOVE THIS METHOD INTO CORRESPONDING SERVICE `validation/token.validation.service.ts`
     private runTokenValidation() {
         if (this.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
             return;
@@ -899,7 +891,7 @@ export class OidcSecurityService {
             );
             if (this.userDataInternal.value && this.storagePersistanceService.silentRenewRunning !== 'running' && this.getIdToken()) {
                 if (
-                    this.oidcSecurityValidation.isTokenExpired(
+                    this.tokenValidationService.isTokenExpired(
                         this.storagePersistanceService.idToken,
                         this.configurationProvider.openIDConfiguration.silentRenewOffsetInSeconds
                     )

@@ -1,8 +1,8 @@
 ﻿import { Injectable } from '@angular/core';
 import { hextob64u, KEYUTIL, KJUR } from 'jsrsasign-reduced';
 import { LoggerService } from '../logging/logger.service';
+import { TokenHelperService } from '../services/oidc-token-helper.service';
 import { EqualityService } from '../utils/equality/equality.service';
-import { TokenHelperService } from './oidc-token-helper.service';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
@@ -49,7 +49,7 @@ import { TokenHelperService } from './oidc-token-helper.service';
 // in the ID Token.
 
 @Injectable()
-export class OidcSecurityValidation {
+export class TokenValidationService {
     static RefreshTokenNoncePlaceholder = '--RefreshToken--';
 
     constructor(
@@ -184,7 +184,7 @@ export class OidcSecurityValidation {
     validateIdTokenNonce(dataIdToken: any, localNonce: any, ignoreNonceAfterRefresh: boolean): boolean {
         const isFromRefreshToken =
             (dataIdToken.nonce === undefined || ignoreNonceAfterRefresh) &&
-            localNonce === OidcSecurityValidation.RefreshTokenNoncePlaceholder;
+            localNonce === TokenValidationService.RefreshTokenNoncePlaceholder;
         if (!isFromRefreshToken && dataIdToken.nonce !== localNonce) {
             this.loggerService.logDebug(
                 'Validate_id_token_nonce failed, dataIdToken.nonce: ' + dataIdToken.nonce + ' local_nonce:' + localNonce

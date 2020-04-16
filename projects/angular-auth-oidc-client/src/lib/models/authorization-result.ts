@@ -1,5 +1,5 @@
+import { ValidationResult } from '../validation/validation-result';
 import { AuthorizationState } from './authorization-state.enum';
-import { ValidationResult } from './validation-result.enum';
 
 export class AuthorizationResult {
     constructor(
