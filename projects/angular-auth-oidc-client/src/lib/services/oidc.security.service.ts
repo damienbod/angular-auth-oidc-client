@@ -265,11 +265,11 @@ export class OidcSecurityService {
 
         let state = this.storagePersistanceService.authStateControl;
         if (!state) {
-            state = Date.now() + '' + Math.random() + Math.random();
+            state = this.createRandom(40);
             this.storagePersistanceService.authStateControl = state;
         }
 
-        const nonce = 'N' + Math.random() + '' + Date.now();
+        const nonce = this.createRandom(40);
         this.storagePersistanceService.authNonce = nonce;
         this.loggerService.logDebug('AuthorizedController created. local state: ' + this.storagePersistanceService.authStateControl);
 
@@ -277,7 +277,7 @@ export class OidcSecurityService {
         // Code Flow
         if (this.configurationProvider.openIDConfiguration.responseType === 'code') {
             // code_challenge with "S256"
-            const codeVerifier = 'C' + Math.random() + '' + Date.now() + '' + Date.now() + Math.random();
+            const codeVerifier = this.createRandom(60);
             const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
 
             this.storagePersistanceService.codeVerifier = codeVerifier;
@@ -683,11 +683,11 @@ export class OidcSecurityService {
 
         let state = this.storagePersistanceService.authStateControl;
         if (state === '' || state === null) {
-            state = Date.now() + '' + Math.random() + Math.random();
+            state = this.createRandom(40);
             this.storagePersistanceService.authStateControl = state;
         }
 
-        const nonce = 'N' + Math.random() + '' + Date.now();
+        const nonce = this.createRandom(40);
         this.storagePersistanceService.authNonce = nonce;
         this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + this.storagePersistanceService.authStateControl);
 
@@ -708,7 +708,7 @@ export class OidcSecurityService {
                 }
             }
             // code_challenge with "S256"
-            const codeVerifier = 'C' + Math.random() + '' + Date.now() + '' + Date.now() + Math.random();
+            const codeVerifier = this.createRandom(60);
             const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
 
             this.storagePersistanceService.codeVerifier = codeVerifier;
@@ -941,5 +941,25 @@ export class OidcSecurityService {
             // ImplicitFlow
             this.authorizedImplicitFlowCallback(e.detail);
         }
+    }
+
+    private createRandom(length: number): string {
+        const arr = new Uint8Array((length || length - 7) / 2);
+        window.crypto.getRandomValues(arr);
+        return Array.from(arr, this.tohex).join('') + this.randomString(7);
+    }
+
+    private tohex(dec) {
+        return ('0' + dec.toString(16)).substr(-2);
+    }
+
+    private randomString(length) {
+        let result = '';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
     }
 }
