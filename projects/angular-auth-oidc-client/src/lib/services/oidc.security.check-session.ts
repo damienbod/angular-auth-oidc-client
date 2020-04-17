@@ -90,10 +90,9 @@ export class OidcSecurityCheckSession {
                     );
                 } else {
                     this.loggerService.logDebug('OidcSecurityCheckSession pollServerSession session_state is blank');
-                    this.eventService.fireEvent(EventTypes.CheckSessionChanged);
                 }
             } else {
-                this.loggerService.logWarning('OidcSecurityCheckSession pollServerSession sessionIframe does not exist');
+                this.loggerService.logWarning('OidcSecurityCheckSession pollServerSession checkSession IFrame does not exist');
                 this.loggerService.logDebug(clientId);
                 this.loggerService.logDebug(existingIframe);
             }
@@ -132,6 +131,7 @@ export class OidcSecurityCheckSession {
                 this.checkSessionReceived = true;
                 this.eventService.fireEvent(EventTypes.CheckSessionChanged, e.data);
             } else {
+                // unchanged event , we don't need this
                 this.loggerService.logDebug(e.data + ' from checksession messageHandler');
             }
         }
