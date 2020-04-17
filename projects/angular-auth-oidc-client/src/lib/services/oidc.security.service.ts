@@ -5,6 +5,7 @@ import { oneLineTrim } from 'common-tags';
 import { BehaviorSubject, from, Observable, of, race, Subject, throwError, timer } from 'rxjs';
 import { catchError, filter, first, map, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { OidcDataService } from '../api/oidc-data.service';
+import { OidcSecurityCheckSession } from '../check-session/oidc.security.check-session';
 import { ConfigurationProvider } from '../config';
 import { EventTypes } from '../events';
 import { EventsService } from '../events/events.service';
@@ -18,7 +19,6 @@ import { StateValidationService } from '../validation/state-validation.service';
 import { TokenValidationService } from '../validation/token-validation.service';
 import { ValidationResult } from '../validation/validation-result';
 import { TokenHelperService } from './oidc-token-helper.service';
-import { OidcSecurityCheckSession } from './oidc.security.check-session';
 import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
 import { OidcSecurityUserService } from './oidc.security.user-service';
 

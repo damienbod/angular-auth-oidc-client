@@ -1,12 +1,12 @@
 import { async, TestBed } from '@angular/core/testing';
-import { ConfigurationProvider } from '../lib/config';
-import { LoggerService } from '../lib/logging/logger.service';
-import { TestLogging } from '../lib/logging/logger.service-mock';
-import { IFrameService } from '../lib/services/existing-iframe.service';
-import { OidcSecurityCheckSession } from '../lib/services/oidc.security.check-session';
-import { OidcSecurityService } from '../lib/services/oidc.security.service';
-import { AbstractSecurityStorage, StoragePersistanceService } from '../lib/storage';
-import { BrowserStorageMock } from '../lib/storage/browser-storage.service-mock';
+import { ConfigurationProvider } from '../config';
+import { LoggerService } from '../logging/logger.service';
+import { TestLogging } from '../logging/logger.service-mock';
+import { IFrameService } from '../services/existing-iframe.service';
+import { OidcSecurityService } from '../services/oidc.security.service';
+import { AbstractSecurityStorage, StoragePersistanceService } from '../storage';
+import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
+import { OidcSecurityCheckSession } from './oidc.security.check-session';
 
 describe('SecurityCheckSessionTests', () => {
     let oidcSecurityCheckSession: OidcSecurityCheckSession;
