@@ -11,7 +11,7 @@ export class AppComponent implements OnInit {
     isConfigurationLoaded$: Observable<OidcClientNotification>;
     isModuleSetUp$: Observable<OidcClientNotification>;
     checkSessionChanged$: Observable<OidcClientNotification>;
-    userData: any;
+    userDataChanged$: Observable<OidcClientNotification>;
     isAuthenticated: boolean;
     checkSessionChanged: boolean;
 
@@ -41,12 +41,12 @@ export class AppComponent implements OnInit {
             tap((item) => (this.checkSessionChanged = item.value === 'changed'))
         );
 
+        this.userDataChanged$ = this.eventsService
+            .registerForEvents()
+            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.UserDataChanged));
+
         this.oidcSecurityService.getIsAuthorized().subscribe((auth) => {
             this.isAuthenticated = auth;
-        });
-
-        this.oidcSecurityService.getUserData().subscribe((userData) => {
-            this.userData = userData;
         });
     }
 
