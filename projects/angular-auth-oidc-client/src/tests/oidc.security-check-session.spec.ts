@@ -112,7 +112,7 @@ describe('SecurityCheckSessionTests', () => {
 
     it('start() does not call pollserversession() if scheduledHeartBeatRunning is set', () => {
         const spy = spyOn<any>(oidcSecurityCheckSession, 'pollServerSession');
-        oidcSecurityCheckSession.scheduledHeartBeatRunning = true;
+        (oidcSecurityCheckSession as any).scheduledHeartBeatRunning = () => {};
         oidcSecurityCheckSession.start('anyId');
         expect(spy).not.toHaveBeenCalled();
     });
