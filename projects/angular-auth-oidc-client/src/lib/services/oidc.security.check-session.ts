@@ -12,7 +12,7 @@ const IFRAME_FOR_CHECK_SESSION_IDENTIFIER = 'myiFrameForCheckSession';
 @Injectable()
 export class OidcSecurityCheckSession {
     private checkSessionReceived = false;
-    private scheduledHeartBeatRunning: NodeJS.Timeout;
+    private scheduledHeartBeatRunning: any;
     private lastIFrameRefresh = 0;
     private outstandingMessages = 0;
     private heartBeatInterval = 3000;
