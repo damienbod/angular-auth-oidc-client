@@ -1,6 +1,6 @@
-<button *ngIf="!isAuthenticated" (click)="login()">Login</button>
+<button *ngIf="!isAuthenticated || !checkSessionChanged" (click)="login()">Login</button>
 <button *ngIf="isAuthenticated" (click)="logout()">Logout</button>
-
+<button *ngIf="checkSessionChanged" (click)="login()">Refresh Session</button>
 <hr />
 
 Is ModuleSetup :
