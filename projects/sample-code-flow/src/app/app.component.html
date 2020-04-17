@@ -17,4 +17,4 @@ Is Authenticated: {{ isAuthenticated }}
 
 <br />
 
-<pre>{{ userData | json }}</pre>
+<pre>{{ userDataChanged$ | async | json }}</pre>
