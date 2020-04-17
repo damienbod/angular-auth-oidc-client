@@ -1,18 +1,19 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { EventsService, EventTypes, OidcClientNotification, OidcSecurityService } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, tap } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
     templateUrl: 'app.component.html',
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit {
     isConfigurationLoaded$: Observable<OidcClientNotification>;
     isModuleSetUp$: Observable<OidcClientNotification>;
     checkSessionChanged$: Observable<OidcClientNotification>;
     userData: any;
     isAuthenticated: boolean;
+    checkSessionChanged: boolean;
 
     constructor(public oidcSecurityService: OidcSecurityService, public eventsService: EventsService) {
         this.oidcSecurityService.setupModule();
@@ -35,9 +36,10 @@ export class AppComponent implements OnInit, OnDestroy {
             .registerForEvents()
             .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.ConfigLoaded));
 
-        this.checkSessionChanged$ = this.eventsService
-            .registerForEvents()
-            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.CheckSessionChanged));
+        this.checkSessionChanged$ = this.eventsService.registerForEvents().pipe(
+            filter((notification: OidcClientNotification) => notification.type === EventTypes.CheckSessionChanged),
+            tap((item) => (this.checkSessionChanged = item.value === 'changed'))
+        );
 
         this.oidcSecurityService.getIsAuthorized().subscribe((auth) => {
             this.isAuthenticated = auth;
@@ -47,8 +49,6 @@ export class AppComponent implements OnInit, OnDestroy {
             this.userData = userData;
         });
     }
-
-    ngOnDestroy(): void {}
 
     login() {
         this.oidcSecurityService.authorize();
