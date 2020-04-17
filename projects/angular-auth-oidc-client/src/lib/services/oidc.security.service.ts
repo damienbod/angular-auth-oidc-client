@@ -956,10 +956,13 @@ export class OidcSecurityService {
     private randomString(length) {
         let result = '';
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        const charactersLength = characters.length;
+
+        const values = new Uint32Array(length);
+        window.crypto.getRandomValues(values);
         for (let i = 0; i < length; i++) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            result += characters[values[i] % characters.length];
         }
+
         return result;
     }
 }
