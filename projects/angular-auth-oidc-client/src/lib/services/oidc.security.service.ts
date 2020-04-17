@@ -853,7 +853,7 @@ export class OidcSecurityService {
                 'silentRenewHeartBeatCheck\r\n' +
                     `\tsilentRenewRunning: ${this.storagePersistanceService.silentRenewRunning === 'running'}\r\n` +
                     `\tidToken: ${!!this.getIdToken()}\r\n` +
-                    `\t_userData.value: ${!!this.oidcSecurityUserService.getUserData()}`
+                    `\tuserData: ${!!this.oidcSecurityUserService.getUserData()}`
             );
             if (
                 this.oidcSecurityUserService.getUserData() &&
