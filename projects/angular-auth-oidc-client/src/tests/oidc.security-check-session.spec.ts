@@ -68,6 +68,18 @@ describe('SecurityCheckSessionTests', () => {
         expect(result).toBeDefined();
     });
 
+    // it('location of iframe is set to authWellKnownEndpoints.check_session_iframe if existing', () => {
+    //     const authWellKnownEndpoints = {
+    //         checkSessionIframe: 'someTestingValue',
+    //     };
+
+    //     configurationProvider.setConfig(null, authWellKnownEndpoints);
+    //     spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
+
+    //     (oidcSecurityCheckSession as any).init();
+    //     expect((oidcSecurityCheckSession as any).getOrCreateIframe().contentWindow.location.toString()).toContain('someTestingValue');
+    // });
+
     // it('init appends iframe on body with correct values', () => {
     //     expect((oidcSecurityCheckSession as any).sessionIframe).toBeFalsy();
 
@@ -81,24 +93,6 @@ describe('SecurityCheckSessionTests', () => {
     //     const iFrame = document.getElementById('myiFrameForCheckSession');
     //     expect(iFrame).toBeDefined();
     // });
-
-    // it('location of iframe is set to authWellKnownEndpoints.check_session_iframe if existing', async(() => {
-    //     const authWellKnownEndpoints = {
-    //         checkSessionIframe: 'someTestingValue',
-    //     };
-
-    //     configurationProvider.setConfig(null, authWellKnownEndpoints);
-    //     spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
-
-    //     expect((oidcSecurityCheckSession as any).sessionIframe).toBeFalsy();
-
-    //     const loaded = (oidcSecurityCheckSession as any).init();
-
-    //     loaded.subscribe(() => {
-    //         expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
-    //         expect((oidcSecurityCheckSession as any).sessionIframe.contentWindow.location.toString()).toContain('someTestingValue');
-    //     });
-    // }));
 
     // it('log warning if authWellKnownEndpoints.check_session_iframe is not existing', () => {
     //     const spy = spyOn<any>(oidcSecurityCheckSession, 'doesSessionExist').and.returnValue(false);
