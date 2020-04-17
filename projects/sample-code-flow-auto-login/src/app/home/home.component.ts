@@ -1,29 +1,23 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-home',
     templateUrl: 'home.component.html',
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit {
     userData: any;
-    isAuthorizedSubscription: Subscription;
-    isAuthorized: boolean;
+    isAuthenticated: boolean;
 
     constructor(public oidcSecurityService: OidcSecurityService) {}
 
     ngOnInit() {
-        this.isAuthorizedSubscription = this.oidcSecurityService.getIsAuthorized().subscribe((isAuthorized: boolean) => {
-            this.isAuthorized = isAuthorized;
+        this.oidcSecurityService.getIsAuthorized().subscribe((auth) => {
+            this.isAuthenticated = auth;
         });
 
         this.oidcSecurityService.getUserData().subscribe((userData) => {
             this.userData = userData;
         });
-    }
-
-    ngOnDestroy(): void {
-        this.isAuthorizedSubscription.unsubscribe();
     }
 }
