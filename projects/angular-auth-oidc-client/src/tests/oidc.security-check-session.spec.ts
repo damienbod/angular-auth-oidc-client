@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { async, TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../lib/config';
 import { LoggerService } from '../lib/logging/logger.service';
 import { TestLogging } from '../lib/logging/logger.service-mock';
@@ -49,71 +49,70 @@ describe('SecurityCheckSessionTests', () => {
         expect(oidcSecurityCheckSession).toBeTruthy();
     });
 
-    it('getOrCreateIframe returns false if nothing is setup', () => {
-        const result: IFrameService = (oidcSecurityCheckSession as any).getOrCreateIframe();
-        expect(result).toBeDefined();
+    it('getOrCreateIframe calls iFrameService.addIFrameToWindowBody if no Iframe exists', () => {
+        spyOn(iFrameService, 'addIFrameToWindowBody').and.callThrough();
+
+        const result = (oidcSecurityCheckSession as any).getOrCreateIframe();
+        expect(result).toBeTruthy();
+        expect(iFrameService.addIFrameToWindowBody).toHaveBeenCalled();
     });
 
     it('getOrCreateIframe returns true if document found on window.document', () => {
         iFrameService.addIFrameToWindowBody('myiFrameForCheckSession');
 
-        const result: IFrameService = (oidcSecurityCheckSession as any).getOrCreateIframe();
+        const result = (oidcSecurityCheckSession as any).getOrCreateIframe();
         expect(result).toBeDefined();
     });
 
-    it('getOrCreateIframe returns true if document found on window.parent.document', () => {
-        iFrameService.addIFrameToWindowBody('myiFrameForCheckSession');
+    /*
+      THIS TEST WORKS IN WHEN DEBUGGING...location.replace
+       does not return a promise or something we can wait for
+    */
+    xit('location of iframe is set to authWellKnownEndpoints.check_session_iframe if existing', async(async () => {
+        const authWellKnownEndpoints = {
+            checkSessionIframe: 'someTestingValue',
+        };
 
-        const result: IFrameService = (oidcSecurityCheckSession as any).getOrCreateIframe();
-        expect(result).toBeDefined();
+        configurationProvider.setConfig(null, authWellKnownEndpoints);
+        spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
+
+        (oidcSecurityCheckSession as any).init();
+        await Promise.resolve().then();
+        const iframe = (oidcSecurityCheckSession as any).getOrCreateIframe();
+        expect(iframe.contentWindow.location.toString()).toContain('someTestingValue');
+    }));
+
+    it('init appends iframe on body with correct values', () => {
+        expect((oidcSecurityCheckSession as any).sessionIframe).toBeFalsy();
+        spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
+
+        (oidcSecurityCheckSession as any).init();
+        const iframe = (oidcSecurityCheckSession as any).getOrCreateIframe();
+        expect(iframe).toBeTruthy();
+        expect(iframe.id).toBe('myiFrameForCheckSession');
+        expect(iframe.style.display).toBe('none');
+        const iFrame = document.getElementById('myiFrameForCheckSession');
+        expect(iFrame).toBeDefined();
     });
 
-    // it('location of iframe is set to authWellKnownEndpoints.check_session_iframe if existing', () => {
-    //     const authWellKnownEndpoints = {
-    //         checkSessionIframe: 'someTestingValue',
-    //     };
+    it('log warning if authWellKnownEndpoints.check_session_iframe is not existing', () => {
+        const spyLogWarning = spyOn<any>(loggerService, 'logWarning');
+        spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
+        configurationProvider.setConfig(null, { checkSessionIframe: undefined });
+        (oidcSecurityCheckSession as any).init();
 
-    //     configurationProvider.setConfig(null, authWellKnownEndpoints);
-    //     spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
+        expect(spyLogWarning).toHaveBeenCalledWith('init check session: checkSessionIframe is not configured to run');
+    });
 
-    //     (oidcSecurityCheckSession as any).init();
-    //     expect((oidcSecurityCheckSession as any).getOrCreateIframe().contentWindow.location.toString()).toContain('someTestingValue');
-    // });
-
-    // it('init appends iframe on body with correct values', () => {
-    //     expect((oidcSecurityCheckSession as any).sessionIframe).toBeFalsy();
-
-    //     (oidcSecurityCheckSession as any).init();
-    //     spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
-
-    //     expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
-    //     const sessionIframe = (oidcSecurityCheckSession as any).sessionIframe;
-    //     expect(sessionIframe.id).toBe('myiFrameForCheckSession');
-    //     expect(sessionIframe.style.display).toBe('none');
-    //     const iFrame = document.getElementById('myiFrameForCheckSession');
-    //     expect(iFrame).toBeDefined();
-    // });
-
-    // it('log warning if authWellKnownEndpoints.check_session_iframe is not existing', () => {
-    //     const spy = spyOn<any>(oidcSecurityCheckSession, 'doesSessionExist').and.returnValue(false);
-    //     const spyLogWarning = spyOn<any>(loggerService, 'logWarning');
-    //     spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
-    //     configurationProvider.setConfig(null, { checkSessionIframe: undefined });
-    //     (oidcSecurityCheckSession as any).init();
-
-    //     expect(spy).toHaveBeenCalled();
-    //     expect(spyLogWarning).toHaveBeenCalledWith('init check session: authWellKnownEndpoints is undefined');
-    // });
-
-    it('startCheckingSession calls pollserversession with clientId if no scheduledheartbeat is set', () => {
+    it('start() calls pollserversession() with clientId if no scheduledheartbeat is set', () => {
         const spy = spyOn<any>(oidcSecurityCheckSession, 'pollServerSession');
         oidcSecurityCheckSession.start('anyId');
         expect(spy).toHaveBeenCalledWith('anyId');
     });
 
-    it('startCheckingSession does not call pollserversession if scheduledHeartBeatRunning is set', () => {
+    it('start() does not call pollserversession() if scheduledHeartBeatRunning is set', () => {
         const spy = spyOn<any>(oidcSecurityCheckSession, 'pollServerSession');
-        (oidcSecurityCheckSession as any).scheduledHeartBeatRunning = () => {};
+        oidcSecurityCheckSession.scheduledHeartBeatRunning = true;
         oidcSecurityCheckSession.start('anyId');
         expect(spy).not.toHaveBeenCalled();
     });
