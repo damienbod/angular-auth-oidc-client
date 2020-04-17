@@ -13,6 +13,7 @@ import { LoggerService } from '../logging/logger.service';
 import { AuthorizationResult } from '../models/authorization-result';
 import { AuthorizationState } from '../models/authorization-state.enum';
 import { StoragePersistanceService } from '../storage';
+import { OidcSecurityUserService } from '../userData/oidc.security.user-service';
 import { UrlService } from '../utils';
 import { JwtKeys } from '../validation/jwtkeys';
 import { StateValidationService } from '../validation/state-validation.service';
@@ -20,7 +21,6 @@ import { TokenValidationService } from '../validation/token-validation.service';
 import { ValidationResult } from '../validation/validation-result';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
-import { OidcSecurityUserService } from './oidc.security.user-service';
 
 @Injectable()
 export class OidcSecurityService {
