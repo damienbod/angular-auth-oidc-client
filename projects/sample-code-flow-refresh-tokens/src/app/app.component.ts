@@ -10,7 +10,6 @@ import { filter } from 'rxjs/operators';
 export class AppComponent implements OnInit, OnDestroy {
     isConfigurationLoaded$: Observable<OidcClientNotification>;
     isModuleSetUp$: Observable<OidcClientNotification>;
-    checkSessionChanged$: Observable<OidcClientNotification>;
     isAuthenticated: boolean;
     userData: any;
 
