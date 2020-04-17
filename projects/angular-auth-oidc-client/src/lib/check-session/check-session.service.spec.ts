@@ -6,17 +6,17 @@ import { IFrameService } from '../services/existing-iframe.service';
 import { OidcSecurityService } from '../services/oidc.security.service';
 import { AbstractSecurityStorage, StoragePersistanceService } from '../storage';
 import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
-import { OidcSecurityCheckSession } from './oidc.security.check-session';
+import { CheckSessionService } from './check-session.service';
 
 describe('SecurityCheckSessionTests', () => {
-    let oidcSecurityCheckSession: OidcSecurityCheckSession;
+    let checkSessionService: CheckSessionService;
     let loggerService: LoggerService;
     let configurationProvider: ConfigurationProvider;
     let iFrameService: IFrameService;
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
-                OidcSecurityCheckSession,
+                CheckSessionService,
                 ConfigurationProvider,
                 StoragePersistanceService,
                 { provide: LoggerService, useClass: TestLogging },
@@ -28,7 +28,7 @@ describe('SecurityCheckSessionTests', () => {
     });
 
     beforeEach(() => {
-        oidcSecurityCheckSession = TestBed.inject(OidcSecurityCheckSession);
+        checkSessionService = TestBed.inject(CheckSessionService);
         configurationProvider = TestBed.inject(ConfigurationProvider);
         loggerService = TestBed.inject(LoggerService);
         iFrameService = TestBed.inject(IFrameService);
@@ -46,13 +46,13 @@ describe('SecurityCheckSessionTests', () => {
     });
 
     it('should create', () => {
-        expect(oidcSecurityCheckSession).toBeTruthy();
+        expect(checkSessionService).toBeTruthy();
     });
 
     it('getOrCreateIframe calls iFrameService.addIFrameToWindowBody if no Iframe exists', () => {
         spyOn(iFrameService, 'addIFrameToWindowBody').and.callThrough();
 
-        const result = (oidcSecurityCheckSession as any).getOrCreateIframe();
+        const result = (checkSessionService as any).getOrCreateIframe();
         expect(result).toBeTruthy();
         expect(iFrameService.addIFrameToWindowBody).toHaveBeenCalled();
     });
@@ -60,7 +60,7 @@ describe('SecurityCheckSessionTests', () => {
     it('getOrCreateIframe returns true if document found on window.document', () => {
         iFrameService.addIFrameToWindowBody('myiFrameForCheckSession');
 
-        const result = (oidcSecurityCheckSession as any).getOrCreateIframe();
+        const result = (checkSessionService as any).getOrCreateIframe();
         expect(result).toBeDefined();
     });
 
@@ -76,18 +76,18 @@ describe('SecurityCheckSessionTests', () => {
         configurationProvider.setConfig(null, authWellKnownEndpoints);
         spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
 
-        (oidcSecurityCheckSession as any).init();
+        (checkSessionService as any).init();
         await Promise.resolve().then();
-        const iframe = (oidcSecurityCheckSession as any).getOrCreateIframe();
+        const iframe = (checkSessionService as any).getOrCreateIframe();
         expect(iframe.contentWindow.location.toString()).toContain('someTestingValue');
     }));
 
     it('init appends iframe on body with correct values', () => {
-        expect((oidcSecurityCheckSession as any).sessionIframe).toBeFalsy();
+        expect((checkSessionService as any).sessionIframe).toBeFalsy();
         spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
 
-        (oidcSecurityCheckSession as any).init();
-        const iframe = (oidcSecurityCheckSession as any).getOrCreateIframe();
+        (checkSessionService as any).init();
+        const iframe = (checkSessionService as any).getOrCreateIframe();
         expect(iframe).toBeTruthy();
         expect(iframe.id).toBe('myiFrameForCheckSession');
         expect(iframe.style.display).toBe('none');
@@ -99,28 +99,28 @@ describe('SecurityCheckSessionTests', () => {
         const spyLogWarning = spyOn<any>(loggerService, 'logWarning');
         spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
         configurationProvider.setConfig(null, { checkSessionIframe: undefined });
-        (oidcSecurityCheckSession as any).init();
+        (checkSessionService as any).init();
 
         expect(spyLogWarning).toHaveBeenCalledWith('init check session: checkSessionIframe is not configured to run');
     });
 
     it('start() calls pollserversession() with clientId if no scheduledheartbeat is set', () => {
-        const spy = spyOn<any>(oidcSecurityCheckSession, 'pollServerSession');
-        oidcSecurityCheckSession.start('anyId');
+        const spy = spyOn<any>(checkSessionService, 'pollServerSession');
+        checkSessionService.start('anyId');
         expect(spy).toHaveBeenCalledWith('anyId');
     });
 
     it('start() does not call pollserversession() if scheduledHeartBeatRunning is set', () => {
-        const spy = spyOn<any>(oidcSecurityCheckSession, 'pollServerSession');
-        (oidcSecurityCheckSession as any).scheduledHeartBeatRunning = () => {};
-        oidcSecurityCheckSession.start('anyId');
+        const spy = spyOn<any>(checkSessionService, 'pollServerSession');
+        (checkSessionService as any).scheduledHeartBeatRunning = () => {};
+        checkSessionService.start('anyId');
         expect(spy).not.toHaveBeenCalled();
     });
 
     it('stopCheckingSession sets heartbeat to null', () => {
-        (oidcSecurityCheckSession as any).scheduledHeartBeatRunning = setTimeout(() => {}, 999);
-        oidcSecurityCheckSession.stop();
-        const heartBeat = (oidcSecurityCheckSession as any).scheduledHeartBeatRunning;
+        (checkSessionService as any).scheduledHeartBeatRunning = setTimeout(() => {}, 999);
+        checkSessionService.stop();
+        const heartBeat = (checkSessionService as any).scheduledHeartBeatRunning;
         expect(heartBeat).toBeNull();
     });
 });

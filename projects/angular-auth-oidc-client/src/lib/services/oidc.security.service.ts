@@ -5,7 +5,7 @@ import { oneLineTrim } from 'common-tags';
 import { BehaviorSubject, from, Observable, of, race, Subject, throwError, timer } from 'rxjs';
 import { catchError, filter, first, map, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { OidcDataService } from '../api/oidc-data.service';
-import { OidcSecurityCheckSession } from '../check-session/oidc.security.check-session';
+import { CheckSessionService } from '../check-session/check-session.service';
 import { ConfigurationProvider } from '../config';
 import { EventTypes } from '../events';
 import { EventsService } from '../events/events.service';
@@ -52,7 +52,7 @@ export class OidcSecurityService {
         private oidcDataService: OidcDataService,
         private stateValidationService: StateValidationService,
         private router: Router,
-        private oidcSecurityCheckSessionService: OidcSecurityCheckSession,
+        private checkSessionService: CheckSessionService,
         private oidcSecuritySilentRenew: OidcSecuritySilentRenew,
         private oidcSecurityUserService: OidcSecurityUserService,
         private storagePersistanceService: StoragePersistanceService,
@@ -119,9 +119,9 @@ export class OidcSecurityService {
             .pipe(filter(() => this.configurationProvider.openIDConfiguration.startCheckSession))
             .subscribe((isSetupAndAuthorized) => {
                 if (isSetupAndAuthorized) {
-                    this.oidcSecurityCheckSessionService.start(this.configurationProvider.openIDConfiguration.clientId);
+                    this.checkSessionService.start(this.configurationProvider.openIDConfiguration.clientId);
                 } else {
-                    this.oidcSecurityCheckSessionService.stop();
+                    this.checkSessionService.stop();
                 }
             });
     }
@@ -657,7 +657,7 @@ export class OidcSecurityService {
 
                 this.resetAuthorizationData(false);
 
-                if (this.oidcSecurityCheckSessionService.serverStateChanged()) {
+                if (this.checkSessionService.serverStateChanged()) {
                     this.loggerService.logDebug('only local login cleaned up, server session has changed');
                 } else if (urlHandler) {
                     urlHandler(url);

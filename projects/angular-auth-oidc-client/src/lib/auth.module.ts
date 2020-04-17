@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { OidcDataService } from './api/oidc-data.service';
-import { OidcSecurityCheckSession } from './check-session/oidc.security.check-session';
+import { CheckSessionService } from './check-session/check-session.service';
 import { OidcConfigService } from './config';
 import { LoggerService } from './logging/logger.service';
 import { IFrameService } from './services/existing-iframe.service';
@@ -22,7 +22,7 @@ export class AuthModule {
                 OidcConfigService,
                 OidcSecurityService,
                 TokenValidationService,
-                OidcSecurityCheckSession,
+                CheckSessionService,
                 OidcSecuritySilentRenew,
                 OidcSecurityUserService,
                 StoragePersistanceService,
