@@ -9,8 +9,6 @@ import { StoragePersistanceService } from '../storage';
 
 @Injectable()
 export class OidcSecurityUserService {
-    private userData: any = '';
-
     constructor(
         private oidcDataService: OidcDataService,
         private storagePersistanceService: StoragePersistanceService,
@@ -27,24 +25,24 @@ export class OidcSecurityUserService {
     }
 
     getUserDataFromSts() {
-        return this.getIdentityUserData().pipe(map((data: any) => (this.userData = data)));
+        return this.getIdentityUserData().pipe(map((data: any) => this.setUserData(data)));
     }
 
     getUserData(): any {
-        if (!this.userData) {
+        if (!this.storagePersistanceService.userData) {
             throw Error('UserData is not set!');
         }
 
-        return this.userData;
+        return this.storagePersistanceService.userData;
     }
 
     setUserData(value: any): void {
-        this.userData = value;
+        this.storagePersistanceService.userData = value;
         this.eventService.fireEvent(EventTypes.UserDataChanged, value);
     }
 
     resetUserData(): void {
-        this.userData = '';
+        this.storagePersistanceService.userData = '';
         this.eventService.fireEvent(EventTypes.UserDataChanged, '');
     }
 
