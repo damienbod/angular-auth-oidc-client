@@ -141,20 +141,20 @@ describe('SecurityCheckSessionTests', () => {
 
     it('startCheckingSession calls pollserversession with clientId if no scheduledheartbeat is set', () => {
         const spy = spyOn<any>(oidcSecurityCheckSession, 'pollServerSession');
-        oidcSecurityCheckSession.startCheckingSession('anyId');
+        oidcSecurityCheckSession.start('anyId');
         expect(spy).toHaveBeenCalledWith('anyId');
     });
 
     it('startCheckingSession does not call pollserversession if scheduledheartbeat is set', () => {
         const spy = spyOn<any>(oidcSecurityCheckSession, 'pollServerSession');
         (oidcSecurityCheckSession as any).scheduledHeartBeat = () => {};
-        oidcSecurityCheckSession.startCheckingSession('anyId');
+        oidcSecurityCheckSession.start('anyId');
         expect(spy).not.toHaveBeenCalled();
     });
 
     it('stopCheckingSession sets heartbeat to null', () => {
         (oidcSecurityCheckSession as any).scheduledHeartBeat = setTimeout(() => {}, 999);
-        oidcSecurityCheckSession.stopCheckingSession();
+        oidcSecurityCheckSession.stop();
         const heartBeat = (oidcSecurityCheckSession as any).scheduledHeartBeat;
         expect(heartBeat).toBeNull();
     });

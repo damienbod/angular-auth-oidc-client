@@ -119,9 +119,9 @@ export class OidcSecurityService {
             .pipe(filter(() => this.configurationProvider.openIDConfiguration.startCheckSession))
             .subscribe((isSetupAndAuthorized) => {
                 if (isSetupAndAuthorized) {
-                    this.oidcSecurityCheckSessionService.startCheckingSession(this.configurationProvider.openIDConfiguration.clientId);
+                    this.oidcSecurityCheckSessionService.start(this.configurationProvider.openIDConfiguration.clientId);
                 } else {
-                    this.oidcSecurityCheckSessionService.stopCheckingSession();
+                    this.oidcSecurityCheckSessionService.stop();
                 }
             });
     }
@@ -657,7 +657,7 @@ export class OidcSecurityService {
 
                 this.resetAuthorizationData(false);
 
-                if (this.serverCheckSessionStateChanged()) {
+                if (this.oidcSecurityCheckSessionService.serverStateChanged()) {
                     this.loggerService.logDebug('only local login cleaned up, server session has changed');
                 } else if (urlHandler) {
                     urlHandler(url);
@@ -671,12 +671,6 @@ export class OidcSecurityService {
         } else {
             this.loggerService.logWarning('authWellKnownEndpoints is undefined');
         }
-    }
-
-    private serverCheckSessionStateChanged() {
-        return (
-            this.configurationProvider.openIDConfiguration.startCheckSession && this.oidcSecurityCheckSessionService.checkSessionReceived
-        );
     }
 
     refreshSession(): Observable<boolean> {

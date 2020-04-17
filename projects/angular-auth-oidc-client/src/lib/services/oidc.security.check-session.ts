@@ -11,7 +11,7 @@ const IFRAME_FOR_CHECK_SESSION_IDENTIFIER = 'myiFrameForCheckSession';
 
 @Injectable()
 export class OidcSecurityCheckSession {
-    public checkSessionReceived = false;
+    private checkSessionReceived = false;
     private scheduledHeartBeatRunning: NodeJS.Timeout;
     private lastIFrameRefresh = 0;
     private outstandingMessages = 0;
@@ -27,7 +27,7 @@ export class OidcSecurityCheckSession {
         private readonly configurationProvider: ConfigurationProvider
     ) {}
 
-    startCheckingSession(clientId: string): void {
+    start(clientId: string): void {
         if (!!this.scheduledHeartBeatRunning) {
             return;
         }
@@ -36,13 +36,17 @@ export class OidcSecurityCheckSession {
         this.pollServerSession(clientId);
     }
 
-    stopCheckingSession(): void {
+    stop(): void {
         if (!this.scheduledHeartBeatRunning) {
             return;
         }
 
         this.clearScheduledHeartBeat();
         this.checkSessionReceived = false;
+    }
+
+    serverStateChanged() {
+        return this.configurationProvider.openIDConfiguration.startCheckSession && this.checkSessionReceived;
     }
 
     private init() {
