@@ -593,7 +593,7 @@ export class OidcSecurityService {
                     observer.next(true);
                     observer.complete();
                 } else {
-                    this.oidcSecurityUserService.initUserData().subscribe(() => {
+                    this.oidcSecurityUserService.getUserDataFromSts().subscribe(() => {
                         this.loggerService.logDebug('authorizedCallback (id_token token || code) flow');
 
                         const userData = this.oidcSecurityUserService.getUserData();

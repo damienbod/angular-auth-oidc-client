@@ -26,7 +26,7 @@ export class OidcSecurityUserService {
         }
     }
 
-    initUserData() {
+    getUserDataFromSts() {
         return this.getIdentityUserData().pipe(map((data: any) => (this.userData = data)));
     }
 
