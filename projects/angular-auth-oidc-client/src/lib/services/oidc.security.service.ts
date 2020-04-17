@@ -593,7 +593,6 @@ export class OidcSecurityService {
                     observer.next(true);
                     observer.complete();
                 } else {
-                    // TODO fix, we set the user data here
                     this.oidcSecurityUserService.getUserDataFromSts(decodedIdToken.sub).subscribe(() => {
                         this.loggerService.logDebug('authorizedCallback (id_token token || code) flow');
 
