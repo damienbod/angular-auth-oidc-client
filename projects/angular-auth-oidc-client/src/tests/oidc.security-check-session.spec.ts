@@ -49,24 +49,24 @@ describe('SecurityCheckSessionTests', () => {
         expect(oidcSecurityCheckSession).toBeTruthy();
     });
 
-    it('doesSessionExist returns false if nothing is setup', () => {
+    it('getOrCreateIframe returns false if nothing is setup', () => {
         const result: IFrameService = (oidcSecurityCheckSession as any).getOrCreateIframe();
         expect(result).toBeDefined();
     });
 
-    // it('doesSessionExist returns true if document found on window.parent.document', () => {
-    //     iFrameService.addIFrameToWindowBody('myiFrameForCheckSession');
+    it('getOrCreateIframe returns true if document found on window.document', () => {
+        iFrameService.addIFrameToWindowBody('myiFrameForCheckSession');
 
-    //     const result = (oidcSecurityCheckSession as any).doesSessionExist();
-    //     expect(result).toBe(true);
-    // });
+        const result: IFrameService = (oidcSecurityCheckSession as any).getOrCreateIframe();
+        expect(result).toBeDefined();
+    });
 
-    // it('doesSessionExist returns true if document found on window.document', () => {
-    //     iFrameService.addIFrameToWindowBody('myiFrameForCheckSession');
+    it('getOrCreateIframe returns true if document found on window.parent.document', () => {
+        iFrameService.addIFrameToWindowBody('myiFrameForCheckSession');
 
-    //     const result = (oidcSecurityCheckSession as any).doesSessionExist();
-    //     expect(result).toBe(true);
-    // });
+        const result: IFrameService = (oidcSecurityCheckSession as any).getOrCreateIframe();
+        expect(result).toBeDefined();
+    });
 
     // it('doesSessionExist returns false if document not found on window.parent.document given the wrong id', () => {
     //     iFrameService.addIFrameToWindowBody('idwhichshouldneverexist');
