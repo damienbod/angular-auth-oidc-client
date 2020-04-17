@@ -118,10 +118,10 @@ describe('SecurityCheckSessionTests', () => {
     //     expect(spy).not.toHaveBeenCalled();
     // });
 
-    // it('stopCheckingSession sets heartbeat to null', () => {
-    //     (oidcSecurityCheckSession as any).scheduledHeartBeat = setTimeout(() => {}, 999);
-    //     oidcSecurityCheckSession.stop();
-    //     const heartBeat = (oidcSecurityCheckSession as any).scheduledHeartBeat;
-    //     expect(heartBeat).toBeNull();
-    // });
+    it('stopCheckingSession sets heartbeat to null', () => {
+        (oidcSecurityCheckSession as any).scheduledHeartBeatRunning = setTimeout(() => {}, 999);
+        oidcSecurityCheckSession.stop();
+        const heartBeat = (oidcSecurityCheckSession as any).scheduledHeartBeatRunning;
+        expect(heartBeat).toBeNull();
+    });
 });
