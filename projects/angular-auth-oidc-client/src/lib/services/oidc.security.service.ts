@@ -277,7 +277,7 @@ export class OidcSecurityService {
         // Code Flow
         if (this.configurationProvider.openIDConfiguration.responseType === 'code') {
             // code_challenge with "S256"
-            const codeVerifier = this.createRandom(60);
+            const codeVerifier = this.createRandom(67);
             const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
 
             this.storagePersistanceService.codeVerifier = codeVerifier;
@@ -708,7 +708,7 @@ export class OidcSecurityService {
                 }
             }
             // code_challenge with "S256"
-            const codeVerifier = this.createRandom(60);
+            const codeVerifier = this.createRandom(67);
             const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
 
             this.storagePersistanceService.codeVerifier = codeVerifier;
@@ -944,7 +944,7 @@ export class OidcSecurityService {
     }
 
     private createRandom(requiredLength: number): string {
-        const length = requiredLength - 7;
+        const length = requiredLength - 6;
         const arr = new Uint8Array((length || length) / 2);
         window.crypto.getRandomValues(arr);
         return Array.from(arr, this.tohex).join('') + this.randomString(7);
