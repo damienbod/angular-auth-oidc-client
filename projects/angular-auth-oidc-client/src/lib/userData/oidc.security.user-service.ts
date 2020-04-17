@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { OidcDataService } from '../api/oidc-data.service';
 import { ConfigurationProvider } from '../config';
-import { EventsService } from '../events';
+import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage';
 
@@ -19,6 +19,13 @@ export class OidcSecurityUserService {
         private readonly configurationProvider: ConfigurationProvider
     ) {}
 
+    initUserDataFromStorage() {
+        const userData = this.storagePersistanceService.userData;
+        if (userData) {
+            this.setUserData(userData);
+        }
+    }
+
     initUserData() {
         return this.getIdentityUserData().pipe(map((data: any) => (this.userData = data)));
     }
@@ -33,6 +40,12 @@ export class OidcSecurityUserService {
 
     setUserData(value: any): void {
         this.userData = value;
+        this.eventService.fireEvent(EventTypes.UserDataChanged, value);
+    }
+
+    resetUserData(): void {
+        this.userData = '';
+        this.eventService.fireEvent(EventTypes.UserDataChanged, '');
     }
 
     private getIdentityUserData(): Observable<any> {

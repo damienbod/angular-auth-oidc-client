@@ -42,7 +42,6 @@ export class OidcSecurityService {
     private isAuthorizedInternal = new BehaviorSubject<boolean>(false);
     private isSetupAndAuthorizedInternal: Observable<boolean>;
 
-    private userDataInternal = new BehaviorSubject<any>('');
     private authWellKnownEndpointsLoaded = false;
     private runTokenValidationRunning = false;
     private scheduledHeartBeatInternal: any;
@@ -132,10 +131,7 @@ export class OidcSecurityService {
             return;
         }
 
-        const userData = this.storagePersistanceService.userData;
-        if (userData) {
-            this.setUserData(userData);
-        }
+        this.oidcSecurityUserService.initUserDataFromStorage();
 
         const isAuthorized = this.storagePersistanceService.isAuthorized;
         if (isAuthorized) {
@@ -189,10 +185,6 @@ export class OidcSecurityService {
         this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
 
         this.checkSetupAndAuthorizedInternal();
-    }
-
-    getUserData<T = any>(): Observable<T> {
-        return this.userDataInternal.asObservable();
     }
 
     getIsModuleSetup(): Observable<boolean> {
@@ -550,7 +542,6 @@ export class OidcSecurityService {
                             if (!isRenewProcess) {
                                 // userData is set to the id_token decoded, auto get user data set to false
                                 this.oidcSecurityUserService.setUserData(validationResult.decodedIdToken);
-                                this.setUserData(this.oidcSecurityUserService.getUserData());
                             }
 
                             this.runTokenValidation();
@@ -597,7 +588,7 @@ export class OidcSecurityService {
                 this.configurationProvider.openIDConfiguration.responseType === 'id_token token' ||
                 this.configurationProvider.openIDConfiguration.responseType === 'code'
             ) {
-                if (isRenewProcess && this.userDataInternal.value) {
+                if (isRenewProcess && this.oidcSecurityUserService.getUserData()) {
                     this.storagePersistanceService.sessionState = result.session_state;
                     observer.next(true);
                     observer.complete();
@@ -608,7 +599,7 @@ export class OidcSecurityService {
                         const userData = this.oidcSecurityUserService.getUserData();
 
                         if (this.tokenValidationService.validateUserdataSubIdToken(decodedIdToken.sub, userData.sub)) {
-                            this.setUserData(userData);
+                            this.oidcSecurityUserService.setUserData(userData);
                             this.loggerService.logDebug(this.storagePersistanceService.accessToken);
                             this.loggerService.logDebug(this.oidcSecurityUserService.getUserData());
 
@@ -633,7 +624,6 @@ export class OidcSecurityService {
 
                 // userData is set to the id_token decoded. No access_token.
                 this.oidcSecurityUserService.setUserData(decodedIdToken);
-                this.setUserData(this.oidcSecurityUserService.getUserData());
 
                 this.storagePersistanceService.sessionState = result.session_state;
 
@@ -789,7 +779,7 @@ export class OidcSecurityService {
         if (!isRenewProcess) {
             if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
                 // Clear user data. Fixes #97.
-                this.setUserData('');
+                this.oidcSecurityUserService.resetUserData();
             }
 
             this.storagePersistanceService.resetStorageData(isRenewProcess);
@@ -805,11 +795,6 @@ export class OidcSecurityService {
                 return this.urlService.createEndSessionUrl(endSessionEndpoint, idTokenHint);
             }
         }
-    }
-
-    private setUserData(userData: any): void {
-        this.storagePersistanceService.userData = userData;
-        this.userDataInternal.next(userData);
     }
 
     private setIsAuthorized(isAuthorized: boolean): void {
@@ -874,9 +859,13 @@ export class OidcSecurityService {
                 'silentRenewHeartBeatCheck\r\n' +
                     `\tsilentRenewRunning: ${this.storagePersistanceService.silentRenewRunning === 'running'}\r\n` +
                     `\tidToken: ${!!this.getIdToken()}\r\n` +
-                    `\t_userData.value: ${!!this.userDataInternal.value}`
+                    `\t_userData.value: ${!!this.oidcSecurityUserService.getUserData()}`
             );
-            if (this.userDataInternal.value && this.storagePersistanceService.silentRenewRunning !== 'running' && this.getIdToken()) {
+            if (
+                this.oidcSecurityUserService.getUserData() &&
+                this.storagePersistanceService.silentRenewRunning !== 'running' &&
+                this.getIdToken()
+            ) {
                 if (
                     this.tokenValidationService.isTokenExpired(
                         this.storagePersistanceService.idToken,
