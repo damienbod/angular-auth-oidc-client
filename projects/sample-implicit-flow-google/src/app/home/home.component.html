@@ -1,8 +1,17 @@
 <div>Welcome</div>
 
-<div *ngIf="isAuthorized">
-    <p>name:</p>
-    <p>Value: {{name}}</p>
-    <p>email:</p>
-    <p>Value: {{email}}</p>
-</div>
+Is ModuleSetup :
+<pre>{{ isModuleSetUp$ | async | json }}</pre>
+
+<br />
+
+Is Configuration loaded:
+<pre>{{ isConfigurationLoaded$ | async | json }}</pre>
+
+<br />
+
+Is Authenticated: {{ isAuthenticated }}
+
+<br />
+
+<pre>{{ userData | json }}</pre>

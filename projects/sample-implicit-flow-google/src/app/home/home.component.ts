@@ -1,46 +1,35 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { Component, OnInit } from '@angular/core';
+import { EventsService, EventTypes, OidcClientNotification, OidcSecurityService } from 'angular-auth-oidc-client';
+import { Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
     selector: 'app-home',
-    templateUrl: 'home.component.html'
+    templateUrl: 'home.component.html',
 })
+export class HomeComponent implements OnInit {
+    isConfigurationLoaded$: Observable<OidcClientNotification>;
+    isModuleSetUp$: Observable<OidcClientNotification>;
+    isAuthenticated: boolean;
+    userData: any;
 
-export class HomeComponent implements OnInit, OnDestroy {
-
-    message: string;
-    name = 'none';
-    email = 'none';
-    userDataSubscription: Subscription;
-    userData: boolean;
-    isAuthorizedSubscription: Subscription;
-    isAuthorized: boolean;
-
-    constructor(public oidcSecurityService: OidcSecurityService) {
-        this.message = 'HomeComponent constructor';
-    }
+    constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {}
 
     ngOnInit() {
-        this.isAuthorizedSubscription = this.oidcSecurityService.getIsAuthorized().subscribe(
-            (isAuthorized: boolean) => {
-                this.isAuthorized = isAuthorized;
-            });
+        this.isModuleSetUp$ = this.eventsService
+            .registerForEvents()
+            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.ModuleSetup));
 
-        this.userDataSubscription = this.oidcSecurityService.getUserData().subscribe(
-            (userData: any) => {
+        this.isConfigurationLoaded$ = this.eventsService
+            .registerForEvents()
+            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.ConfigLoaded));
 
-                if (userData && userData !== '') {
-                    this.name = userData.name;
-                    this.email = userData.email;
-                }
+        this.oidcSecurityService.getIsAuthorized().subscribe((auth) => {
+            this.isAuthenticated = auth;
+        });
 
-                console.log('userData getting data');
-            });
-    }
-
-    ngOnDestroy(): void {
-        this.userDataSubscription.unsubscribe();
-        this.isAuthorizedSubscription.unsubscribe();
+        this.oidcSecurityService.getUserData().subscribe((userData) => {
+            this.userData = userData;
+        });
     }
 }
