@@ -25,7 +25,6 @@ import { OidcSecurityUserService } from './oidc.security.user-service';
 @Injectable()
 export class OidcSecurityService {
     private onModuleSetupInternal = new Subject<boolean>();
-    private onCheckSessionChangedInternal = new Subject<boolean>();
     private onAuthorizationResultInternal = new Subject<AuthorizationResult>();
 
     public get onModuleSetup(): Observable<boolean> {
@@ -36,11 +35,6 @@ export class OidcSecurityService {
         return this.onAuthorizationResultInternal.asObservable();
     }
 
-    public get onCheckSessionChanged(): Observable<boolean> {
-        return this.onCheckSessionChangedInternal.asObservable();
-    }
-
-    checkSessionChanged = false;
     moduleSetup = false;
 
     private isModuleSetupInternal = new BehaviorSubject<boolean>(false);
@@ -58,7 +52,7 @@ export class OidcSecurityService {
         private oidcDataService: OidcDataService,
         private stateValidationService: StateValidationService,
         private router: Router,
-        private oidcSecurityCheckSession: OidcSecurityCheckSession,
+        private oidcSecurityCheckSessionService: OidcSecurityCheckSession,
         private oidcSecuritySilentRenew: OidcSecuritySilentRenew,
         private oidcSecurityUserService: OidcSecurityUserService,
         private storagePersistanceService: StoragePersistanceService,
@@ -125,9 +119,9 @@ export class OidcSecurityService {
             .pipe(filter(() => this.configurationProvider.openIDConfiguration.startCheckSession))
             .subscribe((isSetupAndAuthorized) => {
                 if (isSetupAndAuthorized) {
-                    this.oidcSecurityCheckSession.startCheckingSession(this.configurationProvider.openIDConfiguration.clientId);
+                    this.oidcSecurityCheckSessionService.startCheckingSession(this.configurationProvider.openIDConfiguration.clientId);
                 } else {
-                    this.oidcSecurityCheckSession.stopCheckingSession();
+                    this.oidcSecurityCheckSessionService.stopCheckingSession();
                 }
             });
     }
@@ -137,12 +131,6 @@ export class OidcSecurityService {
             this.loggerService.logError('Please provide a configuration before setting up the module');
             return;
         }
-
-        this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => {
-            this.loggerService.logDebug('onCheckSessionChanged');
-            this.checkSessionChanged = true;
-            this.onCheckSessionChangedInternal.next(this.checkSessionChanged);
-        });
 
         const userData = this.storagePersistanceService.userData;
         if (userData) {
@@ -669,7 +657,7 @@ export class OidcSecurityService {
 
                 this.resetAuthorizationData(false);
 
-                if (this.configurationProvider.openIDConfiguration.startCheckSession && this.checkSessionChanged) {
+                if (this.serverCheckSessionStateChanged()) {
                     this.loggerService.logDebug('only local login cleaned up, server session has changed');
                 } else if (urlHandler) {
                     urlHandler(url);
@@ -683,6 +671,12 @@ export class OidcSecurityService {
         } else {
             this.loggerService.logWarning('authWellKnownEndpoints is undefined');
         }
+    }
+
+    private serverCheckSessionStateChanged() {
+        return (
+            this.configurationProvider.openIDConfiguration.startCheckSession && this.oidcSecurityCheckSessionService.checkSessionReceived
+        );
     }
 
     refreshSession(): Observable<boolean> {
@@ -805,7 +799,6 @@ export class OidcSecurityService {
             }
 
             this.storagePersistanceService.resetStorageData(isRenewProcess);
-            this.checkSessionChanged = false;
             this.setIsAuthorized(false);
         }
     }

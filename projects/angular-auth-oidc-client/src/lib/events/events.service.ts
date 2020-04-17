@@ -7,7 +7,7 @@ import { OidcClientNotification } from './notification';
 export class EventsService {
     private notify = new ReplaySubject<OidcClientNotification>(1);
 
-    fireEvent(type: EventTypes, value: any) {
+    fireEvent(type: EventTypes, value?: any) {
         this.notify.next({ type, value });
     }
 

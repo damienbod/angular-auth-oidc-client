@@ -1,5 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { EventsService, EventTypes, OidcClientNotification, OidcSecurityService } from 'angular-auth-oidc-client';
+import { Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -8,9 +10,10 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 export class AppComponent implements OnInit, OnDestroy {
     isAuthenticated: boolean;
     isConfigurationLoaded: boolean;
+    checkSessionChanged$: Observable<OidcClientNotification>;
     userData: any;
 
-    constructor(public oidcSecurityService: OidcSecurityService) {
+    constructor(public oidcSecurityService: OidcSecurityService, public eventsService: EventsService) {
         this.oidcSecurityService.setupModule();
 
         if (this.oidcSecurityService.moduleSetup) {
@@ -23,6 +26,10 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.checkSessionChanged$ = this.eventsService
+            .registerForEvents()
+            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.CheckSessionChanged));
+
         this.oidcSecurityService.getIsAuthorized().subscribe((auth) => {
             this.isAuthenticated = auth;
         });
