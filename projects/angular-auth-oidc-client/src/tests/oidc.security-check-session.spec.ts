@@ -111,12 +111,12 @@ describe('SecurityCheckSessionTests', () => {
     //     expect(spy).toHaveBeenCalledWith('anyId');
     // });
 
-    // it('startCheckingSession does not call pollserversession if scheduledheartbeat is set', () => {
-    //     const spy = spyOn<any>(oidcSecurityCheckSession, 'pollServerSession');
-    //     (oidcSecurityCheckSession as any).scheduledHeartBeat = () => {};
-    //     oidcSecurityCheckSession.start('anyId');
-    //     expect(spy).not.toHaveBeenCalled();
-    // });
+    it('startCheckingSession does not call pollserversession if scheduledHeartBeatRunning is set', () => {
+        const spy = spyOn<any>(oidcSecurityCheckSession, 'pollServerSession');
+        (oidcSecurityCheckSession as any).scheduledHeartBeatRunning = () => {};
+        oidcSecurityCheckSession.start('anyId');
+        expect(spy).not.toHaveBeenCalled();
+    });
 
     it('stopCheckingSession sets heartbeat to null', () => {
         (oidcSecurityCheckSession as any).scheduledHeartBeatRunning = setTimeout(() => {}, 999);
