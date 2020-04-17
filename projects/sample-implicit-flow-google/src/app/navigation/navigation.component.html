@@ -17,9 +17,6 @@
         <ul class="mr-auto navbar-nav">
             <li class="nav-item"><a class="nav-link" *ngIf="!isAuthorized" (click)="login()">Login</a></li>
             <li class="nav-item"><a class="nav-link" *ngIf="isAuthorized" (click)="logout()">Logout</a></li>
-            <li class="nav-item">
-                <a class="nav-link" *ngIf="oidcSecurityService.checkSessionChanged" (click)="refreshSession()">Refresh Session</a>
-            </li>
         </ul>
         <ul class="navbar-nav"></ul>
     </div>
