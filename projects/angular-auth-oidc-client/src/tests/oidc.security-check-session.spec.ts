@@ -105,11 +105,11 @@ describe('SecurityCheckSessionTests', () => {
     //     expect(spyLogWarning).toHaveBeenCalledWith('init check session: authWellKnownEndpoints is undefined');
     // });
 
-    // it('startCheckingSession calls pollserversession with clientId if no scheduledheartbeat is set', () => {
-    //     const spy = spyOn<any>(oidcSecurityCheckSession, 'pollServerSession');
-    //     oidcSecurityCheckSession.start('anyId');
-    //     expect(spy).toHaveBeenCalledWith('anyId');
-    // });
+    it('startCheckingSession calls pollserversession with clientId if no scheduledheartbeat is set', () => {
+        const spy = spyOn<any>(oidcSecurityCheckSession, 'pollServerSession');
+        oidcSecurityCheckSession.start('anyId');
+        expect(spy).toHaveBeenCalledWith('anyId');
+    });
 
     it('startCheckingSession does not call pollserversession if scheduledHeartBeatRunning is set', () => {
         const spy = spyOn<any>(oidcSecurityCheckSession, 'pollServerSession');
