@@ -3,8 +3,9 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { OidcDataService } from '../api/oidc-data.service';
 import { ConfigurationProvider } from '../config';
-import { StoragePersistanceService } from '../storage';
+import { EventsService } from '../events';
 import { LoggerService } from '../logging/logger.service';
+import { StoragePersistanceService } from '../storage';
 
 @Injectable()
 export class OidcSecurityUserService {
@@ -13,6 +14,7 @@ export class OidcSecurityUserService {
     constructor(
         private oidcDataService: OidcDataService,
         private storagePersistanceService: StoragePersistanceService,
+        private eventService: EventsService,
         private loggerService: LoggerService,
         private readonly configurationProvider: ConfigurationProvider
     ) {}
