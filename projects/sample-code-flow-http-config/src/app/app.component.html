@@ -3,17 +3,23 @@
 
 <hr />
 
-Is Configuration loaded: {{ isConfigurationLoaded }}
-
-CheckSessionChanged
-<pre> {{ checkSessionChanged$ | async }}</pre>
+Is ModuleSetup :
+<pre>{{ isModuleSetUp$ | async | json }}</pre>
 
 <br />
+
+Is Configuration loaded:
+<pre>{{ isConfigurationLoaded$ | async | json }}</pre>
+
+<br />
+
+CheckSessionChanged:
+<pre>{{ checkSessionChanged$ | async | json }}</pre>
+
 <br />
 
 Is Authenticated: {{ isAuthenticated }}
 
 <br />
-<br />
 
-{{ userData | json }}
+<pre>{{ userData | json }}</pre>

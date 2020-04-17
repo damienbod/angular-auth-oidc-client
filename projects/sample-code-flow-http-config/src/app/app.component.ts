@@ -9,7 +9,8 @@ import { filter } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit, OnDestroy {
     isAuthenticated: boolean;
-    isConfigurationLoaded: boolean;
+    isConfigurationLoaded$: Observable<OidcClientNotification>;
+    isModuleSetUp$: Observable<OidcClientNotification>;
     checkSessionChanged$: Observable<OidcClientNotification>;
     userData: any;
 
@@ -26,6 +27,14 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.isModuleSetUp$ = this.eventsService
+            .registerForEvents()
+            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.ModuleSetup));
+
+        this.isConfigurationLoaded$ = this.eventsService
+            .registerForEvents()
+            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.ConfigLoaded));
+
         this.checkSessionChanged$ = this.eventsService
             .registerForEvents()
             .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.CheckSessionChanged));
