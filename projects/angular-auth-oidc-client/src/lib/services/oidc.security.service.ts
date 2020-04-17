@@ -5,6 +5,7 @@ import { oneLineTrim } from 'common-tags';
 import { BehaviorSubject, from, Observable, of, race, Subject, throwError, timer } from 'rxjs';
 import { catchError, filter, first, map, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { OidcDataService } from '../api/oidc-data.service';
+import { CheckSessionService } from '../check-session/check-session.service';
 import { ConfigurationProvider } from '../config';
 import { EventTypes } from '../events';
 import { EventsService } from '../events/events.service';
@@ -18,14 +19,12 @@ import { StateValidationService } from '../validation/state-validation.service';
 import { TokenValidationService } from '../validation/token-validation.service';
 import { ValidationResult } from '../validation/validation-result';
 import { TokenHelperService } from './oidc-token-helper.service';
-import { OidcSecurityCheckSession } from './oidc.security.check-session';
 import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
 import { OidcSecurityUserService } from './oidc.security.user-service';
 
 @Injectable()
 export class OidcSecurityService {
     private onModuleSetupInternal = new Subject<boolean>();
-    private onCheckSessionChangedInternal = new Subject<boolean>();
     private onAuthorizationResultInternal = new Subject<AuthorizationResult>();
 
     public get onModuleSetup(): Observable<boolean> {
@@ -36,11 +35,6 @@ export class OidcSecurityService {
         return this.onAuthorizationResultInternal.asObservable();
     }
 
-    public get onCheckSessionChanged(): Observable<boolean> {
-        return this.onCheckSessionChangedInternal.asObservable();
-    }
-
-    checkSessionChanged = false;
     moduleSetup = false;
 
     private isModuleSetupInternal = new BehaviorSubject<boolean>(false);
@@ -58,7 +52,7 @@ export class OidcSecurityService {
         private oidcDataService: OidcDataService,
         private stateValidationService: StateValidationService,
         private router: Router,
-        private oidcSecurityCheckSession: OidcSecurityCheckSession,
+        private checkSessionService: CheckSessionService,
         private oidcSecuritySilentRenew: OidcSecuritySilentRenew,
         private oidcSecurityUserService: OidcSecurityUserService,
         private storagePersistanceService: StoragePersistanceService,
@@ -125,9 +119,9 @@ export class OidcSecurityService {
             .pipe(filter(() => this.configurationProvider.openIDConfiguration.startCheckSession))
             .subscribe((isSetupAndAuthorized) => {
                 if (isSetupAndAuthorized) {
-                    this.oidcSecurityCheckSession.startCheckingSession(this.configurationProvider.openIDConfiguration.clientId);
+                    this.checkSessionService.start(this.configurationProvider.openIDConfiguration.clientId);
                 } else {
-                    this.oidcSecurityCheckSession.stopCheckingSession();
+                    this.checkSessionService.stop();
                 }
             });
     }
@@ -137,12 +131,6 @@ export class OidcSecurityService {
             this.loggerService.logError('Please provide a configuration before setting up the module');
             return;
         }
-
-        this.oidcSecurityCheckSession.onCheckSessionChanged.subscribe(() => {
-            this.loggerService.logDebug('onCheckSessionChanged');
-            this.checkSessionChanged = true;
-            this.onCheckSessionChangedInternal.next(this.checkSessionChanged);
-        });
 
         const userData = this.storagePersistanceService.userData;
         if (userData) {
@@ -669,7 +657,7 @@ export class OidcSecurityService {
 
                 this.resetAuthorizationData(false);
 
-                if (this.configurationProvider.openIDConfiguration.startCheckSession && this.checkSessionChanged) {
+                if (this.checkSessionService.serverStateChanged()) {
                     this.loggerService.logDebug('only local login cleaned up, server session has changed');
                 } else if (urlHandler) {
                     urlHandler(url);
@@ -805,7 +793,6 @@ export class OidcSecurityService {
             }
 
             this.storagePersistanceService.resetStorageData(isRenewProcess);
-            this.checkSessionChanged = false;
             this.setIsAuthorized(false);
         }
     }

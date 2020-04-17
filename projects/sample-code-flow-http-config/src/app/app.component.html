@@ -1,16 +1,25 @@
-<button *ngIf="!isAuthenticated" (click)="login()">Login</button>
+<button *ngIf="!isAuthenticated || !checkSessionChanged" (click)="login()">Login</button>
 <button *ngIf="isAuthenticated" (click)="logout()">Logout</button>
-
+<button *ngIf="checkSessionChanged" (click)="login()">Refresh Session</button>
 <hr />
 
-Is Configuration loaded: {{ isConfigurationLoaded }}
+Is ModuleSetup :
+<pre>{{ isModuleSetUp$ | async | json }}</pre>
 
 <br />
+
+Is Configuration loaded:
+<pre>{{ isConfigurationLoaded$ | async | json }}</pre>
+
+<br />
+
+CheckSessionChanged:
+<pre>{{ checkSessionChanged$ | async | json }}</pre>
+
 <br />
 
 Is Authenticated: {{ isAuthenticated }}
 
 <br />
-<br />
 
-{{ userData | json }}
+<pre>{{ userData | json }}</pre>
