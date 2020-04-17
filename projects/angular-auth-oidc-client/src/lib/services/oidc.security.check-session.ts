@@ -103,7 +103,6 @@ export class OidcSecurityCheckSession {
                     `OidcSecurityCheckSession not receiving check session response messages.
                             Outstanding messages: ${this.outstandingMessages}. Server unreachable?`
                 );
-                this.eventService.fireEvent(EventTypes.CheckSessionChanged);
             }
         };
 
