@@ -10,8 +10,8 @@ import { filter } from 'rxjs/operators';
 export class HomeComponent implements OnInit {
     isConfigurationLoaded$: Observable<OidcClientNotification>;
     isModuleSetUp$: Observable<OidcClientNotification>;
+    userDataChanged$: Observable<OidcClientNotification>;
     isAuthenticated: boolean;
-    userData: any;
 
     constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {}
 
@@ -28,8 +28,8 @@ export class HomeComponent implements OnInit {
             this.isAuthenticated = auth;
         });
 
-        this.oidcSecurityService.getUserData().subscribe((userData) => {
-            this.userData = userData;
-        });
+        this.userDataChanged$ = this.eventsService
+            .registerForEvents()
+            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.UserDataChanged));
     }
 }

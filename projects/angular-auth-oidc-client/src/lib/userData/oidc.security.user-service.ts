@@ -20,7 +20,8 @@ export class OidcSecurityUserService {
     initUserDataFromStorage() {
         const userData = this.storagePersistanceService.userData;
         if (userData) {
-            this.setUserData(userData);
+            // Don't send an event, nothing changed
+            this.storagePersistanceService.userData = userData;
         }
     }
 
