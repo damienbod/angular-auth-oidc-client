@@ -67,4 +67,15 @@ export class OidcSecurityUserService {
 
         return this.oidcDataService.getIdentityUserData(this.configurationProvider.wellKnownEndpoints.userinfoEndpoint || '', token);
     }
+
+    validateUserdataSubIdToken(idTokenSub: any, userdataSub: any): boolean {
+        if ((idTokenSub as string) !== (userdataSub as string)) {
+            this.loggerService.logDebug(
+                'validate_userdata_sub_id_token failed, id_token_sub: ' + idTokenSub + ' userdata_sub:' + userdataSub
+            );
+            return false;
+        }
+
+        return true;
+    }
 }

@@ -598,10 +598,9 @@ export class OidcSecurityService {
 
                         const userData = this.oidcSecurityUserService.getUserData();
 
-                        if (this.tokenValidationService.validateUserdataSubIdToken(decodedIdToken.sub, userData.sub)) {
-                            this.oidcSecurityUserService.setUserData(userData);
+                        if (this.oidcSecurityUserService.validateUserdataSubIdToken(decodedIdToken.sub, userData.sub)) {
                             this.loggerService.logDebug(this.storagePersistanceService.accessToken);
-                            this.loggerService.logDebug(this.oidcSecurityUserService.getUserData());
+                            this.loggerService.logDebug(userData);
 
                             this.storagePersistanceService.sessionState = result.session_state;
 
