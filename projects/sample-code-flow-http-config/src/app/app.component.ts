@@ -8,11 +8,11 @@ import { filter } from 'rxjs/operators';
     templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit, OnDestroy {
-    isAuthenticated: boolean;
     isConfigurationLoaded$: Observable<OidcClientNotification>;
     isModuleSetUp$: Observable<OidcClientNotification>;
     checkSessionChanged$: Observable<OidcClientNotification>;
     userData: any;
+    isAuthenticated: boolean;
 
     constructor(public oidcSecurityService: OidcSecurityService, public eventsService: EventsService) {
         this.oidcSecurityService.setupModule();

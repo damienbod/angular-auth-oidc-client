@@ -8,11 +8,12 @@ import { filter } from 'rxjs/operators';
     templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit, OnDestroy {
-    isAuthenticated: boolean;
+    isConfigurationLoaded$: Observable<OidcClientNotification>;
     isModuleSetUp$: Observable<OidcClientNotification>;
+    isAuthenticated: boolean;
     userData: any;
 
-    constructor(public oidcSecurityService: OidcSecurityService, private readonly eventService: EventsService) {
+    constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {
         this.oidcSecurityService.setupModule();
         if (this.oidcSecurityService.moduleSetup) {
             this.doCallbackLogicIfRequired();
@@ -24,9 +25,13 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.isModuleSetUp$ = this.eventService
+        this.isModuleSetUp$ = this.eventsService
             .registerForEvents()
             .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.ModuleSetup));
+
+        this.isConfigurationLoaded$ = this.eventsService
+            .registerForEvents()
+            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.ConfigLoaded));
 
         this.oidcSecurityService.getIsAuthorized().subscribe((auth) => {
             this.isAuthenticated = auth;
