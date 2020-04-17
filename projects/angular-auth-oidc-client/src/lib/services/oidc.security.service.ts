@@ -943,8 +943,9 @@ export class OidcSecurityService {
         }
     }
 
-    private createRandom(length: number): string {
-        const arr = new Uint8Array((length || length - 7) / 2);
+    private createRandom(requiredLength: number): string {
+        const length = requiredLength - 7;
+        const arr = new Uint8Array((length || length) / 2);
         window.crypto.getRandomValues(arr);
         return Array.from(arr, this.tohex).join('') + this.randomString(7);
     }
