@@ -24,16 +24,27 @@ export class OidcSecurityUserService {
         }
     }
 
-    getUserDataFromSts() {
-        return this.getIdentityUserData().pipe(map((data: any) => this.setUserData(data)));
+    getUserDataFromSts(idTokenSub: any) {
+        return this.getIdentityUserData().pipe(
+            map((data: any) => {
+                if (this.validateUserdataSubIdToken(idTokenSub, data.sub)) {
+                    this.setUserData(data);
+                } else {
+                    // something went wrong, userdata sub does not match that from id_token
+                    this.loggerService.logWarning('authorizedCallback, User data sub does not match sub in id_token');
+                    this.loggerService.logDebug('authorizedCallback, token(s) validation failed, resetting');
+                    this.resetUserData();
+                }
+            })
+        );
     }
 
     getUserData(): any {
-        if (!this.storagePersistanceService.userData) {
-            throw Error('UserData is not set!');
+        if (!!this.storagePersistanceService.userData) {
+            return this.storagePersistanceService.userData;
         }
 
-        return this.storagePersistanceService.userData;
+        return null;
     }
 
     setUserData(value: any): void {

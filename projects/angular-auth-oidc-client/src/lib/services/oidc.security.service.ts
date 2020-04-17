@@ -593,23 +593,19 @@ export class OidcSecurityService {
                     observer.next(true);
                     observer.complete();
                 } else {
-                    this.oidcSecurityUserService.getUserDataFromSts().subscribe(() => {
+                    // TODO fix, we set the user data here
+                    this.oidcSecurityUserService.getUserDataFromSts(decodedIdToken.sub).subscribe(() => {
                         this.loggerService.logDebug('authorizedCallback (id_token token || code) flow');
 
-                        const userData = this.oidcSecurityUserService.getUserData();
-
-                        if (this.oidcSecurityUserService.validateUserdataSubIdToken(decodedIdToken.sub, userData.sub)) {
+                        if (!!this.oidcSecurityUserService.getUserData()) {
                             this.loggerService.logDebug(this.storagePersistanceService.accessToken);
-                            this.loggerService.logDebug(userData);
+                            this.loggerService.logDebug(this.oidcSecurityUserService.getUserData());
 
                             this.storagePersistanceService.sessionState = result.session_state;
 
                             this.runTokenValidation();
                             observer.next(true);
                         } else {
-                            // something went wrong, userdata sub does not match that from id_token
-                            this.loggerService.logWarning('authorizedCallback, User data sub does not match sub in id_token');
-                            this.loggerService.logDebug('authorizedCallback, token(s) validation failed, resetting');
                             this.resetAuthorizationData(false);
                             observer.next(false);
                         }
