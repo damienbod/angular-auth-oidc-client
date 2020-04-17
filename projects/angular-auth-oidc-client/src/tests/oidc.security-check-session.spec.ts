@@ -68,34 +68,6 @@ describe('SecurityCheckSessionTests', () => {
         expect(result).toBeDefined();
     });
 
-    // it('doesSessionExist returns false if document not found on window.parent.document given the wrong id', () => {
-    //     iFrameService.addIFrameToWindowBody('idwhichshouldneverexist');
-    //     const result = (oidcSecurityCheckSession as any).doesSessionExist();
-    //     expect(result).toBe(false);
-    // });
-
-    // it('doesSessionExist returns false if document not found on window.document given the wrong id', () => {
-    //     iFrameService.addIFrameToWindowBody('idwhichshouldneverexist');
-    //     const result = (oidcSecurityCheckSession as any).doesSessionExist();
-    //     expect(result).toBe(false);
-    // });
-
-    // it('existsParent is set when document was found on window.parent', () => {
-    //     const node = iFrameService.addIFrameToWindowBody('myiFrameForCheckSession');
-
-    //     (oidcSecurityCheckSession as any).doesSessionExist();
-    //     expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
-    //     expect((oidcSecurityCheckSession as any).sessionIframe).toEqual(node);
-    // });
-
-    // it('existsParent is set when document was found on window', () => {
-    //     const node = iFrameService.addIFrameToWindowBody('myiFrameForCheckSession');
-
-    //     (oidcSecurityCheckSession as any).doesSessionExist();
-    //     expect((oidcSecurityCheckSession as any).sessionIframe).toBeTruthy();
-    //     expect((oidcSecurityCheckSession as any).sessionIframe).toEqual(node);
-    // });
-
     // it('init appends iframe on body with correct values', () => {
     //     expect((oidcSecurityCheckSession as any).sessionIframe).toBeFalsy();
 
