@@ -831,9 +831,13 @@ export class OidcSecurityService {
                 'silentRenewHeartBeatCheck\r\n' +
                     `\tsilentRenewRunning: ${this.storagePersistanceService.silentRenewRunning === 'running'}\r\n` +
                     `\tidToken: ${!!this.getIdToken()}\r\n` +
-                    `\tuserData: ${!!this.userService.getUserData()}`
+                    `\tuserData: ${!!this.userService.getUserDataFromStore()}`
             );
-            if (this.userService.getUserData() && this.storagePersistanceService.silentRenewRunning !== 'running' && this.getIdToken()) {
+            if (
+                this.userService.getUserDataFromStore() &&
+                this.storagePersistanceService.silentRenewRunning !== 'running' &&
+                this.getIdToken()
+            ) {
                 if (
                     this.tokenValidationService.isTokenExpired(
                         this.storagePersistanceService.idToken,

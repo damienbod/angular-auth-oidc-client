@@ -24,7 +24,7 @@ export class UserService {
         idToken = idToken || this.storagePersistanceService.idToken;
         decodedIdToken = decodedIdToken || this.tokenHelperService.getPayloadFromToken(idToken, false);
 
-        const existingUserDataFromStorage = this.getUserData();
+        const existingUserDataFromStorage = this.getUserDataFromStore();
         const haveUserData = !!existingUserDataFromStorage;
         const currentFlowIsIdTokenOrCode = this.currentFlowIs(['id_token token', 'code']);
 
@@ -78,7 +78,7 @@ export class UserService {
         );
     }
 
-    getUserData(): any {
+    getUserDataFromStore(): any {
         return this.storagePersistanceService.userData || null;
     }
 
