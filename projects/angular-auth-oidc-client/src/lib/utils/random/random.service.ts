@@ -16,7 +16,6 @@ export class RandomService {
 
         const length = requiredLength - 6;
         const arr = new Uint8Array((length || length) / 2);
-        console.log('@@@', arr);
         this.getCrypto().getRandomValues(arr);
         return Array.from(arr, this.toHex).join('') + this.randomString(7);
     }
