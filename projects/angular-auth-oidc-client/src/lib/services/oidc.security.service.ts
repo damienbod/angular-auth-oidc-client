@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { oneLineTrim } from 'common-tags';
@@ -52,7 +52,6 @@ export class OidcSecurityService {
     private authWellKnownEndpointsLoaded = false;
     private runTokenValidationRunning = false;
     private scheduledHeartBeatInternal: any;
-    private boundSilentRenewEvent: any;
 
     constructor(
         private oidcDataService: DataService,
@@ -162,31 +161,9 @@ export class OidcSecurityService {
         this.onModuleSetupInternal.next();
 
         if (this.configurationProvider.openIDConfiguration.silentRenew) {
-            this.oidcSecuritySilentRenew.initRenew();
-
-            // Support authorization via DOM events.
-            // Deregister if OidcSecurityService.setupModule is called again by any instance.
-            //      We only ever want the latest setup service to be reacting to this event.
-            this.boundSilentRenewEvent = this.silentRenewEventHandler.bind(this);
-
-            const instanceId = Math.random();
-
-            const boundSilentRenewInitEvent: any = ((e: CustomEvent) => {
-                if (e.detail !== instanceId) {
-                    window.removeEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent);
-                    window.removeEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent);
-                }
-            }).bind(this);
-
-            window.addEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent, false);
-            window.addEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent, false);
-
-            window.dispatchEvent(
-                new CustomEvent('oidc-silent-renew-init', {
-                    detail: instanceId,
-                })
-            );
+            this.oidcSecuritySilentRenew.init();
         }
+
         this.moduleSetup = true;
         this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
 
@@ -871,34 +848,5 @@ export class OidcSecurityService {
             /* Initial heartbeat check */
             this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 10000);
         });
-    }
-
-    private silentRenewEventHandler(e: CustomEvent) {
-        this.loggerService.logDebug('silentRenewEventHandler');
-
-        if (this.configurationProvider.openIDConfiguration.responseType === 'code') {
-            const urlParts = e.detail.toString().split('?');
-            const params = new HttpParams({
-                fromString: urlParts[1],
-            });
-            const code = params.get('code');
-            const state = params.get('state');
-            const sessionState = params.get('session_state');
-            const error = params.get('error');
-            if (code && state) {
-                this.requestTokensWithCodeProcedure(code, state, sessionState);
-            }
-            if (error) {
-                this.onAuthorizationResultInternal.next(
-                    new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.LoginRequired, true)
-                );
-                this.resetAuthorizationData(false);
-                this.storagePersistanceService.authNonce = '';
-                this.loggerService.logDebug(e.detail.toString());
-            }
-        } else {
-            // ImplicitFlow
-            this.authorizedImplicitFlowCallback(e.detail);
-        }
     }
 }
