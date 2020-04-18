@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../lib/config';
 import { LoggerService } from '../lib/logging/logger.service';
-import { TestLogging } from '../lib/logging/logger.service-mock';
+import { LoggerServiceMock } from '../lib/logging/logger.service-mock';
 import { TokenHelperService } from '../lib/services/oidc-token-helper.service';
 
 describe('TokenHelperService', () => {
@@ -9,7 +9,7 @@ describe('TokenHelperService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [TokenHelperService, { provide: LoggerService, useClass: TestLogging }, ConfigurationProvider],
+            providers: [TokenHelperService, { provide: LoggerService, useClass: LoggerServiceMock }, ConfigurationProvider],
         });
     });
 

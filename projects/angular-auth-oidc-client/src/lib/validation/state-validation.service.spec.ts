@@ -8,7 +8,7 @@ import { AuthWellKnownEndpoints } from '../config/auth-well-known-endpoints';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LogLevel } from '../logging/log-level';
 import { LoggerService } from '../logging/logger.service';
-import { TestLogging } from '../logging/logger.service-mock';
+import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { TokenHelperService } from '../services/oidc-token-helper.service';
 import { StoragePersistanceService } from '../storage';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
@@ -41,7 +41,7 @@ describe('State Validation Service', () => {
                 },
                 {
                     provide: LoggerService,
-                    useClass: TestLogging,
+                    useClass: LoggerServiceMock,
                 },
             ],
         });

@@ -3,7 +3,7 @@ import { ConfigurationProvider } from '../../config';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LogLevel } from '../../logging/log-level';
 import { LoggerService } from '../../logging/logger.service';
-import { TestLogging } from '../../logging/logger.service-mock';
+import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { UrlService } from './url.service';
 
 describe('UrlService Tests', () => {
@@ -17,7 +17,7 @@ describe('UrlService Tests', () => {
                 UrlService,
                 {
                     provide: LoggerService,
-                    useClass: TestLogging,
+                    useClass: LoggerServiceMock,
                 },
             ],
         });
