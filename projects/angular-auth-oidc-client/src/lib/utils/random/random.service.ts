@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 
+// support for IE, change to (window.crypto || window.msCrypto)
 @Injectable({ providedIn: 'root' })
 export class RandomService {
     createRandom(requiredLength: number): string {
