@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpBaseService } from '../api/http-base.service';
 import { LoggerService } from '../logging/logger.service';
-import { TestLogging } from '../logging/logger.service-mock';
+import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { ConfigurationProvider } from './config.provider';
 import { OidcConfigService } from './config.service';
 
@@ -17,7 +17,7 @@ describe('Configuration Service', () => {
                 OidcConfigService,
                 {
                     provide: LoggerService,
-                    useClass: TestLogging,
+                    useClass: LoggerServiceMock,
                 },
                 ConfigurationProvider,
                 {

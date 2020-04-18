@@ -8,7 +8,7 @@ import { OpenIdConfiguration } from '../lib/angular-auth-oidc-client';
 import { AuthModule } from '../lib/auth.module';
 import { ConfigurationProvider } from '../lib/config';
 import { LoggerService } from '../lib/logging/logger.service';
-import { TestLogging } from '../lib/logging/logger.service-mock';
+import { LoggerServiceMock } from '../lib/logging/logger.service-mock';
 import { IFrameService } from '../lib/services/existing-iframe.service';
 import { OidcSecurityService } from '../lib/services/oidc.security.service';
 import { StoragePersistanceService } from '../lib/storage';
@@ -30,7 +30,7 @@ describe('OidcSecurityService', () => {
                     provide: StoragePersistanceService,
                     useClass: StoragePersistanceServiceMock,
                 },
-                { provide: LoggerService, useClass: TestLogging },
+                { provide: LoggerService, useClass: LoggerServiceMock },
                 UrlService,
                 ConfigurationProvider,
                 IFrameService,

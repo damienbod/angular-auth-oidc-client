@@ -13,7 +13,7 @@ import { LoggerService } from '../logging/logger.service';
 import { AuthorizationResult } from '../models/authorization-result';
 import { AuthorizationState } from '../models/authorization-state.enum';
 import { StoragePersistanceService } from '../storage';
-import { UrlService } from '../utils';
+import { RandomService, UrlService } from '../utils';
 import { JwtKeys } from '../validation/jwtkeys';
 import { StateValidationService } from '../validation/state-validation.service';
 import { TokenValidationService } from '../validation/token-validation.service';
@@ -72,7 +72,8 @@ export class OidcSecurityService {
         private readonly httpClient: HttpClient,
         private readonly configurationProvider: ConfigurationProvider,
         private readonly eventsService: EventsService,
-        private readonly urlService: UrlService
+        private readonly urlService: UrlService,
+        private readonly randomService: RandomService
     ) {
         this.onModuleSetup.pipe(take(1)).subscribe(() => {
             this.moduleSetup = true;
@@ -274,11 +275,11 @@ export class OidcSecurityService {
 
         let state = this.storagePersistanceService.authStateControl;
         if (!state) {
-            state = Date.now() + '' + Math.random() + Math.random();
+            state = this.randomService.createRandom(40);
             this.storagePersistanceService.authStateControl = state;
         }
 
-        const nonce = 'N' + Math.random() + '' + Date.now();
+        const nonce = this.randomService.createRandom(40);
         this.storagePersistanceService.authNonce = nonce;
         this.loggerService.logDebug('AuthorizedController created. local state: ' + this.storagePersistanceService.authStateControl);
 
@@ -286,7 +287,7 @@ export class OidcSecurityService {
         // Code Flow
         if (this.configurationProvider.openIDConfiguration.responseType === 'code') {
             // code_challenge with "S256"
-            const codeVerifier = 'C' + Math.random() + '' + Date.now() + '' + Date.now() + Math.random();
+            const codeVerifier = this.randomService.createRandom(67);
             const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
 
             this.storagePersistanceService.codeVerifier = codeVerifier;
@@ -692,11 +693,11 @@ export class OidcSecurityService {
 
         let state = this.storagePersistanceService.authStateControl;
         if (state === '' || state === null) {
-            state = Date.now() + '' + Math.random() + Math.random();
+            state = this.randomService.createRandom(40);
             this.storagePersistanceService.authStateControl = state;
         }
 
-        const nonce = 'N' + Math.random() + '' + Date.now();
+        const nonce = this.randomService.createRandom(40);
         this.storagePersistanceService.authNonce = nonce;
         this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + this.storagePersistanceService.authStateControl);
 
@@ -717,7 +718,7 @@ export class OidcSecurityService {
                 }
             }
             // code_challenge with "S256"
-            const codeVerifier = 'C' + Math.random() + '' + Date.now() + '' + Date.now() + Math.random();
+            const codeVerifier = this.randomService.createRandom(67);
             const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
 
             this.storagePersistanceService.codeVerifier = codeVerifier;

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 @Injectable()
-export class TestLogging {
+export class LoggerServiceMock {
     logError(message: any, ...args: any[]) {
         console.error(message, ...args);
     }
