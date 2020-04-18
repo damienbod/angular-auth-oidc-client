@@ -4,7 +4,7 @@ import { LoggerService } from '../lib/logging/logger.service';
 import { LoggerServiceMock } from '../lib/logging/logger.service-mock';
 import { TokenHelperService } from '../lib/services/oidc-token-helper.service';
 
-describe('TokenHelperService', () => {
+describe('Token Helper Service', () => {
     let tokenHelperService: TokenHelperService;
 
     beforeEach(() => {
