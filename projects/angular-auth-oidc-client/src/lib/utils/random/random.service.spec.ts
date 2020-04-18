@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { RandomService } from './random.service';
 
 describe('RandomService Tests', () => {
@@ -9,7 +8,7 @@ describe('RandomService Tests', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [RandomService, { provide: LoggerService, useClass: LoggerServiceMock }],
+            providers: [RandomService, LoggerService],
         });
     });
 
@@ -47,14 +46,12 @@ describe('RandomService Tests', () => {
         expect(r1).toBe('');
     });
 
-    // fit('correct length with smaller than 7 ==> 6', () => {
-    //     const requiredLengthSmallerThenSeven = 6;
-    //     const minimumlength = 7;
-    //     const r1 = randomService.createRandom(requiredLengthSmallerThenSeven);
-    //     spyOn(loggerService, 'logWarning').and.callThrough();
-    //     expect(r1.length).toBe(minimumlength);
-    //     expect(loggerService.logWarning).toHaveBeenCalledWith(
-    //         `RandomService called with ${requiredLengthSmallerThenSeven} but 7 chars is the minimum, returning 7 chars`
-    //     );
-    // });
+    for (let index = 1; index < 7; index++) {
+        it('Giving back 10 or more characters when called with numbers less than 7', () => {
+            const requiredLengthSmallerThenSeven = index;
+            const fallbackLength = 10;
+            const r1 = randomService.createRandom(requiredLengthSmallerThenSeven);
+            expect(r1.length).toBeGreaterThanOrEqual(fallbackLength);
+        });
+    }
 });

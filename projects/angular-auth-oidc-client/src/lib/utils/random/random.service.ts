@@ -11,7 +11,8 @@ export class RandomService {
         }
 
         if (requiredLength > 0 && requiredLength < 7) {
-            this.loggerService.logWarning(`RandomService called with ${requiredLength} but 7 chars is the minimum, returning 7 chars`);
+            this.loggerService.logWarning(`RandomService called with ${requiredLength} but 7 chars is the minimum, returning 10 chars`);
+            requiredLength = 10;
         }
 
         const length = requiredLength - 6;
