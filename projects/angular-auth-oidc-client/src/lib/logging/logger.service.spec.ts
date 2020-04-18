@@ -65,7 +65,7 @@ describe('Logger Service', () => {
 
         configProvider.setConfig({ logLevel: LogLevel.Debug }, null);
         loggerService.logDebug('some message');
-        expect(spy).toHaveBeenCalledWith('some message');
+        expect(spy).toHaveBeenCalledWith('some message', []);
     });
 
     it('should not log when loglevel is Warn', () => {

@@ -117,7 +117,7 @@ describe('OidcSecurityService', () => {
         spyOn(urlService, 'createEndSessionUrl').and.returnValue(logoffUrl);
         const redirectToSpy = spyOn(oidcSecurityService as any, 'redirectTo');
 
-        (oidcSecurityService as OidcSecurityService).logoff();
+        oidcSecurityService.logoff();
 
         expect(redirectToSpy).toHaveBeenCalledWith(logoffUrl);
     });
@@ -141,7 +141,7 @@ describe('OidcSecurityService', () => {
         expect(hasBeenCalled).toEqual(false);
 
         (oidcSecurityService as any).isAuthorizedInternal.next(true);
-        (oidcSecurityService as OidcSecurityService).logoff();
+        oidcSecurityService.logoff();
 
         expect(hasBeenCalled).toEqual(true);
     }));
@@ -154,6 +154,7 @@ describe('OidcSecurityService', () => {
 
         expect(spy).toHaveBeenCalledWith('thisisacode', '0000.1234.000', null);
     });
+
     it('refresh session with refresh token should call authorized callback with isRenew running to true', async(() => {
         const config = {} as OpenIdConfiguration;
         config.responseType = 'code';
@@ -165,6 +166,7 @@ describe('OidcSecurityService', () => {
 
         spyOn(oidcSecurityService as any, 'refreshTokensWithCodeProcedure').and.returnValue(of(true));
         spyOn(storagePersistanceService as any, 'getRefreshToken').and.returnValue('refresh token');
+
         oidcSecurityService.refreshSession().subscribe(() => {
             expect(storagePersistanceService.silentRenewRunning).toBe('running');
         });
