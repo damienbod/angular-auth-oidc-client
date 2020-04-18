@@ -1,21 +1,20 @@
-﻿import { HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { ConfigurationProvider } from '../config';
+﻿import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { LoggerService } from '../logging/logger.service';
 import { IFrameService } from './existing-iframe.service';
 
 const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 
 @Injectable()
-export class OidcSecuritySilentRenew {
-    constructor(
-        private loggerService: LoggerService,
-        private iFrameService: IFrameService,
-        private readonly configurationProvider: ConfigurationProvider
-    ) {}
+export class SilentRenewService {
+    constructor(private loggerService: LoggerService, private iFrameService: IFrameService) {}
 
     private boundSilentRenewEvent: any;
+    private silentRenewResultInternal$ = new BehaviorSubject<any>(null);
+
+    get silentRenewResult$() {
+        return this.silentRenewResultInternal$;
+    }
 
     init() {
         this.getOrCreateIframe();
@@ -77,29 +76,6 @@ export class OidcSecuritySilentRenew {
     private silentRenewEventHandler(e: CustomEvent) {
         this.loggerService.logDebug('silentRenewEventHandler');
 
-        if (this.configurationProvider.openIDConfiguration.responseType === 'code') {
-            const urlParts = e.detail.toString().split('?');
-            const params = new HttpParams({
-                fromString: urlParts[1],
-            });
-            const code = params.get('code');
-            const state = params.get('state');
-            const sessionState = params.get('session_state');
-            const error = params.get('error');
-            if (code && state) {
-                this.requestTokensWithCodeProcedure(code, state, sessionState);
-            }
-            if (error) {
-                this.onAuthorizationResultInternal.next(
-                    new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.LoginRequired, true)
-                );
-                this.resetAuthorizationData(false);
-                this.storagePersistanceService.authNonce = '';
-                this.loggerService.logDebug(e.detail.toString());
-            }
-        } else {
-            // ImplicitFlow
-            this.authorizedImplicitFlowCallback(e.detail);
-        }
+        this.silentRenewResultInternal$.next(e.detail);
     }
 }

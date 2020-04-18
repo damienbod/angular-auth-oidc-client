@@ -3,7 +3,7 @@ import { DataService } from './api/data.service';
 import { OidcConfigService } from './config';
 import { CheckSessionService } from './iframeServices/check-session.service';
 import { IFrameService } from './iframeServices/existing-iframe.service';
-import { OidcSecuritySilentRenew } from './iframeServices/oidc.security.silent-renew';
+import { SilentRenewService } from './iframeServices/silent-renew.service';
 import { LoggerService } from './logging/logger.service';
 import { TokenHelperService } from './services/oidc-token-helper.service';
 import { OidcSecurityService } from './services/oidc.security.service';
@@ -23,7 +23,7 @@ export class AuthModule {
                 OidcSecurityService,
                 TokenValidationService,
                 CheckSessionService,
-                OidcSecuritySilentRenew,
+                SilentRenewService,
                 UserService,
                 StoragePersistanceService,
                 TokenHelperService,

@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { oneLineTrim } from 'common-tags';
@@ -8,7 +8,7 @@ import { DataService } from '../api/data.service';
 import { ConfigurationProvider } from '../config';
 import { EventTypes } from '../events';
 import { EventsService } from '../events/events.service';
-import { CheckSessionService, OidcSecuritySilentRenew } from '../iframeServices';
+import { CheckSessionService, SilentRenewService } from '../iframeServices';
 import { LoggerService } from '../logging/logger.service';
 import { AuthorizationResult } from '../models/authorization-result';
 import { AuthorizationState } from '../models/authorization-state.enum';
@@ -58,7 +58,7 @@ export class OidcSecurityService {
         private stateValidationService: StateValidationService,
         private router: Router,
         private checkSessionService: CheckSessionService,
-        private oidcSecuritySilentRenew: OidcSecuritySilentRenew,
+        private silentRenewService: SilentRenewService,
         private userService: UserService,
         private storagePersistanceService: StoragePersistanceService,
         private tokenValidationService: TokenValidationService,
@@ -161,7 +161,10 @@ export class OidcSecurityService {
         this.onModuleSetupInternal.next();
 
         if (this.configurationProvider.openIDConfiguration.silentRenew) {
-            this.oidcSecuritySilentRenew.init();
+            this.silentRenewService.init();
+            this.silentRenewService.silentRenewResult$.subscribe((detail) => {
+                this.silentRenewEventHandler(detail);
+            });
         }
 
         this.moduleSetup = true;
@@ -675,7 +678,7 @@ export class OidcSecurityService {
         return this.getIsAuthorized().pipe(
             first((isAuthorized) => isAuthorized),
             switchMap(() => {
-                return this.oidcSecuritySilentRenew.startRenew(url).pipe(map(() => true));
+                return this.silentRenewService.startRenew(url).pipe(map(() => true));
             })
         );
     }
@@ -848,5 +851,36 @@ export class OidcSecurityService {
             /* Initial heartbeat check */
             this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 10000);
         });
+    }
+
+    private silentRenewEventHandler(detail: any) {
+        if (!detail) {
+            console.warn('EEEEEEEEEE SSIILLEENNT');
+            return;
+        }
+        if (this.configurationProvider.openIDConfiguration.responseType === 'code') {
+            const urlParts = detail.toString().split('?');
+            const params = new HttpParams({
+                fromString: urlParts[1],
+            });
+            const code = params.get('code');
+            const state = params.get('state');
+            const sessionState = params.get('session_state');
+            const error = params.get('error');
+            if (code && state) {
+                this.requestTokensWithCodeProcedure(code, state, sessionState);
+            }
+            if (error) {
+                this.onAuthorizationResultInternal.next(
+                    new AuthorizationResult(AuthorizationState.unauthorized, ValidationResult.LoginRequired, true)
+                );
+                this.resetAuthorizationData(false);
+                this.storagePersistanceService.authNonce = '';
+                this.loggerService.logDebug(detail.toString());
+            }
+        } else {
+            // ImplicitFlow
+            this.authorizedImplicitFlowCallback(detail);
+        }
     }
 }
