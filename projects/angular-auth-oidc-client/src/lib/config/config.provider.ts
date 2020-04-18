@@ -29,10 +29,11 @@ export class ConfigurationProvider {
     }
 
     public get configuration(): PublicConfiguration {
-        // TODO CHECK IF MODULE IS SET UP HERE,
-        // IF NOT, RETURN NULL AND LOG AN INFO
-        /// THIS HAS TO BE PART OF A PUBLIC FACADE
+        // THIS HAS TO BE PART OF A PUBLIC FACADE
         // MAYBE INTRODUCED IN THE FUTURE
+        if (!this.hasValidConfig()) {
+            return null;
+        }
 
         return {
             configuration: { ...this.openIDConfiguration },

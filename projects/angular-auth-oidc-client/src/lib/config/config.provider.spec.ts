@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { LogLevel } from '../logging/log-level';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { ConfigurationProvider } from './config.provider';
+import { DEFAULT_CONFIG } from './default-config';
 import { OpenIdConfiguration } from './openid-configuration';
 
 describe('ConfigurationProviderTests', () => {
@@ -217,5 +218,38 @@ describe('ConfigurationProviderTests', () => {
 
         expect(configurationProvider.openIDConfiguration.silentRenew).toEqual(false);
         expect(configurationProvider.openIDConfiguration.startCheckSession).toEqual(false);
+    });
+
+    it('asking for public config returns null when internal configs are both not set', () => {
+        configurationProvider.setConfig(null, null);
+
+        const currentConfig = configurationProvider.configuration;
+
+        expect(currentConfig).toBeNull();
+    });
+
+    it('public config has default config if config is not getting passed', () => {
+        configurationProvider.setConfig(null, {});
+
+        const currentConfig = configurationProvider.configuration;
+
+        expect(currentConfig).not.toBeNull();
+        expect(currentConfig.configuration).toEqual(DEFAULT_CONFIG);
+    });
+
+    it('asking for public config returns null when internal configs if wellknown is not set', () => {
+        configurationProvider.setConfig({}, null);
+
+        const currentConfig = configurationProvider.configuration;
+
+        expect(currentConfig).toBeNull();
+    });
+
+    it('asking for public config returns config when internal configs are both set', () => {
+        configurationProvider.setConfig({}, {});
+
+        const currentConfig = configurationProvider.configuration;
+
+        expect(currentConfig).not.toBeNull();
     });
 });
