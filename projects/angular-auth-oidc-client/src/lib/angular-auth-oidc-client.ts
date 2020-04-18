@@ -4,6 +4,7 @@ export * from './auth.module';
 export * from './config/auth-well-known-endpoints';
 export * from './config/config.service';
 export * from './config/openid-configuration';
+export * from './config/public-configuration';
 export * from './events';
 export * from './logging/log-level';
 export * from './logging/logger.service';
