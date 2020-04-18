@@ -13,7 +13,7 @@ import { LoggerService } from '../logging/logger.service';
 import { AuthorizationResult } from '../models/authorization-result';
 import { AuthorizationState } from '../models/authorization-state.enum';
 import { StoragePersistanceService } from '../storage';
-import { UrlService } from '../utils';
+import { RandomService, UrlService } from '../utils';
 import { JwtKeys } from '../validation/jwtkeys';
 import { StateValidationService } from '../validation/state-validation.service';
 import { TokenValidationService } from '../validation/token-validation.service';
@@ -63,7 +63,8 @@ export class OidcSecurityService {
         private readonly httpClient: HttpClient,
         private readonly configurationProvider: ConfigurationProvider,
         private readonly eventsService: EventsService,
-        private readonly urlService: UrlService
+        private readonly urlService: UrlService,
+        private readonly randomService: RandomService
     ) {
         this.onModuleSetup.pipe(take(1)).subscribe(() => {
             this.moduleSetup = true;
@@ -265,11 +266,11 @@ export class OidcSecurityService {
 
         let state = this.storagePersistanceService.authStateControl;
         if (!state) {
-            state = this.createRandom(40);
+            state = this.randomService.createRandom(40);
             this.storagePersistanceService.authStateControl = state;
         }
 
-        const nonce = this.createRandom(40);
+        const nonce = this.randomService.createRandom(40);
         this.storagePersistanceService.authNonce = nonce;
         this.loggerService.logDebug('AuthorizedController created. local state: ' + this.storagePersistanceService.authStateControl);
 
@@ -277,7 +278,7 @@ export class OidcSecurityService {
         // Code Flow
         if (this.configurationProvider.openIDConfiguration.responseType === 'code') {
             // code_challenge with "S256"
-            const codeVerifier = this.createRandom(67);
+            const codeVerifier = this.randomService.createRandom(67);
             const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
 
             this.storagePersistanceService.codeVerifier = codeVerifier;
@@ -683,11 +684,11 @@ export class OidcSecurityService {
 
         let state = this.storagePersistanceService.authStateControl;
         if (state === '' || state === null) {
-            state = this.createRandom(40);
+            state = this.randomService.createRandom(40);
             this.storagePersistanceService.authStateControl = state;
         }
 
-        const nonce = this.createRandom(40);
+        const nonce = this.randomService.createRandom(40);
         this.storagePersistanceService.authNonce = nonce;
         this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + this.storagePersistanceService.authStateControl);
 
@@ -708,7 +709,7 @@ export class OidcSecurityService {
                 }
             }
             // code_challenge with "S256"
-            const codeVerifier = this.createRandom(67);
+            const codeVerifier = this.randomService.createRandom(67);
             const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
 
             this.storagePersistanceService.codeVerifier = codeVerifier;
@@ -941,29 +942,5 @@ export class OidcSecurityService {
             // ImplicitFlow
             this.authorizedImplicitFlowCallback(e.detail);
         }
-    }
-
-    private createRandom(requiredLength: number): string {
-        const length = requiredLength - 6;
-        const arr = new Uint8Array((length || length) / 2);
-        window.crypto.getRandomValues(arr);
-        return Array.from(arr, this.tohex).join('') + this.randomString(7);
-    }
-
-    private tohex(dec) {
-        return ('0' + dec.toString(16)).substr(-2);
-    }
-
-    private randomString(length) {
-        let result = '';
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-        const values = new Uint32Array(length);
-        window.crypto.getRandomValues(values);
-        for (let i = 0; i < length; i++) {
-            result += characters[values[i] % characters.length];
-        }
-
-        return result;
     }
 }
