@@ -62,7 +62,7 @@ export class OidcSecurityService {
         private router: Router,
         private checkSessionService: CheckSessionService,
         private oidcSecuritySilentRenew: OidcSecuritySilentRenew,
-        private oidcSecurityUserService: UserService,
+        private userService: UserService,
         private storagePersistanceService: StoragePersistanceService,
         private tokenValidationService: TokenValidationService,
         private tokenHelperService: TokenHelperService,
@@ -517,7 +517,7 @@ export class OidcSecurityService {
                         this.storagePersistanceService.silentRenewRunning = '';
 
                         if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
-                            this.oidcSecurityUserService
+                            this.userService
                                 .getAndPersistUserDataInStore(
                                     isRenewProcess,
                                     result,
@@ -568,7 +568,7 @@ export class OidcSecurityService {
                         } else {
                             if (!isRenewProcess) {
                                 // userData is set to the id_token decoded, auto get user data set to false
-                                this.oidcSecurityUserService.setUserData(validationResult.decodedIdToken);
+                                this.userService.setUserData(validationResult.decodedIdToken);
                             }
 
                             this.runTokenValidation();
@@ -752,7 +752,7 @@ export class OidcSecurityService {
 
         if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
             // Clear user data. Fixes #97.
-            this.oidcSecurityUserService.resetUserData();
+            this.userService.resetUserData();
         }
 
         this.storagePersistanceService.resetStorageData(isRenewProcess);
@@ -831,13 +831,9 @@ export class OidcSecurityService {
                 'silentRenewHeartBeatCheck\r\n' +
                     `\tsilentRenewRunning: ${this.storagePersistanceService.silentRenewRunning === 'running'}\r\n` +
                     `\tidToken: ${!!this.getIdToken()}\r\n` +
-                    `\tuserData: ${!!this.oidcSecurityUserService.getUserData()}`
+                    `\tuserData: ${!!this.userService.getUserData()}`
             );
-            if (
-                this.oidcSecurityUserService.getUserData() &&
-                this.storagePersistanceService.silentRenewRunning !== 'running' &&
-                this.getIdToken()
-            ) {
+            if (this.userService.getUserData() && this.storagePersistanceService.silentRenewRunning !== 'running' && this.getIdToken()) {
                 if (
                     this.tokenValidationService.isTokenExpired(
                         this.storagePersistanceService.idToken,
