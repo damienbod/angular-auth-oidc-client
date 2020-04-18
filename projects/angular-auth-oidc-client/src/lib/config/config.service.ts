@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { map, tap } from 'rxjs/operators';
-import { HttpBaseService } from '../api/http-base.service';
+import { DataService } from '../api/data.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { EventTypes } from '../events/event-types';
 import { EventsService } from '../events/events.service';
@@ -12,7 +12,7 @@ export class OidcConfigService {
     private WELL_KNOWN_SUFFIX = `/.well-known/openid-configuration`;
     constructor(
         private readonly loggerService: LoggerService,
-        private readonly http: HttpBaseService,
+        private readonly http: DataService,
         private readonly configurationProvider: ConfigurationProvider,
         private readonly eventsService: EventsService
     ) {}
