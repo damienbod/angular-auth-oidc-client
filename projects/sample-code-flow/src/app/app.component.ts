@@ -10,8 +10,8 @@ import { filter } from 'rxjs/operators';
 export class AppComponent implements OnInit, OnDestroy {
     configuration: PublicConfiguration;
     isModuleSetUp$: Observable<OidcClientNotification>;
+    userDataChanged$: Observable<OidcClientNotification>;
     isAuthenticated: boolean;
-    userData: any;
 
     constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {
         this.oidcSecurityService.setupModule();
@@ -31,12 +31,12 @@ export class AppComponent implements OnInit, OnDestroy {
             .registerForEvents()
             .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.ModuleSetup));
 
+        this.userDataChanged$ = this.eventsService
+            .registerForEvents()
+            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.UserDataChanged));
+
         this.oidcSecurityService.getIsAuthorized().subscribe((auth) => {
             this.isAuthenticated = auth;
-        });
-
-        this.oidcSecurityService.getUserData().subscribe((userData) => {
-            this.userData = userData;
         });
     }
 
