@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { LoggerService } from '../../logging/logger.service';
+import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { RandomService } from './random.service';
 
 describe('RandomService Tests', () => {
@@ -8,7 +9,7 @@ describe('RandomService Tests', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [RandomService, LoggerService],
+            providers: [RandomService, { provide: LoggerService, useClass: LoggerServiceMock }],
         });
     });
 
