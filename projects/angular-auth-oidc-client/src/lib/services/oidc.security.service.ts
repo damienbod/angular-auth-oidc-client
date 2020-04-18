@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { oneLineTrim } from 'common-tags';
 import { BehaviorSubject, from, Observable, of, race, Subject, throwError, timer } from 'rxjs';
 import { catchError, filter, first, map, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
-import { OidcDataService } from '../api/oidc-data.service';
+import { DataService } from '../api/data.service';
 import { CheckSessionService } from '../check-session/check-session.service';
 import { ConfigurationProvider } from '../config';
 import { EventTypes } from '../events';
@@ -13,6 +13,7 @@ import { LoggerService } from '../logging/logger.service';
 import { AuthorizationResult } from '../models/authorization-result';
 import { AuthorizationState } from '../models/authorization-state.enum';
 import { StoragePersistanceService } from '../storage';
+import { UserService } from '../userData/user-service';
 import { RandomService, UrlService } from '../utils';
 import { JwtKeys } from '../validation/jwtkeys';
 import { StateValidationService } from '../validation/state-validation.service';
@@ -20,7 +21,6 @@ import { TokenValidationService } from '../validation/token-validation.service';
 import { ValidationResult } from '../validation/validation-result';
 import { TokenHelperService } from './oidc-token-helper.service';
 import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
-import { OidcSecurityUserService } from './oidc.security.user-service';
 
 @Injectable()
 export class OidcSecurityService {
@@ -28,12 +28,11 @@ export class OidcSecurityService {
     private onAuthorizationResultInternal = new Subject<AuthorizationResult>();
 
     public get configuration() {
-        // TODO CHECK IF MODULE IS SET UP HERE,
-        // IF NOT, RETURN NULL AND LOG AN INFO
-        /// THIS HAS TO BE PART OF A PUBLIC FACADE
-        // MAYBE INTRODUCED IN THE FUTURE
-
         return this.configurationProvider.configuration;
+    }
+
+    public get userData$() {
+        return this.userService.userData$;
     }
 
     public get onModuleSetup(): Observable<boolean> {
@@ -51,19 +50,18 @@ export class OidcSecurityService {
     private isAuthorizedInternal = new BehaviorSubject<boolean>(false);
     private isSetupAndAuthorizedInternal: Observable<boolean>;
 
-    private userDataInternal = new BehaviorSubject<any>('');
     private authWellKnownEndpointsLoaded = false;
     private runTokenValidationRunning = false;
     private scheduledHeartBeatInternal: any;
     private boundSilentRenewEvent: any;
 
     constructor(
-        private oidcDataService: OidcDataService,
+        private oidcDataService: DataService,
         private stateValidationService: StateValidationService,
         private router: Router,
         private checkSessionService: CheckSessionService,
         private oidcSecuritySilentRenew: OidcSecuritySilentRenew,
-        private oidcSecurityUserService: OidcSecurityUserService,
+        private userService: UserService,
         private storagePersistanceService: StoragePersistanceService,
         private tokenValidationService: TokenValidationService,
         private tokenHelperService: TokenHelperService,
@@ -142,11 +140,6 @@ export class OidcSecurityService {
             return;
         }
 
-        const userData = this.storagePersistanceService.userData;
-        if (userData) {
-            this.setUserData(userData);
-        }
-
         const isAuthorized = this.storagePersistanceService.isAuthorized;
         if (isAuthorized) {
             this.loggerService.logDebug('IsAuthorized setup module');
@@ -199,10 +192,6 @@ export class OidcSecurityService {
         this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
 
         this.checkSetupAndAuthorizedInternal();
-    }
-
-    getUserData<T = any>(): Observable<T> {
-        return this.userDataInternal.asObservable();
     }
 
     getIsModuleSetup(): Observable<boolean> {
@@ -527,40 +516,58 @@ export class OidcSecurityService {
                         this.storagePersistanceService.silentRenewRunning = '';
 
                         if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
-                            this.getUserinfo(isRenewProcess, result, validationResult.idToken, validationResult.decodedIdToken).subscribe(
-                                (response) => {
-                                    if (response) {
-                                        this.onAuthorizationResultInternal.next(
-                                            new AuthorizationResult(AuthorizationState.authorized, validationResult.state, isRenewProcess)
-                                        );
-                                        if (
-                                            !this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent &&
-                                            !isRenewProcess
-                                        ) {
-                                            this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
+                            this.userService
+                                .getAndPersistUserDataInStore(
+                                    isRenewProcess,
+                                    result,
+                                    validationResult.idToken,
+                                    validationResult.decodedIdToken
+                                )
+                                .subscribe(
+                                    (userData) => {
+                                        if (!!userData) {
+                                            this.storagePersistanceService.sessionState = result.session_state;
+                                            this.runTokenValidation();
+                                            this.onAuthorizationResultInternal.next(
+                                                new AuthorizationResult(
+                                                    AuthorizationState.authorized,
+                                                    validationResult.state,
+                                                    isRenewProcess
+                                                )
+                                            );
+                                            if (
+                                                !this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent &&
+                                                !isRenewProcess
+                                            ) {
+                                                this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
+                                            }
+                                        } else {
+                                            this.resetAuthorizationData(false);
+
+                                            this.onAuthorizationResultInternal.next(
+                                                new AuthorizationResult(
+                                                    AuthorizationState.unauthorized,
+                                                    validationResult.state,
+                                                    isRenewProcess
+                                                )
+                                            );
+                                            if (
+                                                !this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent &&
+                                                !isRenewProcess
+                                            ) {
+                                                this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
+                                            }
                                         }
-                                    } else {
-                                        this.onAuthorizationResultInternal.next(
-                                            new AuthorizationResult(AuthorizationState.unauthorized, validationResult.state, isRenewProcess)
-                                        );
-                                        if (
-                                            !this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent &&
-                                            !isRenewProcess
-                                        ) {
-                                            this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
-                                        }
+                                    },
+                                    (err) => {
+                                        /* Something went wrong while getting signing key */
+                                        this.loggerService.logWarning('Failed to retreive user info with error: ' + JSON.stringify(err));
                                     }
-                                },
-                                (err) => {
-                                    /* Something went wrong while getting signing key */
-                                    this.loggerService.logWarning('Failed to retreive user info with error: ' + JSON.stringify(err));
-                                }
-                            );
+                                );
                         } else {
                             if (!isRenewProcess) {
                                 // userData is set to the id_token decoded, auto get user data set to false
-                                this.oidcSecurityUserService.setUserData(validationResult.decodedIdToken);
-                                this.setUserData(this.oidcSecurityUserService.getUserData());
+                                this.userService.setUserDataToStore(validationResult.decodedIdToken);
                             }
 
                             this.runTokenValidation();
@@ -594,65 +601,6 @@ export class OidcSecurityService {
                 }
             );
         }
-    }
-
-    getUserinfo(isRenewProcess = false, result?: any, idToken?: any, decodedIdToken?: any): Observable<boolean> {
-        result = result ? result : this.storagePersistanceService.authResult;
-        idToken = idToken ? idToken : this.storagePersistanceService.idToken;
-        decodedIdToken = decodedIdToken ? decodedIdToken : this.tokenHelperService.getPayloadFromToken(idToken, false);
-
-        return new Observable<boolean>((observer) => {
-            // flow id_token token
-            if (
-                this.configurationProvider.openIDConfiguration.responseType === 'id_token token' ||
-                this.configurationProvider.openIDConfiguration.responseType === 'code'
-            ) {
-                if (isRenewProcess && this.userDataInternal.value) {
-                    this.storagePersistanceService.sessionState = result.session_state;
-                    observer.next(true);
-                    observer.complete();
-                } else {
-                    this.oidcSecurityUserService.initUserData().subscribe(() => {
-                        this.loggerService.logDebug('authorizedCallback (id_token token || code) flow');
-
-                        const userData = this.oidcSecurityUserService.getUserData();
-
-                        if (this.tokenValidationService.validateUserdataSubIdToken(decodedIdToken.sub, userData.sub)) {
-                            this.setUserData(userData);
-                            this.loggerService.logDebug(this.storagePersistanceService.accessToken);
-                            this.loggerService.logDebug(this.oidcSecurityUserService.getUserData());
-
-                            this.storagePersistanceService.sessionState = result.session_state;
-
-                            this.runTokenValidation();
-                            observer.next(true);
-                        } else {
-                            // something went wrong, userdata sub does not match that from id_token
-                            this.loggerService.logWarning('authorizedCallback, User data sub does not match sub in id_token');
-                            this.loggerService.logDebug('authorizedCallback, token(s) validation failed, resetting');
-                            this.resetAuthorizationData(false);
-                            observer.next(false);
-                        }
-                        observer.complete();
-                    });
-                }
-            } else {
-                // flow id_token
-                this.loggerService.logDebug('authorizedCallback id_token flow');
-                this.loggerService.logDebug(this.storagePersistanceService.accessToken);
-
-                // userData is set to the id_token decoded. No access_token.
-                this.oidcSecurityUserService.setUserData(decodedIdToken);
-                this.setUserData(this.oidcSecurityUserService.getUserData());
-
-                this.storagePersistanceService.sessionState = result.session_state;
-
-                this.runTokenValidation();
-
-                observer.next(true);
-                observer.complete();
-            }
-        });
     }
 
     logoff(urlHandler?: (url: string) => any) {
@@ -796,15 +744,18 @@ export class OidcSecurityService {
     }
 
     resetAuthorizationData(isRenewProcess: boolean): void {
-        if (!isRenewProcess) {
-            if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
-                // Clear user data. Fixes #97.
-                this.setUserData('');
-            }
-
-            this.storagePersistanceService.resetStorageData(isRenewProcess);
-            this.setIsAuthorized(false);
+        if (isRenewProcess) {
+            // TODO ADD A LOG
+            return;
         }
+
+        if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
+            // Clear user data. Fixes #97.
+            this.userService.resetUserDataInStore();
+        }
+
+        this.storagePersistanceService.resetStorageData(isRenewProcess);
+        this.setIsAuthorized(false);
     }
 
     getEndSessionUrl(): string | undefined {
@@ -815,11 +766,6 @@ export class OidcSecurityService {
                 return this.urlService.createEndSessionUrl(endSessionEndpoint, idTokenHint);
             }
         }
-    }
-
-    private setUserData(userData: any): void {
-        this.storagePersistanceService.userData = userData;
-        this.userDataInternal.next(userData);
     }
 
     private setIsAuthorized(isAuthorized: boolean): void {
@@ -884,9 +830,13 @@ export class OidcSecurityService {
                 'silentRenewHeartBeatCheck\r\n' +
                     `\tsilentRenewRunning: ${this.storagePersistanceService.silentRenewRunning === 'running'}\r\n` +
                     `\tidToken: ${!!this.getIdToken()}\r\n` +
-                    `\t_userData.value: ${!!this.userDataInternal.value}`
+                    `\tuserData: ${!!this.userService.getUserDataFromStore()}`
             );
-            if (this.userDataInternal.value && this.storagePersistanceService.silentRenewRunning !== 'running' && this.getIdToken()) {
+            if (
+                this.userService.getUserDataFromStore() &&
+                this.storagePersistanceService.silentRenewRunning !== 'running' &&
+                this.getIdToken()
+            ) {
                 if (
                     this.tokenValidationService.isTokenExpired(
                         this.storagePersistanceService.idToken,

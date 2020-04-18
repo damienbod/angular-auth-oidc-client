@@ -245,17 +245,6 @@ export class TokenValidationService {
         return true;
     }
 
-    validateUserdataSubIdToken(idTokenSub: any, userdataSub: any): boolean {
-        if ((idTokenSub as string) !== (userdataSub as string)) {
-            this.loggerService.logDebug(
-                'validate_userdata_sub_id_token failed, id_token_sub: ' + idTokenSub + ' userdata_sub:' + userdataSub
-            );
-            return false;
-        }
-
-        return true;
-    }
-
     // id_token C5: The Client MUST validate the signature of the ID Token according to JWS [JWS] using the algorithm specified in the alg
     // Header Parameter of the JOSE Header.The Client MUST use the keys provided by the Issuer.
     // id_token C6: The alg value SHOULD be RS256. Validation of tokens using other signing algorithms is described in the

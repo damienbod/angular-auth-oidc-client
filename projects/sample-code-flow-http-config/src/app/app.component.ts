@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { EventsService, EventTypes, OidcClientNotification, OidcSecurityService } from 'angular-auth-oidc-client';
+import { EventsService, EventTypes, OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 import { filter, tap } from 'rxjs/operators';
 
@@ -8,10 +8,10 @@ import { filter, tap } from 'rxjs/operators';
     templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit {
-    isConfigurationLoaded$: Observable<OidcClientNotification>;
+    configuration: PublicConfiguration;
     isModuleSetUp$: Observable<OidcClientNotification>;
     checkSessionChanged$: Observable<OidcClientNotification>;
-    userData: any;
+    userDataChanged$: Observable<OidcClientNotification>;
     isAuthenticated: boolean;
     checkSessionChanged: boolean;
 
@@ -28,13 +28,11 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.configuration = this.oidcSecurityService.configuration;
+
         this.isModuleSetUp$ = this.eventsService
             .registerForEvents()
             .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.ModuleSetup));
-
-        this.isConfigurationLoaded$ = this.eventsService
-            .registerForEvents()
-            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.ConfigLoaded));
 
         this.checkSessionChanged$ = this.eventsService.registerForEvents().pipe(
             filter((notification: OidcClientNotification) => notification.type === EventTypes.CheckSessionChanged),
@@ -45,9 +43,9 @@ export class AppComponent implements OnInit {
             this.isAuthenticated = auth;
         });
 
-        this.oidcSecurityService.getUserData().subscribe((userData) => {
-            this.userData = userData;
-        });
+        this.userDataChanged$ = this.eventsService
+            .registerForEvents()
+            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.UserDataChanged));
     }
 
     login() {
