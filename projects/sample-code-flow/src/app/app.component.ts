@@ -8,7 +8,7 @@ import { filter } from 'rxjs/operators';
     templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit, OnDestroy {
-    isConfigurationLoaded$: Observable<OidcClientNotification>;
+    configuration: any;
     isModuleSetUp$: Observable<OidcClientNotification>;
     isAuthenticated: boolean;
     userData: any;
@@ -25,13 +25,11 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.configuration = this.oidcSecurityService.configuration;
+
         this.isModuleSetUp$ = this.eventsService
             .registerForEvents()
             .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.ModuleSetup));
-
-        this.isConfigurationLoaded$ = this.eventsService
-            .registerForEvents()
-            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.ConfigLoaded));
 
         this.oidcSecurityService.getIsAuthorized().subscribe((auth) => {
             this.isAuthenticated = auth;
