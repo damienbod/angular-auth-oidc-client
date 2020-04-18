@@ -10,14 +10,14 @@ import { LogLevel } from '../logging/log-level';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { TokenHelperService } from '../services/oidc-token-helper.service';
-import { AbstractSecurityStorage } from '../storage';
-import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
+import { StoragePersistanceService } from '../storage';
+import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
 import { JwtKeys } from './jwtkeys';
 import { StateValidationService } from './state-validation.service';
 import { TokenValidationService } from './token-validation.service';
 import { ValidationResult } from './validation-result';
 
-describe('yStateValidationService', () => {
+describe('State Validation Service', () => {
     let stateValidationService: StateValidationService;
     let oidcSecurityValidation: TokenValidationService;
     let tokenHelperService: TokenHelperService;
@@ -36,8 +36,8 @@ describe('yStateValidationService', () => {
                 LoggerService,
                 TokenHelperService,
                 {
-                    provide: AbstractSecurityStorage,
-                    useClass: BrowserStorageMock,
+                    provide: StoragePersistanceService,
+                    useClass: StoragePersistanceServiceMock,
                 },
                 {
                     provide: LoggerService,
@@ -84,6 +84,11 @@ describe('yStateValidationService', () => {
             revocationEndpoint: 'https://localhost:44363/connect/revocation',
             introspectionEndpoint: 'https://localhost:44363/connect/introspect',
         };
+    });
+
+    afterEach(() => {
+        // reset config after each test
+        configProvider.setConfig(null, null);
     });
 
     it('should create', () => {

@@ -1,11 +1,12 @@
 import { async, TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../config';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
+import { TestLogging } from '../logging/logger.service-mock';
 import { IFrameService } from '../services/existing-iframe.service';
 import { OidcSecurityService } from '../services/oidc.security.service';
 import { AbstractSecurityStorage, StoragePersistanceService } from '../storage';
 import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
+import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
 import { CheckSessionService } from './check-session.service';
 
 describe('SecurityCheckSessionTests', () => {
@@ -18,8 +19,11 @@ describe('SecurityCheckSessionTests', () => {
             providers: [
                 CheckSessionService,
                 ConfigurationProvider,
-                StoragePersistanceService,
-                { provide: LoggerService, useClass: LoggerServiceMock },
+                {
+                    provide: StoragePersistanceService,
+                    useClass: StoragePersistanceServiceMock,
+                },
+                { provide: LoggerService, useClass: TestLogging },
                 OidcSecurityService,
                 { provide: AbstractSecurityStorage, useClass: BrowserStorageMock },
                 IFrameService,
@@ -43,6 +47,9 @@ describe('SecurityCheckSessionTests', () => {
         if (myiFrameForCheckSession) {
             myiFrameForCheckSession.parentNode.removeChild(myiFrameForCheckSession);
         }
+
+        // reset config after each test
+        configurationProvider.setConfig(null, null);
     });
 
     it('should create', () => {
