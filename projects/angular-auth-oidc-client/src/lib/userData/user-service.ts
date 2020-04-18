@@ -19,8 +19,8 @@ export class UserService {
         private readonly configurationProvider: ConfigurationProvider
     ) {}
 
-    getAndPersistUserDataInStore(isRenewProcess = false, result?: any, idToken?: any, decodedIdToken?: any): Observable<any> {
-        result = result || this.storagePersistanceService.authResult;
+    getAndPersistUserDataInStore(isRenewProcess = false, authResult?: any, idToken?: any, decodedIdToken?: any): Observable<any> {
+        authResult = authResult || this.storagePersistanceService.authResult;
         idToken = idToken || this.storagePersistanceService.idToken;
         decodedIdToken = decodedIdToken || this.tokenHelperService.getPayloadFromToken(idToken, false);
 
@@ -34,7 +34,7 @@ export class UserService {
             this.loggerService.logDebug(this.storagePersistanceService.accessToken);
 
             // userData is set to the id_token decoded. No access_token.
-            this.setUserData(decodedIdToken);
+            this.setUserDataToStore(decodedIdToken);
 
             return of(decodedIdToken);
         }
@@ -66,13 +66,13 @@ export class UserService {
         return this.getIdentityUserData().pipe(
             map((data: any) => {
                 if (this.validateUserdataSubIdToken(idTokenSub, data.sub)) {
-                    this.setUserData(data);
+                    this.setUserDataToStore(data);
                     return data;
                 } else {
                     // something went wrong, userdata sub does not match that from id_token
                     this.loggerService.logWarning('authorizedCallback, User data sub does not match sub in id_token');
                     this.loggerService.logDebug('authorizedCallback, token(s) validation failed, resetting');
-                    this.resetUserData();
+                    this.resetUserDataInStore();
                 }
             })
         );
@@ -82,12 +82,12 @@ export class UserService {
         return this.storagePersistanceService.userData || null;
     }
 
-    setUserData(value: any): void {
+    setUserDataToStore(value: any): void {
         this.storagePersistanceService.userData = value;
         this.eventService.fireEvent(EventTypes.UserDataChanged, value);
     }
 
-    resetUserData(): void {
+    resetUserDataInStore(): void {
         this.storagePersistanceService.userData = '';
         this.eventService.fireEvent(EventTypes.UserDataChanged, '');
     }
@@ -101,8 +101,7 @@ export class UserService {
             throw Error('authWellKnownEndpoints is undefined');
         }
 
-        const canGetUserData =
-            this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.userinfoEndpoint;
+        const canGetUserData = this.configurationProvider?.wellKnownEndpoints?.userinfoEndpoint;
 
         if (!canGetUserData) {
             this.loggerService.logError(
@@ -114,11 +113,9 @@ export class UserService {
         return this.oidcDataService.getIdentityUserData(this.configurationProvider.wellKnownEndpoints.userinfoEndpoint || '', token);
     }
 
-    validateUserdataSubIdToken(idTokenSub: any, userdataSub: any): boolean {
+    private validateUserdataSubIdToken(idTokenSub: any, userdataSub: any): boolean {
         if ((idTokenSub as string) !== (userdataSub as string)) {
-            this.loggerService.logDebug(
-                'validate_userdata_sub_id_token failed, id_token_sub: ' + idTokenSub + ' userdata_sub:' + userdataSub
-            );
+            this.loggerService.logDebug('validateUserdataSubIdToken failed', idTokenSub, userdataSub);
             return false;
         }
 

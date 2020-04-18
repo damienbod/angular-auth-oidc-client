@@ -568,7 +568,7 @@ export class OidcSecurityService {
                         } else {
                             if (!isRenewProcess) {
                                 // userData is set to the id_token decoded, auto get user data set to false
-                                this.userService.setUserData(validationResult.decodedIdToken);
+                                this.userService.setUserDataToStore(validationResult.decodedIdToken);
                             }
 
                             this.runTokenValidation();
@@ -752,7 +752,7 @@ export class OidcSecurityService {
 
         if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
             // Clear user data. Fixes #97.
-            this.userService.resetUserData();
+            this.userService.resetUserDataInStore();
         }
 
         this.storagePersistanceService.resetStorageData(isRenewProcess);
