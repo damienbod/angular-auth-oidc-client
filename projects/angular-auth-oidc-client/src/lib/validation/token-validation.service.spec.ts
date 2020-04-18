@@ -7,7 +7,7 @@ import { ConfigurationProvider } from '../config';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LogLevel } from '../logging/log-level';
 import { LoggerService } from '../logging/logger.service';
-import { TestLogging } from '../logging/logger.service-mock';
+import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { AbstractSecurityStorage } from '../storage';
 import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
 import { EqualityService } from '../utils/equality/equality.service';
@@ -30,7 +30,7 @@ describe('TokenValidationService', () => {
                 },
                 {
                     provide: LoggerService,
-                    useClass: TestLogging,
+                    useClass: LoggerServiceMock,
                 },
             ],
         });

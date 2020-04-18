@@ -1,7 +1,7 @@
 import { async, TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../config';
 import { LoggerService } from '../logging/logger.service';
-import { TestLogging } from '../logging/logger.service-mock';
+import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { IFrameService } from '../services/existing-iframe.service';
 import { OidcSecurityService } from '../services/oidc.security.service';
 import { AbstractSecurityStorage, StoragePersistanceService } from '../storage';
@@ -19,7 +19,7 @@ describe('SecurityCheckSessionTests', () => {
                 CheckSessionService,
                 ConfigurationProvider,
                 StoragePersistanceService,
-                { provide: LoggerService, useClass: TestLogging },
+                { provide: LoggerService, useClass: LoggerServiceMock },
                 OidcSecurityService,
                 { provide: AbstractSecurityStorage, useClass: BrowserStorageMock },
                 IFrameService,
