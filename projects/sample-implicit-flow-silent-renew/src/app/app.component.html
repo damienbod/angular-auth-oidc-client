@@ -8,11 +8,6 @@ Is ModuleSetup :
 
 <br />
 
-Is Configuration loaded:
-<pre>{{ isConfigurationLoaded$ | async | json }}</pre>
-
-<br />
-
 CheckSessionChanged:
 <pre>{{ checkSessionChanged$ | async | json }}</pre>
 
@@ -23,3 +18,8 @@ Is Authenticated: {{ isAuthenticated }}
 <br />
 
 <pre>{{ userDataChanged$ | async | json }}</pre>
+
+<br />
+
+Is Configuration loaded:
+<pre>{{ configuration | json }}</pre>
