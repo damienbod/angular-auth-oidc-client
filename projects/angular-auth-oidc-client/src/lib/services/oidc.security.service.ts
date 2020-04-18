@@ -517,14 +517,14 @@ export class OidcSecurityService {
                         this.storagePersistanceService.silentRenewRunning = '';
 
                         if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
-                            this.persistUserDataInStore(
+                            this.getAndPersistUserDataInStore(
                                 isRenewProcess,
                                 result,
                                 validationResult.idToken,
                                 validationResult.decodedIdToken
                             ).subscribe(
-                                (response) => {
-                                    if (response) {
+                                (userData) => {
+                                    if (!!userData) {
                                         this.storagePersistanceService.sessionState = result.session_state;
                                         this.runTokenValidation();
                                         this.onAuthorizationResultInternal.next(
@@ -598,34 +598,16 @@ export class OidcSecurityService {
         return flowTypes.some((x) => this.configurationProvider.openIDConfiguration.responseType === x);
     }
 
-    persistUserDataInStore(isRenewProcess = false, result?: any, idToken?: any, decodedIdToken?: any): Observable<boolean> {
-        result = result ? result : this.storagePersistanceService.authResult;
-        idToken = idToken ? idToken : this.storagePersistanceService.idToken;
-        decodedIdToken = decodedIdToken ? decodedIdToken : this.tokenHelperService.getPayloadFromToken(idToken, false);
+    getAndPersistUserDataInStore(isRenewProcess = false, result?: any, idToken?: any, decodedIdToken?: any): Observable<any> {
+        result = result || this.storagePersistanceService.authResult;
+        idToken = idToken || this.storagePersistanceService.idToken;
+        decodedIdToken = decodedIdToken || this.tokenHelperService.getPayloadFromToken(idToken, false);
 
         const existingUserDataFromStorage = this.oidcSecurityUserService.getUserData();
         const haveUserData = !!existingUserDataFromStorage;
+        const currentFlowIsIdTokenOrCode = this.currentFlowIs(['id_token token', 'code']);
 
-        if (this.currentFlowIs(['id_token token', 'code'])) {
-            if ((!haveUserData && isRenewProcess) || !isRenewProcess) {
-                // get user data from sts server
-                return this.oidcSecurityUserService.getUserDataOidcFlowAndSave(decodedIdToken.sub).pipe(
-                    map((userData) => {
-                        this.loggerService.logDebug('authorizedCallback (id_token token || code) flow');
-
-                        if (!!userData) {
-                            this.loggerService.logDebug(this.storagePersistanceService.accessToken);
-                            this.loggerService.logDebug(existingUserDataFromStorage);
-
-                            return true;
-                        } else {
-                            this.resetAuthorizationData(false);
-                            return false;
-                        }
-                    })
-                );
-            }
-        } else {
+        if (!currentFlowIsIdTokenOrCode) {
             // flow id_token
             this.loggerService.logDebug('authorizedCallback id_token flow');
             this.loggerService.logDebug(this.storagePersistanceService.accessToken);
@@ -633,7 +615,26 @@ export class OidcSecurityService {
             // userData is set to the id_token decoded. No access_token.
             this.oidcSecurityUserService.setUserData(decodedIdToken);
 
-            return of(true);
+            return of(decodedIdToken);
+        }
+
+        if ((!haveUserData && isRenewProcess) || !isRenewProcess) {
+            // get user data from sts server
+            return this.oidcSecurityUserService.getUserDataOidcFlowAndSave(decodedIdToken.sub).pipe(
+                map((userData) => {
+                    this.loggerService.logDebug('authorizedCallback (id_token token || code) flow');
+
+                    if (!!userData) {
+                        this.loggerService.logDebug(this.storagePersistanceService.accessToken);
+                        this.loggerService.logDebug(existingUserDataFromStorage);
+
+                        return userData;
+                    } else {
+                        this.resetAuthorizationData(false);
+                        return null;
+                    }
+                })
+            );
         }
     }
 
