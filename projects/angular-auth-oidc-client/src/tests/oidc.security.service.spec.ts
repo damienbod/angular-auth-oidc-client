@@ -97,7 +97,7 @@ describe('OidcSecurityService', () => {
         spyOn(urlService, 'createEndSessionUrl').and.returnValue(logoffUrl);
         spyOn(oidcSecurityService, 'logoff').and.callThrough();
         const redirectToSpy = spyOn(oidcSecurityService as any, 'redirectTo');
-        const logoffHandlerSpy = jasmine.createSpy('callHandler', (logoffUrl) => {});
+        const logoffHandlerSpy = jasmine.createSpy('callHandler', (logoutUrl) => {});
 
         oidcSecurityService.logoff(logoffHandlerSpy);
 

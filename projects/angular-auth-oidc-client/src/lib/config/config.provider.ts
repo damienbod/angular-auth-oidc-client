@@ -3,6 +3,7 @@ import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 import { DEFAULT_CONFIG } from './default-config';
 import { OpenIdConfiguration } from './openid-configuration';
+import { PublicConfiguration } from './public-configuration';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigurationProvider {
@@ -27,14 +28,14 @@ export class ConfigurationProvider {
         return this.wellKnownEndpointsInternal;
     }
 
-    public get configuration() {
+    public get configuration(): PublicConfiguration {
         // TODO CHECK IF MODULE IS SET UP HERE,
         // IF NOT, RETURN NULL AND LOG AN INFO
         /// THIS HAS TO BE PART OF A PUBLIC FACADE
         // MAYBE INTRODUCED IN THE FUTURE
 
         return {
-            config: { ...this.openIDConfiguration },
+            configuration: { ...this.openIDConfiguration },
             wellknown: { ...this.wellKnownEndpoints },
         };
     }

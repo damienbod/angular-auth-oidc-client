@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { EventsService, EventTypes, OidcClientNotification, OidcSecurityService } from 'angular-auth-oidc-client';
+import { EventsService, EventTypes, OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
@@ -8,7 +8,7 @@ import { filter } from 'rxjs/operators';
     templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit, OnDestroy {
-    configuration: any;
+    configuration: PublicConfiguration;
     isModuleSetUp$: Observable<OidcClientNotification>;
     isAuthenticated: boolean;
     userData: any;
