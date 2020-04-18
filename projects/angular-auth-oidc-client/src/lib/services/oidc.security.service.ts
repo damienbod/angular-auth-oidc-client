@@ -28,12 +28,11 @@ export class OidcSecurityService {
     private onAuthorizationResultInternal = new Subject<AuthorizationResult>();
 
     public get configuration() {
-        // TODO CHECK IF MODULE IS SET UP HERE,
-        // IF NOT, RETURN NULL AND LOG AN INFO
-        /// THIS HAS TO BE PART OF A PUBLIC FACADE
-        // MAYBE INTRODUCED IN THE FUTURE
-
         return this.configurationProvider.configuration;
+    }
+
+    public get userData$() {
+        return this.userService.userData$;
     }
 
     public get onModuleSetup(): Observable<boolean> {

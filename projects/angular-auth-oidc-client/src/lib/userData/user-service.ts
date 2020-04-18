@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { OidcDataService } from '../api/oidc-data.service';
 import { ConfigurationProvider } from '../config';
@@ -10,6 +10,8 @@ import { StoragePersistanceService } from '../storage';
 
 @Injectable()
 export class UserService {
+    userData$ = new BehaviorSubject<any>(null);
+
     constructor(
         private oidcDataService: OidcDataService,
         private storagePersistanceService: StoragePersistanceService,
@@ -29,18 +31,15 @@ export class UserService {
         const currentFlowIsIdTokenOrCode = this.currentFlowIs(['id_token token', 'code']);
 
         if (!currentFlowIsIdTokenOrCode) {
-            // flow id_token
             this.loggerService.logDebug('authorizedCallback id_token flow');
             this.loggerService.logDebug(this.storagePersistanceService.accessToken);
 
-            // userData is set to the id_token decoded. No access_token.
             this.setUserDataToStore(decodedIdToken);
 
             return of(decodedIdToken);
         }
 
         if ((!haveUserData && isRenewProcess) || !isRenewProcess) {
-            // get user data from sts server
             return this.getUserDataOidcFlowAndSave(decodedIdToken.sub).pipe(
                 map((userData) => {
                     this.loggerService.logDebug('Received user data', userData);
@@ -84,12 +83,14 @@ export class UserService {
 
     setUserDataToStore(value: any): void {
         this.storagePersistanceService.userData = value;
+        this.userData$.next(value);
         this.eventService.fireEvent(EventTypes.UserDataChanged, value);
     }
 
     resetUserDataInStore(): void {
-        this.storagePersistanceService.userData = '';
-        this.eventService.fireEvent(EventTypes.UserDataChanged, '');
+        this.storagePersistanceService.userData = null;
+        this.eventService.fireEvent(EventTypes.UserDataChanged, null);
+        this.userData$.next(null);
     }
 
     private getIdentityUserData(): Observable<any> {
