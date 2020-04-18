@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { OidcDataService } from '../api/oidc-data.service';
 import { ConfigurationProvider } from '../config';
 import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';
+import { TokenHelperService } from '../services/oidc-token-helper.service';
 import { StoragePersistanceService } from '../storage';
 
 @Injectable()
@@ -14,10 +15,52 @@ export class UserService {
         private storagePersistanceService: StoragePersistanceService,
         private eventService: EventsService,
         private loggerService: LoggerService,
+        private tokenHelperService: TokenHelperService,
         private readonly configurationProvider: ConfigurationProvider
     ) {}
 
-    getUserDataOidcFlowAndSave(idTokenSub: any) {
+    getAndPersistUserDataInStore(isRenewProcess = false, result?: any, idToken?: any, decodedIdToken?: any): Observable<any> {
+        result = result || this.storagePersistanceService.authResult;
+        idToken = idToken || this.storagePersistanceService.idToken;
+        decodedIdToken = decodedIdToken || this.tokenHelperService.getPayloadFromToken(idToken, false);
+
+        const existingUserDataFromStorage = this.getUserData();
+        const haveUserData = !!existingUserDataFromStorage;
+        const currentFlowIsIdTokenOrCode = this.currentFlowIs(['id_token token', 'code']);
+
+        if (!currentFlowIsIdTokenOrCode) {
+            // flow id_token
+            this.loggerService.logDebug('authorizedCallback id_token flow');
+            this.loggerService.logDebug(this.storagePersistanceService.accessToken);
+
+            // userData is set to the id_token decoded. No access_token.
+            this.setUserData(decodedIdToken);
+
+            return of(decodedIdToken);
+        }
+
+        if ((!haveUserData && isRenewProcess) || !isRenewProcess) {
+            // get user data from sts server
+            return this.getUserDataOidcFlowAndSave(decodedIdToken.sub).pipe(
+                map((userData) => {
+                    this.loggerService.logDebug('Received user data', userData);
+
+                    if (!!userData) {
+                        this.loggerService.logDebug(this.storagePersistanceService.accessToken);
+                        return userData;
+                    } else {
+                        return null;
+                    }
+                })
+            );
+        }
+    }
+
+    private currentFlowIs(flowTypes: string[]) {
+        return flowTypes.some((x) => this.configurationProvider.openIDConfiguration.responseType === x);
+    }
+
+    private getUserDataOidcFlowAndSave(idTokenSub: any) {
         return this.getIdentityUserData().pipe(
             map((data: any) => {
                 if (this.validateUserdataSubIdToken(idTokenSub, data.sub)) {

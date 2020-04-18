@@ -16,9 +16,9 @@ export class LoggerService {
         }
     }
 
-    logDebug(message: any) {
+    logDebug(message: any, ...args: string[]) {
         if (this.currentLogLevelIsEqualOrSmallerThan(LogLevel.Debug)) {
-            console.log(message);
+            console.log(message, args);
         }
     }
 
