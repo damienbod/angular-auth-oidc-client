@@ -8,7 +8,7 @@ import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage';
 
 @Injectable()
-export class OidcSecurityUserService {
+export class UserService {
     constructor(
         private oidcDataService: OidcDataService,
         private storagePersistanceService: StoragePersistanceService,
@@ -16,14 +16,6 @@ export class OidcSecurityUserService {
         private loggerService: LoggerService,
         private readonly configurationProvider: ConfigurationProvider
     ) {}
-
-    initUserDataFromStorage() {
-        const userData = this.storagePersistanceService.userData;
-        if (userData) {
-            // Don't send an event, nothing changed
-            this.storagePersistanceService.userData = userData;
-        }
-    }
 
     getUserDataFromSts(idTokenSub: any) {
         return this.getIdentityUserData().pipe(
@@ -41,11 +33,7 @@ export class OidcSecurityUserService {
     }
 
     getUserData(): any {
-        if (!!this.storagePersistanceService.userData) {
-            return this.storagePersistanceService.userData;
-        }
-
-        return null;
+        return this.storagePersistanceService.userData || null;
     }
 
     setUserData(value: any): void {

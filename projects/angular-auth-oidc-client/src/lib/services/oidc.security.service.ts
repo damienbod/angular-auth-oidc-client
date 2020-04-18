@@ -13,7 +13,7 @@ import { LoggerService } from '../logging/logger.service';
 import { AuthorizationResult } from '../models/authorization-result';
 import { AuthorizationState } from '../models/authorization-state.enum';
 import { StoragePersistanceService } from '../storage';
-import { OidcSecurityUserService } from '../userData/oidc.security.user-service';
+import { UserService } from '../userData/user-service';
 import { RandomService, UrlService } from '../utils';
 import { JwtKeys } from '../validation/jwtkeys';
 import { StateValidationService } from '../validation/state-validation.service';
@@ -62,7 +62,7 @@ export class OidcSecurityService {
         private router: Router,
         private checkSessionService: CheckSessionService,
         private oidcSecuritySilentRenew: OidcSecuritySilentRenew,
-        private oidcSecurityUserService: OidcSecurityUserService,
+        private oidcSecurityUserService: UserService,
         private storagePersistanceService: StoragePersistanceService,
         private tokenValidationService: TokenValidationService,
         private tokenHelperService: TokenHelperService,
@@ -140,8 +140,6 @@ export class OidcSecurityService {
             this.loggerService.logError('Please provide a configuration before setting up the module');
             return;
         }
-
-        this.oidcSecurityUserService.initUserDataFromStorage();
 
         const isAuthorized = this.storagePersistanceService.isAuthorized;
         if (isAuthorized) {
