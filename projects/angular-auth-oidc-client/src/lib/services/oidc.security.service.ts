@@ -5,10 +5,10 @@ import { oneLineTrim } from 'common-tags';
 import { BehaviorSubject, from, Observable, of, race, Subject, throwError, timer } from 'rxjs';
 import { catchError, filter, first, map, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
-import { CheckSessionService } from '../check-session/check-session.service';
 import { ConfigurationProvider } from '../config';
 import { EventTypes } from '../events';
 import { EventsService } from '../events/events.service';
+import { CheckSessionService, OidcSecuritySilentRenew } from '../iframeServices';
 import { LoggerService } from '../logging/logger.service';
 import { AuthorizationResult } from '../models/authorization-result';
 import { AuthorizationState } from '../models/authorization-state.enum';
@@ -20,7 +20,6 @@ import { StateValidationService } from '../validation/state-validation.service';
 import { TokenValidationService } from '../validation/token-validation.service';
 import { ValidationResult } from '../validation/validation-result';
 import { TokenHelperService } from './oidc-token-helper.service';
-import { OidcSecuritySilentRenew } from './oidc.security.silent-renew';
 
 @Injectable()
 export class OidcSecurityService {

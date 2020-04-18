@@ -2,8 +2,8 @@ import { Injectable, NgZone } from '@angular/core';
 import { ConfigurationProvider } from '../config';
 import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';
-import { IFrameService } from '../services/existing-iframe.service';
 import { StoragePersistanceService } from '../storage';
+import { IFrameService } from './existing-iframe.service';
 
 const IFRAME_FOR_CHECK_SESSION_IDENTIFIER = 'myiFrameForCheckSession';
 

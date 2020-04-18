@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { DataService } from './api/data.service';
-import { CheckSessionService } from './check-session/check-session.service';
 import { OidcConfigService } from './config';
+import { CheckSessionService } from './iframeServices/check-session.service';
+import { IFrameService } from './iframeServices/existing-iframe.service';
+import { OidcSecuritySilentRenew } from './iframeServices/oidc.security.silent-renew';
 import { LoggerService } from './logging/logger.service';
-import { IFrameService } from './services/existing-iframe.service';
 import { TokenHelperService } from './services/oidc-token-helper.service';
 import { OidcSecurityService } from './services/oidc.security.service';
-import { OidcSecuritySilentRenew } from './services/oidc.security.silent-renew';
 import { AbstractSecurityStorage, BrowserStorageService, StoragePersistanceService } from './storage';
 import { UserService } from './userData/user-service';
 import { EqualityService } from './utils/equality/equality.service';
