@@ -1,5 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
-import { TestBed } from '@angular/core/testing';
+import { async, TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
@@ -11,8 +11,8 @@ import { LoggerService } from '../lib/logging/logger.service';
 import { TestLogging } from '../lib/logging/logger.service-mock';
 import { IFrameService } from '../lib/services/existing-iframe.service';
 import { OidcSecurityService } from '../lib/services/oidc.security.service';
-import { AbstractSecurityStorage, StoragePersistanceService } from '../lib/storage';
-import { BrowserStorageMock } from '../lib/storage/browser-storage.service-mock';
+import { StoragePersistanceService } from '../lib/storage';
+import { StoragePersistanceServiceMock } from '../lib/storage/storage-persistance.service-mock';
 import { UrlService } from '../lib/utils';
 
 describe('OidcSecurityService', () => {
@@ -27,8 +27,8 @@ describe('OidcSecurityService', () => {
             providers: [
                 OidcSecurityService,
                 {
-                    provide: AbstractSecurityStorage,
-                    useClass: BrowserStorageMock,
+                    provide: StoragePersistanceService,
+                    useClass: StoragePersistanceServiceMock,
                 },
                 { provide: LoggerService, useClass: TestLogging },
                 UrlService,
@@ -94,18 +94,14 @@ describe('OidcSecurityService', () => {
 
         configurationProvider.setConfig(null, authwellknown);
 
-        // TODO CHECK THOSE PORPERTIES
         spyOn(urlService, 'createEndSessionUrl').and.returnValue(logoffUrl);
+        spyOn(oidcSecurityService, 'logoff').and.callThrough();
         const redirectToSpy = spyOn(oidcSecurityService as any, 'redirectTo');
+        const logoffHandlerSpy = jasmine.createSpy('callHandler', (logoffUrl) => {});
 
-        let hasBeenCalled = false;
+        oidcSecurityService.logoff(logoffHandlerSpy);
 
-        (oidcSecurityService as OidcSecurityService).logoff((url: string) => {
-            expect(url).toEqual(logoffUrl);
-            hasBeenCalled = true;
-        });
-
-        expect(hasBeenCalled).toEqual(true);
+        expect(logoffHandlerSpy).toHaveBeenCalledWith(logoffUrl);
         expect(redirectToSpy).not.toHaveBeenCalled();
     });
 
@@ -126,7 +122,7 @@ describe('OidcSecurityService', () => {
         expect(redirectToSpy).toHaveBeenCalledWith(logoffUrl);
     });
 
-    it('logoff should reset storage data before emitting an isAuthorizedInternal change', () => {
+    it('logoff should reset storage data before emitting an isAuthorizedInternal change', async(() => {
         const authwellknown = {};
 
         const resetStorageData = spyOn((oidcSecurityService as any).storagePersistanceService, 'resetStorageData');
@@ -148,7 +144,7 @@ describe('OidcSecurityService', () => {
         (oidcSecurityService as OidcSecurityService).logoff();
 
         expect(hasBeenCalled).toEqual(true);
-    });
+    }));
 
     it('authorizedCallbackWithCode handles url correctly when hash at the end', () => {
         const urlToCheck = 'https://www.example.com/signin?code=thisisacode&state=0000.1234.000#';
@@ -158,7 +154,7 @@ describe('OidcSecurityService', () => {
 
         expect(spy).toHaveBeenCalledWith('thisisacode', '0000.1234.000', null);
     });
-    it('refresh session with refresh token should call authorized callback with isRenew running to true', (done) => {
+    it('refresh session with refresh token should call authorized callback with isRenew running to true', async(() => {
         const config = {} as OpenIdConfiguration;
         config.responseType = 'code';
         config.silentRenew = true;
@@ -171,7 +167,6 @@ describe('OidcSecurityService', () => {
         spyOn(storagePersistanceService as any, 'getRefreshToken').and.returnValue('refresh token');
         oidcSecurityService.refreshSession().subscribe(() => {
             expect(storagePersistanceService.silentRenewRunning).toBe('running');
-            done();
         });
-    });
+    }));
 });
