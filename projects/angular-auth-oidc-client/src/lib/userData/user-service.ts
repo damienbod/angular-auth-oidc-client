@@ -17,11 +17,12 @@ export class UserService {
         private readonly configurationProvider: ConfigurationProvider
     ) {}
 
-    getUserDataFromSts(idTokenSub: any) {
+    getUserDataOidcFlowAndSave(idTokenSub: any) {
         return this.getIdentityUserData().pipe(
             map((data: any) => {
                 if (this.validateUserdataSubIdToken(idTokenSub, data.sub)) {
                     this.setUserData(data);
+                    return data;
                 } else {
                     // something went wrong, userdata sub does not match that from id_token
                     this.loggerService.logWarning('authorizedCallback, User data sub does not match sub in id_token');
