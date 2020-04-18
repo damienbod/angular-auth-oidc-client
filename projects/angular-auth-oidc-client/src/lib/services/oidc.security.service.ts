@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { oneLineTrim } from 'common-tags';
 import { BehaviorSubject, from, Observable, of, race, Subject, throwError, timer } from 'rxjs';
 import { catchError, filter, first, map, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
-import { OidcDataService } from '../api/oidc-data.service';
+import { DataService } from '../api/data.service';
 import { CheckSessionService } from '../check-session/check-session.service';
 import { ConfigurationProvider } from '../config';
 import { EventTypes } from '../events';
@@ -56,7 +56,7 @@ export class OidcSecurityService {
     private boundSilentRenewEvent: any;
 
     constructor(
-        private oidcDataService: OidcDataService,
+        private oidcDataService: DataService,
         private stateValidationService: StateValidationService,
         private router: Router,
         private checkSessionService: CheckSessionService,

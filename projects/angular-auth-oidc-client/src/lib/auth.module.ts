@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { OidcDataService } from './api/oidc-data.service';
+import { DataService } from './api/data.service';
 import { CheckSessionService } from './check-session/check-session.service';
 import { OidcConfigService } from './config';
 import { LoggerService } from './logging/logger.service';
@@ -30,7 +30,7 @@ export class AuthModule {
                 LoggerService,
                 IFrameService,
                 EqualityService,
-                OidcDataService,
+                DataService,
                 StateValidationService,
                 {
                     provide: AbstractSecurityStorage,

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { OidcDataService } from '../api/oidc-data.service';
+import { DataService } from '../api/data.service';
 import { ConfigurationProvider } from '../config';
 import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';
@@ -10,10 +10,14 @@ import { StoragePersistanceService } from '../storage';
 
 @Injectable()
 export class UserService {
-    userData$ = new BehaviorSubject<any>(null);
+    private userDataInternal$ = new BehaviorSubject<any>(null);
+
+    get userData$() {
+        return this.userDataInternal$.asObservable();
+    }
 
     constructor(
-        private oidcDataService: OidcDataService,
+        private oidcDataService: DataService,
         private storagePersistanceService: StoragePersistanceService,
         private eventService: EventsService,
         private loggerService: LoggerService,
@@ -57,6 +61,22 @@ export class UserService {
         return of(existingUserDataFromStorage);
     }
 
+    getUserDataFromStore(): any {
+        return this.storagePersistanceService.userData || null;
+    }
+
+    setUserDataToStore(value: any): void {
+        this.storagePersistanceService.userData = value;
+        this.userDataInternal$.next(value);
+        this.eventService.fireEvent(EventTypes.UserDataChanged, value);
+    }
+
+    resetUserDataInStore(): void {
+        this.storagePersistanceService.userData = null;
+        this.eventService.fireEvent(EventTypes.UserDataChanged, null);
+        this.userDataInternal$.next(null);
+    }
+
     private currentFlowIs(flowTypes: string[]) {
         return flowTypes.some((x) => this.configurationProvider.openIDConfiguration.responseType === x);
     }
@@ -77,22 +97,6 @@ export class UserService {
         );
     }
 
-    getUserDataFromStore(): any {
-        return this.storagePersistanceService.userData || null;
-    }
-
-    setUserDataToStore(value: any): void {
-        this.storagePersistanceService.userData = value;
-        this.userData$.next(value);
-        this.eventService.fireEvent(EventTypes.UserDataChanged, value);
-    }
-
-    resetUserDataInStore(): void {
-        this.storagePersistanceService.userData = null;
-        this.eventService.fireEvent(EventTypes.UserDataChanged, null);
-        this.userData$.next(null);
-    }
-
     private getIdentityUserData(): Observable<any> {
         const token = this.storagePersistanceService.getAccessToken();
 
@@ -111,7 +115,7 @@ export class UserService {
             throw Error('authWellKnownEndpoints.userinfo_endpoint is undefined');
         }
 
-        return this.oidcDataService.getIdentityUserData(this.configurationProvider.wellKnownEndpoints.userinfoEndpoint || '', token);
+        return this.oidcDataService.get(this.configurationProvider.wellKnownEndpoints.userinfoEndpoint, token);
     }
 
     private validateUserdataSubIdToken(idTokenSub: any, userdataSub: any): boolean {
