@@ -19,8 +19,21 @@ describe('RandonService Tests', () => {
     });
 
     it('should be not equal', () => {
-        const result = randomService.createRandom(45);
-        const result2 = randomService.createRandom(45);
-        expect(result === result2).toBeFalse();
+        const r1 = randomService.createRandom(45);
+        const r2 = randomService.createRandom(45);
+        const result = r1 === r2;
+        expect(result).toBeFalse();
+    });
+
+    it('correct length', () => {
+        const r1 = randomService.createRandom(79);
+        const result = r1.length;
+        expect(result).toBe(79);
+    });
+
+    it('correct length', () => {
+        const r1 = randomService.createRandom(7);
+        const result = r1.length;
+        expect(result).toBe(7);
     });
 });

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class RandomService {
     createRandom(requiredLength: number): string {
         const length = requiredLength - 6;
