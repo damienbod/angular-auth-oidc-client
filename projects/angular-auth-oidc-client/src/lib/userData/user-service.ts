@@ -54,6 +54,8 @@ export class UserService {
                 })
             );
         }
+
+        return of(existingUserDataFromStorage);
     }
 
     private currentFlowIs(flowTypes: string[]) {
