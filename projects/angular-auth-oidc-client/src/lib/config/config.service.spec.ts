@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpBaseService } from '../api/http-base.service';
+import { DataServiceMock } from '../api/data-service-mock';
+import { DataService } from '../api/data.service';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { ConfigurationProvider } from './config.provider';
@@ -21,8 +22,8 @@ describe('Configuration Service', () => {
                 },
                 ConfigurationProvider,
                 {
-                    provide: HttpBaseService,
-                    useValue: httpbaseMock,
+                    provide: DataService,
+                    useValue: DataServiceMock,
                 },
             ],
         });
