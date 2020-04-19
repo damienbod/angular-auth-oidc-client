@@ -6,11 +6,11 @@ import { StoragePersistanceService } from '../storage';
 import { TokenValidationService } from '../validation/token-validation.service';
 import { AuthorizedState } from './authorized-state';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AuthStateService {
     // event which contains the state
-    private authStateInternal$ = new BehaviorSubject<any>(null);
-    private authorizedInternal$ = new BehaviorSubject<boolean>(null);
+    private authStateInternal$ = new BehaviorSubject<AuthorizedState>(AuthorizedState.Unknown);
+    private authorizedInternal$ = new BehaviorSubject<boolean>(false);
     private authState = AuthorizedState.Unknown;
 
     get authState$() {
@@ -28,16 +28,18 @@ export class AuthStateService {
         private tokenValidationService: TokenValidationService
     ) {}
 
-    setAuthorized(): void {
+    setAuthorizedAndFireEvent(): void {
         // set the correct values in storage
         this.authState = AuthorizedState.Authorized;
         this.persistAuthStateInStorage(this.authState);
+        this.authorizedInternal$.next(true);
     }
 
-    setUnauthorized(): void {
+    setUnauthorizedAndFireEvent(): void {
         // set the correct values in storage
         this.authState = AuthorizedState.Unauthorized;
         this.storagePersistanceService.resetAuthStateInStorage();
+        this.authorizedInternal$.next(false);
     }
 
     initStateFromStorage(): void {
@@ -57,7 +59,7 @@ export class AuthStateService {
         this.storagePersistanceService.accessToken = accessToken;
         this.storagePersistanceService.idToken = idToken;
 
-        this.setAuthorized();
+        this.setAuthorizedAndFireEvent();
     }
 
     getAccessToken(): string {
@@ -101,7 +103,7 @@ export class AuthStateService {
                 return false;
             } else {
                 this.loggerService.logDebug('IsAuthorized setup module; id_token is valid');
-                this.setAuthorized();
+                this.setAuthorizedAndFireEvent();
                 return true;
             }
         }

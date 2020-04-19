@@ -705,7 +705,7 @@ export class OidcSecurityService {
 
         this.storagePersistanceService.resetStorageFlowData();
 
-        this.authStateService.setUnauthorized();
+        this.authStateService.setUnauthorizedAndFireEvent();
     }
 
     getEndSessionUrl(): string | undefined {
