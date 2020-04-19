@@ -28,10 +28,6 @@ export class AuthStateService {
         private tokenValidationService: TokenValidationService
     ) {}
 
-    private resetAuthorizationState(): void {
-        this.storagePersistanceService.resetAuthStateInStorage();
-    }
-
     setAuthorized(): void {
         // set the correct values in storage
         this.authState = AuthorizedState.Authorized;
