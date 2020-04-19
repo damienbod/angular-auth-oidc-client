@@ -11,7 +11,7 @@ export class SilentRenewService {
 
     private boundSilentRenewEvent: any;
     private silentRenewResultInternal$ = new BehaviorSubject<any>(null);
-    private instanceId = Math.random();
+
     get silentRenewResult$() {
         return this.silentRenewResultInternal$;
     }
@@ -23,8 +23,9 @@ export class SilentRenewService {
         //      We only ever want the latest setup service to be reacting to this event.
         this.boundSilentRenewEvent = this.silentRenewEventHandler.bind(this);
 
+        const instanceId = Math.random();
         const boundSilentRenewInitEvent: any = ((e: CustomEvent) => {
-            if (e.detail !== this.instanceId) {
+            if (e.detail !== instanceId) {
                 window.removeEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent);
                 window.removeEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent);
             }
@@ -35,7 +36,7 @@ export class SilentRenewService {
 
         window.dispatchEvent(
             new CustomEvent('oidc-silent-renew-init', {
-                detail: this.instanceId,
+                detail: instanceId,
             })
         );
     }
