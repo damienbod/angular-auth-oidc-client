@@ -25,8 +25,9 @@ export class UserService {
         private readonly configurationProvider: ConfigurationProvider
     ) {}
 
-    getAndPersistUserDataInStore(isRenewProcess = false, authResult?: any, idToken?: any, decodedIdToken?: any): Observable<any> {
-        authResult = authResult || this.storagePersistanceService.authResult;
+    // TODO CHECK PARAMETERS
+    //  validationResult.idToken can be the complete valudationResult
+    getAndPersistUserDataInStore(isRenewProcess = false, idToken?: any, decodedIdToken?: any): Observable<any> {
         idToken = idToken || this.storagePersistanceService.idToken;
         decodedIdToken = decodedIdToken || this.tokenHelperService.getPayloadFromToken(idToken, false);
 

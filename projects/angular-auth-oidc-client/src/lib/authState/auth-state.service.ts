@@ -108,6 +108,10 @@ export class AuthStateService {
         }
     }
 
+    setAuthResult(authResult: any) {
+        this.storagePersistanceService.authResult = authResult;
+    }
+
     private getCurrentlyPersistedAuthState() {
         return this.storagePersistanceService.authorizedState;
     }

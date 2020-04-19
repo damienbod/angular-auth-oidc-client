@@ -418,7 +418,7 @@ export class OidcSecurityService {
 
     // Implicit Flow
     private authorizedCallbackProcedure(result: any, isRenewProcess: boolean) {
-        this.storagePersistanceService.authResult = result;
+        this.authStateService.setAuthResult(result);
 
         if (!this.configurationProvider.openIDConfiguration.historyCleanupOff && !isRenewProcess) {
             // reset the history to remove the tokens
@@ -465,12 +465,7 @@ export class OidcSecurityService {
 
                         if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
                             this.userService
-                                .getAndPersistUserDataInStore(
-                                    isRenewProcess,
-                                    result,
-                                    validationResult.idToken,
-                                    validationResult.decodedIdToken
-                                )
+                                .getAndPersistUserDataInStore(isRenewProcess, validationResult.idToken, validationResult.decodedIdToken)
                                 .subscribe(
                                     (userData) => {
                                         if (!!userData) {
