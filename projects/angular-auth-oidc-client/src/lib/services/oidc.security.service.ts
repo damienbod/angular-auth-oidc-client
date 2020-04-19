@@ -286,7 +286,7 @@ export class OidcSecurityService {
 
         const data = `grant_type=refresh_token&client_id=${this.configurationProvider.openIDConfiguration.clientId}&refresh_token=${code}`;
 
-        return this.dataService.post(tokenRequestUrl, data, headers).pipe(
+        return this.dataService.post(tokenRequestUrl, data, null, headers).pipe(
             map((response) => {
                 this.loggerService.logDebug('token refresh response: ' + JSON.stringify(response));
                 let obj: any = new Object();
@@ -334,7 +334,7 @@ export class OidcSecurityService {
                 &redirect_uri=${this.configurationProvider.openIDConfiguration.silentRenewUrl}`;
         }
 
-        return this.dataService.post(tokenRequestUrl, data, headers).pipe(
+        return this.dataService.post(tokenRequestUrl, data, null, headers).pipe(
             map((response) => {
                 let obj: any = new Object();
                 obj = response;
