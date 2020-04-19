@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
+import { PlatformProvider } from '../utils/platform-provider/platform.provider';
+import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
 import { LogLevel } from './log-level';
 
 describe('Logger Service', () => {
@@ -9,7 +11,7 @@ describe('Logger Service', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [ConfigurationProvider, LoggerService],
+            providers: [ConfigurationProvider, LoggerService, { provide: PlatformProvider, useClass: PlatformProviderMock }],
         });
     });
 
