@@ -74,21 +74,7 @@ export class OidcSecurityService {
         // validate storage and @@set authorized@@ if true
         this.authStateService.initStateFromStorage();
 
-        if (!this.configurationProvider.openIDConfiguration.useRefreshToken) {
-            // module setup (not refresh tokens)
-            // init silent renew
-            if (this.configurationProvider.openIDConfiguration.silentRenew) {
-                this.silentRenewService.init();
-                this.silentRenewService.silentRenewResult$.subscribe((detail) => {
-                    this.silentRenewEventHandler(detail);
-                });
-            }
-        }
-
-        if (this.authStateService.isAuthStorageTokenValid()) {
-            // startTokenValidationPeriodically()        (if authorized)
-            this.startTokenValidationPeriodically();
-        }
+        this.authStateService.isAuthStorageTokenValid();
 
         this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
         this.isModuleSetup = true;
@@ -98,6 +84,18 @@ export class OidcSecurityService {
             take(1),
             tap((isAuthorized) => {
                 if (isAuthorized && this.isCheckSessionConfigured()) {
+                    if (!this.configurationProvider.openIDConfiguration.useRefreshToken) {
+                        // module setup (not refresh tokens)
+                        // init silent renew
+                        if (this.configurationProvider.openIDConfiguration.silentRenew) {
+                            this.silentRenewService.init();
+                            this.silentRenewService.silentRenewResult$.subscribe((detail) => {
+                                this.silentRenewEventHandler(detail);
+                            });
+                        }
+                    }
+
+                    this.startTokenValidationPeriodically();
                     this.checkSessionService.start();
                 }
             })
