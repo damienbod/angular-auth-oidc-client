@@ -180,35 +180,16 @@ export class OidcSecurityService {
         return this.isModuleSetupInternal.asObservable();
     }
 
-    getIsAuthorized(): Observable<boolean> {
-        return this.isSetupAndAuthorizedInternal;
-    }
-
     getToken(): string {
-        if (!this.isAuthorizedInternal.getValue()) {
-            return '';
-        }
-
-        const token = this.storagePersistanceService.getAccessToken();
-        return decodeURIComponent(token);
+        return this.authStateService.getAccessToken();
     }
 
     getIdToken(): string {
-        if (!this.isAuthorizedInternal.getValue()) {
-            return '';
-        }
-
-        const token = this.storagePersistanceService.getIdToken();
-        return decodeURIComponent(token);
+        return this.authStateService.getIdToken();
     }
 
     getRefreshToken(): string {
-        if (!this.isAuthorizedInternal.getValue()) {
-            return '';
-        }
-
-        const token = this.storagePersistanceService.getRefreshToken();
-        return decodeURIComponent(token);
+        return this.authStateService.getRefreshToken();
     }
 
     getPayloadFromIdToken(encode = false): any {

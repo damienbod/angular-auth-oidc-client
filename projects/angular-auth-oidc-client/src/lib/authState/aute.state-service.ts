@@ -60,4 +60,31 @@ export class AuthStateService {
 
         this.setAuthorized();
     }
+
+    getAccessToken(): string {
+        if (!(this.authState === 'Authorized')) {
+            return '';
+        }
+
+        const token = this.storagePersistanceService.getAccessToken();
+        return decodeURIComponent(token);
+    }
+
+    getIdToken(): string {
+        if (!(this.authState === 'Authorized')) {
+            return '';
+        }
+
+        const token = this.storagePersistanceService.getIdToken();
+        return decodeURIComponent(token);
+    }
+
+    getRefreshToken(): string {
+        if (!(this.authState === 'Authorized')) {
+            return '';
+        }
+
+        const token = this.storagePersistanceService.getRefreshToken();
+        return decodeURIComponent(token);
+    }
 }
