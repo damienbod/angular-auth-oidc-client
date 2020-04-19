@@ -18,9 +18,7 @@ export class DataService {
     post<T>(url: string, body: any, token?: string, headers?: HttpHeaders) {
         const headersToSend = headers || this.prepareHeaders(token);
 
-        return this.httpClient.post<T>(url, body, {
-            headersToSend,
-        });
+        return this.httpClient.post<T>(url, body, headersToSend);
     }
 
     private prepareHeaders(token?: string) {
