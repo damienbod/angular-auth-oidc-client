@@ -3,7 +3,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { oneLineTrim } from 'common-tags';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
@@ -144,7 +144,18 @@ export class OidcSecurityService {
 
         this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
         this.isModuleSetup = true;
-        return this.authStateService.authorized$;
+
+        return this.authStateService.authorized$.pipe(
+            tap((isAuthorized) => {
+                if (isAuthorized && this.isCheckSessionConfigured()) {
+                    this.checkSessionService.start();
+                }
+            })
+        );
+    }
+
+    private isCheckSessionConfigured() {
+        return this.configurationProvider.openIDConfiguration.startCheckSession;
     }
 
     getToken(): string {

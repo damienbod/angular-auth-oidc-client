@@ -27,12 +27,14 @@ export class CheckSessionService {
         private readonly configurationProvider: ConfigurationProvider
     ) {}
 
-    start(clientId: string): void {
+    start(): void {
         if (!!this.scheduledHeartBeatRunning) {
             return;
         }
 
         this.init();
+
+        const clientId = this.configurationProvider.openIDConfiguration.clientId;
         this.pollServerSession(clientId);
     }
 
