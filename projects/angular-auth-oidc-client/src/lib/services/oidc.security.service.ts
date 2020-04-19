@@ -3,7 +3,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { oneLineTrim } from 'common-tags';
 import { BehaviorSubject, Observable, of, Subject, throwError } from 'rxjs';
-import { catchError, filter, first, map, switchMap, take } from 'rxjs/operators';
+import { catchError, filter, map, switchMap, take } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { AuthStateService } from '../authState/auth-state.service';
 import { ConfigurationProvider } from '../config';
@@ -16,6 +16,7 @@ import { AuthorizationState } from '../models/authorization-state.enum';
 import { StoragePersistanceService } from '../storage';
 import { UserService } from '../userData/user-service';
 import { RandomService, UrlService } from '../utils';
+import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { JwtKeys } from '../validation/jwtkeys';
 import { StateValidationService } from '../validation/state-validation.service';
 import { TokenValidationService } from '../validation/token-validation.service';
@@ -70,7 +71,8 @@ export class OidcSecurityService {
         private readonly eventsService: EventsService,
         private readonly urlService: UrlService,
         private readonly randomService: RandomService,
-        private readonly authStateService: AuthStateService
+        private readonly authStateService: AuthStateService,
+        private readonly flowHelper: FlowHelper
     ) {
         this.onModuleSetup.pipe(take(1)).subscribe(() => {
             this.moduleSetup = true;
@@ -222,7 +224,7 @@ export class OidcSecurityService {
 
         let url = '';
         // Code Flow
-        if (this.configurationProvider.openIDConfiguration.responseType === 'code') {
+        if (this.flowHelper.isCurrentFlowCodeFlow()) {
             // code_challenge with "S256"
             const codeVerifier = this.randomService.createRandom(67);
             const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
@@ -574,8 +576,12 @@ export class OidcSecurityService {
         }
     }
 
+    // this is not an observable as return
     refreshSession(): Observable<boolean> {
-        if (!this.configurationProvider.openIDConfiguration.silentRenewUrl) {
+        if (
+            !this.configurationProvider.openIDConfiguration.silentRenewUrl ||
+            this.configurationProvider.openIDConfiguration.useRefreshToken
+        ) {
             return of(false);
         }
 
@@ -595,7 +601,7 @@ export class OidcSecurityService {
         let url = '';
 
         // Code Flow
-        if (this.configurationProvider.openIDConfiguration.responseType === 'code') {
+        if (this.flowHelper.isCurrentFlowCodeFlow()) {
             if (this.configurationProvider.openIDConfiguration.useRefreshToken) {
                 // try using refresh token
                 const refreshToken = this.storagePersistanceService.getRefreshToken();
@@ -639,11 +645,13 @@ export class OidcSecurityService {
             }
         }
 
-        // TODO fix this
-        return this.getIsAuthorized().pipe(
-            first((isAuthorized) => isAuthorized),
-            switchMap(() => {
-                return this.silentRenewService.sendAuthorizeReqUsingSilentRenew(url).pipe(map(() => true));
+        // PAY ATTENTION: IT RETURNS TRUE IF YOU ARE NOT AUTHORIZED AS WELL
+        return this.authStateService.authorized$.pipe(
+            switchMap((isAuthorized) => {
+                if (isAuthorized) {
+                    this.silentRenewService.sendAuthorizeReqestUsingSilentRenew(url);
+                }
+                return of(true);
             })
         );
     }
@@ -809,7 +817,7 @@ export class OidcSecurityService {
             console.warn('@@@@@@ silentRenewEventHandler NO detail');
             return;
         }
-        if (this.configurationProvider.openIDConfiguration.responseType === 'code') {
+        if (this.flowHelper.isCurrentFlowCodeFlow()) {
             const urlParts = detail.toString().split('?');
             const params = new HttpParams({
                 fromString: urlParts[1],
