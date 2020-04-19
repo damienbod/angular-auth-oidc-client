@@ -1,14 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../../config';
+import { PlatformProvider } from '../platform-provider/platform.provider';
+import { PlatformProviderMock } from '../platform-provider/platform.provider-mock';
 import { FlowHelper } from './flow-helper.service';
 
-describe('Logger Service', () => {
+describe('Flow Helper Service', () => {
     let configProvider: ConfigurationProvider;
     let flowHelper: FlowHelper;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [ConfigurationProvider, FlowHelper],
+            providers: [ConfigurationProvider, FlowHelper, { provide: PlatformProvider, useClass: PlatformProviderMock }],
         });
     });
 
