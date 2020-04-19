@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { oneLineTrim } from 'common-tags';
@@ -42,7 +42,7 @@ export class OidcSecurityService {
     // TODO MOVE TO SEPERATE SERVICE WITH INIT LOGIC
     private isModuleSetup = false;
     constructor(
-        private oidcDataService: DataService,
+        private dataService: DataService,
         private stateValidationService: StateValidationService,
         private router: Router,
         private checkSessionService: CheckSessionService,
@@ -53,7 +53,6 @@ export class OidcSecurityService {
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,
         private zone: NgZone,
-        private readonly httpClient: HttpClient,
         private readonly configurationProvider: ConfigurationProvider,
         private readonly eventsService: EventsService,
         private readonly urlService: UrlService,
@@ -287,7 +286,7 @@ export class OidcSecurityService {
 
         const data = `grant_type=refresh_token&client_id=${this.configurationProvider.openIDConfiguration.clientId}&refresh_token=${code}`;
 
-        return this.httpClient.post(tokenRequestUrl, data, { headers }).pipe(
+        return this.dataService.post(tokenRequestUrl, data, headers).pipe(
             map((response) => {
                 this.loggerService.logDebug('token refresh response: ' + JSON.stringify(response));
                 let obj: any = new Object();
@@ -335,7 +334,7 @@ export class OidcSecurityService {
                 &redirect_uri=${this.configurationProvider.openIDConfiguration.silentRenewUrl}`;
         }
 
-        return this.httpClient.post(tokenRequestUrl, data, { headers }).pipe(
+        return this.dataService.post(tokenRequestUrl, data, headers).pipe(
             map((response) => {
                 let obj: any = new Object();
                 obj = response;
@@ -714,14 +713,14 @@ export class OidcSecurityService {
         if (this.configurationProvider.wellKnownEndpoints) {
             this.loggerService.logDebug('jwks_uri: ' + this.configurationProvider.wellKnownEndpoints.jwksUri);
 
-            return this.oidcDataService
+            return this.dataService
                 .get<JwtKeys>(this.configurationProvider.wellKnownEndpoints.jwksUri || '')
                 .pipe(catchError(this.handleErrorGetSigningKeys));
         } else {
             this.loggerService.logWarning('getSigningKeys: authWellKnownEndpoints is undefined');
         }
 
-        return this.oidcDataService.get<JwtKeys>('undefined').pipe(catchError(this.handleErrorGetSigningKeys));
+        return this.dataService.get<JwtKeys>('undefined').pipe(catchError(this.handleErrorGetSigningKeys));
     }
 
     private handleErrorGetSigningKeys(error: Response | any) {
