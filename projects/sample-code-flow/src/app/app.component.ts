@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { EventsService, EventTypes, OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, tap } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -15,15 +15,18 @@ export class AppComponent implements OnInit, OnDestroy {
     isAuthenticated: boolean;
 
     constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {
-        this.oidcSecurityService.setupModule();
+        this.oidcSecurityService
+            .checkAuth()
+            .pipe(tap(() => this.doCallbackLogicIfRequired()))
+            .subscribe((isAuthenticated) => console.log('i am ', isAuthenticated));
 
-        if (this.oidcSecurityService.moduleSetup) {
-            this.doCallbackLogicIfRequired();
-        } else {
-            this.oidcSecurityService.onModuleSetup.subscribe(() => {
-                this.doCallbackLogicIfRequired();
-            });
-        }
+        // if (this.oidcSecurityService.moduleSetup) {
+        //     this.doCallbackLogicIfRequired();
+        // } else {
+        //     this.oidcSecurityService.onModuleSetup.subscribe(() => {
+        //         this.doCallbackLogicIfRequired();
+        //     });
+        // }
     }
 
     ngOnInit() {

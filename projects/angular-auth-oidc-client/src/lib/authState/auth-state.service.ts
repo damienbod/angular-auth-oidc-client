@@ -89,7 +89,7 @@ export class AuthStateService {
         return decodeURIComponent(token);
     }
 
-    validateStorageAuthTokens() {
+    isAuthStorageTokenValid() {
         const currentAuthState = this.getCurrentlyPersistedAuthState();
 
         if (currentAuthState !== AuthorizedState.Authorized) {
@@ -108,7 +108,7 @@ export class AuthStateService {
         }
     }
 
-    setAuthResult(authResult: any) {
+    setAuthResultInStorage(authResult: any) {
         this.storagePersistanceService.authResult = authResult;
     }
 

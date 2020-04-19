@@ -2,8 +2,8 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { oneLineTrim } from 'common-tags';
-import { BehaviorSubject, Observable, of, Subject, throwError } from 'rxjs';
-import { catchError, filter, map, switchMap, take } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { AuthStateService } from '../authState/auth-state.service';
 import { ConfigurationProvider } from '../config';
@@ -25,9 +25,6 @@ import { TokenHelperService } from './oidc-token-helper.service';
 
 @Injectable()
 export class OidcSecurityService {
-    private onModuleSetupInternal = new Subject<boolean>();
-    private onAuthorizationResultInternal = new Subject<AuthorizationResult>();
-
     public get configuration() {
         return this.configurationProvider.configuration;
     }
@@ -36,21 +33,11 @@ export class OidcSecurityService {
         return this.userService.userData$;
     }
 
-    public get onModuleSetup(): Observable<boolean> {
-        return this.onModuleSetupInternal.asObservable();
-    }
-
-    public get onAuthorizationResult(): Observable<AuthorizationResult> {
-        return this.onAuthorizationResultInternal.asObservable();
-    }
-
-    moduleSetup = false;
-    private isModuleSetupInternal = new BehaviorSubject<boolean>(false);
-
-    private authWellKnownEndpointsLoaded = false;
     private runTokenValidationRunning = false;
     private scheduledHeartBeatInternal: any;
 
+    // TODO MOVE TO SEPERATE SERVICE WITH INIT LOGIC
+    private isModuleSetup = false;
     constructor(
         private oidcDataService: DataService,
         private stateValidationService: StateValidationService,
@@ -70,14 +57,7 @@ export class OidcSecurityService {
         private readonly randomService: RandomService,
         private readonly authStateService: AuthStateService,
         private readonly flowHelper: FlowHelper
-    ) {
-        this.onModuleSetup.pipe(take(1)).subscribe(() => {
-            this.moduleSetup = true;
-            this.isModuleSetupInternal.next(true);
-        });
-
-        //this.checkSetupAndAuthorizedInternal();
-    }
+    ) {}
 
     // private checkSetupAndAuthorizedInternal() {
     //     this.isSetupAndAuthorizedInternal = this.isModuleSetupInternal.pipe(
@@ -132,7 +112,7 @@ export class OidcSecurityService {
     //         });
     // }
 
-    setupModule(): void {
+    checkAuth(): Observable<boolean> {
         if (!this.configurationProvider.hasValidConfig()) {
             this.loggerService.logError('Please provide a configuration before setting up the module');
             return;
@@ -140,22 +120,8 @@ export class OidcSecurityService {
 
         this.loggerService.logDebug('STS server: ' + this.configurationProvider.openIDConfiguration.stsServer);
 
-        // - module setup (refresh tokens)
-        //    - to move... Do not init silent renew (if configured)
-        //    - validate storage and @@set authorized@@ if true
-        //    - start checkSession                  (if authorized)
-        //    - startTokenValidationPeriodically()                (if authorized)
-        //      - id_token expired, run this.refreshSession()
-        //      - refreshes the session using refresh tokens
-
-        //  - module setup (not refresh tokens)
-        //    - init silent renew           (if configured)
-        //    - validate storage and @@set authorized@@ if true
-        //      - storage tokens exist but not valid then run refreshSession
-        //    - start checkSession          (if authorized)
-        //    - startTokenValidationPeriodically()        (if authorized)
-        //      - id_token expired, run this.refreshSession()
-        //          - run silent renew startRenew(url)
+        // validate storage and @@set authorized@@ if true
+        this.authStateService.initStateFromStorage();
 
         if (!this.configurationProvider.openIDConfiguration.useRefreshToken) {
             // module setup (not refresh tokens)
@@ -168,22 +134,14 @@ export class OidcSecurityService {
             }
         }
 
-        // validate storage and @@set authorized@@ if true
-        this.authStateService.initStateFromStorage();
-        if (this.authStateService.validateStorageAuthTokens()) {
+        if (this.authStateService.isAuthStorageTokenValid()) {
             // startTokenValidationPeriodically()        (if authorized)
             this.startTokenValidationPeriodically();
         }
 
-        // old stuff
-        this.onModuleSetupInternal.next();
-        this.moduleSetup = true;
         this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
-        // this.checkSetupAndAuthorizedInternal();
-    }
-
-    getIsModuleSetup(): Observable<boolean> {
-        return this.isModuleSetupInternal.asObservable();
+        this.isModuleSetup = true;
+        return this.authStateService.authorized$;
     }
 
     getToken(): string {
@@ -213,11 +171,7 @@ export class OidcSecurityService {
 
     // Code Flow with PCKE or Implicit Flow
     authorize(urlHandler?: (url: string) => any) {
-        if (this.configurationProvider.wellKnownEndpoints) {
-            this.authWellKnownEndpointsLoaded = true;
-        }
-
-        if (!this.authWellKnownEndpointsLoaded) {
+        if (!this.configurationProvider.hasValidConfig()) {
             this.loggerService.logError('Well known endpoints must be loaded before user can login!');
             return;
         }
@@ -298,19 +252,13 @@ export class OidcSecurityService {
         return this.requestTokensWithCode$(code, state, sessionState);
     }
 
-    // Code Flow
-    requestTokensWithCode(code: string, state: string, sessionState: string | null): void {
-        this.requestTokensWithCode$(code, state, sessionState).subscribe();
-    }
+    // TODO CLEAN THIS UP AS WELL
+    requestTokensWithCode$(code: string, state: string, sessionState: string) {
+        if (!this.isModuleSetup) {
+            return;
+        }
 
-    requestTokensWithCode$(code: string, state: string, sessionState: string | null): Observable<void> {
-        return this.isModuleSetupInternal.pipe(
-            filter((isModuleSetup) => !!isModuleSetup),
-            take(1),
-            switchMap(() => {
-                return this.requestTokensWithCodeProcedure$(code, state, sessionState);
-            })
-        );
+        return this.requestTokensWithCodeProcedure$(code, state, sessionState);
     }
 
     // Refresh Token
@@ -423,37 +371,28 @@ export class OidcSecurityService {
 
     // Implicit Flow
     authorizedImplicitFlowCallback(hash?: string) {
-        this.isModuleSetupInternal
-            .pipe(
-                filter((isModuleSetup: boolean) => isModuleSetup),
-                take(1)
-            )
-            .subscribe(() => {
-                this.authorizedImplicitFlowCallbackProcedure(hash);
-            });
+        if (!this.isModuleSetup) {
+            return;
+        }
+
+        this.authorizedImplicitFlowCallbackProcedure(hash);
     }
 
     private redirectTo(url: string) {
         window.location.href = url;
     }
 
-    // Implicit Flow
     private authorizedCallbackProcedure(result: any, isRenewProcess: boolean) {
-        this.authStateService.setAuthResult(result);
+        this.authStateService.setAuthResultInStorage(result);
 
-        if (!this.configurationProvider.openIDConfiguration.historyCleanupOff && !isRenewProcess) {
-            // reset the history to remove the tokens
-            window.history.replaceState({}, window.document.title, window.location.origin + window.location.pathname);
+        if (this.historyCleanUpTurnedOn() && !isRenewProcess) {
+            this.resetBrowserHistory();
         } else {
             this.loggerService.logDebug('history clean up inactive');
         }
 
         if (result.error) {
-            if (isRenewProcess) {
-                this.loggerService.logDebug(result);
-            } else {
-                this.loggerService.logWarning(result);
-            }
+            this.loggerService.logDebug(`authorizedCallbackProcedure came with error`, result.error);
 
             if ((result.error as string) === 'login_required') {
                 this.onAuthorizationResultInternal.next(
@@ -565,6 +504,10 @@ export class OidcSecurityService {
                 }
             );
         }
+    }
+
+    private historyCleanUpTurnedOn() {
+        return !this.configurationProvider.openIDConfiguration.historyCleanupOff;
     }
 
     logoff(urlHandler?: (url: string) => any) {
@@ -828,6 +771,10 @@ export class OidcSecurityService {
             /* Initial heartbeat check */
             this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 10000);
         });
+    }
+
+    private resetBrowserHistory() {
+        window.history.replaceState({}, window.document.title, window.location.origin + window.location.pathname);
     }
 
     private silentRenewEventHandler(detail: any) {
