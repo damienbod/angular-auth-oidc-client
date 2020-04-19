@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../../config';
 import { FlowHelper } from './flow-helper.service';
 
-fdescribe('Logger Service', () => {
+describe('Logger Service', () => {
     let configProvider: ConfigurationProvider;
     let flowHelper: FlowHelper;
 
