@@ -4,6 +4,7 @@ import { ConfigurationProvider } from '../config';
 import { EventsService } from '../events';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage';
+import { TokenValidationService } from '../validation/token-validation.service';
 
 @Injectable()
 export class AuthStateService {
@@ -25,7 +26,8 @@ export class AuthStateService {
         private storagePersistanceService: StoragePersistanceService,
         private eventService: EventsService,
         private loggerService: LoggerService,
-        private readonly configurationProvider: ConfigurationProvider
+        private readonly configurationProvider: ConfigurationProvider,
+        private tokenValidationService: TokenValidationService
     ) {}
 
     private resetAuthorizationState(): void {
@@ -89,5 +91,25 @@ export class AuthStateService {
 
         const token = this.storagePersistanceService.getRefreshToken();
         return decodeURIComponent(token);
+    }
+
+    validateStorageAuthTokens(): boolean {
+        const isAuthorized = this.storagePersistanceService.authorizedState;
+        if (isAuthorized === 'Authorized') {
+            this.loggerService.logDebug('authorizedState in storage is Authorized');
+            if (
+                this.tokenValidationService.isTokenExpired(
+                    this.storagePersistanceService.idToken || this.storagePersistanceService.accessToken,
+                    this.configurationProvider.openIDConfiguration.silentRenewOffsetInSeconds
+                )
+            ) {
+                this.loggerService.logDebug('IsAuthorized setup module; id_token isTokenExpired');
+                return false;
+            } else {
+                this.loggerService.logDebug('IsAuthorized setup module; id_token is valid');
+                this.setAuthorized();
+                return true;
+            }
+        }
     }
 }

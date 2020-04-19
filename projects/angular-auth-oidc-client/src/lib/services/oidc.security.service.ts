@@ -139,26 +139,12 @@ export class OidcSecurityService {
             return;
         }
 
-        // TODO move to the Auth state without runTokenValidation
-        const isAuthorized = this.storagePersistanceService.isAuthorized;
-        if (isAuthorized) {
-            this.loggerService.logDebug('IsAuthorized setup module');
-            this.loggerService.logDebug(this.storagePersistanceService.idToken);
-            if (
-                this.tokenValidationService.isTokenExpired(
-                    this.storagePersistanceService.idToken || this.storagePersistanceService.accessToken,
-                    this.configurationProvider.openIDConfiguration.silentRenewOffsetInSeconds
-                )
-            ) {
-                this.loggerService.logDebug('IsAuthorized setup module; id_token isTokenExpired');
-            } else {
-                this.loggerService.logDebug('IsAuthorized setup module; id_token is valid');
-                this.authStateService.setAuthorized();
-            }
+        this.loggerService.logDebug('STS server: ' + this.configurationProvider.openIDConfiguration.stsServer);
+
+        this.authStateService.initStateFromStorage();
+        if (this.authStateService.validateStorageAuthTokens()) {
             this.runTokenValidation();
         }
-
-        this.loggerService.logDebug('STS server: ' + this.configurationProvider.openIDConfiguration.stsServer);
 
         this.onModuleSetupInternal.next();
 
