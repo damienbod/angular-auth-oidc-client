@@ -4,6 +4,8 @@ import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LogLevel } from '../../logging/log-level';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
+import { PlatformProvider } from '../platform-provider/platform.provider';
+import { PlatformProviderMock } from '../platform-provider/platform.provider-mock';
 import { UrlService } from './url.service';
 
 describe('UrlService Tests', () => {
@@ -19,6 +21,7 @@ describe('UrlService Tests', () => {
                     provide: LoggerService,
                     useClass: LoggerServiceMock,
                 },
+                { provide: PlatformProvider, useClass: PlatformProviderMock },
             ],
         });
     });

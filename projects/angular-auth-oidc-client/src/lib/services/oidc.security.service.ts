@@ -492,12 +492,11 @@ export class OidcSecurityService {
         this.loggerService.logDebug('BEGIN Authorize, no auth data');
 
         if (this.configurationProvider.wellKnownEndpoints) {
+            this.resetAuthorizationData(false);
             if (this.configurationProvider.wellKnownEndpoints.endSessionEndpoint) {
                 const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.endSessionEndpoint;
                 const idTokenHint = this.storagePersistanceService.idToken;
                 const url = this.urlService.createEndSessionUrl(endSessionEndpoint, idTokenHint);
-
-                this.resetAuthorizationData(false);
 
                 if (this.checkSessionService.serverStateChanged()) {
                     this.loggerService.logDebug('only local login cleaned up, server session has changed');
@@ -507,7 +506,6 @@ export class OidcSecurityService {
                     this.redirectTo(url);
                 }
             } else {
-                this.resetAuthorizationData(false);
                 this.loggerService.logDebug('only local login cleaned up, no end_session_endpoint');
             }
         } else {

@@ -57,7 +57,7 @@ describe('OidcSecurityService', () => {
             stsServer: 'https://localhost:5001',
         };
 
-        const resultSetter = spyOnProperty((oidcSecurityService as any).storagePersistanceService, 'authResult', 'set');
+        const resultSetter = spyOnProperty(storagePersistanceService, 'authResult', 'set');
 
         let hash = 'access_token=ACCESS-TOKEN&token_type=bearer&state=testState';
         const expectedResult = {
@@ -68,12 +68,9 @@ describe('OidcSecurityService', () => {
 
         configurationProvider.setConfig(config, null);
 
-        (oidcSecurityService as OidcSecurityService).authorizedImplicitFlowCallback(hash);
+        oidcSecurityService.authorizedImplicitFlowCallback(hash);
 
         expect(resultSetter).not.toHaveBeenCalled();
-
-        (oidcSecurityService as any).isModuleSetupInternal.next(true);
-
         expect(resultSetter).toHaveBeenCalledWith(expectedResult);
 
         // with '=' chars in values
@@ -81,7 +78,7 @@ describe('OidcSecurityService', () => {
         expectedResult.access_token = 'ACCESS-TOKEN==';
         expectedResult.state = 'test=State';
 
-        (oidcSecurityService as OidcSecurityService).authorizedImplicitFlowCallback(hash);
+        oidcSecurityService.authorizedImplicitFlowCallback(hash);
         expect(resultSetter).toHaveBeenCalledWith(expectedResult);
     });
 
@@ -123,10 +120,8 @@ describe('OidcSecurityService', () => {
     });
 
     it('logoff should reset storage data before emitting an isAuthorizedInternal change', async(() => {
-        const authwellknown = {};
-
-        const resetStorageData = spyOn((oidcSecurityService as any).storagePersistanceService, 'resetStorageData');
-        configurationProvider.setConfig(null, authwellknown);
+        const resetStorageDataSpy = spyOn(storagePersistanceService, 'resetAuthStateInStorage');
+        configurationProvider.setConfig(null, {});
         let hasBeenCalled = false;
         (oidcSecurityService as any).isAuthorizedInternal
             .pipe(
@@ -134,13 +129,14 @@ describe('OidcSecurityService', () => {
                 filter((isAuthorized: boolean) => !isAuthorized)
             )
             .subscribe(() => {
-                expect(resetStorageData).toHaveBeenCalled();
+                expect(resetStorageDataSpy).toHaveBeenCalled();
                 hasBeenCalled = true;
             });
 
         expect(hasBeenCalled).toEqual(false);
 
         (oidcSecurityService as any).isAuthorizedInternal.next(true);
+
         oidcSecurityService.logoff();
 
         expect(hasBeenCalled).toEqual(true);

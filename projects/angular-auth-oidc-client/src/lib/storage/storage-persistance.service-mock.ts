@@ -147,6 +147,8 @@ export class StoragePersistanceServiceMock {
         return this.authResult.refresh_token;
     }
 
+    resetAuthStateInStorage() {}
+
     private createKeyWithPrefix(key: string) {
         return `${this.STORAGE_PREFIX}_${key}`;
     }

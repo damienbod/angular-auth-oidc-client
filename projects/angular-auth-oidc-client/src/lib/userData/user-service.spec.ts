@@ -9,6 +9,9 @@ import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { TokenHelperService } from '../services/oidc-token-helper.service';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
+import { PlatformProvider } from '../utils';
+import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
+import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
 import { UserService } from './user-service';
 
 describe('User Service', () => {
@@ -28,10 +31,12 @@ describe('User Service', () => {
                 },
                 { provide: LoggerService, useClass: LoggerServiceMock },
                 { provide: DataService, useClass: DataServiceMock },
+                { provide: PlatformProvider, useClass: PlatformProviderMock },
                 EventsService,
                 TokenHelperService,
                 ConfigurationProvider,
                 UserService,
+                FlowHelper,
             ],
         });
     });
