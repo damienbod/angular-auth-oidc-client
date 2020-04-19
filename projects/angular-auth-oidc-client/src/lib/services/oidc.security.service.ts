@@ -45,10 +45,7 @@ export class OidcSecurityService {
     }
 
     moduleSetup = false;
-
     private isModuleSetupInternal = new BehaviorSubject<boolean>(false);
-
-    private isSetupAndAuthorizedInternal: Observable<boolean>;
 
     private authWellKnownEndpointsLoaded = false;
     private runTokenValidationRunning = false;
@@ -705,11 +702,11 @@ export class OidcSecurityService {
         }
     }
 
-    startCheckingSilentRenew(): void {
+    doPeriodicallTokenCheck(): void {
         this.startTokenValidationPeriodically();
     }
 
-    stopCheckingSilentRenew(): void {
+    stopPeriodicallTokenCheck(): void {
         if (this.scheduledHeartBeatInternal) {
             clearTimeout(this.scheduledHeartBeatInternal);
             this.scheduledHeartBeatInternal = null;
