@@ -11,13 +11,8 @@ import { AuthorizedState } from './authorized-state';
 @Injectable({ providedIn: 'root' })
 export class AuthStateService {
     // event which contains the state
-    private authStateInternal$ = new BehaviorSubject<AuthorizedState>(AuthorizedState.Unknown);
     private authorizedInternal$ = new BehaviorSubject<boolean>(false);
     private authState = AuthorizedState.Unknown;
-
-    get authState$() {
-        return this.authStateInternal$.asObservable();
-    }
 
     get authorized$() {
         return this.authorizedInternal$.asObservable();
@@ -55,7 +50,7 @@ export class AuthStateService {
     }
 
     updateAndPublishAuthState(authorizationResult: AuthorizationResult) {
-        this.eventsService.fireEvent(EventTypes.NewAuthorizationResult, authorizationResult);
+        this.eventsService.fireEvent<AuthorizationResult>(EventTypes.NewAuthorizationResult, authorizationResult);
     }
 
     setAuthorizationData(accessToken: any, idToken: any) {

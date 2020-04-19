@@ -6,9 +6,9 @@ import { OidcClientNotification } from './notification';
 // TODO RENAME TO PUBLIC EVENTS SERVICE
 @Injectable({ providedIn: 'root' })
 export class EventsService {
-    private notify = new ReplaySubject<OidcClientNotification>(1);
+    private notify = new ReplaySubject<OidcClientNotification<any>>(1);
 
-    fireEvent(type: EventTypes, value?: any) {
+    fireEvent<T>(type: EventTypes, value?: T) {
         this.notify.next({ type, value });
     }
 

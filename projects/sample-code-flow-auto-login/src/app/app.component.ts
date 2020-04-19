@@ -1,6 +1,14 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthorizationResult, AuthorizationState, OidcSecurityService } from 'angular-auth-oidc-client';
+import {
+    AuthorizationResult,
+    AuthorizedState,
+    EventsService,
+    EventTypes,
+    OidcClientNotification,
+    OidcSecurityService,
+} from 'angular-auth-oidc-client';
+import { filter, tap } from 'rxjs/operators';
 import './app.component.css';
 
 @Component({
@@ -9,20 +17,16 @@ import './app.component.css';
     styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-    constructor(public oidcSecurityService: OidcSecurityService, private router: Router) {
-        this.oidcSecurityService.setupModule();
+    constructor(public oidcSecurityService: OidcSecurityService, private router: Router, private readonly eventsService: EventsService) {
+        this.oidcSecurityService
+            .checkAuth()
+            .pipe(tap(() => this.onOidcModuleSetup()))
+            .subscribe((isAuthenticated) => console.log('i am ', isAuthenticated));
 
-        if (this.oidcSecurityService.moduleSetup) {
-            this.onOidcModuleSetup();
-        } else {
-            this.oidcSecurityService.onModuleSetup.subscribe(() => {
-                this.onOidcModuleSetup();
-            });
-        }
-
-        this.oidcSecurityService.onAuthorizationResult.subscribe((authorizationResult: AuthorizationResult) => {
-            this.onAuthorizationResultComplete(authorizationResult);
-        });
+        this.eventsService
+            .registerForEvents()
+            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.NewAuthorizationResult))
+            .subscribe((authorizationResult) => this.onAuthorizationResultComplete(authorizationResult.value));
     }
 
     login() {
@@ -41,14 +45,14 @@ export class AppComponent {
     }
 
     private onOidcModuleSetup() {
-        if (this.oidcSecurityService.moduleSetup && window.location.toString().includes('?code')) {
+        if (window.location.toString().includes('?code')) {
             this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());
         } else {
             if ('/autologin' !== window.location.pathname) {
                 this.write('redirect', window.location.pathname);
             }
             console.log('AppComponent:onOidcModuleSetup false');
-            this.oidcSecurityService.getIsAuthorized().subscribe((authorized: boolean) => {
+            this.oidcSecurityService.isAuthenticated$.subscribe((authorized: boolean) => {
                 if (!authorized) {
                     this.router.navigate(['/autologin']);
                 }
@@ -65,7 +69,7 @@ export class AppComponent {
                 authorizationResult.validationResult
         );
 
-        if (authorizationResult.authorizationState === AuthorizationState.authorized) {
+        if (authorizationResult.authorizationState === AuthorizedState.Authorized) {
             if (path.toString().includes('/unauthorized')) {
                 this.router.navigate(['/']);
             } else {

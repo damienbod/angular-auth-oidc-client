@@ -32,6 +32,10 @@ export class OidcSecurityService {
         return this.userService.userData$;
     }
 
+    public get isAuthenticated$() {
+        return this.authStateService.authorized$;
+    }
+
     private runTokenValidationRunning = false;
     private scheduledHeartBeatInternal: any;
 

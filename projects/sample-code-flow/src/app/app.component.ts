@@ -12,7 +12,7 @@ export class AppComponent implements OnInit, OnDestroy {
     isModuleSetUp$: Observable<OidcClientNotification>;
     userDataChanged$: Observable<OidcClientNotification>;
     userData$: Observable<any>;
-    isAuthenticated: boolean;
+    isAuthenticated$: Observable<boolean>;
 
     constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {
         this.oidcSecurityService
@@ -32,6 +32,7 @@ export class AppComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.configuration = this.oidcSecurityService.configuration;
         this.userData$ = this.oidcSecurityService.userData$;
+        this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
 
         this.isModuleSetUp$ = this.eventsService
             .registerForEvents()
