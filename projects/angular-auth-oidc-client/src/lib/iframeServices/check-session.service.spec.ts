@@ -113,14 +113,15 @@ describe('SecurityCheckSessionTests', () => {
 
     it('start() calls pollserversession() with clientId if no scheduledheartbeat is set', () => {
         const spy = spyOn<any>(checkSessionService, 'pollServerSession');
-        checkSessionService.start('anyId');
-        expect(spy).toHaveBeenCalledWith('anyId');
+        configurationProvider.setConfig({ clientId: 'clientId' }, null);
+        checkSessionService.start();
+        expect(spy).toHaveBeenCalledWith('clientId');
     });
 
     it('start() does not call pollserversession() if scheduledHeartBeatRunning is set', () => {
         const spy = spyOn<any>(checkSessionService, 'pollServerSession');
         (checkSessionService as any).scheduledHeartBeatRunning = () => {};
-        checkSessionService.start('anyId');
+        checkSessionService.start();
         expect(spy).not.toHaveBeenCalled();
     });
 
