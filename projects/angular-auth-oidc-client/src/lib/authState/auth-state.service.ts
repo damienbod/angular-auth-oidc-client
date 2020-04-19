@@ -8,7 +8,7 @@ import { TokenValidationService } from '../validation/token-validation.service';
 import { AuthorizationResult } from './authorization-result';
 import { AuthorizedState } from './authorized-state';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class AuthStateService {
     // event which contains the state
     private authorizedInternal$ = new BehaviorSubject<boolean>(false);

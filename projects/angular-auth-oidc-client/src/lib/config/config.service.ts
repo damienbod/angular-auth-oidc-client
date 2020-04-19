@@ -7,7 +7,7 @@ import { EventsService } from '../events/events.service';
 import { LoggerService } from '../logging/logger.service';
 import { OpenIdConfiguration } from './openid-configuration';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class OidcConfigService {
     private WELL_KNOWN_SUFFIX = `/.well-known/openid-configuration`;
     constructor(

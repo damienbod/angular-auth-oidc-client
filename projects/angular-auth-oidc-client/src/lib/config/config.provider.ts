@@ -5,7 +5,7 @@ import { DEFAULT_CONFIG } from './default-config';
 import { OpenIdConfiguration } from './openid-configuration';
 import { PublicConfiguration } from './public-configuration';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class ConfigurationProvider {
     private wellKnownEndpointsInternal: AuthWellKnownEndpoints;
     private openIdConfigurationInternal: OpenIdConfiguration;

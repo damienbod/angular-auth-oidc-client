@@ -1,8 +1,8 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class HttpBaseService {
     constructor(private http: HttpClient) {}
 
@@ -10,7 +10,7 @@ export class HttpBaseService {
         return this.http.get<T>(url, params);
     }
 
-    post<T>(url: string, body: any, headers?: HttpHeaders): Observable<T> {
-        return this.http.post<T>(url, body, { headers });
+    post<T>(url: string, body: any, params?: { [key: string]: any }): Observable<T> {
+        return this.http.post<T>(url, body, params);
     }
 }

@@ -15,10 +15,10 @@ export class DataService {
         });
     }
 
-    post<T>(url: string, body: any, token?: string, headers?: HttpHeaders) {
-        const headersToSend = headers || this.prepareHeaders(token);
+    post<T>(url: string, body: any, token?: string, headersParams?: HttpHeaders) {
+        const headers = headersParams || this.prepareHeaders(token);
 
-        return this.httpClient.post<T>(url, body, headersToSend);
+        return this.httpClient.post<T>(url, body, { headers });
     }
 
     private prepareHeaders(token?: string) {

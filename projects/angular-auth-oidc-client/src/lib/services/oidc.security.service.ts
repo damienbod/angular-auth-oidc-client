@@ -3,7 +3,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { oneLineTrim } from 'common-tags';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, take, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
@@ -145,6 +145,8 @@ export class OidcSecurityService {
         this.isModuleSetup = true;
 
         return this.authStateService.authorized$.pipe(
+            // make sure we complete the observable after one value was emitted
+            take(1),
             tap((isAuthorized) => {
                 if (isAuthorized && this.isCheckSessionConfigured()) {
                     this.checkSessionService.start();
@@ -246,6 +248,7 @@ export class OidcSecurityService {
 
     // Code Flow
     authorizedCallbackWithCode(urlToCheck: string) {
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', urlToCheck);
         this.authorizedCallbackWithCode$(urlToCheck).subscribe();
     }
     authorizedCallbackWithCode$(urlToCheck: string): Observable<void> {
@@ -318,6 +321,10 @@ export class OidcSecurityService {
             this.loggerService.logWarning('authorizedCallback incorrect state');
             // ValidationResult.StatesDoNotMatch;
             return throwError(new Error('incorrect state'));
+        }
+
+        if (!this.storagePersistanceService.codeVerifier) {
+            this.loggerService.logWarning(`CodeVerifier is not set `, this.storagePersistanceService.codeVerifier);
         }
 
         let headers: HttpHeaders = new HttpHeaders();

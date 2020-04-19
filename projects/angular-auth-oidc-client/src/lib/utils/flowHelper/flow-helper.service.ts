@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ConfigurationProvider } from '../../config';
 
 // TODO  TESTING
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class FlowHelper {
     constructor(private configurationProvider: ConfigurationProvider) {}
 

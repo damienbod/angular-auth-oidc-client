@@ -10,9 +10,9 @@ export class LoggerService {
         console.error(message, ...args);
     }
 
-    logWarning(message: any) {
+    logWarning(message: any, ...args: string[]) {
         if (this.currentLogLevelIsEqualOrSmallerThan(LogLevel.Warn)) {
-            console.warn(message);
+            console.warn(message, args);
         }
     }
 

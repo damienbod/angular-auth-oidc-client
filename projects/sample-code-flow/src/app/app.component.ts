@@ -18,7 +18,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.oidcSecurityService
             .checkAuth()
             .pipe(tap(() => this.doCallbackLogicIfRequired()))
-            .subscribe((isAuthenticated) => console.log('i am ', isAuthenticated));
+            .subscribe((isAuthenticated) => console.log('i am authenticated in the app', isAuthenticated));
 
         // if (this.oidcSecurityService.moduleSetup) {
         //     this.doCallbackLogicIfRequired();
