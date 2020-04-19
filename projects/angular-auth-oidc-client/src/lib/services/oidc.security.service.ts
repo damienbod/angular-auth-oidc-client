@@ -47,7 +47,6 @@ export class OidcSecurityService {
 
     private isModuleSetupInternal = new BehaviorSubject<boolean>(false);
 
-    private isAuthorizedInternal = new BehaviorSubject<boolean>(false);
     private isSetupAndAuthorizedInternal: Observable<boolean>;
 
     private authWellKnownEndpointsLoaded = false;
@@ -659,6 +658,7 @@ export class OidcSecurityService {
             }
         }
 
+        // TODO fix this
         return this.getIsAuthorized().pipe(
             first((isAuthorized) => isAuthorized),
             switchMap(() => {
@@ -775,13 +775,13 @@ export class OidcSecurityService {
             this.loggerService.logDebug(
                 'silentRenewHeartBeatCheck\r\n' +
                     `\tsilentRenewRunning: ${this.storagePersistanceService.silentRenewRunning === 'running'}\r\n` +
-                    `\tidToken: ${!!this.getIdToken()}\r\n` +
+                    `\tidToken: ${!!this.authStateService.getIdToken()}\r\n` +
                     `\tuserData: ${!!this.userService.getUserDataFromStore()}`
             );
             if (
                 this.userService.getUserDataFromStore() &&
                 this.storagePersistanceService.silentRenewRunning !== 'running' &&
-                this.getIdToken()
+                this.authStateService.getIdToken()
             ) {
                 if (
                     this.tokenValidationService.isTokenExpired(

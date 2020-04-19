@@ -35,6 +35,7 @@ export class AuthStateService {
     setAuthorized(): void {
         // set the correct values in storage
         this.authState = 'Authorized';
+        this.storagePersistanceService.authorizedState = this.authState;
     }
 
     setUnauthorized(): void {
@@ -43,10 +44,12 @@ export class AuthStateService {
         this.storagePersistanceService.resetAuthStateStorageData();
     }
 
-    initState(): void {
-        const isAuthorized = this.storagePersistanceService.isAuthorized;
-        if (isAuthorized) {
+    initStateFromStorage(): void {
+        const authorizedState = this.storagePersistanceService.authorizedState;
+        if (authorizedState === 'Authorized') {
             this.authState = 'Authorized';
+        } else {
+            this.authState = 'Unknown';
         }
     }
 
