@@ -38,14 +38,14 @@ export class StoragePersistanceServiceMock {
         this.store(this.storageIdToken, value);
     }
 
-    private storageIsAuthorized = 'storageIsAuthorized';
+    private storageAuthorizedState = 'storageAuthorizedState';
 
-    public get isAuthorized(): boolean | undefined {
-        return this.retrieve(this.storageIsAuthorized);
+    public get authorizedState(): string | undefined {
+        return this.retrieve(this.storageAuthorizedState);
     }
 
-    public set isAuthorized(value: boolean | undefined) {
-        this.store(this.storageIsAuthorized, value);
+    public set authorizedState(value: string | undefined) {
+        this.store(this.storageAuthorizedState, value);
     }
 
     private storageUserData = 'userData';
@@ -125,7 +125,7 @@ export class StoragePersistanceServiceMock {
     }
 
     resetAuthStateStorageData() {
-        this.store(this.storageIsAuthorized, false);
+        this.store(this.authorizedState, false);
         this.store(this.storageAccessToken, '');
         this.store(this.storageIdToken, '');
         this.store(this.storageAuthResult, '');
