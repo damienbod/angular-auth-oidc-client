@@ -854,8 +854,9 @@ export class OidcSecurityService {
     }
 
     private silentRenewEventHandler(detail: any) {
+        console.warn('@@@@@@ silentRenewEventHandler evnent');
         if (!detail) {
-            console.warn('EEEEEEEEEE SSIILLEENNT');
+            console.warn('@@@@@@ silentRenewEventHandler NO detail');
             return;
         }
         if (this.configurationProvider.openIDConfiguration.responseType === 'code') {
