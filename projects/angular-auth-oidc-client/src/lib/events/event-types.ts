@@ -6,4 +6,5 @@ export enum EventTypes {
     ModuleSetup,
     CheckSessionChanged,
     UserDataChanged,
+    NewAuthorizationResult,
 }

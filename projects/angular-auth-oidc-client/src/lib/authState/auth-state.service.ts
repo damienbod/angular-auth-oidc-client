@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ConfigurationProvider } from '../config';
+import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage';
 import { TokenValidationService } from '../validation/token-validation.service';
+import { AuthorizationResult } from './authorization-result';
 import { AuthorizedState } from './authorized-state';
 
 @Injectable({ providedIn: 'root' })
@@ -24,6 +26,7 @@ export class AuthStateService {
     constructor(
         private storagePersistanceService: StoragePersistanceService,
         private loggerService: LoggerService,
+        private eventsService: EventsService,
         private readonly configurationProvider: ConfigurationProvider,
         private tokenValidationService: TokenValidationService
     ) {}
@@ -49,6 +52,10 @@ export class AuthStateService {
         } else {
             this.authState = AuthorizedState.Unknown;
         }
+    }
+
+    updateAndPublishAuthState(authorizationResult: AuthorizationResult) {
+        this.eventsService.fireEvent(EventTypes.NewAuthorizationResult, authorizationResult);
     }
 
     setAuthorizationData(accessToken: any, idToken: any) {

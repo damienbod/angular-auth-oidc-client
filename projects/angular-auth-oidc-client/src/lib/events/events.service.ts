@@ -3,6 +3,7 @@ import { ReplaySubject } from 'rxjs';
 import { EventTypes } from './event-types';
 import { OidcClientNotification } from './notification';
 
+// TODO RENAME TO PUBLIC EVENTS SERVICE
 @Injectable({ providedIn: 'root' })
 export class EventsService {
     private notify = new ReplaySubject<OidcClientNotification>(1);
