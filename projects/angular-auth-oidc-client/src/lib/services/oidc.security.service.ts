@@ -2,9 +2,10 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { oneLineTrim } from 'common-tags';
-import { BehaviorSubject, from, Observable, of, race, Subject, throwError, timer } from 'rxjs';
-import { catchError, filter, first, map, shareReplay, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subject, throwError } from 'rxjs';
+import { catchError, filter, first, map, switchMap, take } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
+import { AuthStateService } from '../authState/aute.state-service';
 import { ConfigurationProvider } from '../config';
 import { EventTypes } from '../events';
 import { EventsService } from '../events/events.service';
@@ -69,68 +70,69 @@ export class OidcSecurityService {
         private readonly configurationProvider: ConfigurationProvider,
         private readonly eventsService: EventsService,
         private readonly urlService: UrlService,
-        private readonly randomService: RandomService
+        private readonly randomService: RandomService,
+        private readonly authStateService: AuthStateService
     ) {
         this.onModuleSetup.pipe(take(1)).subscribe(() => {
             this.moduleSetup = true;
             this.isModuleSetupInternal.next(true);
         });
 
-        this.checkSetupAndAuthorizedInternal();
+        //this.checkSetupAndAuthorizedInternal();
     }
 
-    private checkSetupAndAuthorizedInternal() {
-        this.isSetupAndAuthorizedInternal = this.isModuleSetupInternal.pipe(
-            filter((isModuleSetup: boolean) => isModuleSetup),
-            switchMap(() => {
-                if (!this.configurationProvider.openIDConfiguration.silentRenew) {
-                    this.loggerService.logDebug(`IsAuthorizedRace: Silent Renew Not Active. Emitting.`);
-                    return from([true]);
-                }
-                const race$ = race(
-                    this.isAuthorizedInternal.asObservable().pipe(
-                        filter((isAuthorized: boolean) => isAuthorized),
-                        take(1),
-                        tap(() => this.loggerService.logDebug('IsAuthorizedRace: Existing token is still authorized.'))
-                    ),
-                    this.onAuthorizationResultInternal.pipe(
-                        take(1),
-                        tap(() => this.loggerService.logDebug('IsAuthorizedRace: Silent Renew Refresh Session Complete')),
-                        map(() => true)
-                    ),
-                    timer(this.configurationProvider.openIDConfiguration.isauthorizedRaceTimeoutInSeconds * 1000).pipe(
-                        // backup, if nothing happens after X seconds stop waiting and emit (5s Default)
-                        tap(() => {
-                            this.resetAuthorizationData(false);
-                            this.storagePersistanceService.authNonce = '';
-                            this.loggerService.logWarning('IsAuthorizedRace: Timeout reached. Emitting.');
-                        }),
-                        map(() => true)
-                    )
-                );
-                this.loggerService.logDebug('Silent Renew is active, check if token in storage is active');
-                if (this.storagePersistanceService.authNonce === '' || this.storagePersistanceService.authNonce === undefined) {
-                    // login not running, or a second silent renew, user must login first before this will work.
-                    this.loggerService.logDebug('Silent Renew or login not running, try to refresh the session');
-                    this.refreshSession().subscribe();
-                }
-                return race$;
-            }),
-            tap(() => this.loggerService.logDebug('IsAuthorizedRace: Completed')),
-            switchMapTo(this.isAuthorizedInternal.asObservable()),
-            tap((isAuthorized: boolean) => this.loggerService.logDebug(`getIsAuthorized: ${isAuthorized}`)),
-            shareReplay(1)
-        );
-        this.isSetupAndAuthorizedInternal
-            .pipe(filter(() => this.configurationProvider.openIDConfiguration.startCheckSession))
-            .subscribe((isSetupAndAuthorized) => {
-                if (isSetupAndAuthorized) {
-                    this.checkSessionService.start(this.configurationProvider.openIDConfiguration.clientId);
-                } else {
-                    this.checkSessionService.stop();
-                }
-            });
-    }
+    // private checkSetupAndAuthorizedInternal() {
+    //     this.isSetupAndAuthorizedInternal = this.isModuleSetupInternal.pipe(
+    //         filter((isModuleSetup: boolean) => isModuleSetup),
+    //         switchMap(() => {
+    //             if (!this.configurationProvider.openIDConfiguration.silentRenew) {
+    //                 this.loggerService.logDebug(`IsAuthorizedRace: Silent Renew Not Active. Emitting.`);
+    //                 return from([true]);
+    //             }
+    //             const race$ = race(
+    //                 this.isAuthorizedInternal.asObservable().pipe(
+    //                     filter((isAuthorized: boolean) => isAuthorized),
+    //                     take(1),
+    //                     tap(() => this.loggerService.logDebug('IsAuthorizedRace: Existing token is still authorized.'))
+    //                 ),
+    //                 this.onAuthorizationResultInternal.pipe(
+    //                     take(1),
+    //                     tap(() => this.loggerService.logDebug('IsAuthorizedRace: Silent Renew Refresh Session Complete')),
+    //                     map(() => true)
+    //                 ),
+    //                 timer(this.configurationProvider.openIDConfiguration.isauthorizedRaceTimeoutInSeconds * 1000).pipe(
+    //                     // backup, if nothing happens after X seconds stop waiting and emit (5s Default)
+    //                     tap(() => {
+    //                         this.resetAuthorizationData(false);
+    //                         this.storagePersistanceService.authNonce = '';
+    //                         this.loggerService.logWarning('IsAuthorizedRace: Timeout reached. Emitting.');
+    //                     }),
+    //                     map(() => true)
+    //                 )
+    //             );
+    //             this.loggerService.logDebug('Silent Renew is active, check if token in storage is active');
+    //             if (this.storagePersistanceService.authNonce === '' || this.storagePersistanceService.authNonce === undefined) {
+    //                 // login not running, or a second silent renew, user must login first before this will work.
+    //                 this.loggerService.logDebug('Silent Renew or login not running, try to refresh the session');
+    //                 this.refreshSession().subscribe();
+    //             }
+    //             return race$;
+    //         }),
+    //         tap(() => this.loggerService.logDebug('IsAuthorizedRace: Completed')),
+    //         switchMapTo(this.isAuthorizedInternal.asObservable()),
+    //         tap((isAuthorized: boolean) => this.loggerService.logDebug(`getIsAuthorized: ${isAuthorized}`)),
+    //         shareReplay(1)
+    //     );
+    //     this.isSetupAndAuthorizedInternal
+    //         .pipe(filter(() => this.configurationProvider.openIDConfiguration.startCheckSession))
+    //         .subscribe((isSetupAndAuthorized) => {
+    //             if (isSetupAndAuthorized) {
+    //                 this.checkSessionService.start(this.configurationProvider.openIDConfiguration.clientId);
+    //             } else {
+    //                 this.checkSessionService.stop();
+    //             }
+    //         });
+    // }
 
     setupModule(): void {
         if (!this.configurationProvider.hasValidConfig()) {
@@ -138,6 +140,7 @@ export class OidcSecurityService {
             return;
         }
 
+        // TODO move to the Auth state without runTokenValidation
         const isAuthorized = this.storagePersistanceService.isAuthorized;
         if (isAuthorized) {
             this.loggerService.logDebug('IsAuthorized setup module');
@@ -151,7 +154,7 @@ export class OidcSecurityService {
                 this.loggerService.logDebug('IsAuthorized setup module; id_token isTokenExpired');
             } else {
                 this.loggerService.logDebug('IsAuthorized setup module; id_token is valid');
-                this.setIsAuthorized(isAuthorized);
+                this.authStateService.setAuthorized();
             }
             this.runTokenValidation();
         }
@@ -170,7 +173,7 @@ export class OidcSecurityService {
         this.moduleSetup = true;
         this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
 
-        this.checkSetupAndAuthorizedInternal();
+        //this.checkSetupAndAuthorizedInternal();
     }
 
     getIsModuleSetup(): Observable<boolean> {
@@ -491,7 +494,7 @@ export class OidcSecurityService {
                     const validationResult = this.stateValidationService.getValidatedStateResult(result, jwtKeys);
 
                     if (validationResult.authResponseIsValid) {
-                        this.setAuthorizationData(validationResult.accessToken, validationResult.idToken);
+                        this.authStateService.setAuthorizationData(validationResult.accessToken, validationResult.idToken);
                         this.storagePersistanceService.silentRenewRunning = '';
 
                         if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
@@ -678,7 +681,7 @@ export class OidcSecurityService {
         return this.getIsAuthorized().pipe(
             first((isAuthorized) => isAuthorized),
             switchMap(() => {
-                return this.silentRenewService.startRenew(url).pipe(map(() => true));
+                return this.silentRenewService.sendAuthorizeReqUsingSilentRenew(url).pipe(map(() => true));
             })
         );
     }
@@ -735,7 +738,7 @@ export class OidcSecurityService {
 
         this.storagePersistanceService.resetStorageFlowData();
 
-        this.setIsAuthorized(false);
+        this.authStateService.setUnauthorized();
     }
 
     getEndSessionUrl(): string | undefined {
@@ -746,24 +749,6 @@ export class OidcSecurityService {
                 return this.urlService.createEndSessionUrl(endSessionEndpoint, idTokenHint);
             }
         }
-    }
-
-    private setIsAuthorized(isAuthorized: boolean): void {
-        this.isAuthorizedInternal.next(isAuthorized);
-    }
-
-    private setAuthorizationData(accessToken: any, idToken: any) {
-        if (this.storagePersistanceService.accessToken !== '') {
-            this.storagePersistanceService.accessToken = '';
-        }
-
-        this.loggerService.logDebug(accessToken);
-        this.loggerService.logDebug(idToken);
-        this.loggerService.logDebug('storing to storage, getting the roles');
-        this.storagePersistanceService.accessToken = accessToken;
-        this.storagePersistanceService.idToken = idToken;
-        this.setIsAuthorized(true);
-        this.storagePersistanceService.isAuthorized = true;
     }
 
     private getSigningKeys(): Observable<JwtKeys> {

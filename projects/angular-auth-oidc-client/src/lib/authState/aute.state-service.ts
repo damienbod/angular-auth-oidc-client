@@ -28,8 +28,7 @@ export class AuthStateService {
         private readonly configurationProvider: ConfigurationProvider
     ) {}
 
-    resetAuthorizationState(): void {
-        // TODO
+    private resetAuthorizationState(): void {
         this.storagePersistanceService.resetAuthStateStorageData();
     }
 
@@ -41,6 +40,7 @@ export class AuthStateService {
     setUnauthorized(): void {
         // set the correct values in storage
         this.authState = 'Unauthorized';
+        this.storagePersistanceService.resetAuthStateStorageData();
     }
 
     initState(): void {
@@ -48,5 +48,16 @@ export class AuthStateService {
         if (isAuthorized) {
             this.authState = 'Authorized';
         }
+    }
+
+    setAuthorizationData(accessToken: any, idToken: any) {
+        this.loggerService.logDebug(accessToken);
+        this.loggerService.logDebug(idToken);
+        this.loggerService.logDebug('storing to storage, getting the roles');
+
+        this.storagePersistanceService.accessToken = accessToken;
+        this.storagePersistanceService.idToken = idToken;
+
+        this.setAuthorized();
     }
 }

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { DataService } from './api/data.service';
+import { AuthStateService } from './authState/aute.state-service';
 import { OidcConfigService } from './config';
 import { CheckSessionService } from './iframeServices/check-session.service';
 import { IFrameService } from './iframeServices/existing-iframe.service';
@@ -21,6 +22,7 @@ export class AuthModule {
             providers: [
                 OidcConfigService,
                 OidcSecurityService,
+                AuthStateService,
                 TokenValidationService,
                 CheckSessionService,
                 SilentRenewService,

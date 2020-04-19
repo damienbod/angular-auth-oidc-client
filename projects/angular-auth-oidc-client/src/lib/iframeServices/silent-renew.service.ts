@@ -56,9 +56,9 @@ export class SilentRenewService {
         return this.iFrameService.getExistingIFrame(IFRAME_FOR_SILENT_RENEW_IDENTIFIER);
     }
 
-    startRenew(url: string): Observable<void> {
+    sendAuthorizeReqUsingSilentRenew(url: string): Observable<void> {
         const sessionIframe = this.getOrCreateIframe();
-        this.loggerService.logDebug('startRenew for URL:' + url);
+        this.loggerService.logDebug('sendAuthorizeReqUsingSilentRenew for URL:' + url);
         return new Observable<void>((observer) => {
             const onLoadHandler = () => {
                 sessionIframe.removeEventListener('load', onLoadHandler);
