@@ -195,7 +195,6 @@ export class OidcSecurityService {
 
     // Code Flow
     authorizedCallbackWithCode(urlToCheck: string) {
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', urlToCheck);
         this.authorizedCallbackWithCode$(urlToCheck).subscribe();
     }
     authorizedCallbackWithCode$(urlToCheck: string): Observable<void> {
@@ -704,8 +703,8 @@ export class OidcSecurityService {
         const silentRenewHeartBeatCheck = () => {
             this.loggerService.logDebug(
                 'silentRenewHeartBeatCheck\r\n' +
-                    `\tsilentRenewRunning: ${this.storagePersistanceService.silentRenewRunning === 'running'}\r\n` +
-                    `\tidToken: ${!!this.authStateService.getIdToken()}\r\n` +
+                    `\tsilentRenewRunning: ${this.storagePersistanceService.silentRenewRunning === 'running'} ` +
+                    `\tidToken: ${!!this.authStateService.getIdToken()} ` +
                     `\tuserData: ${!!this.userService.getUserDataFromStore()}`
             );
             if (
