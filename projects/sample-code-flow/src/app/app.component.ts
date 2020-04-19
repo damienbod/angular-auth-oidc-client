@@ -9,8 +9,8 @@ import { filter, tap } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit, OnDestroy {
     configuration: PublicConfiguration;
-    isModuleSetUp$: Observable<OidcClientNotification>;
-    userDataChanged$: Observable<OidcClientNotification>;
+    isModuleSetUp$: Observable<OidcClientNotification<boolean>>;
+    userDataChanged$: Observable<OidcClientNotification<any>>;
     userData$: Observable<any>;
     isAuthenticated$: Observable<boolean>;
 
@@ -36,15 +36,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.isModuleSetUp$ = this.eventsService
             .registerForEvents()
-            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.ModuleSetup));
+            .pipe(filter((notification: OidcClientNotification<boolean>) => notification.type === EventTypes.ModuleSetup));
 
         this.userDataChanged$ = this.eventsService
             .registerForEvents()
-            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.UserDataChanged));
-
-        // this.oidcSecurityService.getIsAuthorized().subscribe((auth) => {
-        //     this.isAuthenticated = auth;
-        // });
+            .pipe(filter((notification: OidcClientNotification<any>) => notification.type === EventTypes.UserDataChanged));
     }
 
     ngOnDestroy(): void {}
