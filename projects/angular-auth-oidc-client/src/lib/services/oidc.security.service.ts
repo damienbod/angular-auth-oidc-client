@@ -61,59 +61,6 @@ export class OidcSecurityService {
         private readonly flowHelper: FlowHelper
     ) {}
 
-    // private checkSetupAndAuthorizedInternal() {
-    //     this.isSetupAndAuthorizedInternal = this.isModuleSetupInternal.pipe(
-    //         filter((isModuleSetup: boolean) => isModuleSetup),
-    //         switchMap(() => {
-    //             if (!this.configurationProvider.openIDConfiguration.silentRenew) {
-    //                 this.loggerService.logDebug(`IsAuthorizedRace: Silent Renew Not Active. Emitting.`);
-    //                 return from([true]);
-    //             }
-    //             const race$ = race(
-    //                 this.isAuthorizedInternal.asObservable().pipe(
-    //                     filter((isAuthorized: boolean) => isAuthorized),
-    //                     take(1),
-    //                     tap(() => this.loggerService.logDebug('IsAuthorizedRace: Existing token is still authorized.'))
-    //                 ),
-    //                 this.onAuthorizationResultInternal.pipe(
-    //                     take(1),
-    //                     tap(() => this.loggerService.logDebug('IsAuthorizedRace: Silent Renew Refresh Session Complete')),
-    //                     map(() => true)
-    //                 ),
-    //                 timer(this.configurationProvider.openIDConfiguration.isauthorizedRaceTimeoutInSeconds * 1000).pipe(
-    //                     // backup, if nothing happens after X seconds stop waiting and emit (5s Default)
-    //                     tap(() => {
-    //                         this.resetAuthorizationData(false);
-    //                         this.storagePersistanceService.authNonce = '';
-    //                         this.loggerService.logWarning('IsAuthorizedRace: Timeout reached. Emitting.');
-    //                     }),
-    //                     map(() => true)
-    //                 )
-    //             );
-    //             this.loggerService.logDebug('Silent Renew is active, check if token in storage is active');
-    //             if (this.storagePersistanceService.authNonce === '' || this.storagePersistanceService.authNonce === undefined) {
-    //                 // login not running, or a second silent renew, user must login first before this will work.
-    //                 this.loggerService.logDebug('Silent Renew or login not running, try to refresh the session');
-    //                 this.refreshSession().subscribe();
-    //             }
-    //             return race$;
-    //         }),
-    //         tap(() => this.loggerService.logDebug('IsAuthorizedRace: Completed')),
-    //         switchMapTo(this.isAuthorizedInternal.asObservable()),
-    //         tap((isAuthorized: boolean) => this.loggerService.logDebug(`getIsAuthorized: ${isAuthorized}`)),
-    //         shareReplay(1)
-    //     );
-    //     this.isSetupAndAuthorizedInternal
-    //         .pipe(filter(() => this.configurationProvider.openIDConfiguration.startCheckSession))
-    //         .subscribe((isSetupAndAuthorized) => {
-    //             if (isSetupAndAuthorized) {
-    //                 this.checkSessionService.start(this.configurationProvider.openIDConfiguration.clientId);
-    //             } else {
-    //                 this.checkSessionService.stop();
-    //             }
-    //         });
-    // }
-
     checkAuth(): Observable<boolean> {
         if (!this.configurationProvider.hasValidConfig()) {
             this.loggerService.logError('Please provide a configuration before setting up the module');
