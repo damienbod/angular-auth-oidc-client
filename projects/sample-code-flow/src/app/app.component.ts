@@ -19,14 +19,6 @@ export class AppComponent implements OnInit, OnDestroy {
             .checkAuth()
             .pipe(tap(() => this.doCallbackLogicIfRequired()))
             .subscribe((isAuthenticated) => console.log('i am authenticated in the app', isAuthenticated));
-
-        // if (this.oidcSecurityService.moduleSetup) {
-        //     this.doCallbackLogicIfRequired();
-        // } else {
-        //     this.oidcSecurityService.onModuleSetup.subscribe(() => {
-        //         this.doCallbackLogicIfRequired();
-        //     });
-        // }
     }
 
     ngOnInit() {
