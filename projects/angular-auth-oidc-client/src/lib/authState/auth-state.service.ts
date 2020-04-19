@@ -89,23 +89,22 @@ export class AuthStateService {
         return decodeURIComponent(token);
     }
 
-    validateStorageAuthTokens(): boolean {
+    validateStorageAuthTokens() {
         const currentAuthState = this.getCurrentlyPersistedAuthState();
-        if (currentAuthState === AuthorizedState.Authorized) {
-            this.loggerService.logDebug('authorizedState in storage is Authorized');
-            if (
-                this.tokenValidationService.isTokenExpired(
-                    this.storagePersistanceService.idToken || this.storagePersistanceService.accessToken,
-                    this.configurationProvider.openIDConfiguration.silentRenewOffsetInSeconds
-                )
-            ) {
-                this.loggerService.logDebug('IsAuthorized setup module; id_token isTokenExpired');
-                return false;
-            } else {
-                this.loggerService.logDebug('IsAuthorized setup module; id_token is valid');
-                this.setAuthorizedAndFireEvent();
-                return true;
-            }
+
+        if (currentAuthState !== AuthorizedState.Authorized) {
+            return false;
+        }
+
+        this.loggerService.logDebug(`authorizedState in storage is ${currentAuthState}`);
+
+        if (this.tokenIsExpired()) {
+            this.loggerService.logDebug('persisted token is expired');
+            return false;
+        } else {
+            this.loggerService.logDebug('persisted token is valid');
+            this.setAuthorizedAndFireEvent();
+            return true;
         }
     }
 
@@ -115,5 +114,13 @@ export class AuthStateService {
 
     private persistAuthStateInStorage(authState: AuthorizedState) {
         this.storagePersistanceService.authorizedState = authState;
+    }
+
+    private tokenIsExpired() {
+        const tokenToCheck = this.storagePersistanceService.idToken || this.storagePersistanceService.accessToken;
+        return this.tokenValidationService.isTokenExpired(
+            tokenToCheck,
+            this.configurationProvider.openIDConfiguration.silentRenewOffsetInSeconds
+        );
     }
 }
