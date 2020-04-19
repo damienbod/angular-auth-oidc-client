@@ -733,7 +733,8 @@ export class OidcSecurityService {
             this.userService.resetUserDataInStore();
         }
 
-        this.storagePersistanceService.resetStorageData(isRenewProcess);
+        this.storagePersistanceService.resetStorageFlowData();
+
         this.setIsAuthorized(false);
     }
 

@@ -118,17 +118,17 @@ export class StoragePersistanceServiceMock {
         this.itemsInternal.push({ key: keyToStore, value });
     }
 
-    resetStorageData(isRenewProcess: boolean) {
-        if (!isRenewProcess) {
-            this.store(this.storageAuthResult, '');
-            this.store(this.storageSessionState, '');
-            this.store(this.storageSilentRenewRunning, '');
-            this.store(this.storageIsAuthorized, false);
-            this.store(this.storageAccessToken, '');
-            this.store(this.storageIdToken, '');
-            this.store(this.storageUserData, '');
-            this.store(this.storageCodeVerifier, '');
-        }
+    resetStorageFlowData() {
+        this.store(this.storageSessionState, '');
+        this.store(this.storageSilentRenewRunning, '');
+        this.store(this.storageCodeVerifier, '');
+    }
+
+    resetAuthStateStorageData() {
+        this.store(this.storageIsAuthorized, false);
+        this.store(this.storageAccessToken, '');
+        this.store(this.storageIdToken, '');
+        this.store(this.storageAuthResult, '');
     }
 
     getAccessToken(): any {
