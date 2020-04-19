@@ -5,7 +5,7 @@ import { oneLineTrim } from 'common-tags';
 import { BehaviorSubject, Observable, of, Subject, throwError } from 'rxjs';
 import { catchError, filter, first, map, switchMap, take } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
-import { AuthStateService } from '../authState/aute.state-service';
+import { AuthStateService } from '../authState/auth-state.service';
 import { ConfigurationProvider } from '../config';
 import { EventTypes } from '../events';
 import { EventsService } from '../events/events.service';
@@ -143,7 +143,7 @@ export class OidcSecurityService {
 
         this.authStateService.initStateFromStorage();
         if (this.authStateService.validateStorageAuthTokens()) {
-            this.runTokenValidation();
+            this.startTokenValidationPeriodically();
         }
 
         this.onModuleSetupInternal.next();
@@ -475,7 +475,7 @@ export class OidcSecurityService {
                                     (userData) => {
                                         if (!!userData) {
                                             this.storagePersistanceService.sessionState = result.session_state;
-                                            this.runTokenValidation();
+                                            this.startTokenValidationPeriodically();
                                             this.onAuthorizationResultInternal.next(
                                                 new AuthorizationResult(
                                                     AuthorizationState.authorized,
@@ -518,7 +518,7 @@ export class OidcSecurityService {
                                 this.userService.setUserDataToStore(validationResult.decodedIdToken);
                             }
 
-                            this.runTokenValidation();
+                            this.startTokenValidationPeriodically();
 
                             this.onAuthorizationResultInternal.next(
                                 new AuthorizationResult(AuthorizationState.authorized, validationResult.state, isRenewProcess)
@@ -681,7 +681,7 @@ export class OidcSecurityService {
     }
 
     startCheckingSilentRenew(): void {
-        this.runTokenValidation();
+        this.startTokenValidationPeriodically();
     }
 
     stopCheckingSilentRenew(): void {
@@ -718,6 +718,7 @@ export class OidcSecurityService {
         }
     }
 
+    // TODO EXTRACT IN SERVICE
     private getSigningKeys(): Observable<JwtKeys> {
         if (this.configurationProvider.wellKnownEndpoints) {
             this.loggerService.logDebug('jwks_uri: ' + this.configurationProvider.wellKnownEndpoints.jwksUri);
@@ -746,10 +747,11 @@ export class OidcSecurityService {
     }
 
     // TODO MOVE THIS METHOD INTO CORRESPONDING SERVICE `validation/token.validation.service.ts`
-    private runTokenValidation() {
+    private startTokenValidationPeriodically() {
         if (this.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
             return;
         }
+
         this.runTokenValidationRunning = true;
         this.loggerService.logDebug('runTokenValidation silent-renew running');
 
@@ -807,7 +809,7 @@ export class OidcSecurityService {
     }
 
     private silentRenewEventHandler(detail: any) {
-        console.warn('@@@@@@ silentRenewEventHandler evnent');
+        console.warn('@@@@@@ silentRenewEventHandler event');
         if (!detail) {
             console.warn('@@@@@@ silentRenewEventHandler NO detail');
             return;

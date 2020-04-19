@@ -1,18 +1,17 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ConfigurationProvider } from '../config';
-import { EventsService } from '../events';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage';
 import { TokenValidationService } from '../validation/token-validation.service';
+import { AuthorizedState } from './authorized-state';
 
 @Injectable()
 export class AuthStateService {
     // event which contains the state
     private authStateInternal$ = new BehaviorSubject<any>(null);
     private authorizedInternal$ = new BehaviorSubject<boolean>(null);
-    // [('Authorized', 'Unauthorized', 'Unknown')];
-    private authState = 'Unknown';
+    private authState = AuthorizedState.Unknown;
 
     get authState$() {
         return this.authStateInternal$.asObservable();
@@ -24,34 +23,33 @@ export class AuthStateService {
 
     constructor(
         private storagePersistanceService: StoragePersistanceService,
-        private eventService: EventsService,
         private loggerService: LoggerService,
         private readonly configurationProvider: ConfigurationProvider,
         private tokenValidationService: TokenValidationService
     ) {}
 
     private resetAuthorizationState(): void {
-        this.storagePersistanceService.resetAuthStateStorageData();
+        this.storagePersistanceService.resetAuthStateInStorage();
     }
 
     setAuthorized(): void {
         // set the correct values in storage
-        this.authState = 'Authorized';
-        this.storagePersistanceService.authorizedState = this.authState;
+        this.authState = AuthorizedState.Authorized;
+        this.persistAuthStateInStorage(this.authState);
     }
 
     setUnauthorized(): void {
         // set the correct values in storage
-        this.authState = 'Unauthorized';
-        this.storagePersistanceService.resetAuthStateStorageData();
+        this.authState = AuthorizedState.Unauthorized;
+        this.storagePersistanceService.resetAuthStateInStorage();
     }
 
     initStateFromStorage(): void {
-        const authorizedState = this.storagePersistanceService.authorizedState;
-        if (authorizedState === 'Authorized') {
-            this.authState = 'Authorized';
+        const currentAuthorizedState = this.getCurrentlyPersistedAuthState();
+        if (currentAuthorizedState === AuthorizedState.Authorized) {
+            this.authState = AuthorizedState.Authorized;
         } else {
-            this.authState = 'Unknown';
+            this.authState = AuthorizedState.Unknown;
         }
     }
 
@@ -67,7 +65,7 @@ export class AuthStateService {
     }
 
     getAccessToken(): string {
-        if (!(this.authState === 'Authorized')) {
+        if (!(this.authState === AuthorizedState.Authorized)) {
             return '';
         }
 
@@ -76,7 +74,7 @@ export class AuthStateService {
     }
 
     getIdToken(): string {
-        if (!(this.authState === 'Authorized')) {
+        if (!(this.authState === AuthorizedState.Authorized)) {
             return '';
         }
 
@@ -85,7 +83,7 @@ export class AuthStateService {
     }
 
     getRefreshToken(): string {
-        if (!(this.authState === 'Authorized')) {
+        if (!(this.authState === AuthorizedState.Authorized)) {
             return '';
         }
 
@@ -94,8 +92,8 @@ export class AuthStateService {
     }
 
     validateStorageAuthTokens(): boolean {
-        const isAuthorized = this.storagePersistanceService.authorizedState;
-        if (isAuthorized === 'Authorized') {
+        const currentAuthState = this.getCurrentlyPersistedAuthState();
+        if (currentAuthState === AuthorizedState.Authorized) {
             this.loggerService.logDebug('authorizedState in storage is Authorized');
             if (
                 this.tokenValidationService.isTokenExpired(
@@ -111,5 +109,13 @@ export class AuthStateService {
                 return true;
             }
         }
+    }
+
+    private getCurrentlyPersistedAuthState() {
+        return this.storagePersistanceService.authorizedState;
+    }
+
+    private persistAuthStateInStorage(authState: AuthorizedState) {
+        this.storagePersistanceService.authorizedState = authState;
     }
 }

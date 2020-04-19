@@ -1,4 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
+import { AuthorizedState } from '../authState/authorized-state';
 import { ConfigurationProvider } from '../config';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 
@@ -130,8 +131,8 @@ export class StoragePersistanceService {
         this.store(this.storageUserData, '');
     }
 
-    resetAuthStateStorageData() {
-        this.store(this.storageIsAuthorized, false);
+    resetAuthStateInStorage() {
+        this.store(this.storageAuthorizedState, AuthorizedState.Unknown);
         this.store(this.storageAccessToken, '');
         this.store(this.storageIdToken, '');
         this.store(this.storageAuthResult, '');
