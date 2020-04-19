@@ -143,24 +143,46 @@ export class OidcSecurityService {
 
         this.loggerService.logDebug('STS server: ' + this.configurationProvider.openIDConfiguration.stsServer);
 
+        // - module setup (refresh tokens)
+        //    - to move... Do not init silent renew (if configured)
+        //    - validate storage and @@set authorized@@ if true
+        //    - start checkSession                  (if authorized)
+        //    - startTokenValidationPeriodically()                (if authorized)
+        //      - id_token expired, run this.refreshSession()
+        //      - refreshes the session using refresh tokens
+
+        //  - module setup (not refresh tokens)
+        //    - init silent renew           (if configured)
+        //    - validate storage and @@set authorized@@ if true
+        //      - storage tokens exist but not valid then run refreshSession
+        //    - start checkSession          (if authorized)
+        //    - startTokenValidationPeriodically()        (if authorized)
+        //      - id_token expired, run this.refreshSession()
+        //          - run silent renew startRenew(url)
+
+        if (!this.configurationProvider.openIDConfiguration.useRefreshToken) {
+            // module setup (not refresh tokens)
+            // init silent renew
+            if (this.configurationProvider.openIDConfiguration.silentRenew) {
+                this.silentRenewService.init();
+                this.silentRenewService.silentRenewResult$.subscribe((detail) => {
+                    this.silentRenewEventHandler(detail);
+                });
+            }
+        }
+
+        // validate storage and @@set authorized@@ if true
         this.authStateService.initStateFromStorage();
         if (this.authStateService.validateStorageAuthTokens()) {
+            // startTokenValidationPeriodically()        (if authorized)
             this.startTokenValidationPeriodically();
         }
 
+        // old stuff
         this.onModuleSetupInternal.next();
-
-        if (this.configurationProvider.openIDConfiguration.silentRenew) {
-            this.silentRenewService.init();
-            this.silentRenewService.silentRenewResult$.subscribe((detail) => {
-                this.silentRenewEventHandler(detail);
-            });
-        }
-
         this.moduleSetup = true;
         this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
-
-        //this.checkSetupAndAuthorizedInternal();
+        // this.checkSetupAndAuthorizedInternal();
     }
 
     getIsModuleSetup(): Observable<boolean> {
