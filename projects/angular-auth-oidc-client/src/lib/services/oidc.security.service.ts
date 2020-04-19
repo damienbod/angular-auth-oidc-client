@@ -61,6 +61,8 @@ export class OidcSecurityService {
         private readonly flowHelper: FlowHelper
     ) {}
 
+    // TODO WHAT HAPPENS IF THIS METHOD IS CALLED TWICE EARLY RETURN
+
     checkAuth(): Observable<boolean> {
         if (!this.configurationProvider.hasValidConfig()) {
             this.loggerService.logError('Please provide a configuration before setting up the module');
