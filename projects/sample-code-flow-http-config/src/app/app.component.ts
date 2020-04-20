@@ -9,43 +9,38 @@ import { filter, tap } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
     configuration: PublicConfiguration;
-    isModuleSetUp$: Observable<OidcClientNotification>;
-    checkSessionChanged$: Observable<OidcClientNotification>;
-    userDataChanged$: Observable<OidcClientNotification>;
-    isAuthenticated: boolean;
+    isModuleSetUp$: Observable<OidcClientNotification<boolean>>;
+    userDataChanged$: Observable<OidcClientNotification<any>>;
+    userData$: Observable<any>;
+    isAuthenticated$: Observable<boolean>;
+
+    checkSessionChanged$: Observable<OidcClientNotification<boolean>>;
     checkSessionChanged: boolean;
 
-    constructor(public oidcSecurityService: OidcSecurityService, public eventsService: EventsService) {
-        this.oidcSecurityService.setupModule();
-
-        if (this.oidcSecurityService.moduleSetup) {
-            this.doCallbackLogicIfRequired();
-        } else {
-            this.oidcSecurityService.onModuleSetup.subscribe(() => {
-                this.doCallbackLogicIfRequired();
-            });
-        }
+    constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {
+        this.oidcSecurityService
+            .checkAuth()
+            .pipe(tap(() => this.doCallbackLogicIfRequired()))
+            .subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
     }
 
     ngOnInit() {
         this.configuration = this.oidcSecurityService.configuration;
+        this.userData$ = this.oidcSecurityService.userData$;
+        this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
 
         this.isModuleSetUp$ = this.eventsService
             .registerForEvents()
-            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.ModuleSetup));
-
-        this.checkSessionChanged$ = this.eventsService.registerForEvents().pipe(
-            filter((notification: OidcClientNotification) => notification.type === EventTypes.CheckSessionChanged),
-            tap((item) => (this.checkSessionChanged = item.value === 'changed'))
-        );
-
-        this.oidcSecurityService.getIsAuthorized().subscribe((auth) => {
-            this.isAuthenticated = auth;
-        });
+            .pipe(filter((notification: OidcClientNotification<boolean>) => notification.type === EventTypes.ModuleSetup));
 
         this.userDataChanged$ = this.eventsService
             .registerForEvents()
-            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.UserDataChanged));
+            .pipe(filter((notification: OidcClientNotification<any>) => notification.type === EventTypes.UserDataChanged));
+
+        this.checkSessionChanged$ = this.eventsService.registerForEvents().pipe(
+            filter((notification) => notification.type === EventTypes.CheckSessionChanged),
+            tap((item) => (this.checkSessionChanged = item.value === 'changed'))
+        );
     }
 
     login() {
