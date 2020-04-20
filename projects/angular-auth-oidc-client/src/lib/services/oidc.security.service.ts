@@ -589,10 +589,11 @@ export class OidcSecurityService {
         return this.authStateService.authorized$.pipe(
             switchMap((isAuthorized) => {
                 if (isAuthorized) {
-                    this.silentRenewService.sendAuthorizeReqestUsingSilentRenew(url);
+                    return this.silentRenewService.sendAuthorizeReqestUsingSilentRenew(url);
                 }
-                return of(true);
-            })
+                return of(null);
+            }),
+            map(() => true)
         );
     }
 

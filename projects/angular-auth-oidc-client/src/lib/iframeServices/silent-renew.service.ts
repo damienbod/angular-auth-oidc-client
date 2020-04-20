@@ -1,5 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { LoggerService } from '../logging/logger.service';
 import { IFrameService } from './existing-iframe.service';
 
@@ -57,18 +57,22 @@ export class SilentRenewService {
 
     sendAuthorizeReqestUsingSilentRenew(url: string) {
         const sessionIframe = this.getOrCreateIframe();
-        this.loggerService.logDebug('sendAuthorizeReqUsingSilentRenew for URL:' + url);
+        this.loggerService.logDebug('sendAuthorizeReqestUsingSilentRenew for URL:' + url);
 
-        const onLoadHandler = () => {
-            sessionIframe.removeEventListener('load', onLoadHandler);
-        };
-        sessionIframe.addEventListener('load', onLoadHandler);
-        sessionIframe.src = url;
+        return new Observable((observer) => {
+            const onLoadHandler = () => {
+                sessionIframe.removeEventListener('load', onLoadHandler);
+                this.loggerService.logDebug('removed event listener from IFrame');
+                observer.next(true);
+                observer.complete();
+            };
+            sessionIframe.addEventListener('load', onLoadHandler);
+            sessionIframe.src = url;
+        });
     }
 
     private silentRenewEventHandler(e: CustomEvent) {
         this.loggerService.logDebug('silentRenewEventHandler');
-
         this.silentRenewResultInternal$.next(e.detail);
     }
 }
