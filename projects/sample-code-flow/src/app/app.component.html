@@ -1,5 +1,6 @@
 <div *ngIf="isAuthenticated$ | async as isAuthenticated; else noAuth">
     <button (click)="logout()">Logout</button>
+    <hr />
     Is ModuleSetup :
     <pre>{{ isModuleSetUp$ | async | json }}</pre>
 
@@ -16,8 +17,8 @@
 
 <ng-template #noAuth>
     <button (click)="login()">Login</button>
+    <hr />
 </ng-template>
 
-<hr />
 Configuration loaded:
 <pre>{{ configuration | json }}</pre>
