@@ -42,13 +42,25 @@ describe('Configuration Service', () => {
         expect(oidcConfigService).toBeTruthy();
     });
 
-    it('withConfig without sts server does nothing and logs error', () => {
-        const config = {};
-        spyOn(loggerService, 'logError');
+    describe('withConfig', () => {
+        it('no given sts server does nothing and logs error', () => {
+            const config = {};
+            spyOn(loggerService, 'logError');
 
-        const promiseReturn = oidcConfigService.withConfig(config);
+            const promiseReturn = oidcConfigService.withConfig(config);
 
-        expect(promiseReturn).toBeUndefined();
-        expect(loggerService.logError).toHaveBeenCalled();
+            expect(promiseReturn).toBeUndefined();
+            expect(loggerService.logError).toHaveBeenCalled();
+        });
+
+        // it('withConfig without sts server does nothing and logs error', () => {
+        //     const config = {};
+        //     spyOn(loggerService, 'logError');
+
+        //     const promiseReturn = oidcConfigService.withConfig(config);
+
+        //     expect(promiseReturn).toBeUndefined();
+        //     expect(loggerService.logError).toHaveBeenCalled();
+        // });
     });
 });

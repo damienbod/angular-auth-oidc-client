@@ -232,10 +232,8 @@ describe('Auth State Service', () => {
         it('authState is AuthorizedState.Authorized and token is not expired fires event', () => {
             spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Authorized);
             spyOn(authStateService as any, 'tokenIsExpired').and.returnValue(false);
-            const eventSpy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
             const result = authStateService.isAuthStorageTokenValid();
             expect(result).toBeTrue();
-            expect(eventSpy).toHaveBeenCalled();
         });
     });
 

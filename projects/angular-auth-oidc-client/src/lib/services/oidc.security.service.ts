@@ -3,7 +3,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { oneLineTrim } from 'common-tags';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, map, switchMap, take, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, take } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
@@ -73,8 +73,13 @@ export class OidcSecurityService {
 
         // validate storage and @@set authorized@@ if true
         if (this.authStateService.isAuthStorageTokenValid()) {
+            this.authStateService.setAuthorizedAndFireEvent();
             // startTokenValidationPeriodically()        (if authorized)
             this.startTokenValidationPeriodically();
+
+            if (this.isCheckSessionConfigured()) {
+                this.checkSessionService.start();
+            }
         }
 
         this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
@@ -82,12 +87,7 @@ export class OidcSecurityService {
 
         return this.authStateService.authorized$.pipe(
             // make sure we complete the observable after one value was emitted
-            take(1),
-            tap((isAuthorized) => {
-                if (isAuthorized && this.isCheckSessionConfigured()) {
-                    this.checkSessionService.start();
-                }
-            })
+            take(1)
         );
     }
 

@@ -105,7 +105,6 @@ export class AuthStateService {
             return false;
         } else {
             this.loggerService.logDebug('persisted token is valid');
-            this.setAuthorizedAndFireEvent();
             return true;
         }
     }
