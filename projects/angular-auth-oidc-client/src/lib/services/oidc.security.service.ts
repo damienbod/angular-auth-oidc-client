@@ -72,25 +72,11 @@ export class OidcSecurityService {
         this.loggerService.logDebug('STS server: ' + this.configurationProvider.openIDConfiguration.stsServer);
 
         // validate storage and @@set authorized@@ if true
-        this.authStateService.initStateFromStorage();
-
-        this.authStateService.isAuthStorageTokenValid();
-
-        if (!this.configurationProvider.openIDConfiguration.useRefreshToken) {
-            // module setup (not refresh tokens)
-            // init silent renew
-            if (this.configurationProvider.openIDConfiguration.silentRenew) {
-                this.silentRenewService.init();
-                this.silentRenewService.silentRenewResult$.subscribe((detail) => {
-                    this.silentRenewEventHandler(detail);
-                });
-            }
-        }
-
         if (this.authStateService.isAuthStorageTokenValid()) {
             // startTokenValidationPeriodically()        (if authorized)
             this.startTokenValidationPeriodically();
         }
+
         this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
         this.isModuleSetup = true;
 
