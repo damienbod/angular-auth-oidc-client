@@ -3,7 +3,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { oneLineTrim } from 'common-tags';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
@@ -62,6 +62,12 @@ export class OidcSecurityService {
     private isModuleSetup = false;
     private boundSilentRenewEvent: any;
 
+    private instanceId = Math.random();
+
+    private counter1 = 0;
+    private counter2 = 0;
+    private counter3 = 0;
+    private counter4 = 0;
     // TODO WHAT HAPPENS IF THIS METHOD IS CALLED TWICE EARLY RETURN
 
     checkAuth(): Observable<boolean> {
@@ -81,6 +87,10 @@ export class OidcSecurityService {
 
             if (this.isCheckSessionConfigured()) {
                 this.checkSessionService.start();
+            }
+
+            if (this.silentRenewShouldBeUsed()) {
+                this.silentRenewService.getOrCreateIframe();
             }
         }
 
@@ -572,17 +582,10 @@ export class OidcSecurityService {
                 this.loggerService.logWarning('authWellKnownEndpoints is undefined');
             }
         }
+        this.counter1++;
+        console.warn('COUNTER1 ' + this.counter1);
 
-        // PAY ATTENTION: IT RETURNS TRUE IF YOU ARE NOT AUTHORIZED AS WELL
-        return this.authStateService.authorized$.pipe(
-            switchMap((isAuthorized) => {
-                if (isAuthorized) {
-                    return this.sendAuthorizeReqestUsingSilentRenew(url);
-                }
-                return of(null);
-            }),
-            map(() => true)
-        );
+        return this.sendAuthorizeReqestUsingSilentRenew$(url);
     }
 
     handleError(error: any) {
@@ -740,7 +743,7 @@ export class OidcSecurityService {
 
         this.zone.runOutsideAngular(() => {
             /* Initial heartbeat check */
-            this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 10000);
+            this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 5000);
         });
     }
 
@@ -748,9 +751,9 @@ export class OidcSecurityService {
         window.history.replaceState({}, window.document.title, window.location.origin + window.location.pathname);
     }
 
-    sendAuthorizeReqestUsingSilentRenew(url: string) {
-        this.initSilentRenewRequest();
+    sendAuthorizeReqestUsingSilentRenew$(url: string): Observable<boolean> {
         const sessionIframe = this.silentRenewService.getOrCreateIframe();
+        this.initSilentRenewRequest();
         this.loggerService.logDebug('sendAuthorizeReqestUsingSilentRenew for URL:' + url);
 
         return new Observable((observer) => {
