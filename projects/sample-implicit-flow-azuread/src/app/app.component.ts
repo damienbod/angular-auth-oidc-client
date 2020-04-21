@@ -48,8 +48,8 @@ export class AppComponent implements OnInit {
     }
 
     private onOidcModuleSetup() {
-        if (window.location.toString().includes('?code')) {
-            this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());
+        if (window.location.hash) {
+            this.oidcSecurityService.authorizedImplicitFlowCallback();
         } else {
             if ('/autologin' !== window.location.pathname) {
                 this.write('redirect', window.location.pathname);
