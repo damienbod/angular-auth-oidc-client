@@ -741,7 +741,7 @@ export class OidcSecurityService {
         window.history.replaceState({}, window.document.title, window.location.origin + window.location.pathname);
     }
 
-    sendAuthorizeReqestUsingSilentRenew$(url: string): Observable<boolean> {
+    private sendAuthorizeReqestUsingSilentRenew$(url: string): Observable<boolean> {
         const sessionIframe = this.silentRenewService.getOrCreateIframe();
         this.initSilentRenewRequest();
         this.loggerService.logDebug('sendAuthorizeReqestUsingSilentRenew for URL:' + url);
@@ -759,15 +759,11 @@ export class OidcSecurityService {
     }
     private silentRenewEventHandler(e: CustomEvent) {
         this.loggerService.logDebug('silentRenewEventHandler');
-        this.silentRenewEventHandlerImpl(e.detail);
-    }
-
-    private silentRenewEventHandlerImpl(detail: any) {
-        if (!detail) {
+        if (!e.detail) {
             return;
         }
         if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            const urlParts = detail.toString().split('?');
+            const urlParts = e.detail.toString().split('?');
             const params = new HttpParams({
                 fromString: urlParts[1],
             });
@@ -786,11 +782,11 @@ export class OidcSecurityService {
                 });
                 this.resetAuthorizationData(false);
                 this.storagePersistanceService.authNonce = '';
-                this.loggerService.logDebug(detail.toString());
+                this.loggerService.logDebug(e.detail.toString());
             }
         } else {
             // ImplicitFlow
-            this.authorizedImplicitFlowCallback(detail);
+            this.authorizedImplicitFlowCallback(e.detail);
         }
     }
 
