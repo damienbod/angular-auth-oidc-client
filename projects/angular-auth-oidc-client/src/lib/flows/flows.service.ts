@@ -1,22 +1,10 @@
 import { Injectable } from '@angular/core';
 import { RandomService } from 'dist/angular-auth-oidc-client/lib/utils';
-import { ConfigurationProvider } from '../config';
 import { StoragePersistanceService } from '../storage';
 
 @Injectable()
 export class FlowsService {
-    constructor(
-        private storagePersistanceService: StoragePersistanceService,
-        private readonly configurationProvider: ConfigurationProvider,
-        private readonly randomService: RandomService
-    ) {}
-    getSessionState(): any {
-        return this.storagePersistanceService.sessionState;
-    }
-
-    getNonce(): string {
-        return this.storagePersistanceService.authNonce;
-    }
+    constructor(private storagePersistanceService: StoragePersistanceService, private readonly randomService: RandomService) {}
 
     createNonce(): string {
         const nonce = this.randomService.createRandom(40);
@@ -24,8 +12,15 @@ export class FlowsService {
         return nonce;
     }
 
+    setNonce(nonce: string) {
+        this.storagePersistanceService.authNonce = nonce;
+    }
+
     getAuthStateControl(): any {
         return this.storagePersistanceService.authStateControl;
+    }
+    setAuthStateControl(authStateControl: string) {
+        this.storagePersistanceService.authStateControl = authStateControl;
     }
 
     getExistingOrCreateAuthStateControl(): any {
@@ -38,14 +33,6 @@ export class FlowsService {
 
     setSessionState(sessionState: any) {
         this.storagePersistanceService.sessionState = sessionState;
-    }
-
-    setNonce(nonce: string) {
-        this.storagePersistanceService.authNonce = nonce;
-    }
-
-    setAuthStateControl(authStateControl: string) {
-        this.storagePersistanceService.authStateControl = authStateControl;
     }
 
     resetStorageFlowData() {
