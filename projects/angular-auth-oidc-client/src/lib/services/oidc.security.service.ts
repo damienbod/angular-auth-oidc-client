@@ -148,36 +148,7 @@ export class OidcSecurityService {
 
         this.loggerService.logDebug('BEGIN Authorize OIDC Flow, no auth data');
 
-        const state = this.flowsService.getExistingOrCreateAuthStateControl();
-        const nonce = this.flowsService.createNonce();
-        this.loggerService.logDebug('AuthorizedController created. local state: ' + state);
-
-        let url = '';
-        // Code Flow
-        if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            // code_challenge with "S256"
-            const codeVerifier = this.flowsService.createCodeVerifier();
-            const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
-
-            if (this.configurationProvider.wellKnownEndpoints) {
-                url = this.urlService.createAuthorizeUrl(
-                    codeChallenge,
-                    this.configurationProvider.openIDConfiguration.redirectUrl,
-                    nonce,
-                    state
-                );
-            } else {
-                this.loggerService.logError('authWellKnownEndpoints is undefined');
-            }
-        } else {
-            // Implicit Flow
-
-            if (this.configurationProvider.wellKnownEndpoints) {
-                url = this.urlService.createAuthorizeUrl('', this.configurationProvider.openIDConfiguration.redirectUrl, nonce, state);
-            } else {
-                this.loggerService.logError('authWellKnownEndpoints is undefined');
-            }
-        }
+        const url = this.flowsService.getAuthorizeUrl();
 
         if (urlHandler) {
             urlHandler(url);

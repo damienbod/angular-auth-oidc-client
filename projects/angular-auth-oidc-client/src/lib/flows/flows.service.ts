@@ -70,6 +70,18 @@ export class FlowsService {
 
         return url;
     }
+
+    getAuthorizeUrl(): string {
+        let url = '';
+        if (this.flowHelper.isCurrentFlowCodeFlow()) {
+            url = this.createUrlCodeFlowAuthorize();
+        } else {
+            url = this.createUrlImplicitFlowAuthorize();
+        }
+
+        return url;
+    }
+
     private createUrlImplicitFlowWithSilentRenew(): string {
         const state = this.getExistingOrCreateAuthStateControl();
         const nonce = this.createNonce();
@@ -106,6 +118,40 @@ export class FlowsService {
             );
         } else {
             this.loggerService.logWarning('authWellKnownEndpoints is undefined');
+        }
+        return '';
+    }
+
+    private createUrlImplicitFlowAuthorize(): string {
+        const state = this.getExistingOrCreateAuthStateControl();
+        const nonce = this.createNonce();
+        this.loggerService.logDebug('Authorize created. adding myautostate: ' + state);
+
+        if (this.configurationProvider.wellKnownEndpoints) {
+            return this.urlService.createAuthorizeUrl('', this.configurationProvider.openIDConfiguration.redirectUrl, nonce, state);
+        } else {
+            this.loggerService.logError('authWellKnownEndpoints is undefined');
+        }
+
+        return '';
+    }
+    private createUrlCodeFlowAuthorize(): string {
+        const state = this.getExistingOrCreateAuthStateControl();
+        const nonce = this.createNonce();
+        this.loggerService.logDebug('Authorize created. adding myautostate: ' + state);
+        // code_challenge with "S256"
+        const codeVerifier = this.createCodeVerifier;
+        const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
+
+        if (this.configurationProvider.wellKnownEndpoints) {
+            return this.urlService.createAuthorizeUrl(
+                codeChallenge,
+                this.configurationProvider.openIDConfiguration.redirectUrl,
+                nonce,
+                state
+            );
+        } else {
+            this.loggerService.logError('authWellKnownEndpoints is undefined');
         }
         return '';
     }
