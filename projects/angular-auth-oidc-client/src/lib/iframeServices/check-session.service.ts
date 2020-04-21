@@ -33,6 +33,10 @@ export class CheckSessionService {
         private readonly configurationProvider: ConfigurationProvider
     ) {}
 
+    isCheckSessionConfigured() {
+        return this.configurationProvider.openIDConfiguration.startCheckSession;
+    }
+
     start(): void {
         if (!!this.scheduledHeartBeatRunning) {
             return;
