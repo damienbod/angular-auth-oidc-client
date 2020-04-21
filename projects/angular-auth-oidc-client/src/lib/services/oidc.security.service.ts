@@ -77,7 +77,6 @@ export class OidcSecurityService {
             this.loggerService.logError('Please provide a configuration before setting up the module');
             return;
         }
-
         this.loggerService.logDebug('STS server: ' + this.configurationProvider.openIDConfiguration.stsServer);
 
         const isAuthenticated = this.authStateService.isAuthStorageTokenValid();
@@ -95,6 +94,8 @@ export class OidcSecurityService {
                 this.silentRenewService.getOrCreateIframe();
             }
         }
+
+        this.loggerService.logDebug('checkAuth START completed fire events' + isAuthenticated);
 
         // TODO EXTRACT THIS IN SERVICE LATER
         this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
@@ -687,8 +688,10 @@ export class OidcSecurityService {
         return throwError(errMsg);
     }
 
-    // TODO MOVE THIS METHOD INTO CORRESPONDING SERVICE `validation/token.validation.service.ts`
     private startTokenValidationPeriodically() {
+        if (this.isCheckSessionConfigured()) {
+            this.checkSessionService.start();
+        }
         if (this.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
             return;
         }

@@ -135,6 +135,7 @@ export class CheckSessionService {
             if (e.data === 'error') {
                 this.loggerService.logWarning('error from checksession messageHandler');
             } else if (e.data === 'changed') {
+                this.loggerService.logDebug(e);
                 this.checkSessionReceived = true;
                 this.eventService.fireEvent(EventTypes.CheckSessionChanged, e.data);
                 this.checkSessionChangedInternal$.next(true);
@@ -145,7 +146,7 @@ export class CheckSessionService {
         }
     }
 
-    private getExistingIframe() {
+    getExistingIframe() {
         return this.iFrameService.getExistingIFrame(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
     }
 
