@@ -25,7 +25,7 @@ export class AppComponent {
 
         this.eventsService
             .registerForEvents()
-            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.NewAuthorizationResult))
+            .pipe(filter((notification: OidcClientNotification<any>) => notification.type === EventTypes.NewAuthorizationResult))
             .subscribe((authorizationResult) => this.onAuthorizationResultComplete(authorizationResult.value));
     }
 
