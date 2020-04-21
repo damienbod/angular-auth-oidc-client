@@ -148,7 +148,7 @@ export class OidcSecurityService {
 
         this.loggerService.logDebug('BEGIN Authorize OIDC Flow, no auth data');
 
-        const url = this.flowsService.getAuthorizeUrl();
+        const url = this.urlService.getAuthorizeUrl();
 
         if (urlHandler) {
             urlHandler(url);
@@ -485,7 +485,7 @@ export class OidcSecurityService {
             return this.refreshSessionWithRefreshTokens();
         }
 
-        const url = this.flowsService.getRefreshSessionSilentRenewUrl();
+        const url = this.urlService.getRefreshSessionSilentRenewUrl();
 
         return this.sendAuthorizeReqestUsingSilentRenew$(url);
     }

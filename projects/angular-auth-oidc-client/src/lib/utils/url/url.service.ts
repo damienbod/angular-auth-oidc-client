@@ -1,12 +1,21 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ConfigurationProvider } from '../../config/config.provider';
+import { FlowsService } from '../../flows/flows.service';
 import { LoggerService } from '../../logging/logger.service';
+import { TokenValidationService } from '../../validation/token-validation.service';
+import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { UriEncoder } from './uri-encoder';
 
 @Injectable()
 export class UrlService {
-    constructor(private readonly configurationProvider: ConfigurationProvider, private readonly loggerService: LoggerService) {}
+    constructor(
+        private readonly configurationProvider: ConfigurationProvider,
+        private readonly loggerService: LoggerService,
+        private flowsService: FlowsService,
+        private readonly flowHelper: FlowHelper,
+        private tokenValidationService: TokenValidationService
+    ) {}
 
     getUrlParameter(urlToCheck: any, name: any): string {
         if (!urlToCheck) {
@@ -23,7 +32,7 @@ export class UrlService {
         return results === null ? '' : decodeURIComponent(results[1]);
     }
 
-    createAuthorizeUrl(codeChallenge: string, redirectUrl: string, nonce: string, state: string, prompt?: string): string {
+    private createAuthorizeUrl(codeChallenge: string, redirectUrl: string, nonce: string, state: string, prompt?: string): string {
         const authorizationEndpoint = this.getAuthorizationEndpoint();
 
         if (!authorizationEndpoint) {
@@ -90,5 +99,90 @@ export class UrlService {
     private getAuthorizationEndpoint() {
         // this.configurationProvider.wellKnownEndpoints.authorizationEndpoint
         return this.configurationProvider?.wellKnownEndpoints?.authorizationEndpoint;
+    }
+
+    getRefreshSessionSilentRenewUrl(): string {
+        let url = '';
+        if (this.flowHelper.isCurrentFlowCodeFlow()) {
+            url = this.createUrlCodeFlowWithSilentRenew();
+        } else {
+            url = this.createUrlImplicitFlowWithSilentRenew();
+        }
+
+        return url;
+    }
+
+    getAuthorizeUrl(): string {
+        let url = '';
+        if (this.flowHelper.isCurrentFlowCodeFlow()) {
+            url = this.createUrlCodeFlowAuthorize();
+        } else {
+            url = this.createUrlImplicitFlowAuthorize();
+        }
+
+        return url;
+    }
+
+    private createUrlImplicitFlowWithSilentRenew(): string {
+        const state = this.flowsService.getExistingOrCreateAuthStateControl();
+        const nonce = this.flowsService.createNonce();
+        this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + state);
+        if (this.configurationProvider.wellKnownEndpoints) {
+            return this.createAuthorizeUrl('', this.configurationProvider.openIDConfiguration.silentRenewUrl, nonce, state, 'none');
+        } else {
+            this.loggerService.logWarning('authWellKnownEndpoints is undefined');
+        }
+        return '';
+    }
+
+    private createUrlCodeFlowWithSilentRenew(): string {
+        const state = this.flowsService.getExistingOrCreateAuthStateControl();
+        const nonce = this.flowsService.createNonce();
+        this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + state);
+        // code_challenge with "S256"
+        const codeVerifier = this.flowsService.createCodeVerifier();
+        const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
+
+        if (this.configurationProvider.wellKnownEndpoints) {
+            return this.createAuthorizeUrl(
+                codeChallenge,
+                this.configurationProvider.openIDConfiguration.silentRenewUrl,
+                nonce,
+                state,
+                'none'
+            );
+        } else {
+            this.loggerService.logWarning('authWellKnownEndpoints is undefined');
+        }
+        return '';
+    }
+
+    private createUrlImplicitFlowAuthorize(): string {
+        const state = this.flowsService.getExistingOrCreateAuthStateControl();
+        const nonce = this.flowsService.createNonce();
+        this.loggerService.logDebug('Authorize created. adding myautostate: ' + state);
+
+        if (this.configurationProvider.wellKnownEndpoints) {
+            return this.createAuthorizeUrl('', this.configurationProvider.openIDConfiguration.redirectUrl, nonce, state);
+        } else {
+            this.loggerService.logError('authWellKnownEndpoints is undefined');
+        }
+
+        return '';
+    }
+    private createUrlCodeFlowAuthorize(): string {
+        const state = this.flowsService.getExistingOrCreateAuthStateControl();
+        const nonce = this.flowsService.createNonce();
+        this.loggerService.logDebug('Authorize created. adding myautostate: ' + state);
+        // code_challenge with "S256"
+        const codeVerifier = this.flowsService.createCodeVerifier();
+        const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
+
+        if (this.configurationProvider.wellKnownEndpoints) {
+            return this.createAuthorizeUrl(codeChallenge, this.configurationProvider.openIDConfiguration.redirectUrl, nonce, state);
+        } else {
+            this.loggerService.logError('authWellKnownEndpoints is undefined');
+        }
+        return '';
     }
 }
