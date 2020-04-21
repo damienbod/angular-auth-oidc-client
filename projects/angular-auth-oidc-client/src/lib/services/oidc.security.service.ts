@@ -509,52 +509,65 @@ export class OidcSecurityService {
         this.loggerService.logDebug('BEGIN refresh session Authorize');
         this.storagePersistanceService.silentRenewRunning = 'running';
 
-        const state = this.flowsService.getExistingOrCreateAuthStateControl();
-        const nonce = this.flowsService.createNonce();
-        this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + state);
-
         let url = '';
 
         // Code Flow renew with Refresh tokens
         if (this.flowHelper.isCurrentFlowCodeFlow() && this.configurationProvider.openIDConfiguration.useRefreshToken) {
-            return this.refreshSessionWithResfreshTokens(state);
+            return this.refreshSessionWithRefreshTokens();
         }
 
         // Code Flow Silent renew
         if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            // code_challenge with "S256"
-            const codeVerifier = this.flowsService.createCodeVerifier;
-            const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
-
-            if (this.configurationProvider.wellKnownEndpoints) {
-                url = this.urlService.createAuthorizeUrl(
-                    codeChallenge,
-                    this.configurationProvider.openIDConfiguration.silentRenewUrl,
-                    nonce,
-                    state,
-                    'none'
-                );
-            } else {
-                this.loggerService.logWarning('authWellKnownEndpoints is undefined');
-            }
+            url = this.createUrlCodeFlowWithSilentRenew();
         } else {
-            if (this.configurationProvider.wellKnownEndpoints) {
-                url = this.urlService.createAuthorizeUrl(
-                    '',
-                    this.configurationProvider.openIDConfiguration.silentRenewUrl,
-                    nonce,
-                    state,
-                    'none'
-                );
-            } else {
-                this.loggerService.logWarning('authWellKnownEndpoints is undefined');
-            }
+            url = this.createUrlImplicitFlowWithSilentRenew();
         }
 
         return this.sendAuthorizeReqestUsingSilentRenew$(url);
     }
+    private createUrlImplicitFlowWithSilentRenew(): string {
+        const state = this.flowsService.getExistingOrCreateAuthStateControl();
+        const nonce = this.flowsService.createNonce();
+        this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + state);
+        if (this.configurationProvider.wellKnownEndpoints) {
+            return this.urlService.createAuthorizeUrl(
+                '',
+                this.configurationProvider.openIDConfiguration.silentRenewUrl,
+                nonce,
+                state,
+                'none'
+            );
+        } else {
+            this.loggerService.logWarning('authWellKnownEndpoints is undefined');
+        }
+        return '';
+    }
 
-    private refreshSessionWithResfreshTokens(state: string) {
+    private createUrlCodeFlowWithSilentRenew(): string {
+        const state = this.flowsService.getExistingOrCreateAuthStateControl();
+        const nonce = this.flowsService.createNonce();
+        this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + state);
+        // code_challenge with "S256"
+        const codeVerifier = this.flowsService.createCodeVerifier;
+        const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
+
+        if (this.configurationProvider.wellKnownEndpoints) {
+            return this.urlService.createAuthorizeUrl(
+                codeChallenge,
+                this.configurationProvider.openIDConfiguration.silentRenewUrl,
+                nonce,
+                state,
+                'none'
+            );
+        } else {
+            this.loggerService.logWarning('authWellKnownEndpoints is undefined');
+        }
+        return '';
+    }
+
+    private refreshSessionWithRefreshTokens() {
+        const state = this.flowsService.getExistingOrCreateAuthStateControl();
+        this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + state);
         const refreshToken = this.authStateService.getRefreshToken();
         if (refreshToken) {
             this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
