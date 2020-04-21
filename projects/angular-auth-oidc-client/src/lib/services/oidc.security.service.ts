@@ -10,6 +10,7 @@ import { AuthorizedState } from '../authState/authorized-state';
 import { ConfigurationProvider } from '../config';
 import { EventTypes } from '../events';
 import { EventsService } from '../events/events.service';
+import { FlowsService } from '../flows/flows.service';
 import { CheckSessionService, SilentRenewService } from '../iframeServices';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage';
@@ -20,7 +21,6 @@ import { JwtKeys } from '../validation/jwtkeys';
 import { StateValidationService } from '../validation/state-validation.service';
 import { TokenValidationService } from '../validation/token-validation.service';
 import { ValidationResult } from '../validation/validation-result';
-import { FlowsService } from './../flows/flows.service';
 import { TokenHelperService } from './oidc-token-helper.service';
 
 @Injectable()
