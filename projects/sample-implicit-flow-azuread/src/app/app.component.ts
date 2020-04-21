@@ -54,7 +54,7 @@ export class AppComponent implements OnInit {
             if ('/autologin' !== window.location.pathname) {
                 this.write('redirect', window.location.pathname);
             }
-            console.log('AppComponent:onOidcModuleSetup false');
+            console.warn('AppComponent:onOidcModuleSetup false' + window.location.pathname);
             this.oidcSecurityService.isAuthenticated$.subscribe((authorized: boolean) => {
                 if (!authorized) {
                     this.router.navigate(['/autologin']);
@@ -64,10 +64,11 @@ export class AppComponent implements OnInit {
     }
 
     private onAuthorizationResultComplete(authorizationResult: AuthorizationResult) {
-        console.log('AppComponent:onAuthorizationResultComplete');
         const path = this.read('redirect');
+        console.log('AppComponent:onAuthorizationResultComplete path: ' + path);
         if (authorizationResult.authorizationState === AuthorizedState.Authorized) {
             if (path) {
+                console.log('AppComponent:onAuthorizationResultComplete go to path ' + path);
                 this.router.navigate([path]);
             }
         } else {
