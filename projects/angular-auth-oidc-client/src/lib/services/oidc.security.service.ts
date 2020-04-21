@@ -41,6 +41,7 @@ export class OidcSecurityService {
     get checkSessionChanged$() {
         return this.checkSessionService.checkSessionChanged$;
     }
+
     get moduleSetup$() {
         return this.isModuleSetupInternal$.asObservable();
     }
@@ -86,11 +87,11 @@ export class OidcSecurityService {
 
             this.startTokenValidationPeriodically();
 
-            if (this.isCheckSessionConfigured()) {
+            if (this.checkSessionService.isCheckSessionConfigured()) {
                 this.checkSessionService.start();
             }
 
-            if (this.silentRenewShouldBeUsed()) {
+            if (this.silentRenewService.silentRenewShouldBeUsed()) {
                 this.silentRenewService.getOrCreateIframe();
             }
         }
@@ -103,16 +104,6 @@ export class OidcSecurityService {
         this.isModuleSetup = true;
 
         return of(isAuthenticated);
-    }
-
-    private silentRenewShouldBeUsed() {
-        return (
-            !this.configurationProvider.openIDConfiguration.useRefreshToken && this.configurationProvider.openIDConfiguration.silentRenew
-        );
-    }
-
-    private isCheckSessionConfigured() {
-        return this.configurationProvider.openIDConfiguration.startCheckSession;
     }
 
     getToken(): string {
@@ -688,7 +679,7 @@ export class OidcSecurityService {
     }
 
     private startTokenValidationPeriodically() {
-        if (this.isCheckSessionConfigured()) {
+        if (this.checkSessionService.isCheckSessionConfigured()) {
             this.checkSessionService.start();
         }
         if (this.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
