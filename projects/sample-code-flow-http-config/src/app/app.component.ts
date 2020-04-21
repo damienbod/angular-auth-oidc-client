@@ -14,7 +14,7 @@ export class AppComponent implements OnInit {
     userData$: Observable<any>;
     isAuthenticated$: Observable<boolean>;
 
-    checkSessionChanged$: Observable<OidcClientNotification<boolean>>;
+    checkSessionChanged$: Observable<OidcClientNotification<any>>;
     checkSessionChanged: boolean;
 
     constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {
@@ -28,19 +28,17 @@ export class AppComponent implements OnInit {
         this.configuration = this.oidcSecurityService.configuration;
         this.userData$ = this.oidcSecurityService.userData$;
         this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
-
-        this.isModuleSetUp$ = this.eventsService
-            .registerForEvents()
-            .pipe(filter((notification: OidcClientNotification<boolean>) => notification.type === EventTypes.ModuleSetup));
+        this.isModuleSetUp$ = this.oidcSecurityService.moduleSetup$;
+        this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 
         this.userDataChanged$ = this.eventsService
             .registerForEvents()
             .pipe(filter((notification: OidcClientNotification<any>) => notification.type === EventTypes.UserDataChanged));
 
-        this.checkSessionChanged$ = this.eventsService.registerForEvents().pipe(
-            filter((notification) => notification.type === EventTypes.CheckSessionChanged),
-            tap((item) => (this.checkSessionChanged = item.value === 'changed'))
-        );
+        this.oidcSecurityService
+            .checkAuth()
+            .pipe(tap(() => this.doCallbackLogicIfRequired()))
+            .subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
     }
 
     login() {

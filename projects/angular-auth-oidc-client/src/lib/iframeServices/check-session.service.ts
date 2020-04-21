@@ -1,4 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { ConfigurationProvider } from '../config';
 import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';
@@ -18,6 +19,11 @@ export class CheckSessionService {
     private heartBeatInterval = 3000;
     private iframeRefreshInterval = 60000;
 
+    private checkSessionChangedInternal$ = new BehaviorSubject<boolean>(false);
+
+    get checkSessionChanged$() {
+        return this.checkSessionChangedInternal$.asObservable();
+    }
     constructor(
         private storagePersistanceService: StoragePersistanceService,
         private loggerService: LoggerService,
@@ -131,6 +137,7 @@ export class CheckSessionService {
             } else if (e.data === 'changed') {
                 this.checkSessionReceived = true;
                 this.eventService.fireEvent(EventTypes.CheckSessionChanged, e.data);
+                this.checkSessionChangedInternal$.next(true);
             } else {
                 // unchanged event , we don't need this
                 this.loggerService.logDebug(e.data + ' from checksession messageHandler');

@@ -38,6 +38,9 @@ export class OidcSecurityService {
         return this.authStateService.authorized$;
     }
 
+    get checkSessionChanged$() {
+        return this.checkSessionService.checkSessionChanged$;
+    }
     get moduleSetup$() {
         return this.isModuleSetupInternal$.asObservable();
     }
