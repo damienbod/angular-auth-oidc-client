@@ -154,7 +154,7 @@ export class OidcSecurityService {
 
         this.resetAuthorizationData(false);
 
-        this.loggerService.logDebug('BEGIN Authorize Code Flow, no auth data');
+        this.loggerService.logDebug('BEGIN Authorize OIDC Flow, no auth data');
 
         let state = this.storagePersistanceService.authStateControl;
         if (!state) {
