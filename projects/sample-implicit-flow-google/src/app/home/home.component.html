@@ -1,17 +1,5 @@
 <div>Welcome</div>
 
-Is ModuleSetup :
-<pre>{{ isModuleSetUp$ | async | json }}</pre>
-
 <br />
-
-Is Authenticated: {{ isAuthenticated }}
-
-<br />
-
-<pre>{{ userDataChanged$ | async | json }}</pre>
-
-<br />
-
-Configuration loaded:
-<pre>{{ configuration | json }}</pre>
+Is Authenticated: {{ isAuthenticated$ | async }}
+<pre>{{ userData$ | async | json }}</pre>
