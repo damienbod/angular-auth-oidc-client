@@ -509,60 +509,14 @@ export class OidcSecurityService {
         this.loggerService.logDebug('BEGIN refresh session Authorize');
         this.storagePersistanceService.silentRenewRunning = 'running';
 
-        let url = '';
-
         // Code Flow renew with Refresh tokens
         if (this.flowHelper.isCurrentFlowCodeFlow() && this.configurationProvider.openIDConfiguration.useRefreshToken) {
             return this.refreshSessionWithRefreshTokens();
         }
 
-        // Code Flow Silent renew
-        if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            url = this.createUrlCodeFlowWithSilentRenew();
-        } else {
-            url = this.createUrlImplicitFlowWithSilentRenew();
-        }
+        const url = this.flowsService.getRefreshSessionSilentRenewUrl();
 
         return this.sendAuthorizeReqestUsingSilentRenew$(url);
-    }
-    private createUrlImplicitFlowWithSilentRenew(): string {
-        const state = this.flowsService.getExistingOrCreateAuthStateControl();
-        const nonce = this.flowsService.createNonce();
-        this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + state);
-        if (this.configurationProvider.wellKnownEndpoints) {
-            return this.urlService.createAuthorizeUrl(
-                '',
-                this.configurationProvider.openIDConfiguration.silentRenewUrl,
-                nonce,
-                state,
-                'none'
-            );
-        } else {
-            this.loggerService.logWarning('authWellKnownEndpoints is undefined');
-        }
-        return '';
-    }
-
-    private createUrlCodeFlowWithSilentRenew(): string {
-        const state = this.flowsService.getExistingOrCreateAuthStateControl();
-        const nonce = this.flowsService.createNonce();
-        this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + state);
-        // code_challenge with "S256"
-        const codeVerifier = this.flowsService.createCodeVerifier;
-        const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
-
-        if (this.configurationProvider.wellKnownEndpoints) {
-            return this.urlService.createAuthorizeUrl(
-                codeChallenge,
-                this.configurationProvider.openIDConfiguration.silentRenewUrl,
-                nonce,
-                state,
-                'none'
-            );
-        } else {
-            this.loggerService.logWarning('authWellKnownEndpoints is undefined');
-        }
-        return '';
     }
 
     private refreshSessionWithRefreshTokens() {
