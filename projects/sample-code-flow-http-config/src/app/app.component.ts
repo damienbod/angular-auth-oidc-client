@@ -15,12 +15,7 @@ export class AppComponent implements OnInit {
     isAuthenticated$: Observable<boolean>;
     checkSessionChanged$: Observable<boolean>;
 
-    constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {
-        this.oidcSecurityService
-            .checkAuth()
-            .pipe(tap(() => this.doCallbackLogicIfRequired()))
-            .subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
-    }
+    constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {}
 
     ngOnInit() {
         this.configuration = this.oidcSecurityService.configuration;
