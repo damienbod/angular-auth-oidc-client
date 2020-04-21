@@ -1,47 +1,38 @@
-import { Component } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { Observable } from 'rxjs';
 
 @Component({
-  selector: 'app-nav-menu',
-  templateUrl: './nav-menu.component.html',
-  styleUrls: ['./nav-menu.component.css']
+    selector: 'app-nav-menu',
+    templateUrl: './nav-menu.component.html',
+    styleUrls: ['./nav-menu.component.css'],
 })
-export class NavMenuComponent {
-  isExpanded = false;
-  isAuthorizedSubscription: Subscription;
-  isAuthorized: boolean;
+export class NavMenuComponent implements OnInit {
+    isExpanded = false;
+    isAuthenticated$: Observable<boolean>;
 
-  constructor(public oidcSecurityService: OidcSecurityService) {
-  }
+    constructor(public oidcSecurityService: OidcSecurityService) {}
 
-  ngOnInit() {
-    this.isAuthorizedSubscription = this.oidcSecurityService.getIsAuthorized().subscribe(
-      (isAuthorized: boolean) => {
-        this.isAuthorized = isAuthorized;
-      });
-  }
+    ngOnInit() {
+        this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
+    }
 
-  ngOnDestroy(): void {
-    this.isAuthorizedSubscription.unsubscribe();
-  }
+    login() {
+        this.oidcSecurityService.authorize();
+    }
 
-  login() {
-    this.oidcSecurityService.authorize();
-  }
+    refreshSession() {
+        this.oidcSecurityService.authorize();
+    }
 
-  refreshSession() {
-    this.oidcSecurityService.authorize();
-  }
+    logout() {
+        this.oidcSecurityService.logoff();
+    }
+    collapse() {
+        this.isExpanded = false;
+    }
 
-  logout() {
-    this.oidcSecurityService.logoff();
-  }
-  collapse() {
-    this.isExpanded = false;
-  }
-
-  toggle() {
-    this.isExpanded = !this.isExpanded;
-  }
+    toggle() {
+        this.isExpanded = !this.isExpanded;
+    }
 }
