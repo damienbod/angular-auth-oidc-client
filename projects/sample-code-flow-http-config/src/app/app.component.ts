@@ -9,13 +9,11 @@ import { filter, tap } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
     configuration: PublicConfiguration;
-    isModuleSetUp$: Observable<OidcClientNotification<boolean>>;
+    isModuleSetUp$: Observable<boolean>;
     userDataChanged$: Observable<OidcClientNotification<any>>;
     userData$: Observable<any>;
     isAuthenticated$: Observable<boolean>;
-
-    checkSessionChanged$: Observable<OidcClientNotification<any>>;
-    checkSessionChanged: boolean;
+    checkSessionChanged$: Observable<boolean>;
 
     constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {
         this.oidcSecurityService
