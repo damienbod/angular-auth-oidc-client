@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { RandomService } from 'dist/angular-auth-oidc-client/lib/utils';
 import { StoragePersistanceService } from '../storage';
+import { RandomService } from '../utils';
 
 @Injectable()
 export class FlowsService {
