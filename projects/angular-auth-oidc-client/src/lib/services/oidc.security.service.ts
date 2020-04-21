@@ -95,7 +95,7 @@ export class OidcSecurityService {
             }
         }
 
-        this.loggerService.logDebug('checkAuth START completed fire events' + isAuthenticated);
+        this.loggerService.logDebug('checkAuth completed fire events, auth: ' + isAuthenticated);
 
         // TODO EXTRACT THIS IN SERVICE LATER
         this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
