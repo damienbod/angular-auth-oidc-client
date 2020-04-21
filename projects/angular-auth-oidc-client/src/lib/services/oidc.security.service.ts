@@ -2,7 +2,7 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { oneLineTrim } from 'common-tags';
-import { Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { AuthStateService } from '../authState/auth-state.service';
@@ -24,17 +24,24 @@ import { TokenHelperService } from './oidc-token-helper.service';
 
 @Injectable()
 export class OidcSecurityService {
-    public get configuration() {
+    private isModuleSetupInternal$ = new BehaviorSubject<boolean>(false);
+
+    get configuration() {
         return this.configurationProvider.configuration;
     }
 
-    public get userData$() {
+    get userData$() {
         return this.userService.userData$;
     }
 
-    public get isAuthenticated$() {
+    get isAuthenticated$() {
         return this.authStateService.authorized$;
     }
+
+    get moduleSetup$() {
+        return this.isModuleSetupInternal$.asObservable();
+    }
+
     constructor(
         private dataService: DataService,
         private stateValidationService: StateValidationService,
@@ -86,7 +93,9 @@ export class OidcSecurityService {
             }
         }
 
+        // TODO EXTRACT THIS IN SERVICE LATER
         this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
+        this.isModuleSetupInternal$.next(true);
         this.isModuleSetup = true;
 
         return of(isAuthenticated);
