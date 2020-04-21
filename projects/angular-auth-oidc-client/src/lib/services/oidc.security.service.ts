@@ -62,14 +62,6 @@ export class OidcSecurityService {
     private isModuleSetup = false;
     private boundSilentRenewEvent: any;
 
-    private instanceId = Math.random();
-
-    private counter1 = 0;
-    private counter2 = 0;
-    private counter3 = 0;
-    private counter4 = 0;
-    // TODO WHAT HAPPENS IF THIS METHOD IS CALLED TWICE EARLY RETURN
-
     checkAuth(): Observable<boolean> {
         if (!this.configurationProvider.hasValidConfig()) {
             this.loggerService.logError('Please provide a configuration before setting up the module');
@@ -582,8 +574,6 @@ export class OidcSecurityService {
                 this.loggerService.logWarning('authWellKnownEndpoints is undefined');
             }
         }
-        this.counter1++;
-        console.warn('COUNTER1 ' + this.counter1);
 
         return this.sendAuthorizeReqestUsingSilentRenew$(url);
     }
@@ -773,9 +763,7 @@ export class OidcSecurityService {
     }
 
     private silentRenewEventHandlerImpl(detail: any) {
-        console.warn('@@@@@@ silentRenewEventHandler event');
         if (!detail) {
-            console.warn('@@@@@@ silentRenewEventHandler NO detail');
             return;
         }
         if (this.flowHelper.isCurrentFlowCodeFlow()) {
