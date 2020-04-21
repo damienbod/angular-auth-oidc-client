@@ -32,6 +32,43 @@ export class UrlService {
         return results === null ? '' : decodeURIComponent(results[1]);
     }
 
+    getRefreshSessionSilentRenewUrl(): string {
+        let url = '';
+        if (this.flowHelper.isCurrentFlowCodeFlow()) {
+            url = this.createUrlCodeFlowWithSilentRenew();
+        } else {
+            url = this.createUrlImplicitFlowWithSilentRenew();
+        }
+
+        return url;
+    }
+
+    getAuthorizeUrl(): string {
+        let url = '';
+        if (this.flowHelper.isCurrentFlowCodeFlow()) {
+            url = this.createUrlCodeFlowAuthorize();
+        } else {
+            url = this.createUrlImplicitFlowAuthorize();
+        }
+
+        return url;
+    }
+
+    createEndSessionUrl(endSessionEndpoint: string, idTokenHint: string) {
+        const urlParts = endSessionEndpoint.split('?');
+
+        const authorizationEndsessionUrl = urlParts[0];
+
+        let params = new HttpParams({
+            fromString: urlParts[1],
+            encoder: new UriEncoder(),
+        });
+        params = params.set('id_token_hint', idTokenHint);
+        params = params.append('post_logout_redirect_uri', this.configurationProvider.openIDConfiguration.postLogoutRedirectUri);
+
+        return `${authorizationEndsessionUrl}?${params}`;
+    }
+
     private createAuthorizeUrl(codeChallenge: string, redirectUrl: string, nonce: string, state: string, prompt?: string): string {
         const authorizationEndpoint = this.getAuthorizationEndpoint();
 
@@ -77,21 +114,6 @@ export class UrlService {
         return `${authorizationUrl}?${params}`;
     }
 
-    createEndSessionUrl(endSessionEndpoint: string, idTokenHint: string) {
-        const urlParts = endSessionEndpoint.split('?');
-
-        const authorizationEndsessionUrl = urlParts[0];
-
-        let params = new HttpParams({
-            fromString: urlParts[1],
-            encoder: new UriEncoder(),
-        });
-        params = params.set('id_token_hint', idTokenHint);
-        params = params.append('post_logout_redirect_uri', this.configurationProvider.openIDConfiguration.postLogoutRedirectUri);
-
-        return `${authorizationEndsessionUrl}?${params}`;
-    }
-
     private isCodeFlow() {
         return this.configurationProvider.openIDConfiguration.responseType === 'code';
     }
@@ -99,28 +121,6 @@ export class UrlService {
     private getAuthorizationEndpoint() {
         // this.configurationProvider.wellKnownEndpoints.authorizationEndpoint
         return this.configurationProvider?.wellKnownEndpoints?.authorizationEndpoint;
-    }
-
-    getRefreshSessionSilentRenewUrl(): string {
-        let url = '';
-        if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            url = this.createUrlCodeFlowWithSilentRenew();
-        } else {
-            url = this.createUrlImplicitFlowWithSilentRenew();
-        }
-
-        return url;
-    }
-
-    getAuthorizeUrl(): string {
-        let url = '';
-        if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            url = this.createUrlCodeFlowAuthorize();
-        } else {
-            url = this.createUrlImplicitFlowAuthorize();
-        }
-
-        return url;
     }
 
     private createUrlImplicitFlowWithSilentRenew(): string {
