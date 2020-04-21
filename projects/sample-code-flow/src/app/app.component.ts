@@ -9,30 +9,27 @@ import { filter, tap } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit, OnDestroy {
     configuration: PublicConfiguration;
-    isModuleSetUp$: Observable<OidcClientNotification<boolean>>;
+    isModuleSetUp$: Observable<boolean>;
     userDataChanged$: Observable<OidcClientNotification<any>>;
     userData$: Observable<any>;
     isAuthenticated$: Observable<boolean>;
 
-    constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {
-        this.oidcSecurityService
-            .checkAuth()
-            .pipe(tap(() => this.doCallbackLogicIfRequired()))
-            .subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
-    }
+    constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {}
 
     ngOnInit() {
         this.configuration = this.oidcSecurityService.configuration;
         this.userData$ = this.oidcSecurityService.userData$;
         this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
-
-        this.isModuleSetUp$ = this.eventsService
-            .registerForEvents()
-            .pipe(filter((notification: OidcClientNotification<boolean>) => notification.type === EventTypes.ModuleSetup));
+        this.isModuleSetUp$ = this.oidcSecurityService.moduleSetup$;
 
         this.userDataChanged$ = this.eventsService
             .registerForEvents()
             .pipe(filter((notification: OidcClientNotification<any>) => notification.type === EventTypes.UserDataChanged));
+
+        this.oidcSecurityService
+            .checkAuth()
+            .pipe(tap(() => this.doCallbackLogicIfRequired()))
+            .subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
     }
 
     ngOnDestroy(): void {}
