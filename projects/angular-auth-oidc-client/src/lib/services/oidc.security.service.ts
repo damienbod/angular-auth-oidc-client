@@ -521,13 +521,6 @@ export class OidcSecurityService {
 
     // this is not an observable as return
     refreshSession(): Observable<boolean> {
-        if (
-            !this.configurationProvider.openIDConfiguration.silentRenewUrl ||
-            this.configurationProvider.openIDConfiguration.useRefreshToken
-        ) {
-            return of(false);
-        }
-
         this.loggerService.logDebug('BEGIN refresh session Authorize');
         this.storagePersistanceService.silentRenewRunning = 'running';
 
@@ -543,20 +536,13 @@ export class OidcSecurityService {
 
         let url = '';
 
-        // Code Flow
+        // Code Flow renew with Refresh tokens
+        if (this.flowHelper.isCurrentFlowCodeFlow() && this.configurationProvider.openIDConfiguration.useRefreshToken) {
+            return this.refreshSessionWithResfreshTokens(state);
+        }
+
+        // Code Flow Silent renew
         if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            if (this.configurationProvider.openIDConfiguration.useRefreshToken) {
-                // try using refresh token
-                const refreshToken = this.storagePersistanceService.getRefreshToken();
-                if (refreshToken) {
-                    this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
-                    // Nonce is not used with refresh tokens; but Keycloak may send it anyway
-                    this.storagePersistanceService.authNonce = TokenValidationService.RefreshTokenNoncePlaceholder;
-                    return this.refreshTokensWithCodeProcedure(refreshToken, state);
-                } else {
-                    this.loggerService.logDebug('no refresh token found, using silent renew');
-                }
-            }
             // code_challenge with "S256"
             const codeVerifier = this.randomService.createRandom(67);
             const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
@@ -589,6 +575,19 @@ export class OidcSecurityService {
         }
 
         return this.sendAuthorizeReqestUsingSilentRenew$(url);
+    }
+
+    private refreshSessionWithResfreshTokens(state: string) {
+        const refreshToken = this.storagePersistanceService.getRefreshToken();
+        if (refreshToken) {
+            this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
+            // Nonce is not used with refresh tokens; but Keycloak may send it anyway
+            this.storagePersistanceService.authNonce = TokenValidationService.RefreshTokenNoncePlaceholder;
+            return this.refreshTokensWithCodeProcedure(refreshToken, state);
+        } else {
+            this.loggerService.logError('no refresh token found, please login');
+            return;
+        }
     }
 
     handleError(error: any) {
