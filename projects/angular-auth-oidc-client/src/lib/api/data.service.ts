@@ -8,6 +8,20 @@ export class DataService {
     constructor(private httpClient: HttpBaseService) {}
 
     get<T>(url: string, token?: string): Observable<T> {
+        const headers = this.prepareHeaders(token);
+
+        return this.httpClient.get<T>(url, {
+            headers,
+        });
+    }
+
+    post<T>(url: string, body: any, token?: string, headersParams?: HttpHeaders) {
+        const headers = headersParams || this.prepareHeaders(token);
+
+        return this.httpClient.post<T>(url, body, { headers });
+    }
+
+    private prepareHeaders(token?: string) {
         let headers = new HttpHeaders();
         headers = headers.set('Accept', 'application/json');
 
@@ -15,8 +29,6 @@ export class DataService {
             headers = headers.set('Authorization', 'Bearer ' + decodeURIComponent(token));
         }
 
-        return this.httpClient.get<T>(url, {
-            headers,
-        });
+        return headers;
     }
 }

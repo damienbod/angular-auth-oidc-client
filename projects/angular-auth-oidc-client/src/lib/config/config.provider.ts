@@ -5,14 +5,13 @@ import { DEFAULT_CONFIG } from './default-config';
 import { OpenIdConfiguration } from './openid-configuration';
 import { PublicConfiguration } from './public-configuration';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class ConfigurationProvider {
     private wellKnownEndpointsInternal: AuthWellKnownEndpoints;
     private openIdConfigurationInternal: OpenIdConfiguration;
 
     get openIDConfiguration(): OpenIdConfiguration {
         if (!this.openIdConfigurationInternal) {
-            // 'Config was asked before the module was set, this should never happen'
             return null;
         }
 
@@ -21,16 +20,13 @@ export class ConfigurationProvider {
 
     get wellKnownEndpoints(): AuthWellKnownEndpoints {
         if (!this.wellKnownEndpointsInternal) {
-            // 'Config was asked before the module was set, this should never happen'
             return null;
         }
 
         return this.wellKnownEndpointsInternal;
     }
 
-    public get configuration(): PublicConfiguration {
-        // THIS HAS TO BE PART OF A PUBLIC FACADE
-        // MAYBE INTRODUCED IN THE FUTURE
+    get configuration(): PublicConfiguration {
         if (!this.hasValidConfig()) {
             return null;
         }

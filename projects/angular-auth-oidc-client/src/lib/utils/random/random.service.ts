@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LoggerService } from '../../logging/logger.service';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class RandomService {
     constructor(private loggerService: LoggerService) {}
 

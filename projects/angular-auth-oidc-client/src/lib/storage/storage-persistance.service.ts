@@ -1,4 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
+import { AuthorizedState } from '../authState/authorized-state';
 import { ConfigurationProvider } from '../config';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 
@@ -43,14 +44,14 @@ export class StoragePersistanceService {
         this.store(this.storageIdToken, value);
     }
 
-    private storageIsAuthorized = 'storageIsAuthorized';
+    private storageAuthorizedState = 'storageAuthorizedState';
 
-    public get isAuthorized(): boolean | undefined {
-        return this.retrieve(this.storageIsAuthorized);
+    public get authorizedState(): string | undefined {
+        return this.retrieve(this.storageAuthorizedState);
     }
 
-    public set isAuthorized(value: boolean | undefined) {
-        this.store(this.storageIsAuthorized, value);
+    public set authorizedState(value: string | undefined) {
+        this.store(this.storageAuthorizedState, value);
     }
 
     private storageUserData = 'userData';
@@ -123,17 +124,18 @@ export class StoragePersistanceService {
         this.oidcSecurityStorage.write(keyToStore, value);
     }
 
-    resetStorageData(isRenewProcess: boolean) {
-        if (!isRenewProcess) {
-            this.store(this.storageAuthResult, '');
-            this.store(this.storageSessionState, '');
-            this.store(this.storageSilentRenewRunning, '');
-            this.store(this.storageIsAuthorized, false);
-            this.store(this.storageAccessToken, '');
-            this.store(this.storageIdToken, '');
-            this.store(this.storageUserData, '');
-            this.store(this.storageCodeVerifier, '');
-        }
+    resetStorageFlowData() {
+        this.store(this.storageSessionState, '');
+        this.store(this.storageSilentRenewRunning, '');
+        this.store(this.storageCodeVerifier, '');
+        this.store(this.storageUserData, '');
+    }
+
+    resetAuthStateInStorage() {
+        this.store(this.storageAuthorizedState, AuthorizedState.Unknown);
+        this.store(this.storageAccessToken, '');
+        this.store(this.storageIdToken, '');
+        this.store(this.storageAuthResult, '');
     }
 
     getAccessToken(): any {

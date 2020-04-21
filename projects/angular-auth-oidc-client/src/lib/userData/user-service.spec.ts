@@ -9,6 +9,9 @@ import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { TokenHelperService } from '../services/oidc-token-helper.service';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
+import { PlatformProvider } from '../utils';
+import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
+import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
 import { UserService } from './user-service';
 
 describe('User Service', () => {
@@ -28,10 +31,12 @@ describe('User Service', () => {
                 },
                 { provide: LoggerService, useClass: LoggerServiceMock },
                 { provide: DataService, useClass: DataServiceMock },
+                { provide: PlatformProvider, useClass: PlatformProviderMock },
                 EventsService,
                 TokenHelperService,
                 ConfigurationProvider,
                 UserService,
+                FlowHelper,
             ],
         });
     });
@@ -51,7 +56,6 @@ describe('User Service', () => {
     describe('getAndPersistUserDataInStore', () => {
         it('if not currentFlow is NOT id Token or Code flow, return decoded ID Token - passed as argument', async(() => {
             const isRenewProcess = false;
-            const authResult = false;
             const idToken = false;
             const decodedIdToken = 'decodedIdToken';
             const userDataInstore = '';
@@ -64,14 +68,13 @@ describe('User Service', () => {
 
             spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
 
-            userService.getAndPersistUserDataInStore(isRenewProcess, authResult, idToken, decodedIdToken).subscribe((token) => {
+            userService.getAndPersistUserDataInStore(isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
                 expect(decodedIdToken).toBe(token);
             });
         }));
 
         it('if not currentFlow is NOT id Token or Code flow, "setUserDataToStore" is called with the decodedIdToken', async(() => {
             const isRenewProcess = false;
-            const authResult = false;
             const idToken = false;
             const decodedIdToken = 'decodedIdToken';
             const userDataInstore = '';
@@ -85,7 +88,7 @@ describe('User Service', () => {
             spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
             spyOn(userService, 'setUserDataToStore');
 
-            userService.getAndPersistUserDataInStore(isRenewProcess, authResult, idToken, decodedIdToken).subscribe((token) => {
+            userService.getAndPersistUserDataInStore(isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
                 expect(decodedIdToken).toBe(token);
             });
 
@@ -94,7 +97,6 @@ describe('User Service', () => {
 
         it('if not currentFlow is id token or code flow with renewprocess going -> return existing data from storage', async(() => {
             const isRenewProcess = true;
-            const authResult = false;
             const idToken = false;
             const decodedIdToken = 'decodedIdToken';
             const userDataInstore = 'userDataInstore';
@@ -107,14 +109,13 @@ describe('User Service', () => {
 
             spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
 
-            userService.getAndPersistUserDataInStore(isRenewProcess, authResult, idToken, decodedIdToken).subscribe((token) => {
+            userService.getAndPersistUserDataInStore(isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
                 expect(userDataInstore).toBe(token);
             });
         }));
 
         it('if not currentFlow is id token or code flow and not renewprocess --> ask server for data', async(() => {
             const isRenewProcess = false;
-            const authResult = false;
             const idToken = false;
             const decodedIdToken = 'decodedIdToken';
             const userDataInstore = '';
@@ -129,7 +130,7 @@ describe('User Service', () => {
             spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
             const spy = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
 
-            userService.getAndPersistUserDataInStore(isRenewProcess, authResult, idToken, decodedIdToken).subscribe((token) => {
+            userService.getAndPersistUserDataInStore(isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
                 expect(userDataFromSts).toEqual(token);
             });
 
@@ -140,7 +141,6 @@ describe('User Service', () => {
           --> ask server for data
           --> logging if it has userdata`, async(() => {
             const isRenewProcess = false;
-            const authResult = false;
             const idToken = false;
             const decodedIdToken = 'decodedIdToken';
             const userDataInstore = '';
@@ -157,7 +157,7 @@ describe('User Service', () => {
             spyOn(loggerService, 'logDebug');
             spyOnProperty(storagePersistanceService, 'accessToken', 'get').and.returnValue('accessToken');
 
-            userService.getAndPersistUserDataInStore(isRenewProcess, authResult, idToken, decodedIdToken).subscribe((token) => {
+            userService.getAndPersistUserDataInStore(isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
                 expect(userDataFromSts).toEqual(token);
             });
 

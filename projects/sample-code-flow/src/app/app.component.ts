@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { EventsService, EventTypes, OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, tap } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -9,38 +9,27 @@ import { filter } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit, OnDestroy {
     configuration: PublicConfiguration;
-    isModuleSetUp$: Observable<OidcClientNotification>;
-    userDataChanged$: Observable<OidcClientNotification>;
+    isModuleSetUp$: Observable<boolean>;
+    userDataChanged$: Observable<OidcClientNotification<any>>;
     userData$: Observable<any>;
-    isAuthenticated: boolean;
+    isAuthenticated$: Observable<boolean>;
 
-    constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {
-        this.oidcSecurityService.setupModule();
-
-        if (this.oidcSecurityService.moduleSetup) {
-            this.doCallbackLogicIfRequired();
-        } else {
-            this.oidcSecurityService.onModuleSetup.subscribe(() => {
-                this.doCallbackLogicIfRequired();
-            });
-        }
-    }
+    constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {}
 
     ngOnInit() {
         this.configuration = this.oidcSecurityService.configuration;
         this.userData$ = this.oidcSecurityService.userData$;
-
-        this.isModuleSetUp$ = this.eventsService
-            .registerForEvents()
-            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.ModuleSetup));
+        this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
+        this.isModuleSetUp$ = this.oidcSecurityService.moduleSetup$;
 
         this.userDataChanged$ = this.eventsService
             .registerForEvents()
-            .pipe(filter((notification: OidcClientNotification) => notification.type === EventTypes.UserDataChanged));
+            .pipe(filter((notification: OidcClientNotification<any>) => notification.type === EventTypes.UserDataChanged));
 
-        this.oidcSecurityService.getIsAuthorized().subscribe((auth) => {
-            this.isAuthenticated = auth;
-        });
+        this.oidcSecurityService
+            .checkAuth()
+            .pipe(tap(() => this.doCallbackLogicIfRequired()))
+            .subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
     }
 
     ngOnDestroy(): void {}

@@ -1,22 +1,29 @@
 <nav class="bg-dark mb-4 navbar navbar-dark navbar-expand-md">
-  <a [routerLink]="['/home']" class="navbar-brand">
-    <em>Azure AD OIDC</em>
-  </a>
-  <button aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#topNavbarCollapse" data-toggle="collapse" type="button">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="topNavbarCollapse">
-    <ul class="mr-auto navbar-nav">
-      <li class="nav-item" *ngIf="isAuthorized">
-        <a [routerLink]="['/protected']" class="nav-link">Protected</a>
-      </li>
-      <li class="nav-item">
-        <a [routerLink]="['/home']" class="nav-link">Home</a>
-      </li>
-      <li class="nav-item"><a class="nav-link" *ngIf="!isAuthorized" (click)="login()">Login</a></li>
-      <li class="nav-item"><a class="nav-link" *ngIf="isAuthorized" (click)="logout()">Logout</a></li>
-    </ul>
-    <ul class="navbar-nav">
-    </ul>
-  </div>
+    <a [routerLink]="['/home']" class="navbar-brand">
+        <em>Azure AD OIDC</em>
+    </a>
+    <button
+        aria-controls="navbarCollapse"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+        class="navbar-toggler"
+        data-target="#topNavbarCollapse"
+        data-toggle="collapse"
+        type="button"
+    >
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="topNavbarCollapse" *ngIf="isAuthenticated$ | async as isAuthenticated">
+        <ul class="mr-auto navbar-nav">
+            <li class="nav-item" *ngIf="isAuthenticated">
+                <a [routerLink]="['/protected']" class="nav-link">Protected</a>
+            </li>
+            <li class="nav-item">
+                <a [routerLink]="['/home']" class="nav-link">Home</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" *ngIf="!isAuthenticated" (click)="login()">Login</a></li>
+            <li class="nav-item"><a class="nav-link" *ngIf="isAuthenticated" (click)="logout()">Logout</a></li>
+        </ul>
+        <ul class="navbar-nav"></ul>
+    </div>
 </nav>

@@ -7,6 +7,7 @@ import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';
 import { TokenHelperService } from '../services/oidc-token-helper.service';
 import { StoragePersistanceService } from '../storage';
+import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 
 @Injectable()
 export class UserService {
@@ -22,17 +23,19 @@ export class UserService {
         private eventService: EventsService,
         private loggerService: LoggerService,
         private tokenHelperService: TokenHelperService,
-        private readonly configurationProvider: ConfigurationProvider
+        private readonly configurationProvider: ConfigurationProvider,
+        private readonly flowHelper: FlowHelper
     ) {}
 
-    getAndPersistUserDataInStore(isRenewProcess = false, authResult?: any, idToken?: any, decodedIdToken?: any): Observable<any> {
-        authResult = authResult || this.storagePersistanceService.authResult;
+    // TODO CHECK PARAMETERS
+    //  validationResult.idToken can be the complete valudationResult
+    getAndPersistUserDataInStore(isRenewProcess = false, idToken?: any, decodedIdToken?: any): Observable<any> {
         idToken = idToken || this.storagePersistanceService.idToken;
         decodedIdToken = decodedIdToken || this.tokenHelperService.getPayloadFromToken(idToken, false);
 
         const existingUserDataFromStorage = this.getUserDataFromStore();
         const haveUserData = !!existingUserDataFromStorage;
-        const currentFlowIsIdTokenOrCode = this.currentFlowIs(['id_token token', 'code']);
+        const currentFlowIsIdTokenOrCode = this.flowHelper.currentFlowIs(['id_token token', 'code']);
 
         if (!currentFlowIsIdTokenOrCode) {
             this.loggerService.logDebug('authorizedCallback id_token flow');
@@ -75,10 +78,6 @@ export class UserService {
         this.storagePersistanceService.userData = null;
         this.eventService.fireEvent(EventTypes.UserDataChanged, null);
         this.userDataInternal$.next(null);
-    }
-
-    private currentFlowIs(flowTypes: string[]) {
-        return flowTypes.some((x) => this.configurationProvider.openIDConfiguration.responseType === x);
     }
 
     private getUserDataOidcFlowAndSave(idTokenSub: any) {

@@ -38,14 +38,14 @@ export class StoragePersistanceServiceMock {
         this.store(this.storageIdToken, value);
     }
 
-    private storageIsAuthorized = 'storageIsAuthorized';
+    private storageAuthorizedState = 'storageAuthorizedState';
 
-    public get isAuthorized(): boolean | undefined {
-        return this.retrieve(this.storageIsAuthorized);
+    public get authorizedState(): string | undefined {
+        return this.retrieve(this.storageAuthorizedState);
     }
 
-    public set isAuthorized(value: boolean | undefined) {
-        this.store(this.storageIsAuthorized, value);
+    public set authorizedState(value: string | undefined) {
+        this.store(this.storageAuthorizedState, value);
     }
 
     private storageUserData = 'userData';
@@ -118,17 +118,17 @@ export class StoragePersistanceServiceMock {
         this.itemsInternal.push({ key: keyToStore, value });
     }
 
-    resetStorageData(isRenewProcess: boolean) {
-        if (!isRenewProcess) {
-            this.store(this.storageAuthResult, '');
-            this.store(this.storageSessionState, '');
-            this.store(this.storageSilentRenewRunning, '');
-            this.store(this.storageIsAuthorized, false);
-            this.store(this.storageAccessToken, '');
-            this.store(this.storageIdToken, '');
-            this.store(this.storageUserData, '');
-            this.store(this.storageCodeVerifier, '');
-        }
+    resetStorageFlowData() {
+        this.store(this.storageSessionState, '');
+        this.store(this.storageSilentRenewRunning, '');
+        this.store(this.storageCodeVerifier, '');
+    }
+
+    resetAuthStateStorageData() {
+        this.store(this.authorizedState, false);
+        this.store(this.storageAccessToken, '');
+        this.store(this.storageIdToken, '');
+        this.store(this.storageAuthResult, '');
     }
 
     getAccessToken(): any {
@@ -146,6 +146,8 @@ export class StoragePersistanceServiceMock {
 
         return this.authResult.refresh_token;
     }
+
+    resetAuthStateInStorage() {}
 
     private createKeyWithPrefix(key: string) {
         return `${this.STORAGE_PREFIX}_${key}`;

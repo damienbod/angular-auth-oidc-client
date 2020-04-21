@@ -4,7 +4,7 @@ import { ConfigurationProvider } from '../../config/config.provider';
 import { LoggerService } from '../../logging/logger.service';
 import { UriEncoder } from './uri-encoder';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class UrlService {
     constructor(private readonly configurationProvider: ConfigurationProvider, private readonly loggerService: LoggerService) {}
 

@@ -1,9 +1,10 @@
 import { Injectable, NgZone } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { ConfigurationProvider } from '../config';
 import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';
-import { IFrameService } from '../services/existing-iframe.service';
 import { StoragePersistanceService } from '../storage';
+import { IFrameService } from './existing-iframe.service';
 
 const IFRAME_FOR_CHECK_SESSION_IDENTIFIER = 'myiFrameForCheckSession';
 
@@ -18,6 +19,11 @@ export class CheckSessionService {
     private heartBeatInterval = 3000;
     private iframeRefreshInterval = 60000;
 
+    private checkSessionChangedInternal$ = new BehaviorSubject<boolean>(false);
+
+    get checkSessionChanged$() {
+        return this.checkSessionChangedInternal$.asObservable();
+    }
     constructor(
         private storagePersistanceService: StoragePersistanceService,
         private loggerService: LoggerService,
@@ -27,12 +33,14 @@ export class CheckSessionService {
         private readonly configurationProvider: ConfigurationProvider
     ) {}
 
-    start(clientId: string): void {
+    start(): void {
         if (!!this.scheduledHeartBeatRunning) {
             return;
         }
 
         this.init();
+
+        const clientId = this.configurationProvider.openIDConfiguration.clientId;
         this.pollServerSession(clientId);
     }
 
@@ -127,8 +135,10 @@ export class CheckSessionService {
             if (e.data === 'error') {
                 this.loggerService.logWarning('error from checksession messageHandler');
             } else if (e.data === 'changed') {
+                this.loggerService.logDebug(e);
                 this.checkSessionReceived = true;
                 this.eventService.fireEvent(EventTypes.CheckSessionChanged, e.data);
+                this.checkSessionChangedInternal$.next(true);
             } else {
                 // unchanged event , we don't need this
                 this.loggerService.logDebug(e.data + ' from checksession messageHandler');
@@ -136,7 +146,7 @@ export class CheckSessionService {
         }
     }
 
-    private getExistingIframe() {
+    getExistingIframe() {
         return this.iFrameService.getExistingIFrame(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
     }
 

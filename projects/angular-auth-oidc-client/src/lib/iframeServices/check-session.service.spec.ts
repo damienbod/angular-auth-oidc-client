@@ -1,13 +1,16 @@
 import { async, TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../config';
+import { EventsService } from '../events';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
-import { IFrameService } from '../services/existing-iframe.service';
 import { OidcSecurityService } from '../services/oidc.security.service';
 import { AbstractSecurityStorage, StoragePersistanceService } from '../storage';
 import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
+import { PlatformProvider } from '../utils/platform-provider/platform.provider';
+import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
 import { CheckSessionService } from './check-session.service';
+import { IFrameService } from './existing-iframe.service';
 
 describe('SecurityCheckSessionTests', () => {
     let checkSessionService: CheckSessionService;
@@ -19,14 +22,16 @@ describe('SecurityCheckSessionTests', () => {
             providers: [
                 CheckSessionService,
                 ConfigurationProvider,
+                OidcSecurityService,
+                IFrameService,
+                EventsService,
                 {
                     provide: StoragePersistanceService,
                     useClass: StoragePersistanceServiceMock,
                 },
                 { provide: LoggerService, useClass: LoggerServiceMock },
-                OidcSecurityService,
                 { provide: AbstractSecurityStorage, useClass: BrowserStorageMock },
-                IFrameService,
+                { provide: PlatformProvider, useClass: PlatformProviderMock },
             ],
         });
     });
@@ -113,14 +118,15 @@ describe('SecurityCheckSessionTests', () => {
 
     it('start() calls pollserversession() with clientId if no scheduledheartbeat is set', () => {
         const spy = spyOn<any>(checkSessionService, 'pollServerSession');
-        checkSessionService.start('anyId');
-        expect(spy).toHaveBeenCalledWith('anyId');
+        configurationProvider.setConfig({ clientId: 'clientId' }, null);
+        checkSessionService.start();
+        expect(spy).toHaveBeenCalledWith('clientId');
     });
 
     it('start() does not call pollserversession() if scheduledHeartBeatRunning is set', () => {
         const spy = spyOn<any>(checkSessionService, 'pollServerSession');
         (checkSessionService as any).scheduledHeartBeatRunning = () => {};
-        checkSessionService.start('anyId');
+        checkSessionService.start();
         expect(spy).not.toHaveBeenCalled();
     });
 
