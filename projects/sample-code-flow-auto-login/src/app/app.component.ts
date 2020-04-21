@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
     AuthorizationResult,
@@ -16,17 +16,19 @@ import './app.component.css';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css'],
 })
-export class AppComponent {
-    constructor(public oidcSecurityService: OidcSecurityService, private router: Router, private readonly eventsService: EventsService) {
-        this.oidcSecurityService
-            .checkAuth()
-            .pipe(tap(() => this.onOidcModuleSetup()))
-            .subscribe((isAuthenticated) => console.log('i am ', isAuthenticated));
+export class AppComponent implements OnInit {
+    constructor(public oidcSecurityService: OidcSecurityService, private router: Router, private readonly eventsService: EventsService) {}
 
+    ngOnInit() {
         this.eventsService
             .registerForEvents()
             .pipe(filter((notification: OidcClientNotification<any>) => notification.type === EventTypes.NewAuthorizationResult))
             .subscribe((authorizationResult) => this.onAuthorizationResultComplete(authorizationResult.value));
+
+        this.oidcSecurityService
+            .checkAuth()
+            .pipe(tap(() => this.onOidcModuleSetup()))
+            .subscribe((isAuthenticated) => console.log('i am ', isAuthenticated));
     }
 
     login() {
