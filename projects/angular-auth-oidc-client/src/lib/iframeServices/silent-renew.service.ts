@@ -18,7 +18,7 @@ export class SilentRenewService {
         return existingIframe;
     }
 
-    silentRenewShouldBeUsed() {
+    isSilentRenewConfigured() {
         return (
             !this.configurationProvider.openIDConfiguration.useRefreshToken && this.configurationProvider.openIDConfiguration.silentRenew
         );

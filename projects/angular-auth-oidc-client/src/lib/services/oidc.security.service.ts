@@ -91,7 +91,7 @@ export class OidcSecurityService {
                 this.checkSessionService.start();
             }
 
-            if (this.silentRenewService.silentRenewShouldBeUsed()) {
+            if (this.silentRenewService.isSilentRenewConfigured()) {
                 this.silentRenewService.getOrCreateIframe();
             }
         }
