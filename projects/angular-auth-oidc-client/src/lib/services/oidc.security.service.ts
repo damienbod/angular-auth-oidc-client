@@ -14,7 +14,7 @@ import { CheckSessionService, SilentRenewService } from '../iframeServices';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage';
 import { UserService } from '../userData/user-service';
-import { RandomService, UrlService } from '../utils';
+import { UrlService } from '../utils';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { JwtKeys } from '../validation/jwtkeys';
 import { StateValidationService } from '../validation/state-validation.service';
@@ -62,7 +62,6 @@ export class OidcSecurityService {
         private readonly configurationProvider: ConfigurationProvider,
         private readonly eventsService: EventsService,
         private readonly urlService: UrlService,
-        private readonly randomService: RandomService,
         private readonly authStateService: AuthStateService,
         private readonly flowHelper: FlowHelper,
         private readonly flowsService: FlowsService
