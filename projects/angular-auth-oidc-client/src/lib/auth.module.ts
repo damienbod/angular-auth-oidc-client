@@ -4,6 +4,7 @@ import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './authState/auth-state.service';
 import { ConfigurationProvider, OidcConfigService } from './config';
 import { EventsService } from './events';
+import { FlowsService } from './flows/flows.service';
 import { CheckSessionService } from './iframeServices/check-session.service';
 import { IFrameService } from './iframeServices/existing-iframe.service';
 import { SilentRenewService } from './iframeServices/silent-renew.service';
@@ -31,6 +32,7 @@ export class AuthModule {
                 TokenValidationService,
                 PlatformProvider,
                 CheckSessionService,
+                FlowsService,
                 SilentRenewService,
                 ConfigurationProvider,
                 UserService,
