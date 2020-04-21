@@ -9,27 +9,22 @@ import { filter, tap } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
     configuration: PublicConfiguration;
-    isModuleSetUp$: Observable<OidcClientNotification<boolean>>;
+    isModuleSetUp$: Observable<boolean>;
     userDataChanged$: Observable<OidcClientNotification<any>>;
     userData$: Observable<any>;
     isAuthenticated$: Observable<boolean>;
 
-    checkSessionChanged$: Observable<OidcClientNotification<any>>;
-    checkSessionChanged: boolean;
+    // checkSessionChanged$: Observable<OidcClientNotification<any>>;
+    // checkSessionChanged: boolean;
 
-    constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {
-        this.oidcSecurityService
-            .checkAuth()
-            .pipe(tap(() => this.doCallbackLogicIfRequired()))
-            .subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
-    }
+    constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {}
 
     ngOnInit() {
         this.configuration = this.oidcSecurityService.configuration;
         this.userData$ = this.oidcSecurityService.userData$;
         this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
         this.isModuleSetUp$ = this.oidcSecurityService.moduleSetup$;
-        this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
+        // this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 
         this.userDataChanged$ = this.eventsService
             .registerForEvents()
