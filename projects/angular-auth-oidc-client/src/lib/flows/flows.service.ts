@@ -60,7 +60,7 @@ export class FlowsService {
         return codeVerifier;
     }
 
-    public getRefreshSessionSilentRenewUrl(): string {
+    getRefreshSessionSilentRenewUrl(): string {
         let url = '';
         if (this.flowHelper.isCurrentFlowCodeFlow()) {
             url = this.createUrlCodeFlowWithSilentRenew();
