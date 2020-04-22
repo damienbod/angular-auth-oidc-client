@@ -7,8 +7,6 @@ export type SilentRenewState = 'running' | '';
 
 @Injectable()
 export class StoragePersistanceService {
-    private STORAGE_PREFIX = this.configurationProvider.openIDConfiguration.clientId;
-
     constructor(
         private readonly oidcSecurityStorage: AbstractSecurityStorage,
         private readonly configurationProvider: ConfigurationProvider
@@ -155,6 +153,8 @@ export class StoragePersistanceService {
     }
 
     private createKeyWithPrefix(key: string) {
-        return `${this.STORAGE_PREFIX}_${key}`;
+        const prefix = this.configurationProvider.openIDConfiguration.clientId;
+
+        return `${prefix}_${key}`;
     }
 }
