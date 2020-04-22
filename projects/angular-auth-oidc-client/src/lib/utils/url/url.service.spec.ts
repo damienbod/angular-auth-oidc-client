@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../../config';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
+import { FlowsDataService } from '../../flows/flows.data.service';
 import { LogLevel } from '../../logging/log-level';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
@@ -16,6 +17,7 @@ describe('UrlService Tests', () => {
         TestBed.configureTestingModule({
             providers: [
                 ConfigurationProvider,
+                FlowsDataService,
                 UrlService,
                 {
                     provide: LoggerService,

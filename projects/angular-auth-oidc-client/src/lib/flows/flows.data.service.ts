@@ -29,6 +29,7 @@ export class FlowsDataService {
             state = this.randomService.createRandom(40);
             this.storagePersistanceService.authStateControl = state;
         }
+        return state;
     }
 
     setSessionState(sessionState: any) {
