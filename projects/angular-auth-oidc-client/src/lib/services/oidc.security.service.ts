@@ -10,11 +10,12 @@ import { AuthorizedState } from '../authState/authorized-state';
 import { ConfigurationProvider } from '../config';
 import { EventTypes } from '../events';
 import { EventsService } from '../events/events.service';
+import { FlowsDataService } from '../flows/flows.data.service';
 import { CheckSessionService, SilentRenewService } from '../iframeServices';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage';
 import { UserService } from '../userData/user-service';
-import { RandomService, UrlService } from '../utils';
+import { UrlService } from '../utils';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { JwtKeys } from '../validation/jwtkeys';
 import { StateValidationService } from '../validation/state-validation.service';
@@ -61,9 +62,9 @@ export class OidcSecurityService {
         private readonly configurationProvider: ConfigurationProvider,
         private readonly eventsService: EventsService,
         private readonly urlService: UrlService,
-        private readonly randomService: RandomService,
         private readonly authStateService: AuthStateService,
-        private readonly flowHelper: FlowHelper
+        private readonly flowHelper: FlowHelper,
+        private readonly flowsDataService: FlowsDataService
     ) {}
 
     private runTokenValidationRunning = false;
@@ -124,11 +125,11 @@ export class OidcSecurityService {
     }
 
     setState(state: string): void {
-        this.storagePersistanceService.authStateControl = state;
+        this.flowsDataService.setAuthStateControl(state);
     }
 
     getState(): string {
-        return this.storagePersistanceService.authStateControl;
+        return this.flowsDataService.getAuthStateControl();
     }
 
     // Code Flow with PCKE or Implicit Flow
@@ -147,44 +148,7 @@ export class OidcSecurityService {
 
         this.loggerService.logDebug('BEGIN Authorize OIDC Flow, no auth data');
 
-        let state = this.storagePersistanceService.authStateControl;
-        if (!state) {
-            state = this.randomService.createRandom(40);
-            this.storagePersistanceService.authStateControl = state;
-        }
-
-        const nonce = this.randomService.createRandom(40);
-        this.storagePersistanceService.authNonce = nonce;
-        this.loggerService.logDebug('AuthorizedController created. local state: ' + this.storagePersistanceService.authStateControl);
-
-        let url = '';
-        // Code Flow
-        if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            // code_challenge with "S256"
-            const codeVerifier = this.randomService.createRandom(67);
-            const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
-
-            this.storagePersistanceService.codeVerifier = codeVerifier;
-
-            if (this.configurationProvider.wellKnownEndpoints) {
-                url = this.urlService.createAuthorizeUrl(
-                    codeChallenge,
-                    this.configurationProvider.openIDConfiguration.redirectUrl,
-                    nonce,
-                    state
-                );
-            } else {
-                this.loggerService.logError('authWellKnownEndpoints is undefined');
-            }
-        } else {
-            // Implicit Flow
-
-            if (this.configurationProvider.wellKnownEndpoints) {
-                url = this.urlService.createAuthorizeUrl('', this.configurationProvider.openIDConfiguration.redirectUrl, nonce, state);
-            } else {
-                this.loggerService.logError('authWellKnownEndpoints is undefined');
-            }
-        }
+        const url = this.urlService.getAuthorizeUrl();
 
         if (urlHandler) {
             urlHandler(url);
@@ -263,26 +227,27 @@ export class OidcSecurityService {
             tokenRequestUrl = `${this.configurationProvider.wellKnownEndpoints.tokenEndpoint}`;
         }
 
-        if (!this.tokenValidationService.validateStateFromHashCallback(state, this.storagePersistanceService.authStateControl)) {
+        if (!this.tokenValidationService.validateStateFromHashCallback(state, this.flowsDataService.getAuthStateControl())) {
             this.loggerService.logWarning('authorizedCallback incorrect state');
             // ValidationResult.StatesDoNotMatch;
             return throwError(new Error('incorrect state'));
         }
 
-        if (!this.storagePersistanceService.codeVerifier) {
-            this.loggerService.logWarning(`CodeVerifier is not set `, this.storagePersistanceService.codeVerifier);
+        const codeVerifier = this.flowsDataService.getCodeVerifier();
+        if (!codeVerifier) {
+            this.loggerService.logWarning(`CodeVerifier is not set `, codeVerifier);
         }
 
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
         let data = oneLineTrim`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.clientId}
-            &code_verifier=${this.storagePersistanceService.codeVerifier}
+            &code_verifier=${codeVerifier}
             &code=${code}&redirect_uri=${this.configurationProvider.openIDConfiguration.redirectUrl}`;
 
         if (this.storagePersistanceService.silentRenewRunning === 'running') {
             data = oneLineTrim`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.clientId}
-                &code_verifier=${this.storagePersistanceService.codeVerifier}
+                &code_verifier=${codeVerifier}
                 &code=${code}
                 &redirect_uri=${this.configurationProvider.openIDConfiguration.silentRenewUrl}`;
         }
@@ -375,7 +340,7 @@ export class OidcSecurityService {
             }
 
             this.resetAuthorizationData(false);
-            this.storagePersistanceService.authNonce = '';
+            this.flowsDataService.setNonce('');
 
             if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
                 this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
@@ -399,7 +364,7 @@ export class OidcSecurityService {
                                 .subscribe(
                                     (userData) => {
                                         if (!!userData) {
-                                            this.storagePersistanceService.sessionState = result.session_state;
+                                            this.flowsDataService.setSessionState(result.session_state);
                                             this.startTokenValidationPeriodically();
 
                                             this.authStateService.updateAndPublishAuthState({
@@ -515,65 +480,24 @@ export class OidcSecurityService {
         this.loggerService.logDebug('BEGIN refresh session Authorize');
         this.storagePersistanceService.silentRenewRunning = 'running';
 
-        let state = this.storagePersistanceService.authStateControl;
-        if (state === '' || state === null) {
-            state = this.randomService.createRandom(40);
-            this.storagePersistanceService.authStateControl = state;
-        }
-
-        const nonce = this.randomService.createRandom(40);
-        this.storagePersistanceService.authNonce = nonce;
-        this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + this.storagePersistanceService.authStateControl);
-
-        let url = '';
-
         // Code Flow renew with Refresh tokens
         if (this.flowHelper.isCurrentFlowCodeFlow() && this.configurationProvider.openIDConfiguration.useRefreshToken) {
-            return this.refreshSessionWithResfreshTokens(state);
+            return this.refreshSessionWithRefreshTokens();
         }
 
-        // Code Flow Silent renew
-        if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            // code_challenge with "S256"
-            const codeVerifier = this.randomService.createRandom(67);
-            const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
-
-            this.storagePersistanceService.codeVerifier = codeVerifier;
-
-            if (this.configurationProvider.wellKnownEndpoints) {
-                url = this.urlService.createAuthorizeUrl(
-                    codeChallenge,
-                    this.configurationProvider.openIDConfiguration.silentRenewUrl,
-                    nonce,
-                    state,
-                    'none'
-                );
-            } else {
-                this.loggerService.logWarning('authWellKnownEndpoints is undefined');
-            }
-        } else {
-            if (this.configurationProvider.wellKnownEndpoints) {
-                url = this.urlService.createAuthorizeUrl(
-                    '',
-                    this.configurationProvider.openIDConfiguration.silentRenewUrl,
-                    nonce,
-                    state,
-                    'none'
-                );
-            } else {
-                this.loggerService.logWarning('authWellKnownEndpoints is undefined');
-            }
-        }
+        const url = this.urlService.getRefreshSessionSilentRenewUrl();
 
         return this.sendAuthorizeReqestUsingSilentRenew$(url);
     }
 
-    private refreshSessionWithResfreshTokens(state: string) {
-        const refreshToken = this.storagePersistanceService.getRefreshToken();
+    private refreshSessionWithRefreshTokens() {
+        const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
+        this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + state);
+        const refreshToken = this.authStateService.getRefreshToken();
         if (refreshToken) {
             this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
             // Nonce is not used with refresh tokens; but Keycloak may send it anyway
-            this.storagePersistanceService.authNonce = TokenValidationService.RefreshTokenNoncePlaceholder;
+            this.flowsDataService.setNonce(TokenValidationService.RefreshTokenNoncePlaceholder);
             return this.refreshTokensWithCodeProcedure(refreshToken, state);
         } else {
             this.loggerService.logError('no refresh token found, please login');
@@ -635,8 +559,7 @@ export class OidcSecurityService {
             this.userService.resetUserDataInStore();
         }
 
-        this.storagePersistanceService.resetStorageFlowData();
-
+        this.flowsDataService.resetStorageFlowData();
         this.authStateService.setUnauthorizedAndFireEvent();
     }
 
@@ -786,7 +709,7 @@ export class OidcSecurityService {
                     isRenewProcess: true,
                 });
                 this.resetAuthorizationData(false);
-                this.storagePersistanceService.authNonce = '';
+                this.flowsDataService.setNonce('');
                 this.loggerService.logDebug(e.detail.toString());
             }
         } else {
