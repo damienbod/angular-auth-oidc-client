@@ -145,11 +145,7 @@ export class StoragePersistanceService {
     }
 
     getRefreshToken(): any {
-        if (!this.authResult) {
-            return null;
-        }
-
-        return this.authResult.refresh_token;
+        return this.authResult?.refresh_token;
     }
 
     private createKeyWithPrefix(key: string) {
