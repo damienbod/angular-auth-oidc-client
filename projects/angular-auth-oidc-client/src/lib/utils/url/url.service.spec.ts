@@ -1,8 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../../config';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
+import { FlowsDataService } from '../../flows/flows.data.service';
+import { RandomService } from '../../flows/random/random.service';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
+import { StoragePersistanceService } from '../../storage';
+import { StoragePersistanceServiceMock } from '../../storage/storage-persistance.service-mock';
+import { TokenValidationService } from '../../validation/token-validation.service';
+import { TokenValidationServiceMock } from '../../validation/token-validation.service-mock';
+import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { PlatformProvider } from '../platform-provider/platform.provider';
 import { PlatformProviderMock } from '../platform-provider/platform.provider-mock';
 import { UrlService } from './url.service';
@@ -15,12 +22,17 @@ describe('UrlService Tests', () => {
         TestBed.configureTestingModule({
             providers: [
                 ConfigurationProvider,
+                FlowsDataService,
                 UrlService,
                 {
                     provide: LoggerService,
                     useClass: LoggerServiceMock,
                 },
                 { provide: PlatformProvider, useClass: PlatformProviderMock },
+                { provide: StoragePersistanceService, useClass: StoragePersistanceServiceMock },
+                { provide: TokenValidationService, useClass: TokenValidationServiceMock },
+                RandomService,
+                FlowHelper,
             ],
         });
     });
