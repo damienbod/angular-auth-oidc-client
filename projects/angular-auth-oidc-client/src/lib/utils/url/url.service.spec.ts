@@ -106,7 +106,7 @@ describe('UrlService Tests', () => {
         it('returns empty string when no authoizationendpoint given -> wellKnownEndpoints null', () => {
             configurationProvider.setConfig(null, null);
 
-            const value = service.createAuthorizeUrl(
+            const value = (service as any).createAuthorizeUrl(
                 '', // Implicit Flow
                 'https://localhost:44386',
                 'nonce',
@@ -121,7 +121,7 @@ describe('UrlService Tests', () => {
         it('returns empty string when no authoizationendpoint given -> configurationProvider null', () => {
             (service as any).configurationProvider = null;
 
-            const value = service.createAuthorizeUrl(
+            const value = (service as any).createAuthorizeUrl(
                 '', // Implicit Flow
                 'https://localhost:44386',
                 'nonce',
@@ -146,7 +146,7 @@ describe('UrlService Tests', () => {
 
             configurationProvider.setConfig(config, { authorizationEndpoint: 'http://example' });
 
-            const value = service.createAuthorizeUrl(
+            const value = (service as any).createAuthorizeUrl(
                 '', // Implicit Flow
                 config.redirectUrl,
                 'nonce',
@@ -175,7 +175,7 @@ describe('UrlService Tests', () => {
 
             configurationProvider.setConfig(config, { authorizationEndpoint: 'http://example' });
 
-            const value = service.createAuthorizeUrl(
+            const value = (service as any).createAuthorizeUrl(
                 '', // Implicit Flow
                 config.redirectUrl,
                 'nonce',
@@ -205,7 +205,7 @@ describe('UrlService Tests', () => {
 
             configurationProvider.setConfig(config, { authorizationEndpoint: 'http://example' });
 
-            const value = service.createAuthorizeUrl(
+            const value = (service as any).createAuthorizeUrl(
                 '', // Implicit Flow
                 config.redirectUrl,
                 'nonce',
@@ -237,7 +237,7 @@ describe('UrlService Tests', () => {
 
             configurationProvider.setConfig(config, { authorizationEndpoint: 'http://example' });
 
-            const value = service.createAuthorizeUrl(
+            const value = (service as any).createAuthorizeUrl(
                 '', // Implicit Flow
                 config.redirectUrl,
                 'nonce',
@@ -272,7 +272,7 @@ describe('UrlService Tests', () => {
 
             configurationProvider.setConfig(config, { authorizationEndpoint: 'http://example' });
 
-            const value = service.createAuthorizeUrl(
+            const value = (service as any).createAuthorizeUrl(
                 '', // Implicit Flow
                 config.redirectUrl,
                 'nonce',
@@ -335,7 +335,7 @@ describe('UrlService Tests', () => {
 
             configurationProvider.setConfig(config, { authorizationEndpoint: 'http://example' });
 
-            const value = service.createAuthorizeUrl(
+            const value = (service as any).createAuthorizeUrl(
                 '', // Implicit Flow
                 config.redirectUrl,
                 'nonce',
@@ -366,7 +366,7 @@ describe('UrlService Tests', () => {
                     'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=b2c_1_sign_in',
             });
 
-            const value = service.createAuthorizeUrl(
+            const value = (service as any).createAuthorizeUrl(
                 '', // Implicit Flow
                 config.redirectUrl,
                 'nonce',
