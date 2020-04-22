@@ -32,7 +32,6 @@ export class UrlService {
         }
 
         const urlParts = this.getAuthorizationEndpoint().split('?');
-
         const authorizationUrl = urlParts[0];
 
         let params = new HttpParams({
