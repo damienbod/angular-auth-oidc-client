@@ -1,7 +1,7 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ConfigurationProvider } from '../../config/config.provider';
-import { FlowsDataService } from '../../flows/flows.data.service';
+import { FlowsDataService } from '../../flows/flows-data.service';
 import { LoggerService } from '../../logging/logger.service';
 import { TokenValidationService } from '../../validation/token-validation.service';
 import { FlowHelper } from '../flowHelper/flow-helper.service';

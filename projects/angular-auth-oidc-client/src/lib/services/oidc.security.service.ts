@@ -10,7 +10,7 @@ import { AuthorizedState } from '../authState/authorized-state';
 import { ConfigurationProvider } from '../config';
 import { EventTypes } from '../events';
 import { EventsService } from '../events/events.service';
-import { FlowsDataService } from '../flows/flows.data.service';
+import { FlowsDataService } from '../flows/flows-data.service';
 import { CheckSessionService, SilentRenewService } from '../iframeServices';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage';

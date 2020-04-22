@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../../config';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { FlowsDataService } from '../../flows/flows.data.service';
+import { FlowsDataService } from '../../flows/flows-data.service';
 import { RandomService } from '../../flows/random/random.service';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
