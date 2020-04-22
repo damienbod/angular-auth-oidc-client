@@ -31,7 +31,7 @@ export class UrlService {
             return '';
         }
 
-        const urlParts = authorizationEndpoint.split('?');
+        const urlParts = this.getAuthorizationEndpoint().split('?');
 
         const authorizationUrl = urlParts[0];
 
@@ -89,6 +89,7 @@ export class UrlService {
     }
 
     private getAuthorizationEndpoint() {
+        // this.configurationProvider.wellKnownEndpoints.authorizationEndpoint
         return this.configurationProvider?.wellKnownEndpoints?.authorizationEndpoint;
     }
 }
