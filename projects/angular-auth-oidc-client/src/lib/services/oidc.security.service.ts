@@ -144,7 +144,7 @@ export class OidcSecurityService {
             return;
         }
 
-        this.resetAuthorizationData(false);
+        this.resetAuthorizationData();
 
         this.loggerService.logDebug('BEGIN Authorize OIDC Flow, no auth data');
 
@@ -276,7 +276,9 @@ export class OidcSecurityService {
         const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
 
         this.loggerService.logDebug('BEGIN authorized Code Flow Callback, no auth data');
-        this.resetAuthorizationData(isRenewProcess);
+        if (!isRenewProcess) {
+            this.resetAuthorizationData();
+        }
         this.authorizedCallbackProcedure(result, isRenewProcess);
     }
 
@@ -285,7 +287,9 @@ export class OidcSecurityService {
         const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
 
         this.loggerService.logDebug('BEGIN authorizedCallback, no auth data');
-        this.resetAuthorizationData(isRenewProcess);
+        if (!isRenewProcess) {
+            this.resetAuthorizationData();
+        }
 
         hash = hash || window.location.hash.substr(1);
 
@@ -337,7 +341,7 @@ export class OidcSecurityService {
                 });
             }
 
-            this.resetAuthorizationData(false);
+            this.resetAuthorizationData();
             this.flowsDataService.setNonce('');
 
             if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
@@ -378,7 +382,7 @@ export class OidcSecurityService {
                                                 this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
                                             }
                                         } else {
-                                            this.resetAuthorizationData(false);
+                                            this.resetAuthorizationData();
 
                                             this.authStateService.updateAndPublishAuthState({
                                                 authorizationState: AuthorizedState.Unauthorized,
@@ -420,7 +424,7 @@ export class OidcSecurityService {
                         // something went wrong
                         this.loggerService.logWarning('authorizedCallback, token(s) validation failed, resetting');
                         this.loggerService.logWarning(window.location.hash);
-                        this.resetAuthorizationData(false);
+                        this.resetAuthorizationData();
                         this.flowsDataService.resetSilentRenewRunning();
 
                         this.authStateService.updateAndPublishAuthState({
@@ -452,7 +456,7 @@ export class OidcSecurityService {
         this.loggerService.logDebug('BEGIN Authorize, no auth data');
 
         if (this.configurationProvider.wellKnownEndpoints) {
-            this.resetAuthorizationData(false);
+            this.resetAuthorizationData();
             if (this.configurationProvider.wellKnownEndpoints.endSessionEndpoint) {
                 const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.endSessionEndpoint;
                 const idTokenHint = this.storagePersistanceService.idToken;
@@ -515,12 +519,7 @@ export class OidcSecurityService {
         }
     }
 
-    resetAuthorizationData(isRenewProcess: boolean): void {
-        if (isRenewProcess) {
-            // TODO ADD A LOG
-            return;
-        }
-
+    resetAuthorizationData(): void {
         if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
             // Clear user data. Fixes #97.
             this.userService.resetUserDataInStore();
@@ -617,7 +616,7 @@ export class OidcSecurityService {
                         We don't want to schedule another check so we have to return here */
                         return;
                     } else {
-                        this.resetAuthorizationData(false);
+                        this.resetAuthorizationData();
                     }
                 }
             }
@@ -675,7 +674,7 @@ export class OidcSecurityService {
                     validationResult: ValidationResult.LoginRequired,
                     isRenewProcess: true,
                 });
-                this.resetAuthorizationData(false);
+                this.resetAuthorizationData();
                 this.flowsDataService.setNonce('');
                 this.loggerService.logDebug(e.detail.toString());
             }
