@@ -245,7 +245,7 @@ export class OidcSecurityService {
             &code_verifier=${codeVerifier}
             &code=${code}&redirect_uri=${this.configurationProvider.openIDConfiguration.redirectUrl}`;
 
-        if (this.storagePersistanceService.silentRenewRunning === 'running') {
+        if (this.flowsDataService.isSilentRenewRunning()) {
             data = oneLineTrim`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.clientId}
                 &code_verifier=${codeVerifier}
                 &code=${code}
@@ -273,8 +273,7 @@ export class OidcSecurityService {
 
     // Code Flow
     private authorizedCodeFlowCallbackProcedure(result: any) {
-        const silentRenew = this.storagePersistanceService.silentRenewRunning;
-        const isRenewProcess = silentRenew === 'running';
+        const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
 
         this.loggerService.logDebug('BEGIN authorized Code Flow Callback, no auth data');
         this.resetAuthorizationData(isRenewProcess);
@@ -283,8 +282,7 @@ export class OidcSecurityService {
 
     // Implicit Flow
     private authorizedImplicitFlowCallbackProcedure(hash?: string) {
-        const silentRenew = this.storagePersistanceService.silentRenewRunning;
-        const isRenewProcess = silentRenew === 'running';
+        const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
 
         this.loggerService.logDebug('BEGIN authorizedCallback, no auth data');
         this.resetAuthorizationData(isRenewProcess);
@@ -356,7 +354,7 @@ export class OidcSecurityService {
 
                     if (validationResult.authResponseIsValid) {
                         this.authStateService.setAuthorizationData(validationResult.accessToken, validationResult.idToken);
-                        this.storagePersistanceService.silentRenewRunning = '';
+                        this.flowsDataService.resetSilentRenewRunning();
 
                         if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
                             this.userService
@@ -423,7 +421,7 @@ export class OidcSecurityService {
                         this.loggerService.logWarning('authorizedCallback, token(s) validation failed, resetting');
                         this.loggerService.logWarning(window.location.hash);
                         this.resetAuthorizationData(false);
-                        this.storagePersistanceService.silentRenewRunning = '';
+                        this.flowsDataService.resetSilentRenewRunning();
 
                         this.authStateService.updateAndPublishAuthState({
                             authorizationState: AuthorizedState.Unauthorized,
@@ -439,7 +437,7 @@ export class OidcSecurityService {
                 (err) => {
                     /* Something went wrong while getting signing key */
                     this.loggerService.logWarning('Failed to retreive siging key with error: ' + JSON.stringify(err));
-                    this.storagePersistanceService.silentRenewRunning = '';
+                    this.flowsDataService.resetSilentRenewRunning();
                 }
             );
         }
@@ -478,7 +476,7 @@ export class OidcSecurityService {
     // this is not an observable as return
     refreshSession(): Observable<boolean> {
         this.loggerService.logDebug('BEGIN refresh session Authorize');
-        this.storagePersistanceService.silentRenewRunning = 'running';
+        this.flowsDataService.setSilentRenewRunning();
 
         // Code Flow renew with Refresh tokens
         if (this.flowHelper.isCurrentFlowCodeFlow() && this.configurationProvider.openIDConfiguration.useRefreshToken) {
@@ -502,37 +500,6 @@ export class OidcSecurityService {
         } else {
             this.loggerService.logError('no refresh token found, please login');
             return;
-        }
-    }
-
-    handleError(error: any) {
-        const silentRenew = this.storagePersistanceService.silentRenewRunning;
-        const isRenewProcess = silentRenew === 'running';
-        this.loggerService.logError(error);
-        if (error.status === 403 || error.status === '403') {
-            if (this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent) {
-                this.authStateService.updateAndPublishAuthState({
-                    authorizationState: AuthorizedState.Unauthorized,
-                    validationResult: ValidationResult.NotSet,
-                    isRenewProcess,
-                });
-            } else {
-                this.router.navigate([this.configurationProvider.openIDConfiguration.forbiddenRoute]);
-            }
-        } else if (error.status === 401 || error.status === '401') {
-            const silentRenewRunning = this.storagePersistanceService.silentRenewRunning;
-
-            this.resetAuthorizationData(!!silentRenewRunning);
-
-            if (this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent) {
-                this.authStateService.updateAndPublishAuthState({
-                    authorizationState: AuthorizedState.Unauthorized,
-                    validationResult: ValidationResult.NotSet,
-                    isRenewProcess,
-                });
-            } else {
-                this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
-            }
         }
     }
 
@@ -619,13 +586,13 @@ export class OidcSecurityService {
         const silentRenewHeartBeatCheck = () => {
             this.loggerService.logDebug(
                 'silentRenewHeartBeatCheck\r\n' +
-                    `\tsilentRenewRunning: ${this.storagePersistanceService.silentRenewRunning === 'running'} ` +
+                    `\tsilentRenewRunning: ${this.flowsDataService.isSilentRenewRunning()} ` +
                     `\tidToken: ${!!this.authStateService.getIdToken()} ` +
                     `\tuserData: ${!!this.userService.getUserDataFromStore()}`
             );
             if (
                 this.userService.getUserDataFromStore() &&
-                this.storagePersistanceService.silentRenewRunning !== 'running' &&
+                !this.flowsDataService.isSilentRenewRunning() &&
                 this.authStateService.getIdToken()
             ) {
                 if (

@@ -49,4 +49,15 @@ export class FlowsDataService {
         this.storagePersistanceService.codeVerifier = codeVerifier;
         return codeVerifier;
     }
+
+    isSilentRenewRunning() {
+        return this.storagePersistanceService.silentRenewRunning === 'running';
+    }
+
+    setSilentRenewRunning() {
+        this.storagePersistanceService.silentRenewRunning = 'running';
+    }
+    resetSilentRenewRunning() {
+        this.storagePersistanceService.silentRenewRunning = '';
+    }
 }
