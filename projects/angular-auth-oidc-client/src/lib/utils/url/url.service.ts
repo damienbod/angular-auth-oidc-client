@@ -1,7 +1,7 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ConfigurationProvider } from '../../config/config.provider';
-import { FlowsService } from '../../flows/flows.service';
+import { FlowsDataService } from '../../flows/flows.data.service';
 import { LoggerService } from '../../logging/logger.service';
 import { TokenValidationService } from '../../validation/token-validation.service';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
@@ -12,7 +12,7 @@ export class UrlService {
     constructor(
         private readonly configurationProvider: ConfigurationProvider,
         private readonly loggerService: LoggerService,
-        private flowsService: FlowsService,
+        private flowsDataService: FlowsDataService,
         private readonly flowHelper: FlowHelper,
         private tokenValidationService: TokenValidationService
     ) {}
@@ -124,8 +124,8 @@ export class UrlService {
     }
 
     private createUrlImplicitFlowWithSilentRenew(): string {
-        const state = this.flowsService.getExistingOrCreateAuthStateControl();
-        const nonce = this.flowsService.createNonce();
+        const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
+        const nonce = this.flowsDataService.createNonce();
         this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + state);
         if (this.configurationProvider.wellKnownEndpoints) {
             return this.createAuthorizeUrl('', this.configurationProvider.openIDConfiguration.silentRenewUrl, nonce, state, 'none');
@@ -136,11 +136,11 @@ export class UrlService {
     }
 
     private createUrlCodeFlowWithSilentRenew(): string {
-        const state = this.flowsService.getExistingOrCreateAuthStateControl();
-        const nonce = this.flowsService.createNonce();
+        const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
+        const nonce = this.flowsDataService.createNonce();
         this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + state);
         // code_challenge with "S256"
-        const codeVerifier = this.flowsService.createCodeVerifier();
+        const codeVerifier = this.flowsDataService.createCodeVerifier();
         const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
 
         if (this.configurationProvider.wellKnownEndpoints) {
@@ -158,8 +158,8 @@ export class UrlService {
     }
 
     private createUrlImplicitFlowAuthorize(): string {
-        const state = this.flowsService.getExistingOrCreateAuthStateControl();
-        const nonce = this.flowsService.createNonce();
+        const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
+        const nonce = this.flowsDataService.createNonce();
         this.loggerService.logDebug('Authorize created. adding myautostate: ' + state);
 
         if (this.configurationProvider.wellKnownEndpoints) {
@@ -171,11 +171,11 @@ export class UrlService {
         return '';
     }
     private createUrlCodeFlowAuthorize(): string {
-        const state = this.flowsService.getExistingOrCreateAuthStateControl();
-        const nonce = this.flowsService.createNonce();
+        const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
+        const nonce = this.flowsDataService.createNonce();
         this.loggerService.logDebug('Authorize created. adding myautostate: ' + state);
         // code_challenge with "S256"
-        const codeVerifier = this.flowsService.createCodeVerifier();
+        const codeVerifier = this.flowsDataService.createCodeVerifier();
         const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
 
         if (this.configurationProvider.wellKnownEndpoints) {

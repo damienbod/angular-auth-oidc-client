@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StoragePersistanceService } from '../storage';
-import { RandomService } from '../utils/random/random.service';
+import { RandomService } from './random/random.service';
 
 @Injectable()
 export class FlowsDataService {

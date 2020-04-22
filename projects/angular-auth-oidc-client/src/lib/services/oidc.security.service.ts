@@ -709,7 +709,7 @@ export class OidcSecurityService {
                     isRenewProcess: true,
                 });
                 this.resetAuthorizationData(false);
-                this.flowsService.setNonce('');
+                this.flowsDataService.setNonce('');
                 this.loggerService.logDebug(e.detail.toString());
             }
         } else {
