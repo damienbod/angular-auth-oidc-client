@@ -2,16 +2,11 @@ import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ConfigurationProvider } from '../../config/config.provider';
 import { LoggerService } from '../../logging/logger.service';
-import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { UriEncoder } from './uri-encoder';
 
 @Injectable()
 export class UrlService {
-    constructor(
-        private readonly configurationProvider: ConfigurationProvider,
-        private readonly loggerService: LoggerService,
-        private readonly flowHelper: FlowHelper
-    ) {}
+    constructor(private readonly configurationProvider: ConfigurationProvider, private readonly loggerService: LoggerService) {}
 
     getUrlParameter(urlToCheck: any, name: any): string {
         if (!urlToCheck) {
@@ -52,7 +47,7 @@ export class UrlService {
         params = params.append('nonce', nonce);
         params = params.append('state', state);
 
-        if (this.flowHelper.isCurrentFlowCodeFlow()) {
+        if (this.isCodeFlow()) {
             params = params.append('code_challenge', codeChallenge);
             params = params.append('code_challenge_method', 'S256');
         }
@@ -87,6 +82,10 @@ export class UrlService {
         params = params.append('post_logout_redirect_uri', this.configurationProvider.openIDConfiguration.postLogoutRedirectUri);
 
         return `${authorizationEndsessionUrl}?${params}`;
+    }
+
+    private isCodeFlow() {
+        return this.configurationProvider.openIDConfiguration.responseType === 'code';
     }
 
     private getAuthorizationEndpoint() {
