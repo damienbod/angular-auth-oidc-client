@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { IFrameService } from '../../iframeServices/existing-iframe.service';
+import { IFrameService } from '../../iframe/existing-iframe.service';
 import { EqualityService } from './equality.service';
 
 describe('EqualityService Tests', () => {

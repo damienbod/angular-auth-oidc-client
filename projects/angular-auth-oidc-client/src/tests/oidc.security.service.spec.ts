@@ -7,7 +7,7 @@ import { filter, skipWhile } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../lib/angular-auth-oidc-client';
 import { AuthModule } from '../lib/auth.module';
 import { ConfigurationProvider } from '../lib/config';
-import { IFrameService } from '../lib/iframeServices/existing-iframe.service';
+import { IFrameService } from '../lib/iframe/existing-iframe.service';
 import { LoggerService } from '../lib/logging/logger.service';
 import { LoggerServiceMock } from '../lib/logging/logger.service-mock';
 import { OidcSecurityService } from '../lib/services/oidc.security.service';
