@@ -188,13 +188,13 @@ export class OidcSecurityService {
 
     // Refresh Token
     refreshTokensWithCodeProcedure(code: string, state: string): Observable<any> {
-        let tokenRequestUrl = '';
-        if (this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.tokenEndpoint) {
-            tokenRequestUrl = `${this.configurationProvider.wellKnownEndpoints.tokenEndpoint}`;
-        }
-
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
+
+        const tokenRequestUrl = this.getTokenEndpoint();
+        if (!tokenRequestUrl) {
+            return throwError(new Error('Token Endpoint not defined'));
+        }
 
         const data = `grant_type=refresh_token&client_id=${this.configurationProvider.openIDConfiguration.clientId}&refresh_token=${code}`;
 
@@ -219,17 +219,24 @@ export class OidcSecurityService {
         this.requestTokensWithCodeProcedure$(code, state, sessionState).subscribe();
     }
 
+    getTokenEndpoint(): string {
+        if (this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.tokenEndpoint) {
+            return `${this.configurationProvider.wellKnownEndpoints.tokenEndpoint}`;
+        }
+        return null;
+    }
+
     // Code Flow with PCKE
     requestTokensWithCodeProcedure$(code: string, state: string, sessionState: string | null): Observable<void> {
-        let tokenRequestUrl = '';
-        if (this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.tokenEndpoint) {
-            tokenRequestUrl = `${this.configurationProvider.wellKnownEndpoints.tokenEndpoint}`;
-        }
-
         if (!this.tokenValidationService.validateStateFromHashCallback(state, this.flowsDataService.getAuthStateControl())) {
             this.loggerService.logWarning('authorizedCallback incorrect state');
             // ValidationResult.StatesDoNotMatch;
             return throwError(new Error('incorrect state'));
+        }
+
+        const tokenRequestUrl = this.getTokenEndpoint();
+        if (!tokenRequestUrl) {
+            return throwError(new Error('Token Endpoint not defined'));
         }
 
         let headers: HttpHeaders = new HttpHeaders();
