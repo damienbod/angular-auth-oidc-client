@@ -1,7 +1,7 @@
 import { async, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { DataServiceMock } from '../api/data-service-mock';
 import { DataService } from '../api/data.service';
+import { DataServiceMock } from '../api/data.service-mock';
 import { ConfigurationProvider } from '../config/config.provider';
 import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';

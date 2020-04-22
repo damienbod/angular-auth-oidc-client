@@ -30,6 +30,11 @@ describe('ConfigurationProviderTests', () => {
         expect(configurationProvider.openIDConfiguration).toBeDefined();
     });
 
+    it('get openIDConfiguration returns null when openIdConfigurationInternal is falsy', () => {
+        // do not set anything
+        expect(configurationProvider.openIDConfiguration).toBeNull();
+    });
+
     it('setup defines authwellknownendpoints', () => {
         const toPass = {
             issuer: '',
