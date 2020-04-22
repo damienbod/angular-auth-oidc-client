@@ -6,6 +6,7 @@ import { ConfigurationProvider, OidcConfigService } from './config';
 import { EventsService } from './events';
 import { FlowsDataService } from './flows/flows-data.service';
 import { RandomService } from './flows/random/random.service';
+import { SigninKeyDataService } from './flows/signin-key-data.service';
 import { CheckSessionService } from './iframe/check-session.service';
 import { IFrameService } from './iframe/existing-iframe.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
@@ -41,6 +42,7 @@ export class AuthModule {
                 HttpBaseService,
                 UrlService,
                 AuthStateService,
+                SigninKeyDataService,
                 StoragePersistanceService,
                 TokenHelperService,
                 LoggerService,
