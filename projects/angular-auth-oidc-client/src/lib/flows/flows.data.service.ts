@@ -8,7 +8,7 @@ export class FlowsDataService {
 
     createNonce(): string {
         const nonce = this.randomService.createRandom(40);
-        this.storagePersistanceService.authNonce = nonce;
+        this.setNonce(nonce);
         return nonce;
     }
 

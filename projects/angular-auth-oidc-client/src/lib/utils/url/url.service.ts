@@ -33,25 +33,19 @@ export class UrlService {
     }
 
     getRefreshSessionSilentRenewUrl(): string {
-        let url = '';
         if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            url = this.createUrlCodeFlowWithSilentRenew();
-        } else {
-            url = this.createUrlImplicitFlowWithSilentRenew();
+            return this.createUrlCodeFlowWithSilentRenew();
         }
 
-        return url;
+        return this.createUrlImplicitFlowWithSilentRenew() || '';
     }
 
     getAuthorizeUrl(): string {
-        let url = '';
         if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            url = this.createUrlCodeFlowAuthorize();
-        } else {
-            url = this.createUrlImplicitFlowAuthorize();
+            return this.createUrlCodeFlowAuthorize();
         }
 
-        return url;
+        return this.createUrlImplicitFlowAuthorize() || '';
     }
 
     createEndSessionUrl(endSessionEndpoint: string, idTokenHint: string) {
