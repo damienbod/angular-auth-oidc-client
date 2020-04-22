@@ -10,7 +10,7 @@ import { AuthorizedState } from '../authState/authorized-state';
 import { ConfigurationProvider } from '../config';
 import { EventTypes } from '../events';
 import { EventsService } from '../events/events.service';
-import { FlowsDataService } from '../flows/flows.data.service';
+import { FlowsDataService } from '../flows/flows-data.service';
 import { CheckSessionService, SilentRenewService } from '../iframeServices';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage';
@@ -199,7 +199,7 @@ export class OidcSecurityService {
 
         const data = `grant_type=refresh_token&client_id=${this.configurationProvider.openIDConfiguration.clientId}&refresh_token=${code}`;
 
-        return this.dataService.post(tokenRequestUrl, data, null, headers).pipe(
+        return this.dataService.post(tokenRequestUrl, data, headers).pipe(
             map((response) => {
                 this.loggerService.logDebug('token refresh response: ' + JSON.stringify(response));
                 let obj: any = new Object();
@@ -252,7 +252,7 @@ export class OidcSecurityService {
                 &redirect_uri=${this.configurationProvider.openIDConfiguration.silentRenewUrl}`;
         }
 
-        return this.dataService.post(tokenRequestUrl, data, null, headers).pipe(
+        return this.dataService.post(tokenRequestUrl, data, headers).pipe(
             map((response) => {
                 let obj: any = new Object();
                 obj = response;

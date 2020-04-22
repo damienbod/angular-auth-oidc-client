@@ -15,8 +15,8 @@ export class DataService {
         });
     }
 
-    post<T>(url: string, body: any, token?: string, headersParams?: HttpHeaders) {
-        const headers = headersParams || this.prepareHeaders(token);
+    post<T>(url: string, body: any, headersParams?: HttpHeaders) {
+        const headers = headersParams || this.prepareHeaders();
 
         return this.httpClient.post<T>(url, body, { headers });
     }

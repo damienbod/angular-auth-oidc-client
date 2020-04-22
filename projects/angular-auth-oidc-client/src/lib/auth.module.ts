@@ -4,7 +4,7 @@ import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './authState/auth-state.service';
 import { ConfigurationProvider, OidcConfigService } from './config';
 import { EventsService } from './events';
-import { FlowsDataService } from './flows/flows.data.service';
+import { FlowsDataService } from './flows/flows-data.service';
 import { RandomService } from './flows/random/random.service';
 import { CheckSessionService } from './iframeServices/check-session.service';
 import { IFrameService } from './iframeServices/existing-iframe.service';
