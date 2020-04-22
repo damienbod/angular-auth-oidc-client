@@ -4,7 +4,7 @@ import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { AbstractSecurityStorage, StoragePersistanceService } from '../storage';
 import { BrowserStorageMock } from './browser-storage.service-mock';
 
-describe('Flows Data Service', () => {
+describe('Storage Persistance Service', () => {
     let service: StoragePersistanceService;
     let configurationProvider: ConfigurationProvider;
     let securityStorage: AbstractSecurityStorage;
