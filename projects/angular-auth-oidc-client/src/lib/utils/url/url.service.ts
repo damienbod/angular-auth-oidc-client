@@ -12,7 +12,7 @@ export class UrlService {
     constructor(
         private readonly configurationProvider: ConfigurationProvider,
         private readonly loggerService: LoggerService,
-        private flowsDataService: FlowsDataService,
+        private readonly flowsDataService: FlowsDataService,
         private readonly flowHelper: FlowHelper,
         private tokenValidationService: TokenValidationService
     ) {}
