@@ -84,6 +84,11 @@ export class UrlService {
         return data;
     }
 
+    createBodyForCodeFlowRefreshTokensRequest(refreshtoken: string): string {
+        return oneLineTrim`grant_type=refresh_token
+          &client_id=${this.configurationProvider.openIDConfiguration.clientId}&refresh_token=${refreshtoken}`;
+    }
+
     private createAuthorizeUrl(codeChallenge: string, redirectUrl: string, nonce: string, state: string, prompt?: string): string {
         const authorizationEndpoint = this.getAuthorizationEndpoint();
 

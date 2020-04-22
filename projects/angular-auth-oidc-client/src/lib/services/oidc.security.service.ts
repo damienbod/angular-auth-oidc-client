@@ -187,7 +187,7 @@ export class OidcSecurityService {
     }
 
     // Refresh Token
-    refreshTokensWithCodeProcedure(code: string, state: string): Observable<any> {
+    refreshTokensWithCodeProcedure(refreshToken: string, state: string): Observable<any> {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -196,7 +196,7 @@ export class OidcSecurityService {
             return throwError(new Error('Token Endpoint not defined'));
         }
 
-        const data = `grant_type=refresh_token&client_id=${this.configurationProvider.openIDConfiguration.clientId}&refresh_token=${code}`;
+        const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(refreshToken);
 
         return this.dataService.post(tokenRequestUrl, data, headers).pipe(
             map((response) => {
