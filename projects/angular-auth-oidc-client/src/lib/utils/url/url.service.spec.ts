@@ -3,7 +3,6 @@ import { ConfigurationProvider } from '../../config';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
-import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { PlatformProvider } from '../platform-provider/platform.provider';
 import { PlatformProviderMock } from '../platform-provider/platform.provider-mock';
 import { UrlService } from './url.service';
@@ -11,14 +10,12 @@ import { UrlService } from './url.service';
 describe('UrlService Tests', () => {
     let service: UrlService;
     let configurationProvider: ConfigurationProvider;
-    let flowHelper: FlowHelper;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
                 ConfigurationProvider,
                 UrlService,
-                FlowHelper,
                 {
                     provide: LoggerService,
                     useClass: LoggerServiceMock,
@@ -31,7 +28,6 @@ describe('UrlService Tests', () => {
     beforeEach(() => {
         service = TestBed.inject(UrlService);
         configurationProvider = TestBed.inject(ConfigurationProvider);
-        flowHelper = TestBed.inject(FlowHelper);
     });
 
     it('should create', () => {
@@ -128,7 +124,7 @@ describe('UrlService Tests', () => {
         it('createAuthorizeUrl with code flow adds "code_challenge" and "code_challenge_method" param', () => {
             const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
             config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-            config.responseType = 'id_token token';
+            config.responseType = 'code';
             config.scope = 'openid email profile';
             config.redirectUrl = 'https://localhost:44386';
 
@@ -137,8 +133,6 @@ describe('UrlService Tests', () => {
             };
 
             configurationProvider.setConfig(config, { authorizationEndpoint: 'http://example' });
-
-            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
 
             const value = service.createAuthorizeUrl(
                 '', // Implicit Flow
@@ -150,7 +144,7 @@ describe('UrlService Tests', () => {
             const expectValue =
                 'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
                 '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
-                '&response_type=id_token%20token' +
+                '&response_type=code' +
                 '&scope=openid%20email%20profile' +
                 '&nonce=nonce' +
                 '&state=state' +
