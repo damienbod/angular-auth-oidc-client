@@ -1,5 +1,6 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { oneLineTrim } from 'common-tags';
 import { ConfigurationProvider } from '../../config/config.provider';
 import { FlowsDataService } from '../../flows/flows-data.service';
 import { LoggerService } from '../../logging/logger.service';
@@ -61,6 +62,26 @@ export class UrlService {
         params = params.append('post_logout_redirect_uri', this.configurationProvider.openIDConfiguration.postLogoutRedirectUri);
 
         return `${authorizationEndsessionUrl}?${params}`;
+    }
+
+    createBodyForCodeFlowCodeRequest(code: string): string {
+        const codeVerifier = this.flowsDataService.getCodeVerifier();
+        if (!codeVerifier) {
+            this.loggerService.logWarning(`CodeVerifier is not set `, codeVerifier);
+        }
+
+        let data = oneLineTrim`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.clientId}
+            &code_verifier=${codeVerifier}
+            &code=${code}&redirect_uri=${this.configurationProvider.openIDConfiguration.redirectUrl}`;
+
+        if (this.flowsDataService.isSilentRenewRunning()) {
+            data = oneLineTrim`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.clientId}
+                &code_verifier=${codeVerifier}
+                &code=${code}
+                &redirect_uri=${this.configurationProvider.openIDConfiguration.silentRenewUrl}`;
+        }
+
+        return data;
     }
 
     private createAuthorizeUrl(codeChallenge: string, redirectUrl: string, nonce: string, state: string, prompt?: string): string {

@@ -1,7 +1,6 @@
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
-import { oneLineTrim } from 'common-tags';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
@@ -233,26 +232,12 @@ export class OidcSecurityService {
             return throwError(new Error('incorrect state'));
         }
 
-        const codeVerifier = this.flowsDataService.getCodeVerifier();
-        if (!codeVerifier) {
-            this.loggerService.logWarning(`CodeVerifier is not set `, codeVerifier);
-        }
-
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-        let data = oneLineTrim`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.clientId}
-            &code_verifier=${codeVerifier}
-            &code=${code}&redirect_uri=${this.configurationProvider.openIDConfiguration.redirectUrl}`;
+        const bodyForCodeFlow = this.urlService.createBodyForCodeFlowCodeRequest(code);
 
-        if (this.flowsDataService.isSilentRenewRunning()) {
-            data = oneLineTrim`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.clientId}
-                &code_verifier=${codeVerifier}
-                &code=${code}
-                &redirect_uri=${this.configurationProvider.openIDConfiguration.silentRenewUrl}`;
-        }
-
-        return this.dataService.post(tokenRequestUrl, data, headers).pipe(
+        return this.dataService.post(tokenRequestUrl, bodyForCodeFlow, headers).pipe(
             map((response) => {
                 let obj: any = new Object();
                 obj = response;
