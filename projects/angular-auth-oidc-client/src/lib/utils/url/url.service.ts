@@ -2,11 +2,16 @@ import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ConfigurationProvider } from '../../config/config.provider';
 import { LoggerService } from '../../logging/logger.service';
+import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { UriEncoder } from './uri-encoder';
 
 @Injectable()
 export class UrlService {
-    constructor(private readonly configurationProvider: ConfigurationProvider, private readonly loggerService: LoggerService) {}
+    constructor(
+        private readonly configurationProvider: ConfigurationProvider,
+        private readonly loggerService: LoggerService,
+        private readonly flowHelper: FlowHelper
+    ) {}
 
     getUrlParameter(urlToCheck: any, name: any): string {
         if (!urlToCheck) {
@@ -31,7 +36,8 @@ export class UrlService {
             return '';
         }
 
-        const urlParts = this.getAuthorizationEndpoint().split('?');
+        const urlParts = authorizationEndpoint.split('?');
+
         const authorizationUrl = urlParts[0];
 
         let params = new HttpParams({
@@ -46,7 +52,7 @@ export class UrlService {
         params = params.append('nonce', nonce);
         params = params.append('state', state);
 
-        if (this.isCodeFlow()) {
+        if (this.flowHelper.isCurrentFlowCodeFlow()) {
             params = params.append('code_challenge', codeChallenge);
             params = params.append('code_challenge_method', 'S256');
         }
@@ -83,12 +89,7 @@ export class UrlService {
         return `${authorizationEndsessionUrl}?${params}`;
     }
 
-    private isCodeFlow() {
-        return this.configurationProvider.openIDConfiguration.responseType === 'code';
-    }
-
     private getAuthorizationEndpoint() {
-        // this.configurationProvider.wellKnownEndpoints.authorizationEndpoint
         return this.configurationProvider?.wellKnownEndpoints?.authorizationEndpoint;
     }
 }
