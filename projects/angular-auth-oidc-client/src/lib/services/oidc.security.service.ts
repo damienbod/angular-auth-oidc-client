@@ -10,7 +10,7 @@ import { AuthorizedState } from '../authState/authorized-state';
 import { ConfigurationProvider } from '../config';
 import { EventTypes } from '../events';
 import { EventsService } from '../events/events.service';
-import { FlowsService } from '../flows/flows.service';
+import { FlowsDataService } from '../flows/flows.data.service';
 import { CheckSessionService, SilentRenewService } from '../iframeServices';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage';
@@ -64,7 +64,7 @@ export class OidcSecurityService {
         private readonly urlService: UrlService,
         private readonly authStateService: AuthStateService,
         private readonly flowHelper: FlowHelper,
-        private readonly flowsService: FlowsService
+        private readonly flowsDataService: FlowsDataService
     ) {}
 
     private runTokenValidationRunning = false;
@@ -125,11 +125,11 @@ export class OidcSecurityService {
     }
 
     setState(state: string): void {
-        this.flowsService.setAuthStateControl(state);
+        this.flowsDataService.setAuthStateControl(state);
     }
 
     getState(): string {
-        return this.flowsService.getAuthStateControl();
+        return this.flowsDataService.getAuthStateControl();
     }
 
     // Code Flow with PCKE or Implicit Flow
@@ -227,13 +227,13 @@ export class OidcSecurityService {
             tokenRequestUrl = `${this.configurationProvider.wellKnownEndpoints.tokenEndpoint}`;
         }
 
-        if (!this.tokenValidationService.validateStateFromHashCallback(state, this.flowsService.getAuthStateControl())) {
+        if (!this.tokenValidationService.validateStateFromHashCallback(state, this.flowsDataService.getAuthStateControl())) {
             this.loggerService.logWarning('authorizedCallback incorrect state');
             // ValidationResult.StatesDoNotMatch;
             return throwError(new Error('incorrect state'));
         }
 
-        const codeVerifier = this.flowsService.getCodeVerifier();
+        const codeVerifier = this.flowsDataService.getCodeVerifier();
         if (!codeVerifier) {
             this.loggerService.logWarning(`CodeVerifier is not set `, codeVerifier);
         }
@@ -340,7 +340,7 @@ export class OidcSecurityService {
             }
 
             this.resetAuthorizationData(false);
-            this.flowsService.setNonce('');
+            this.flowsDataService.setNonce('');
 
             if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
                 this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
@@ -364,7 +364,7 @@ export class OidcSecurityService {
                                 .subscribe(
                                     (userData) => {
                                         if (!!userData) {
-                                            this.flowsService.setSessionState(result.session_state);
+                                            this.flowsDataService.setSessionState(result.session_state);
                                             this.startTokenValidationPeriodically();
 
                                             this.authStateService.updateAndPublishAuthState({
@@ -491,13 +491,13 @@ export class OidcSecurityService {
     }
 
     private refreshSessionWithRefreshTokens() {
-        const state = this.flowsService.getExistingOrCreateAuthStateControl();
+        const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
         this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + state);
         const refreshToken = this.authStateService.getRefreshToken();
         if (refreshToken) {
             this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
             // Nonce is not used with refresh tokens; but Keycloak may send it anyway
-            this.flowsService.setNonce(TokenValidationService.RefreshTokenNoncePlaceholder);
+            this.flowsDataService.setNonce(TokenValidationService.RefreshTokenNoncePlaceholder);
             return this.refreshTokensWithCodeProcedure(refreshToken, state);
         } else {
             this.loggerService.logError('no refresh token found, please login');
@@ -559,7 +559,7 @@ export class OidcSecurityService {
             this.userService.resetUserDataInStore();
         }
 
-        this.flowsService.resetStorageFlowData();
+        this.flowsDataService.resetStorageFlowData();
         this.authStateService.setUnauthorizedAndFireEvent();
     }
 

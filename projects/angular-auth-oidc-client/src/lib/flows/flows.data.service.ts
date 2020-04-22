@@ -3,7 +3,7 @@ import { StoragePersistanceService } from '../storage';
 import { RandomService } from '../utils/random/random.service';
 
 @Injectable()
-export class FlowsService {
+export class FlowsDataService {
     constructor(private storagePersistanceService: StoragePersistanceService, private readonly randomService: RandomService) {}
 
     createNonce(): string {
