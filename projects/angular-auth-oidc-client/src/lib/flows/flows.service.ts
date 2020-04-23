@@ -65,6 +65,14 @@ export class FlowsService {
         );
     }
 
+    processImplicitFlowCallback(hash?: string) {
+        return this.implicitFlowCallback(hash).pipe(
+            switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
+            switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
+            switchMap((callbackContext) => this.callbackUser(callbackContext))
+        );
+    }
+
     // STEP 1 Code Flow
     private codeFlowCallback(urlToCheck: string): Observable<CallbackContext> {
         const codeParam = this.urlService.getUrlParameter(urlToCheck, 'code');
@@ -98,7 +106,7 @@ export class FlowsService {
     }
 
     // STEP 1 Implicit Flow
-    implicitFlowCallback$(hash?: string): Observable<CallbackContext> {
+    private implicitFlowCallback(hash?: string): Observable<CallbackContext> {
         const isRenewProcessData = this.flowsDataService.isSilentRenewRunning();
 
         this.loggerService.logDebug('BEGIN authorizedCallback, no auth data');

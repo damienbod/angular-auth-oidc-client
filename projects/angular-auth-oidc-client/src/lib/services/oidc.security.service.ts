@@ -179,10 +179,24 @@ export class OidcSecurityService {
     // Implicit Flow Callback
     authorizedImplicitFlowCallback(hash?: string) {
         if (!this.isModuleSetup) {
-            return;
+            return throwError('module is not set up');
         }
 
-        this.flowsService.implicitFlowCallback$(hash);
+        return this.flowsService.processImplicitFlowCallback(hash).pipe(
+            tap((callbackContext) => {
+                this.startTokenValidationPeriodically();
+
+                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
+                    this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
+                }
+            }),
+            catchError((error) => {
+                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
+                    this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
+                }
+                return throwError(error);
+            })
+        );
     }
 
     refreshSession(): Observable<boolean> {
