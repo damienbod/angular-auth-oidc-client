@@ -207,7 +207,7 @@ export class FlowsService {
                 },
                 (err) => {
                     /* Something went wrong while getting signing key */
-                    this.loggerService.logWarning('Failed to retreive siging key with error: ' + JSON.stringify(err));
+                    this.loggerService.logWarning('Failed to retrieve signing key with error: ' + JSON.stringify(err));
                     this.flowsDataService.resetSilentRenewRunning();
                 }
             );
