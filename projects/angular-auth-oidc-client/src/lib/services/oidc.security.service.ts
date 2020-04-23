@@ -156,7 +156,7 @@ export class OidcSecurityService {
             return;
         }
 
-        this.flowsService.authorizedCallbackWithCode$(urlToCheck).subscribe();
+        this.flowsService.codeFlowCallback$(urlToCheck).subscribe();
     }
 
     // Implicit Flow Callback
@@ -165,7 +165,7 @@ export class OidcSecurityService {
             return;
         }
 
-        this.flowsService.authorizedImplicitFlowCallbackProcedure(hash);
+        this.flowsService.implicitFlowCallback$(hash);
     }
 
     refreshSession(): Observable<boolean> {

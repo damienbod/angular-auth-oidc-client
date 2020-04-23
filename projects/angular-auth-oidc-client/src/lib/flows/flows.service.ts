@@ -56,18 +56,18 @@ export class FlowsService {
     }
 
     // STEP 1 Code Flow
-    authorizedCallbackWithCode$(urlToCheck: string): Observable<void> {
+    codeFlowCallback$(urlToCheck: string): Observable<CallbackContext> {
         const codeParam = this.urlService.getUrlParameter(urlToCheck, 'code');
         const stateParam = this.urlService.getUrlParameter(urlToCheck, 'state');
         const sessionStateParam = this.urlService.getUrlParameter(urlToCheck, 'session_state') || null;
 
         if (!stateParam) {
             this.loggerService.logDebug('no state in url');
-            return of();
+            return throwError('no state in url');
         }
         if (!codeParam) {
             this.loggerService.logDebug('no code in url');
-            return of();
+            return throwError('no code in url');
         }
         this.loggerService.logDebug('running validation for callback' + urlToCheck);
 
@@ -81,12 +81,14 @@ export class FlowsService {
             jwtKeys: null,
             validationResult: null,
         };
+        return of(callbackContext);
+
         // TODO STEP2
-        return this.requestTokensWithCodeProcedure$(callbackContext);
+        // return this.requestTokensWithCodeProcedure$(callbackContext);
     }
 
     // STEP 1 Implicit Flow
-    authorizedImplicitFlowCallbackProcedure(hash?: string) {
+    implicitFlowCallback$(hash?: string): Observable<CallbackContext> {
         const isRenewProcessData = this.flowsDataService.isSilentRenewRunning();
 
         this.loggerService.logDebug('BEGIN authorizedCallback, no auth data');
@@ -112,8 +114,10 @@ export class FlowsService {
             jwtKeys: null,
             validationResult: null,
         };
+
+        return of(callbackContext);
         // TODO STEP2
-        this.authorizedCallbackProcedure(callbackContext);
+        // this.authorizedCallbackProcedure(callbackContext);
     }
 
     // STEP 1 Refresh session
@@ -151,7 +155,7 @@ export class FlowsService {
 
         const tokenRequestUrl = this.getTokenEndpoint();
         if (!tokenRequestUrl) {
-            return throwError(new Error('Token Endpoint not defined'));
+            return throwError('Token Endpoint not defined');
         }
 
         const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken);
