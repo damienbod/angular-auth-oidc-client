@@ -7,7 +7,7 @@ import { ConfigurationProvider } from '../config';
 import { EventTypes } from '../events';
 import { EventsService } from '../events/events.service';
 import { FlowsDataService } from '../flows/flows-data.service';
-import { FlowsService } from '../flows/flows.service';
+import { CallbackContext, FlowsService } from '../flows/flows.service';
 import { CheckSessionService, SilentRenewService } from '../iframe';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage';
@@ -347,8 +347,18 @@ export class OidcSecurityService {
         }
     }
 
-    private requestTokensWithCodeProcedure(code: string, state: string, sessionState: string | null): void {
-        this.flowsService.requestTokensWithCodeProcedure$(code, state, sessionState).subscribe();
+    private requestTokensWithCodeProcedure(codeParam: string, stateParam: string, sessionStateParam: string | null): void {
+        const callbackContext: CallbackContext = {
+            code: codeParam,
+            refreshToken: null,
+            state: stateParam,
+            sessionState: sessionStateParam,
+            authResult: null,
+            isRenewProcess: false,
+            jwtKeys: null,
+            validationResult: null,
+        };
+        this.flowsService.requestTokensWithCodeProcedure$(callbackContext).subscribe();
     }
 
     private initSilentRenewRequest() {

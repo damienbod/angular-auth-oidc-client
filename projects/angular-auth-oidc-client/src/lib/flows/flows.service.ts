@@ -18,6 +18,17 @@ import { JwtKeys } from './../validation/jwtkeys';
 import { FlowsDataService } from './flows-data.service';
 import { SigninKeyDataService } from './signin-key-data.service';
 
+export interface CallbackContext {
+    code: string;
+    refreshToken: string;
+    state: string;
+    sessionState: string | null;
+    authResult: any;
+    isRenewProcess: boolean;
+    jwtKeys: JwtKeys;
+    validationResult: StateValidationResult;
+}
+
 @Injectable()
 export class FlowsService {
     constructor(
@@ -46,30 +57,40 @@ export class FlowsService {
 
     // STEP 1 Code Flow
     authorizedCallbackWithCode$(urlToCheck: string): Observable<void> {
-        const code = this.urlService.getUrlParameter(urlToCheck, 'code');
-        const state = this.urlService.getUrlParameter(urlToCheck, 'state');
-        const sessionState = this.urlService.getUrlParameter(urlToCheck, 'session_state') || null;
+        const codeParam = this.urlService.getUrlParameter(urlToCheck, 'code');
+        const stateParam = this.urlService.getUrlParameter(urlToCheck, 'state');
+        const sessionStateParam = this.urlService.getUrlParameter(urlToCheck, 'session_state') || null;
 
-        if (!state) {
+        if (!stateParam) {
             this.loggerService.logDebug('no state in url');
             return of();
         }
-        if (!code) {
+        if (!codeParam) {
             this.loggerService.logDebug('no code in url');
             return of();
         }
         this.loggerService.logDebug('running validation for callback' + urlToCheck);
 
+        const callbackContext: CallbackContext = {
+            code: codeParam,
+            refreshToken: null,
+            state: stateParam,
+            sessionState: sessionStateParam,
+            authResult: null,
+            isRenewProcess: false,
+            jwtKeys: null,
+            validationResult: null,
+        };
         // TODO STEP2
-        return this.requestTokensWithCodeProcedure$(code, state, sessionState);
+        return this.requestTokensWithCodeProcedure$(callbackContext);
     }
 
     // STEP 1 Implicit Flow
     authorizedImplicitFlowCallbackProcedure(hash?: string) {
-        const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
+        const isRenewProcessData = this.flowsDataService.isSilentRenewRunning();
 
         this.loggerService.logDebug('BEGIN authorizedCallback, no auth data');
-        if (!isRenewProcess) {
+        if (!isRenewProcessData) {
             this.resetAuthorizationData();
         }
 
@@ -81,20 +102,42 @@ export class FlowsService {
             return resultData;
         }, {});
 
+        const callbackContext: CallbackContext = {
+            code: null,
+            refreshToken: null,
+            state: null,
+            sessionState: null,
+            authResult: result,
+            isRenewProcess: isRenewProcessData,
+            jwtKeys: null,
+            validationResult: null,
+        };
         // TODO STEP2
-        this.authorizedCallbackProcedure(result, isRenewProcess);
+        this.authorizedCallbackProcedure(callbackContext);
     }
 
     // STEP 1 Refresh session
     refreshSessionWithRefreshTokens() {
-        const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
-        this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + state);
-        const refreshToken = this.authStateService.getRefreshToken();
-        if (refreshToken) {
+        const stateData = this.flowsDataService.getExistingOrCreateAuthStateControl();
+        this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + stateData);
+        const refreshTokenData = this.authStateService.getRefreshToken();
+
+        const callbackContext: CallbackContext = {
+            code: null,
+            refreshToken: refreshTokenData,
+            state: stateData,
+            sessionState: null,
+            authResult: null,
+            isRenewProcess: false,
+            jwtKeys: null,
+            validationResult: null,
+        };
+
+        if (refreshTokenData) {
             this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
             // Nonce is not used with refresh tokens; but Keycloak may send it anyway
             this.flowsDataService.setNonce(TokenValidationService.RefreshTokenNoncePlaceholder);
-            return this.refreshTokensWithCodeProcedure(refreshToken, state);
+            return this.refreshTokensWithCodeProcedure(callbackContext);
         } else {
             this.loggerService.logError('no refresh token found, please login');
             return;
@@ -102,7 +145,7 @@ export class FlowsService {
     }
 
     // STEP 2 Refresh Token
-    private refreshTokensWithCodeProcedure(refreshToken: string, state: string): Observable<any> {
+    private refreshTokensWithCodeProcedure(callbackContext: CallbackContext): Observable<any> {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -111,16 +154,17 @@ export class FlowsService {
             return throwError(new Error('Token Endpoint not defined'));
         }
 
-        const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(refreshToken);
+        const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken);
 
         return this.dataService.post(tokenRequestUrl, data, headers).pipe(
             map((response) => {
                 this.loggerService.logDebug('token refresh response: ' + JSON.stringify(response));
-                let obj: any = new Object();
-                obj = response;
-                obj.state = state;
+                let authResult: any = new Object();
+                authResult = response;
+                authResult.state = callbackContext.state;
 
-                this.authorizedCodeFlowCallbackProcedure(obj);
+                callbackContext.authResult = authResult;
+                this.authorizedCodeFlowCallbackProcedure(callbackContext);
             }),
             catchError((error) => {
                 this.loggerService.logError(error);
@@ -131,8 +175,10 @@ export class FlowsService {
     }
 
     // STEP 2 Code Flow //  Code Flow Silent Renew starts here
-    requestTokensWithCodeProcedure$(code: string, state: string, sessionState: string | null): Observable<void> {
-        if (!this.tokenValidationService.validateStateFromHashCallback(state, this.flowsDataService.getAuthStateControl())) {
+    requestTokensWithCodeProcedure$(callbackContext: CallbackContext): Observable<void> {
+        if (
+            !this.tokenValidationService.validateStateFromHashCallback(callbackContext.state, this.flowsDataService.getAuthStateControl())
+        ) {
             this.loggerService.logWarning('authorizedCallback incorrect state');
             // ValidationResult.StatesDoNotMatch;
             return throwError(new Error('incorrect state'));
@@ -146,17 +192,18 @@ export class FlowsService {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-        const bodyForCodeFlow = this.urlService.createBodyForCodeFlowCodeRequest(code);
+        const bodyForCodeFlow = this.urlService.createBodyForCodeFlowCodeRequest(callbackContext.code);
 
         return this.dataService.post(tokenRequestUrl, bodyForCodeFlow, headers).pipe(
             map((response) => {
-                let obj: any = new Object();
-                obj = response;
-                obj.state = state;
-                obj.session_state = sessionState;
+                let authResult: any = new Object();
+                authResult = response;
+                authResult.state = callbackContext.state;
+                authResult.session_state = callbackContext.sessionState;
 
+                callbackContext.authResult = authResult;
                 // TODO STEP3
-                this.authorizedCodeFlowCallbackProcedure(obj);
+                this.authorizedCodeFlowCallbackProcedure(callbackContext);
 
                 return undefined;
             }),
@@ -169,41 +216,42 @@ export class FlowsService {
     }
 
     // STEP 3 Code Flow, STEP 3 Refresh Token
-    private authorizedCodeFlowCallbackProcedure(result: any) {
-        const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
+    private authorizedCodeFlowCallbackProcedure(callbackContext: CallbackContext) {
+        callbackContext.isRenewProcess = this.flowsDataService.isSilentRenewRunning();
 
         this.loggerService.logDebug('BEGIN authorized Code Flow Callback, no auth data');
-        if (!isRenewProcess) {
+        if (!callbackContext.isRenewProcess) {
             this.resetAuthorizationData();
         }
 
         // TODO STEP4
-        this.authorizedCallbackProcedure(result, isRenewProcess);
+        this.authorizedCallbackProcedure(callbackContext);
     }
 
     // STEP 4 Code Flow, STEP 2 Implicit Flow, STEP 4 Refresh Token LAST Step
-    private authorizedCallbackProcedure(result: any, isRenewProcess: boolean) {
-        this.authStateService.setAuthResultInStorage(result);
+    private authorizedCallbackProcedure(callbackContext: CallbackContext) {
+        this.authStateService.setAuthResultInStorage(callbackContext.authResult);
 
-        if (this.historyCleanUpTurnedOn() && !isRenewProcess) {
+        if (this.historyCleanUpTurnedOn() && !callbackContext.isRenewProcess) {
             this.resetBrowserHistory();
         } else {
             this.loggerService.logDebug('history clean up inactive');
         }
 
-        if (result.error) {
-            this.loggerService.logDebug(`authorizedCallbackProcedure came with error`, result.error);
+        if (callbackContext.authResult.error) {
+            this.loggerService.logDebug(`authorizedCallbackProcedure came with error`, callbackContext.authResult.error);
             this.resetAuthorizationData();
             this.flowsDataService.setNonce('');
-            this.handleResultErrorFromCallback(result, isRenewProcess);
+            this.handleResultErrorFromCallback(callbackContext.authResult, callbackContext.isRenewProcess);
         } else {
-            this.loggerService.logDebug(result);
+            this.loggerService.logDebug(callbackContext.authResult);
             this.loggerService.logDebug('authorizedCallback created, begin token validation');
 
             this.signinKeyDataService.getSigningKeys().subscribe(
                 (jwtKeys) => {
+                    callbackContext.jwtKeys = jwtKeys;
                     // TODO STEP5
-                    this.callbackStep5(result, isRenewProcess, jwtKeys);
+                    this.callbackStep5(callbackContext);
                 },
                 (err) => {
                     /* Something went wrong while getting signing key */
@@ -215,15 +263,16 @@ export class FlowsService {
     }
 
     // STEP 5 All flows
-    private callbackStep5(result: any, isRenewProcess: boolean, jwtKeys: JwtKeys) {
-        const validationResult = this.stateValidationService.getValidatedStateResult(result, jwtKeys);
+    private callbackStep5(callbackContext: CallbackContext) {
+        const validationResult = this.stateValidationService.getValidatedStateResult(callbackContext.authResult, callbackContext.jwtKeys);
+        callbackContext.validationResult = validationResult;
 
         if (validationResult.authResponseIsValid) {
             this.authStateService.setAuthorizationData(validationResult.accessToken, validationResult.idToken);
             this.flowsDataService.resetSilentRenewRunning();
 
             // TODO STEP6
-            this.callbackUserDataStep6(result, isRenewProcess, validationResult);
+            this.callbackUserDataStep6(callbackContext);
         } else {
             // something went wrong
             this.loggerService.logWarning('authorizedCallback, token(s) validation failed, resetting');
@@ -231,24 +280,29 @@ export class FlowsService {
             this.resetAuthorizationData();
             this.flowsDataService.resetSilentRenewRunning();
 
-            this.handleExceptionFromCallback(validationResult, isRenewProcess);
+            this.callbackUserDataStep6(callbackContext);
+            this.handleExceptionFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
         }
     }
 
     // STEP 6 userData
-    private callbackUserDataStep6(result: any, isRenewProcess: boolean, validationResult: StateValidationResult) {
+    private callbackUserDataStep6(callbackContext: CallbackContext) {
         if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
             this.userService
-                .getAndPersistUserDataInStore(isRenewProcess, validationResult.idToken, validationResult.decodedIdToken)
+                .getAndPersistUserDataInStore(
+                    callbackContext.isRenewProcess,
+                    callbackContext.validationResult.idToken,
+                    callbackContext.validationResult.decodedIdToken
+                )
                 .subscribe(
                     (userData) => {
                         if (!!userData) {
-                            this.flowsDataService.setSessionState(result.session_state);
+                            this.flowsDataService.setSessionState(callbackContext.authResult.session_state);
                             // TODO move to parent OIDC service, success completion function
-                            this.handleSuccessFromCallback(validationResult, isRenewProcess);
+                            this.handleSuccessFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
                         } else {
                             this.resetAuthorizationData();
-                            this.handleExceptionFromCallback(validationResult, isRenewProcess);
+                            this.handleExceptionFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
                         }
                     },
                     (err) => {
@@ -257,13 +311,13 @@ export class FlowsService {
                     }
                 );
         } else {
-            if (!isRenewProcess) {
+            if (!callbackContext.isRenewProcess) {
                 // userData is set to the id_token decoded, auto get user data set to false
-                this.userService.setUserDataToStore(validationResult.decodedIdToken);
+                this.userService.setUserDataToStore(callbackContext.validationResult.decodedIdToken);
             }
 
             // TODO move to parent OIDC service, success completion function
-            this.handleSuccessFromCallback(validationResult, isRenewProcess);
+            this.handleSuccessFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
         }
     }
 
