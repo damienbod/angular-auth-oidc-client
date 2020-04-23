@@ -52,6 +52,15 @@ export class FlowsService {
         );
     }
 
+    processSilentRenewCodeFlowCallback(firstContext: CallbackContext) {
+        return this.codeFlowCodeRequest(firstContext).pipe(
+            switchMap((callbackContext) => this.codeFlowSilentRenewCheck(callbackContext)),
+            switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
+            switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
+            switchMap((callbackContext) => this.callbackUser(callbackContext))
+        );
+    }
+
     processImplicitFlowCallback(hash?: string) {
         return this.implicitFlowCallback(hash).pipe(
             switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
@@ -189,7 +198,7 @@ export class FlowsService {
     }
 
     // STEP 2 Code Flow //  Code Flow Silent Renew starts here
-    codeFlowCodeRequest(callbackContext: CallbackContext): Observable<CallbackContext> {
+    private codeFlowCodeRequest(callbackContext: CallbackContext): Observable<CallbackContext> {
         if (
             !this.tokenValidationService.validateStateFromHashCallback(callbackContext.state, this.flowsDataService.getAuthStateControl())
         ) {

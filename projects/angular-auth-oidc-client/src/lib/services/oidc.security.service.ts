@@ -390,7 +390,7 @@ export class OidcSecurityService {
             jwtKeys: null,
             validationResult: null,
         };
-        this.flowsService.codeFlowCodeRequest(callbackContext).subscribe();
+        this.flowsService.processSilentRenewCodeFlowCallback(callbackContext).subscribe();
     }
 
     private initSilentRenewRequest() {
