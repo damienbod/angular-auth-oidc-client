@@ -7,12 +7,9 @@ import { DataService } from '../api/data.service';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
 import { ConfigurationProvider } from '../config/config.provider';
-import { EventsService } from '../events/events.service';
 import { LoggerService } from '../logging/logger.service';
-import { TokenHelperService } from '../services/oidc-token-helper.service';
 import { UserService } from '../userData/user-service';
 import { UrlService } from '../utils';
-import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { StateValidationService } from '../validation/state-validation.service';
 import { TokenValidationService } from '../validation/token-validation.service';
 import { ValidationResult } from '../validation/validation-result';
@@ -25,11 +22,8 @@ export class FlowsService {
         private urlService: UrlService,
         private loggerService: LoggerService,
         private tokenValidationService: TokenValidationService,
-        private tokenHelperService: TokenHelperService,
         private readonly configurationProvider: ConfigurationProvider,
-        private readonly eventsService: EventsService,
         private readonly authStateService: AuthStateService,
-        private readonly flowHelper: FlowHelper,
         private readonly flowsDataService: FlowsDataService,
         private readonly signinKeyDataService: SigninKeyDataService,
         private readonly dataService: DataService,
@@ -179,7 +173,7 @@ export class FlowsService {
         this.authorizedCallbackProcedure(result, isRenewProcess);
     }
 
-    // STEP 4 Code Flow, STEP 2 Implicit Flow, STEP 4 Refresh Token
+    // STEP 4 Code Flow, STEP 2 Implicit Flow, STEP 4 Refresh Token LAST Step
     private authorizedCallbackProcedure(result: any, isRenewProcess: boolean) {
         this.authStateService.setAuthResultInStorage(result);
 
