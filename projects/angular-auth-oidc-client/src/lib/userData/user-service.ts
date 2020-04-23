@@ -35,9 +35,9 @@ export class UserService {
 
         const existingUserDataFromStorage = this.getUserDataFromStore();
         const haveUserData = !!existingUserDataFromStorage;
-        const currentFlowIsIdTokenOrCode = this.flowHelper.currentFlowIs(['id_token token', 'code']);
+        const currentFlowIsIdTokenWithAccessTokenOrCode = this.flowHelper.currentFlowIs(['id_token token', 'code']);
 
-        if (!currentFlowIsIdTokenOrCode) {
+        if (!currentFlowIsIdTokenWithAccessTokenOrCode) {
             this.loggerService.logDebug('authorizedCallback id_token flow');
             this.loggerService.logDebug(this.storagePersistanceService.accessToken);
 
@@ -80,7 +80,7 @@ export class UserService {
         this.userDataInternal$.next(null);
     }
 
-    private getUserDataOidcFlowAndSave(idTokenSub: any) {
+    private getUserDataOidcFlowAndSave(idTokenSub: any): Observable<any> {
         return this.getIdentityUserData().pipe(
             map((data: any) => {
                 if (this.validateUserdataSubIdToken(idTokenSub, data.sub)) {
