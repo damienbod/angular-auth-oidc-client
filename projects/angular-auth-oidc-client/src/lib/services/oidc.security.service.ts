@@ -2,14 +2,14 @@ import { HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
 import { ConfigurationProvider } from '../config';
 import { EventTypes } from '../events';
 import { EventsService } from '../events/events.service';
 import { FlowsDataService } from '../flows/flows-data.service';
-import { CallbackContext, FlowsService } from '../flows/flows.service';
+import { FlowsService } from '../flows/flows.service';
 import { CheckSessionService, SilentRenewService } from '../iframe';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage';
@@ -204,13 +204,14 @@ export class OidcSecurityService {
         this.flowsDataService.setSilentRenewRunning();
 
         // Code Flow renew with Refresh tokens
+        // TODO CHECK THIS!!!
         if (this.flowHelper.isCurrentFlowCodeFlow() && this.configurationProvider.openIDConfiguration.useRefreshToken) {
-            return this.flowsService.refreshSessionWithRefreshTokens();
+            return this.flowsService.processRefreshToken().pipe(map((context) => !!context));
         }
 
         const url = this.urlService.getRefreshSessionSilentRenewUrl();
 
-        return this.sendAuthorizeReqestUsingSilentRenew$(url);
+        return this.sendAuthorizeReqestUsingSilentRenew(url);
     }
 
     private redirectTo(url: string) {
@@ -329,7 +330,7 @@ export class OidcSecurityService {
         });
     }
 
-    private sendAuthorizeReqestUsingSilentRenew$(url: string): Observable<boolean> {
+    private sendAuthorizeReqestUsingSilentRenew(url: string): Observable<boolean> {
         const sessionIframe = this.silentRenewService.getOrCreateIframe();
         this.initSilentRenewRequest();
         this.loggerService.logDebug('sendAuthorizeReqestUsingSilentRenew for URL:' + url);
@@ -379,7 +380,7 @@ export class OidcSecurityService {
     }
 
     private requestTokensWithCodeProcedure(codeParam: string, stateParam: string, sessionStateParam: string | null): void {
-        const callbackContext: CallbackContext = {
+        const callbackContext = {
             code: codeParam,
             refreshToken: null,
             state: stateParam,
@@ -389,7 +390,7 @@ export class OidcSecurityService {
             jwtKeys: null,
             validationResult: null,
         };
-        this.flowsService.requestTokensWithCodeProcedure$(callbackContext).subscribe();
+        this.flowsService.codeFlowCodeRequest(callbackContext).subscribe();
     }
 
     private initSilentRenewRequest() {

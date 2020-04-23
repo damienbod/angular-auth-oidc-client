@@ -73,6 +73,16 @@ export class FlowsService {
         );
     }
 
+    processRefreshToken() {
+        return this.refreshSessionWithRefreshTokens().pipe(
+            switchMap((callbackContext) => this.refreshTokensRequestTokens(callbackContext)),
+            switchMap((callbackContext) => this.codeFlowSilentRenewCheck(callbackContext)),
+            switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
+            switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
+            switchMap((callbackContext) => this.callbackUser(callbackContext))
+        );
+    }
+
     // STEP 1 Code Flow
     private codeFlowCallback(urlToCheck: string): Observable<CallbackContext> {
         const codeParam = this.urlService.getUrlParameter(urlToCheck, 'code');
@@ -139,7 +149,7 @@ export class FlowsService {
     }
 
     // STEP 1 Refresh session
-    refreshSessionWithRefreshTokens$(): Observable<CallbackContext> {
+    private refreshSessionWithRefreshTokens(): Observable<CallbackContext> {
         const stateData = this.flowsDataService.getExistingOrCreateAuthStateControl();
         this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + stateData);
         const refreshTokenData = this.authStateService.getRefreshToken();
@@ -170,7 +180,7 @@ export class FlowsService {
     }
 
     // STEP 2 Refresh Token
-    refreshTokensRequestTokens$(callbackContext: CallbackContext): Observable<CallbackContext> {
+    private refreshTokensRequestTokens(callbackContext: CallbackContext): Observable<CallbackContext> {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -202,7 +212,7 @@ export class FlowsService {
     }
 
     // STEP 2 Code Flow //  Code Flow Silent Renew starts here
-    private codeFlowCodeRequest(callbackContext: CallbackContext): Observable<CallbackContext> {
+    codeFlowCodeRequest(callbackContext: CallbackContext): Observable<CallbackContext> {
         if (
             !this.tokenValidationService.validateStateFromHashCallback(callbackContext.state, this.flowsDataService.getAuthStateControl())
         ) {
