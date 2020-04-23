@@ -10,13 +10,13 @@ import { ConfigurationProvider } from '../config';
 import { EventTypes } from '../events';
 import { EventsService } from '../events/events.service';
 import { FlowsDataService } from '../flows/flows-data.service';
+import { SigninKeyDataService } from '../flows/signin-key-data.service';
 import { CheckSessionService, SilentRenewService } from '../iframe';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage';
 import { UserService } from '../userData/user-service';
 import { UrlService } from '../utils';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
-import { JwtKeys } from '../validation/jwtkeys';
 import { StateValidationService } from '../validation/state-validation.service';
 import { TokenValidationService } from '../validation/token-validation.service';
 import { ValidationResult } from '../validation/validation-result';
@@ -63,7 +63,8 @@ export class OidcSecurityService {
         private readonly urlService: UrlService,
         private readonly authStateService: AuthStateService,
         private readonly flowHelper: FlowHelper,
-        private readonly flowsDataService: FlowsDataService
+        private readonly flowsDataService: FlowsDataService,
+        private readonly signinKeyDataService: SigninKeyDataService
     ) {}
 
     private runTokenValidationRunning = false;
@@ -344,7 +345,7 @@ export class OidcSecurityService {
 
             this.loggerService.logDebug('authorizedCallback created, begin token validation');
 
-            this.getSigningKeys().subscribe(
+            this.signinKeyDataService.getSigningKeys().subscribe(
                 (jwtKeys) => {
                     const validationResult = this.stateValidationService.getValidatedStateResult(result, jwtKeys);
 
@@ -529,34 +530,6 @@ export class OidcSecurityService {
                 return this.urlService.createEndSessionUrl(endSessionEndpoint, idTokenHint);
             }
         }
-    }
-
-    // TODO EXTRACT IN SERVICE
-    private getSigningKeys(): Observable<JwtKeys> {
-        if (this.configurationProvider.wellKnownEndpoints) {
-            this.loggerService.logDebug('jwks_uri: ' + this.configurationProvider.wellKnownEndpoints.jwksUri);
-
-            return this.dataService
-                .get<JwtKeys>(this.configurationProvider.wellKnownEndpoints.jwksUri || '')
-                .pipe(catchError(this.handleErrorGetSigningKeys));
-        } else {
-            this.loggerService.logWarning('getSigningKeys: authWellKnownEndpoints is undefined');
-        }
-
-        return this.dataService.get<JwtKeys>('undefined').pipe(catchError(this.handleErrorGetSigningKeys));
-    }
-
-    private handleErrorGetSigningKeys(error: Response | any) {
-        let errMsg: string;
-        if (error instanceof Response) {
-            const body = error.json() || {};
-            const err = JSON.stringify(body);
-            errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
-        } else {
-            errMsg = error.message ? error.message : error.toString();
-        }
-        this.loggerService.logError(errMsg);
-        return throwError(errMsg);
     }
 
     private startTokenValidationPeriodically() {
