@@ -121,7 +121,7 @@ export class FlowsService {
     }
 
     // STEP 1 Refresh session
-    refreshSessionWithRefreshTokens() {
+    refreshSessionWithRefreshTokens$(): Observable<CallbackContext> {
         const stateData = this.flowsDataService.getExistingOrCreateAuthStateControl();
         this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + stateData);
         const refreshTokenData = this.authStateService.getRefreshToken();
@@ -141,15 +141,18 @@ export class FlowsService {
             this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
             // Nonce is not used with refresh tokens; but Keycloak may send it anyway
             this.flowsDataService.setNonce(TokenValidationService.RefreshTokenNoncePlaceholder);
-            return this.refreshTokensWithCodeProcedure(callbackContext);
+
+            return of(callbackContext);
+            // TODO Step 2
+            // return this.refreshTokensWithCodeProcedure(callbackContext);
         } else {
             this.loggerService.logError('no refresh token found, please login');
-            return;
+            return throwError('no refresh token found, please login');
         }
     }
 
     // STEP 2 Refresh Token
-    private refreshTokensWithCodeProcedure(callbackContext: CallbackContext): Observable<any> {
+    refreshTokensRequestTokens$(callbackContext: CallbackContext): Observable<any> {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -168,29 +171,31 @@ export class FlowsService {
                 authResult.state = callbackContext.state;
 
                 callbackContext.authResult = authResult;
-                this.authorizedCodeFlowCallbackProcedure(callbackContext);
+                return of(callbackContext);
+
+                // TODO Step 3
+                // this.authorizedCodeFlowCallbackProcedure(callbackContext);
             }),
             catchError((error) => {
                 this.loggerService.logError(error);
-                this.loggerService.logError(`OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}`);
-                return of(false);
+                return throwError(`OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}`);
             })
         );
     }
 
     // STEP 2 Code Flow //  Code Flow Silent Renew starts here
-    requestTokensWithCodeProcedure$(callbackContext: CallbackContext): Observable<void> {
+    codeFlowCodeRequest$(callbackContext: CallbackContext): Observable<any> {
         if (
             !this.tokenValidationService.validateStateFromHashCallback(callbackContext.state, this.flowsDataService.getAuthStateControl())
         ) {
             this.loggerService.logWarning('authorizedCallback incorrect state');
             // ValidationResult.StatesDoNotMatch;
-            return throwError(new Error('incorrect state'));
+            return throwError('incorrect state');
         }
 
         const tokenRequestUrl = this.getTokenEndpoint();
         if (!tokenRequestUrl) {
-            return throwError(new Error('Token Endpoint not defined'));
+            return throwError('Token Endpoint not defined');
         }
 
         let headers: HttpHeaders = new HttpHeaders();
@@ -206,21 +211,21 @@ export class FlowsService {
                 authResult.session_state = callbackContext.sessionState;
 
                 callbackContext.authResult = authResult;
-                // TODO STEP3
-                this.authorizedCodeFlowCallbackProcedure(callbackContext);
+                return of(callbackContext);
 
-                return undefined;
+                // TODO STEP3
+                // this.authorizedCodeFlowCallbackProcedure(callbackContext);
             }),
             catchError((error) => {
                 this.loggerService.logError(error);
                 this.loggerService.logError(`OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}`);
-                return throwError(error);
+                return throwError(`OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}`);
             })
         );
     }
 
     // STEP 3 Code Flow, STEP 3 Refresh Token
-    private authorizedCodeFlowCallbackProcedure(callbackContext: CallbackContext) {
+    codeFlowSilentRenewCheck$(callbackContext: CallbackContext): Observable<CallbackContext> {
         callbackContext.isRenewProcess = this.flowsDataService.isSilentRenewRunning();
 
         this.loggerService.logDebug('BEGIN authorized Code Flow Callback, no auth data');
@@ -228,8 +233,9 @@ export class FlowsService {
             this.resetAuthorizationData();
         }
 
+        return of(callbackContext);
         // TODO STEP4
-        this.authorizedCallbackProcedure(callbackContext);
+        // this.authorizedCallbackProcedure(callbackContext);
     }
 
     // STEP 4 Code Flow, STEP 2 Implicit Flow, STEP 4 Refresh Token LAST Step
