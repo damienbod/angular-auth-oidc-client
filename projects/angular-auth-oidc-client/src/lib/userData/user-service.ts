@@ -55,7 +55,7 @@ export class UserService {
                         this.loggerService.logDebug(this.storagePersistanceService.accessToken);
                         return userData;
                     } else {
-                        return throwError('wuahahah');
+                        return throwError('no user data, request failed');
                     }
                 })
             );
