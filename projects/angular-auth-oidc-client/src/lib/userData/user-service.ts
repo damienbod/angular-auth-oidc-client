@@ -91,7 +91,7 @@ export class UserService {
                     this.loggerService.logWarning('authorizedCallback, User data sub does not match sub in id_token');
                     this.loggerService.logDebug('authorizedCallback, token(s) validation failed, resetting');
                     this.resetUserDataInStore();
-                    return throwError('blablabla');
+                    return throwError('authorizedCallback, User data sub does not match sub in id_token');
                 }
             })
         );
