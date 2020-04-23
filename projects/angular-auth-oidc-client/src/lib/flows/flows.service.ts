@@ -71,7 +71,7 @@ export class FlowsService {
         }
         this.loggerService.logDebug('running validation for callback' + urlToCheck);
 
-        const callbackContext: CallbackContext = {
+        const callbackContext = {
             code: codeParam,
             refreshToken: null,
             state: stateParam,
@@ -104,7 +104,7 @@ export class FlowsService {
             return resultData;
         }, {});
 
-        const callbackContext: CallbackContext = {
+        const callbackContext = {
             code: null,
             refreshToken: null,
             state: null,
@@ -126,7 +126,7 @@ export class FlowsService {
         this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + stateData);
         const refreshTokenData = this.authStateService.getRefreshToken();
 
-        const callbackContext: CallbackContext = {
+        const callbackContext = {
             code: null,
             refreshToken: refreshTokenData,
             state: stateData,
@@ -152,7 +152,7 @@ export class FlowsService {
     }
 
     // STEP 2 Refresh Token
-    refreshTokensRequestTokens$(callbackContext: CallbackContext): Observable<any> {
+    refreshTokensRequestTokens$(callbackContext: CallbackContext): Observable<CallbackContext> {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -164,14 +164,14 @@ export class FlowsService {
         const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken);
 
         return this.dataService.post(tokenRequestUrl, data, headers).pipe(
-            map((response) => {
+            map((response: any) => {
                 this.loggerService.logDebug('token refresh response: ' + JSON.stringify(response));
                 let authResult: any = new Object();
                 authResult = response;
                 authResult.state = callbackContext.state;
 
                 callbackContext.authResult = authResult;
-                return of(callbackContext);
+                return callbackContext;
 
                 // TODO Step 3
                 // this.authorizedCodeFlowCallbackProcedure(callbackContext);
@@ -184,7 +184,7 @@ export class FlowsService {
     }
 
     // STEP 2 Code Flow //  Code Flow Silent Renew starts here
-    codeFlowCodeRequest$(callbackContext: CallbackContext): Observable<any> {
+    codeFlowCodeRequest$(callbackContext: CallbackContext): Observable<CallbackContext> {
         if (
             !this.tokenValidationService.validateStateFromHashCallback(callbackContext.state, this.flowsDataService.getAuthStateControl())
         ) {
@@ -211,7 +211,7 @@ export class FlowsService {
                 authResult.session_state = callbackContext.sessionState;
 
                 callbackContext.authResult = authResult;
-                return of(callbackContext);
+                return callbackContext;
 
                 // TODO STEP3
                 // this.authorizedCodeFlowCallbackProcedure(callbackContext);
@@ -238,8 +238,8 @@ export class FlowsService {
         // this.authorizedCallbackProcedure(callbackContext);
     }
 
-    // STEP 4 Code Flow, STEP 2 Implicit Flow, STEP 4 Refresh Token LAST Step
-    private authorizedCallbackProcedure(callbackContext: CallbackContext) {
+    // STEP 4 Code Flow, STEP 2 Implicit Flow, STEP 4 Refresh Token
+    callbackHistoryAndResetJwtKeys(callbackContext: CallbackContext): Observable<CallbackContext> {
         this.authStateService.setAuthResultInStorage(callbackContext.authResult);
 
         if (this.historyCleanUpTurnedOn() && !callbackContext.isRenewProcess) {
@@ -253,27 +253,33 @@ export class FlowsService {
             this.resetAuthorizationData();
             this.flowsDataService.setNonce('');
             this.handleResultErrorFromCallback(callbackContext.authResult, callbackContext.isRenewProcess);
+            return throwError(`authorizedCallbackProcedure came with error`, callbackContext.authResult.error);
         } else {
             this.loggerService.logDebug(callbackContext.authResult);
             this.loggerService.logDebug('authorizedCallback created, begin token validation');
 
-            this.signinKeyDataService.getSigningKeys().subscribe(
-                (jwtKeys) => {
-                    callbackContext.jwtKeys = jwtKeys;
-                    // TODO STEP5
-                    this.callbackStep5(callbackContext);
-                },
-                (err) => {
-                    /* Something went wrong while getting signing key */
-                    this.loggerService.logWarning('Failed to retrieve signing key with error: ' + JSON.stringify(err));
-                    this.flowsDataService.resetSilentRenewRunning();
-                }
+            this.signinKeyDataService.getSigningKeys().pipe(
+                map(
+                    (jwtKeys) => {
+                        callbackContext.jwtKeys = jwtKeys;
+
+                        return callbackContext;
+                        // TODO STEP5
+                        // this.callbackStateValidation(callbackContext);
+                    },
+                    (err) => {
+                        /* Something went wrong while getting signing key */
+                        this.loggerService.logWarning('Failed to retrieve signing key with error: ', err);
+                        this.flowsDataService.resetSilentRenewRunning();
+                        return throwError('Failed to retrieve signing key with error: ', err);
+                    }
+                )
             );
         }
     }
 
     // STEP 5 All flows
-    private callbackStep5(callbackContext: CallbackContext) {
+    callbackStateValidation(callbackContext: CallbackContext): Observable<CallbackContext> {
         const validationResult = this.stateValidationService.getValidatedStateResult(callbackContext.authResult, callbackContext.jwtKeys);
         callbackContext.validationResult = validationResult;
 
@@ -281,22 +287,22 @@ export class FlowsService {
             this.authStateService.setAuthorizationData(validationResult.accessToken, validationResult.idToken);
             this.flowsDataService.resetSilentRenewRunning();
 
+            return of(callbackContext);
             // TODO STEP6
-            this.callbackUserDataStep6(callbackContext);
+            // this.callbackUserDataStep6(callbackContext);
         } else {
             // something went wrong
             this.loggerService.logWarning('authorizedCallback, token(s) validation failed, resetting');
             this.loggerService.logWarning(window.location.hash);
             this.resetAuthorizationData();
             this.flowsDataService.resetSilentRenewRunning();
-
-            this.callbackUserDataStep6(callbackContext);
             this.handleExceptionFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
+            return throwError('authorizedCallback, token(s) validation failed, resetting: ');
         }
     }
 
     // STEP 6 userData
-    private callbackUserDataStep6(callbackContext: CallbackContext) {
+    callbackUser(callbackContext: CallbackContext): Observable<CallbackContext> {
         if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
             this.userService
                 .getAndPersistUserDataInStore(
@@ -304,21 +310,26 @@ export class FlowsService {
                     callbackContext.validationResult.idToken,
                     callbackContext.validationResult.decodedIdToken
                 )
-                .subscribe(
-                    (userData) => {
-                        if (!!userData) {
-                            this.flowsDataService.setSessionState(callbackContext.authResult.session_state);
-                            // TODO move to parent OIDC service, success completion function
-                            this.handleSuccessFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
-                        } else {
-                            this.resetAuthorizationData();
-                            this.handleExceptionFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
+                .pipe(
+                    map(
+                        (userData) => {
+                            if (!!userData) {
+                                this.flowsDataService.setSessionState(callbackContext.authResult.session_state);
+                                // TODO move to parent OIDC service, success completion function
+                                this.handleSuccessFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
+                                return of(callbackContext);
+                            } else {
+                                this.resetAuthorizationData();
+                                this.handleExceptionFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
+                                return throwError('Failed to retreive user info with error: ');
+                            }
+                        },
+                        (err) => {
+                            /* Something went wrong while getting signing key */
+                            this.loggerService.logWarning('Failed to retreive user info with error: ', err);
+                            return throwError('Failed to retreive user info with error: ', err);
                         }
-                    },
-                    (err) => {
-                        /* Something went wrong while getting signing key */
-                        this.loggerService.logWarning('Failed to retreive user info with error: ' + JSON.stringify(err));
-                    }
+                    )
                 );
         } else {
             if (!callbackContext.isRenewProcess) {
@@ -328,6 +339,7 @@ export class FlowsService {
 
             // TODO move to parent OIDC service, success completion function
             this.handleSuccessFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
+            return of(callbackContext);
         }
     }
 
