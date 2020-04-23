@@ -1,7 +1,6 @@
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
-import { oneLineTrim } from 'common-tags';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
@@ -188,16 +187,16 @@ export class OidcSecurityService {
     }
 
     // Refresh Token
-    refreshTokensWithCodeProcedure(code: string, state: string): Observable<any> {
-        let tokenRequestUrl = '';
-        if (this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.tokenEndpoint) {
-            tokenRequestUrl = `${this.configurationProvider.wellKnownEndpoints.tokenEndpoint}`;
-        }
-
+    refreshTokensWithCodeProcedure(refreshToken: string, state: string): Observable<any> {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-        const data = `grant_type=refresh_token&client_id=${this.configurationProvider.openIDConfiguration.clientId}&refresh_token=${code}`;
+        const tokenRequestUrl = this.getTokenEndpoint();
+        if (!tokenRequestUrl) {
+            return throwError(new Error('Token Endpoint not defined'));
+        }
+
+        const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(refreshToken);
 
         return this.dataService.post(tokenRequestUrl, data, headers).pipe(
             map((response) => {
@@ -220,39 +219,32 @@ export class OidcSecurityService {
         this.requestTokensWithCodeProcedure$(code, state, sessionState).subscribe();
     }
 
+    getTokenEndpoint(): string {
+        if (this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.tokenEndpoint) {
+            return `${this.configurationProvider.wellKnownEndpoints.tokenEndpoint}`;
+        }
+        return null;
+    }
+
     // Code Flow with PCKE
     requestTokensWithCodeProcedure$(code: string, state: string, sessionState: string | null): Observable<void> {
-        let tokenRequestUrl = '';
-        if (this.configurationProvider.wellKnownEndpoints && this.configurationProvider.wellKnownEndpoints.tokenEndpoint) {
-            tokenRequestUrl = `${this.configurationProvider.wellKnownEndpoints.tokenEndpoint}`;
-        }
-
         if (!this.tokenValidationService.validateStateFromHashCallback(state, this.flowsDataService.getAuthStateControl())) {
             this.loggerService.logWarning('authorizedCallback incorrect state');
             // ValidationResult.StatesDoNotMatch;
             return throwError(new Error('incorrect state'));
         }
 
-        const codeVerifier = this.flowsDataService.getCodeVerifier();
-        if (!codeVerifier) {
-            this.loggerService.logWarning(`CodeVerifier is not set `, codeVerifier);
+        const tokenRequestUrl = this.getTokenEndpoint();
+        if (!tokenRequestUrl) {
+            return throwError(new Error('Token Endpoint not defined'));
         }
 
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-        let data = oneLineTrim`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.clientId}
-            &code_verifier=${codeVerifier}
-            &code=${code}&redirect_uri=${this.configurationProvider.openIDConfiguration.redirectUrl}`;
+        const bodyForCodeFlow = this.urlService.createBodyForCodeFlowCodeRequest(code);
 
-        if (this.flowsDataService.isSilentRenewRunning()) {
-            data = oneLineTrim`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.clientId}
-                &code_verifier=${codeVerifier}
-                &code=${code}
-                &redirect_uri=${this.configurationProvider.openIDConfiguration.silentRenewUrl}`;
-        }
-
-        return this.dataService.post(tokenRequestUrl, data, headers).pipe(
+        return this.dataService.post(tokenRequestUrl, bodyForCodeFlow, headers).pipe(
             map((response) => {
                 let obj: any = new Object();
                 obj = response;
