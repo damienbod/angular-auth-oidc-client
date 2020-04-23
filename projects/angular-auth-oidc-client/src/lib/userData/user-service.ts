@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { ConfigurationProvider } from '../config';
@@ -91,6 +91,7 @@ export class UserService {
                     this.loggerService.logWarning('authorizedCallback, User data sub does not match sub in id_token');
                     this.loggerService.logDebug('authorizedCallback, token(s) validation failed, resetting');
                     this.resetUserDataInStore();
+                    return throwError('blablabla');
                 }
             })
         );
@@ -102,7 +103,7 @@ export class UserService {
         if (!this.configurationProvider.wellKnownEndpoints) {
             this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
 
-            throw Error('authWellKnownEndpoints is undefined');
+            return throwError('authWellKnownEndpoints is undefined');
         }
 
         const canGetUserData = this.configurationProvider?.wellKnownEndpoints?.userinfoEndpoint;
@@ -111,7 +112,7 @@ export class UserService {
             this.loggerService.logError(
                 'init check session: authWellKnownEndpoints.userinfo_endpoint is undefined; set auto_userinfo = false in config'
             );
-            throw Error('authWellKnownEndpoints.userinfo_endpoint is undefined');
+            return throwError('authWellKnownEndpoints.userinfo_endpoint is undefined');
         }
 
         return this.oidcDataService.get(this.configurationProvider.wellKnownEndpoints.userinfoEndpoint, token);
