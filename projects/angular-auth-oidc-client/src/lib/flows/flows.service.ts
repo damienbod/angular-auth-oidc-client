@@ -223,7 +223,7 @@ export class FlowsService {
             this.flowsDataService.resetSilentRenewRunning();
 
             // TODO STEP6
-            this.callbackUserDataStep6(result, isRenewProcess, jwtKeys, validationResult);
+            this.callbackUserDataStep6(result, isRenewProcess, validationResult);
         } else {
             // something went wrong
             this.loggerService.logWarning('authorizedCallback, token(s) validation failed, resetting');
@@ -277,6 +277,7 @@ export class FlowsService {
         // MOVE to OIDC service
         this.startTokenValidationPeriodically();
 
+        // MOVE to OIDC service
         if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
             this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
         }
