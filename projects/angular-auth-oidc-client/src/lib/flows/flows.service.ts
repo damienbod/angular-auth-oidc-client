@@ -59,6 +59,8 @@ export class FlowsService {
             return of();
         }
         this.loggerService.logDebug('running validation for callback' + urlToCheck);
+
+        // TODO STEP2
         return this.requestTokensWithCodeProcedure$(code, state, sessionState);
     }
 
@@ -79,6 +81,7 @@ export class FlowsService {
             return resultData;
         }, {});
 
+        // TODO STEP2
         this.authorizedCallbackProcedure(result, isRenewProcess);
     }
 
@@ -152,6 +155,7 @@ export class FlowsService {
                 obj.state = state;
                 obj.session_state = sessionState;
 
+                // TODO STEP3
                 this.authorizedCodeFlowCallbackProcedure(obj);
 
                 return undefined;
@@ -172,6 +176,8 @@ export class FlowsService {
         if (!isRenewProcess) {
             this.resetAuthorizationData();
         }
+
+        // TODO STEP4
         this.authorizedCallbackProcedure(result, isRenewProcess);
     }
 
@@ -196,6 +202,7 @@ export class FlowsService {
 
             this.signinKeyDataService.getSigningKeys().subscribe(
                 (jwtKeys) => {
+                    // TODO STEP5
                     this.callbackStep5(result, isRenewProcess, jwtKeys);
                 },
                 (err) => {
@@ -215,6 +222,7 @@ export class FlowsService {
             this.authStateService.setAuthorizationData(validationResult.accessToken, validationResult.idToken);
             this.flowsDataService.resetSilentRenewRunning();
 
+            // TODO STEP6
             this.callbackUserDataStep6(result, isRenewProcess, jwtKeys, validationResult);
         } else {
             // something went wrong
@@ -228,7 +236,7 @@ export class FlowsService {
     }
 
     // STEP 6 userData
-    private callbackUserDataStep6(result: any, isRenewProcess: boolean, jwtKeys: JwtKeys, validationResult: StateValidationResult) {
+    private callbackUserDataStep6(result: any, isRenewProcess: boolean, validationResult: StateValidationResult) {
         if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
             this.userService
                 .getAndPersistUserDataInStore(isRenewProcess, validationResult.idToken, validationResult.decodedIdToken)
@@ -236,6 +244,7 @@ export class FlowsService {
                     (userData) => {
                         if (!!userData) {
                             this.flowsDataService.setSessionState(result.session_state);
+                            // TODO move to parent OIDC service, success completion function
                             this.handleSuccessFromCallback(validationResult, isRenewProcess);
                         } else {
                             this.resetAuthorizationData();
@@ -253,17 +262,21 @@ export class FlowsService {
                 this.userService.setUserDataToStore(validationResult.decodedIdToken);
             }
 
+            // TODO move to parent OIDC service, success completion function
             this.handleSuccessFromCallback(validationResult, isRenewProcess);
         }
     }
-    private handleSuccessFromCallback(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
-        this.startTokenValidationPeriodically();
 
+    private handleSuccessFromCallback(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
         this.authStateService.updateAndPublishAuthState({
             authorizationState: AuthorizedState.Authorized,
             validationResult: stateValidationResult.state,
             isRenewProcess,
         });
+
+        // MOVE to OIDC service
+        this.startTokenValidationPeriodically();
+
         if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
             this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
         }
@@ -276,6 +289,7 @@ export class FlowsService {
             isRenewProcess,
         });
 
+        // MOVE to OIDC service
         if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
             this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
         }
@@ -296,6 +310,7 @@ export class FlowsService {
             });
         }
 
+        // MOVE to OIDC service
         if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
             this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
         }
