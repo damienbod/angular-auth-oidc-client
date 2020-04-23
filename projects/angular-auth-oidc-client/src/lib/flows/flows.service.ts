@@ -14,6 +14,7 @@ import { StateValidationResult } from '../validation/state-validation-result';
 import { StateValidationService } from '../validation/state-validation.service';
 import { TokenValidationService } from '../validation/token-validation.service';
 import { ValidationResult } from '../validation/validation-result';
+import { JwtKeys } from './../validation/jwtkeys';
 import { FlowsDataService } from './flows-data.service';
 import { SigninKeyDataService } from './signin-key-data.service';
 
@@ -195,47 +196,7 @@ export class FlowsService {
 
             this.signinKeyDataService.getSigningKeys().subscribe(
                 (jwtKeys) => {
-                    const validationResult = this.stateValidationService.getValidatedStateResult(result, jwtKeys);
-
-                    if (validationResult.authResponseIsValid) {
-                        this.authStateService.setAuthorizationData(validationResult.accessToken, validationResult.idToken);
-                        this.flowsDataService.resetSilentRenewRunning();
-
-                        if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
-                            this.userService
-                                .getAndPersistUserDataInStore(isRenewProcess, validationResult.idToken, validationResult.decodedIdToken)
-                                .subscribe(
-                                    (userData) => {
-                                        if (!!userData) {
-                                            this.flowsDataService.setSessionState(result.session_state);
-                                            this.handleSuccessFromCallback(validationResult, isRenewProcess);
-                                        } else {
-                                            this.resetAuthorizationData();
-                                            this.handleExceptionFromCallback(validationResult, isRenewProcess);
-                                        }
-                                    },
-                                    (err) => {
-                                        /* Something went wrong while getting signing key */
-                                        this.loggerService.logWarning('Failed to retreive user info with error: ' + JSON.stringify(err));
-                                    }
-                                );
-                        } else {
-                            if (!isRenewProcess) {
-                                // userData is set to the id_token decoded, auto get user data set to false
-                                this.userService.setUserDataToStore(validationResult.decodedIdToken);
-                            }
-
-                            this.handleSuccessFromCallback(validationResult, isRenewProcess);
-                        }
-                    } else {
-                        // something went wrong
-                        this.loggerService.logWarning('authorizedCallback, token(s) validation failed, resetting');
-                        this.loggerService.logWarning(window.location.hash);
-                        this.resetAuthorizationData();
-                        this.flowsDataService.resetSilentRenewRunning();
-
-                        this.handleExceptionFromCallback(validationResult, isRenewProcess);
-                    }
+                    this.callbackStep5(result, isRenewProcess, jwtKeys);
                 },
                 (err) => {
                     /* Something went wrong while getting signing key */
@@ -246,6 +207,50 @@ export class FlowsService {
         }
     }
 
+    // STEP 5 callback
+    private callbackStep5(result: any, isRenewProcess: boolean, jwtKeys: JwtKeys) {
+        const validationResult = this.stateValidationService.getValidatedStateResult(result, jwtKeys);
+
+        if (validationResult.authResponseIsValid) {
+            this.authStateService.setAuthorizationData(validationResult.accessToken, validationResult.idToken);
+            this.flowsDataService.resetSilentRenewRunning();
+
+            if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
+                this.userService
+                    .getAndPersistUserDataInStore(isRenewProcess, validationResult.idToken, validationResult.decodedIdToken)
+                    .subscribe(
+                        (userData) => {
+                            if (!!userData) {
+                                this.flowsDataService.setSessionState(result.session_state);
+                                this.handleSuccessFromCallback(validationResult, isRenewProcess);
+                            } else {
+                                this.resetAuthorizationData();
+                                this.handleExceptionFromCallback(validationResult, isRenewProcess);
+                            }
+                        },
+                        (err) => {
+                            /* Something went wrong while getting signing key */
+                            this.loggerService.logWarning('Failed to retreive user info with error: ' + JSON.stringify(err));
+                        }
+                    );
+            } else {
+                if (!isRenewProcess) {
+                    // userData is set to the id_token decoded, auto get user data set to false
+                    this.userService.setUserDataToStore(validationResult.decodedIdToken);
+                }
+
+                this.handleSuccessFromCallback(validationResult, isRenewProcess);
+            }
+        } else {
+            // something went wrong
+            this.loggerService.logWarning('authorizedCallback, token(s) validation failed, resetting');
+            this.loggerService.logWarning(window.location.hash);
+            this.resetAuthorizationData();
+            this.flowsDataService.resetSilentRenewRunning();
+
+            this.handleExceptionFromCallback(validationResult, isRenewProcess);
+        }
+    }
     private handleSuccessFromCallback(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
         this.startTokenValidationPeriodically();
 
