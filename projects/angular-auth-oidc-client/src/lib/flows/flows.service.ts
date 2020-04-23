@@ -207,7 +207,7 @@ export class FlowsService {
         }
     }
 
-    // STEP 5 callback
+    // STEP 5 All flows
     private callbackStep5(result: any, isRenewProcess: boolean, jwtKeys: JwtKeys) {
         const validationResult = this.stateValidationService.getValidatedStateResult(result, jwtKeys);
 
@@ -215,32 +215,7 @@ export class FlowsService {
             this.authStateService.setAuthorizationData(validationResult.accessToken, validationResult.idToken);
             this.flowsDataService.resetSilentRenewRunning();
 
-            if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
-                this.userService
-                    .getAndPersistUserDataInStore(isRenewProcess, validationResult.idToken, validationResult.decodedIdToken)
-                    .subscribe(
-                        (userData) => {
-                            if (!!userData) {
-                                this.flowsDataService.setSessionState(result.session_state);
-                                this.handleSuccessFromCallback(validationResult, isRenewProcess);
-                            } else {
-                                this.resetAuthorizationData();
-                                this.handleExceptionFromCallback(validationResult, isRenewProcess);
-                            }
-                        },
-                        (err) => {
-                            /* Something went wrong while getting signing key */
-                            this.loggerService.logWarning('Failed to retreive user info with error: ' + JSON.stringify(err));
-                        }
-                    );
-            } else {
-                if (!isRenewProcess) {
-                    // userData is set to the id_token decoded, auto get user data set to false
-                    this.userService.setUserDataToStore(validationResult.decodedIdToken);
-                }
-
-                this.handleSuccessFromCallback(validationResult, isRenewProcess);
-            }
+            this.callbackUserDataStep6(result, isRenewProcess, jwtKeys, validationResult);
         } else {
             // something went wrong
             this.loggerService.logWarning('authorizedCallback, token(s) validation failed, resetting');
@@ -249,6 +224,36 @@ export class FlowsService {
             this.flowsDataService.resetSilentRenewRunning();
 
             this.handleExceptionFromCallback(validationResult, isRenewProcess);
+        }
+    }
+
+    // STEP 6 userData
+    private callbackUserDataStep6(result: any, isRenewProcess: boolean, jwtKeys: JwtKeys, validationResult: StateValidationResult) {
+        if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
+            this.userService
+                .getAndPersistUserDataInStore(isRenewProcess, validationResult.idToken, validationResult.decodedIdToken)
+                .subscribe(
+                    (userData) => {
+                        if (!!userData) {
+                            this.flowsDataService.setSessionState(result.session_state);
+                            this.handleSuccessFromCallback(validationResult, isRenewProcess);
+                        } else {
+                            this.resetAuthorizationData();
+                            this.handleExceptionFromCallback(validationResult, isRenewProcess);
+                        }
+                    },
+                    (err) => {
+                        /* Something went wrong while getting signing key */
+                        this.loggerService.logWarning('Failed to retreive user info with error: ' + JSON.stringify(err));
+                    }
+                );
+        } else {
+            if (!isRenewProcess) {
+                // userData is set to the id_token decoded, auto get user data set to false
+                this.userService.setUserDataToStore(validationResult.decodedIdToken);
+            }
+
+            this.handleSuccessFromCallback(validationResult, isRenewProcess);
         }
     }
     private handleSuccessFromCallback(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
