@@ -97,9 +97,6 @@ export class FlowsService {
             validationResult: null,
         };
         return of(initialCallbackContext);
-
-        // TODO STEP2
-        // return this.requestTokensWithCodeProcedure$(callbackContext);
     }
 
     // STEP 1 Implicit Flow
@@ -131,8 +128,6 @@ export class FlowsService {
         };
 
         return of(callbackContext);
-        // TODO STEP2
-        // this.authorizedCallbackProcedure(callbackContext);
     }
 
     // STEP 1 Refresh session
@@ -158,8 +153,6 @@ export class FlowsService {
             this.flowsDataService.setNonce(TokenValidationService.RefreshTokenNoncePlaceholder);
 
             return of(callbackContext);
-            // TODO Step 2
-            // return this.refreshTokensWithCodeProcedure(callbackContext);
         } else {
             this.loggerService.logError('no refresh token found, please login');
             return throwError('no refresh token found, please login');
@@ -187,9 +180,6 @@ export class FlowsService {
 
                 callbackContext.authResult = authResult;
                 return callbackContext;
-
-                // TODO Step 3
-                // this.authorizedCodeFlowCallbackProcedure(callbackContext);
             }),
             catchError((error) => {
                 this.loggerService.logError(error);
@@ -227,9 +217,6 @@ export class FlowsService {
 
                 callbackContext.authResult = authResult;
                 return callbackContext;
-
-                // TODO STEP3
-                // this.authorizedCodeFlowCallbackProcedure(callbackContext);
             }),
             catchError((error) => {
                 this.loggerService.logError(error);
@@ -249,8 +236,6 @@ export class FlowsService {
         }
 
         return of(callbackContext);
-        // TODO STEP4
-        // this.authorizedCallbackProcedure(callbackContext);
     }
 
     // STEP 4 Code Flow, STEP 2 Implicit Flow, STEP 4 Refresh Token
@@ -279,8 +264,6 @@ export class FlowsService {
                         callbackContext.jwtKeys = jwtKeys;
 
                         return callbackContext;
-                        // TODO STEP5
-                        // this.callbackStateValidation(callbackContext);
                     },
                     (err) => {
                         /* Something went wrong while getting signing key */
@@ -303,8 +286,6 @@ export class FlowsService {
             this.flowsDataService.resetSilentRenewRunning();
 
             return of(callbackContext);
-            // TODO STEP6
-            // this.callbackUserDataStep6(callbackContext);
         } else {
             // something went wrong
             this.loggerService.logWarning('authorizedCallback, token(s) validation failed, resetting');
@@ -330,7 +311,6 @@ export class FlowsService {
                         (userData) => {
                             if (!!userData) {
                                 this.flowsDataService.setSessionState(callbackContext.authResult.session_state);
-                                // TODO move to parent OIDC service, success completion function
                                 this.handleSuccessFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
                                 return of(callbackContext);
                             } else {
@@ -352,7 +332,6 @@ export class FlowsService {
                 this.userService.setUserDataToStore(callbackContext.validationResult.decodedIdToken);
             }
 
-            // TODO move to parent OIDC service, success completion function
             this.handleSuccessFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
             return of(callbackContext);
         }
