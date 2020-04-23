@@ -1,6 +1,5 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
@@ -14,35 +13,23 @@ import { StateValidationResult } from '../validation/state-validation-result';
 import { StateValidationService } from '../validation/state-validation.service';
 import { TokenValidationService } from '../validation/token-validation.service';
 import { ValidationResult } from '../validation/validation-result';
-import { JwtKeys } from './../validation/jwtkeys';
+import { CallbackContext } from './callback-context';
 import { FlowsDataService } from './flows-data.service';
 import { SigninKeyDataService } from './signin-key-data.service';
-
-export interface CallbackContext {
-    code: string;
-    refreshToken: string;
-    state: string;
-    sessionState: string | null;
-    authResult: any;
-    isRenewProcess: boolean;
-    jwtKeys: JwtKeys;
-    validationResult: StateValidationResult;
-}
 
 @Injectable()
 export class FlowsService {
     constructor(
-        private urlService: UrlService,
-        private loggerService: LoggerService,
-        private tokenValidationService: TokenValidationService,
+        private readonly urlService: UrlService,
+        private readonly loggerService: LoggerService,
+        private readonly tokenValidationService: TokenValidationService,
         private readonly configurationProvider: ConfigurationProvider,
         private readonly authStateService: AuthStateService,
         private readonly flowsDataService: FlowsDataService,
         private readonly signinKeyDataService: SigninKeyDataService,
         private readonly dataService: DataService,
         private readonly userService: UserService,
-        private readonly stateValidationService: StateValidationService,
-        private router: Router
+        private readonly stateValidationService: StateValidationService
     ) {}
 
     resetAuthorizationData(): void {
