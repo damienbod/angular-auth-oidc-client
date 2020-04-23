@@ -10,6 +10,7 @@ import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { UserService } from '../userData/user-service';
 import { UrlService } from '../utils';
+import { StateValidationResult } from '../validation/state-validation-result';
 import { StateValidationService } from '../validation/state-validation.service';
 import { TokenValidationService } from '../validation/token-validation.service';
 import { ValidationResult } from '../validation/validation-result';
@@ -185,30 +186,11 @@ export class FlowsService {
 
         if (result.error) {
             this.loggerService.logDebug(`authorizedCallbackProcedure came with error`, result.error);
-
-            if ((result.error as string) === 'login_required') {
-                this.authStateService.updateAndPublishAuthState({
-                    authorizationState: AuthorizedState.Unauthorized,
-                    validationResult: ValidationResult.LoginRequired,
-                    isRenewProcess,
-                });
-            } else {
-                this.authStateService.updateAndPublishAuthState({
-                    authorizationState: AuthorizedState.Unauthorized,
-                    validationResult: ValidationResult.SecureTokenServerError,
-                    isRenewProcess,
-                });
-            }
-
             this.resetAuthorizationData();
             this.flowsDataService.setNonce('');
-
-            if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
-                this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
-            }
+            this.handleResultErrorFromCallback(result, isRenewProcess);
         } else {
             this.loggerService.logDebug(result);
-
             this.loggerService.logDebug('authorizedCallback created, begin token validation');
 
             this.signinKeyDataService.getSigningKeys().subscribe(
@@ -226,35 +208,10 @@ export class FlowsService {
                                     (userData) => {
                                         if (!!userData) {
                                             this.flowsDataService.setSessionState(result.session_state);
-                                            this.startTokenValidationPeriodically();
-
-                                            this.authStateService.updateAndPublishAuthState({
-                                                authorizationState: AuthorizedState.Authorized,
-                                                validationResult: validationResult.state,
-                                                isRenewProcess,
-                                            });
-
-                                            if (
-                                                !this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent &&
-                                                !isRenewProcess
-                                            ) {
-                                                this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
-                                            }
+                                            this.handleSuccessFromCallback(validationResult, isRenewProcess);
                                         } else {
                                             this.resetAuthorizationData();
-
-                                            this.authStateService.updateAndPublishAuthState({
-                                                authorizationState: AuthorizedState.Unauthorized,
-                                                validationResult: validationResult.state,
-                                                isRenewProcess,
-                                            });
-
-                                            if (
-                                                !this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent &&
-                                                !isRenewProcess
-                                            ) {
-                                                this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
-                                            }
+                                            this.handleExceptionFromCallback(validationResult, isRenewProcess);
                                         }
                                     },
                                     (err) => {
@@ -268,16 +225,7 @@ export class FlowsService {
                                 this.userService.setUserDataToStore(validationResult.decodedIdToken);
                             }
 
-                            this.startTokenValidationPeriodically();
-
-                            this.authStateService.updateAndPublishAuthState({
-                                authorizationState: AuthorizedState.Authorized,
-                                validationResult: validationResult.state,
-                                isRenewProcess,
-                            });
-                            if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
-                                this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
-                            }
+                            this.handleSuccessFromCallback(validationResult, isRenewProcess);
                         }
                     } else {
                         // something went wrong
@@ -286,15 +234,7 @@ export class FlowsService {
                         this.resetAuthorizationData();
                         this.flowsDataService.resetSilentRenewRunning();
 
-                        this.authStateService.updateAndPublishAuthState({
-                            authorizationState: AuthorizedState.Unauthorized,
-                            validationResult: validationResult.state,
-                            isRenewProcess,
-                        });
-
-                        if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
-                            this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
-                        }
+                        this.handleExceptionFromCallback(validationResult, isRenewProcess);
                     }
                 },
                 (err) => {
@@ -303,6 +243,51 @@ export class FlowsService {
                     this.flowsDataService.resetSilentRenewRunning();
                 }
             );
+        }
+    }
+
+    private handleSuccessFromCallback(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
+        this.startTokenValidationPeriodically();
+
+        this.authStateService.updateAndPublishAuthState({
+            authorizationState: AuthorizedState.Authorized,
+            validationResult: stateValidationResult.state,
+            isRenewProcess,
+        });
+        if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
+            this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
+        }
+    }
+
+    private handleExceptionFromCallback(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
+        this.authStateService.updateAndPublishAuthState({
+            authorizationState: AuthorizedState.Unauthorized,
+            validationResult: stateValidationResult.state,
+            isRenewProcess,
+        });
+
+        if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
+            this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
+        }
+    }
+
+    private handleResultErrorFromCallback(result: any, isRenewProcess: boolean) {
+        if ((result.error as string) === 'login_required') {
+            this.authStateService.updateAndPublishAuthState({
+                authorizationState: AuthorizedState.Unauthorized,
+                validationResult: ValidationResult.LoginRequired,
+                isRenewProcess,
+            });
+        } else {
+            this.authStateService.updateAndPublishAuthState({
+                authorizationState: AuthorizedState.Unauthorized,
+                validationResult: ValidationResult.SecureTokenServerError,
+                isRenewProcess,
+            });
+        }
+
+        if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
+            this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
         }
     }
 
