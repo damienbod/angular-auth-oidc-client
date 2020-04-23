@@ -258,7 +258,7 @@ export class FlowsService {
             this.loggerService.logDebug(callbackContext.authResult);
             this.loggerService.logDebug('authorizedCallback created, begin token validation');
 
-            this.signinKeyDataService.getSigningKeys().pipe(
+            return this.signinKeyDataService.getSigningKeys().pipe(
                 map(
                     (jwtKeys) => {
                         callbackContext.jwtKeys = jwtKeys;
@@ -312,7 +312,7 @@ export class FlowsService {
                             if (!!userData) {
                                 this.flowsDataService.setSessionState(callbackContext.authResult.session_state);
                                 this.handleSuccessFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
-                                return of(callbackContext);
+                                return callbackContext;
                             } else {
                                 this.resetAuthorizationData();
                                 this.handleExceptionFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
