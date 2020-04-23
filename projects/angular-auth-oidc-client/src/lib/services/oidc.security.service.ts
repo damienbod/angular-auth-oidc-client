@@ -1,6 +1,8 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { Router } from '@angular/router';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
 import { ConfigurationProvider } from '../config';
@@ -57,7 +59,8 @@ export class OidcSecurityService {
         private readonly authStateService: AuthStateService,
         private readonly flowHelper: FlowHelper,
         private readonly flowsDataService: FlowsDataService,
-        private readonly flowsService: FlowsService
+        private readonly flowsService: FlowsService,
+        private readonly router: Router
     ) {}
 
     private runTokenValidationRunning = false;
@@ -153,10 +156,24 @@ export class OidcSecurityService {
     // Code Flow Callback
     authorizedCallbackWithCode(urlToCheck: string) {
         if (!this.isModuleSetup) {
-            return;
+            return throwError('module is not set up');
         }
 
-        this.flowsService.codeFlowCallback$(urlToCheck).subscribe();
+        return this.flowsService.processCodeFlowCallback(urlToCheck).pipe(
+            tap((callbackContext) => {
+                this.startTokenValidationPeriodically();
+
+                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
+                    this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
+                }
+            }),
+            catchError((error) => {
+                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
+                    this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
+                }
+                return throwError(error);
+            })
+        );
     }
 
     // Implicit Flow Callback

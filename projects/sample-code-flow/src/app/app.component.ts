@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { EventsService, EventTypes, OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
-import { filter, tap } from 'rxjs/operators';
+import { filter, switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -28,7 +28,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.oidcSecurityService
             .checkAuth()
-            .pipe(tap(() => this.doCallbackLogicIfRequired()))
+            .pipe(switchMap(() => this.doCallbackLogicIfRequired()))
             .subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
     }
 
@@ -44,6 +44,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private doCallbackLogicIfRequired() {
         // Will do a callback, if the url has a code and state parameter.
-        this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());
+        return this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());
     }
 }

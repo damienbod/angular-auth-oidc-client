@@ -2,7 +2,7 @@ import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
@@ -55,8 +55,18 @@ export class FlowsService {
         this.authStateService.setUnauthorizedAndFireEvent();
     }
 
+    processCodeFlowCallback(urlToCheck: string) {
+        return this.codeFlowCallback(urlToCheck).pipe(
+            switchMap((callbackContext) => this.codeFlowCodeRequest(callbackContext)),
+            switchMap((callbackContext) => this.codeFlowSilentRenewCheck(callbackContext)),
+            switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
+            switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
+            switchMap((callbackContext) => this.callbackUser(callbackContext))
+        );
+    }
+
     // STEP 1 Code Flow
-    codeFlowCallback$(urlToCheck: string): Observable<CallbackContext> {
+    private codeFlowCallback(urlToCheck: string): Observable<CallbackContext> {
         const codeParam = this.urlService.getUrlParameter(urlToCheck, 'code');
         const stateParam = this.urlService.getUrlParameter(urlToCheck, 'state');
         const sessionStateParam = this.urlService.getUrlParameter(urlToCheck, 'session_state') || null;
@@ -71,7 +81,7 @@ export class FlowsService {
         }
         this.loggerService.logDebug('running validation for callback' + urlToCheck);
 
-        const callbackContext = {
+        const initialCallbackContext = {
             code: codeParam,
             refreshToken: null,
             state: stateParam,
@@ -81,7 +91,7 @@ export class FlowsService {
             jwtKeys: null,
             validationResult: null,
         };
-        return of(callbackContext);
+        return of(initialCallbackContext);
 
         // TODO STEP2
         // return this.requestTokensWithCodeProcedure$(callbackContext);
@@ -184,7 +194,7 @@ export class FlowsService {
     }
 
     // STEP 2 Code Flow //  Code Flow Silent Renew starts here
-    codeFlowCodeRequest$(callbackContext: CallbackContext): Observable<CallbackContext> {
+    private codeFlowCodeRequest(callbackContext: CallbackContext): Observable<CallbackContext> {
         if (
             !this.tokenValidationService.validateStateFromHashCallback(callbackContext.state, this.flowsDataService.getAuthStateControl())
         ) {
@@ -225,7 +235,7 @@ export class FlowsService {
     }
 
     // STEP 3 Code Flow, STEP 3 Refresh Token
-    codeFlowSilentRenewCheck$(callbackContext: CallbackContext): Observable<CallbackContext> {
+    private codeFlowSilentRenewCheck(callbackContext: CallbackContext): Observable<CallbackContext> {
         callbackContext.isRenewProcess = this.flowsDataService.isSilentRenewRunning();
 
         this.loggerService.logDebug('BEGIN authorized Code Flow Callback, no auth data');
@@ -239,7 +249,7 @@ export class FlowsService {
     }
 
     // STEP 4 Code Flow, STEP 2 Implicit Flow, STEP 4 Refresh Token
-    callbackHistoryAndResetJwtKeys(callbackContext: CallbackContext): Observable<CallbackContext> {
+    private callbackHistoryAndResetJwtKeys(callbackContext: CallbackContext): Observable<CallbackContext> {
         this.authStateService.setAuthResultInStorage(callbackContext.authResult);
 
         if (this.historyCleanUpTurnedOn() && !callbackContext.isRenewProcess) {
@@ -279,7 +289,7 @@ export class FlowsService {
     }
 
     // STEP 5 All flows
-    callbackStateValidation(callbackContext: CallbackContext): Observable<CallbackContext> {
+    private callbackStateValidation(callbackContext: CallbackContext): Observable<CallbackContext> {
         const validationResult = this.stateValidationService.getValidatedStateResult(callbackContext.authResult, callbackContext.jwtKeys);
         callbackContext.validationResult = validationResult;
 
@@ -302,7 +312,7 @@ export class FlowsService {
     }
 
     // STEP 6 userData
-    callbackUser(callbackContext: CallbackContext): Observable<CallbackContext> {
+    private callbackUser(callbackContext: CallbackContext): Observable<CallbackContext> {
         if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
             this.userService
                 .getAndPersistUserDataInStore(
@@ -349,14 +359,6 @@ export class FlowsService {
             validationResult: stateValidationResult.state,
             isRenewProcess,
         });
-
-        // MOVE to OIDC service
-        this.startTokenValidationPeriodically();
-
-        // MOVE to OIDC service
-        if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
-            this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
-        }
     }
 
     private handleExceptionFromCallback(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
@@ -365,11 +367,6 @@ export class FlowsService {
             validationResult: stateValidationResult.state,
             isRenewProcess,
         });
-
-        // MOVE to OIDC service
-        if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
-            this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
-        }
     }
 
     private handleResultErrorFromCallback(result: any, isRenewProcess: boolean) {
@@ -385,11 +382,6 @@ export class FlowsService {
                 validationResult: ValidationResult.SecureTokenServerError,
                 isRenewProcess,
             });
-        }
-
-        // MOVE to OIDC service
-        if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
-            this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
         }
     }
 
