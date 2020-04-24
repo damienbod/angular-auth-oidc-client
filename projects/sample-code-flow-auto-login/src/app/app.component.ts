@@ -8,7 +8,7 @@ import {
     OidcClientNotification,
     OidcSecurityService,
 } from 'angular-auth-oidc-client';
-import { filter, tap } from 'rxjs/operators';
+import { filter, switchMap, tap } from 'rxjs/operators';
 import './app.component.css';
 
 @Component({
@@ -27,8 +27,29 @@ export class AppComponent implements OnInit {
 
         this.oidcSecurityService
             .checkAuth()
-            .pipe(tap(() => this.onOidcModuleSetup()))
-            .subscribe((isAuthenticated) => console.log('i am ', isAuthenticated));
+
+            .pipe(
+                tap((isAuthenticated) => {
+                    if (!isAuthenticated && '/autologin' !== window.location.pathname) {
+                        this.write('redirect', window.location.pathname);
+                    }
+
+                    console.log('AppComponent:onOidcModuleSetup false');
+                }),
+                tap((isAuthenticated) => {
+                    if (!isAuthenticated && !this.isCallback()) {
+                        this.router.navigate(['/autologin']);
+                    }
+                }),
+                switchMap(() => {
+                    if (this.isCallback()) {
+                        return this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());
+                    }
+                })
+            )
+            .subscribe((result) => {
+                console.log('result', result);
+            });
     }
 
     login() {
@@ -46,20 +67,8 @@ export class AppComponent implements OnInit {
         this.oidcSecurityService.logoff();
     }
 
-    private onOidcModuleSetup() {
-        if (window.location.toString().includes('?code')) {
-            this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());
-        } else {
-            if ('/autologin' !== window.location.pathname) {
-                this.write('redirect', window.location.pathname);
-            }
-            console.log('AppComponent:onOidcModuleSetup false');
-            this.oidcSecurityService.isAuthenticated$.subscribe((authorized: boolean) => {
-                if (!authorized) {
-                    this.router.navigate(['/autologin']);
-                }
-            });
-        }
+    private isCallback() {
+        return window.location.toString().includes('?code');
     }
 
     private onAuthorizationResultComplete(authorizationResult: AuthorizationResult) {
