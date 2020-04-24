@@ -3,7 +3,7 @@ import { ConfigurationProvider } from '../config';
 import { EventsService } from '../events';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
-import { OidcSecurityService } from '../services/oidc.security.service';
+import { OidcSecurityService } from '../oidc.security.service';
 import { AbstractSecurityStorage, StoragePersistanceService } from '../storage';
 import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';

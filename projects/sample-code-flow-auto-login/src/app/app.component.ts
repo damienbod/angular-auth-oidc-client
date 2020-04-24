@@ -1,14 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import {
-    AuthorizationResult,
-    AuthorizedState,
-    EventsService,
-    EventTypes,
-    OidcClientNotification,
-    OidcSecurityService,
-} from 'angular-auth-oidc-client';
-import { filter, tap } from 'rxjs/operators';
+import { AuthorizationResult, AuthorizedState, EventsService, OidcSecurityService } from 'angular-auth-oidc-client';
+import { switchMap, tap } from 'rxjs/operators';
 import './app.component.css';
 
 @Component({
@@ -20,15 +13,27 @@ export class AppComponent implements OnInit {
     constructor(public oidcSecurityService: OidcSecurityService, private router: Router, private readonly eventsService: EventsService) {}
 
     ngOnInit() {
-        this.eventsService
-            .registerForEvents()
-            .pipe(filter((notification: OidcClientNotification<any>) => notification.type === EventTypes.NewAuthorizationResult))
-            .subscribe((authorizationResult) => this.onAuthorizationResultComplete(authorizationResult.value));
+        // Until the library is not doing this for itself, you have to do this here
+        this.oidcSecurityService.stsCallback$
+            .pipe(switchMap(() => this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString())))
+            .subscribe((callbackContext) => this.onAuthorizationResultComplete(callbackContext.authResult));
 
         this.oidcSecurityService
             .checkAuth()
-            .pipe(tap(() => this.onOidcModuleSetup()))
-            .subscribe((isAuthenticated) => console.log('i am ', isAuthenticated));
+
+            .pipe(
+                tap((isAuthenticated) => {
+                    if (!isAuthenticated) {
+                        if ('/autologin' !== window.location.pathname && !this.isCallback()) {
+                            this.write('redirect', window.location.pathname);
+                            this.router.navigate(['/autologin']);
+                        }
+                    }
+
+                    console.log('AppComponent:onOidcModuleSetup false');
+                })
+            )
+            .subscribe((result) => console.log('result', result));
     }
 
     login() {
@@ -46,20 +51,8 @@ export class AppComponent implements OnInit {
         this.oidcSecurityService.logoff();
     }
 
-    private onOidcModuleSetup() {
-        if (window.location.toString().includes('?code')) {
-            this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());
-        } else {
-            if ('/autologin' !== window.location.pathname) {
-                this.write('redirect', window.location.pathname);
-            }
-            console.log('AppComponent:onOidcModuleSetup false');
-            this.oidcSecurityService.isAuthenticated$.subscribe((authorized: boolean) => {
-                if (!authorized) {
-                    this.router.navigate(['/autologin']);
-                }
-            });
-        }
+    private isCallback() {
+        return window.location.toString().includes('?code');
     }
 
     private onAuthorizationResultComplete(authorizationResult: AuthorizationResult) {
@@ -71,20 +64,20 @@ export class AppComponent implements OnInit {
                 authorizationResult.validationResult
         );
 
-        if (authorizationResult.authorizationState === AuthorizedState.Authorized) {
-            if (path.toString().includes('/unauthorized')) {
-                this.router.navigate(['/']);
-            } else {
-                this.router.navigate([path]);
-            }
-        } else {
+        if (authorizationResult.authorizationState !== AuthorizedState.Authorized) {
             this.router.navigate(['/unauthorized']);
+        }
+
+        if (path.toString().includes('/unauthorized')) {
+            this.router.navigate(['/']);
+        } else {
+            this.router.navigate([path]);
         }
     }
 
     private read(key: string): any {
         const data = localStorage.getItem(key);
-        if (data != null) {
+        if (data) {
             return JSON.parse(data);
         }
 

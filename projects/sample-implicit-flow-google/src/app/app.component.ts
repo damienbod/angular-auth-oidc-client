@@ -47,7 +47,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private onOidcModuleSetup() {
         if (window.location.hash) {
-            this.oidcSecurityService.authorizedImplicitFlowCallback();
+            this.oidcSecurityService.authorizedImplicitFlowCallback().subscribe();
         } else {
             if ('/autologin' !== window.location.pathname) {
                 this.write('redirect', window.location.pathname);

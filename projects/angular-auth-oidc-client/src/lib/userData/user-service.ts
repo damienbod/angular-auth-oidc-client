@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { ConfigurationProvider } from '../config';
 import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';
-import { TokenHelperService } from '../services/oidc-token-helper.service';
 import { StoragePersistanceService } from '../storage';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
+import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
 
 @Injectable()
 export class UserService {
@@ -35,9 +35,9 @@ export class UserService {
 
         const existingUserDataFromStorage = this.getUserDataFromStore();
         const haveUserData = !!existingUserDataFromStorage;
-        const currentFlowIsIdTokenOrCode = this.flowHelper.currentFlowIs(['id_token token', 'code']);
+        const currentFlowIsIdTokenWithAccessTokenOrCode = this.flowHelper.currentFlowIs(['id_token token', 'code']);
 
-        if (!currentFlowIsIdTokenOrCode) {
+        if (!currentFlowIsIdTokenWithAccessTokenOrCode) {
             this.loggerService.logDebug('authorizedCallback id_token flow');
             this.loggerService.logDebug(this.storagePersistanceService.accessToken);
 
@@ -55,7 +55,7 @@ export class UserService {
                         this.loggerService.logDebug(this.storagePersistanceService.accessToken);
                         return userData;
                     } else {
-                        return null;
+                        return throwError('no user data, request failed');
                     }
                 })
             );
@@ -66,6 +66,14 @@ export class UserService {
 
     getUserDataFromStore(): any {
         return this.storagePersistanceService.userData || null;
+    }
+
+    publishUserdataIfExists() {
+        const userdata = this.getUserDataFromStore();
+        if (userdata) {
+            this.userDataInternal$.next(userdata);
+            this.eventService.fireEvent(EventTypes.UserDataChanged, userdata);
+        }
     }
 
     setUserDataToStore(value: any): void {
@@ -80,7 +88,7 @@ export class UserService {
         this.userDataInternal$.next(null);
     }
 
-    private getUserDataOidcFlowAndSave(idTokenSub: any) {
+    private getUserDataOidcFlowAndSave(idTokenSub: any): Observable<any> {
         return this.getIdentityUserData().pipe(
             map((data: any) => {
                 if (this.validateUserdataSubIdToken(idTokenSub, data.sub)) {
@@ -91,6 +99,7 @@ export class UserService {
                     this.loggerService.logWarning('authorizedCallback, User data sub does not match sub in id_token');
                     this.loggerService.logDebug('authorizedCallback, token(s) validation failed, resetting');
                     this.resetUserDataInStore();
+                    return throwError('authorizedCallback, User data sub does not match sub in id_token');
                 }
             })
         );
@@ -102,7 +111,7 @@ export class UserService {
         if (!this.configurationProvider.wellKnownEndpoints) {
             this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
 
-            throw Error('authWellKnownEndpoints is undefined');
+            return throwError('authWellKnownEndpoints is undefined');
         }
 
         const canGetUserData = this.configurationProvider?.wellKnownEndpoints?.userinfoEndpoint;
@@ -111,7 +120,7 @@ export class UserService {
             this.loggerService.logError(
                 'init check session: authWellKnownEndpoints.userinfo_endpoint is undefined; set auto_userinfo = false in config'
             );
-            throw Error('authWellKnownEndpoints.userinfo_endpoint is undefined');
+            return throwError('authWellKnownEndpoints.userinfo_endpoint is undefined');
         }
 
         return this.oidcDataService.get(this.configurationProvider.wellKnownEndpoints.userinfoEndpoint, token);

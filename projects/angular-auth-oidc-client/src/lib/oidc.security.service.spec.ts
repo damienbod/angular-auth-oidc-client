@@ -4,16 +4,15 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { filter, skipWhile } from 'rxjs/operators';
-import { OpenIdConfiguration } from '../lib/angular-auth-oidc-client';
-import { AuthModule } from '../lib/auth.module';
-import { ConfigurationProvider } from '../lib/config';
-import { IFrameService } from '../lib/iframe/existing-iframe.service';
-import { LoggerService } from '../lib/logging/logger.service';
-import { LoggerServiceMock } from '../lib/logging/logger.service-mock';
-import { OidcSecurityService } from '../lib/services/oidc.security.service';
-import { StoragePersistanceService } from '../lib/storage';
-import { StoragePersistanceServiceMock } from '../lib/storage/storage-persistance.service-mock';
-import { UrlService } from '../lib/utils';
+import { AuthModule } from './auth.module';
+import { ConfigurationProvider } from './config';
+import { IFrameService } from './iframe/existing-iframe.service';
+import { LoggerService } from './logging/logger.service';
+import { LoggerServiceMock } from './logging/logger.service-mock';
+import { OidcSecurityService } from './oidc.security.service';
+import { StoragePersistanceService } from './storage';
+import { StoragePersistanceServiceMock } from './storage/storage-persistance.service-mock';
+import { UrlService } from './utils';
 
 xdescribe('OidcSecurityService', () => {
     let oidcSecurityService: OidcSecurityService;
@@ -140,31 +139,5 @@ xdescribe('OidcSecurityService', () => {
         oidcSecurityService.logoff();
 
         expect(hasBeenCalled).toEqual(true);
-    }));
-
-    it('authorizedCallbackWithCode handles url correctly when hash at the end', () => {
-        const urlToCheck = 'https://www.example.com/signin?code=thisisacode&state=0000.1234.000#';
-
-        const spy = spyOn(oidcSecurityService, 'requestTokensWithCode$').and.callThrough();
-        oidcSecurityService.authorizedCallbackWithCode(urlToCheck);
-
-        expect(spy).toHaveBeenCalledWith('thisisacode', '0000.1234.000', null);
-    });
-
-    it('refresh session with refresh token should call authorized callback with isRenew running to true', async(() => {
-        const config = {} as OpenIdConfiguration;
-        config.responseType = 'code';
-        config.silentRenew = true;
-        config.useRefreshToken = true;
-        config.stsServer = 'https://localhost:5001';
-        config.silentRenewOffsetInSeconds = 0;
-        configurationProvider.setConfig(config, null);
-
-        spyOn(oidcSecurityService as any, 'refreshTokensWithCodeProcedure').and.returnValue(of(true));
-        spyOn(storagePersistanceService as any, 'getRefreshToken').and.returnValue('refresh token');
-
-        oidcSecurityService.refreshSession().subscribe(() => {
-            expect(storagePersistanceService.silentRenewRunning).toBe('running');
-        });
     }));
 });

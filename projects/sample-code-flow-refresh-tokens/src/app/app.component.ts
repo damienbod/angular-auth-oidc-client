@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { EventsService, EventTypes, OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
-import { filter, tap } from 'rxjs/operators';
+import { filter, switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -13,7 +13,6 @@ export class AppComponent implements OnInit, OnDestroy {
     userDataChanged$: Observable<OidcClientNotification<any>>;
     userData$: Observable<any>;
     isAuthenticated$: Observable<boolean>;
-
     constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {}
 
     ngOnInit() {
@@ -22,14 +21,16 @@ export class AppComponent implements OnInit, OnDestroy {
         this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
         this.isModuleSetUp$ = this.oidcSecurityService.moduleSetup$;
 
+        // Until the library is not doing this for itself, you have to do this here
+        this.oidcSecurityService.stsCallback$
+            .pipe(switchMap(() => this.doCallbackLogicIfRequired()))
+            .subscribe((callbackContext) => console.log(callbackContext));
+
         this.userDataChanged$ = this.eventsService
             .registerForEvents()
             .pipe(filter((notification: OidcClientNotification<any>) => notification.type === EventTypes.UserDataChanged));
 
-        this.oidcSecurityService
-            .checkAuth()
-            .pipe(tap(() => this.doCallbackLogicIfRequired()))
-            .subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
+        this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
     }
 
     ngOnDestroy(): void {}
@@ -44,6 +45,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private doCallbackLogicIfRequired() {
         // Will do a callback, if the url has a code and state parameter.
-        this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());
+        return this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());
     }
 }

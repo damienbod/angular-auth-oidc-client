@@ -123,9 +123,10 @@ export class AuthStateService {
 
     private tokenIsExpired() {
         const tokenToCheck = this.storagePersistanceService.idToken || this.storagePersistanceService.accessToken;
-        return this.tokenValidationService.isTokenExpired(
+        const tokenIsExpired = this.tokenValidationService.isTokenExpired(
             tokenToCheck,
             this.configurationProvider.openIDConfiguration.silentRenewOffsetInSeconds
         );
+        return tokenIsExpired;
     }
 }

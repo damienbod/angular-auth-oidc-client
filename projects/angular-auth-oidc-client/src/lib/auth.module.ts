@@ -5,19 +5,20 @@ import { AuthStateService } from './authState/auth-state.service';
 import { ConfigurationProvider, OidcConfigService } from './config';
 import { EventsService } from './events';
 import { FlowsDataService } from './flows/flows-data.service';
+import { FlowsService } from './flows/flows.service';
 import { RandomService } from './flows/random/random.service';
 import { SigninKeyDataService } from './flows/signin-key-data.service';
 import { CheckSessionService } from './iframe/check-session.service';
 import { IFrameService } from './iframe/existing-iframe.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
 import { LoggerService } from './logging/logger.service';
-import { TokenHelperService } from './services/oidc-token-helper.service';
-import { OidcSecurityService } from './services/oidc.security.service';
+import { OidcSecurityService } from './oidc.security.service';
 import { AbstractSecurityStorage, BrowserStorageService, StoragePersistanceService } from './storage';
 import { UserService } from './userData/user-service';
 import { PlatformProvider, UrlService } from './utils';
 import { EqualityService } from './utils/equality/equality.service';
 import { FlowHelper } from './utils/flowHelper/flow-helper.service';
+import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
 import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';
 
@@ -35,6 +36,7 @@ export class AuthModule {
                 PlatformProvider,
                 CheckSessionService,
                 FlowsDataService,
+                FlowsService,
                 SilentRenewService,
                 ConfigurationProvider,
                 UserService,

@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { ConfigurationProvider } from '../lib/config';
-import { LoggerService } from '../lib/logging/logger.service';
-import { LoggerServiceMock } from '../lib/logging/logger.service-mock';
-import { TokenHelperService } from '../lib/services/oidc-token-helper.service';
+import { ConfigurationProvider } from '../../config';
+import { LoggerService } from '../../logging/logger.service';
+import { LoggerServiceMock } from '../../logging/logger.service-mock';
+import { TokenHelperService } from './oidc-token-helper.service';
 
 describe('Token Helper Service', () => {
     let tokenHelperService: TokenHelperService;

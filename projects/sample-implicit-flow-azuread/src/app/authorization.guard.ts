@@ -6,11 +6,7 @@ import { tap } from 'rxjs/operators';
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate, CanLoad {
-    constructor(private router: Router, private oidcSecurityService: OidcSecurityService) {
-        this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
-    }
-
-    isAuthenticated$: Observable<boolean>;
+    constructor(private router: Router, private oidcSecurityService: OidcSecurityService) {}
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
         return this.checkUser();

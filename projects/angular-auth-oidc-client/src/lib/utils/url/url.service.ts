@@ -10,6 +10,8 @@ import { UriEncoder } from './uri-encoder';
 
 @Injectable()
 export class UrlService {
+    private CALLBACK_PARAMS_TO_CHECK = ['code', 'state', 'token', 'id_token'];
+
     constructor(
         private readonly configurationProvider: ConfigurationProvider,
         private readonly loggerService: LoggerService,
@@ -31,6 +33,11 @@ export class UrlService {
         const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
         const results = regex.exec(urlToCheck);
         return results === null ? '' : decodeURIComponent(results[1]);
+    }
+
+    isCallbackFromSts() {
+        const anyParameterIsGiven = this.CALLBACK_PARAMS_TO_CHECK.some((x) => !!this.getUrlParameter(window.location.toString(), x));
+        return anyParameterIsGiven;
     }
 
     getRefreshSessionSilentRenewUrl(): string {

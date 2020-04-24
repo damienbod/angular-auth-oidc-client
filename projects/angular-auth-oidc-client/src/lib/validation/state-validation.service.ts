@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ConfigurationProvider } from '../config';
 import { LoggerService } from '../logging/logger.service';
-import { TokenHelperService } from '../services/oidc-token-helper.service';
 import { StoragePersistanceService } from '../storage';
+import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
 import { JwtKeys } from './jwtkeys';
 import { StateValidationResult } from './state-validation-result';
 import { TokenValidationService } from './token-validation.service';

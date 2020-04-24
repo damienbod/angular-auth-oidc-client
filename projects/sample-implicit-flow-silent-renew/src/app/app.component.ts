@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { EventsService, OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { EventsService, EventTypes, OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
+import { Observable, of } from 'rxjs';
+import { filter, switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -17,7 +17,6 @@ export class AppComponent implements OnInit {
     checkSessionChanged: any;
 
     constructor(public oidcSecurityService: OidcSecurityService, public eventsService: EventsService) {}
-
     ngOnInit() {
         this.configuration = this.oidcSecurityService.configuration;
         this.userData$ = this.oidcSecurityService.userData$;
@@ -25,12 +24,17 @@ export class AppComponent implements OnInit {
         this.isModuleSetUp$ = this.oidcSecurityService.moduleSetup$;
         this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 
-        this.oidcSecurityService
-            .checkAuth()
-            .pipe(tap(() => this.doCallbackLogicIfRequired()))
-            .subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
-    }
+        // Until the library is not doing this for itself, you have to do this here
+        this.oidcSecurityService.stsCallback$
+            .pipe(switchMap(() => this.doCallbackLogicIfRequired()))
+            .subscribe((callbackContext) => console.log(callbackContext));
 
+        this.userDataChanged$ = this.eventsService
+            .registerForEvents()
+            .pipe(filter((notification: OidcClientNotification<any>) => notification.type === EventTypes.UserDataChanged));
+
+        this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
+    }
     login() {
         console.log('start login');
         this.oidcSecurityService.authorize();
@@ -47,9 +51,9 @@ export class AppComponent implements OnInit {
     }
 
     private doCallbackLogicIfRequired() {
-        console.log('AppComponent:doCallbackLogicIfRequired');
         if (window.location.hash) {
-            this.oidcSecurityService.authorizedImplicitFlowCallback();
+            return this.oidcSecurityService.authorizedImplicitFlowCallback();
         }
+        return of(null);
     }
 }
