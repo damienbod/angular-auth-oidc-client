@@ -428,9 +428,7 @@ export class OidcSecurityService {
         };
 
         return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext).pipe(
-            tap(() => {
-                this.startTokenValidationPeriodically();
-            }),
+            tap(() => this.startTokenValidationPeriodically()),
             catchError((errorFromFlow) => {
                 this.stopPeriodicallTokenCheck();
                 return throwError(errorFromFlow);
