@@ -327,8 +327,10 @@ export class OidcSecurityService {
                     // TODO remove subscribe
                     if (this.configurationProvider.openIDConfiguration.silentRenew) {
                         if (this.flowHelper.isCurrentFlowCodeFlow() && this.configurationProvider.openIDConfiguration.useRefreshToken) {
+                            // Refresh Session using Refresh tokens
                             this.refreshSessionWithRefreshTokens().subscribe();
                         } else {
+                            // Send Silent renew request in iframe
                             this.refreshSessionWithIframe().subscribe(
                                 () => {
                                     this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
@@ -382,44 +384,57 @@ export class OidcSecurityService {
         }
         if (this.flowHelper.isCurrentFlowCodeFlow()) {
             const urlParts = e.detail.toString().split('?');
-            const params = new HttpParams({
-                fromString: urlParts[1],
-            });
-            const code = params.get('code');
-            const state = params.get('state');
-            const sessionState = params.get('session_state');
-            const error = params.get('error');
-            if (code && state) {
-                this.requestTokensWithCodeProcedure(code, state, sessionState);
-            }
-            if (error) {
-                this.authStateService.updateAndPublishAuthState({
-                    authorizationState: AuthorizedState.Unauthorized,
-                    validationResult: ValidationResult.LoginRequired,
-                    isRenewProcess: true,
-                });
-                this.flowsService.resetAuthorizationData();
-                this.flowsDataService.setNonce('');
-                this.loggerService.logDebug(e.detail.toString());
-            }
+            // Code Flow Callback silent renew iframe
+            this.codeFlowCallbackSilentRenewIframe(urlParts).subscribe();
         } else {
-            // ImplicitFlow
+            // Implicit Flow Callback silent renew iframe
             this.authorizedImplicitFlowCallback(e.detail).subscribe();
         }
     }
 
-    private requestTokensWithCodeProcedure(codeParam: string, stateParam: string, sessionStateParam: string | null): void {
+    private codeFlowCallbackSilentRenewIframe(urlParts) {
+        const params = new HttpParams({
+            fromString: urlParts[1],
+        });
+
+        const error = params.get('error');
+
+        if (error) {
+            this.authStateService.updateAndPublishAuthState({
+                authorizationState: AuthorizedState.Unauthorized,
+                validationResult: ValidationResult.LoginRequired,
+                isRenewProcess: true,
+            });
+            this.flowsService.resetAuthorizationData();
+            this.flowsDataService.setNonce('');
+            this.stopPeriodicallTokenCheck();
+            return throwError(error);
+        }
+
+        const code = params.get('code');
+        const state = params.get('state');
+        const sessionState = params.get('session_state');
+
         const callbackContext = {
-            code: codeParam,
+            code,
             refreshToken: null,
-            state: stateParam,
-            sessionState: sessionStateParam,
+            state,
+            sessionState,
             authResult: null,
             isRenewProcess: false,
             jwtKeys: null,
             validationResult: null,
         };
-        this.flowsService.processSilentRenewCodeFlowCallback(callbackContext).subscribe();
+
+        return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext).pipe(
+            tap(() => {
+                this.startTokenValidationPeriodically();
+            }),
+            catchError((errorFromFlow) => {
+                this.stopPeriodicallTokenCheck();
+                return throwError(errorFromFlow);
+            })
+        );
     }
 
     private initSilentRenewRequest() {
