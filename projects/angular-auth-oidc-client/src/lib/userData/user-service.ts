@@ -68,6 +68,14 @@ export class UserService {
         return this.storagePersistanceService.userData || null;
     }
 
+    publishUserdataIfExists() {
+        const userdata = this.getUserDataFromStore();
+        if (userdata) {
+            this.userDataInternal$.next(userdata);
+            this.eventService.fireEvent(EventTypes.UserDataChanged, userdata);
+        }
+    }
+
     setUserDataToStore(value: any): void {
         this.storagePersistanceService.userData = value;
         this.userDataInternal$.next(value);

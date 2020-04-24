@@ -86,6 +86,7 @@ export class OidcSecurityService {
         // validate storage and @@set authorized@@ if true
         if (isAuthenticated) {
             this.authStateService.setAuthorizedAndFireEvent();
+            this.userService.publishUserdataIfExists();
 
             this.startTokenValidationPeriodically();
 
