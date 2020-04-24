@@ -405,7 +405,7 @@ export class OidcSecurityService {
             }
         } else {
             // ImplicitFlow
-            this.authorizedImplicitFlowCallback(e.detail);
+            this.authorizedImplicitFlowCallback(e.detail).subscribe();
         }
     }
 
