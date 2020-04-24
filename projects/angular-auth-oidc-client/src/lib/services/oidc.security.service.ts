@@ -2,7 +2,7 @@ import { HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of, Subject, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
 import { ConfigurationProvider } from '../config';
@@ -214,20 +214,27 @@ export class OidcSecurityService {
     refreshSessionWithIframe(): Observable<boolean> {
         this.loggerService.logDebug('BEGIN refresh session Authorize Iframe renew');
         this.flowsDataService.setSilentRenewRunning();
-
         const url = this.urlService.getRefreshSessionSilentRenewUrl();
 
-        // TODO on error this.stopPeriodicallTokenCheck();
         return this.sendAuthorizeReqestUsingSilentRenew(url);
     }
 
-    refreshSessionWithRefreshTokens(): Observable<boolean> {
+    refreshSessionWithRefreshTokens() {
         this.loggerService.logDebug('BEGIN refresh session Authorize');
         this.flowsDataService.setSilentRenewRunning();
 
-        // TODO on error this.stopPeriodicallTokenCheck();
-
-        return this.flowsService.processRefreshToken().pipe(map((context) => !!context));
+        return this.flowsService.processRefreshToken().pipe(
+            tap(() => {
+                this.startTokenValidationPeriodically();
+            }),
+            catchError((error) => {
+                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
+                    this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
+                }
+                this.stopPeriodicallTokenCheck();
+                return throwError(error);
+            })
+        );
     }
 
     private redirectTo(url: string) {
@@ -320,15 +327,7 @@ export class OidcSecurityService {
                     // TODO remove subscribe
                     if (this.configurationProvider.openIDConfiguration.silentRenew) {
                         if (this.flowHelper.isCurrentFlowCodeFlow() && this.configurationProvider.openIDConfiguration.useRefreshToken) {
-                            this.refreshSessionWithRefreshTokens().subscribe(
-                                () => {
-                                    this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
-                                },
-                                (err: any) => {
-                                    this.loggerService.logError('Error: ' + err);
-                                    this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
-                                }
-                            );
+                            this.refreshSessionWithRefreshTokens().subscribe();
                         } else {
                             this.refreshSessionWithIframe().subscribe(
                                 () => {
