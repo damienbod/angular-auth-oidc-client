@@ -6,12 +6,12 @@ import { ConfigurationProvider } from '../config/config.provider';
 import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
-import { TokenHelperService } from '../services/oidc-token-helper.service';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
 import { PlatformProvider } from '../utils';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
+import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
 import { UserService } from './user-service';
 
 describe('User Service', () => {

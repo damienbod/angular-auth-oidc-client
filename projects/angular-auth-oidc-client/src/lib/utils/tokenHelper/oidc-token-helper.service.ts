@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../../logging/logger.service';
 
 @Injectable()
 export class TokenHelperService {

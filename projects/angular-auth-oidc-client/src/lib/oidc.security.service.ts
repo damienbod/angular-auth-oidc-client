@@ -3,22 +3,22 @@ import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of, Subject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { AuthStateService } from '../authState/auth-state.service';
-import { AuthorizedState } from '../authState/authorized-state';
-import { ConfigurationProvider } from '../config';
-import { EventTypes } from '../events';
-import { EventsService } from '../events/events.service';
-import { FlowsDataService } from '../flows/flows-data.service';
-import { FlowsService } from '../flows/flows.service';
-import { CheckSessionService, SilentRenewService } from '../iframe';
-import { LoggerService } from '../logging/logger.service';
-import { StoragePersistanceService } from '../storage';
-import { UserService } from '../userData/user-service';
-import { UrlService } from '../utils';
-import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
-import { TokenValidationService } from '../validation/token-validation.service';
-import { ValidationResult } from '../validation/validation-result';
-import { TokenHelperService } from './oidc-token-helper.service';
+import { AuthStateService } from './authState/auth-state.service';
+import { AuthorizedState } from './authState/authorized-state';
+import { ConfigurationProvider } from './config';
+import { EventTypes } from './events';
+import { EventsService } from './events/events.service';
+import { FlowsDataService } from './flows/flows-data.service';
+import { FlowsService } from './flows/flows.service';
+import { CheckSessionService, SilentRenewService } from './iframe';
+import { LoggerService } from './logging/logger.service';
+import { StoragePersistanceService } from './storage';
+import { UserService } from './userData/user-service';
+import { UrlService } from './utils';
+import { FlowHelper } from './utils/flowHelper/flow-helper.service';
+import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
+import { TokenValidationService } from './validation/token-validation.service';
+import { ValidationResult } from './validation/validation-result';
 
 @Injectable()
 export class OidcSecurityService {

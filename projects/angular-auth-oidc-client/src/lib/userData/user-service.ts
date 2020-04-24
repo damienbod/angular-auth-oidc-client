@@ -5,9 +5,9 @@ import { DataService } from '../api/data.service';
 import { ConfigurationProvider } from '../config';
 import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';
-import { TokenHelperService } from '../services/oidc-token-helper.service';
 import { StoragePersistanceService } from '../storage';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
+import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
 
 @Injectable()
 export class UserService {
