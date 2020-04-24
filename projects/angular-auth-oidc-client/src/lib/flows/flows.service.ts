@@ -81,25 +81,25 @@ export class FlowsService {
 
     // STEP 1 Code Flow
     private codeFlowCallback(urlToCheck: string): Observable<CallbackContext> {
-        const codeParam = this.urlService.getUrlParameter(urlToCheck, 'code');
-        const stateParam = this.urlService.getUrlParameter(urlToCheck, 'state');
-        const sessionStateParam = this.urlService.getUrlParameter(urlToCheck, 'session_state') || null;
+        const code = this.urlService.getUrlParameter(urlToCheck, 'code');
+        const state = this.urlService.getUrlParameter(urlToCheck, 'state');
+        const sessionState = this.urlService.getUrlParameter(urlToCheck, 'session_state') || null;
 
-        if (!stateParam) {
+        if (!state) {
             this.loggerService.logDebug('no state in url');
             return throwError('no state in url');
         }
-        if (!codeParam) {
+        if (!code) {
             this.loggerService.logDebug('no code in url');
             return throwError('no code in url');
         }
         this.loggerService.logDebug('running validation for callback' + urlToCheck);
 
         const initialCallbackContext = {
-            code: codeParam,
+            code,
             refreshToken: null,
-            state: stateParam,
-            sessionState: sessionStateParam,
+            state,
+            sessionState,
             authResult: null,
             isRenewProcess: false,
             jwtKeys: null,
@@ -119,7 +119,7 @@ export class FlowsService {
 
         hash = hash || window.location.hash.substr(1);
 
-        const result: any = hash.split('&').reduce((resultData: any, item: string) => {
+        const authResult: any = hash.split('&').reduce((resultData: any, item: string) => {
             const parts = item.split('=');
             resultData[parts.shift() as string] = parts.join('=');
             return resultData;
@@ -130,7 +130,7 @@ export class FlowsService {
             refreshToken: null,
             state: null,
             sessionState: null,
-            authResult: result,
+            authResult,
             isRenewProcess: isRenewProcessData,
             jwtKeys: null,
             validationResult: null,
@@ -143,20 +143,20 @@ export class FlowsService {
     private refreshSessionWithRefreshTokens(): Observable<CallbackContext> {
         const stateData = this.flowsDataService.getExistingOrCreateAuthStateControl();
         this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + stateData);
-        const refreshTokenData = this.authStateService.getRefreshToken();
+        const refreshToken = this.authStateService.getRefreshToken();
 
-        const callbackContext = {
-            code: null,
-            refreshToken: refreshTokenData,
-            state: stateData,
-            sessionState: null,
-            authResult: null,
-            isRenewProcess: false,
-            jwtKeys: null,
-            validationResult: null,
-        };
+        if (refreshToken) {
+            const callbackContext = {
+                code: null,
+                refreshToken,
+                state: stateData,
+                sessionState: null,
+                authResult: null,
+                isRenewProcess: false,
+                jwtKeys: null,
+                validationResult: null,
+            };
 
-        if (refreshTokenData) {
             this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
             // Nonce is not used with refresh tokens; but Keycloak may send it anyway
             this.flowsDataService.setNonce(TokenValidationService.RefreshTokenNoncePlaceholder);
