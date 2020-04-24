@@ -171,6 +171,7 @@ export class OidcSecurityService {
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
+                this.stopPeriodicallTokenCheck();
                 return throwError(error);
             })
         );
@@ -194,24 +195,29 @@ export class OidcSecurityService {
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
+                this.stopPeriodicallTokenCheck();
                 return throwError(error);
             })
         );
     }
 
-    refreshSession(): Observable<boolean> {
-        this.loggerService.logDebug('BEGIN refresh session Authorize');
+    refreshSessionWithIframe(): Observable<boolean> {
+        this.loggerService.logDebug('BEGIN refresh session Authorize Iframe renew');
         this.flowsDataService.setSilentRenewRunning();
-
-        // Code Flow renew with Refresh tokens
-        // TODO CHECK THIS!!!
-        if (this.flowHelper.isCurrentFlowCodeFlow() && this.configurationProvider.openIDConfiguration.useRefreshToken) {
-            return this.flowsService.processRefreshToken().pipe(map((context) => !!context));
-        }
 
         const url = this.urlService.getRefreshSessionSilentRenewUrl();
 
+        // TODO on error this.stopPeriodicallTokenCheck();
         return this.sendAuthorizeReqestUsingSilentRenew(url);
+    }
+
+    refreshSessionWithRefreshTokens(): Observable<boolean> {
+        this.loggerService.logDebug('BEGIN refresh session Authorize');
+        this.flowsDataService.setSilentRenewRunning();
+
+        // TODO on error this.stopPeriodicallTokenCheck();
+
+        return this.flowsService.processRefreshToken().pipe(map((context) => !!context));
     }
 
     private redirectTo(url: string) {
@@ -301,16 +307,30 @@ export class OidcSecurityService {
                 ) {
                     this.loggerService.logDebug('IsAuthorized: id_token isTokenExpired, start silent renew if active');
 
+                    // TODO remove subscribe
                     if (this.configurationProvider.openIDConfiguration.silentRenew) {
-                        this.refreshSession().subscribe(
-                            () => {
-                                this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
-                            },
-                            (err: any) => {
-                                this.loggerService.logError('Error: ' + err);
-                                this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
-                            }
-                        );
+                        if (this.flowHelper.isCurrentFlowCodeFlow() && this.configurationProvider.openIDConfiguration.useRefreshToken) {
+                            this.refreshSessionWithRefreshTokens().subscribe(
+                                () => {
+                                    this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
+                                },
+                                (err: any) => {
+                                    this.loggerService.logError('Error: ' + err);
+                                    this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
+                                }
+                            );
+                        } else {
+                            this.refreshSessionWithIframe().subscribe(
+                                () => {
+                                    this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
+                                },
+                                (err: any) => {
+                                    this.loggerService.logError('Error: ' + err);
+                                    this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
+                                }
+                            );
+                        }
+
                         /* In this situation, we schedule a heartbeat check only when silentRenew is finished.
                         We don't want to schedule another check so we have to return here */
                         return;
