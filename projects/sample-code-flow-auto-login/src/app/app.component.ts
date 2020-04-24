@@ -25,7 +25,6 @@ export class AppComponent implements OnInit {
                 tap((isAuthenticated) => {
                     if (!isAuthenticated) {
                         if ('/autologin' !== window.location.pathname && !this.isCallback()) {
-                            alert('write ' + window.location.pathname);
                             this.write('redirect', window.location.pathname);
                             this.router.navigate(['/autologin']);
                         }
@@ -58,7 +57,6 @@ export class AppComponent implements OnInit {
 
     private onAuthorizationResultComplete(authorizationResult: AuthorizationResult) {
         const path = this.read('redirect');
-        alert('read ' + path);
         console.log(
             'Auth result received AuthorizationState:' +
                 authorizationResult.authorizationState +
