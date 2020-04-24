@@ -309,31 +309,32 @@ export class FlowsService {
     // STEP 6 userData
     private callbackUser(callbackContext: CallbackContext): Observable<CallbackContext> {
         if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
-            this.userService
+            return this.userService
                 .getAndPersistUserDataInStore(
                     callbackContext.isRenewProcess,
                     callbackContext.validationResult.idToken,
                     callbackContext.validationResult.decodedIdToken
                 )
                 .pipe(
-                    map(
-                        (userData) => {
-                            if (!!userData) {
-                                this.flowsDataService.setSessionState(callbackContext.authResult.session_state);
-                                this.handleSuccessFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
-                                return callbackContext;
-                            } else {
-                                this.resetAuthorizationData();
-                                this.handleExceptionFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
-                                return throwError('Failed to retreive user info with error: ');
-                            }
-                        },
-                        (err) => {
-                            /* Something went wrong while getting signing key */
-                            this.loggerService.logWarning('Failed to retreive user info with error: ', err);
-                            return throwError('Failed to retreive user info with error: ', err);
+                    catchError((err) => {
+                        /* Something went wrong while getting signing key */
+                        const errorMessage = `Failed to retreive user info with error:  ${err}`;
+                        this.loggerService.logWarning(errorMessage);
+                        return throwError(errorMessage);
+                    }),
+                    switchMap((userData) => {
+                        if (!!userData) {
+                            this.flowsDataService.setSessionState(callbackContext.authResult.session_state);
+                            this.handleSuccessFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
+                            return of(callbackContext);
+                        } else {
+                            this.resetAuthorizationData();
+                            this.handleExceptionFromCallback(callbackContext.validationResult, callbackContext.isRenewProcess);
+                            const errorMessage = `Called for userData but they were ${userData}`;
+                            this.loggerService.logWarning(errorMessage);
+                            return throwError(errorMessage);
                         }
-                    )
+                    })
                 );
         } else {
             if (!callbackContext.isRenewProcess) {
