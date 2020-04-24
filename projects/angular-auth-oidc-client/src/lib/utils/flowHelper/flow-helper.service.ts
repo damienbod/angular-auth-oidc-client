@@ -15,7 +15,7 @@ export class FlowHelper {
     }
 
     isCurrentFlowImplicitFlowWithoutAccessToken() {
-        return this.currentFlowIs('id_token ');
+        return this.currentFlowIs('id_token');
     }
 
     currentFlowIs(flowTypes: string[] | string) {
