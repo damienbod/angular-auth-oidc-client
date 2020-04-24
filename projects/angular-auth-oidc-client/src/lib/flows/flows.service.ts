@@ -182,6 +182,11 @@ export class FlowsService {
         const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken);
 
         return this.dataService.post(tokenRequestUrl, data, headers).pipe(
+            catchError((error) => {
+                const errorMessage = `OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}: ${error}`;
+                this.loggerService.logError(errorMessage);
+                return throwError(errorMessage);
+            }),
             map((response: any) => {
                 this.loggerService.logDebug('token refresh response: ', response);
                 let authResult: any = new Object();
@@ -190,11 +195,6 @@ export class FlowsService {
 
                 callbackContext.authResult = authResult;
                 return callbackContext;
-            }),
-            catchError((error) => {
-                const errorMessage = `OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}: ${error}`;
-                this.loggerService.logError(errorMessage);
-                return throwError(errorMessage);
             })
         );
     }
@@ -274,19 +274,24 @@ export class FlowsService {
         this.loggerService.logDebug('authorizedCallback created, begin token validation');
 
         return this.signinKeyDataService.getSigningKeys().pipe(
-            map(
-                (jwtKeys) => {
+            switchMap((jwtKeys) => {
+                if (jwtKeys) {
                     callbackContext.jwtKeys = jwtKeys;
 
-                    return callbackContext;
-                },
-                (err) => {
-                    const errorMessage = `Failed to retrieve signing key with error: ${err}`;
-                    this.loggerService.logWarning(errorMessage);
-                    this.flowsDataService.resetSilentRenewRunning();
-                    return throwError(errorMessage);
+                    return of(callbackContext);
                 }
-            )
+
+                const errorMessage = `Failed to retrieve signing key`;
+                this.loggerService.logWarning(errorMessage);
+                this.flowsDataService.resetSilentRenewRunning();
+                return throwError(errorMessage);
+            }),
+            catchError((err) => {
+                const errorMessage = `Failed to retrieve signing key with error: ${err}`;
+                this.loggerService.logWarning(errorMessage);
+                this.flowsDataService.resetSilentRenewRunning();
+                return throwError(errorMessage);
+            })
         );
     }
 
@@ -329,11 +334,6 @@ export class FlowsService {
                 callbackContext.validationResult.decodedIdToken
             )
             .pipe(
-                catchError((err) => {
-                    const errorMessage = `Failed to retreive user info with error:  ${err}`;
-                    this.loggerService.logWarning(errorMessage);
-                    return throwError(errorMessage);
-                }),
                 switchMap((userData) => {
                     if (!!userData) {
                         this.flowsDataService.setSessionState(callbackContext.authResult.session_state);
@@ -346,6 +346,11 @@ export class FlowsService {
                         this.loggerService.logWarning(errorMessage);
                         return throwError(errorMessage);
                     }
+                }),
+                catchError((err) => {
+                    const errorMessage = `Failed to retreive user info with error:  ${err}`;
+                    this.loggerService.logWarning(errorMessage);
+                    return throwError(errorMessage);
                 })
             );
     }
