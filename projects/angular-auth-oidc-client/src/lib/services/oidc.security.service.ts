@@ -1,7 +1,7 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
@@ -23,6 +23,7 @@ import { TokenHelperService } from './oidc-token-helper.service';
 @Injectable()
 export class OidcSecurityService {
     private isModuleSetupInternal$ = new BehaviorSubject<boolean>(false);
+    private stsCallbackInternal$ = new Subject<boolean>();
 
     get configuration() {
         return this.configurationProvider.configuration;
@@ -42,6 +43,10 @@ export class OidcSecurityService {
 
     get moduleSetup$() {
         return this.isModuleSetupInternal$.asObservable();
+    }
+
+    get stsCallback$() {
+        return this.stsCallbackInternal$.asObservable();
     }
 
     constructor(
@@ -99,6 +104,11 @@ export class OidcSecurityService {
         this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
         this.isModuleSetupInternal$.next(true);
         this.isModuleSetup = true;
+
+        const isCallbackFromSts = this.urlService.isCallbackFromSts();
+        if (isCallbackFromSts) {
+            this.stsCallbackInternal$.next();
+        }
 
         return of(isAuthenticated);
     }

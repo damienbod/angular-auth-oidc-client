@@ -22,14 +22,16 @@ export class AppComponent implements OnInit, OnDestroy {
         this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
         this.isModuleSetUp$ = this.oidcSecurityService.moduleSetup$;
 
+        // Until the library is not doing this for itself, you have to do this here
+        this.oidcSecurityService.stsCallback$
+            .pipe(switchMap(() => this.doCallbackLogicIfRequired()))
+            .subscribe((callbackContext) => console.log(callbackContext));
+
         this.userDataChanged$ = this.eventsService
             .registerForEvents()
             .pipe(filter((notification: OidcClientNotification<any>) => notification.type === EventTypes.UserDataChanged));
 
-        this.oidcSecurityService
-            .checkAuth()
-            .pipe(switchMap(() => this.doCallbackLogicIfRequired()))
-            .subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
+        this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
     }
 
     ngOnDestroy(): void {}
