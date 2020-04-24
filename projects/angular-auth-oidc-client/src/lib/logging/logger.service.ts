@@ -7,18 +7,27 @@ export class LoggerService {
     constructor(private configurationProvider: ConfigurationProvider) {}
 
     logError(message: any, ...args: any[]) {
-        console.error(message, ...args);
+        if (args.length) {
+            console.error(message, args);
+        }
+        console.error(message);
     }
 
     logWarning(message: any, ...args: string[]) {
         if (this.currentLogLevelIsEqualOrSmallerThan(LogLevel.Warn)) {
-            console.warn(message, args);
+            if (args.length) {
+                console.warn(message, args);
+            }
+            console.warn(message);
         }
     }
 
     logDebug(message: any, ...args: string[]) {
         if (this.currentLogLevelIsEqualOrSmallerThan(LogLevel.Debug)) {
-            console.log(message, args);
+            if (args.length) {
+                console.log(message, args);
+            }
+            console.log(message);
         }
     }
 
