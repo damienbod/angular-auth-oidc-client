@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { EventsService, OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
+import { EventsService, EventTypes, OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
 import { Observable, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { filter, switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -17,7 +17,6 @@ export class AppComponent implements OnInit {
     checkSessionChanged: any;
 
     constructor(public oidcSecurityService: OidcSecurityService, public eventsService: EventsService) {}
-
     ngOnInit() {
         this.configuration = this.oidcSecurityService.configuration;
         this.userData$ = this.oidcSecurityService.userData$;
@@ -25,12 +24,17 @@ export class AppComponent implements OnInit {
         this.isModuleSetUp$ = this.oidcSecurityService.moduleSetup$;
         this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 
-        this.oidcSecurityService
-            .checkAuth()
+        // Until the library is not doing this for itself, you have to do this here
+        this.oidcSecurityService.stsCallback$
             .pipe(switchMap(() => this.doCallbackLogicIfRequired()))
-            .subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
-    }
+            .subscribe((callbackContext) => console.log(callbackContext));
 
+        this.userDataChanged$ = this.eventsService
+            .registerForEvents()
+            .pipe(filter((notification: OidcClientNotification<any>) => notification.type === EventTypes.UserDataChanged));
+
+        this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
+    }
     login() {
         console.log('start login');
         this.oidcSecurityService.authorize();
