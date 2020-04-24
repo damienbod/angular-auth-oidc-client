@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { EventsService, OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
 
         this.oidcSecurityService
             .checkAuth()
-            .pipe(tap(() => this.doCallbackLogicIfRequired()))
+            .pipe(switchMap(() => this.doCallbackLogicIfRequired()))
             .subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
     }
 
@@ -47,9 +47,9 @@ export class AppComponent implements OnInit {
     }
 
     private doCallbackLogicIfRequired() {
-        console.log('AppComponent:doCallbackLogicIfRequired');
         if (window.location.hash) {
-            this.oidcSecurityService.authorizedImplicitFlowCallback();
+            return this.oidcSecurityService.authorizedImplicitFlowCallback();
         }
+        return of(null);
     }
 }
