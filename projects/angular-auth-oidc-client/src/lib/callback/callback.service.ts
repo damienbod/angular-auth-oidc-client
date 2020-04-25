@@ -100,6 +100,40 @@ export class CallbackService {
         );
     }
 
+    refreshSessionWithIframe(): Observable<boolean> {
+        this.loggerService.logDebug('BEGIN refresh session Authorize Iframe renew');
+        this.flowsDataService.setSilentRenewRunning();
+        const url = this.urlService.getRefreshSessionSilentRenewUrl();
+
+        return this.sendAuthorizeReqestUsingSilentRenew(url);
+    }
+
+    refreshSessionWithRefreshTokens() {
+        this.loggerService.logDebug('BEGIN refresh session Authorize');
+        this.flowsDataService.setSilentRenewRunning();
+
+        return this.flowsService.processRefreshToken().pipe(
+            tap(() => {
+                this.startTokenValidationPeriodically();
+            }),
+            catchError((error) => {
+                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
+                    this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
+                }
+                this.stopPeriodicallTokenCheck();
+                return throwError(error);
+            })
+        );
+    }
+
+    stopPeriodicallTokenCheck(): void {
+        if (this.scheduledHeartBeatInternal) {
+            clearTimeout(this.scheduledHeartBeatInternal);
+            this.scheduledHeartBeatInternal = null;
+            this.runTokenValidationRunning = false;
+        }
+    }
+
     startTokenValidationPeriodically() {
         if (this.checkSessionService.isCheckSessionConfigured()) {
             this.checkSessionService.start();
@@ -134,7 +168,15 @@ export class CallbackService {
                     if (this.configurationProvider.openIDConfiguration.silentRenew) {
                         if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
                             // Refresh Session using Refresh tokens
-                            this.refreshSessionWithRefreshTokens().subscribe();
+                            this.refreshSessionWithRefreshTokens().subscribe(
+                                () => {
+                                    this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
+                                },
+                                (err: any) => {
+                                    this.loggerService.logError('Error: ' + err);
+                                    this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
+                                }
+                            );
                         } else {
                             // Send Silent renew request in iframe
                             this.refreshSessionWithIframe().subscribe(
@@ -167,32 +209,6 @@ export class CallbackService {
         });
     }
 
-    refreshSessionWithIframe(): Observable<boolean> {
-        this.loggerService.logDebug('BEGIN refresh session Authorize Iframe renew');
-        this.flowsDataService.setSilentRenewRunning();
-        const url = this.urlService.getRefreshSessionSilentRenewUrl();
-
-        return this.sendAuthorizeReqestUsingSilentRenew(url);
-    }
-
-    refreshSessionWithRefreshTokens() {
-        this.loggerService.logDebug('BEGIN refresh session Authorize');
-        this.flowsDataService.setSilentRenewRunning();
-
-        return this.flowsService.processRefreshToken().pipe(
-            tap(() => {
-                this.startTokenValidationPeriodically();
-            }),
-            catchError((error) => {
-                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
-                    this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
-                }
-                this.stopPeriodicallTokenCheck();
-                return throwError(error);
-            })
-        );
-    }
-
     private sendAuthorizeReqestUsingSilentRenew(url: string): Observable<boolean> {
         const sessionIframe = this.silentRenewService.getOrCreateIframe();
         this.initSilentRenewRequest();
@@ -209,40 +225,6 @@ export class CallbackService {
             sessionIframe.src = url;
         });
     }
-
-    stopPeriodicallTokenCheck(): void {
-        if (this.scheduledHeartBeatInternal) {
-            clearTimeout(this.scheduledHeartBeatInternal);
-            this.scheduledHeartBeatInternal = null;
-            this.runTokenValidationRunning = false;
-        }
-    }
-
-    private initSilentRenewRequest() {
-        const instanceId = Math.random();
-        this.silentRenewService.getOrCreateIframe();
-        // Support authorization via DOM events.
-        // Deregister if OidcSecurityService.setupModule is called again by any instance.
-        //      We only ever want the latest setup service to be reacting to this event.
-        this.boundSilentRenewEvent = this.silentRenewEventHandler.bind(this);
-
-        const boundSilentRenewInitEvent: any = ((e: CustomEvent) => {
-            if (e.detail !== instanceId) {
-                window.removeEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent);
-                window.removeEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent);
-            }
-        }).bind(this);
-
-        window.addEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent, false);
-        window.addEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent, false);
-
-        window.dispatchEvent(
-            new CustomEvent('oidc-silent-renew-init', {
-                detail: instanceId,
-            })
-        );
-    }
-
     private silentRenewEventHandler(e: CustomEvent) {
         this.loggerService.logDebug('silentRenewEventHandler');
         if (!e.detail) {
@@ -297,6 +279,31 @@ export class CallbackService {
             catchError((errorFromFlow) => {
                 this.stopPeriodicallTokenCheck();
                 return throwError(errorFromFlow);
+            })
+        );
+    }
+
+    private initSilentRenewRequest() {
+        const instanceId = Math.random();
+        this.silentRenewService.getOrCreateIframe();
+        // Support authorization via DOM events.
+        // Deregister if OidcSecurityService.setupModule is called again by any instance.
+        //      We only ever want the latest setup service to be reacting to this event.
+        this.boundSilentRenewEvent = this.silentRenewEventHandler.bind(this);
+
+        const boundSilentRenewInitEvent: any = ((e: CustomEvent) => {
+            if (e.detail !== instanceId) {
+                window.removeEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent);
+                window.removeEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent);
+            }
+        }).bind(this);
+
+        window.addEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent, false);
+        window.addEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent, false);
+
+        window.dispatchEvent(
+            new CustomEvent('oidc-silent-renew-init', {
+                detail: instanceId,
             })
         );
     }
