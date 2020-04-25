@@ -78,11 +78,11 @@ export class UrlService {
         return null;
     }
     createRevocationEndpointBodyAccessToken(token: any) {
-        return `token=${token}&token_type_hint=access_token`;
+        return `client_id=${this.configurationProvider.openIDConfiguration.clientId}&token=${token}&token_type_hint=access_token`;
     }
 
     createRevocationEndpointBodyRefreshToken(token: any) {
-        return `token=${token}&token_type_hint=refresh_token`;
+        return `client_id=${this.configurationProvider.openIDConfiguration.clientId}&token=${token}&token_type_hint=refresh_token`;
     }
 
     getRevocationEndpointUrl() {
