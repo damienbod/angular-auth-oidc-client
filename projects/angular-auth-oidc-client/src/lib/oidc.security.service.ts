@@ -255,14 +255,9 @@ export class OidcSecurityService {
         }
     }
 
-    getEndSessionUrl(): string | undefined {
-        if (this.configurationProvider.wellKnownEndpoints) {
-            if (this.configurationProvider.wellKnownEndpoints.endSessionEndpoint) {
-                const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.endSessionEndpoint;
-                const idTokenHint = this.storagePersistanceService.idToken;
-                return this.urlService.createEndSessionUrl(endSessionEndpoint, idTokenHint);
-            }
-        }
+    getEndSessionUrl(): string | null {
+        const idTokenHint = this.storagePersistanceService.idToken;
+        return this.urlService.createEndSessionUrl(idTokenHint);
     }
 
     doPeriodicallTokenCheck(): void {

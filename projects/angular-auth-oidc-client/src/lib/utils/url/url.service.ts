@@ -56,19 +56,26 @@ export class UrlService {
         return this.createUrlImplicitFlowAuthorize() || '';
     }
 
-    createEndSessionUrl(endSessionEndpoint: string, idTokenHint: string) {
-        const urlParts = endSessionEndpoint.split('?');
+    createEndSessionUrl(idTokenHint: string) {
+        if (this.configurationProvider.wellKnownEndpoints) {
+            if (this.configurationProvider.wellKnownEndpoints.endSessionEndpoint) {
+                const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.endSessionEndpoint;
+                const urlParts = endSessionEndpoint.split('?');
 
-        const authorizationEndsessionUrl = urlParts[0];
+                const authorizationEndsessionUrl = urlParts[0];
 
-        let params = new HttpParams({
-            fromString: urlParts[1],
-            encoder: new UriEncoder(),
-        });
-        params = params.set('id_token_hint', idTokenHint);
-        params = params.append('post_logout_redirect_uri', this.configurationProvider.openIDConfiguration.postLogoutRedirectUri);
+                let params = new HttpParams({
+                    fromString: urlParts[1],
+                    encoder: new UriEncoder(),
+                });
+                params = params.set('id_token_hint', idTokenHint);
+                params = params.append('post_logout_redirect_uri', this.configurationProvider.openIDConfiguration.postLogoutRedirectUri);
 
-        return `${authorizationEndsessionUrl}?${params}`;
+                return `${authorizationEndsessionUrl}?${params}`;
+            }
+        }
+
+        return null;
     }
 
     createBodyForCodeFlowCodeRequest(code: string): string {
