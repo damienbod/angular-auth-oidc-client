@@ -54,4 +54,40 @@ describe('Flow Helper Service', () => {
 
         expect(flowHelper.currentFlowIs('code')).toBeFalse();
     });
+
+    it('isCurrentFlowImplicitFlowWithAccessToken return true if flow is "id_token token"', () => {
+        const config = { responseType: 'id_token token' };
+
+        configProvider.setConfig(config, null);
+        const result = flowHelper.isCurrentFlowImplicitFlowWithAccessToken();
+
+        expect(result).toBeTrue();
+    });
+
+    it('isCurrentFlowImplicitFlowWithAccessToken return false if flow is not "id_token token"', () => {
+        const config = { responseType: 'id_token2 token2' };
+
+        configProvider.setConfig(config, null);
+        const result = flowHelper.isCurrentFlowImplicitFlowWithAccessToken();
+
+        expect(result).toBeFalse();
+    });
+
+    it('isCurrentFlowImplicitFlowWithoutAccessToken return true if flow is "id_token"', () => {
+        const config = { responseType: 'id_token' };
+
+        configProvider.setConfig(config, null);
+        const result = flowHelper.isCurrentFlowImplicitFlowWithoutAccessToken();
+
+        expect(result).toBeTrue();
+    });
+
+    it('isCurrentFlowImplicitFlowWithoutAccessToken return false if flow is not "id_token token"', () => {
+        const config = { responseType: 'id_token2' };
+
+        configProvider.setConfig(config, null);
+        const result = flowHelper.isCurrentFlowImplicitFlowWithoutAccessToken();
+
+        expect(result).toBeFalse();
+    });
 });
