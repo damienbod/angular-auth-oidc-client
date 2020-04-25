@@ -44,19 +44,21 @@ export class CallbackService {
     ) {}
 
     handlePossibleStsCallback(currentCallbackUrl: string) {
+        let callback$: Observable<any>;
+
         if (!this.urlService.isCallbackFromSts()) {
-            return of(null).pipe(tap(() => this.stsCallbackInternal$.next()));
+            callback$ = of(null);
         }
 
         if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            return this.authorizedCallbackWithCode(currentCallbackUrl).pipe(tap(() => this.stsCallbackInternal$.next()));
+            callback$ = this.authorizedCallbackWithCode(currentCallbackUrl);
         }
 
         if (this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken()) {
-            return this.authorizedImplicitFlowCallback().pipe(tap(() => this.stsCallbackInternal$.next()));
+            callback$ = this.authorizedImplicitFlowCallback();
         }
 
-        return of(null).pipe(tap(() => this.stsCallbackInternal$.next()));
+        return callback$.pipe(tap(() => this.stsCallbackInternal$.next()));
     }
 
     // Code Flow Callback

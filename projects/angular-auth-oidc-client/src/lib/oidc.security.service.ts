@@ -68,7 +68,9 @@ export class OidcSecurityService {
         }
         this.loggerService.logDebug('STS server: ' + this.configurationProvider.openIDConfiguration.stsServer);
 
-        return this.callbackService.handlePossibleStsCallback(window.location.toString()).pipe(
+        const currentUrl = window.location.toString();
+
+        return this.callbackService.handlePossibleStsCallback(currentUrl).pipe(
             map(() => {
                 const isAuthenticated = this.authStateService.isAuthStorageTokenValid();
                 // validate storage and @@set authorized@@ if true
