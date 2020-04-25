@@ -45,7 +45,7 @@ export class CallbackService {
     ) {}
 
     handlePossibleStsCallback(currentCallbackUrl: string) {
-        if (!this.isCallBackFromSts()) {
+        if (!this.urlService.isCallbackFromSts()) {
             return of(null);
         }
 
@@ -58,10 +58,6 @@ export class CallbackService {
         }
 
         return of(null);
-    }
-
-    private isCallBackFromSts() {
-        return this.urlService.isCallbackFromSts();
     }
 
     // Code Flow Callback

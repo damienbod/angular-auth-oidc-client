@@ -93,7 +93,7 @@ export class OidcSecurityService {
 
         const callback$ = this.callbackService.handlePossibleStsCallback(window.location.toString());
 
-        return callback$.pipe(switchMap(() => of(isAuthenticated)));
+        return callback$.pipe(switchMap(() => of(this.authStateService.isAuthStorageTokenValid())));
     }
 
     getToken(): string {
