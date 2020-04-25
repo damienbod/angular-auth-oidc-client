@@ -238,10 +238,6 @@ export class OidcSecurityService {
         );
     }
 
-    private redirectTo(url: string) {
-        window.location.href = url;
-    }
-
     logoff(urlHandler?: (url: string) => any) {
         // /connect/endsession?id_token_hint=...&post_logout_redirect_uri=https://myapp.com
         this.loggerService.logDebug('BEGIN Authorize, no auth data');
@@ -268,6 +264,16 @@ export class OidcSecurityService {
         }
     }
 
+    getEndSessionUrl(): string | undefined {
+        if (this.configurationProvider.wellKnownEndpoints) {
+            if (this.configurationProvider.wellKnownEndpoints.endSessionEndpoint) {
+                const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.endSessionEndpoint;
+                const idTokenHint = this.storagePersistanceService.idToken;
+                return this.urlService.createEndSessionUrl(endSessionEndpoint, idTokenHint);
+            }
+        }
+    }
+
     doPeriodicallTokenCheck(): void {
         this.startTokenValidationPeriodically();
     }
@@ -280,14 +286,8 @@ export class OidcSecurityService {
         }
     }
 
-    getEndSessionUrl(): string | undefined {
-        if (this.configurationProvider.wellKnownEndpoints) {
-            if (this.configurationProvider.wellKnownEndpoints.endSessionEndpoint) {
-                const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.endSessionEndpoint;
-                const idTokenHint = this.storagePersistanceService.idToken;
-                return this.urlService.createEndSessionUrl(endSessionEndpoint, idTokenHint);
-            }
-        }
+    private redirectTo(url: string) {
+        window.location.href = url;
     }
 
     private startTokenValidationPeriodically() {
@@ -302,14 +302,14 @@ export class OidcSecurityService {
         this.loggerService.logDebug('runTokenValidation silent-renew running');
 
         /**
-         *   First time: delay 10 seconds to call silentRenewHeartBeatCheck
+         *   First time: delay 5 seconds to call silentRenewHeartBeatCheck
          *   Afterwards: Run this check in a 5 second interval only AFTER the previous operation ends.
          */
         const silentRenewHeartBeatCheck = () => {
             this.loggerService.logDebug(
-                'silentRenewHeartBeatCheck\r\n' +
+                'Checking:' +
                     `\tsilentRenewRunning: ${this.flowsDataService.isSilentRenewRunning()} ` +
-                    `\tidToken: ${!!this.authStateService.getIdToken()} ` +
+                    `\tid_token: ${!!this.authStateService.getIdToken()} ` +
                     `\tuserData: ${!!this.userService.getUserDataFromStore()}`
             );
             if (
@@ -317,12 +317,7 @@ export class OidcSecurityService {
                 !this.flowsDataService.isSilentRenewRunning() &&
                 this.authStateService.getIdToken()
             ) {
-                if (
-                    this.tokenValidationService.isTokenExpired(
-                        this.storagePersistanceService.idToken,
-                        this.configurationProvider.openIDConfiguration.silentRenewOffsetInSeconds
-                    )
-                ) {
+                if (this.authStateService.tokenIsExpired()) {
                     this.loggerService.logDebug('IsAuthorized: id_token isTokenExpired, start silent renew if active');
 
                     // TODO remove subscribe

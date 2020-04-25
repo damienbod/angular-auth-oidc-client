@@ -121,7 +121,7 @@ export class AuthStateService {
         this.storagePersistanceService.authorizedState = authState;
     }
 
-    private tokenIsExpired() {
+    public tokenIsExpired() {
         const tokenToCheck = this.storagePersistanceService.idToken || this.storagePersistanceService.accessToken;
         const tokenIsExpired = this.tokenValidationService.isTokenExpired(
             tokenToCheck,
