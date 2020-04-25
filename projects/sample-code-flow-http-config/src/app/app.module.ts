@@ -2,7 +2,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
+import { AuthModule, OidcConfigService } from 'angular-auth-oidc-client';
 import { map, switchMap } from 'rxjs/operators';
 import { AppComponent } from './app.component';
 
@@ -22,7 +22,7 @@ export function configureAuth(oidcConfigService: OidcConfigService, httpClient: 
                 postLoginRoute: customConfig.startup_route,
                 forbiddenRoute: customConfig.forbidden_route,
                 unauthorizedRoute: customConfig.unauthorized_route,
-                logLevel: LogLevel.Debug, // TODO add the config back new breaking change in API
+                logLevel: customConfig.logLevel, // LogLevel.Debug,
                 maxIdTokenIatOffsetAllowedInSeconds: customConfig.max_id_token_iat_offset_allowed_in_seconds,
                 historyCleanupOff: true,
                 // autoUserinfo: false,

@@ -149,39 +149,25 @@ export class OidcSecurityService {
     }
 
     logoff(urlHandler?: (url: string) => any) {
-        // /connect/endsession?id_token_hint=...&post_logout_redirect_uri=https://myapp.com
-        this.loggerService.logDebug('BEGIN Authorize, no auth data');
-
-        if (this.configurationProvider.wellKnownEndpoints) {
-            this.flowsService.resetAuthorizationData();
-            if (this.configurationProvider.wellKnownEndpoints.endSessionEndpoint) {
-                const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.endSessionEndpoint;
-                const idTokenHint = this.storagePersistanceService.idToken;
-                const url = this.urlService.createEndSessionUrl(endSessionEndpoint, idTokenHint);
-
-                if (this.checkSessionService.serverStateChanged()) {
-                    this.loggerService.logDebug('only local login cleaned up, server session has changed');
-                } else if (urlHandler) {
-                    urlHandler(url);
-                } else {
-                    this.redirectTo(url);
-                }
+        this.loggerService.logDebug('logoff, remove auth ');
+        const endSessionUrl = this.getEndSessionUrl();
+        this.flowsService.resetAuthorizationData();
+        if (endSessionUrl) {
+            if (this.checkSessionService.serverStateChanged()) {
+                this.loggerService.logDebug('only local login cleaned up, server session has changed');
+            } else if (urlHandler) {
+                urlHandler(endSessionUrl);
             } else {
-                this.loggerService.logDebug('only local login cleaned up, no end_session_endpoint');
+                this.redirectTo(endSessionUrl);
             }
         } else {
-            this.loggerService.logWarning('authWellKnownEndpoints is undefined');
+            this.loggerService.logDebug('only local login cleaned up, no end_session_endpoint');
         }
     }
 
-    getEndSessionUrl(): string | undefined {
-        if (this.configurationProvider.wellKnownEndpoints) {
-            if (this.configurationProvider.wellKnownEndpoints.endSessionEndpoint) {
-                const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.endSessionEndpoint;
-                const idTokenHint = this.storagePersistanceService.idToken;
-                return this.urlService.createEndSessionUrl(endSessionEndpoint, idTokenHint);
-            }
-        }
+    getEndSessionUrl(): string | null {
+        const idTokenHint = this.storagePersistanceService.idToken;
+        return this.urlService.createEndSessionUrl(idTokenHint);
     }
 
     doPeriodicallTokenCheck(): void {
