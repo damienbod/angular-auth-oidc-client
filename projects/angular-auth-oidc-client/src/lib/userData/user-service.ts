@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { ConfigurationProvider } from '../config';
 import { EventsService, EventTypes } from '../events';
@@ -43,18 +43,17 @@ export class UserService {
             this.loggerService.logDebug(this.storagePersistanceService.accessToken);
 
             this.setUserDataToStore(decodedIdToken);
-
             return of(decodedIdToken);
         }
 
         if ((!haveUserData && isRenewProcess) || !isRenewProcess) {
             return this.getUserDataOidcFlowAndSave(decodedIdToken.sub).pipe(
-                map((userData) => {
+                switchMap((userData) => {
                     this.loggerService.logDebug('Received user data', userData);
-
+                    console.log('@@@@@@@@@@@@ userData', userData);
                     if (!!userData) {
                         this.loggerService.logDebug(this.storagePersistanceService.accessToken);
-                        return userData;
+                        return of(userData);
                     } else {
                         return throwError('no user data, request failed');
                     }
@@ -92,7 +91,7 @@ export class UserService {
     private getUserDataOidcFlowAndSave(idTokenSub: any): Observable<any> {
         return this.getIdentityUserData().pipe(
             map((data: any) => {
-                if (this.validateUserdataSubIdToken(idTokenSub, data.sub)) {
+                if (this.validateUserdataSubIdToken(idTokenSub, data?.sub)) {
                     this.setUserDataToStore(data);
                     return data;
                 } else {
@@ -100,7 +99,7 @@ export class UserService {
                     this.loggerService.logWarning('authorizedCallback, User data sub does not match sub in id_token');
                     this.loggerService.logDebug('authorizedCallback, token(s) validation failed, resetting');
                     this.resetUserDataInStore();
-                    return throwError('authorizedCallback, User data sub does not match sub in id_token');
+                    return null;
                 }
             })
         );
@@ -128,6 +127,14 @@ export class UserService {
     }
 
     private validateUserdataSubIdToken(idTokenSub: any, userdataSub: any): boolean {
+        if (!idTokenSub) {
+            return false;
+        }
+
+        if (!userdataSub) {
+            return false;
+        }
+
         if ((idTokenSub as string) !== (userdataSub as string)) {
             this.loggerService.logDebug('validateUserdataSubIdToken failed', idTokenSub, userdataSub);
             return false;

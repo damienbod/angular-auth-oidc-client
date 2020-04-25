@@ -168,6 +168,36 @@ describe('User Service', () => {
             expect(spy).toHaveBeenCalled();
             expect(loggerService.logDebug).toHaveBeenCalledWith('accessToken');
         }));
+
+        it(`if not currentFlow is id token or code flow and not renewprocess
+          --> ask server for data
+          --> throwing Error if it has no userdata `, async(() => {
+            const isRenewProcess = false;
+            const idToken = false;
+            const decodedIdToken = { sub: 'decodedIdToken' };
+            const userDataInstore = '';
+            const userDataFromSts = null;
+
+            const config = {
+                responseType: 'code',
+            };
+
+            configProvider.setConfig(config, null);
+
+            spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
+            const spyGetIdentityUserData = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
+            spyOn(loggerService, 'logDebug');
+            spyOnProperty(storagePersistanceService, 'accessToken', 'get').and.returnValue('accessToken');
+
+            userService.getAndPersistUserDataInStore(isRenewProcess, idToken, decodedIdToken).subscribe({
+                error: (err) => {
+                    expect(err).toEqual('no user data, request failed');
+                    expect(err).not.toEqual('some other message');
+                },
+            });
+
+            expect(spyGetIdentityUserData).toHaveBeenCalled();
+        }));
     });
 
     describe('getUserDataFromStore', () => {
