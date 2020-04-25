@@ -241,14 +241,12 @@ export class OidcSecurityService {
     logoff(urlHandler?: (url: string) => any) {
         // /connect/endsession?id_token_hint=...&post_logout_redirect_uri=https://myapp.com
         this.loggerService.logDebug('BEGIN Authorize, no auth data');
-
+        const idTokenHint = this.storagePersistanceService.idToken;
         if (this.configurationProvider.wellKnownEndpoints) {
             this.flowsService.resetAuthorizationData();
             if (this.configurationProvider.wellKnownEndpoints.endSessionEndpoint) {
                 const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.endSessionEndpoint;
-                const idTokenHint = this.storagePersistanceService.idToken;
                 const url = this.urlService.createEndSessionUrl(endSessionEndpoint, idTokenHint);
-
                 if (this.checkSessionService.serverStateChanged()) {
                     this.loggerService.logDebug('only local login cleaned up, server session has changed');
                 } else if (urlHandler) {
