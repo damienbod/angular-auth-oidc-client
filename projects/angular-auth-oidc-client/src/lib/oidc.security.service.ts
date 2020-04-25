@@ -255,7 +255,7 @@ export class OidcSecurityService {
 
     // https://tools.ietf.org/html/rfc7009
     revokeRefreshToken(refreshToken?: any) {
-        return this.logoffRevocationService.revokeAccessToken(refreshToken);
+        return this.logoffRevocationService.revokeRefreshToken(refreshToken);
     }
 
     getEndSessionUrl(): string | null {
