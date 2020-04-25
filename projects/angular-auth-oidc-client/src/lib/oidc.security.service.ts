@@ -1,9 +1,8 @@
-import { HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of, Subject, throwError } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { DataService } from './api/data.service';
+import { catchError, tap } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
 import { AuthorizedState } from './authState/authorized-state';
 import { ConfigurationProvider } from './config';
@@ -13,6 +12,7 @@ import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsService } from './flows/flows.service';
 import { CheckSessionService, SilentRenewService } from './iframe';
 import { LoggerService } from './logging/logger.service';
+import { LogoffRevocationService } from './logoffRevoke/logoff-revocation-service';
 import { StoragePersistanceService } from './storage';
 import { UserService } from './userData/user-service';
 import { UrlService } from './utils';
@@ -67,7 +67,7 @@ export class OidcSecurityService {
         private readonly flowsDataService: FlowsDataService,
         private readonly flowsService: FlowsService,
         private readonly router: Router,
-        private readonly dataService: DataService
+        private readonly logoffRevocationService: LogoffRevocationService
     ) {}
 
     private runTokenValidationRunning = false;
@@ -241,87 +241,25 @@ export class OidcSecurityService {
     }
 
     logoffAndRevokeTokens(urlHandler?: (url: string) => any) {
-        return this.revokeRefreshToken()
-            .pipe(
-                catchError((error) => {
-                    const errorMessage = `revokeRefreshToken failed ${error}`;
-                    this.loggerService.logError(errorMessage);
-                    return throwError(errorMessage);
-                }),
-                switchMap((result) => this.revokeAccessToken(result)),
-                catchError((error) => {
-                    const errorMessage = `revokeAccessToken failed ${error}`;
-                    this.loggerService.logError(errorMessage);
-                    return throwError(errorMessage);
-                })
-            )
-            .subscribe(() => this.logoff(urlHandler));
+        return this.logoffRevocationService.logoffAndRevokeTokens(urlHandler);
     }
 
     logoff(urlHandler?: (url: string) => any) {
-        this.loggerService.logDebug('logoff, remove auth ');
-        const endSessionUrl = this.getEndSessionUrl();
-        this.flowsService.resetAuthorizationData();
-        if (endSessionUrl) {
-            if (this.checkSessionService.serverStateChanged()) {
-                this.loggerService.logDebug('only local login cleaned up, server session has changed');
-            } else if (urlHandler) {
-                urlHandler(endSessionUrl);
-            } else {
-                this.redirectTo(endSessionUrl);
-            }
-        } else {
-            this.loggerService.logDebug('only local login cleaned up, no end_session_endpoint');
-        }
+        return this.logoffRevocationService.logoff(urlHandler);
     }
 
     // https://tools.ietf.org/html/rfc7009
     revokeAccessToken(accessToken?: any) {
-        const accessTok = accessToken || this.storagePersistanceService.accessToken;
-        const body = this.urlService.createRevocationEndpointBodyAccessToken(accessTok);
-        const url = this.urlService.getRevocationEndpointUrl();
-
-        let headers: HttpHeaders = new HttpHeaders();
-        headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
-
-        return this.dataService.post(url, body, headers).pipe(
-            catchError((error) => {
-                const errorMessage = `Revocation request failed ${error}`;
-                this.loggerService.logError(errorMessage);
-                return throwError(errorMessage);
-            }),
-            map((response: any) => {
-                this.loggerService.logDebug('revocation endpoint post response: ', response);
-                return response;
-            })
-        );
+        return this.logoffRevocationService.revokeAccessToken(accessToken);
     }
 
     // https://tools.ietf.org/html/rfc7009
     revokeRefreshToken(refreshToken?: any) {
-        const refreshTok = refreshToken || this.storagePersistanceService.getRefreshToken();
-        const body = this.urlService.createRevocationEndpointBodyRefreshToken(refreshTok);
-        const url = this.urlService.getRevocationEndpointUrl();
-
-        let headers: HttpHeaders = new HttpHeaders();
-        headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
-
-        return this.dataService.post(url, body, headers).pipe(
-            catchError((error) => {
-                const errorMessage = `Revocation request failed ${error}`;
-                this.loggerService.logError(errorMessage);
-                return throwError(errorMessage);
-            }),
-            map((response: any) => {
-                this.loggerService.logDebug('revocation endpoint post response: ', response);
-                return response;
-            })
-        );
+        return this.logoffRevocationService.revokeAccessToken(refreshToken);
     }
 
     getEndSessionUrl(): string | null {
-        const idTokenHint = this.storagePersistanceService.idToken;
-        return this.urlService.createEndSessionUrl(idTokenHint);
+        return this.logoffRevocationService.getEndSessionUrl();
     }
 
     doPeriodicallTokenCheck(): void {
