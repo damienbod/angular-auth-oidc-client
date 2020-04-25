@@ -113,20 +113,19 @@ export class AuthStateService {
         this.storagePersistanceService.authResult = authResult;
     }
 
-    private getCurrentlyPersistedAuthState() {
-        return this.storagePersistanceService.authorizedState;
-    }
-
-    private persistAuthStateInStorage(authState: AuthorizedState) {
-        this.storagePersistanceService.authorizedState = authState;
-    }
-
-    private tokenIsExpired() {
+    tokenIsExpired() {
         const tokenToCheck = this.storagePersistanceService.idToken || this.storagePersistanceService.accessToken;
         const tokenIsExpired = this.tokenValidationService.isTokenExpired(
             tokenToCheck,
             this.configurationProvider.openIDConfiguration.silentRenewOffsetInSeconds
         );
         return tokenIsExpired;
+    }
+    private getCurrentlyPersistedAuthState() {
+        return this.storagePersistanceService.authorizedState;
+    }
+
+    private persistAuthStateInStorage(authState: AuthorizedState) {
+        this.storagePersistanceService.authorizedState = authState;
     }
 }
