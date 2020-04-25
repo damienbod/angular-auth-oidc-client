@@ -22,7 +22,7 @@ export class AppComponent implements OnInit {
                     }
                 }
                 if (isAuthenticated) {
-                    this.navigateToStoredEndpoint(isAuthenticated);
+                    this.navigateToStoredEndpoint();
                 }
             });
     }
