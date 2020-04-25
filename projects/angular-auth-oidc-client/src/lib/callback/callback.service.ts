@@ -15,7 +15,6 @@ import { UserService } from '../userData/user-service';
 import { UrlService } from '../utils';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { ValidationResult } from '../validation/validation-result';
-import { CallbackType } from './callback-type';
 
 @Injectable({ providedIn: 'root' })
 export class CallbackService {
@@ -23,7 +22,7 @@ export class CallbackService {
     private scheduledHeartBeatInternal: any;
     private boundSilentRenewEvent: any;
 
-    private stsCallbackInternal$ = new Subject<CallbackType>();
+    private stsCallbackInternal$ = new Subject();
 
     get stsCallback$() {
         return this.stsCallbackInternal$.asObservable();
@@ -46,18 +45,18 @@ export class CallbackService {
 
     handlePossibleStsCallback(currentCallbackUrl: string) {
         if (!this.urlService.isCallbackFromSts()) {
-            return of(null);
+            return of(null).pipe(tap(() => this.stsCallbackInternal$.next()));
         }
 
         if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            return this.authorizedCallbackWithCode(currentCallbackUrl);
+            return this.authorizedCallbackWithCode(currentCallbackUrl).pipe(tap(() => this.stsCallbackInternal$.next()));
         }
 
         if (this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken()) {
-            return this.authorizedImplicitFlowCallback();
+            return this.authorizedImplicitFlowCallback().pipe(tap(() => this.stsCallbackInternal$.next()));
         }
 
-        return of(null);
+        return of(null).pipe(tap(() => this.stsCallbackInternal$.next()));
     }
 
     // Code Flow Callback
