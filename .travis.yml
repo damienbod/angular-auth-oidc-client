@@ -14,7 +14,7 @@ script:
     - npm run build-lib
     - cd ../..
     - ls
-    # - ng new testProject
+    - ng new testProject
     # - cd ./testProject
     # - npm install ../damienbod/angular-auth-oidc-client/dist/angular-auth-oidc-client
     # - npm test -- --watch=false --browsers=ChromeHeadless
