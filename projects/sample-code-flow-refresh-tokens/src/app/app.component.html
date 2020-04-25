@@ -1,6 +1,6 @@
 <div *ngIf="isAuthenticated$ | async as isAuthenticated; else noAuth">
     <button (click)="logout()">Logout</button>
-    <button (click)="logoffAndRevokeTokens()">logoffAndRevokeTokens</button>
+    <button (click)="logoffAndRevokeTokens()">Logout and revoke tokens</button>
     <button (click)="revokeAccessToken()">Revoke access token</button>
     <button (click)="revokeRefreshToken()">Rovoke refresh token</button>
     <hr />

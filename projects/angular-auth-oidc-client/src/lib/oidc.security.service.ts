@@ -2,7 +2,7 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of, Subject, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { DataService } from './api/data.service';
 import { AuthStateService } from './authState/auth-state.service';
 import { AuthorizedState } from './authState/authorized-state';
@@ -241,9 +241,21 @@ export class OidcSecurityService {
     }
 
     logoffAndRevokeTokens(urlHandler?: (url: string) => any) {
-        this.revokeRefreshToken().subscribe();
-        this.revokeAccessToken().subscribe();
-        this.logoff();
+        return this.revokeRefreshToken()
+            .pipe(
+                catchError((error) => {
+                    const errorMessage = `revokeRefreshToken failed ${error}`;
+                    this.loggerService.logError(errorMessage);
+                    return throwError(errorMessage);
+                }),
+                switchMap((result) => this.revokeAccessToken(result)),
+                catchError((error) => {
+                    const errorMessage = `revokeAccessToken failed ${error}`;
+                    this.loggerService.logError(errorMessage);
+                    return throwError(errorMessage);
+                })
+            )
+            .subscribe(() => this.logoff(urlHandler));
     }
 
     logoff(urlHandler?: (url: string) => any) {
