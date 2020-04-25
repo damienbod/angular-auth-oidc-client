@@ -258,7 +258,7 @@ export class OidcSecurityService {
     }
 
     // https://tools.ietf.org/html/rfc7009
-    revokeAccessToken(accessToken: any) {
+    revokeAccessToken(accessToken?: any) {
         const accessTok = accessToken || this.storagePersistanceService.accessToken;
         const body = this.urlService.createRevocationEndpointBodyAccessToken(accessTok);
         const url = this.urlService.getRevocationEndpointUrl();
@@ -280,7 +280,7 @@ export class OidcSecurityService {
     }
 
     // https://tools.ietf.org/html/rfc7009
-    revokeRefreshToken(refreshToken: any) {
+    revokeRefreshToken(refreshToken?: any) {
         const refreshTok = refreshToken || this.storagePersistanceService.getRefreshToken();
         const body = this.urlService.createRevocationEndpointBodyRefreshToken(refreshTok);
         const url = this.urlService.getRevocationEndpointUrl();
