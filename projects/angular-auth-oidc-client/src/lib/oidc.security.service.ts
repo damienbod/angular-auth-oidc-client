@@ -324,7 +324,15 @@ export class OidcSecurityService {
                     if (this.configurationProvider.openIDConfiguration.silentRenew) {
                         if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
                             // Refresh Session using Refresh tokens
-                            this.refreshSessionWithRefreshTokens().subscribe();
+                            this.refreshSessionWithRefreshTokens().subscribe(
+                                () => {
+                                    this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
+                                },
+                                (err: any) => {
+                                    this.loggerService.logError('Error: ' + err);
+                                    this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
+                                }
+                            );
                         } else {
                             // Send Silent renew request in iframe
                             this.refreshSessionWithIframe().subscribe(
