@@ -93,6 +93,8 @@ export class OidcSecurityService {
 
         const callback$ = this.callbackService.handlePossibleStsCallback(window.location.toString());
 
+        // MAYBE THE CALLBACK HAS TO BE EXECUTED AS the FIRST step in this method, because it sets the `isAuthenticated`
+        // but idk, ask damien about this.
         return callback$.pipe(switchMap(() => of(this.authStateService.isAuthStorageTokenValid())));
     }
 
