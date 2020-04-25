@@ -277,4 +277,26 @@ describe('User Service', () => {
             expect(eventSpy).toHaveBeenCalledWith(EventTypes.UserDataChanged, 'something');
         });
     });
+
+    describe('validateUserdataSubIdToken', () => {
+        it('with no idTokenSub returns false', () => {
+            const serviceAsAny = userService as any;
+            const result = serviceAsAny.validateUserdataSubIdToken('', 'anything');
+            expect(result).toBeFalse();
+        });
+
+        it('with no userdataSub returns false', () => {
+            const serviceAsAny = userService as any;
+            const result = serviceAsAny.validateUserdataSubIdToken('something', '');
+            expect(result).toBeFalse();
+        });
+
+        it('with idTokenSub and userdataSub not match logs and returns false', () => {
+            const serviceAsAny = userService as any;
+            const loggerspy = spyOn(loggerService, 'logDebug');
+            const result = serviceAsAny.validateUserdataSubIdToken('something', 'something2');
+            expect(result).toBeFalse();
+            expect(loggerspy).toHaveBeenCalledWith('validateUserdataSubIdToken failed', 'something', 'something2');
+        });
+    });
 });
