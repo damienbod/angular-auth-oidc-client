@@ -12,6 +12,7 @@ import { TokenValidationServiceMock } from '../../validation/token-validation.se
 import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { PlatformProvider } from '../platform-provider/platform.provider';
 import { PlatformProviderMock } from '../platform-provider/platform.provider-mock';
+import { AuthWellKnownEndpoints } from './../../config/auth-well-known-endpoints';
 import { UrlService } from './url.service';
 
 describe('UrlService Tests', () => {
@@ -298,9 +299,10 @@ describe('UrlService Tests', () => {
             config.scope = 'openid email profile';
             config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
 
-            configurationProvider.setConfig(config, null);
+            const revocationEndpoint = 'http://example';
+            configurationProvider.setConfig(config, { revocation_endpoint: revocationEndpoint } as AuthWellKnownEndpoints);
 
-            const value = service.createEndSessionUrl('http://example', 'mytoken');
+            const value = service.createEndSessionUrl('mytoken');
 
             const expectValue =
                 'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
@@ -393,12 +395,10 @@ describe('UrlService Tests', () => {
             config.scope = 'openid email profile';
             config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
 
-            configurationProvider.setConfig(config, null);
+            const revocationEndpoint = 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in';
+            configurationProvider.setConfig(config, { revocation_endpoint: revocationEndpoint } as AuthWellKnownEndpoints);
 
-            const value = service.createEndSessionUrl(
-                'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in',
-                'UzI1NiIsImtpZCI6Il'
-            );
+            const value = service.createEndSessionUrl('UzI1NiIsImtpZCI6Il');
 
             const expectValue =
                 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in' +
