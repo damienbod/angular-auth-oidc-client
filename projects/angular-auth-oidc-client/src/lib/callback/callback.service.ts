@@ -40,7 +40,7 @@ export class CallbackService {
         private silentRenewService: SilentRenewService,
         private userService: UserService,
         private zone: NgZone,
-        private readonly authStateService: AuthStateService
+        private authStateService: AuthStateService
     ) {}
 
     handlePossibleStsCallback(currentCallbackUrl: string) {
