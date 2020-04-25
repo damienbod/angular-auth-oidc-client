@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
 
             .subscribe((isAuthenticated) => {
                 if (!isAuthenticated) {
-                    if ('/autologin' !== window.location.pathname && !this.isCallback()) {
+                    if ('/autologin' !== window.location.pathname) {
                         this.write('redirect', window.location.pathname);
                         this.router.navigate(['/autologin']);
                     }
@@ -42,10 +42,6 @@ export class AppComponent implements OnInit {
         this.oidcSecurityService.logoff();
     }
 
-    private isCallback() {
-        return window.location.toString().includes('?code');
-    }
-
     private navigateToStoredEndpoint() {
         const path = this.read('redirect');
 
@@ -63,7 +59,6 @@ export class AppComponent implements OnInit {
     private read(key: string): any {
         const data = localStorage.getItem(key);
         if (data) {
-            alert('reading :' + data);
             return JSON.parse(data);
         }
 
@@ -71,7 +66,6 @@ export class AppComponent implements OnInit {
     }
 
     private write(key: string, value: any): void {
-        alert('writing :' + value);
         localStorage.setItem(key, JSON.stringify(value));
     }
 }
