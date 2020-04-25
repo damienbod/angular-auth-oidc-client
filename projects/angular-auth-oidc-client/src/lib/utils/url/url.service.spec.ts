@@ -299,8 +299,8 @@ describe('UrlService Tests', () => {
             config.scope = 'openid email profile';
             config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
 
-            const revocationEndpoint = 'http://example';
-            configurationProvider.setConfig(config, { revocation_endpoint: revocationEndpoint } as AuthWellKnownEndpoints);
+            const endSessionEndpoint = 'http://example';
+            configurationProvider.setConfig(config, { endSessionEndpoint } as AuthWellKnownEndpoints);
 
             const value = service.createEndSessionUrl('mytoken');
 
@@ -395,8 +395,8 @@ describe('UrlService Tests', () => {
             config.scope = 'openid email profile';
             config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
 
-            const revocationEndpoint = 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in';
-            configurationProvider.setConfig(config, { revocation_endpoint: revocationEndpoint } as AuthWellKnownEndpoints);
+            const endSessionEndpoint = 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in';
+            configurationProvider.setConfig(config, { endSessionEndpoint } as AuthWellKnownEndpoints);
 
             const value = service.createEndSessionUrl('UzI1NiIsImtpZCI6Il');
 
