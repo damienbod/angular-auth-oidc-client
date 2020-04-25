@@ -322,7 +322,7 @@ export class OidcSecurityService {
 
                     // TODO remove subscribe
                     if (this.configurationProvider.openIDConfiguration.silentRenew) {
-                        if (this.flowHelper.isCurrentFlowCodeFlow() && this.configurationProvider.openIDConfiguration.useRefreshToken) {
+                        if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
                             // Refresh Session using Refresh tokens
                             this.refreshSessionWithRefreshTokens().subscribe();
                         } else {
