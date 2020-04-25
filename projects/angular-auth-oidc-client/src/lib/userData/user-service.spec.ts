@@ -1,5 +1,5 @@
 import { async, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { ConfigurationProvider } from '../config/config.provider';
@@ -51,6 +51,10 @@ describe('User Service', () => {
 
     it('should create', () => {
         expect(userService).toBeTruthy();
+    });
+
+    it('public authorize$ is observable$', () => {
+        expect(userService.userData$).toEqual(jasmine.any(Observable));
     });
 
     describe('getAndPersistUserDataInStore', () => {
@@ -216,6 +220,31 @@ describe('User Service', () => {
             const spy = spyOn(eventsService, 'fireEvent');
             userService.resetUserDataInStore();
             expect(spy).toHaveBeenCalledWith(EventTypes.UserDataChanged, null);
+        });
+    });
+
+    describe('publishUserdataIfExists', () => {
+        it('do nothing if no userdata is stored', () => {
+            spyOn(userService, 'getUserDataFromStore').and.returnValue('');
+            const observableSpy = spyOn((userService as any).userDataInternal$, 'next');
+            const eventSpy = spyOn(eventsService, 'fireEvent');
+            userService.publishUserdataIfExists();
+            expect(observableSpy).not.toHaveBeenCalled();
+            expect(eventSpy).not.toHaveBeenCalled();
+        });
+
+        it('userDataInternal is fired if userdata exists', () => {
+            spyOn(userService, 'getUserDataFromStore').and.returnValue('something');
+            const observableSpy = spyOn((userService as any).userDataInternal$, 'next');
+            userService.publishUserdataIfExists();
+            expect(observableSpy).toHaveBeenCalledWith('something');
+        });
+
+        it('eventservice UserDataChanged is fired if userdata exists', () => {
+            spyOn(userService, 'getUserDataFromStore').and.returnValue('something');
+            const eventSpy = spyOn(eventsService, 'fireEvent');
+            userService.publishUserdataIfExists();
+            expect(eventSpy).toHaveBeenCalledWith(EventTypes.UserDataChanged, 'something');
         });
     });
 });

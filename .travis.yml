@@ -5,23 +5,19 @@ addons:
 language: node_js
 node_js:
     - '12'
-
 install:
-    - npm install
+    - npm ci
 script:
     - npm run lint-lib
     - npm run test-lib-ci
     - npm run build-lib
-    - cd ../..
-    - ls
-    - ng new testProject
+    # - cd ../..
+    # - ls
+    # - ng new testProject
     # - cd ./testProject
     # - npm install ../damienbod/angular-auth-oidc-client/dist/angular-auth-oidc-client
     # - npm test -- --watch=false --browsers=ChromeHeadless
 before_script:
-    - export DISPLAY=:99.0
-    - sh -e /etc/init.d/xvfb start
-    - sleep 3
     - npm install -g @angular/cli
 notifications:
     email: false
