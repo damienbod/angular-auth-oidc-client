@@ -77,30 +77,22 @@ export class UrlService {
 
         return null;
     }
-    createRevocationEndpointAccessTokenUrl(token: any) {
-        return this.createRevocationEndpointUrl(token, 'access_token');
+    createRevocationEndpointBodyAccessToken(token: any) {
+        return `token=${token}&token_type_hint=access_token`;
     }
 
-    createRevocationEndpointRefreshTokenUrl(token: any) {
-        return this.createRevocationEndpointUrl(token, 'refresh_token');
+    createRevocationEndpointBodyRefreshToken(token: any) {
+        return `token=${token}&token_type_hint=refresh_token`;
     }
 
-    private createRevocationEndpointUrl(token: any, tokenTypeHint: string) {
+    getRevocationEndpointUrl() {
         if (this.configurationProvider.wellKnownEndpoints) {
             if (this.configurationProvider.wellKnownEndpoints.revocationEndpoint) {
                 const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.revocationEndpoint;
                 const urlParts = endSessionEndpoint.split('?');
 
-                const authorizationEndsessionUrl = urlParts[0];
-
-                let params = new HttpParams({
-                    fromString: urlParts[1],
-                    encoder: new UriEncoder(),
-                });
-                params = params.set('token', token);
-                params = params.append('token_type_hint', tokenTypeHint);
-
-                return `${authorizationEndsessionUrl}?${params}`;
+                const revocationEndpointUrl = urlParts[0];
+                return revocationEndpointUrl;
             }
         }
 

@@ -408,25 +408,39 @@ describe('UrlService Tests', () => {
             expect(value).toEqual(expectValue);
         });
 
-        it('createRevocationUrl access_token default', () => {
-            const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-            config.redirectUrl = 'https://localhost:44386';
-            config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-            config.responseType = 'id_token token';
-            config.scope = 'openid email profile';
-            config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
-
-            const revocationEndpoint = 'http://example';
-            configurationProvider.setConfig(config, { revocationEndpoint } as AuthWellKnownEndpoints);
-
-            const value = service.createRevocationEndpointRefreshTokenUrl('mytoken');
-
-            const expectValue = 'http://example?token=mytoken&token_type_hint=access_token';
+        it('createRevocationBody access_token default', () => {
+            const value = service.createRevocationEndpointBodyAccessToken('mytoken');
+            const expectValue = 'token=mytoken&token_type_hint=access_token';
 
             expect(value).toEqual(expectValue);
         });
 
-        it('createRevocationUrl refresh_token default', () => {
+        it('createRevocationBody refresh_token default', () => {
+            const value = service.createRevocationEndpointBodyRefreshToken('mytoken');
+            const expectValue = 'token=mytoken&token_type_hint=refresh_token';
+
+            expect(value).toEqual(expectValue);
+        });
+
+        it('createRevocationUrl with params', () => {
+            const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+            config.redirectUrl = 'https://localhost:44386';
+            config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+            config.responseType = 'id_token token';
+            config.scope = 'openid email profile';
+            config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+
+            const revocationEndpoint = 'http://example?cod=ddd';
+            configurationProvider.setConfig(config, { revocationEndpoint } as AuthWellKnownEndpoints);
+
+            const value = service.getRevocationEndpointUrl();
+
+            const expectValue = 'http://example';
+
+            expect(value).toEqual(expectValue);
+        });
+
+        it('createRevocationUrl default', () => {
             const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
             config.redirectUrl = 'https://localhost:44386';
             config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
@@ -437,9 +451,9 @@ describe('UrlService Tests', () => {
             const revocationEndpoint = 'http://example';
             configurationProvider.setConfig(config, { revocationEndpoint } as AuthWellKnownEndpoints);
 
-            const value = service.createRevocationEndpointRefreshTokenUrl('mytoken');
+            const value = service.getRevocationEndpointUrl();
 
-            const expectValue = 'http://example?token=mytoken&token_type_hint=refresh_token';
+            const expectValue = 'http://example';
 
             expect(value).toEqual(expectValue);
         });

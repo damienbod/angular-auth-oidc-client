@@ -1,8 +1,9 @@
-import { HttpParams } from '@angular/common/http';
+import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of, Subject, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
+import { DataService } from './api/data.service';
 import { AuthStateService } from './authState/auth-state.service';
 import { AuthorizedState } from './authState/authorized-state';
 import { ConfigurationProvider } from './config';
@@ -65,7 +66,8 @@ export class OidcSecurityService {
         private readonly flowHelper: FlowHelper,
         private readonly flowsDataService: FlowsDataService,
         private readonly flowsService: FlowsService,
-        private readonly router: Router
+        private readonly router: Router,
+        private readonly dataService: DataService
     ) {}
 
     private runTokenValidationRunning = false;
@@ -255,16 +257,48 @@ export class OidcSecurityService {
         }
     }
 
+    // https://tools.ietf.org/html/rfc7009
     sendRevocationReqAccessToken(accessToken: any) {
         const accessTok = accessToken || this.storagePersistanceService.accessToken;
-        const url = this.urlService.createRevocationEndpointAccessTokenUrl(accessTok);
-        // TODO send request
+        const body = this.urlService.createRevocationEndpointBodyAccessToken(accessTok);
+        const url = this.urlService.getRevocationEndpointUrl();
+
+        let headers: HttpHeaders = new HttpHeaders();
+        headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
+
+        return this.dataService.post(url, body, headers).pipe(
+            catchError((error) => {
+                const errorMessage = `Revocation request failed ${error}`;
+                this.loggerService.logError(errorMessage);
+                return throwError(errorMessage);
+            }),
+            map((response: any) => {
+                this.loggerService.logDebug('revocation endpoint post response: ', response);
+                return response;
+            })
+        );
     }
 
+    // https://tools.ietf.org/html/rfc7009
     sendRevocationReqRefreshToken(refreshToken: any) {
         const refreshTok = refreshToken || this.storagePersistanceService.getRefreshToken();
-        const url = this.urlService.createRevocationEndpointRefreshTokenUrl(refreshTok);
-        // TODO send request
+        const body = this.urlService.createRevocationEndpointBodyRefreshToken(refreshTok);
+        const url = this.urlService.getRevocationEndpointUrl();
+
+        let headers: HttpHeaders = new HttpHeaders();
+        headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
+
+        return this.dataService.post(url, body, headers).pipe(
+            catchError((error) => {
+                const errorMessage = `Revocation request failed ${error}`;
+                this.loggerService.logError(errorMessage);
+                return throwError(errorMessage);
+            }),
+            map((response: any) => {
+                this.loggerService.logDebug('revocation endpoint post response: ', response);
+                return response;
+            })
+        );
     }
 
     getEndSessionUrl(): string | null {
