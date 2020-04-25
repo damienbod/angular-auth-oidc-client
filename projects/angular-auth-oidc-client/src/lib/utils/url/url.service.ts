@@ -77,6 +77,35 @@ export class UrlService {
 
         return null;
     }
+    createRevocationEndpointAccessTokenUrl(token: any) {
+        return this.createRevocationEndpointUrl(token, 'access_token');
+    }
+
+    createRevocationEndpointRefreshTokenUrl(token: any) {
+        return this.createRevocationEndpointUrl(token, 'refresh_token');
+    }
+
+    private createRevocationEndpointUrl(token: any, tokenTypeHint: string) {
+        if (this.configurationProvider.wellKnownEndpoints) {
+            if (this.configurationProvider.wellKnownEndpoints.revocationEndpoint) {
+                const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.revocationEndpoint;
+                const urlParts = endSessionEndpoint.split('?');
+
+                const authorizationEndsessionUrl = urlParts[0];
+
+                let params = new HttpParams({
+                    fromString: urlParts[1],
+                    encoder: new UriEncoder(),
+                });
+                params = params.set('token', token);
+                params = params.append('token_type_hint', tokenTypeHint);
+
+                return `${authorizationEndsessionUrl}?${params}`;
+            }
+        }
+
+        return null;
+    }
 
     createBodyForCodeFlowCodeRequest(code: string): string {
         const codeVerifier = this.flowsDataService.getCodeVerifier();
