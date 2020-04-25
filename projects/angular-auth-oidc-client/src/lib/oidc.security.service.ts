@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
 import { ConfigurationProvider } from './config';
@@ -68,34 +68,34 @@ export class OidcSecurityService {
         }
         this.loggerService.logDebug('STS server: ' + this.configurationProvider.openIDConfiguration.stsServer);
 
-        const isAuthenticated = this.authStateService.isAuthStorageTokenValid();
-        // validate storage and @@set authorized@@ if true
-        if (isAuthenticated) {
-            this.authStateService.setAuthorizedAndFireEvent();
-            this.userService.publishUserdataIfExists();
+        return this.callbackService.handlePossibleStsCallback(window.location.toString()).pipe(
+            map(() => {
+                const isAuthenticated = this.authStateService.isAuthStorageTokenValid();
+                // validate storage and @@set authorized@@ if true
+                if (isAuthenticated) {
+                    this.authStateService.setAuthorizedAndFireEvent();
+                    this.userService.publishUserdataIfExists();
 
-            this.callbackService.startTokenValidationPeriodically();
+                    this.callbackService.startTokenValidationPeriodically();
 
-            if (this.checkSessionService.isCheckSessionConfigured()) {
-                this.checkSessionService.start();
-            }
+                    if (this.checkSessionService.isCheckSessionConfigured()) {
+                        this.checkSessionService.start();
+                    }
 
-            if (this.silentRenewService.isSilentRenewConfigured()) {
-                this.silentRenewService.getOrCreateIframe();
-            }
-        }
+                    if (this.silentRenewService.isSilentRenewConfigured()) {
+                        this.silentRenewService.getOrCreateIframe();
+                    }
+                }
 
-        this.loggerService.logDebug('checkAuth completed fire events, auth: ' + isAuthenticated);
+                this.loggerService.logDebug('checkAuth completed fire events, auth: ' + isAuthenticated);
 
-        // TODO EXTRACT THIS IN SERVICE LATER
-        this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
-        this.isModuleSetupInternal$.next(true);
+                // TODO EXTRACT THIS IN SERVICE LATER
+                this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
+                this.isModuleSetupInternal$.next(true);
 
-        const callback$ = this.callbackService.handlePossibleStsCallback(window.location.toString());
-
-        // MAYBE THE CALLBACK HAS TO BE EXECUTED AS the FIRST step in this method, because it sets the `isAuthenticated`
-        // but idk, ask damien about this.
-        return callback$.pipe(switchMap(() => of(this.authStateService.isAuthStorageTokenValid())));
+                return isAuthenticated;
+            })
+        );
     }
 
     getToken(): string {
