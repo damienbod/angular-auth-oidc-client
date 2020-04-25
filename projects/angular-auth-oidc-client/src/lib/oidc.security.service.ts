@@ -307,10 +307,10 @@ export class OidcSecurityService {
          */
         const silentRenewHeartBeatCheck = () => {
             this.loggerService.logDebug(
-                'Checking:' +
-                    `\tsilentRenewRunning: ${this.flowsDataService.isSilentRenewRunning()} ` +
-                    `\tid_token: ${!!this.authStateService.getIdToken()} ` +
-                    `\tuserData: ${!!this.userService.getUserDataFromStore()}`
+                'Checking: ' +
+                    `silentRenewRunning: ${this.flowsDataService.isSilentRenewRunning()} ` +
+                    ` id_token: ${!!this.authStateService.getIdToken()} ` +
+                    ` userData: ${!!this.userService.getUserDataFromStore()}`
             );
             if (
                 this.userService.getUserDataFromStore() &&
