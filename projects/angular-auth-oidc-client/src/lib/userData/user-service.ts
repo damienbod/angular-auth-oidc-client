@@ -35,9 +35,10 @@ export class UserService {
 
         const existingUserDataFromStorage = this.getUserDataFromStore();
         const haveUserData = !!existingUserDataFromStorage;
-        const currentFlowIsIdTokenWithAccessTokenOrCode = this.flowHelper.currentFlowIs(['id_token token', 'code']);
+        const isCurrentFlowImplicitFlowWithAccessToken = this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken();
+        const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow();
 
-        if (!currentFlowIsIdTokenWithAccessTokenOrCode) {
+        if (!(isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow)) {
             this.loggerService.logDebug('authorizedCallback id_token flow');
             this.loggerService.logDebug(this.storagePersistanceService.accessToken);
 
