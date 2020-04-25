@@ -255,6 +255,18 @@ export class OidcSecurityService {
         }
     }
 
+    sendRevocationReqAccessToken(accessToken: any) {
+        const accessTok = accessToken || this.storagePersistanceService.accessToken;
+        const url = this.urlService.createRevocationEndpointAccessTokenUrl(accessTok);
+        // TODO send request
+    }
+
+    sendRevocationReqRefreshToken(refreshToken: any) {
+        const refreshTok = refreshToken || this.storagePersistanceService.getRefreshToken();
+        const url = this.urlService.createRevocationEndpointRefreshTokenUrl(refreshTok);
+        // TODO send request
+    }
+
     getEndSessionUrl(): string | null {
         const idTokenHint = this.storagePersistanceService.idToken;
         return this.urlService.createEndSessionUrl(idTokenHint);
