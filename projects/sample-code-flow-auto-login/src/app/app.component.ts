@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { tap } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -9,26 +8,23 @@ import { tap } from 'rxjs/operators';
     styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-    constructor(public oidcSecurityService: OidcSecurityService, private router: Router) {}
+    constructor(private oidcSecurityService: OidcSecurityService, private router: Router) {}
 
     ngOnInit() {
         this.oidcSecurityService
             .checkAuth()
 
-            .pipe(
-                tap((isAuthenticated) => {
-                    if (!isAuthenticated) {
-                        if ('/autologin' !== window.location.pathname && !this.isCallback()) {
-                            this.write('redirect', window.location.pathname);
-                            this.router.navigate(['/autologin']);
-                        }
+            .subscribe((isAuthenticated) => {
+                if (!isAuthenticated) {
+                    if ('/autologin' !== window.location.pathname && !this.isCallback()) {
+                        this.write('redirect', window.location.pathname);
+                        this.router.navigate(['/autologin']);
                     }
-                    if (isAuthenticated) {
-                        this.onAuthorizationResultComplete(isAuthenticated);
-                    }
-                })
-            )
-            .subscribe((result) => console.log('result', result));
+                }
+                if (isAuthenticated) {
+                    this.navigateToStoredEndpoint(isAuthenticated);
+                }
+            });
     }
 
     login() {
@@ -50,11 +46,11 @@ export class AppComponent implements OnInit {
         return window.location.toString().includes('?code');
     }
 
-    private onAuthorizationResultComplete(isAuthenticated: boolean) {
+    private navigateToStoredEndpoint() {
         const path = this.read('redirect');
 
-        if (!isAuthenticated) {
-            this.router.navigate(['/unauthorized']);
+        if (this.router.url === path) {
+            return;
         }
 
         if (path.toString().includes('/unauthorized')) {
@@ -67,6 +63,7 @@ export class AppComponent implements OnInit {
     private read(key: string): any {
         const data = localStorage.getItem(key);
         if (data) {
+            alert('reading :' + data);
             return JSON.parse(data);
         }
 
@@ -74,6 +71,7 @@ export class AppComponent implements OnInit {
     }
 
     private write(key: string, value: any): void {
+        alert('writing :' + value);
         localStorage.setItem(key, JSON.stringify(value));
     }
 }
