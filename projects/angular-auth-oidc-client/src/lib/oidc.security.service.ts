@@ -240,6 +240,12 @@ export class OidcSecurityService {
         );
     }
 
+    logoffAndRevokeTokens(urlHandler?: (url: string) => any) {
+        this.revokeRefreshToken().subscribe();
+        this.revokeAccessToken().subscribe();
+        this.logoff();
+    }
+
     logoff(urlHandler?: (url: string) => any) {
         this.loggerService.logDebug('logoff, remove auth ');
         const endSessionUrl = this.getEndSessionUrl();
