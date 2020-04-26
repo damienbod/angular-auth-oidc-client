@@ -12,6 +12,7 @@ import { CheckSessionService } from './iframe/check-session.service';
 import { IFrameService } from './iframe/existing-iframe.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
 import { LoggerService } from './logging/logger.service';
+import { LogoffRevocationService } from './logoffRevoke/logoff-revocation-service';
 import { OidcSecurityService } from './oidc.security.service';
 import { AbstractSecurityStorage, BrowserStorageService, StoragePersistanceService } from './storage';
 import { UserService } from './userData/user-service';
@@ -39,6 +40,7 @@ export class AuthModule {
                 FlowsService,
                 SilentRenewService,
                 ConfigurationProvider,
+                LogoffRevocationService,
                 UserService,
                 RandomService,
                 HttpBaseService,

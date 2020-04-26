@@ -311,24 +311,6 @@ describe('UrlService Tests', () => {
         });
 
         it('createAuthorizeUrl default', () => {
-            // let well = '{
-            // 	"issuer":"https://accounts.google.com",
-            // 	"authorization_endpoint":"https://accounts.google.com/o/oauth2/v2/auth",
-            // 	"token_endpoint":"https://www.googleapis.com/oauth2/v4/token",
-            // 	"userinfo_endpoint":"https://www.googleapis.com/oauth2/v3/userinfo",
-            // 	"revocation_endpoint":"https://accounts.google.com/o/oauth2/revoke",
-            // 	"jwks_uri":"https://www.googleapis.com/oauth2/v3/certs",
-            // 	"response_types_supported":[ "code", "token", "id_token", "codetoken", "codeid_token", "tokenid_token", "codetokenid_token",
-            // "none" ],
-            // 	"subject_types_supported":[ "public" ],
-            // 	"id_token_signing_alg_values_supported":[ "RS256" ],
-            // 	"scopes_supported":[ "openid", "email", "profile" ],
-            // 	"token_endpoint_auth_methods_supported":[ "client_secret_post", "client_secret_basic" ],
-            // 	"claims_supported":[ "aud", "email", "email_verified", "exp", "family_name", "given_name", "iat", "iss","locale",
-            // "name", "picture", "sub"],
-            // 	"code_challenge_methods_supported":["plain","S256"]}';
-            // (oidcSecurityService as any).oidcSecurityCommon.store('wellknownendpoints', well);
-
             const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
             config.redirectUrl = 'https://localhost:44386';
             config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
@@ -404,6 +386,78 @@ describe('UrlService Tests', () => {
                 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in' +
                 '&id_token_hint=UzI1NiIsImtpZCI6Il' +
                 '&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
+
+            expect(value).toEqual(expectValue);
+        });
+
+        it('createRevocationBody access_token default', () => {
+            const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+            config.redirectUrl = 'https://localhost:44386';
+            config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+            config.responseType = 'id_token token';
+            config.scope = 'openid email profile';
+            config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+
+            const revocationEndpoint = 'http://example?cod=ddd';
+            configurationProvider.setConfig(config, { revocationEndpoint } as AuthWellKnownEndpoints);
+
+            const value = service.createRevocationEndpointBodyAccessToken('mytoken');
+            const expectValue =
+                'client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&token=mytoken&token_type_hint=access_token';
+
+            expect(value).toEqual(expectValue);
+        });
+
+        it('createRevocationBody refresh_token default', () => {
+            const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+            config.redirectUrl = 'https://localhost:44386';
+            config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+            config.responseType = 'id_token token';
+            config.scope = 'openid email profile';
+            config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+
+            const revocationEndpoint = 'http://example?cod=ddd';
+            configurationProvider.setConfig(config, { revocationEndpoint } as AuthWellKnownEndpoints);
+
+            const value = service.createRevocationEndpointBodyRefreshToken('mytoken');
+            const expectValue =
+                'client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&token=mytoken&token_type_hint=refresh_token';
+
+            expect(value).toEqual(expectValue);
+        });
+
+        it('createRevocationUrl with params', () => {
+            const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+            config.redirectUrl = 'https://localhost:44386';
+            config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+            config.responseType = 'id_token token';
+            config.scope = 'openid email profile';
+            config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+
+            const revocationEndpoint = 'http://example?cod=ddd';
+            configurationProvider.setConfig(config, { revocationEndpoint } as AuthWellKnownEndpoints);
+
+            const value = service.getRevocationEndpointUrl();
+
+            const expectValue = 'http://example';
+
+            expect(value).toEqual(expectValue);
+        });
+
+        it('createRevocationUrl default', () => {
+            const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+            config.redirectUrl = 'https://localhost:44386';
+            config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+            config.responseType = 'id_token token';
+            config.scope = 'openid email profile';
+            config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+
+            const revocationEndpoint = 'http://example';
+            configurationProvider.setConfig(config, { revocationEndpoint } as AuthWellKnownEndpoints);
+
+            const value = service.getRevocationEndpointUrl();
+
+            const expectValue = 'http://example';
 
             expect(value).toEqual(expectValue);
         });

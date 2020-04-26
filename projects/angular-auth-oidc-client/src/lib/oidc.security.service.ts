@@ -10,7 +10,7 @@ import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsService } from './flows/flows.service';
 import { CheckSessionService, SilentRenewService } from './iframe';
 import { LoggerService } from './logging/logger.service';
-import { StoragePersistanceService } from './storage';
+import { LogoffRevocationService } from './logoffRevoke/logoff-revocation-service';
 import { UserService } from './userData/user-service';
 import { UrlService } from './utils';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
@@ -48,7 +48,6 @@ export class OidcSecurityService {
         private checkSessionService: CheckSessionService,
         private silentRenewService: SilentRenewService,
         private userService: UserService,
-        private storagePersistanceService: StoragePersistanceService,
         private tokenValidationService: TokenValidationService,
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,
@@ -58,7 +57,8 @@ export class OidcSecurityService {
         private authStateService: AuthStateService,
         private flowsDataService: FlowsDataService,
         private flowsService: FlowsService,
-        private callbackService: CallbackService
+        private callbackService: CallbackService,
+        private logoffRevocationService: LogoffRevocationService
     ) {}
 
     checkAuth(): Observable<boolean> {
@@ -150,26 +150,36 @@ export class OidcSecurityService {
         }
     }
 
+    // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
+    // only the access token is revoked. Then the logout run.
+    logoffAndRevokeTokens(urlHandler?: (url: string) => any) {
+        return this.logoffRevocationService.logoffAndRevokeTokens(urlHandler);
+    }
+
+    // Logs out on the server and the local client.
+    // If the server state has changed, checksession, then only a local logout.
     logoff(urlHandler?: (url: string) => any) {
-        this.loggerService.logDebug('logoff, remove auth ');
-        const endSessionUrl = this.getEndSessionUrl();
-        this.flowsService.resetAuthorizationData();
-        if (endSessionUrl) {
-            if (this.checkSessionService.serverStateChanged()) {
-                this.loggerService.logDebug('only local login cleaned up, server session has changed');
-            } else if (urlHandler) {
-                urlHandler(endSessionUrl);
-            } else {
-                this.redirectTo(endSessionUrl);
-            }
-        } else {
-            this.loggerService.logDebug('only local login cleaned up, no end_session_endpoint');
-        }
+        return this.logoffRevocationService.logoff(urlHandler);
+    }
+
+    // https://tools.ietf.org/html/rfc7009
+    // revokes an access token on the STS. This is only required in the code flow with refresh tokens.
+    // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
+    // This makes it possible to manage your own tokens.
+    revokeAccessToken(accessToken?: any) {
+        return this.logoffRevocationService.revokeAccessToken(accessToken);
+    }
+
+    // https://tools.ietf.org/html/rfc7009
+    // revokes a refresh token on the STS. This is only required in the code flow with refresh tokens.
+    // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
+    // This makes it possible to manage your own tokens.
+    revokeRefreshToken(refreshToken?: any) {
+        return this.logoffRevocationService.revokeRefreshToken(refreshToken);
     }
 
     getEndSessionUrl(): string | null {
-        const idTokenHint = this.storagePersistanceService.idToken;
-        return this.urlService.createEndSessionUrl(idTokenHint);
+        return this.logoffRevocationService.getEndSessionUrl();
     }
 
     doPeriodicallTokenCheck(): void {
