@@ -115,7 +115,7 @@ export class CallbackService {
             `starting token validation check every ${repeatAfterSeconds}s (${millisecondsDelayBetweenTokenCheck}ms)`
         );
 
-        const periodicallyCheck$ = interval(repeatAfterSeconds * 1000).pipe(
+        const periodicallyCheck$ = interval(millisecondsDelayBetweenTokenCheck).pipe(
             switchMap(() => {
                 const idToken = this.authStateService.getIdToken();
                 const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
