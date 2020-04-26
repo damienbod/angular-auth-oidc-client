@@ -86,17 +86,15 @@ export class UrlService {
     }
 
     getRevocationEndpointUrl() {
-        if (this.configurationProvider.wellKnownEndpoints) {
-            if (this.configurationProvider.wellKnownEndpoints.revocationEndpoint) {
-                const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.revocationEndpoint;
-                const urlParts = endSessionEndpoint.split('?');
-
-                const revocationEndpointUrl = urlParts[0];
-                return revocationEndpointUrl;
-            }
+        if (!this.configurationProvider.wellKnownEndpoints?.revocationEndpoint) {
+            return null;
         }
 
-        return null;
+        const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.revocationEndpoint;
+        const urlParts = endSessionEndpoint.split('?');
+
+        const revocationEndpointUrl = urlParts[0];
+        return revocationEndpointUrl;
     }
 
     createBodyForCodeFlowCodeRequest(code: string): string {
