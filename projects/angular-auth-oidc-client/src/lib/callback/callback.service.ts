@@ -133,11 +133,13 @@ export class CallbackService {
                 const idTokenHasExpired = this.authStateService.hasIdTokenExpired();
                 const accessTokenHasExpired = this.authStateService.hasAccessTokenExpiredIfExpiryExists();
 
-                if (!idTokenHasExpired && !accessTokenHasExpired) {
+                console.warn('accessTokenHasExpired', accessTokenHasExpired);
+
+                if (!idTokenHasExpired) {
                     return of(null);
                 }
 
-                this.loggerService.logDebug('IsAuthorized: id_token isTokenExpired, start silent renew if active');
+                this.loggerService.logDebug('IsAuthorized: id_token idTokenHasExpired, start silent renew if active');
 
                 if (!this.configurationProvider.openIDConfiguration.silentRenew) {
                     this.flowsService.resetAuthorizationData();
