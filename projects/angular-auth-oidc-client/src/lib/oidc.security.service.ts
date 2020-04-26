@@ -10,7 +10,7 @@ import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsService } from './flows/flows.service';
 import { CheckSessionService, SilentRenewService } from './iframe';
 import { LoggerService } from './logging/logger.service';
-import { LogoffRevocationService } from './logoffRevoke/logoff-revocation-service';
+import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { UserService } from './userData/user-service';
 import { UrlService } from './utils';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
