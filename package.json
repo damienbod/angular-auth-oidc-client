@@ -6,7 +6,7 @@
         "build": "npm run build-lib",
         "build-app": "ng build sample-code-flow",
         "watch-lib": "ng build angular-auth-oidc-client --watch",
-        "build-lib": "npm run copy-readme-to-lib-folder && ng build angular-auth-oidc-client",
+        "build-lib": "npm run copy-readme-to-lib-folder && && npm run copy-Licence-to-lib-folde && ng build angular-auth-oidc-client",
         "test-lib": "ng test angular-auth-oidc-client --code-coverage",
         "test-lib-ci": "ng test angular-auth-oidc-client --watch=false --browsers=ChromeHeadless",
         "lint-lib": "ng lint angular-auth-oidc-client",
