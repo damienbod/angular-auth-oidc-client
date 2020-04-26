@@ -78,7 +78,7 @@ export class OidcSecurityService {
                     this.authStateService.setAuthorizedAndFireEvent();
                     this.userService.publishUserdataIfExists();
 
-                    this.callbackService.startTokenValidationPeriodically();
+                    this.callbackService.startTokenValidationPeriodically(3);
 
                     if (this.checkSessionService.isCheckSessionConfigured()) {
                         this.checkSessionService.start();
@@ -183,7 +183,7 @@ export class OidcSecurityService {
     }
 
     doPeriodicallTokenCheck(): void {
-        this.callbackService.startTokenValidationPeriodically();
+        this.callbackService.startTokenValidationPeriodically(3);
     }
 
     stopPeriodicallTokenCheck(): void {
