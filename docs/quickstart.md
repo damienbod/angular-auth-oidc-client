@@ -82,3 +82,15 @@ export function configureAuth(oidcConfigService: OidcConfigService, httpClient: 
     return () => setupAction$.toPromise();
 }
 ```
+
+### Silent Renew with the Angular Cli
+
+Add the `silent-renew.html` file to the `angular.json` assets configuration
+
+```json
+"assets": [
+    "projects/sample-code-flow/src/silent-renew.html",
+    "projects/sample-code-flow/src/favicon.ico",
+    "projects/sample-code-flow/src/assets"
+  ],
+```
