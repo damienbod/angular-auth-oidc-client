@@ -240,20 +240,30 @@ export class OidcSecurityService {
         );
     }
 
+    // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
+    // only the access token is revoked. Then the logout run.
     logoffAndRevokeTokens(urlHandler?: (url: string) => any) {
         return this.logoffRevocationService.logoffAndRevokeTokens(urlHandler);
     }
 
+    // Logs out on the server and the local client.
+    // If the server state has changed, checksession, then only a local logout.
     logoff(urlHandler?: (url: string) => any) {
         return this.logoffRevocationService.logoff(urlHandler);
     }
 
     // https://tools.ietf.org/html/rfc7009
+    // revokes an access token on the STS. This is only required in the code flow with refresh tokens.
+    // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
+    // This makes it possible to manage your own tokens.
     revokeAccessToken(accessToken?: any) {
         return this.logoffRevocationService.revokeAccessToken(accessToken);
     }
 
     // https://tools.ietf.org/html/rfc7009
+    // revokes a refresh token on the STS. This is only required in the code flow with refresh tokens.
+    // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
+    // This makes it possible to manage your own tokens.
     revokeRefreshToken(refreshToken?: any) {
         return this.logoffRevocationService.revokeRefreshToken(refreshToken);
     }
