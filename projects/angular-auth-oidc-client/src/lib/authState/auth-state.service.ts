@@ -125,7 +125,7 @@ export class AuthStateService {
     hasAccessTokenExpiredIfExpiryExists() {
         const accessTokenExpiresIn = this.storagePersistanceService.accessTokenExpiresIn;
         const accessTokenHasExpired = this.tokenValidationService.validateAccessTokenNotExpired(accessTokenExpiresIn);
-        return accessTokenHasExpired;
+        return !accessTokenHasExpired;
     }
 
     private getCurrentlyPersistedAuthState() {
