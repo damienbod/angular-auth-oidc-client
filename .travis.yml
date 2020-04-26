@@ -11,6 +11,7 @@ before_install:
 install:
     - npm install
 script:
+    - npm run lint-lib
     - npm run test-lib-ci
     - npm run build-lib
     - cd ../..
