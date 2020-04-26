@@ -22,9 +22,9 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 
 Documentation : [Quickstart](https://github.com/damienbod/angular-auth-oidc-client) | [API Documentation](https://github.com/damienbod/angular-auth-oidc-client/blob/master/API_DOCUMENTATION.md) | [Changelog](https://github.com/damienbod/angular-auth-oidc-client/blob/master/CHANGELOG.md)
 
-## Using the package
+## Installation
 
-Navigate to the level of your package.json and type
+Navigate to the level of your `package.json` and type
 
 ```typescript
  npm install angular-auth-oidc-client
@@ -36,180 +36,9 @@ or with yarn
  yarn add angular-auth-oidc-client
 ```
 
-or you can add the npm package to your package.json
-
-```typescript
- "angular-auth-oidc-client": "^10.0.15"
-```
-
-and type
-
-```typescript
- npm install
-```
-
 ## Configuration
 
-### Approach 1: `APP_INITIALIZER`
-
-Import the module and services in your module.
-
-The `OidcSecurityService` has a dependency on the `HttpClientModule` which needs to be imported. The angular-auth-oidc-client module supports all versions of Angular 4.3 onwards.
-
-## Loading the configuration from the server
-
-```typescript
-import { HttpClientModule } from '@angular/common/http';
-import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { RouterModule } from '@angular/router';
-import { AuthModule, ConfigResult, OidcConfigService, OidcSecurityService, OpenIdConfiguration } from 'angular-auth-oidc-client';
-import { AppComponent } from './app.component';
-
-const oidc_configuration = 'assets/auth.clientConfiguration.json';
-// if your config is on server side
-// const oidc_configuration = ${window.location.origin}/api/ClientAppSettings
-
-export function loadConfig(oidcConfigService: OidcConfigService) {
-    return () => oidcConfigService.load(oidc_configuration);
-}
-
-@NgModule({
-    declarations: [AppComponent],
-    imports: [
-        BrowserModule,
-        HttpClientModule,
-        RouterModule.forRoot([
-            { path: '', component: AppComponent },
-            { path: 'home', component: AppComponent },
-            { path: 'forbidden', component: AppComponent },
-            { path: 'unauthorized', component: AppComponent },
-        ]),
-        AuthModule.forRoot(),
-    ],
-    providers: [
-        OidcConfigService,
-        {
-            provide: APP_INITIALIZER,
-            useFactory: loadConfig,
-            deps: [OidcConfigService],
-            multi: true,
-        },
-    ],
-    bootstrap: [AppComponent],
-})
-export class AppModule {
-    constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
-        this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
-		
-            // Use the configResult to set the configurations
-			
-            const config: OpenIdConfiguration = {
-                stsServer: configResult.customConfig.stsServer,
-                redirect_url: 'https://localhost:4200',
-                client_id: 'angularClient',
-                scope: 'openid profile email',
-                response_type: 'code',
-                silent_renew: true,
-                silent_renew_url: 'https://localhost:4200/silent-renew.html',
-                log_console_debug_active: true,
-                // all other properties you want to set
-            };
-
-            this.oidcSecurityService.setupModule(config, configResult.authWellknownEndpoints);
-        });
-    }
-}
-```
-
-#### assets/auth.clientConfiguration.json
-
-See [Auth documentation](https://github.com/damienbod/angular-auth-oidc-client/blob/master/API_DOCUMENTATION.md#authconfiguration)
-for the detail of each field.
-
-```json
-{
-    "stsServer": "https://localhost:44318",
-    "redirect_url": "https://localhost:44311",
-    "client_id": "angularclient",
-    "response_type": "code",
-    "scope": "dataEventRecords securedFiles openid profile",
-    "post_logout_redirect_uri": "https://localhost:44311",
-    "start_checksession": true,
-    "silent_renew": true,
-    "silent_renew_url": "https://localhost:44311/silent-renew.html",
-    "post_login_route": "/home",
-    "forbidden_route": "/forbidden",
-    "unauthorized_route": "/unauthorized",
-    "log_console_warning_active": true,
-    "log_console_debug_active": true,
-    "max_id_token_iat_offset_allowed_in_seconds": 10
-}
-```
-
-At present only the 'code' with PKCE, 'id_token token' or the 'id_token' flows are supported:
-
-`"response_type": ["code" | "id_token token" | "id_token" ]`
-
-> Note the configuration json must have a property stsServer for this to work.
-
-### Approach 2. `Configuration without APP_INITIALIZER`
-
-```typescript
-export class AppModule {
-    constructor(public oidcSecurityService: OidcSecurityService) {
-        const config: OpenIdConfiguration = {
-            stsServer: 'https://localhost:44363',
-            redirect_url: 'https://localhost:44363',
-            // The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer identified by the iss (issuer) Claim as an audience.
-            // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences not trusted by the Client.
-            client_id: 'singleapp',
-            response_type: 'code', // 'id_token token' Implicit Flow
-            scope: 'dataEventRecords openid',
-            post_logout_redirect_uri: 'https://localhost:44363/Unauthorized',
-            start_checksession: false,
-            silent_renew: true,
-            silent_renew_url: 'https://localhost:44363/silent-renew.html',
-            post_login_route: '/dataeventrecords',
-
-            forbidden_route: '/Forbidden',
-            // HTTP 401
-            unauthorized_route: '/Unauthorized',
-            log_console_warning_active: true,
-            log_console_debug_active: true,
-            // id_token C8: The iat Claim can be used to reject tokens that were issued too far away from the current time,
-            // limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is Client specific.
-            max_id_token_iat_offset_allowed_in_seconds: 10,
-        };
-
-        const authWellKnownEndpoints: AuthWellKnownEndpoints = {
-            issuer: 'https://localhost:44363/.well-known/openid-configuration/jwks',
-            authorization_endpoint: 'https://localhost:44363/connect/authorize',
-            token_endpoint: 'https://localhost:44363/connect/token',
-            userinfo_endpoint: 'https://localhost:44363/connect/userinfo',
-            end_session_endpoint: 'https://localhost:44363/connect/endsession',
-            check_session_iframe: 'https://localhost:44363/connect/checksession',
-            revocation_endpoint: 'https://localhost:44363/connect/revocation',
-            introspection_endpoint: 'https://localhost:44363/connect/introspect',
-        };
-
-        this.oidcSecurityService.setupModule(config, authWellKnownEndpoints);
-    }
-}
-```
-
-### Custom STS server well known configuration
-
-Sometimes it is required to load custom .well-known/openid-configuration. The load_using_custom_stsServer can be used for this.
-
-```typescript
-export function loadConfig(oidcConfigService: OidcConfigService) {
-    return () =>
-        oidcConfigService.load_using_custom_stsServer(
-            'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=b2c_1_susi'
-        );
-}
-```
+[Configuration examples](docs/configuration.md)
 
 ## Usage
 
@@ -245,11 +74,11 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.oidcSecurityService.getIsAuthorized().subscribe(auth => {
+        this.oidcSecurityService.getIsAuthorized().subscribe((auth) => {
             this.isAuthenticated = auth;
         });
 
-        this.oidcSecurityService.getUserData().subscribe(userData => {
+        this.oidcSecurityService.getUserData().subscribe((userData) => {
             this.userData = userData;
         });
     }
@@ -400,7 +229,7 @@ The guard should only be applied to protected URLs. The guard should not be acti
 Custom parameters can be added to the auth request by using the setCustomRequestParameters method. Here you could add ui_locale, acr or whatever you request for your token server.
 
 ```typescript
-this.oidcSecurityService.setCustomRequestParameters({ 'ui_locales': culture});
+this.oidcSecurityService.setCustomRequestParameters({ ui_locales: culture });
 ```
 
 ## Custom Storage
