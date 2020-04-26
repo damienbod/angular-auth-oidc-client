@@ -50,7 +50,6 @@ export class UserService {
             return this.getUserDataOidcFlowAndSave(decodedIdToken.sub).pipe(
                 switchMap((userData) => {
                     this.loggerService.logDebug('Received user data', userData);
-                    console.log('@@@@@@@@@@@@ userData', userData);
                     if (!!userData) {
                         this.loggerService.logDebug(this.storagePersistanceService.accessToken);
                         return of(userData);
