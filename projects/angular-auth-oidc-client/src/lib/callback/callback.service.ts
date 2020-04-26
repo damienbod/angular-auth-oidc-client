@@ -103,7 +103,6 @@ export class CallbackService {
         );
     }
 
-    // TODO THE PERIODICALLY TOKEN VALIDATION DOES NOT BELOND IN THE CALLBACK SERVICE
     startTokenValidationPeriodically(repeatAfterSeconds: number) {
         if (!!this.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
             return;
