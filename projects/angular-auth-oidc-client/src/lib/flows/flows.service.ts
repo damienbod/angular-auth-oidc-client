@@ -283,13 +283,11 @@ export class FlowsService {
 
                 const errorMessage = `Failed to retrieve signing key`;
                 this.loggerService.logWarning(errorMessage);
-                this.flowsDataService.resetSilentRenewRunning();
                 return throwError(errorMessage);
             }),
             catchError((err) => {
                 const errorMessage = `Failed to retrieve signing key with error: ${err}`;
                 this.loggerService.logWarning(errorMessage);
-                this.flowsDataService.resetSilentRenewRunning();
                 return throwError(errorMessage);
             })
         );
@@ -302,14 +300,12 @@ export class FlowsService {
 
         if (validationResult.authResponseIsValid) {
             this.authStateService.setAuthorizationData(validationResult.accessToken, validationResult.idToken);
-            this.flowsDataService.resetSilentRenewRunning();
 
             return of(callbackContext);
         } else {
             const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${window.location.hash}`;
             this.loggerService.logWarning(errorMessage);
             this.resetAuthorizationData();
-            this.flowsDataService.resetSilentRenewRunning();
             this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
             return throwError(errorMessage);
         }

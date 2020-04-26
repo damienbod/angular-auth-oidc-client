@@ -175,12 +175,12 @@ export class OidcSecurityService {
         return this.flowsService.processCodeFlowCallback(urlToCheck).pipe(
             tap((callbackContext) => {
                 this.startTokenValidationPeriodically();
-
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
                 }
             }),
             catchError((error) => {
+                this.flowsDataService.resetSilentRenewRunning();
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
@@ -199,12 +199,12 @@ export class OidcSecurityService {
         return this.flowsService.processImplicitFlowCallback(hash).pipe(
             tap((callbackContext) => {
                 this.startTokenValidationPeriodically();
-
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
                 }
             }),
             catchError((error) => {
+                this.flowsDataService.resetSilentRenewRunning();
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
@@ -315,10 +315,12 @@ export class OidcSecurityService {
                             this.refreshSessionWithRefreshTokens().subscribe(
                                 () => {
                                     this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
+                                    this.flowsDataService.resetSilentRenewRunning();
                                 },
                                 (err: any) => {
                                     this.loggerService.logError('Error: ' + err);
                                     this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
+                                    this.flowsDataService.resetSilentRenewRunning();
                                 }
                             );
                         } else {
@@ -330,6 +332,7 @@ export class OidcSecurityService {
                                 (err: any) => {
                                     this.loggerService.logError('Error: ' + err);
                                     this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
+                                    this.flowsDataService.resetSilentRenewRunning();
                                 }
                             );
                         }
@@ -377,10 +380,26 @@ export class OidcSecurityService {
         if (this.flowHelper.isCurrentFlowCodeFlow()) {
             const urlParts = e.detail.toString().split('?');
             // Code Flow Callback silent renew iframe
-            this.codeFlowCallbackSilentRenewIframe(urlParts).subscribe();
+            this.codeFlowCallbackSilentRenewIframe(urlParts).subscribe(
+                () => {
+                    this.flowsDataService.resetSilentRenewRunning();
+                },
+                (err: any) => {
+                    this.loggerService.logError('Error: ' + err);
+                    this.flowsDataService.resetSilentRenewRunning();
+                }
+            );
         } else {
             // Implicit Flow Callback silent renew iframe
-            this.authorizedImplicitFlowCallback(e.detail).subscribe();
+            this.authorizedImplicitFlowCallback(e.detail).subscribe(
+                () => {
+                    this.flowsDataService.resetSilentRenewRunning();
+                },
+                (err: any) => {
+                    this.loggerService.logError('Error: ' + err);
+                    this.flowsDataService.resetSilentRenewRunning();
+                }
+            );
         }
     }
 
