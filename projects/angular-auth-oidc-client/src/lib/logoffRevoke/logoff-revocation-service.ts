@@ -1,7 +1,7 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { of, throwError } from 'rxjs';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { FlowsService } from '../flows/flows.service';
 import { CheckSessionService } from '../iframe';
@@ -84,9 +84,9 @@ export class LogoffRevocationService {
                 this.loggerService.logError(errorMessage);
                 return throwError(errorMessage);
             }),
-            map((response: any) => {
+            switchMap((response: any) => {
                 this.loggerService.logDebug('revocation endpoint post response: ', response);
-                return response;
+                return of(response);
             })
         );
     }
@@ -109,9 +109,9 @@ export class LogoffRevocationService {
                 this.loggerService.logError(errorMessage);
                 return throwError(errorMessage);
             }),
-            map((response: any) => {
+            switchMap((response: any) => {
                 this.loggerService.logDebug('revocation endpoint post response: ', response);
-                return response;
+                return of(response);
             })
         );
     }
