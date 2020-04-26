@@ -1,7 +1,7 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { FlowsService } from '../flows/flows.service';
 import { CheckSessionService } from '../iframe';
@@ -16,8 +16,8 @@ export class LogoffRevocationService {
         private storagePersistanceService: StoragePersistanceService,
         private loggerService: LoggerService,
         private urlService: UrlService,
-        private readonly checkSessionService: CheckSessionService,
-        private readonly flowsService: FlowsService
+        private checkSessionService: CheckSessionService,
+        private flowsService: FlowsService
     ) {}
 
     // Logs out on the server and the local client.
@@ -26,16 +26,18 @@ export class LogoffRevocationService {
         this.loggerService.logDebug('logoff, remove auth ');
         const endSessionUrl = this.getEndSessionUrl();
         this.flowsService.resetAuthorizationData();
-        if (endSessionUrl) {
-            if (this.checkSessionService.serverStateChanged()) {
-                this.loggerService.logDebug('only local login cleaned up, server session has changed');
-            } else if (urlHandler) {
-                urlHandler(endSessionUrl);
-            } else {
-                this.redirectTo(endSessionUrl);
-            }
-        } else {
+
+        if (!endSessionUrl) {
             this.loggerService.logDebug('only local login cleaned up, no end_session_endpoint');
+            return;
+        }
+
+        if (this.checkSessionService.serverStateChanged()) {
+            this.loggerService.logDebug('only local login cleaned up, server session has changed');
+        } else if (urlHandler) {
+            urlHandler(endSessionUrl);
+        } else {
+            this.redirectTo(endSessionUrl);
         }
     }
 
@@ -43,31 +45,24 @@ export class LogoffRevocationService {
     // only the access token is revoked. Then the logout run.
     logoffAndRevokeTokens(urlHandler?: (url: string) => any) {
         if (this.storagePersistanceService.getRefreshToken()) {
-            return this.revokeRefreshToken()
-                .pipe(
-                    catchError((error) => {
-                        const errorMessage = `revokeRefreshToken failed ${error}`;
-                        this.loggerService.logError(errorMessage);
-                        return throwError(errorMessage);
-                    }),
-                    switchMap((result) => this.revokeAccessToken(result)),
-                    catchError((error) => {
-                        const errorMessage = `revokeAccessToken failed ${error}`;
-                        this.loggerService.logError(errorMessage);
-                        return throwError(errorMessage);
-                    })
-                )
-                .subscribe(() => this.logoff(urlHandler));
+            return this.revokeRefreshToken().pipe(
+                switchMap((result) => this.revokeAccessToken(result)),
+                catchError((error) => {
+                    const errorMessage = `revoke token failed ${error}`;
+                    this.loggerService.logError(errorMessage);
+                    return throwError(errorMessage);
+                }),
+                tap(() => this.logoff(urlHandler))
+            );
         } else {
-            return this.revokeAccessToken()
-                .pipe(
-                    catchError((error) => {
-                        const errorMessage = `revokeRefreshToken failed ${error}`;
-                        this.loggerService.logError(errorMessage);
-                        return throwError(errorMessage);
-                    })
-                )
-                .subscribe(() => this.logoff(urlHandler));
+            return this.revokeAccessToken().pipe(
+                catchError((error) => {
+                    const errorMessage = `revoke access token failed ${error}`;
+                    this.loggerService.logError(errorMessage);
+                    return throwError(errorMessage);
+                }),
+                tap(() => this.logoff(urlHandler))
+            );
         }
     }
 

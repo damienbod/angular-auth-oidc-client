@@ -44,7 +44,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     logoffAndRevokeTokens() {
-        this.oidcSecurityService.logoffAndRevokeTokens();
+        this.oidcSecurityService.logoffAndRevokeTokens().subscribe((result) => console.log(result));
     }
 
     revokeRefreshToken() {
