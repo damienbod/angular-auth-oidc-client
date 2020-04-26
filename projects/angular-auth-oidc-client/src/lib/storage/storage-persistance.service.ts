@@ -125,7 +125,7 @@ export class StoragePersistanceService {
 
     private storageSilentRenewRunning = 'storageSilentRenewRunning';
 
-    private storageAccessTokenExpiresIn: any;
+    private storageAccessTokenExpiresIn = 'access_token_expires_at';
 
     private retrieve(key: string): any {
         const keyToRead = this.createKeyWithPrefix(key);
