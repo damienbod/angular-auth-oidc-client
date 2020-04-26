@@ -10,7 +10,7 @@ import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsService } from './flows/flows.service';
 import { CheckSessionService, SilentRenewService } from './iframe';
 import { LoggerService } from './logging/logger.service';
-import { LogoffRevocationService } from './logoffRevoke/logoff-revocation-service';
+import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { UserService } from './userData/user-service';
 import { UrlService } from './utils';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
@@ -18,6 +18,8 @@ import { TokenValidationService } from './validation/token-validation.service';
 
 @Injectable()
 export class OidcSecurityService {
+    private TOKEN_REFRESH_INTERVALL_IN_SECONDS = 3;
+
     private isModuleSetupInternal$ = new BehaviorSubject<boolean>(false);
 
     get configuration() {
@@ -78,11 +80,11 @@ export class OidcSecurityService {
                     this.authStateService.setAuthorizedAndFireEvent();
                     this.userService.publishUserdataIfExists();
 
-                    this.callbackService.startTokenValidationPeriodically();
-
                     if (this.checkSessionService.isCheckSessionConfigured()) {
                         this.checkSessionService.start();
                     }
+
+                    this.callbackService.startTokenValidationPeriodically(this.TOKEN_REFRESH_INTERVALL_IN_SECONDS);
 
                     if (this.silentRenewService.isSilentRenewConfigured()) {
                         this.silentRenewService.getOrCreateIframe();
@@ -183,7 +185,7 @@ export class OidcSecurityService {
     }
 
     doPeriodicallTokenCheck(): void {
-        this.callbackService.startTokenValidationPeriodically();
+        this.callbackService.startTokenValidationPeriodically(3);
     }
 
     stopPeriodicallTokenCheck(): void {

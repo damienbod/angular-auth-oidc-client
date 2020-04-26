@@ -1,8 +1,8 @@
 import { HttpParams } from '@angular/common/http';
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, of, Subject, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { interval, Observable, of, Subject, Subscription, throwError } from 'rxjs';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
 import { ConfigurationProvider } from '../config/';
@@ -18,7 +18,7 @@ import { ValidationResult } from '../validation/validation-result';
 
 @Injectable({ providedIn: 'root' })
 export class CallbackService {
-    private runTokenValidationRunning = false;
+    private runTokenValidationRunning: Subscription = null;
     private scheduledHeartBeatInternal: any;
     private boundSilentRenewEvent: any;
 
@@ -39,7 +39,6 @@ export class CallbackService {
         private checkSessionService: CheckSessionService,
         private silentRenewService: SilentRenewService,
         private userService: UserService,
-        private zone: NgZone,
         private authStateService: AuthStateService
     ) {}
 
@@ -61,7 +60,8 @@ export class CallbackService {
         if (this.scheduledHeartBeatInternal) {
             clearTimeout(this.scheduledHeartBeatInternal);
             this.scheduledHeartBeatInternal = null;
-            this.runTokenValidationRunning = false;
+            this.runTokenValidationRunning.unsubscribe();
+            this.runTokenValidationRunning = null;
         }
     }
 
@@ -69,7 +69,6 @@ export class CallbackService {
     private authorizedCallbackWithCode(urlToCheck: string) {
         return this.flowsService.processCodeFlowCallback(urlToCheck).pipe(
             tap((callbackContext) => {
-                this.startTokenValidationPeriodically();
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
                 }
@@ -89,7 +88,6 @@ export class CallbackService {
     authorizedImplicitFlowCallback(hash?: string) {
         return this.flowsService.processImplicitFlowCallback(hash).pipe(
             tap((callbackContext) => {
-                this.startTokenValidationPeriodically();
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
                 }
@@ -105,100 +103,81 @@ export class CallbackService {
         );
     }
 
-    startTokenValidationPeriodically() {
-        if (this.checkSessionService.isCheckSessionConfigured()) {
-            this.checkSessionService.start();
-        }
-        if (this.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
+    startTokenValidationPeriodically(repeatAfterSeconds: number) {
+        if (!!this.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
             return;
         }
 
-        this.runTokenValidationRunning = true;
-        this.loggerService.logDebug('runTokenValidation silent-renew running');
+        const millisecondsDelayBetweenTokenCheck = repeatAfterSeconds * 1000;
 
-        /**
-         *   First time: delay 5 seconds to call silentRenewHeartBeatCheck
-         *   Afterwards: Run this check in a 5 second interval only AFTER the previous operation ends.
-         */
-        const silentRenewHeartBeatCheck = () => {
-            this.loggerService.logDebug(
-                'Checking: ' +
-                    `silentRenewRunning: ${this.flowsDataService.isSilentRenewRunning()} ` +
-                    ` id_token: ${!!this.authStateService.getIdToken()} ` +
-                    ` userData: ${!!this.userService.getUserDataFromStore()}`
-            );
-            if (
-                this.userService.getUserDataFromStore() &&
-                !this.flowsDataService.isSilentRenewRunning() &&
-                this.authStateService.getIdToken()
-            ) {
-                if (this.authStateService.tokenIsExpired()) {
-                    this.loggerService.logDebug('IsAuthorized: id_token isTokenExpired, start silent renew if active');
+        this.loggerService.logDebug(
+            `starting token validation check every ${repeatAfterSeconds}s (${millisecondsDelayBetweenTokenCheck}ms)`
+        );
 
-                    // TODO remove subscribe
-                    if (this.configurationProvider.openIDConfiguration.silentRenew) {
-                        if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
-                            // Refresh Session using Refresh tokens
-                            this.refreshSessionWithRefreshTokens().subscribe(
-                                () => {
-                                    this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
-                                    this.flowsDataService.resetSilentRenewRunning();
-                                },
-                                (err: any) => {
-                                    this.loggerService.logError('Error: ' + err);
-                                    this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
-                                    this.flowsDataService.resetSilentRenewRunning();
-                                }
-                            );
-                        } else {
-                            // Send Silent renew request in iframe
-                            this.refreshSessionWithIframe().subscribe(
-                                () => {
-                                    this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
-                                },
-                                (err: any) => {
-                                    this.loggerService.logError('Error: ' + err);
-                                    this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
-                                    this.flowsDataService.resetSilentRenewRunning();
-                                }
-                            );
-                        }
+        const periodicallyCheck$ = interval(millisecondsDelayBetweenTokenCheck).pipe(
+            switchMap(() => {
+                const idToken = this.authStateService.getIdToken();
+                const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
+                const userDataFromStore = this.userService.getUserDataFromStore();
 
-                        /* In this situation, we schedule a heartbeat check only when silentRenew is finished.
-                        We don't want to schedule another check so we have to return here */
-                        return;
-                    } else {
-                        this.flowsService.resetAuthorizationData();
-                    }
+                this.loggerService.logDebug(
+                    `Checking: silentRenewRunning: ${isSilentRenewRunning} id_token: ${!!idToken} userData: ${!!userDataFromStore}`
+                );
+
+                const shouldBeExecuted = userDataFromStore && !isSilentRenewRunning && idToken;
+
+                if (!shouldBeExecuted) {
+                    return of(null);
                 }
-            }
 
-            /* Delay 3 seconds and do the next check */
-            this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
-        };
+                const tokenisExpired = this.authStateService.tokenIsExpired();
 
-        this.zone.runOutsideAngular(() => {
-            /* Initial heartbeat check */
-            this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 5000);
-        });
+                if (!tokenisExpired) {
+                    return of(null);
+                }
+
+                this.loggerService.logDebug('IsAuthorized: id_token isTokenExpired, start silent renew if active');
+
+                if (!this.configurationProvider.openIDConfiguration.silentRenew) {
+                    this.flowsService.resetAuthorizationData();
+                    return of(null);
+                }
+
+                this.flowsDataService.setSilentRenewRunning();
+
+                if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
+                    // Refresh Session using Refresh tokens
+                    return this.refreshSessionWithRefreshTokens();
+                }
+
+                return this.refreshSessionWithIframe();
+            })
+        );
+
+        this.runTokenValidationRunning = periodicallyCheck$
+            .pipe(
+                catchError(() => {
+                    this.flowsDataService.resetSilentRenewRunning();
+                    return throwError('periodically check failed');
+                })
+            )
+            .subscribe(() => {
+                if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
+                    this.flowsDataService.resetSilentRenewRunning();
+                }
+            });
     }
 
     private refreshSessionWithIframe(): Observable<boolean> {
         this.loggerService.logDebug('BEGIN refresh session Authorize Iframe renew');
-        this.flowsDataService.setSilentRenewRunning();
         const url = this.urlService.getRefreshSessionSilentRenewUrl();
-
         return this.sendAuthorizeReqestUsingSilentRenew(url);
     }
 
     private refreshSessionWithRefreshTokens() {
         this.loggerService.logDebug('BEGIN refresh session Authorize');
-        this.flowsDataService.setSilentRenewRunning();
 
         return this.flowsService.processRefreshToken().pipe(
-            tap(() => {
-                this.startTokenValidationPeriodically();
-            }),
             catchError((error) => {
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
@@ -292,7 +271,6 @@ export class CallbackService {
         };
 
         return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext).pipe(
-            tap(() => this.startTokenValidationPeriodically()),
             catchError((errorFromFlow) => {
                 this.stopPeriodicallTokenCheck();
                 return throwError(errorFromFlow);
