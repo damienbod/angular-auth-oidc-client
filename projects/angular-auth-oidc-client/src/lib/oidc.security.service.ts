@@ -12,6 +12,7 @@ import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsService } from './flows/flows.service';
 import { CheckSessionService, SilentRenewService } from './iframe';
 import { LoggerService } from './logging/logger.service';
+import { LogoffRevocationService } from './logoffRevoke/logoff-revocation-service';
 import { StoragePersistanceService } from './storage';
 import { UserService } from './userData/user-service';
 import { UrlService } from './utils';
@@ -65,7 +66,8 @@ export class OidcSecurityService {
         private readonly flowHelper: FlowHelper,
         private readonly flowsDataService: FlowsDataService,
         private readonly flowsService: FlowsService,
-        private readonly router: Router
+        private readonly router: Router,
+        private readonly logoffRevocationService: LogoffRevocationService
     ) {}
 
     private runTokenValidationRunning = false;
@@ -173,12 +175,12 @@ export class OidcSecurityService {
         return this.flowsService.processCodeFlowCallback(urlToCheck).pipe(
             tap((callbackContext) => {
                 this.startTokenValidationPeriodically();
-
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
                 }
             }),
             catchError((error) => {
+                this.flowsDataService.resetSilentRenewRunning();
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
@@ -197,12 +199,12 @@ export class OidcSecurityService {
         return this.flowsService.processImplicitFlowCallback(hash).pipe(
             tap((callbackContext) => {
                 this.startTokenValidationPeriodically();
-
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
                 }
             }),
             catchError((error) => {
+                this.flowsDataService.resetSilentRenewRunning();
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
@@ -238,26 +240,36 @@ export class OidcSecurityService {
         );
     }
 
+    // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
+    // only the access token is revoked. Then the logout run.
+    logoffAndRevokeTokens(urlHandler?: (url: string) => any) {
+        return this.logoffRevocationService.logoffAndRevokeTokens(urlHandler);
+    }
+
+    // Logs out on the server and the local client.
+    // If the server state has changed, checksession, then only a local logout.
     logoff(urlHandler?: (url: string) => any) {
-        this.loggerService.logDebug('logoff, remove auth ');
-        const endSessionUrl = this.getEndSessionUrl();
-        this.flowsService.resetAuthorizationData();
-        if (endSessionUrl) {
-            if (this.checkSessionService.serverStateChanged()) {
-                this.loggerService.logDebug('only local login cleaned up, server session has changed');
-            } else if (urlHandler) {
-                urlHandler(endSessionUrl);
-            } else {
-                this.redirectTo(endSessionUrl);
-            }
-        } else {
-            this.loggerService.logDebug('only local login cleaned up, no end_session_endpoint');
-        }
+        return this.logoffRevocationService.logoff(urlHandler);
+    }
+
+    // https://tools.ietf.org/html/rfc7009
+    // revokes an access token on the STS. This is only required in the code flow with refresh tokens.
+    // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
+    // This makes it possible to manage your own tokens.
+    revokeAccessToken(accessToken?: any) {
+        return this.logoffRevocationService.revokeAccessToken(accessToken);
+    }
+
+    // https://tools.ietf.org/html/rfc7009
+    // revokes a refresh token on the STS. This is only required in the code flow with refresh tokens.
+    // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
+    // This makes it possible to manage your own tokens.
+    revokeRefreshToken(refreshToken?: any) {
+        return this.logoffRevocationService.revokeRefreshToken(refreshToken);
     }
 
     getEndSessionUrl(): string | null {
-        const idTokenHint = this.storagePersistanceService.idToken;
-        return this.urlService.createEndSessionUrl(idTokenHint);
+        return this.logoffRevocationService.getEndSessionUrl();
     }
 
     doPeriodicallTokenCheck(): void {
@@ -313,10 +325,12 @@ export class OidcSecurityService {
                             this.refreshSessionWithRefreshTokens().subscribe(
                                 () => {
                                     this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
+                                    this.flowsDataService.resetSilentRenewRunning();
                                 },
                                 (err: any) => {
                                     this.loggerService.logError('Error: ' + err);
                                     this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
+                                    this.flowsDataService.resetSilentRenewRunning();
                                 }
                             );
                         } else {
@@ -328,6 +342,7 @@ export class OidcSecurityService {
                                 (err: any) => {
                                     this.loggerService.logError('Error: ' + err);
                                     this.scheduledHeartBeatInternal = setTimeout(silentRenewHeartBeatCheck, 3000);
+                                    this.flowsDataService.resetSilentRenewRunning();
                                 }
                             );
                         }
@@ -375,10 +390,26 @@ export class OidcSecurityService {
         if (this.flowHelper.isCurrentFlowCodeFlow()) {
             const urlParts = e.detail.toString().split('?');
             // Code Flow Callback silent renew iframe
-            this.codeFlowCallbackSilentRenewIframe(urlParts).subscribe();
+            this.codeFlowCallbackSilentRenewIframe(urlParts).subscribe(
+                () => {
+                    this.flowsDataService.resetSilentRenewRunning();
+                },
+                (err: any) => {
+                    this.loggerService.logError('Error: ' + err);
+                    this.flowsDataService.resetSilentRenewRunning();
+                }
+            );
         } else {
             // Implicit Flow Callback silent renew iframe
-            this.authorizedImplicitFlowCallback(e.detail).subscribe();
+            this.authorizedImplicitFlowCallback(e.detail).subscribe(
+                () => {
+                    this.flowsDataService.resetSilentRenewRunning();
+                },
+                (err: any) => {
+                    this.loggerService.logError('Error: ' + err);
+                    this.flowsDataService.resetSilentRenewRunning();
+                }
+            );
         }
     }
 

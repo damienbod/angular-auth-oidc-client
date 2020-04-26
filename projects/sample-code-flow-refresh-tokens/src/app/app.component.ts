@@ -43,6 +43,18 @@ export class AppComponent implements OnInit, OnDestroy {
         this.oidcSecurityService.logoff();
     }
 
+    logoffAndRevokeTokens() {
+        this.oidcSecurityService.logoffAndRevokeTokens().subscribe((result) => console.log(result));
+    }
+
+    revokeRefreshToken() {
+        this.oidcSecurityService.revokeRefreshToken().subscribe((result) => console.log(result));
+    }
+
+    revokeAccessToken() {
+        this.oidcSecurityService.revokeAccessToken().subscribe((result) => console.log(result));
+    }
+
     private doCallbackLogicIfRequired() {
         // Will do a callback, if the url has a code and state parameter.
         return this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());

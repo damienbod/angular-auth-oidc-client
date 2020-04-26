@@ -77,6 +77,25 @@ export class UrlService {
 
         return null;
     }
+    createRevocationEndpointBodyAccessToken(token: any) {
+        return `client_id=${this.configurationProvider.openIDConfiguration.clientId}&token=${token}&token_type_hint=access_token`;
+    }
+
+    createRevocationEndpointBodyRefreshToken(token: any) {
+        return `client_id=${this.configurationProvider.openIDConfiguration.clientId}&token=${token}&token_type_hint=refresh_token`;
+    }
+
+    getRevocationEndpointUrl() {
+        if (!this.configurationProvider.wellKnownEndpoints?.revocationEndpoint) {
+            return null;
+        }
+
+        const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.revocationEndpoint;
+        const urlParts = endSessionEndpoint.split('?');
+
+        const revocationEndpointUrl = urlParts[0];
+        return revocationEndpointUrl;
+    }
 
     createBodyForCodeFlowCodeRequest(code: string): string {
         const codeVerifier = this.flowsDataService.getCodeVerifier();
