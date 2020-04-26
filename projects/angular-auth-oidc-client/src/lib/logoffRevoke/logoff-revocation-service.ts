@@ -79,14 +79,14 @@ export class LogoffRevocationService {
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
         return this.dataService.post(url, body, headers).pipe(
+            switchMap((response: any) => {
+                this.loggerService.logDebug('revocation endpoint post response: ', response);
+                return of(response);
+            }),
             catchError((error) => {
                 const errorMessage = `Revocation request failed ${error}`;
                 this.loggerService.logError(errorMessage);
                 return throwError(errorMessage);
-            }),
-            switchMap((response: any) => {
-                this.loggerService.logDebug('revocation endpoint post response: ', response);
-                return of(response);
             })
         );
     }
@@ -104,14 +104,14 @@ export class LogoffRevocationService {
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
         return this.dataService.post(url, body, headers).pipe(
+            switchMap((response: any) => {
+                this.loggerService.logDebug('revocation endpoint post response: ', response);
+                return of(response);
+            }),
             catchError((error) => {
                 const errorMessage = `Revocation request failed ${error}`;
                 this.loggerService.logError(errorMessage);
                 return throwError(errorMessage);
-            }),
-            switchMap((response: any) => {
-                this.loggerService.logDebug('revocation endpoint post response: ', response);
-                return of(response);
             })
         );
     }

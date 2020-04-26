@@ -1,7 +1,7 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
@@ -182,19 +182,19 @@ export class FlowsService {
         const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken);
 
         return this.dataService.post(tokenRequestUrl, data, headers).pipe(
-            catchError((error) => {
-                const errorMessage = `OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}: ${error}`;
-                this.loggerService.logError(errorMessage);
-                return throwError(errorMessage);
-            }),
-            map((response: any) => {
+            switchMap((response: any) => {
                 this.loggerService.logDebug('token refresh response: ', response);
                 let authResult: any = new Object();
                 authResult = response;
                 authResult.state = callbackContext.state;
 
                 callbackContext.authResult = authResult;
-                return callbackContext;
+                return of(callbackContext);
+            }),
+            catchError((error) => {
+                const errorMessage = `OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}: ${error}`;
+                this.loggerService.logError(errorMessage);
+                return throwError(errorMessage);
             })
         );
     }
@@ -222,14 +222,14 @@ export class FlowsService {
         const bodyForCodeFlow = this.urlService.createBodyForCodeFlowCodeRequest(callbackContext.code);
 
         return this.dataService.post(tokenRequestUrl, bodyForCodeFlow, headers).pipe(
-            map((response) => {
+            switchMap((response) => {
                 let authResult: any = new Object();
                 authResult = response;
                 authResult.state = callbackContext.state;
                 authResult.session_state = callbackContext.sessionState;
 
                 callbackContext.authResult = authResult;
-                return callbackContext;
+                return of(callbackContext);
             }),
             catchError((error) => {
                 const errorMessage = `OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer} with error ${error}`;
