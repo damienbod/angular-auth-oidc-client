@@ -1,14 +1,6 @@
 ﻿import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import {
-    AuthorizationResult,
-    AuthorizedState,
-    EventsService,
-    EventTypes,
-    OidcClientNotification,
-    OidcSecurityService,
-} from 'angular-auth-oidc-client';
-import { filter, tap } from 'rxjs/operators';
+import { EventsService, OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
     selector: 'app-root',
@@ -18,16 +10,22 @@ export class AppComponent implements OnInit, OnDestroy {
     constructor(public oidcSecurityService: OidcSecurityService, private router: Router, private readonly eventsService: EventsService) {}
 
     ngOnInit() {
-        this.eventsService
-            .registerForEvents()
-            .pipe(filter((notification: OidcClientNotification<any>) => notification.type === EventTypes.NewAuthorizationResult))
-            .subscribe((authorizationResult) => this.onAuthorizationResultComplete(authorizationResult.value));
-
         this.oidcSecurityService
             .checkAuth()
-            .pipe(tap(() => this.onOidcModuleSetup()))
-            .subscribe((isAuthenticated) => console.log('i am ', isAuthenticated));
+
+            .subscribe((isAuthenticated) => {
+                if (!isAuthenticated) {
+                    if ('/autologin' !== window.location.pathname) {
+                        this.write('redirect', window.location.pathname);
+                        this.router.navigate(['/autologin']);
+                    }
+                }
+                if (isAuthenticated) {
+                    this.navigateToStoredEndpoint();
+                }
+            });
     }
+
     ngOnDestroy(): void {}
 
     login() {
@@ -45,39 +43,17 @@ export class AppComponent implements OnInit, OnDestroy {
         this.oidcSecurityService.logoff();
     }
 
-    private onOidcModuleSetup() {
-        if (window.location.hash) {
-            this.oidcSecurityService.authorizedImplicitFlowCallback().subscribe();
-        } else {
-            if ('/autologin' !== window.location.pathname) {
-                this.write('redirect', window.location.pathname);
-            }
-            console.log('AppComponent:onModuleSetup');
-            this.oidcSecurityService.isAuthenticated$.subscribe((authorized: boolean) => {
-                if (!authorized) {
-                    this.router.navigate(['/autologin']);
-                }
-            });
-        }
-    }
-
-    private onAuthorizationResultComplete(authorizationResult: AuthorizationResult) {
+    private navigateToStoredEndpoint() {
         const path = this.read('redirect');
-        console.log(
-            'Auth result received AuthorizationState:' +
-                authorizationResult.authorizationState +
-                ' validationResult:' +
-                authorizationResult.validationResult
-        );
 
-        if (authorizationResult.authorizationState === AuthorizedState.Authorized) {
-            if (path.toString().includes('/unauthorized')) {
-                this.router.navigate(['/']);
-            } else {
-                this.router.navigate([path]);
-            }
+        if (this.router.url === path) {
+            return;
+        }
+
+        if (path.toString().includes('/unauthorized')) {
+            this.router.navigate(['/']);
         } else {
-            this.router.navigate(['/unauthorized']);
+            this.router.navigate([path]);
         }
     }
 

@@ -207,8 +207,8 @@ export class FlowsService {
         );
 
         if (!isStateCorrect) {
-            this.loggerService.logWarning('authorizedCallback incorrect state');
-            return throwError('incorrect state');
+            this.loggerService.logWarning('codeFlowCodeRequest incorrect state');
+            return throwError('codeFlowCodeRequest incorrect state');
         }
 
         const tokenRequestUrl = this.getTokenEndpoint();

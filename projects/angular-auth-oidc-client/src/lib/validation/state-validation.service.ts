@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ConfigurationProvider } from '../config';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage';
+import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
 import { JwtKeys } from './jwtkeys';
 import { StateValidationResult } from './state-validation-result';
@@ -15,7 +16,8 @@ export class StateValidationService {
         private tokenValidationService: TokenValidationService,
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,
-        private readonly configurationProvider: ConfigurationProvider
+        private readonly configurationProvider: ConfigurationProvider,
+        private readonly flowHelper: FlowHelper
     ) {}
 
     getValidatedStateResult(result: any, jwtKeys: JwtKeys): StateValidationResult {
@@ -35,10 +37,10 @@ export class StateValidationService {
             return toReturn;
         }
 
-        if (
-            this.configurationProvider.openIDConfiguration.responseType === 'id_token token' ||
-            this.configurationProvider.openIDConfiguration.responseType === 'code'
-        ) {
+        const isCurrentFlowImplicitFlowWithAccessToken = this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken();
+        const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow();
+
+        if (isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow) {
             toReturn.accessToken = result.access_token;
         }
 
@@ -133,11 +135,8 @@ export class StateValidationService {
             this.loggerService.logDebug('No id_token found, skipping id_token validation');
         }
 
-        // flow id_token token
-        if (
-            this.configurationProvider.openIDConfiguration.responseType !== 'id_token token' &&
-            this.configurationProvider.openIDConfiguration.responseType !== 'code'
-        ) {
+        // flow id_token
+        if (!isCurrentFlowImplicitFlowWithAccessToken && !isCurrentFlowCodeFlow) {
             toReturn.authResponseIsValid = true;
             toReturn.state = ValidationResult.Ok;
             this.handleSuccessfulValidation();
@@ -149,7 +148,7 @@ export class StateValidationService {
             !this.tokenValidationService.validateIdTokenAtHash(
                 toReturn.accessToken,
                 toReturn.decodedIdToken.at_hash,
-                this.configurationProvider.openIDConfiguration.responseType === 'code'
+                isCurrentFlowCodeFlow
             ) ||
             !toReturn.accessToken
         ) {

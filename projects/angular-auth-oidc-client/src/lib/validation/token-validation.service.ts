@@ -2,6 +2,7 @@
 import { hextob64u, KEYUTIL, KJUR } from 'jsrsasign-reduced';
 import { LoggerService } from '../logging/logger.service';
 import { EqualityService } from '../utils/equality/equality.service';
+import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
@@ -55,6 +56,7 @@ export class TokenValidationService {
     constructor(
         private arrayHelperService: EqualityService,
         private tokenHelperService: TokenHelperService,
+        private flowHelper: FlowHelper,
         private loggerService: LoggerService
     ) {}
 
@@ -317,11 +319,11 @@ export class TokenValidationService {
     }
 
     configValidateResponseType(responseType: string): boolean {
-        if (responseType === 'id_token token' || responseType === 'id_token') {
+        if (this.flowHelper.isCurrentFlowAnyImplicitFlow()) {
             return true;
         }
 
-        if (responseType === 'code') {
+        if (this.flowHelper.isCurrentFlowCodeFlow()) {
             return true;
         }
 

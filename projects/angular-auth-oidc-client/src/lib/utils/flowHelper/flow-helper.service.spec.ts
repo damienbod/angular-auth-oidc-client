@@ -47,6 +47,22 @@ describe('Flow Helper Service', () => {
         expect(flowHelper.currentFlowIs('code')).toBeTrue();
     });
 
+    it('currentFlowIs returns true if current flow is code flow (array)', () => {
+        const config = { responseType: 'code' };
+
+        configProvider.setConfig(config, null);
+
+        expect(flowHelper.currentFlowIs(['code'])).toBeTrue();
+    });
+
+    it('currentFlowIs returns true if current flow is id_token token or code (array)', () => {
+        const config = { responseType: 'id_token token' };
+
+        configProvider.setConfig(config, null);
+
+        expect(flowHelper.currentFlowIs(['id_token token', 'code'])).toBeTrue();
+    });
+
     it('currentFlowIs returns true if current flow is code flow', () => {
         const config = { responseType: 'id_token token' };
 
@@ -89,5 +105,32 @@ describe('Flow Helper Service', () => {
         const result = flowHelper.isCurrentFlowImplicitFlowWithoutAccessToken();
 
         expect(result).toBeFalse();
+    });
+
+    it('isCurrentFlowCodeFlowWithRefeshTokens return false if flow is not code flow', () => {
+        const config = { responseType: 'not code' };
+
+        configProvider.setConfig(config, null);
+        const result = flowHelper.isCurrentFlowCodeFlowWithRefeshTokens();
+
+        expect(result).toBeFalse();
+    });
+
+    it('isCurrentFlowCodeFlowWithRefeshTokens return false if useRefreshToken is set to false', () => {
+        const config = { responseType: 'not code', useRefreshToken: false };
+
+        configProvider.setConfig(config, null);
+        const result = flowHelper.isCurrentFlowCodeFlowWithRefeshTokens();
+
+        expect(result).toBeFalse();
+    });
+
+    it('isCurrentFlowCodeFlowWithRefeshTokens return true if useRefreshToken is set to true and code flow', () => {
+        const config = { responseType: 'code', useRefreshToken: true };
+
+        configProvider.setConfig(config, null);
+        const result = flowHelper.isCurrentFlowCodeFlowWithRefeshTokens();
+
+        expect(result).toBeTrue();
     });
 });
