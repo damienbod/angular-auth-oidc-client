@@ -12,105 +12,120 @@ export class StoragePersistanceService {
         private readonly configurationProvider: ConfigurationProvider
     ) {}
 
-    private storageAuthResult = 'authorizationResult';
-
-    public get authResult(): any {
+    get authResult(): any {
         return this.retrieve(this.storageAuthResult);
     }
 
-    public set authResult(value: any) {
+    set authResult(value: any) {
         this.store(this.storageAuthResult, value);
+
+        const expiresIn = this.authResult?.expires_in;
+        if (expiresIn) {
+            const accessTokenExpiryTime = new Date().valueOf() + expiresIn * 1000;
+            this.accessTokenExpiresIn = accessTokenExpiryTime;
+        }
     }
 
-    private storageAccessToken = 'authorizationData';
-
-    public get accessToken(): string {
+    get accessToken(): string {
         return this.retrieve(this.storageAccessToken) || '';
     }
 
-    public set accessToken(value: string) {
+    set accessToken(value: string) {
         this.store(this.storageAccessToken, value);
     }
 
-    private storageIdToken = 'authorizationDataIdToken';
-
-    public get idToken(): string {
+    get idToken(): string {
         return this.retrieve(this.storageIdToken) || '';
     }
 
-    public set idToken(value: string) {
+    set idToken(value: string) {
         this.store(this.storageIdToken, value);
     }
 
-    private storageAuthorizedState = 'storageAuthorizedState';
-
-    public get authorizedState(): string | undefined {
+    get authorizedState(): string | undefined {
         return this.retrieve(this.storageAuthorizedState);
     }
 
-    public set authorizedState(value: string | undefined) {
+    set authorizedState(value: string | undefined) {
         this.store(this.storageAuthorizedState, value);
     }
 
-    private storageUserData = 'userData';
-
-    public get userData(): any {
+    get userData(): any {
         return this.retrieve(this.storageUserData);
     }
 
-    public set userData(value: any) {
+    set userData(value: any) {
         this.store(this.storageUserData, value);
     }
 
-    private storageAuthNonce = 'authNonce';
-
-    public get authNonce(): string {
+    get authNonce(): string {
         return this.retrieve(this.storageAuthNonce) || '';
     }
 
-    public set authNonce(value: string) {
+    set authNonce(value: string) {
         this.store(this.storageAuthNonce, value);
     }
 
-    private storageCodeVerifier = 'codeVerifier';
-
-    public get codeVerifier(): string {
+    get codeVerifier(): string {
         return this.retrieve(this.storageCodeVerifier) || '';
     }
 
-    public set codeVerifier(value: string) {
+    set codeVerifier(value: string) {
         this.store(this.storageCodeVerifier, value);
     }
 
-    private storageAuthStateControl = 'authStateControl';
-
-    public get authStateControl(): string {
+    get authStateControl(): string {
         return this.retrieve(this.storageAuthStateControl) || '';
     }
 
-    public set authStateControl(value: string) {
+    set authStateControl(value: string) {
         this.store(this.storageAuthStateControl, value);
     }
 
-    private storageSessionState = 'session_state';
-
-    public get sessionState(): any {
+    get sessionState(): any {
         return this.retrieve(this.storageSessionState);
     }
 
-    public set sessionState(value: any) {
+    set sessionState(value: any) {
         this.store(this.storageSessionState, value);
     }
 
-    private storageSilentRenewRunning = 'storageSilentRenewRunning';
-
-    public get silentRenewRunning(): SilentRenewState {
+    get silentRenewRunning(): SilentRenewState {
         return this.retrieve(this.storageSilentRenewRunning) || '';
     }
 
-    public set silentRenewRunning(value: SilentRenewState) {
+    set silentRenewRunning(value: SilentRenewState) {
         this.store(this.storageSilentRenewRunning, value);
     }
+    get accessTokenExpiresIn(): any {
+        return this.retrieve(this.storageAccessTokenExpiresIn);
+    }
+
+    set accessTokenExpiresIn(value: any) {
+        this.store(this.storageAccessTokenExpiresIn, value);
+    }
+
+    private storageAuthResult = 'authorizationResult';
+
+    private storageAccessToken = 'authorizationData';
+
+    private storageIdToken = 'authorizationDataIdToken';
+
+    private storageAuthorizedState = 'storageAuthorizedState';
+
+    private storageUserData = 'userData';
+
+    private storageAuthNonce = 'authNonce';
+
+    private storageCodeVerifier = 'codeVerifier';
+
+    private storageAuthStateControl = 'authStateControl';
+
+    private storageSessionState = 'session_state';
+
+    private storageSilentRenewRunning = 'storageSilentRenewRunning';
+
+    private storageAccessTokenExpiresIn: any;
 
     private retrieve(key: string): any {
         const keyToRead = this.createKeyWithPrefix(key);
@@ -147,7 +162,6 @@ export class StoragePersistanceService {
     getRefreshToken(): any {
         return this.authResult?.refresh_token;
     }
-
     private createKeyWithPrefix(key: string) {
         const prefix = this.configurationProvider.openIDConfiguration.clientId;
 

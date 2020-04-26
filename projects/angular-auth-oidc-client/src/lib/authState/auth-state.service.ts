@@ -100,7 +100,7 @@ export class AuthStateService {
 
         this.loggerService.logDebug(`authorizedState in storage is ${currentAuthState}`);
 
-        if (this.tokenIsExpired()) {
+        if (this.hasIdTokenExpired()) {
             this.loggerService.logDebug('persisted token is expired');
             return false;
         } else {
@@ -113,7 +113,7 @@ export class AuthStateService {
         this.storagePersistanceService.authResult = authResult;
     }
 
-    tokenIsExpired() {
+    hasIdTokenExpired() {
         const tokenToCheck = this.storagePersistanceService.idToken || this.storagePersistanceService.accessToken;
         const tokenIsExpired = this.tokenValidationService.isTokenExpired(
             tokenToCheck,
