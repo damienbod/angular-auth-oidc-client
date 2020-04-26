@@ -130,9 +130,10 @@ export class CallbackService {
                     return of(null);
                 }
 
-                const tokenisExpired = this.authStateService.hasIdTokenExpired();
+                const idTokenHasExpired = this.authStateService.hasIdTokenExpired();
+                const accessTokenHasExpired = this.authStateService.hasAccessTokenExpiredIfExpiryExists();
 
-                if (!tokenisExpired) {
+                if (!idTokenHasExpired && !accessTokenHasExpired) {
                     return of(null);
                 }
 

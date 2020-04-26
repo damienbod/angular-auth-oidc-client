@@ -62,7 +62,7 @@ export class TokenValidationService {
 
     // id_token C7: The current time MUST be before the time represented by the exp Claim
     // (possibly allowing for some small leeway to account for clock skew).
-    isTokenExpired(token: string, offsetSeconds?: number): boolean {
+    hasIdTokenExpired(token: string, offsetSeconds?: number): boolean {
         let decoded: any;
         decoded = this.tokenHelperService.getPayloadFromToken(token, false);
 

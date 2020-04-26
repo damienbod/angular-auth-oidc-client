@@ -115,12 +115,22 @@ export class AuthStateService {
 
     hasIdTokenExpired() {
         const tokenToCheck = this.storagePersistanceService.idToken || this.storagePersistanceService.accessToken;
-        const tokenIsExpired = this.tokenValidationService.isTokenExpired(
+        const tokenIsExpired = this.tokenValidationService.hasIdTokenExpired(
             tokenToCheck,
             this.configurationProvider.openIDConfiguration.silentRenewOffsetInSeconds
         );
         return tokenIsExpired;
     }
+
+    hasAccessTokenExpiredIfExpiryExists() {
+        const accessTokenExpiresIn = this.storagePersistanceService.accessTokenExpiresIn;
+        const accessTokenHasExpired = this.tokenValidationService.validateAccessTokenNotExpired(
+            accessTokenExpiresIn,
+            this.configurationProvider.openIDConfiguration.silentRenewOffsetInSeconds
+        );
+        return accessTokenHasExpired;
+    }
+
     private getCurrentlyPersistedAuthState() {
         return this.storagePersistanceService.authorizedState;
     }
