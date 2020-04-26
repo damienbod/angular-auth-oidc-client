@@ -48,13 +48,9 @@ export class CallbackService {
 
         if (!this.urlService.isCallbackFromSts()) {
             callback$ = of(null);
-        }
-
-        if (this.flowHelper.isCurrentFlowCodeFlow()) {
+        } else if (this.flowHelper.isCurrentFlowCodeFlow()) {
             callback$ = this.authorizedCallbackWithCode(currentCallbackUrl);
-        }
-
-        if (this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken()) {
+        } else if (this.flowHelper.isCurrentFlowAnyImplicitFlow()) {
             callback$ = this.authorizedImplicitFlowCallback();
         }
 
@@ -69,10 +65,8 @@ export class CallbackService {
         }
     }
 
-    /////////////////////////////////////////////////////////
-
     // Code Flow Callback
-    authorizedCallbackWithCode(urlToCheck: string) {
+    private authorizedCallbackWithCode(urlToCheck: string) {
         return this.flowsService.processCodeFlowCallback(urlToCheck).pipe(
             tap((callbackContext) => {
                 this.startTokenValidationPeriodically();
@@ -102,32 +96,6 @@ export class CallbackService {
             }),
             catchError((error) => {
                 this.flowsDataService.resetSilentRenewRunning();
-                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
-                    this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
-                }
-                this.stopPeriodicallTokenCheck();
-                return throwError(error);
-            })
-        );
-    }
-
-    refreshSessionWithIframe(): Observable<boolean> {
-        this.loggerService.logDebug('BEGIN refresh session Authorize Iframe renew');
-        this.flowsDataService.setSilentRenewRunning();
-        const url = this.urlService.getRefreshSessionSilentRenewUrl();
-
-        return this.sendAuthorizeReqestUsingSilentRenew(url);
-    }
-
-    refreshSessionWithRefreshTokens() {
-        this.loggerService.logDebug('BEGIN refresh session Authorize');
-        this.flowsDataService.setSilentRenewRunning();
-
-        return this.flowsService.processRefreshToken().pipe(
-            tap(() => {
-                this.startTokenValidationPeriodically();
-            }),
-            catchError((error) => {
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
@@ -215,6 +183,32 @@ export class CallbackService {
         });
     }
 
+    private refreshSessionWithIframe(): Observable<boolean> {
+        this.loggerService.logDebug('BEGIN refresh session Authorize Iframe renew');
+        this.flowsDataService.setSilentRenewRunning();
+        const url = this.urlService.getRefreshSessionSilentRenewUrl();
+
+        return this.sendAuthorizeReqestUsingSilentRenew(url);
+    }
+
+    private refreshSessionWithRefreshTokens() {
+        this.loggerService.logDebug('BEGIN refresh session Authorize');
+        this.flowsDataService.setSilentRenewRunning();
+
+        return this.flowsService.processRefreshToken().pipe(
+            tap(() => {
+                this.startTokenValidationPeriodically();
+            }),
+            catchError((error) => {
+                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
+                    this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
+                }
+                this.stopPeriodicallTokenCheck();
+                return throwError(error);
+            })
+        );
+    }
+
     private sendAuthorizeReqestUsingSilentRenew(url: string): Observable<boolean> {
         const sessionIframe = this.silentRenewService.getOrCreateIframe();
         this.initSilentRenewRequest();
@@ -231,6 +225,7 @@ export class CallbackService {
             sessionIframe.src = url;
         });
     }
+
     private silentRenewEventHandler(e: CustomEvent) {
         this.loggerService.logDebug('silentRenewEventHandler');
         if (!e.detail) {

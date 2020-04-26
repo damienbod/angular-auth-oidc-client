@@ -319,11 +319,7 @@ export class TokenValidationService {
     }
 
     configValidateResponseType(responseType: string): boolean {
-        if (this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken()) {
-            return true;
-        }
-
-        if (this.flowHelper.isCurrentFlowImplicitFlowWithoutAccessToken()) {
+        if (this.flowHelper.isCurrentFlowAnyImplicitFlow()) {
             return true;
         }
 

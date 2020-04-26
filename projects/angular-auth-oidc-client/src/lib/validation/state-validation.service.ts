@@ -135,7 +135,7 @@ export class StateValidationService {
             this.loggerService.logDebug('No id_token found, skipping id_token validation');
         }
 
-        // flow id_token token
+        // flow id_token
         if (!isCurrentFlowImplicitFlowWithAccessToken && !isCurrentFlowCodeFlow) {
             toReturn.authResponseIsValid = true;
             toReturn.state = ValidationResult.Ok;

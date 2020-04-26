@@ -10,6 +10,10 @@ export class FlowHelper {
         return this.currentFlowIs('code');
     }
 
+    isCurrentFlowAnyImplicitFlow() {
+        return this.isCurrentFlowImplicitFlowWithAccessToken() || this.isCurrentFlowImplicitFlowWithoutAccessToken();
+    }
+
     isCurrentFlowCodeFlowWithRefeshTokens() {
         if (this.isCurrentFlowCodeFlow() && this.configurationProvider.openIDConfiguration.useRefreshToken) {
             return true;
