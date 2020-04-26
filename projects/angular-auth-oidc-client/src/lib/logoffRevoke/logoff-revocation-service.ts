@@ -38,21 +38,33 @@ export class LogoffRevocationService {
     }
 
     logoffAndRevokeTokens(urlHandler?: (url: string) => any) {
-        return this.revokeRefreshToken()
-            .pipe(
-                catchError((error) => {
-                    const errorMessage = `revokeRefreshToken failed ${error}`;
-                    this.loggerService.logError(errorMessage);
-                    return throwError(errorMessage);
-                }),
-                switchMap((result) => this.revokeAccessToken(result)),
-                catchError((error) => {
-                    const errorMessage = `revokeAccessToken failed ${error}`;
-                    this.loggerService.logError(errorMessage);
-                    return throwError(errorMessage);
-                })
-            )
-            .subscribe(() => this.logoff(urlHandler));
+        if (this.storagePersistanceService.getRefreshToken()) {
+            return this.revokeRefreshToken()
+                .pipe(
+                    catchError((error) => {
+                        const errorMessage = `revokeRefreshToken failed ${error}`;
+                        this.loggerService.logError(errorMessage);
+                        return throwError(errorMessage);
+                    }),
+                    switchMap((result) => this.revokeAccessToken(result)),
+                    catchError((error) => {
+                        const errorMessage = `revokeAccessToken failed ${error}`;
+                        this.loggerService.logError(errorMessage);
+                        return throwError(errorMessage);
+                    })
+                )
+                .subscribe(() => this.logoff(urlHandler));
+        } else {
+            return this.revokeAccessToken()
+                .pipe(
+                    catchError((error) => {
+                        const errorMessage = `revokeRefreshToken failed ${error}`;
+                        this.loggerService.logError(errorMessage);
+                        return throwError(errorMessage);
+                    })
+                )
+                .subscribe(() => this.logoff(urlHandler));
+        }
     }
 
     // https://tools.ietf.org/html/rfc7009
