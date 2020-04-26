@@ -105,15 +105,15 @@ export class CallbackService {
 
     // TODO THE PERIODICALLY TOKEN VALIDATION DOES NOT BELOND IN THE CALLBACK SERVICE
     startTokenValidationPeriodically(repeatAfterSeconds: number) {
-        if (this.checkSessionService.isCheckSessionConfigured()) {
-            this.checkSessionService.start();
-        }
-
         if (!!this.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
             return;
         }
 
-        this.loggerService.logDebug('runTokenValidation silent-renew running');
+        const millisecondsDelayBetweenTokenCheck = repeatAfterSeconds * 1000;
+
+        this.loggerService.logDebug(
+            `starting token validation check every ${repeatAfterSeconds}s (${millisecondsDelayBetweenTokenCheck}ms)`
+        );
 
         const periodicallyCheck$ = interval(repeatAfterSeconds * 1000).pipe(
             switchMap(() => {

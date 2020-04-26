@@ -18,6 +18,8 @@ import { TokenValidationService } from './validation/token-validation.service';
 
 @Injectable()
 export class OidcSecurityService {
+    private TOKEN_REFRESH_INTERVALL_IN_SECONDS = 3;
+
     private isModuleSetupInternal$ = new BehaviorSubject<boolean>(false);
 
     get configuration() {
@@ -78,11 +80,11 @@ export class OidcSecurityService {
                     this.authStateService.setAuthorizedAndFireEvent();
                     this.userService.publishUserdataIfExists();
 
-                    this.callbackService.startTokenValidationPeriodically(3);
-
                     if (this.checkSessionService.isCheckSessionConfigured()) {
                         this.checkSessionService.start();
                     }
+
+                    this.callbackService.startTokenValidationPeriodically(this.TOKEN_REFRESH_INTERVALL_IN_SECONDS);
 
                     if (this.silentRenewService.isSilentRenewConfigured()) {
                         this.silentRenewService.getOrCreateIframe();
