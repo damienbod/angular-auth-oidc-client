@@ -89,6 +89,24 @@ export class TokenValidationService {
         return tokenNotExpired;
     }
 
+    validateAccessTokenNotExpired(accessTokenExpiresAt: Date, offsetSeconds?: number): boolean {
+        offsetSeconds = offsetSeconds || 0;
+
+        // value is optional, so if it does not exist, then it has not expired
+        if (!accessTokenExpiresAt) {
+            return true;
+        }
+
+        const accessTokenExpirationValue = accessTokenExpiresAt.valueOf();
+        const nowWithOffset = new Date().valueOf() + offsetSeconds * 1000;
+        const tokenNotExpired = accessTokenExpirationValue > nowWithOffset;
+
+        this.loggerService.logDebug(`Has access_token expired: ${!tokenNotExpired}, ${accessTokenExpirationValue} > ${nowWithOffset}`);
+
+        // access token not expired?
+        return tokenNotExpired;
+    }
+
     // iss
     // REQUIRED. Issuer Identifier for the Issuer of the response.The iss value is a case-sensitive URL using the
     // https scheme that contains scheme, host,
