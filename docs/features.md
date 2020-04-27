@@ -1,6 +1,37 @@
-# Public Events
+# Useful Features of this library
 
-# Redirect after loing (if implement)
+## Public Events
+
+The library exposes several events which are happening during the runtime. You can subscribe to those events by using the `PublicEventsService`.
+
+Currently the events
+
+```ts
+{
+    ConfigLoaded,
+    ModuleSetup,
+    CheckSessionChanged,
+    UserDataChanged,
+    NewAuthorizationResult,
+}
+```
+
+are supported.
+
+> Notice that the `ConfigLoaded` event only runs inside the `AppModule`s constructor as the config is loaded with the `APP_INITIALIZER` of Angular.
+
+You can inject the service and use the events like this:
+
+```typescript
+import { PublicEventsService } from 'angular-auth-oidc-client';
+
+constructor(private eventService: PublicEventsService) {
+    this.eventService
+            .registerForEvents()
+            .pipe(filter((notification) => notification.type === EventTypes.CheckSessionChanged))
+            .subscribe((value) => console.log('CheckSessionChanged with value ', value));
+}
+```
 
 ## Custom Storage
 
@@ -43,3 +74,5 @@ Custom parameters can be added to the auth request by using the setCustomRequest
 ```typescript
 this.oidcSecurityService.setCustomRequestParameters({ ui_locales: culture });
 ```
+
+## Redirect after login (not implemented yet)
