@@ -27,7 +27,6 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
             forbiddenRoute: '/forbidden',
             unauthorizedRoute: '/unauthorized',
             logLevel: LogLevel.Debug,
-            maxIdTokenIatOffsetAllowedInSeconds: 30,
             historyCleanupOff: true,
             // iss_validation_off: false
             // disable_iat_offset_validation: true

@@ -28,7 +28,6 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
             autoUserinfo: false,
             silentRenewUrl: 'https://localhost:65328/silent-renew.html',
             logLevel: LogLevel.Debug,
-            maxIdTokenIatOffsetAllowedInSeconds: 500,
             customParams: {
                 response_mode: 'fragment',
                 prompt: 'consent',

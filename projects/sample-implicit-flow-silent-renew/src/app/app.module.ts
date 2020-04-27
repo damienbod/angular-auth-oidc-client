@@ -17,7 +17,6 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
             responseType: 'id_token token',
             startCheckSession: true,
             silentRenew: true,
-            maxIdTokenIatOffsetAllowedInSeconds: 500,
             silentRenewUrl: 'https://localhost:4202/silent-renew.html',
             logLevel: LogLevel.Debug,
         });

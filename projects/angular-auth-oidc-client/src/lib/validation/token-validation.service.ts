@@ -190,7 +190,13 @@ export class TokenValidationService {
                 ' < ' +
                 maxOffsetAllowedInSeconds * 1000
         );
-        return new Date().valueOf() - dateTimeIatIdToken.valueOf() < maxOffsetAllowedInSeconds * 1000;
+
+        const diff = new Date().valueOf() - dateTimeIatIdToken.valueOf();
+        if (diff > 0) {
+            return diff < maxOffsetAllowedInSeconds * 1000;
+        }
+
+        return -diff < maxOffsetAllowedInSeconds * 1000;
     }
 
     // id_token C9: The value of the nonce Claim MUST be checked to verify that it is the same value as the one
