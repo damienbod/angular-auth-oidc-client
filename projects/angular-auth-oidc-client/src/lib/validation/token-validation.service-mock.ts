@@ -1,5 +1,5 @@
 ﻿export class TokenValidationServiceMock {
-    hasIdTokenExpired(token: string, offsetSeconds?: number): boolean {
+    hasIdTokenExpired(idToken: string, offsetSeconds?: number): boolean {
         return false;
     }
 
