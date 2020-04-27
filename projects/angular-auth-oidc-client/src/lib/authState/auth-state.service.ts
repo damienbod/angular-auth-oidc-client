@@ -91,7 +91,7 @@ export class AuthStateService {
         return decodeURIComponent(token);
     }
 
-    isAuthStorageIdTokenValid() {
+    areAuthStorageTokensValid() {
         const currentAuthState = this.getCurrentlyPersistedAuthState();
 
         if (currentAuthState !== AuthorizedState.Authorized) {
@@ -103,8 +103,11 @@ export class AuthStateService {
         if (this.hasIdTokenExpired()) {
             this.loggerService.logDebug('persisted id_token is expired');
             return false;
+        } else if (this.hasAccessTokenExpiredIfExpiryExists()) {
+            this.loggerService.logDebug('persisted access_token is expired');
+            return false;
         } else {
-            this.loggerService.logDebug('persisted id_token is valid');
+            this.loggerService.logDebug('persisted id_token and access token are valid');
             return true;
         }
     }

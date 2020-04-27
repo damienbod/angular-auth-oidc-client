@@ -202,37 +202,37 @@ describe('Auth State Service', () => {
         });
     });
 
-    describe('isAuthStorageTokenValid', () => {
+    describe('areAuthStorageTokensValid', () => {
         it('authState is AuthorizedState.Unknown returns false', () => {
             spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Unknown);
-            const result = authStateService.isAuthStorageIdTokenValid();
+            const result = authStateService.areAuthStorageTokensValid();
             expect(result).toBeFalse();
         });
 
         it('authState is AuthorizedState.Unauthorized returns false', () => {
             spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Unauthorized);
-            const result = authStateService.isAuthStorageIdTokenValid();
+            const result = authStateService.areAuthStorageTokensValid();
             expect(result).toBeFalse();
         });
 
         it('authState is AuthorizedState.Authorized and id_token is expired returns false', () => {
             spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Authorized);
             spyOn(authStateService as any, 'hasIdTokenExpired').and.returnValue(true);
-            const result = authStateService.isAuthStorageIdTokenValid();
+            const result = authStateService.areAuthStorageTokensValid();
             expect(result).toBeFalse();
         });
 
         it('authState is AuthorizedState.Authorized and id_token is not expired returns true', () => {
             spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Authorized);
             spyOn(authStateService as any, 'hasIdTokenExpired').and.returnValue(false);
-            const result = authStateService.isAuthStorageIdTokenValid();
+            const result = authStateService.areAuthStorageTokensValid();
             expect(result).toBeTrue();
         });
 
         it('authState is AuthorizedState.Authorized and id_token is not expired fires event', () => {
             spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Authorized);
             spyOn(authStateService as any, 'hasIdTokenExpired').and.returnValue(false);
-            const result = authStateService.isAuthStorageIdTokenValid();
+            const result = authStateService.areAuthStorageTokensValid();
             expect(result).toBeTrue();
         });
     });
