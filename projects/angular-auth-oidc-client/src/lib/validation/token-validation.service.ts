@@ -261,6 +261,19 @@ export class TokenValidationService {
         return true;
     }
 
+    // If an azp (authorized party) Claim is present, the Client SHOULD verify that its client_id is the Claim Value.
+    validateIdTokenAzpValid(dataIdToken: any, clientId: string): boolean {
+        if (!dataIdToken.azp) {
+            return true;
+        }
+
+        if (dataIdToken.azp === clientId) {
+            return true;
+        }
+
+        return false;
+    }
+
     validateStateFromHashCallback(state: any, localState: any): boolean {
         if ((state as string) !== (localState as string)) {
             this.loggerService.logDebug('ValidateStateFromHashCallback failed, state: ' + state + ' local_state:' + localState);
