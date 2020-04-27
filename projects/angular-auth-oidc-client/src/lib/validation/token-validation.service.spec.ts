@@ -67,7 +67,7 @@ describe('TokenValidationService', () => {
         expect(valueFalse).toEqual(false);
     });
 
-    it('validate aud array', () => {
+    it('validate aud array and azp', () => {
         const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
         config.redirectUrl = 'https://localhost:44386';
         config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
@@ -128,7 +128,7 @@ describe('TokenValidationService', () => {
         ).toBe(false);
     });
 
-    it('validate aud azp', () => {
+    it('validate aud array and azp', () => {
         const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
         config.redirectUrl = 'https://localhost:44386';
         config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
@@ -163,7 +163,7 @@ describe('TokenValidationService', () => {
         expect(azpValid).toEqual(true);
     });
 
-    it('validate  azp', () => {
+    it('validate string aud and no azp', () => {
         const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
         config.redirectUrl = 'https://localhost:44386';
         config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
@@ -197,7 +197,7 @@ describe('TokenValidationService', () => {
         expect(azpValid3).toEqual(true);
     });
 
-    it('validate array aud  azp', () => {
+    it('validate array aud with 1 item and no azp', () => {
         const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
         config.redirectUrl = 'https://localhost:44386';
         config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
