@@ -89,14 +89,15 @@ export class TokenValidationService {
         return tokenNotExpired;
     }
 
-    validateAccessTokenNotExpired(accessTokenExpiresAt: Date): boolean {
+    validateAccessTokenNotExpired(accessTokenExpiresAt: Date, offsetSeconds?: number): boolean {
         // value is optional, so if it does not exist, then it has not expired
         if (!accessTokenExpiresAt) {
             return true;
         }
 
+        offsetSeconds = offsetSeconds || 0;
         const accessTokenExpirationValue = accessTokenExpiresAt.valueOf();
-        const nowWithOffset = new Date().valueOf();
+        const nowWithOffset = new Date().valueOf() + offsetSeconds * 1000;
         const tokenNotExpired = accessTokenExpirationValue > nowWithOffset;
 
         this.loggerService.logDebug(`Has access_token expired: ${!tokenNotExpired}, ${accessTokenExpirationValue} > ${nowWithOffset}`);
