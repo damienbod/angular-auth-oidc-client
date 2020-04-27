@@ -263,10 +263,8 @@ export class TokenValidationService {
     }
 
     validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken: any): boolean {
-        if (Array.isArray(dataIdToken.aud) && dataIdToken.aud.length > 1) {
-            if (!dataIdToken?.azp) {
-                return false;
-            }
+        if (Array.isArray(dataIdToken.aud) && dataIdToken.aud.length > 1 && !dataIdToken?.azp) {
+            return false;
         }
 
         return true;
