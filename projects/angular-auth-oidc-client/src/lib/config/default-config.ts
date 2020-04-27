@@ -13,7 +13,7 @@ export const DEFAULT_CONFIG: OpenIdConfiguration = {
     startCheckSession: false,
     silentRenew: false,
     silentRenewUrl: 'https://please_set',
-    silentRenewOffsetInSeconds: 0,
+    renewTimeBeforeTokenExpiresInSeconds: 0,
     useRefreshToken: false,
     ignoreNonceAfterRefresh: false,
     postLoginRoute: '/',

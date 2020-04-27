@@ -91,7 +91,7 @@ export class AuthStateService {
         return decodeURIComponent(token);
     }
 
-    isAuthStorageTokenValid() {
+    areAuthStorageTokensValid() {
         const currentAuthState = this.getCurrentlyPersistedAuthState();
 
         if (currentAuthState !== AuthorizedState.Authorized) {
@@ -100,27 +100,42 @@ export class AuthStateService {
 
         this.loggerService.logDebug(`authorizedState in storage is ${currentAuthState}`);
 
-        if (this.tokenIsExpired()) {
-            this.loggerService.logDebug('persisted token is expired');
+        if (this.hasIdTokenExpired()) {
+            this.loggerService.logDebug('persisted id_token is expired');
             return false;
-        } else {
-            this.loggerService.logDebug('persisted token is valid');
-            return true;
         }
+
+        if (this.hasAccessTokenExpiredIfExpiryExists()) {
+            this.loggerService.logDebug('persisted access_token is expired');
+            return false;
+        }
+
+        this.loggerService.logDebug('persisted id_token and access token are valid');
+        return true;
     }
 
     setAuthResultInStorage(authResult: any) {
         this.storagePersistanceService.authResult = authResult;
     }
 
-    tokenIsExpired() {
-        const tokenToCheck = this.storagePersistanceService.idToken || this.storagePersistanceService.accessToken;
-        const tokenIsExpired = this.tokenValidationService.isTokenExpired(
+    hasIdTokenExpired() {
+        const tokenToCheck = this.storagePersistanceService.idToken;
+        const tokenIsExpired = this.tokenValidationService.hasIdTokenExpired(
             tokenToCheck,
-            this.configurationProvider.openIDConfiguration.silentRenewOffsetInSeconds
+            this.configurationProvider.openIDConfiguration.renewTimeBeforeTokenExpiresInSeconds
         );
         return tokenIsExpired;
     }
+
+    hasAccessTokenExpiredIfExpiryExists() {
+        const accessTokenExpiresIn = this.storagePersistanceService.accessTokenExpiresIn;
+        const accessTokenHasExpired = this.tokenValidationService.validateAccessTokenNotExpired(
+            accessTokenExpiresIn,
+            this.configurationProvider.openIDConfiguration.renewTimeBeforeTokenExpiresInSeconds
+        );
+        return !accessTokenHasExpired;
+    }
+
     private getCurrentlyPersistedAuthState() {
         return this.storagePersistanceService.authorizedState;
     }

@@ -74,7 +74,7 @@ export class OidcSecurityService {
 
         return this.callbackService.handlePossibleStsCallback(currentUrl).pipe(
             map(() => {
-                const isAuthenticated = this.authStateService.isAuthStorageTokenValid();
+                const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
                 // validate storage and @@set authorized@@ if true
                 if (isAuthenticated) {
                     this.authStateService.setAuthorizedAndFireEvent();

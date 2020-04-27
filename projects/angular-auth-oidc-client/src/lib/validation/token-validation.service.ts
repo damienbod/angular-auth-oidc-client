@@ -62,7 +62,7 @@ export class TokenValidationService {
 
     // id_token C7: The current time MUST be before the time represented by the exp Claim
     // (possibly allowing for some small leeway to account for clock skew).
-    isTokenExpired(token: string, offsetSeconds?: number): boolean {
+    hasIdTokenExpired(token: string, offsetSeconds?: number): boolean {
         let decoded: any;
         decoded = this.tokenHelperService.getPayloadFromToken(token, false);
 
@@ -83,9 +83,26 @@ export class TokenValidationService {
         const nowWithOffset = new Date().valueOf() + offsetSeconds * 1000;
         const tokenNotExpired = tokenExpirationValue > nowWithOffset;
 
-        this.loggerService.logDebug(`Is Token expired: ${!tokenNotExpired}, ${tokenExpirationValue} > ${nowWithOffset}`);
+        this.loggerService.logDebug(`Has id_token expired: ${!tokenNotExpired}, ${tokenExpirationValue} > ${nowWithOffset}`);
 
         // Token not expired?
+        return tokenNotExpired;
+    }
+
+    validateAccessTokenNotExpired(accessTokenExpiresAt: Date, offsetSeconds?: number): boolean {
+        // value is optional, so if it does not exist, then it has not expired
+        if (!accessTokenExpiresAt) {
+            return true;
+        }
+
+        offsetSeconds = offsetSeconds || 0;
+        const accessTokenExpirationValue = accessTokenExpiresAt.valueOf();
+        const nowWithOffset = new Date().valueOf() + offsetSeconds * 1000;
+        const tokenNotExpired = accessTokenExpirationValue > nowWithOffset;
+
+        this.loggerService.logDebug(`Has access_token expired: ${!tokenNotExpired}, ${accessTokenExpirationValue} > ${nowWithOffset}`);
+
+        // access token not expired?
         return tokenNotExpired;
     }
 
