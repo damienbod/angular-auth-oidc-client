@@ -125,12 +125,7 @@ export class StateValidationService {
                 return toReturn;
             }
 
-            if (
-                !this.tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(
-                    toReturn.decodedIdToken,
-                    this.configurationProvider.openIDConfiguration.clientId
-                )
-            ) {
+            if (!this.tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(toReturn.decodedIdToken)) {
                 this.loggerService.logWarning('authorizedCallback missing azp');
                 toReturn.state = ValidationResult.IncorrectAzp;
                 this.handleUnsuccessfulValidation();

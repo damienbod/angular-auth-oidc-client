@@ -262,9 +262,9 @@ export class TokenValidationService {
         return true;
     }
 
-    validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken: any, aud: any): boolean {
+    validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken: any): boolean {
         if (Array.isArray(dataIdToken.aud) && dataIdToken.aud.length > 1) {
-            if (!dataIdToken.azp) {
+            if (!dataIdToken?.azp) {
                 return false;
             }
         }
@@ -273,7 +273,7 @@ export class TokenValidationService {
     }
     // If an azp (authorized party) Claim is present, the Client SHOULD verify that its client_id is the Claim Value.
     validateIdTokenAzpValid(dataIdToken: any, clientId: string): boolean {
-        if (!dataIdToken.azp) {
+        if (!dataIdToken?.azp) {
             return true;
         }
 
