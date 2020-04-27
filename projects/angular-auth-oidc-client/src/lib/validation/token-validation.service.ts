@@ -241,12 +241,13 @@ export class TokenValidationService {
     // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences
     // not trusted by the Client.
     validateIdTokenAud(dataIdToken: any, aud: any): boolean {
-        if (dataIdToken.aud instanceof Array) {
-            const result = this.arrayHelperService.areEqual(dataIdToken.aud, aud);
+        if (Array.isArray(dataIdToken.aud)) {
+            // const result = this.arrayHelperService.areEqual(dataIdToken.aud, aud);
+            const result = dataIdToken.aud.includes(aud);
 
             if (!result) {
                 this.loggerService.logDebug(
-                    'Validate_id_token_aud  array failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud
+                    'Validate_id_token_aud array failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud
                 );
                 return false;
             }
@@ -259,6 +260,26 @@ export class TokenValidationService {
         }
 
         return true;
+    }
+
+    validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken: any): boolean {
+        if (Array.isArray(dataIdToken.aud) && dataIdToken.aud.length > 1 && !dataIdToken?.azp) {
+            return false;
+        }
+
+        return true;
+    }
+    // If an azp (authorized party) Claim is present, the Client SHOULD verify that its client_id is the Claim Value.
+    validateIdTokenAzpValid(dataIdToken: any, clientId: string): boolean {
+        if (!dataIdToken?.azp) {
+            return true;
+        }
+
+        if (dataIdToken.azp === clientId) {
+            return true;
+        }
+
+        return false;
     }
 
     validateStateFromHashCallback(state: any, localState: any): boolean {
