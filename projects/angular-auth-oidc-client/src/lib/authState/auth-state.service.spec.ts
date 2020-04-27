@@ -215,9 +215,18 @@ describe('Auth State Service', () => {
             expect(result).toBeFalse();
         });
 
-        it('authState is AuthorizedState.Authorized and id_token is expired returns false', () => {
+        it('authState is AuthorizedState.Authorized and id_token is expired returns true', () => {
             spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Authorized);
             spyOn(authStateService as any, 'hasIdTokenExpired').and.returnValue(true);
+            spyOn(authStateService as any, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(false);
+            const result = authStateService.areAuthStorageTokensValid();
+            expect(result).toBeFalse();
+        });
+
+        it('authState is AuthorizedState.Authorized and access_token is expired returns true', () => {
+            spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Authorized);
+            spyOn(authStateService as any, 'hasIdTokenExpired').and.returnValue(false);
+            spyOn(authStateService as any, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(true);
             const result = authStateService.areAuthStorageTokensValid();
             expect(result).toBeFalse();
         });
@@ -225,6 +234,7 @@ describe('Auth State Service', () => {
         it('authState is AuthorizedState.Authorized and id_token is not expired returns true', () => {
             spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Authorized);
             spyOn(authStateService as any, 'hasIdTokenExpired').and.returnValue(false);
+            spyOn(authStateService as any, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(false);
             const result = authStateService.areAuthStorageTokensValid();
             expect(result).toBeTrue();
         });
@@ -232,6 +242,7 @@ describe('Auth State Service', () => {
         it('authState is AuthorizedState.Authorized and id_token is not expired fires event', () => {
             spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Authorized);
             spyOn(authStateService as any, 'hasIdTokenExpired').and.returnValue(false);
+            spyOn(authStateService as any, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(false);
             const result = authStateService.areAuthStorageTokensValid();
             expect(result).toBeTrue();
         });
@@ -253,16 +264,6 @@ describe('Auth State Service', () => {
             spyOnProperty(storagePersistanceService, 'idToken', 'get').and.returnValue('idToken');
             serviceAsAny.hasIdTokenExpired();
             expect(spy).toHaveBeenCalledWith('idToken', 30);
-        });
-
-        it('tokenValidationService gets called with accessToken if id_token is not set', () => {
-            const serviceAsAny = authStateService as any;
-            configurationProvider.setConfig({ silentRenewOffsetInSeconds: 30 }, null);
-            const spy = spyOn(tokenValidationService, 'hasIdTokenExpired').and.callFake((a, b) => true);
-            spyOnProperty(storagePersistanceService, 'idToken', 'get').and.returnValue(null);
-            spyOnProperty(storagePersistanceService, 'accessToken', 'get').and.returnValue('accessToken');
-            serviceAsAny.hasIdTokenExpired();
-            expect(spy).toHaveBeenCalledWith('accessToken', 30);
         });
     });
 });
