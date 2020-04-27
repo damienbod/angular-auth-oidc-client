@@ -4,7 +4,7 @@
 
 - Refactor lib config to make it easier to use
 - Update project to Angular 9 #610
-- add examples #625
+- added examples #625
 - support refresh tokens with example, and docs (coming safari change)
 - refactor configuration property names
 - eslint conform #627
@@ -21,18 +21,16 @@
 - After successful login, getIsAuthorized still returns false for a bit. #549
 - Expose silent renew running observable #447
 - Issue with silent renew when js execution has been suspended #605
+- Add support for OAuth 2.0 Token Revocation #673
+- Silent renew dies if startRenew fails #617
+- support for Angular 8 , Angular 9
+- redesign login init
+- Remove avoidable anys #624
+- Use returned expired value of access token for expired validation
+- Id_Token is rejected because of timing issue when server hour is different then client hour
 
-in progress
-support IE in second package #520
-Use returned expired value of access token for expired validation
-Refactor rxjs events, user profile events, silent renew, check session
+#175
 fix validate, fix max time offset
-support for Angular 8 , Angular 9
-redesign (or add docs) for the silent renew, login init
-separate the silent renew, and the login parameters (nonce, state, etc)
-Remove avoidable anys #624
-id_token : alg : HS256 support #597
-Id_Token is rejected because of timing issue when server hour is different then client hour #175
 
 ### 2020-02-14 version 10.0.15
 * Subscribe startRenew after isAuthorized is true
