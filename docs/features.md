@@ -33,17 +33,26 @@ constructor(private eventService: PublicEventsService) {
 }
 ```
 
-Pass inside the `filter` the type of event you want to subscribe to.
+The `Notification` being sent out comes with a `type` and a `value`.
+
+```ts
+export interface OidcClientNotification<T> {
+    type: EventTypes;
+    value?: T;
+}
+```
+
+Pass inside the `filter` the type of event you are interested in and subscribe to it.
 
 ## Custom Storage
 
 If you need, you can create a custom storage (for example to use cookies).
 
-Implement `OidcSecurityStorage` class-interface and the `read` and `write` methods:
+Implement `AbstractSecurityStorage` and the `read` and `write` methods:
 
 ```typescript
 @Injectable()
-export class CustomStorage implements OidcSecurityStorage {
+export class CustomStorage implements AbstractSecurityStorage {
 
     public read(key: string): any {
         ...
@@ -71,10 +80,27 @@ Then provide the class in the module:
 
 ## Adding custom parameters to the authorization request
 
-Custom parameters can be added to the auth request by using the setCustomRequestParameters method. Here you could add ui_locale, acr or whatever you request for your token server.
+Custom parameters can be added to the auth request by adding them to the config you are calling the `withConfig(...)` method with. They are provided by
 
 ```typescript
-this.oidcSecurityService.setCustomRequestParameters({ ui_locales: culture });
+customParams?: {
+    [key: string]: string | number | boolean;
+};
+```
+
+so you can pass them as an object like this:
+
+```typescript
+export function loadConfig(oidcConfigService: OidcConfigService) {
+    return () =>
+        oidcConfigService.withConfig({
+            // ...
+            customParams: {
+                response_mode: 'fragment',
+                prompt: 'consent',
+            },
+        });
+}
 ```
 
 ## Redirect after login (not implemented yet)
