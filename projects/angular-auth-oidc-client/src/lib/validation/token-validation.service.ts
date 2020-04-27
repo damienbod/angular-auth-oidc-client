@@ -242,11 +242,12 @@ export class TokenValidationService {
     // not trusted by the Client.
     validateIdTokenAud(dataIdToken: any, aud: any): boolean {
         if (dataIdToken.aud instanceof Array) {
-            const result = this.arrayHelperService.areEqual(dataIdToken.aud, aud);
+            // const result = this.arrayHelperService.areEqual(dataIdToken.aud, aud);
+            const result = dataIdToken.aud.includes('aud');
 
             if (!result) {
                 this.loggerService.logDebug(
-                    'Validate_id_token_aud  array failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud
+                    'Validate_id_token_aud array failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud
                 );
                 return false;
             }

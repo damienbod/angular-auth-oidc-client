@@ -125,6 +125,30 @@ export class StateValidationService {
                 return toReturn;
             }
 
+            if (
+                !this.tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(
+                    toReturn.decodedIdToken,
+                    this.configurationProvider.openIDConfiguration.clientId
+                )
+            ) {
+                this.loggerService.logWarning('authorizedCallback missing azp');
+                toReturn.state = ValidationResult.IncorrectAzp;
+                this.handleUnsuccessfulValidation();
+                return toReturn;
+            }
+
+            if (
+                !this.tokenValidationService.validateIdTokenAzpValid(
+                    toReturn.decodedIdToken,
+                    this.configurationProvider.openIDConfiguration.clientId
+                )
+            ) {
+                this.loggerService.logWarning('authorizedCallback incorrect azp');
+                toReturn.state = ValidationResult.IncorrectAzp;
+                this.handleUnsuccessfulValidation();
+                return toReturn;
+            }
+
             if (!this.tokenValidationService.validateIdTokenExpNotExpired(toReturn.decodedIdToken)) {
                 this.loggerService.logWarning('authorizedCallback token expired');
                 toReturn.state = ValidationResult.TokenExpired;
