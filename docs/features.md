@@ -33,6 +33,8 @@ constructor(private eventService: PublicEventsService) {
 }
 ```
 
+Pass inside the `filter` the type of event you want to subscribe to.
+
 ## Custom Storage
 
 If you need, you can create a custom storage (for example to use cookies).
