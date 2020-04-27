@@ -241,7 +241,7 @@ export class TokenValidationService {
     // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences
     // not trusted by the Client.
     validateIdTokenAud(dataIdToken: any, aud: any): boolean {
-        if (dataIdToken.aud instanceof Array) {
+        if (Array.isArray(dataIdToken.aud)) {
             // const result = this.arrayHelperService.areEqual(dataIdToken.aud, aud);
             const result = dataIdToken.aud.includes('aud');
 
@@ -263,7 +263,7 @@ export class TokenValidationService {
     }
 
     validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken: any, aud: any): boolean {
-        if (dataIdToken.aud instanceof Array && dataIdToken.aud.length > 1) {
+        if (Array.isArray(dataIdToken.aud) && dataIdToken.aud.length > 1) {
             if (!dataIdToken.azp) {
                 return false;
             }
