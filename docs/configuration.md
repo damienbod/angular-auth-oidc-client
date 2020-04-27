@@ -28,7 +28,6 @@ In this document we will find all values which can be set to configure this libr
 | `issValidationOff`                     | `boolean`                                      | TBD                                                        | No       | No            |
 | `historyCleanupOff`                    | `boolean`                                      | TBD                                                        | No       | No            |
 | `maxIdTokenIatOffsetAllowedInSeconds`  | `number`                                       | TBD                                                        | No       | No            |
-| `isauthorizedRaceTimeoutInSeconds`     | `number`                                       | TBD                                                        | No       | No            |
 | `disableIatOffsetValidation`           | `boolean`                                      | TBD                                                        | No       | No            |
 | `storage`                              | `any`                                          | TBD                                                        | No       | No            |
 | `customParams`                         | `{ [key: string]: string | number | boolean }` | TBD                                                        | No       | No            |
