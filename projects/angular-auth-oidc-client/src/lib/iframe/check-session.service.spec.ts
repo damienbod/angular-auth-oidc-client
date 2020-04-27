@@ -1,9 +1,9 @@
 import { async, TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../config';
-import { EventsService } from '../events';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { OidcSecurityService } from '../oidc.security.service';
+import { PublicEventsService } from '../public-events';
 import { AbstractSecurityStorage, StoragePersistanceService } from '../storage';
 import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
@@ -24,7 +24,7 @@ describe('SecurityCheckSessionTests', () => {
                 ConfigurationProvider,
                 OidcSecurityService,
                 IFrameService,
-                EventsService,
+                PublicEventsService,
                 {
                     provide: StoragePersistanceService,
                     useClass: StoragePersistanceServiceMock,

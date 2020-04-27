@@ -3,9 +3,9 @@ import { Observable, of } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { ConfigurationProvider } from '../config/config.provider';
-import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
+import { EventTypes, PublicEventsService } from '../public-events';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
 import { PlatformProvider } from '../utils';
@@ -19,7 +19,7 @@ describe('User Service', () => {
     let loggerService: LoggerService;
     let userService: UserService;
     let storagePersistanceService: StoragePersistanceService;
-    let eventsService: EventsService;
+    let eventsService: PublicEventsService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -32,7 +32,7 @@ describe('User Service', () => {
                 { provide: LoggerService, useClass: LoggerServiceMock },
                 { provide: DataService, useClass: DataServiceMock },
                 { provide: PlatformProvider, useClass: PlatformProviderMock },
-                EventsService,
+                PublicEventsService,
                 TokenHelperService,
                 ConfigurationProvider,
                 UserService,
@@ -46,7 +46,7 @@ describe('User Service', () => {
         loggerService = TestBed.inject(LoggerService);
         userService = TestBed.inject(UserService);
         storagePersistanceService = TestBed.inject(StoragePersistanceService);
-        eventsService = TestBed.inject(EventsService);
+        eventsService = TestBed.inject(PublicEventsService);
     });
 
     it('should create', () => {

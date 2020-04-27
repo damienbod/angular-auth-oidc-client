@@ -1,8 +1,8 @@
 import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ConfigurationProvider } from '../config';
-import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';
+import { EventTypes, PublicEventsService } from '../public-events';
 import { StoragePersistanceService } from '../storage';
 import { IFrameService } from './existing-iframe.service';
 
@@ -29,7 +29,7 @@ export class CheckSessionService {
         private loggerService: LoggerService,
         private iFrameService: IFrameService,
         private zone: NgZone,
-        private eventService: EventsService,
+        private eventService: PublicEventsService,
         private readonly configurationProvider: ConfigurationProvider
     ) {}
 
