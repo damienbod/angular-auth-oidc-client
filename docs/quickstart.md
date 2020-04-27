@@ -9,7 +9,7 @@ Import the module and services in your module.
 ```typescript
 import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { AuthModule, EventsService, EventTypes, LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
+import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
 // ...
 
 export function configureAuth(oidcConfigService: OidcConfigService) {

@@ -54,7 +54,7 @@ export class OidcSecurityService {
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,
         private configurationProvider: ConfigurationProvider,
-        private eventsService: PublicEventsService,
+        private publicEventsService: PublicEventsService,
         private urlService: UrlService,
         private authStateService: AuthStateService,
         private flowsDataService: FlowsDataService,
@@ -94,7 +94,7 @@ export class OidcSecurityService {
                 this.loggerService.logDebug('checkAuth completed fire events, auth: ' + isAuthenticated);
 
                 // TODO EXTRACT THIS IN SERVICE LATER
-                this.eventsService.fireEvent(EventTypes.ModuleSetup, true);
+                this.publicEventsService.fireEvent(EventTypes.ModuleSetup, true);
                 this.isModuleSetupInternal$.next(true);
 
                 return isAuthenticated;

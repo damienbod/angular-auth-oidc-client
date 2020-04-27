@@ -14,7 +14,7 @@ export class OidcConfigService {
         private readonly loggerService: LoggerService,
         private readonly http: DataService,
         private readonly configurationProvider: ConfigurationProvider,
-        private readonly eventsService: PublicEventsService
+        private readonly publicEventsService: PublicEventsService
     ) {}
 
     withConfig(passedConfig: OpenIdConfiguration) {
@@ -42,7 +42,7 @@ export class OidcConfigService {
                 };
             }),
             tap((mappedWellKnownEndpoints) =>
-                this.eventsService.fireEvent(EventTypes.ConfigLoaded, { passedConfig, mappedWellKnownEndpoints })
+                this.publicEventsService.fireEvent(EventTypes.ConfigLoaded, { passedConfig, mappedWellKnownEndpoints })
             ),
             tap((mappedWellKnownEndpoints) => this.configurationProvider.setConfig(passedConfig, mappedWellKnownEndpoints))
         );

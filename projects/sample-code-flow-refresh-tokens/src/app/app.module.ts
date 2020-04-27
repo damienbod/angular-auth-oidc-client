@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { AuthModule, EventsService, EventTypes, LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
+import { AuthModule, EventTypes, LogLevel, OidcConfigService, PublicEventsService } from 'angular-auth-oidc-client';
 import { filter } from 'rxjs/operators';
 import { AppComponent } from './app.component';
 
@@ -46,7 +46,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
     bootstrap: [AppComponent],
 })
 export class AppModule {
-    constructor(private readonly eventService: EventsService) {
+    constructor(private readonly eventService: PublicEventsService) {
         this.eventService
             .registerForEvents()
             .pipe(filter((notification) => notification.type === EventTypes.ConfigLoaded))

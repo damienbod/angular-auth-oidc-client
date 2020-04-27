@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { EventsService, OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
+import { OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -15,7 +15,7 @@ export class AppComponent implements OnInit {
     checkSessionChanged$: Observable<boolean>;
     checkSessionChanged: any;
 
-    constructor(public oidcSecurityService: OidcSecurityService, private readonly eventsService: EventsService) {}
+    constructor(public oidcSecurityService: OidcSecurityService) {}
 
     ngOnInit() {
         this.configuration = this.oidcSecurityService.configuration;

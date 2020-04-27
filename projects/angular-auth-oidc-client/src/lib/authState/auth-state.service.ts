@@ -21,7 +21,7 @@ export class AuthStateService {
     constructor(
         private storagePersistanceService: StoragePersistanceService,
         private loggerService: LoggerService,
-        private eventsService: PublicEventsService,
+        private publicEventsService: PublicEventsService,
         private readonly configurationProvider: ConfigurationProvider,
         private tokenValidationService: TokenValidationService
     ) {}
@@ -50,7 +50,7 @@ export class AuthStateService {
     }
 
     updateAndPublishAuthState(authorizationResult: AuthorizationResult) {
-        this.eventsService.fireEvent<AuthorizationResult>(EventTypes.NewAuthorizationResult, authorizationResult);
+        this.publicEventsService.fireEvent<AuthorizationResult>(EventTypes.NewAuthorizationResult, authorizationResult);
     }
 
     setAuthorizationData(accessToken: any, idToken: any) {
