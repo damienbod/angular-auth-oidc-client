@@ -53,7 +53,7 @@ describe('TokenValidationService', () => {
         config.unauthorizedRoute = '/Unauthorized';
         config.startCheckSession = false;
         config.silentRenew = false;
-        config.silentRenewOffsetInSeconds = 0;
+        config.renewTimeBeforeTokenExpiresInSeconds = 0;
         config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
@@ -79,7 +79,7 @@ describe('TokenValidationService', () => {
         config.unauthorizedRoute = '/Unauthorized';
         config.startCheckSession = false;
         config.silentRenew = false;
-        config.silentRenewOffsetInSeconds = 0;
+        config.renewTimeBeforeTokenExpiresInSeconds = 0;
         config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 

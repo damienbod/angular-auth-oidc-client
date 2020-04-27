@@ -17,6 +17,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
             responseType: 'code',
             silentRenew: true,
             silentRenewUrl: 'https://localhost:4200/silent-renew.html',
+            renewTimeBeforeTokenExpiresInSeconds: 15,
             logLevel: LogLevel.Debug,
         });
 }
