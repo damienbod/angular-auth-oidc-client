@@ -25,7 +25,6 @@ export interface OpenIdConfiguration {
     issValidationOff?: boolean;
     historyCleanupOff?: boolean;
     maxIdTokenIatOffsetAllowedInSeconds?: number;
-    isauthorizedRaceTimeoutInSeconds?: number;
     disableIatOffsetValidation?: boolean;
     storage?: any;
     customParams?: { [key: string]: string | number | boolean };

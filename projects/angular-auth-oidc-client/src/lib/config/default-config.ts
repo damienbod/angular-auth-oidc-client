@@ -26,7 +26,6 @@ export const DEFAULT_CONFIG: OpenIdConfiguration = {
     issValidationOff: false,
     historyCleanupOff: false,
     maxIdTokenIatOffsetAllowedInSeconds: 3,
-    isauthorizedRaceTimeoutInSeconds: 5,
     disableIatOffsetValidation: false,
     storage: typeof Storage !== 'undefined' ? sessionStorage : null,
     customParams: {},
