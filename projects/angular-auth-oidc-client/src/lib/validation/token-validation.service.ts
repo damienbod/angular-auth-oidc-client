@@ -243,7 +243,7 @@ export class TokenValidationService {
     validateIdTokenAud(dataIdToken: any, aud: any): boolean {
         if (Array.isArray(dataIdToken.aud)) {
             // const result = this.arrayHelperService.areEqual(dataIdToken.aud, aud);
-            const result = dataIdToken.aud.includes('aud');
+            const result = dataIdToken.aud.includes(aud);
 
             if (!result) {
                 this.loggerService.logDebug(

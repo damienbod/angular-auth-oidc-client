@@ -87,12 +87,13 @@ describe('TokenValidationService', () => {
 
         const dataIdToken = {
             aud: ['banana', 'apple', 'https://nice.dom'],
+            azp: 'apple',
         };
-        const valueTrue = tokenvalidationService.validateIdTokenAud(dataIdToken, ['banana', 'apple', 'https://nice.dom']);
-        expect(valueTrue).toEqual(true);
+        const audValidTrue = tokenvalidationService.validateIdTokenAud(dataIdToken, 'apple');
+        expect(audValidTrue).toEqual(true);
 
-        const valueFalse = tokenvalidationService.validateIdTokenAud(dataIdToken, ['ooo', 'apple', 'https://nice.dom']);
-        expect(valueFalse).toEqual(false);
+        const audValidFalse = tokenvalidationService.validateIdTokenAud(dataIdToken, 'https://nice.domunnnnnnkoem');
+        expect(audValidFalse).toEqual(false);
     });
 
     it('should validate id token nonce after code grant when match', () => {
@@ -125,5 +126,111 @@ describe('TokenValidationService', () => {
         expect(
             tokenvalidationService.validateIdTokenNonce({ nonce: 'test1' }, TokenValidationService.RefreshTokenNoncePlaceholder, false)
         ).toBe(false);
+    });
+
+    it('validate aud azp', () => {
+        const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+        config.redirectUrl = 'https://localhost:44386';
+        config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+        config.responseType = 'id_token token';
+        config.scope = 'openid email profile';
+        config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        config.postLoginRoute = '/home';
+        config.forbiddenRoute = '/Forbidden';
+        config.unauthorizedRoute = '/Unauthorized';
+        config.startCheckSession = false;
+        config.silentRenew = false;
+        config.renewTimeBeforeTokenExpiresInSeconds = 0;
+        config.logLevel = LogLevel.Debug;
+        config.maxIdTokenIatOffsetAllowedInSeconds = 10;
+
+        configProvider.setConfig(config, null);
+
+        const dataIdToken = {
+            aud: ['banana', 'apple', '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com'],
+            azp: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
+        };
+        const valueTrue = tokenvalidationService.validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken);
+        expect(valueTrue).toEqual(true);
+
+        const azpInvalid = tokenvalidationService.validateIdTokenAzpValid(dataIdToken, 'bananammmm');
+        expect(azpInvalid).toEqual(false);
+
+        const azpValid = tokenvalidationService.validateIdTokenAzpValid(
+            dataIdToken,
+            '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com'
+        );
+        expect(azpValid).toEqual(true);
+    });
+
+    it('validate  azp', () => {
+        const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+        config.redirectUrl = 'https://localhost:44386';
+        config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+        config.responseType = 'id_token token';
+        config.scope = 'openid email profile';
+        config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        config.postLoginRoute = '/home';
+        config.forbiddenRoute = '/Forbidden';
+        config.unauthorizedRoute = '/Unauthorized';
+        config.startCheckSession = false;
+        config.silentRenew = false;
+        config.renewTimeBeforeTokenExpiresInSeconds = 0;
+        config.logLevel = LogLevel.Debug;
+        config.maxIdTokenIatOffsetAllowedInSeconds = 10;
+
+        configProvider.setConfig(config, null);
+
+        const dataIdToken = {
+            aud: 'banana',
+        };
+        const valueTrue = tokenvalidationService.validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken);
+        expect(valueTrue).toEqual(true);
+
+        const azpValid = tokenvalidationService.validateIdTokenAzpValid(dataIdToken, 'bananammmm');
+        expect(azpValid).toEqual(true);
+
+        const azpValid2 = tokenvalidationService.validateIdTokenAzpValid(dataIdToken, 'banana');
+        expect(azpValid2).toEqual(true);
+
+        const azpValid3 = tokenvalidationService.validateIdTokenAzpValid(dataIdToken, 'fdfddlfkdlfkds');
+        expect(azpValid3).toEqual(true);
+    });
+
+    it('validate array aud  azp', () => {
+        const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+        config.redirectUrl = 'https://localhost:44386';
+        config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+        config.responseType = 'id_token token';
+        config.scope = 'openid email profile';
+        config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        config.postLoginRoute = '/home';
+        config.forbiddenRoute = '/Forbidden';
+        config.unauthorizedRoute = '/Unauthorized';
+        config.startCheckSession = false;
+        config.silentRenew = false;
+        config.renewTimeBeforeTokenExpiresInSeconds = 0;
+        config.logLevel = LogLevel.Debug;
+        config.maxIdTokenIatOffsetAllowedInSeconds = 10;
+
+        configProvider.setConfig(config, null);
+
+        const dataIdToken = {
+            aud: ['banana'],
+        };
+        const valueTrue = tokenvalidationService.validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken);
+        expect(valueTrue).toEqual(true);
+
+        const azpValid = tokenvalidationService.validateIdTokenAzpValid(dataIdToken, 'bananammmm');
+        expect(azpValid).toEqual(true);
+
+        const azpValid2 = tokenvalidationService.validateIdTokenAzpValid(dataIdToken, 'banana');
+        expect(azpValid2).toEqual(true);
+
+        const azpValid3 = tokenvalidationService.validateIdTokenAzpValid(dataIdToken, 'fdfddlfkdlfkds');
+        expect(azpValid3).toEqual(true);
+
+        const valueAud = tokenvalidationService.validateIdTokenAud(dataIdToken, 'banana');
+        expect(valueAud).toEqual(true);
     });
 });
