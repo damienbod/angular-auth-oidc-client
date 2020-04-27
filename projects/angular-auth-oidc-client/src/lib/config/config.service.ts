@@ -2,9 +2,9 @@
 import { map, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { ConfigurationProvider } from '../config/config.provider';
-import { EventTypes } from '../events/event-types';
-import { EventsService } from '../events/events.service';
 import { LoggerService } from '../logging/logger.service';
+import { EventTypes } from '../public-events/event-types';
+import { PublicEventsService } from '../public-events/public-events.service';
 import { OpenIdConfiguration } from './openid-configuration';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class OidcConfigService {
         private readonly loggerService: LoggerService,
         private readonly http: DataService,
         private readonly configurationProvider: ConfigurationProvider,
-        private readonly eventsService: EventsService
+        private readonly eventsService: PublicEventsService
     ) {}
 
     withConfig(passedConfig: OpenIdConfiguration) {

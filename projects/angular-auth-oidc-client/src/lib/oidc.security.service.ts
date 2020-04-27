@@ -4,13 +4,13 @@ import { map } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
 import { ConfigurationProvider } from './config';
-import { EventTypes } from './events';
-import { EventsService } from './events/events.service';
 import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsService } from './flows/flows.service';
 import { CheckSessionService, SilentRenewService } from './iframe';
 import { LoggerService } from './logging/logger.service';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
+import { EventTypes } from './public-events';
+import { PublicEventsService } from './public-events/public-events.service';
 import { UserService } from './userData/user-service';
 import { UrlService } from './utils';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
@@ -54,7 +54,7 @@ export class OidcSecurityService {
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,
         private configurationProvider: ConfigurationProvider,
-        private eventsService: EventsService,
+        private eventsService: PublicEventsService,
         private urlService: UrlService,
         private authStateService: AuthStateService,
         private flowsDataService: FlowsDataService,

@@ -3,8 +3,8 @@ import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { ConfigurationProvider } from '../config';
-import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';
+import { EventTypes, PublicEventsService } from '../public-events';
 import { StoragePersistanceService } from '../storage';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
@@ -20,7 +20,7 @@ export class UserService {
     constructor(
         private oidcDataService: DataService,
         private storagePersistanceService: StoragePersistanceService,
-        private eventService: EventsService,
+        private eventService: PublicEventsService,
         private loggerService: LoggerService,
         private tokenHelperService: TokenHelperService,
         private readonly configurationProvider: ConfigurationProvider,
