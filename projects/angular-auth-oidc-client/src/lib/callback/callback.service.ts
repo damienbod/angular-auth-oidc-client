@@ -133,9 +133,7 @@ export class CallbackService {
                 const idTokenHasExpired = this.authStateService.hasIdTokenExpired();
                 const accessTokenHasExpired = this.authStateService.hasAccessTokenExpiredIfExpiryExists();
 
-                console.warn('accessTokenHasExpired', accessTokenHasExpired);
-
-                if (!idTokenHasExpired) {
+                if (!idTokenHasExpired && !accessTokenHasExpired) {
                     return of(null);
                 }
 
