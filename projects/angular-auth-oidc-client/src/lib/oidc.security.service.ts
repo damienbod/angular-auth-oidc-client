@@ -184,14 +184,6 @@ export class OidcSecurityService {
         return this.logoffRevocationService.getEndSessionUrl();
     }
 
-    doPeriodicallTokenCheck(): void {
-        this.callbackService.startTokenValidationPeriodically(3);
-    }
-
-    stopPeriodicallTokenCheck(): void {
-        this.callbackService.stopPeriodicallTokenCheck();
-    }
-
     private redirectTo(url: string) {
         window.location.href = url;
     }
