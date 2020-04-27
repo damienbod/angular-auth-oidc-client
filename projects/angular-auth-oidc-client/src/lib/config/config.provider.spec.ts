@@ -80,7 +80,7 @@ describe('ConfigurationProviderTests', () => {
             logLevel: LogLevel.Warn,
             issValidationOff: false,
             historyCleanupOff: false,
-            maxIdTokenIatOffsetAllowedInSeconds: 3,
+            maxIdTokenIatOffsetAllowedInSeconds: 120,
             disableIatOffsetValidation: false,
             storage: sessionStorage,
             customParams: {},

@@ -25,7 +25,7 @@ export const DEFAULT_CONFIG: OpenIdConfiguration = {
     logLevel: LogLevel.Warn,
     issValidationOff: false,
     historyCleanupOff: false,
-    maxIdTokenIatOffsetAllowedInSeconds: 30,
+    maxIdTokenIatOffsetAllowedInSeconds: 120,
     disableIatOffsetValidation: false,
     storage: typeof Storage !== 'undefined' ? sessionStorage : null,
     customParams: {},
