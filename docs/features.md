@@ -1,5 +1,9 @@
 # Useful Features of this library
 
+-   [Public Events](#public-events)
+-   [Custom Storage](#custom-storage)
+-   [Custom parameters](#custom-parameters)
+
 ## Public Events
 
 The library exposes several events which are happening during the runtime. You can subscribe to those events by using the `PublicEventsService`.
@@ -78,7 +82,7 @@ Then provide the class in the module:
 })
 ```
 
-## Adding custom parameters to the authorization request
+## Custom parameters
 
 Custom parameters can be added to the auth request by adding them to the config you are calling the `withConfig(...)` method with. They are provided by
 
