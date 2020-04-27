@@ -1,19 +1,19 @@
 import { async, TestBed } from '@angular/core/testing';
 import { filter } from 'rxjs/operators';
 import { EventTypes } from './event-types';
-import { EventsService } from './events.service';
+import { PublicEventsService } from './public-events.service';
 
 describe('Events Service', () => {
-    let eventsService: EventsService;
+    let eventsService: PublicEventsService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [EventsService],
+            providers: [PublicEventsService],
         });
     });
 
     beforeEach(() => {
-        eventsService = TestBed.inject(EventsService);
+        eventsService = TestBed.inject(PublicEventsService);
     });
 
     it('should create', () => {

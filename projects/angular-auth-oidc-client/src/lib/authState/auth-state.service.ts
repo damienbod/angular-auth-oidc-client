@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ConfigurationProvider } from '../config';
-import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';
+import { EventTypes, PublicEventsService } from '../public-events';
 import { StoragePersistanceService } from '../storage';
 import { TokenValidationService } from '../validation/token-validation.service';
 import { AuthorizationResult } from './authorization-result';
@@ -21,7 +21,7 @@ export class AuthStateService {
     constructor(
         private storagePersistanceService: StoragePersistanceService,
         private loggerService: LoggerService,
-        private eventsService: EventsService,
+        private eventsService: PublicEventsService,
         private readonly configurationProvider: ConfigurationProvider,
         private tokenValidationService: TokenValidationService
     ) {}

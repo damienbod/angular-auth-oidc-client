@@ -3,7 +3,6 @@ import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './authState/auth-state.service';
 import { ConfigurationProvider, OidcConfigService } from './config';
-import { EventsService } from './events';
 import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsService } from './flows/flows.service';
 import { RandomService } from './flows/random/random.service';
@@ -14,6 +13,7 @@ import { SilentRenewService } from './iframe/silent-renew.service';
 import { LoggerService } from './logging/logger.service';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { OidcSecurityService } from './oidc.security.service';
+import { PublicEventsService } from './public-events';
 import { AbstractSecurityStorage, BrowserStorageService, StoragePersistanceService } from './storage';
 import { UserService } from './userData/user-service';
 import { PlatformProvider, UrlService } from './utils';
@@ -30,7 +30,7 @@ export class AuthModule {
             ngModule: AuthModule,
             providers: [
                 OidcConfigService,
-                EventsService,
+                PublicEventsService,
                 FlowHelper,
                 OidcSecurityService,
                 TokenValidationService,

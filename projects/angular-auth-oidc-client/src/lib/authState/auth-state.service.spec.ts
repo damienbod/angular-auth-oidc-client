@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
 import { ConfigurationProvider } from '../config/config.provider';
-import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
+import { EventTypes, PublicEventsService } from '../public-events';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
@@ -16,7 +16,7 @@ import { AuthorizedState } from './authorized-state';
 describe('Auth State Service', () => {
     let authStateService: AuthStateService;
     let storagePersistanceService: StoragePersistanceService;
-    let eventsService: EventsService;
+    let eventsService: PublicEventsService;
     let tokenValidationService: TokenValidationService;
     let configurationProvider: ConfigurationProvider;
 
@@ -25,7 +25,7 @@ describe('Auth State Service', () => {
             providers: [
                 ConfigurationProvider,
                 AuthStateService,
-                EventsService,
+                PublicEventsService,
                 { provide: LoggerService, useClass: LoggerServiceMock },
                 { provide: TokenValidationService, useClass: TokenValidationServiceMock },
                 { provide: PlatformProvider, useClass: PlatformProviderMock },
@@ -40,7 +40,7 @@ describe('Auth State Service', () => {
     beforeEach(() => {
         authStateService = TestBed.inject(AuthStateService);
         storagePersistanceService = TestBed.inject(StoragePersistanceService);
-        eventsService = TestBed.inject(EventsService);
+        eventsService = TestBed.inject(PublicEventsService);
         tokenValidationService = TestBed.inject(TokenValidationService);
         configurationProvider = TestBed.inject(ConfigurationProvider);
     });

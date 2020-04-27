@@ -56,53 +56,6 @@ export class CallbackService {
         return callback$.pipe(tap(() => this.stsCallbackInternal$.next()));
     }
 
-    stopPeriodicallTokenCheck(): void {
-        if (this.scheduledHeartBeatInternal) {
-            clearTimeout(this.scheduledHeartBeatInternal);
-            this.scheduledHeartBeatInternal = null;
-            this.runTokenValidationRunning.unsubscribe();
-            this.runTokenValidationRunning = null;
-        }
-    }
-
-    // Code Flow Callback
-    private authorizedCallbackWithCode(urlToCheck: string) {
-        return this.flowsService.processCodeFlowCallback(urlToCheck).pipe(
-            tap((callbackContext) => {
-                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
-                    this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
-                }
-            }),
-            catchError((error) => {
-                this.flowsDataService.resetSilentRenewRunning();
-                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
-                    this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
-                }
-                this.stopPeriodicallTokenCheck();
-                return throwError(error);
-            })
-        );
-    }
-
-    // Implicit Flow Callback
-    authorizedImplicitFlowCallback(hash?: string) {
-        return this.flowsService.processImplicitFlowCallback(hash).pipe(
-            tap((callbackContext) => {
-                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
-                    this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
-                }
-            }),
-            catchError((error) => {
-                this.flowsDataService.resetSilentRenewRunning();
-                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
-                    this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
-                }
-                this.stopPeriodicallTokenCheck();
-                return throwError(error);
-            })
-        );
-    }
-
     startTokenValidationPeriodically(repeatAfterSeconds: number) {
         if (!!this.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
             return;
@@ -167,6 +120,53 @@ export class CallbackService {
                     this.flowsDataService.resetSilentRenewRunning();
                 }
             });
+    }
+
+    private stopPeriodicallTokenCheck(): void {
+        if (this.scheduledHeartBeatInternal) {
+            clearTimeout(this.scheduledHeartBeatInternal);
+            this.scheduledHeartBeatInternal = null;
+            this.runTokenValidationRunning.unsubscribe();
+            this.runTokenValidationRunning = null;
+        }
+    }
+
+    // Code Flow Callback
+    private authorizedCallbackWithCode(urlToCheck: string) {
+        return this.flowsService.processCodeFlowCallback(urlToCheck).pipe(
+            tap((callbackContext) => {
+                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
+                    this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
+                }
+            }),
+            catchError((error) => {
+                this.flowsDataService.resetSilentRenewRunning();
+                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
+                    this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
+                }
+                this.stopPeriodicallTokenCheck();
+                return throwError(error);
+            })
+        );
+    }
+
+    // Implicit Flow Callback
+    private authorizedImplicitFlowCallback(hash?: string) {
+        return this.flowsService.processImplicitFlowCallback(hash).pipe(
+            tap((callbackContext) => {
+                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
+                    this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
+                }
+            }),
+            catchError((error) => {
+                this.flowsDataService.resetSilentRenewRunning();
+                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
+                    this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
+                }
+                this.stopPeriodicallTokenCheck();
+                return throwError(error);
+            })
+        );
     }
 
     private refreshSessionWithIframe(): Observable<boolean> {

@@ -5,7 +5,7 @@ import { OidcClientNotification } from './notification';
 
 // TODO RENAME TO PUBLIC EVENTS SERVICE
 @Injectable()
-export class EventsService {
+export class PublicEventsService {
     private notify = new ReplaySubject<OidcClientNotification<any>>(1);
 
     fireEvent<T>(type: EventTypes, value?: T) {

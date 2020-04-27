@@ -2,9 +2,9 @@ import { async, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
-import { EventsService, EventTypes } from '../events';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
+import { EventTypes, PublicEventsService } from '../public-events';
 import { ConfigurationProvider } from './config.provider';
 import { ConfigurationProviderMock } from './config.provider-mock';
 import { OidcConfigService } from './config.service';
@@ -12,7 +12,7 @@ import { OidcConfigService } from './config.service';
 describe('Configuration Service', () => {
     let oidcConfigService: OidcConfigService;
     let loggerService: LoggerService;
-    let eventsService: EventsService;
+    let eventsService: PublicEventsService;
     let configurationProvider: ConfigurationProvider;
     let dataService: DataService;
 
@@ -32,7 +32,7 @@ describe('Configuration Service', () => {
                     provide: DataService,
                     useClass: DataServiceMock,
                 },
-                EventsService,
+                PublicEventsService,
             ],
         });
     });
@@ -40,7 +40,7 @@ describe('Configuration Service', () => {
     beforeEach(() => {
         oidcConfigService = TestBed.inject(OidcConfigService);
         loggerService = TestBed.inject(LoggerService);
-        eventsService = TestBed.inject(EventsService);
+        eventsService = TestBed.inject(PublicEventsService);
         configurationProvider = TestBed.inject(ConfigurationProvider);
         dataService = TestBed.inject(DataService);
     });
