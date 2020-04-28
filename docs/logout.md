@@ -1,33 +1,28 @@
-# Using Guards
+# Logoff
+
+The `logoff` function sends an endsesion request to the OIDC server, if it is available, or the check session has not sent a changed event.
 
 ```typescript
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-
-@Injectable({ providedIn: 'root' })
-export class AuthorizationGuard implements CanActivate {
-    constructor(private oidcSecurityService: OidcSecurityService, private router: Router) {}
-
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-        // return checkAuth() again should be possible
-        return this.oidcSecurityService.isAuthenticated$.pipe(
-            map((isAuthorized: boolean) => {
-                console.log('AuthorizationGuard, canActivate isAuthorized: ' + isAuthorized);
-
-                if (!isAuthorized) {
-                    this.router.navigate(['/unauthorized']);
-                    return false;
-                }
-
-                return true;
-            })
-        );
-    }
+logout() {
+	this.oidcSecurityService.logoff();
 }
 
 ```
 
-> The guard should only be applied to protected URLs. The guard should not be active on the default route, where the authorization request is processed.
+The `logoffAndRevokeTokens` function revokes the access token and the refresh token if using a refresh flow, and then logoff like above.
+
+```typescript
+logoffAndRevokeTokens() {
+    this.oidcSecurityService.logoffAndRevokeTokens()
+		.subscribe((result) => console.log(result));
+}
+```
+
+The `logoffLocal` function is used to reset you local session in the browser, but not sending anything to the server.
+
+```typescript
+logoutLocal() {
+	this.oidcSecurityService.logoffLocal();
+}
+```
+

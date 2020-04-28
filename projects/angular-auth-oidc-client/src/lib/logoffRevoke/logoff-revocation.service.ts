@@ -41,6 +41,10 @@ export class LogoffRevocationService {
         }
     }
 
+    logoffLocal() {
+        this.flowsService.resetAuthorizationData();
+    }
+
     // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
     // only the access token is revoked. Then the logout run.
     logoffAndRevokeTokens(urlHandler?: (url: string) => any) {
