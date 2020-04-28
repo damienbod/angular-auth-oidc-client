@@ -1,9 +1,14 @@
 # Samples using this library
 
 
-- [Basic usage ASP.NET Core, NET Core](#basic-usage-aspnet-core-net-core)
-- [Certificate Configuration](#certificate-configuration )
-- [Creating Self Signed Certificates for Client Server Authentication](#creating-self-signed-certificates-for-client-server-authentication)
+- [Code Flow with PKCE Using a configuration from an http source and silent renew](#code-flow-with-pkce-using-a-configuration-from-an-http-source-and-silent-renew)
+- [Code Flow PKCE with Refresh tokens](#code-flow-pkce-with-refresh-tokens)
+- [Code Flow PKCE Auto login](#code-flow-pkce-auto-login)
+- [Code Flow with PKCE basic with silent renew](#code-flow-with-pkce-basic-with-silent-renew)
+- [Implicit Flow with silent renew (Not recommended)](#implicit-flow-with-silent-renew-not-recommended)
+- [Implicit Flow google (Not recommended)](#implicit-flow-google-not-recommended)
+- [Implicit Flow Azure AD (Not recommended)](#implicit-flow-azure-ad-not-recommended)
+- [Implicit Flow Azure B2C (Not recommended)](#implicit-flow-azure-b2c-not-recommended)
 
 ## Code Flow with PKCE Using a configuration from an http source and silent renew
 
