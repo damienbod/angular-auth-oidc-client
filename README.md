@@ -35,12 +35,15 @@ or with yarn
 
 ## Documentation
 
--[Quickstart](docs/configuration.md)
--[Samples](docs/samples.md)
--[Silent renew](docs/silent-renew.md)
--[Guards](docs/guards.md)
--[API Documentation](docs/API_DOCUMENTATION.md)
--[Changelog](CHANGELOG.md)
+- [Quickstart](docs/configuration.md)
+- [Samples](docs/samples.md)
+- [Silent renew](docs/silent-renew.md)
+- [Guards](docs/guards.md)
+- [Using the access token and revoking it](docs/using-access-tokens.md)
+- [Logout](docs/logout.md)
+- [CSP & CORS](docs/csp-cors-config.md)
+- [API Documentation](docs/API_DOCUMENTATION.md)
+- [Changelog](CHANGELOG.md)
 
 
 ## Quickstart
