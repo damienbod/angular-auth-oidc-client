@@ -39,10 +39,13 @@ or with yarn
 - [Samples](docs/samples.md)
 - [Silent renew](docs/silent-renew.md)
 - [Guards](docs/guards.md)
-- [Using the access token and revoking it](docs/using-access-tokens.md)
+- [Features](docs/features.md)
+- [Public API](docs/public-api.md)
+- [Configuration of the lib](docs/configuration.md)
 - [Logout](docs/logout.md)
 - [CSP & CORS](docs/csp-cors-config.md)
-- [API Documentation](docs/API_DOCUMENTATION.md)
+- [Using the access token and revoking it](docs/using-access-tokens.md)
+- [Migration](docs/migration.md)
 - [Changelog](CHANGELOG.md)
 
 
