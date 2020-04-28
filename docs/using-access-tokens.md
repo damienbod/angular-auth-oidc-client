@@ -1,6 +1,6 @@
 # Using the access token
 
-
+The access token can be used by calling the `getToken()` function.
 
 ## Using the access_token
 
@@ -45,3 +45,12 @@ export class AuthInterceptor implements HttpInterceptor {
 ```
 
 ## Revoke the access_token
+
+Access tokens can be revoked using the `revokeAccessToken` function. If you provide the access token in the param, any access token from the same STS can be revoked, if the STS supports the revocation endpoint.
+
+```typescript
+revokeAccessToken() {
+    this.oidcSecurityService.revokeAccessToken()
+		.subscribe((result) => console.log(result));
+}
+```

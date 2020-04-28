@@ -37,17 +37,14 @@ or with yarn
 
 - [Quickstart](docs/quickstart.md)
 - [Samples](docs/samples.md)
-
 - [Silent renew](docs/silent-renew.md)
 - [Guards](docs/guards.md)
 - [Features](docs/features.md)
 - [Logout](docs/logout.md)
 - [Using and revoking the access token](docs/using-access-tokens.md)
 - [CSP & CORS](docs/csp-cors-config.md)
-
 - [Public API](docs/public-api.md)
 - [Configuration](docs/configuration.md)
-
 - [Migration](docs/migration.md)
 - [Changelog](CHANGELOG.md)
 
