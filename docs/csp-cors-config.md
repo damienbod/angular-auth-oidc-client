@@ -20,7 +20,3 @@ http {
     ...
     add_header Content-Security-Policy "script-src 'self' 'unsafe-inline';style-src 'self' 'unsafe-inline';img-src 'self' data:;font-src 'self';frame-ancestors 'self' https://localhost:44318;block-all-mixed-content";
 ```
-
-## Authorizing in a popup or iframe
-
-Please see [Authorizing in a popup or iframe](authorizing-popup-iframe.md)
