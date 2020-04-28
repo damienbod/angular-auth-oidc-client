@@ -37,14 +37,17 @@ or with yarn
 
 - [Quickstart](docs/quickstart.md)
 - [Samples](docs/samples.md)
+
 - [Silent renew](docs/silent-renew.md)
 - [Guards](docs/guards.md)
 - [Features](docs/features.md)
+- [Logout](docs/logout.md)
+- [Using and revoking the access token](docs/using-access-tokens.md)
+- [CSP & CORS](docs/csp-cors-config.md)
+
 - [Public API](docs/public-api.md)
 - [Configuration](docs/configuration.md)
-- [Logout](docs/logout.md)
-- [CSP & CORS](docs/csp-cors-config.md)
-- [Using the access token and revoking it](docs/using-access-tokens.md)
+
 - [Migration](docs/migration.md)
 - [Changelog](CHANGELOG.md)
 
@@ -123,25 +126,21 @@ export class AppComponent implements OnInit {
 }
 ```
 
-## Send the token in every http request with an HTTP Interceptor
+## Using the access_token
 
-**Note** Do not send the access token with requests for which the access token is not intended!
+In the http services, add the token to the header using the oidcSecurityService
 
 ```typescript
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-    constructor(private oidcSecurityService: OidcSecurityService) {}
+private setHeaders() {
+	this.headers = new HttpHeaders();
+	this.headers = this.headers.set('Content-Type', 'application/json');
+	this.headers = this.headers.set('Accept', 'application/json');
 
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        const token = this.oidcSecurityService.getToken();
-
-        if (token) {
-            request = request.clone({
-                headers: request.headers.set('Authorization', 'Bearer ' + token),
-            });
-        }
-        return next.handle(request);
-    }
+	const token = this._securityService.getToken();
+	if (token !== '') {
+		const tokenValue = 'Bearer ' + token;
+		this.headers = this.headers.set('Authorization', tokenValue);
+	}
 }
 ```
 
