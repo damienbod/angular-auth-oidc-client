@@ -122,26 +122,24 @@ export class AppComponent implements OnInit {
 }
 ```
 
-## Using the token to send with every HTTP request
+## Using the access token
 
-In the interceptors of HTTP, add the token to the header using the `getToken()` method of the `OidcSecurityService`
+You can get the access token by calling the method `getToken()` on the `OidcSecurityService`
 
 ```typescript
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-    constructor(private oidcSecurityService: OidcSecurityService) {}
+const token = this.oidcSecurityService.getToken();
+```
 
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        const token = this.oidcSecurityService.getToken();
+And then you can use it in the HttpHeaders
 
-        if (token) {
-            request = request.clone({
-                headers: request.headers.set('Authorization', 'Bearer ' + token),
-            });
-        }
-        return next.handle(request);
-    }
-}
+```typescript
+import { HttpHeaders } from '@angular/common/http';
+const token = this.oidcSecurityServices.getToken();
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Authorization': 'Bearer ' + token
+  })
+};
 ```
 
 ## License

@@ -10,6 +10,18 @@ You can get the access token by calling the method `getToken()` on the `OidcSecu
 const token = this.oidcSecurityService.getToken();
 ```
 
+And then you can use it in the HttpHeaders
+
+```typescript
+import { HttpHeaders } from '@angular/common/http';
+const token = this.oidcSecurityServices.getToken();
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Authorization': 'Bearer ' + token
+  })
+};
+```
+
 ## Http Interceptor
 
 The HttpClient allows you to write [interceptors](https://angular.io/guide/http#intercepting-all-requests-or-responses). A common usecase would be to intercept any outgoing HTTP request and add an authorization header.
