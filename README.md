@@ -12,13 +12,12 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 
 ## Features
 
--   version 4.1.0 Angular 4 to Angular 5.2.10, Version 6.0.0, Angular 6 onwards
--   Supports OpenID Connect Code Flow with PKCE
--   Supports OpenID Connect Implicit Flow http://openid.net/specs/openid-connect-implicit-1_0.html
--   Complete client side validation for REQUIRED features
--   OpenID Connect Session Management 1.0 http://openid.net/specs/openid-connect-session-1_0.html
--   AOT build
--   Can be lazy loaded
+- Supports OpenID Connect Code Flow with PKCE
+- Supports Code Flow PKCE with Refresh tokens
+- Revocation Enpoint
+- Supports OpenID Connect Implicit Flow http://openid.net/specs/openid-connect-implicit-1_0.html
+- Complete client side validation for REQUIRED features
+- OpenID Connect Session Management 1.0 http://openid.net/specs/openid-connect-session-1_0.html
 
 ## Installation
 
@@ -37,9 +36,9 @@ or with yarn
 ## Quick Links
 
 -   [Quickstart](docs/configuration.md)
--   [API Documentation](API_DOCUMENTATION.md)
+-   [API Documentation](docs/API_DOCUMENTATION.md)
 -   [Changelog](CHANGELOG.md)
--   [Samples](Samples.md)
+-   [Samples](docs/samples.md)
 
 ## Quickstart
 
