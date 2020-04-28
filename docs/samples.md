@@ -11,9 +11,9 @@
 
 ## Code Flow with PKCE Using a configuration from an http source and silent renew
 
-Sometimes it is required to load a custom `.well-known/openid-configuration` from an http adress. You can load the config from your source, map it into the required format and use the `withConfig(...)` method as usual.
+Sometimes it is required to load the configuration from an http address. You can load the config from your source, map it into the required format and use the `withConfig(...)` function.
 
-> There properties are just an example, you have to use yours if you are choosing this way of configuring
+The properties used in this example are just for demo purposes, you can used any definitions.
 
 ### [src code](../projects/sample-code-flow-http-config)
 
@@ -25,6 +25,8 @@ Sometimes it is required to load a custom `.well-known/openid-configuration` fro
 
 ## Code Flow PKCE with Refresh tokens
 
+The Code flow with PKCE uses refresh tokens to refresh the session and a the end of the session, the user can logout and revoke the tokens. The demo is setup to use each refresh token only once.
+
 ### [src code](../projects/sample-code-flow-refresh-tokens)
 
 [app.module.ts](../projects/sample-code-flow-refresh-tokens/src/app/app.module.ts)
@@ -34,6 +36,8 @@ Sometimes it is required to load a custom `.well-known/openid-configuration` fro
 [app.component.html](../projects/sample-code-flow-refresh-tokens/src/app/app.component.html)
 
 ## Code Flow PKCE Auto login
+
+The example logins the user in directly without a login click using the Code Flow with PKCE and an Auth Guard.
 
 ### [src code](../projects/sample-code-flow-auto-login)
 
@@ -49,6 +53,8 @@ Sometimes it is required to load a custom `.well-known/openid-configuration` fro
 
 ## Code Flow with PKCE basic with silent renew
 
+The is the basic example of the Code Flow with PKCE.
+
 ### [src code](../projects/sample-code-flow)
 
 [app.module.ts](../projects/sample-code-flow/src/app/app.module.ts)
@@ -59,9 +65,7 @@ Sometimes it is required to load a custom `.well-known/openid-configuration` fro
 
 ## Implicit Flow with silent renew (Not recommended)
 
-This flow is no longer recommended, but some servers support this flow only, and not the Code flow with PKCE.
-
-Create the login, logout component and use the oidcSecurityService
+The example uses the Implicit Flow with silent renew. This flow is no longer recommended, but some servers support this flow only, and not the Code flow with PKCE.
 
 ### [src code](../projects/sample-implicit-flow-silent-renew)
 
@@ -73,9 +77,7 @@ Create the login, logout component and use the oidcSecurityService
 
 ## Implicit Flow google (Not recommended)
 
-This flow is no longer recommended, but some servers support this flow only, and not the Code flow with PKCE.
-
-Create the login, logout component and use the oidcSecurityService
+The example uses the Implicit Flow with silent renew with google. This flow is no longer recommended, but some servers support this flow only, and not the Code flow with PKCE.
 
 ### [src code](../projects/sample-implicit-flow-google)
 
@@ -87,9 +89,7 @@ Create the login, logout component and use the oidcSecurityService
 
 ## Implicit Flow Azure AD (Not recommended)
 
-This flow is no longer recommended, but some servers support this flow only, and not the Code flow with PKCE.
-
-Create the login, logout component and use the oidcSecurityService
+The example uses the Implicit Flow with silent renew with Azure AD. This flow is no longer recommended, but some servers support this flow only, and not the Code flow with PKCE.
 
 ### [src code](../projects/sample-implicit-flow-azuread)
 
@@ -101,9 +101,7 @@ Create the login, logout component and use the oidcSecurityService
 
 ## Implicit Flow Azure B2C (Not recommended)
 
-This flow is no longer recommended, but some servers support this flow only, and not the Code flow with PKCE.
-
-Create the login, logout component and use the oidcSecurityService
+The example uses the Implicit Flow with silent renew with Azure B2C. This flow is no longer recommended, but some servers support this flow only, and not the Code flow with PKCE.
 
 ### [src code](../projects/sample-implicit-flow-ad-b2c)
 
