@@ -7,4 +7,6 @@ export enum EventTypes {
     CheckSessionReceived,
     UserDataChanged,
     NewAuthorizationResult,
+    TokenExpired,
+    IdTokenExpired,
 }

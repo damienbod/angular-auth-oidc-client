@@ -201,7 +201,7 @@ export class StateValidationService {
             }
 
             if (!this.tokenValidationService.validateIdTokenExpNotExpired(toReturn.decodedIdToken)) {
-                this.loggerService.logWarning('authorizedCallback token expired');
+                this.loggerService.logWarning('authorizedCallback id token expired');
                 toReturn.state = ValidationResult.TokenExpired;
                 this.handleUnsuccessfulValidation();
                 return toReturn;
