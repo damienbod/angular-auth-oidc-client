@@ -33,7 +33,7 @@ The HttpClient allows you to write [interceptors](https://angular.io/guide/http#
 ```typescript
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-    private routesToAddBearerTokenTo = ['http://my.route.io/secureapi'];
+    private routesToAddTokenTo = ['http://my.route.io/secureapi'];
 
     constructor(private oidcSecurityService: OidcSecurityService) {}
 
