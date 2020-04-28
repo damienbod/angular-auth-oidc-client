@@ -144,7 +144,8 @@ export class CheckSessionService {
                 this.eventService.fireEvent(EventTypes.CheckSessionChanged, e.data);
                 this.checkSessionChangedInternal$.next(true);
             } else {
-                // unchanged event , we don't need this
+                // unchanged event , we don't need this internally
+                this.eventService.fireEvent(EventTypes.CheckSessionChanged, e.data);
                 this.loggerService.logDebug(e.data + ' from checksession messageHandler');
             }
         }
