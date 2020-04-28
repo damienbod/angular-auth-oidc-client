@@ -112,8 +112,7 @@ export class CheckSessionService {
             // after sending three messages with no response, fail.
             if (this.outstandingMessages > 3) {
                 this.loggerService.logError(
-                    `OidcSecurityCheckSession not receiving check session response messages.
-                            Outstanding messages: ${this.outstandingMessages}. Server unreachable?`
+                    `OidcSecurityCheckSession not receiving check session response messages. Outstanding messages: ${this.outstandingMessages}. Server unreachable?`
                 );
             }
         };
@@ -141,11 +140,11 @@ export class CheckSessionService {
             } else if (e.data === 'changed') {
                 this.loggerService.logDebug(e);
                 this.checkSessionReceived = true;
-                this.eventService.fireEvent(EventTypes.CheckSessionChanged, e.data);
+                this.eventService.fireEvent(EventTypes.CheckSessionReceived, e.data);
                 this.checkSessionChangedInternal$.next(true);
             } else {
                 // unchanged event , we don't need this internally
-                this.eventService.fireEvent(EventTypes.CheckSessionChanged, e.data);
+                this.eventService.fireEvent(EventTypes.CheckSessionReceived, e.data);
                 this.loggerService.logDebug(e.data + ' from checksession messageHandler');
             }
         }

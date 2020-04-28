@@ -4,7 +4,7 @@ export enum EventTypes {
      */
     ConfigLoaded,
     ModuleSetup,
-    CheckSessionChanged,
+    CheckSessionReceived,
     UserDataChanged,
     NewAuthorizationResult,
 }

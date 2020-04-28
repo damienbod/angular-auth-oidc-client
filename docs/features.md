@@ -14,7 +14,7 @@ Currently the events
 {
     ConfigLoaded,
     ModuleSetup,
-    CheckSessionChanged,
+    CheckSessionReceived,
     UserDataChanged,
     NewAuthorizationResult,
 }
@@ -32,7 +32,7 @@ import { PublicEventsService } from 'angular-auth-oidc-client';
 constructor(private eventService: PublicEventsService) {
     this.eventService
             .registerForEvents()
-            .pipe(filter((notification) => notification.type === EventTypes.CheckSessionChanged))
+            .pipe(filter((notification) => notification.type === EventTypes.CheckSessionReceived))
             .subscribe((value) => console.log('CheckSessionChanged with value ', value));
 }
 ```
