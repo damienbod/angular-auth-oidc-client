@@ -9,4 +9,5 @@ export interface CallbackContext {
     isRenewProcess: boolean;
     jwtKeys: JwtKeys;
     validationResult: StateValidationResult;
+    existingIdToken: any;
 }

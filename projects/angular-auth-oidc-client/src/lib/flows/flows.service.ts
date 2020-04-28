@@ -104,6 +104,7 @@ export class FlowsService {
             isRenewProcess: false,
             jwtKeys: null,
             validationResult: null,
+            existingIdToken: null,
         };
         return of(initialCallbackContext);
     }
@@ -134,6 +135,7 @@ export class FlowsService {
             isRenewProcess: isRenewProcessData,
             jwtKeys: null,
             validationResult: null,
+            existingIdToken: null,
         };
 
         return of(callbackContext);
@@ -144,6 +146,8 @@ export class FlowsService {
         const stateData = this.flowsDataService.getExistingOrCreateAuthStateControl();
         this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + stateData);
         const refreshToken = this.authStateService.getRefreshToken();
+        const idToken = this.authStateService.getIdToken();
+        // TODO add id_token data
 
         if (refreshToken) {
             const callbackContext = {
@@ -155,6 +159,7 @@ export class FlowsService {
                 isRenewProcess: false,
                 jwtKeys: null,
                 validationResult: null,
+                existingIdToken: idToken,
             };
 
             this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
@@ -295,7 +300,7 @@ export class FlowsService {
 
     // STEP 5 All flows
     private callbackStateValidation(callbackContext: CallbackContext): Observable<CallbackContext> {
-        const validationResult = this.stateValidationService.getValidatedStateResult(callbackContext.authResult, callbackContext.jwtKeys);
+        const validationResult = this.stateValidationService.getValidatedStateResult(callbackContext);
         callbackContext.validationResult = validationResult;
 
         if (validationResult.authResponseIsValid) {
