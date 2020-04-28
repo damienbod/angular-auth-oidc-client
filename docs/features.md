@@ -10,7 +10,7 @@ The library exposes several events which are happening during the runtime. You c
 
 Currently the events
 
-```ts
+```typescript
 {
     ConfigLoaded,
     ModuleSetup,

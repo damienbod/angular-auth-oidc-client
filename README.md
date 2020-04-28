@@ -50,7 +50,7 @@ or with yarn
 
 ## Quickstart
 
-> For the example of the Code Flow. For further examples please check the [Samples](Samples.md) Section
+> For the example of the Code Flow. For further examples please check the [Samples](docs/samples.md) Section
 
 Import the module and services in your module.
 
@@ -136,9 +136,9 @@ And then you can use it in the HttpHeaders
 import { HttpHeaders } from '@angular/common/http';
 const token = this.oidcSecurityServices.getToken();
 const httpOptions = {
-  headers: new HttpHeaders({
-    'Authorization': 'Bearer ' + token
-  })
+    headers: new HttpHeaders({
+        Authorization: 'Bearer ' + token,
+    }),
 };
 ```
 

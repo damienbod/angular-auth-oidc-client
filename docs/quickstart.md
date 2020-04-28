@@ -47,7 +47,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
 export class AppModule {}
 ```
 
-### Silent Renew with the Angular ClI
+### Silent Renew with the Angular CLI
 
 Add the `silent-renew.html` file to the `angular.json` assets configuration
 
