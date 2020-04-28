@@ -184,6 +184,7 @@ export class CallbackService {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
                 this.stopPeriodicallTokenCheck();
+                this.flowsService.resetAuthorizationData();
                 return throwError(error);
             })
         );
@@ -269,11 +270,13 @@ export class CallbackService {
             isRenewProcess: false,
             jwtKeys: null,
             validationResult: null,
+            existingIdToken: null,
         };
 
         return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext).pipe(
             catchError((errorFromFlow) => {
                 this.stopPeriodicallTokenCheck();
+                this.flowsService.resetAuthorizationData();
                 return throwError(errorFromFlow);
             })
         );

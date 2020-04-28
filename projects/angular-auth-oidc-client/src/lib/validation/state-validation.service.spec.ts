@@ -103,7 +103,21 @@ describe('State Validation Service', () => {
 
         const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
-        const state = stateValidationService.validateState('', new JwtKeys());
+        const callbackContext = {
+            code: 'fdffsdfsdf',
+            refreshToken: null,
+            state: 'fdffsdfhhhhsdf',
+            sessionState: 'fdffsggggggdfsdf',
+            authResult: {
+                access_token: 'access_tokenTEST',
+                id_token: 'id_tokenTEST',
+            },
+            isRenewProcess: false,
+            jwtKeys: new JwtKeys(),
+            validationResult: null,
+            existingIdToken: null,
+        };
+        const state = stateValidationService.validateState(callbackContext);
 
         expect(oidcSecurityValidation.validateStateFromHashCallback).toHaveBeenCalled();
 
@@ -145,13 +159,21 @@ describe('State Validation Service', () => {
 
         configProvider.setConfig(config, authWellKnownEndpoints);
 
-        const state = stateValidationService.validateState(
-            {
+        const callbackContext = {
+            code: 'fdffsdfsdf',
+            refreshToken: null,
+            state: 'fdffsdfhhhhsdf',
+            sessionState: 'fdffsggggggdfsdf',
+            authResult: {
                 access_token: 'access_tokenTEST',
                 id_token: 'id_tokenTEST',
             },
-            new JwtKeys()
-        );
+            isRenewProcess: false,
+            jwtKeys: new JwtKeys(),
+            validationResult: null,
+            existingIdToken: null,
+        };
+        const state = stateValidationService.validateState(callbackContext);
 
         expect(state.accessToken).toBe('access_tokenTEST');
         expect(state.idToken).toBe('id_tokenTEST');
@@ -168,13 +190,22 @@ describe('State Validation Service', () => {
         configProvider.setConfig(config, authWellKnownEndpoints);
         const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
-        const state = stateValidationService.validateState(
-            {
+        const callbackContext = {
+            code: 'fdffsdfsdf',
+            refreshToken: null,
+            state: 'fdffsdfhhhhsdf',
+            sessionState: 'fdffsggggggdfsdf',
+            authResult: {
                 access_token: 'access_tokenTEST',
                 id_token: 'id_tokenTEST',
             },
-            new JwtKeys()
-        );
+            isRenewProcess: false,
+            jwtKeys: new JwtKeys(),
+            validationResult: null,
+            existingIdToken: null,
+        };
+
+        const state = stateValidationService.validateState(callbackContext);
 
         expect(logDebugSpy).toHaveBeenCalledWith('authorizedCallback Signature validation failed id_token');
 
@@ -194,13 +225,21 @@ describe('State Validation Service', () => {
 
         const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
-        const state = stateValidationService.validateState(
-            {
+        const callbackContext = {
+            code: 'fdffsdfsdf',
+            refreshToken: null,
+            state: 'fdffsdfhhhhsdf',
+            sessionState: 'fdffsggggggdfsdf',
+            authResult: {
                 access_token: 'access_tokenTEST',
                 id_token: 'id_tokenTEST',
             },
-            new JwtKeys()
-        );
+            isRenewProcess: false,
+            jwtKeys: new JwtKeys(),
+            validationResult: null,
+            existingIdToken: null,
+        };
+        const state = stateValidationService.validateState(callbackContext);
 
         expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback incorrect nonce');
 
@@ -225,13 +264,21 @@ describe('State Validation Service', () => {
         configProvider.setConfig(config, authWellKnownEndpoints);
         const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
-        const state = stateValidationService.validateState(
-            {
+        const callbackContext = {
+            code: 'fdffsdfsdf',
+            refreshToken: null,
+            state: 'fdffsdfhhhhsdf',
+            sessionState: 'fdffsggggggdfsdf',
+            authResult: {
                 access_token: 'access_tokenTEST',
                 id_token: 'id_tokenTEST',
             },
-            new JwtKeys()
-        );
+            isRenewProcess: false,
+            jwtKeys: new JwtKeys(),
+            validationResult: null,
+            existingIdToken: null,
+        };
+        const state = stateValidationService.validateState(callbackContext);
 
         expect(logDebugSpy).toHaveBeenCalledWith('authorizedCallback Validation, one of the REQUIRED properties missing from id_token');
 
@@ -260,13 +307,21 @@ describe('State Validation Service', () => {
         configProvider.setConfig(config, authWellKnownEndpoints);
         const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
-        const state = stateValidationService.validateState(
-            {
+        const callbackContext = {
+            code: 'fdffsdfsdf',
+            refreshToken: null,
+            state: 'fdffsdfhhhhsdf',
+            sessionState: 'fdffsggggggdfsdf',
+            authResult: {
                 access_token: 'access_tokenTEST',
                 id_token: 'id_tokenTEST',
             },
-            new JwtKeys()
-        );
+            isRenewProcess: false,
+            jwtKeys: new JwtKeys(),
+            validationResult: null,
+            existingIdToken: null,
+        };
+        const state = stateValidationService.validateState(callbackContext);
 
         expect(logWarningSpy).toHaveBeenCalledWith(
             'authorizedCallback Validation, iat rejected id_token was issued too far away from the current time'
@@ -298,13 +353,21 @@ describe('State Validation Service', () => {
         configProvider.setConfig(config, authWellKnownEndpoints);
         const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
-        const state = stateValidationService.validateState(
-            {
+        const callbackContext = {
+            code: 'fdffsdfsdf',
+            refreshToken: null,
+            state: 'fdffsdfhhhhsdf',
+            sessionState: 'fdffsggggggdfsdf',
+            authResult: {
                 access_token: 'access_tokenTEST',
                 id_token: 'id_tokenTEST',
             },
-            new JwtKeys()
-        );
+            isRenewProcess: false,
+            jwtKeys: new JwtKeys(),
+            validationResult: null,
+            existingIdToken: null,
+        };
+        const state = stateValidationService.validateState(callbackContext);
 
         expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer');
 
@@ -338,13 +401,21 @@ describe('State Validation Service', () => {
         configProvider.setConfig(config, authWellKnownEndpoints);
         const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
-        const state = stateValidationService.validateState(
-            {
+        const callbackContext = {
+            code: 'fdffsdfsdf',
+            refreshToken: null,
+            state: 'fdffsdfhhhhsdf',
+            sessionState: 'fdffsggggggdfsdf',
+            authResult: {
                 access_token: 'access_tokenTEST',
                 id_token: 'id_tokenTEST',
             },
-            new JwtKeys()
-        );
+            isRenewProcess: false,
+            jwtKeys: new JwtKeys(),
+            validationResult: null,
+            existingIdToken: null,
+        };
+        const state = stateValidationService.validateState(callbackContext);
 
         expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback incorrect aud');
 
@@ -380,13 +451,21 @@ describe('State Validation Service', () => {
 
         const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
-        const state = stateValidationService.validateState(
-            {
+        const callbackContext = {
+            code: 'fdffsdfsdf',
+            refreshToken: null,
+            state: 'fdffsdfhhhhsdf',
+            sessionState: 'fdffsggggggdfsdf',
+            authResult: {
                 access_token: 'access_tokenTEST',
                 id_token: 'id_tokenTEST',
             },
-            new JwtKeys()
-        );
+            isRenewProcess: false,
+            jwtKeys: new JwtKeys(),
+            validationResult: null,
+            existingIdToken: null,
+        };
+        const state = stateValidationService.validateState(callbackContext);
 
         expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback token expired');
 
@@ -414,13 +493,22 @@ describe('State Validation Service', () => {
 
         const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
-        const state = stateValidationService.validateState(
-            {
+        const callbackContext = {
+            code: 'fdffsdfsdf',
+            refreshToken: null,
+            state: 'fdffsdfhhhhsdf',
+            sessionState: 'fdffsggggggdfsdf',
+            authResult: {
                 access_token: 'access_tokenTEST',
                 id_token: 'id_tokenTEST',
             },
-            new JwtKeys()
-        );
+            isRenewProcess: false,
+            jwtKeys: new JwtKeys(),
+            validationResult: null,
+            existingIdToken: null,
+        };
+
+        const state = stateValidationService.validateState(callbackContext);
 
         expect(logDebugSpy).toHaveBeenCalledWith('AuthorizedCallback token(s) validated, continue');
 
@@ -450,13 +538,21 @@ describe('State Validation Service', () => {
 
         const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
-        const state = stateValidationService.validateState(
-            {
+        const callbackContext = {
+            code: 'fdffsdfsdf',
+            refreshToken: null,
+            state: 'fdffsdfhhhhsdf',
+            sessionState: 'fdffsggggggdfsdf',
+            authResult: {
                 access_token: 'access_tokenTEST',
                 id_token: 'id_tokenTEST',
             },
-            new JwtKeys()
-        );
+            isRenewProcess: false,
+            jwtKeys: new JwtKeys(),
+            validationResult: null,
+            existingIdToken: null,
+        };
+        const state = stateValidationService.validateState(callbackContext);
 
         expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback incorrect at_hash');
 
@@ -485,13 +581,21 @@ describe('State Validation Service', () => {
 
         const logDebugSpy = spyOn(loggerService, 'logDebug'); // .and.callFake(() => {});
 
-        const state = stateValidationService.validateState(
-            {
+        const callbackContext = {
+            code: 'fdffsdfsdf',
+            refreshToken: null,
+            state: 'fdffsdfhhhhsdf',
+            sessionState: 'fdffsggggggdfsdf',
+            authResult: {
                 access_token: 'access_tokenTEST',
                 id_token: 'id_tokenTEST',
             },
-            new JwtKeys()
-        );
+            isRenewProcess: false,
+            jwtKeys: new JwtKeys(),
+            validationResult: null,
+            existingIdToken: null,
+        };
+        const state = stateValidationService.validateState(callbackContext);
 
         expect(logDebugSpy).toHaveBeenCalledWith('iss validation is turned off, this is not recommended!');
 
@@ -532,13 +636,21 @@ describe('State Validation Service', () => {
 
         configProvider.setConfig(config, authWellKnownEndpoints);
 
-        const state = stateValidationService.validateState(
-            {
+        const callbackContext = {
+            code: 'fdffsdfsdf',
+            refreshToken: null,
+            state: 'fdffsdfhhhhsdf',
+            sessionState: 'fdffsggggggdfsdf',
+            authResult: {
                 access_token: 'access_tokenTEST',
                 id_token: '',
             },
-            new JwtKeys()
-        );
+            isRenewProcess: false,
+            jwtKeys: new JwtKeys(),
+            validationResult: null,
+            existingIdToken: null,
+        };
+        const state = stateValidationService.validateState(callbackContext);
 
         expect(state.accessToken).toBe('access_tokenTEST');
         expect(state.idToken).toBe('');

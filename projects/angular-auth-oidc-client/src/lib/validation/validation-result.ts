@@ -8,7 +8,7 @@ export enum ValidationResult {
     IssDoesNotMatchIssuer = 'IssDoesNotMatchIssuer',
     NoAuthWellKnownEndPoints = 'NoAuthWellKnownEndPoints',
     IncorrectAud = 'IncorrectAud',
-
+    IncorrectIdTokenClaimsAfterRefresh = 'IncorrectIdTokenClaimsAfterRefresh',
     IncorrectAzp = 'IncorrectAzp',
     TokenExpired = 'TokenExpired',
     IncorrectAtHash = 'IncorrectAtHash',

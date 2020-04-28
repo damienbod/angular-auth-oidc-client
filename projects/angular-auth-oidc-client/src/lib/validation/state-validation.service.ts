@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { ConfigurationProvider } from '../config';
+import { CallbackContext } from '../flows/callback-context';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
-import { JwtKeys } from './jwtkeys';
 import { StateValidationResult } from './state-validation-result';
 import { TokenValidationService } from './token-validation.service';
 import { ValidationResult } from './validation-result';
@@ -20,17 +20,66 @@ export class StateValidationService {
         private readonly flowHelper: FlowHelper
     ) {}
 
-    getValidatedStateResult(result: any, jwtKeys: JwtKeys): StateValidationResult {
-        if (result.error) {
+    getValidatedStateResult(callbackContext: CallbackContext): StateValidationResult {
+        if (callbackContext?.authResult.error) {
             return new StateValidationResult('', '', false, {});
         }
 
-        return this.validateState(result, jwtKeys);
+        return this.validateState(callbackContext);
     }
 
-    validateState(result: any, jwtKeys: JwtKeys): StateValidationResult {
+    private isIdTokenAfterRefreshTokenRequestValid(callbackContext: CallbackContext, newIdToken: any): boolean {
+        if (!this.configurationProvider.openIDConfiguration.useRefreshToken) {
+            return true;
+        }
+
+        if (!callbackContext.existingIdToken) {
+            return true;
+        }
+        const decodedIdToken = this.tokenHelperService.getPayloadFromToken(callbackContext.existingIdToken, false);
+
+        // Upon successful validation of the Refresh Token, the response body is the Token Response of Section 3.1.3.3
+        // except that it might not contain an id_token.
+
+        // If an ID Token is returned as a result of a token refresh request, the following requirements apply:
+
+        // its iss Claim Value MUST be the same as in the ID Token issued when the original authentication occurred,
+        if (decodedIdToken.iss !== newIdToken.iss) {
+            return false;
+        }
+        // its azp Claim Value MUST be the same as in the ID Token issued when the original authentication occurred;
+        //   if no azp Claim was present in the original ID Token, one MUST NOT be present in the new ID Token, and
+        // otherwise, the same rules apply as apply when issuing an ID Token at the time of the original authentication.
+        if (decodedIdToken.azp !== newIdToken.azp) {
+            return false;
+        }
+        // its sub Claim Value MUST be the same as in the ID Token issued when the original authentication occurred,
+        if (decodedIdToken.sub !== newIdToken.sub) {
+            return false;
+        }
+
+        // its aud Claim Value MUST be the same as in the ID Token issued when the original authentication occurred,
+        if (decodedIdToken.aud !== newIdToken.aud) {
+            return false;
+        }
+        // its iat Claim MUST represent the time that the new ID Token is issued,
+        // if the ID Token contains an auth_time Claim, its value MUST represent the time of the original authentication
+        // - not the time that the new ID token is issued,
+        if (decodedIdToken.auth_time !== newIdToken.auth_time) {
+            return false;
+        }
+
+        return true;
+    }
+
+    validateState(callbackContext): StateValidationResult {
         const toReturn = new StateValidationResult();
-        if (!this.tokenValidationService.validateStateFromHashCallback(result.state, this.storagePersistanceService.authStateControl)) {
+        if (
+            !this.tokenValidationService.validateStateFromHashCallback(
+                callbackContext.authResult.state,
+                this.storagePersistanceService.authStateControl
+            )
+        ) {
             this.loggerService.logWarning('authorizedCallback incorrect state');
             toReturn.state = ValidationResult.StatesDoNotMatch;
             this.handleUnsuccessfulValidation();
@@ -41,15 +90,15 @@ export class StateValidationService {
         const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow();
 
         if (isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow) {
-            toReturn.accessToken = result.access_token;
+            toReturn.accessToken = callbackContext.authResult.access_token;
         }
 
-        if (result.id_token) {
-            toReturn.idToken = result.id_token;
+        if (callbackContext.authResult.id_token) {
+            toReturn.idToken = callbackContext.authResult.id_token;
 
             toReturn.decodedIdToken = this.tokenHelperService.getPayloadFromToken(toReturn.idToken, false);
 
-            if (!this.tokenValidationService.validateSignatureIdToken(toReturn.idToken, jwtKeys)) {
+            if (!this.tokenValidationService.validateSignatureIdToken(toReturn.idToken, callbackContext.jwtKeys)) {
                 this.loggerService.logDebug('authorizedCallback Signature validation failed id_token');
                 toReturn.state = ValidationResult.SignatureFailed;
                 this.handleUnsuccessfulValidation();
@@ -140,6 +189,13 @@ export class StateValidationService {
             ) {
                 this.loggerService.logWarning('authorizedCallback incorrect azp');
                 toReturn.state = ValidationResult.IncorrectAzp;
+                this.handleUnsuccessfulValidation();
+                return toReturn;
+            }
+
+            if (!this.isIdTokenAfterRefreshTokenRequestValid(callbackContext, toReturn.decodedIdToken)) {
+                this.loggerService.logWarning('authorizedCallback pre, post id_token claims do not match in refresh');
+                toReturn.state = ValidationResult.IncorrectIdTokenClaimsAfterRefresh;
                 this.handleUnsuccessfulValidation();
                 return toReturn;
             }
