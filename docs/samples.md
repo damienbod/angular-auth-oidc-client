@@ -15,41 +15,47 @@ Sometimes it is required to load a custom `.well-known/openid-configuration` fro
 
 > There properties are just an example, you have to use yours if you are choosing this way of configuring
 
-### [Code](../projects/sample-code-flow-http-config)
+### [src code](../projects/sample-code-flow-http-config)
 
-[App module](../projects/sample-code-flow-http-config/src/app/app.module.ts)
+[app.module.ts](../projects/sample-code-flow-http-config/src/app/app.module.ts)
 
-[App component](../projects/sample-code-flow-http-config/src/app/app.component.ts)
+[app.component.ts](../projects/sample-code-flow-http-config/src/app/app.component.ts)
 
-[App component html](../projects/sample-code-flow-http-config/src/app/app.component.html)
+[app.component.html](../projects/sample-code-flow-http-config/src/app/app.component.html)
 
 ## Code Flow PKCE with Refresh tokens
 
-### Code
+### [src code](../projects/sample-code-flow-refresh-tokens)
 
-[App module](http://github.com)
-[App component](http://github.com)
-[App component html](http://github.com)
+[app.module.ts](../projects/sample-code-flow-refresh-tokens/src/app/app.module.ts)
+
+[app.component.ts](../projects/sample-code-flow-refresh-tokens/src/app/app.component.ts)
+
+[app.component.html](../projects/sample-code-flow-refresh-tokens/src/app/app.component.html)
 
 ## Code Flow PKCE Auto login
 
-### Code
+### [src code](../projects/sample-code-flow-auto-login)
 
-[App module](http://github.com)
-[App component](http://github.com)
-[App component html](http://github.com)
-[Auto login component](http://github.com)
-[Guard](http://github.com)
+[app.module.ts](../projects/sample-code-flow-auto-login/src/app/app.module.ts)
+
+[app.component.ts](../projects/sample-code-flow-auto-login/src/app/app.component.ts)
+
+[app.component.html](../projects/sample-code-flow-auto-login/src/app/app.component.html)
+
+[auto-login.component.ts](../projects/sample-code-flow-auto-login/src/app/auto-login/auto-login.component.ts)
+
+[guard.ts](../projects/sample-code-flow-auto-login/src/app/authorization.guard.ts)
 
 ## Code Flow with PKCE basic with silent renew
 
-### [Code](../projects/sample-code-flow)
+### [src code](../projects/sample-code-flow)
 
-[App module](../projects/sample-code-flow/src/app/app.module.ts)
+[app.module.ts](../projects/sample-code-flow/src/app/app.module.ts)
 
-[App component](../projects/sample-code-flow/src/app/app.component.ts)
+[app.component.ts](../projects/sample-code-flow/src/app/app.component.ts)
 
-[App component html](../projects/sample-code-flow/src/app/app.component.html)
+[app.component.html](../projects/sample-code-flow/src/app/app.component.html)
 
 ## Implicit Flow with silent renew (Not recommended)
 
@@ -57,11 +63,13 @@ This flow is no longer recommended, but some servers support this flow only, and
 
 Create the login, logout component and use the oidcSecurityService
 
-### Code
+### [src code](../projects/sample-implicit-flow-silent-renew)
 
-[App module](http://github.com)
-[App component](http://github.com)
-[App component html](http://github.com)
+[app.module.ts](../projects/sample-implicit-flow-silent-renew/src/app/app.module.ts)
+
+[app.component.ts](../projects/sample-implicit-flow-silent-renew/src/app/app.component.ts)
+
+[app.component.html](../projects/sample-implicit-flow-silent-renew/src/app/app.component.html)
 
 ## Implicit Flow google (Not recommended)
 
@@ -69,11 +77,13 @@ This flow is no longer recommended, but some servers support this flow only, and
 
 Create the login, logout component and use the oidcSecurityService
 
-### Code
+### [src code](../projects/sample-implicit-flow-google)
 
-[App module](http://github.com)
-[App component](http://github.com)
-[App component html](http://github.com)
+[app.module.ts](../projects/sample-implicit-flow-google/src/app/app.module.ts)
+
+[app.component.ts](../projects/sample-implicit-flow-google/src/app/app.component.ts)
+
+[app.component.html](../projects/sample-implicit-flow-google/src/app/app.component.html)
 
 ## Implicit Flow Azure AD (Not recommended)
 
@@ -81,8 +91,24 @@ This flow is no longer recommended, but some servers support this flow only, and
 
 Create the login, logout component and use the oidcSecurityService
 
-### Code
+### [src code](../projects/sample-implicit-flow-azuread)
 
-[App module](http://github.com)
-[App component](http://github.com)
-[App component html](http://github.com)
+[app.module.ts](../projects/sample-implicit-flow-azuread/src/app/app.module.ts)
+
+[app.component.ts](../projects/sample-implicit-flow-azuread/src/app/app.component.ts)
+
+[app.component.html](../projects/sample-implicit-flow-azuread/src/app/app.component.html)
+
+## Implicit Flow Azure B2C (Not recommended)
+
+This flow is no longer recommended, but some servers support this flow only, and not the Code flow with PKCE.
+
+Create the login, logout component and use the oidcSecurityService
+
+### [src code](../projects/sample-implicit-flow-ad-b2c)
+
+[app.module.ts](../projects/sample-implicit-flow-ad-b2c/src/app/app.module.ts)
+
+[app.component.ts](../projects/sample-implicit-flow-ad-b2c/src/app/app.component.ts)
+
+[app.component.html](../projects/sample-implicit-flow-ad-b2c/src/app/app.component.html)
