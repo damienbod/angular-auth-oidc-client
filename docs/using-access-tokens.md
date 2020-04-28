@@ -24,7 +24,9 @@ private setHeaders() {
 
 The HttpClient allows you to write [interceptors](https://angular.io/guide/http#intercepting-all-requests-or-responses). A common usecase would be to intercept any outgoing HTTP request and add an authorization header.
 
-```ts
+**Note** Do not send the access token with requests for which the access token is not intended!
+
+```typescript
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
     constructor(private oidcSecurityService: OidcSecurityService) {}

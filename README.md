@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/damienbod/angular-auth-oidc-client.svg?branch=master)](https://travis-ci.org/damienbod/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/v/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/dm/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/l/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client)
 
-> OpenID Code Flow with PKCE, OpenID Connect Implicit Flow
+> OpenID Code Flow with PKCE, Code Flow with refresh tokens, OpenID Connect Implicit Flow
 
 ## OpenID Certification
 
@@ -35,13 +35,13 @@ or with yarn
 
 ## Documentation
 
-- [Quickstart](docs/configuration.md)
+- [Quickstart](docs/quickstart.md)
 - [Samples](docs/samples.md)
 - [Silent renew](docs/silent-renew.md)
 - [Guards](docs/guards.md)
 - [Features](docs/features.md)
 - [Public API](docs/public-api.md)
-- [Configuration of the lib](docs/configuration.md)
+- [Configuration](docs/configuration.md)
 - [Logout](docs/logout.md)
 - [CSP & CORS](docs/csp-cors-config.md)
 - [Using the access token and revoking it](docs/using-access-tokens.md)
@@ -124,6 +124,8 @@ export class AppComponent implements OnInit {
 ```
 
 ## Send the token in every http request with an HTTP Interceptor
+
+**Note** Do not send the access token with requests for which the access token is not intended!
 
 ```typescript
 @Injectable()
