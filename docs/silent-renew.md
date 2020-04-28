@@ -1,8 +1,9 @@
 # Silent Renew
 
-- [Silent Renew Code Flow with PKCE](#code-flow-with-pkce-using-a-configuration-from-an-http-source-and-silent-renew)
-- [Silent Renew Code Flow with PKCE with refresh tokens](#code-flow-pkce-with-refresh-tokens)
-- [Silent Renew Implicit Flow](#code-flow-pkce-auto-login)
+- [Silent Renew Code Flow with PKCE](#silent-renew-code-flow-with-pkce)
+- [Silent Renew Code Flow with PKCE with refresh tokens](#silent-renew-code-flow-with-pkce-with-refresh-tokens)
+- [Silent Renew Implicit Flow](#silent-renew-implicit-flow)
+- [Secure Token Server CSP and CORS](#silent-renew-implicit-flow)
 
 
 When silent renew is enabled, a DOM event will be automatically installed in the application's host window.
@@ -47,6 +48,8 @@ No iframes are used for this flow, the the renew only needs to be configured in 
 };
 </script>
 ```
+
+## Secure Token Server CSP and CORS
 
 When silent renew is enabled, the lib will attempt to perform a renew before returning the authorization state.
 This allows the application to authorize a user, that is already authenticated, without redirects.
