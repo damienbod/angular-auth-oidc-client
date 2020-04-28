@@ -164,7 +164,7 @@ export class OidcSecurityService {
         return this.logoffRevocationService.logoff(urlHandler);
     }
 
-    logoffLocal(y) {
+    logoffLocal() {
         return this.logoffRevocationService.logoffLocal();
     }
 

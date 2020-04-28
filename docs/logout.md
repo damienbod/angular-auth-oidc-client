@@ -4,7 +4,7 @@ The `logoff` function sends an endsesion request to the OIDC server, if it is av
 
 ```typescript
 logout() {
-	this.oidcSecurityService.logoff();
+   this.oidcSecurityService.logoff();
 }
 
 ```
@@ -13,8 +13,8 @@ The `logoffAndRevokeTokens` function revokes the access token and the refresh to
 
 ```typescript
 logoffAndRevokeTokens() {
-    this.oidcSecurityService.logoffAndRevokeTokens()
-		.subscribe((result) => console.log(result));
+   this.oidcSecurityService.logoffAndRevokeTokens()
+      .subscribe((result) => console.log(result));
 }
 ```
 
@@ -22,7 +22,7 @@ The `logoffLocal` function is used to reset you local session in the browser, bu
 
 ```typescript
 logoutLocal() {
-	this.oidcSecurityService.logoffLocal();
+   this.oidcSecurityService.logoffLocal();
 }
 ```
 
