@@ -17,6 +17,8 @@ Currently the events
     CheckSessionReceived,
     UserDataChanged,
     NewAuthorizationResult,
+    TokenExpired,
+    IdTokenExpired,
 }
 ```
 
