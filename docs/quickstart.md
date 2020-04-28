@@ -47,7 +47,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
 export class AppModule {}
 ```
 
-### Silent Renew with the Angular Cli
+### Silent Renew with the Angular ClI
 
 Add the `silent-renew.html` file to the `angular.json` assets configuration
 
@@ -57,4 +57,18 @@ Add the `silent-renew.html` file to the `angular.json` assets configuration
     "projects/sample-code-flow/src/favicon.ico",
     "projects/sample-code-flow/src/assets"
   ],
+```
+
+### Silent Renew Code Flow with PKCE
+
+```javascript
+<script>
+	window.onload = function () {
+		/* The parent window hosts the Angular application */
+		var parent = window.parent;
+		/* Send the id_token information to the oidc message handler */
+		var event = new CustomEvent('oidc-silent-renew-message', { detail: window.location });
+		parent.dispatchEvent(event);
+	};
+</script>
 ```

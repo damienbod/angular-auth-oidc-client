@@ -164,6 +164,10 @@ export class OidcSecurityService {
         return this.logoffRevocationService.logoff(urlHandler);
     }
 
+    logoffLocal() {
+        return this.logoffRevocationService.logoffLocal();
+    }
+
     // https://tools.ietf.org/html/rfc7009
     // revokes an access token on the STS. This is only required in the code flow with refresh tokens.
     // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.

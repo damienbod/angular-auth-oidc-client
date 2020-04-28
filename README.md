@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/damienbod/angular-auth-oidc-client.svg?branch=master)](https://travis-ci.org/damienbod/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/v/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/dm/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/l/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client)
 
-> OpenID Code Flow with PKCE, OpenID Connect Implicit Flow
+> OpenID Code Flow with PKCE, Code Flow with refresh tokens, OpenID Connect Implicit Flow
 
 ## OpenID Certification
 
@@ -12,13 +12,12 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 
 ## Features
 
--   version 4.1.0 Angular 4 to Angular 5.2.10, Version 6.0.0, Angular 6 onwards
 -   Supports OpenID Connect Code Flow with PKCE
--   Supports OpenID Connect Implicit Flow http://openid.net/specs/openid-connect-implicit-1_0.html
+-   Supports Code Flow PKCE with Refresh tokens
+-   Revocation Enpoint
+-   [Supports OpenID Connect Implicit Flow](http://openid.net/specs/openid-connect-implicit-1_0.html)
 -   Complete client side validation for REQUIRED features
--   OpenID Connect Session Management 1.0 http://openid.net/specs/openid-connect-session-1_0.html
--   AOT build
--   Can be lazy loaded
+-   [OpenID Connect Session Management 1.0](http://openid.net/specs/openid-connect-session-1_0.html)
 
 ## Installation
 
@@ -34,12 +33,20 @@ or with yarn
  yarn add angular-auth-oidc-client
 ```
 
-## Quick Links
+## Documentation
 
--   [Quickstart](docs/configuration.md)
--   [API Documentation](API_DOCUMENTATION.md)
+-   [Quickstart](docs/quickstart.md)
+-   [Samples](docs/samples.md)
+-   [Silent renew](docs/silent-renew.md)
+-   [Guards](docs/guards.md)
+-   [Features](docs/features.md)
+-   [Logout](docs/logout.md)
+-   [Using and revoking the access token](docs/using-access-tokens.md)
+-   [CSP & CORS](docs/csp-cors-config.md)
+-   [Public API](docs/public-api.md)
+-   [Configuration](docs/configuration.md)
+-   [Migration](docs/migration.md)
 -   [Changelog](CHANGELOG.md)
--   [Samples](Samples.md)
 
 ## Quickstart
 
@@ -115,24 +122,24 @@ export class AppComponent implements OnInit {
 }
 ```
 
-## Send the token in every http request with an HTTP Interceptor
+## Using the access token
+
+You can get the access token by calling the method `getToken()` on the `OidcSecurityService`
 
 ```typescript
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-    constructor(private oidcSecurityService: OidcSecurityService) {}
+const token = this.oidcSecurityService.getToken();
+```
 
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        const token = this.oidcSecurityService.getToken();
+And then you can use it in the HttpHeaders
 
-        if (token) {
-            request = request.clone({
-                headers: request.headers.set('Authorization', 'Bearer ' + token),
-            });
-        }
-        return next.handle(request);
-    }
-}
+```typescript
+import { HttpHeaders } from '@angular/common/http';
+const token = this.oidcSecurityServices.getToken();
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Authorization': 'Bearer ' + token
+  })
+};
 ```
 
 ## License
