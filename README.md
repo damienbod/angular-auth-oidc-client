@@ -103,7 +103,7 @@ import { OidcClientNotification, OidcSecurityService, PublicConfiguration } from
 import { Observable } from 'rxjs';
 
 @Component({
-    /***/
+    /**/
 })
 export class AppComponent implements OnInit {
     constructor(public oidcSecurityService: OidcSecurityService) {}
@@ -147,5 +147,3 @@ const httpOptions = {
 ## License
 
 MIT
-
-## Contributors
