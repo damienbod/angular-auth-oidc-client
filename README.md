@@ -134,7 +134,9 @@ And then you can use it in the HttpHeaders
 
 ```typescript
 import { HttpHeaders } from '@angular/common/http';
+
 const token = this.oidcSecurityServices.getToken();
+
 const httpOptions = {
     headers: new HttpHeaders({
         Authorization: 'Bearer ' + token,

@@ -14,11 +14,13 @@ And then you can use it in the HttpHeaders
 
 ```typescript
 import { HttpHeaders } from '@angular/common/http';
+
 const token = this.oidcSecurityServices.getToken();
+
 const httpOptions = {
-  headers: new HttpHeaders({
-    'Authorization': 'Bearer ' + token
-  })
+    headers: new HttpHeaders({
+        Authorization: 'Bearer ' + token,
+    }),
 };
 ```
 
@@ -31,16 +33,26 @@ The HttpClient allows you to write [interceptors](https://angular.io/guide/http#
 ```typescript
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
+    private routesToAddTokenTo = ['http://my.route.io/secureapi'];
+
     constructor(private oidcSecurityService: OidcSecurityService) {}
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        // Ensure we send the token only to routes which are secured
+        if (!this.routesToAddTokenTo.find((x) => x === req.url)) {
+            return next.handle(request);
+        }
+
         const token = this.oidcSecurityService.getToken();
 
-        if (token) {
-            request = request.clone({
-                headers: request.headers.set('Authorization', 'Bearer ' + token),
-            });
+        if (!token) {
+            return next.handle(request);
         }
+
+        request = request.clone({
+            headers: request.headers.set('Authorization', 'Bearer ' + token),
+        });
+
         return next.handle(request);
     }
 }
