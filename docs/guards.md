@@ -27,7 +27,15 @@ export class AuthorizationGuard implements CanActivate {
         );
     }
 }
+```
 
+Do not forget to add the guard to your routes with `canActivate`, `canLoad`, etc.
+
+```typescript
+const appRoutes: Routes = [
+  // ...
+  { path: 'protected', component: <yourComponent>, canActivate: [AuthorizationGuard] }
+];
 ```
 
 > The guard should only be applied to protected URLs. The guard should not be active on the default route, where the authorization request is processed.

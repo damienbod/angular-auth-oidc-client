@@ -1,10 +1,9 @@
 # Silent Renew
 
-- [Silent Renew Code Flow with PKCE](#silent-renew-code-flow-with-pkce)
-- [Silent Renew Code Flow with PKCE with refresh tokens](#silent-renew-code-flow-with-pkce-with-refresh-tokens)
-- [Silent Renew Implicit Flow](#silent-renew-implicit-flow)
-- [Secure Token Server CSP and CORS](#secure-token-server-csp-and-cors)
-
+-   [Silent Renew Code Flow with PKCE](#silent-renew-code-flow-with-pkce)
+-   [Silent Renew Code Flow with PKCE with refresh tokens](#silent-renew-code-flow-with-pkce-with-refresh-tokens)
+-   [Silent Renew Implicit Flow](#silent-renew-implicit-flow)
+-   [Secure Token Server CSP and CORS](#secure-token-server-csp-and-cors)
 
 When silent renew is enabled, a DOM event will be automatically installed in the application's host window.
 The event `oidc-silent-renew-message` accepts a `CustomEvent` instance with the token returned from the OAuth server
@@ -55,7 +54,3 @@ When silent renew is enabled, the lib will attempt to perform a renew before ret
 This allows the application to authorize a user, that is already authenticated, without redirects.
 
 Silent renew requires CSP configuration on the server to allow iframes and also CORS
-
-
-
-

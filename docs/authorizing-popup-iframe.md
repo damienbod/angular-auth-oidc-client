@@ -1,4 +1,3 @@
-
 # Authorizing in a popup or iframe
 
 You can call the Provider's authorization endpoint in a popup or iframe instead of navigating to it in the app's parent window.
@@ -11,7 +10,7 @@ To get the fully-formed authorization URL, pass a handler function to `OidcSecur
 ```typescript
 login() {
     this.oidcSecurityService.authorize((authUrl) => {
-        // handle the authorrization URL
+        // handle the authorization URL
         window.open(authUrl, '_blank', 'toolbar=0,location=0,menubar=0');
     });
 }

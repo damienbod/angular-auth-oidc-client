@@ -12,12 +12,12 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 
 ## Features
 
-- Supports OpenID Connect Code Flow with PKCE
-- Supports Code Flow PKCE with Refresh tokens
-- Revocation Enpoint
-- Supports OpenID Connect Implicit Flow http://openid.net/specs/openid-connect-implicit-1_0.html
-- Complete client side validation for REQUIRED features
-- OpenID Connect Session Management 1.0 http://openid.net/specs/openid-connect-session-1_0.html
+-   Supports OpenID Connect Code Flow with PKCE
+-   Supports Code Flow PKCE with Refresh tokens
+-   Revocation Enpoint
+-   [Supports OpenID Connect Implicit Flow](http://openid.net/specs/openid-connect-implicit-1_0.html)
+-   Complete client side validation for REQUIRED features
+-   [OpenID Connect Session Management 1.0](http://openid.net/specs/openid-connect-session-1_0.html)
 
 ## Installation
 
@@ -35,19 +35,18 @@ or with yarn
 
 ## Documentation
 
-- [Quickstart](docs/quickstart.md)
-- [Samples](docs/samples.md)
-- [Silent renew](docs/silent-renew.md)
-- [Guards](docs/guards.md)
-- [Features](docs/features.md)
-- [Logout](docs/logout.md)
-- [Using and revoking the access token](docs/using-access-tokens.md)
-- [CSP & CORS](docs/csp-cors-config.md)
-- [Public API](docs/public-api.md)
-- [Configuration](docs/configuration.md)
-- [Migration](docs/migration.md)
-- [Changelog](CHANGELOG.md)
-
+-   [Quickstart](docs/quickstart.md)
+-   [Samples](docs/samples.md)
+-   [Silent renew](docs/silent-renew.md)
+-   [Guards](docs/guards.md)
+-   [Features](docs/features.md)
+-   [Logout](docs/logout.md)
+-   [Using and revoking the access token](docs/using-access-tokens.md)
+-   [CSP & CORS](docs/csp-cors-config.md)
+-   [Public API](docs/public-api.md)
+-   [Configuration](docs/configuration.md)
+-   [Migration](docs/migration.md)
+-   [Changelog](CHANGELOG.md)
 
 ## Quickstart
 
@@ -123,21 +122,25 @@ export class AppComponent implements OnInit {
 }
 ```
 
-## Using the access_token
+## Using the token to send with every HTTP request
 
-In the http services, add the token to the header using the oidcSecurityService
+In the interceptors of HTTP, add the token to the header using the `getToken()` method of the `OidcSecurityService`
 
 ```typescript
-private setHeaders() {
-	this.headers = new HttpHeaders();
-	this.headers = this.headers.set('Content-Type', 'application/json');
-	this.headers = this.headers.set('Accept', 'application/json');
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+    constructor(private oidcSecurityService: OidcSecurityService) {}
 
-	const token = this._securityService.getToken();
-	if (token !== '') {
-		const tokenValue = 'Bearer ' + token;
-		this.headers = this.headers.set('Authorization', tokenValue);
-	}
+    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        const token = this.oidcSecurityService.getToken();
+
+        if (token) {
+            request = request.clone({
+                headers: request.headers.set('Authorization', 'Bearer ' + token),
+            });
+        }
+        return next.handle(request);
+    }
 }
 ```
 

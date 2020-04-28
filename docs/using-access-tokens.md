@@ -2,22 +2,12 @@
 
 The access token can be used by calling the `getToken()` function.
 
-## Using the access_token
+## Accessing the access token
 
-In the http services, add the token to the header using the oidcSecurityService
+You can get the access token by calling the method `getToken()` on the `OidcSecurityService`
 
 ```typescript
-private setHeaders() {
-	this.headers = new HttpHeaders();
-	this.headers = this.headers.set('Content-Type', 'application/json');
-	this.headers = this.headers.set('Accept', 'application/json');
-
-	const token = this._securityService.getToken();
-	if (token !== '') {
-		const tokenValue = 'Bearer ' + token;
-		this.headers = this.headers.set('Authorization', tokenValue);
-	}
-}
+const token = this.oidcSecurityService.getToken();
 ```
 
 ## Http Interceptor
@@ -44,13 +34,13 @@ export class AuthInterceptor implements HttpInterceptor {
 }
 ```
 
-## Revoke the access_token
+## Revoke the access token
 
-Access tokens can be revoked using the `revokeAccessToken` function. If you provide the access token in the param, any access token from the same STS can be revoked, if the STS supports the revocation endpoint.
+Access tokens can be revoked using the `revokeAccessToken()` function. If you provide the access token in the param, any access token from the same STS can be revoked, if the STS supports the revocation endpoint.
 
 ```typescript
 revokeAccessToken() {
     this.oidcSecurityService.revokeAccessToken()
-		.subscribe((result) => console.log(result));
+		  .subscribe((result) => console.log(result));
 }
 ```
