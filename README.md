@@ -33,12 +33,15 @@ or with yarn
  yarn add angular-auth-oidc-client
 ```
 
-## Quick Links
+## Documentation
 
--   [Quickstart](docs/configuration.md)
--   [API Documentation](docs/API_DOCUMENTATION.md)
--   [Changelog](CHANGELOG.md)
--   [Samples](docs/samples.md)
+-[Quickstart](docs/configuration.md)
+-[Samples](docs/samples.md)
+-[Silent renew](docs/silent-renew.md)
+-[Guards](docs/guards.md)
+-[API Documentation](docs/API_DOCUMENTATION.md)
+-[Changelog](CHANGELOG.md)
+
 
 ## Quickstart
 

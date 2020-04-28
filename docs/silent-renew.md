@@ -3,7 +3,7 @@
 - [Silent Renew Code Flow with PKCE](#silent-renew-code-flow-with-pkce)
 - [Silent Renew Code Flow with PKCE with refresh tokens](#silent-renew-code-flow-with-pkce-with-refresh-tokens)
 - [Silent Renew Implicit Flow](#silent-renew-implicit-flow)
-- [Secure Token Server CSP and CORS](#silent-renew-implicit-flow)
+- [Secure Token Server CSP and CORS](#secure-token-server-csp-and-cors)
 
 
 When silent renew is enabled, a DOM event will be automatically installed in the application's host window.
