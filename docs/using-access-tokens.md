@@ -53,6 +53,6 @@ Access tokens can be revoked using the `revokeAccessToken()` function. If you pr
 ```typescript
 revokeAccessToken() {
     this.oidcSecurityService.revokeAccessToken()
-		  .subscribe((result) => console.log(result));
+        .subscribe((result) => console.log(result));
 }
 ```
