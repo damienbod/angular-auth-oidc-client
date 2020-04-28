@@ -1,6 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
+import {
+    EventTypes,
+    OidcClientNotification,
+    OidcSecurityService,
+    PublicConfiguration,
+    PublicEventsService,
+} from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -15,7 +22,7 @@ export class AppComponent implements OnInit {
     checkSessionChanged$: Observable<boolean>;
     checkSessionChanged: any;
 
-    constructor(public oidcSecurityService: OidcSecurityService) {}
+    constructor(public oidcSecurityService: OidcSecurityService, private eventService: PublicEventsService) {}
 
     ngOnInit() {
         this.configuration = this.oidcSecurityService.configuration;
@@ -25,6 +32,11 @@ export class AppComponent implements OnInit {
         this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 
         this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
+
+        this.eventService
+            .registerForEvents()
+            .pipe(filter((notification) => notification.type === EventTypes.CheckSessionReceived))
+            .subscribe((value) => console.log('CheckSessionReceived with value from app', value));
     }
 
     login() {

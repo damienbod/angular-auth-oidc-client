@@ -22,7 +22,7 @@ export class AuthStateService {
         private storagePersistanceService: StoragePersistanceService,
         private loggerService: LoggerService,
         private publicEventsService: PublicEventsService,
-        private readonly configurationProvider: ConfigurationProvider,
+        private configurationProvider: ConfigurationProvider,
         private tokenValidationService: TokenValidationService
     ) {}
 
@@ -120,20 +120,32 @@ export class AuthStateService {
 
     hasIdTokenExpired() {
         const tokenToCheck = this.storagePersistanceService.idToken;
-        const tokenIsExpired = this.tokenValidationService.hasIdTokenExpired(
+        const idTokenExpired = this.tokenValidationService.hasIdTokenExpired(
             tokenToCheck,
             this.configurationProvider.openIDConfiguration.renewTimeBeforeTokenExpiresInSeconds
         );
-        return tokenIsExpired;
+
+        if (idTokenExpired) {
+            this.publicEventsService.fireEvent<boolean>(EventTypes.IdTokenExpired, idTokenExpired);
+        }
+
+        return idTokenExpired;
     }
 
     hasAccessTokenExpiredIfExpiryExists() {
         const accessTokenExpiresIn = this.storagePersistanceService.accessTokenExpiresIn;
-        const accessTokenHasExpired = this.tokenValidationService.validateAccessTokenNotExpired(
+        const accessTokenHasNotExpired = this.tokenValidationService.validateAccessTokenNotExpired(
             accessTokenExpiresIn,
             this.configurationProvider.openIDConfiguration.renewTimeBeforeTokenExpiresInSeconds
         );
-        return !accessTokenHasExpired;
+
+        const hasExpired = !accessTokenHasNotExpired;
+
+        if (hasExpired) {
+            this.publicEventsService.fireEvent<boolean>(EventTypes.TokenExpired, hasExpired);
+        }
+
+        return hasExpired;
     }
 
     private getCurrentlyPersistedAuthState() {
