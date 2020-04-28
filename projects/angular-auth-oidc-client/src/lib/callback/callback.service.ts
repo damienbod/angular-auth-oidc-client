@@ -184,6 +184,7 @@ export class CallbackService {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
                 this.stopPeriodicallTokenCheck();
+                this.flowsService.resetAuthorizationData();
                 return throwError(error);
             })
         );
