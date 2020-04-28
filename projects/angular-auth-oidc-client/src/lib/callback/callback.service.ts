@@ -276,6 +276,7 @@ export class CallbackService {
         return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext).pipe(
             catchError((errorFromFlow) => {
                 this.stopPeriodicallTokenCheck();
+                this.flowsService.resetAuthorizationData();
                 return throwError(errorFromFlow);
             })
         );
