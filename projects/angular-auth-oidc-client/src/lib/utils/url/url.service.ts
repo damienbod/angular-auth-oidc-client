@@ -57,25 +57,23 @@ export class UrlService {
     }
 
     createEndSessionUrl(idTokenHint: string) {
-        if (this.configurationProvider.wellKnownEndpoints) {
-            if (this.configurationProvider.wellKnownEndpoints.endSessionEndpoint) {
-                const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.endSessionEndpoint;
-                const urlParts = endSessionEndpoint.split('?');
-
-                const authorizationEndsessionUrl = urlParts[0];
-
-                let params = new HttpParams({
-                    fromString: urlParts[1],
-                    encoder: new UriEncoder(),
-                });
-                params = params.set('id_token_hint', idTokenHint);
-                params = params.append('post_logout_redirect_uri', this.configurationProvider.openIDConfiguration.postLogoutRedirectUri);
-
-                return `${authorizationEndsessionUrl}?${params}`;
-            }
+        if (!this.configurationProvider.wellKnownEndpoints?.endSessionEndpoint) {
+            return null;
         }
 
-        return null;
+        const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints.endSessionEndpoint;
+        const urlParts = endSessionEndpoint.split('?');
+
+        const authorizationEndsessionUrl = urlParts[0];
+
+        let params = new HttpParams({
+            fromString: urlParts[1],
+            encoder: new UriEncoder(),
+        });
+        params = params.set('id_token_hint', idTokenHint);
+        params = params.append('post_logout_redirect_uri', this.configurationProvider.openIDConfiguration.postLogoutRedirectUri);
+
+        return `${authorizationEndsessionUrl}?${params}`;
     }
     createRevocationEndpointBodyAccessToken(token: any) {
         return `client_id=${this.configurationProvider.openIDConfiguration.clientId}&token=${token}&token_type_hint=access_token`;
