@@ -18,6 +18,7 @@ import { UrlService } from './url.service';
 describe('UrlService Tests', () => {
     let service: UrlService;
     let configurationProvider: ConfigurationProvider;
+    let flowHelper: FlowHelper;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -41,6 +42,7 @@ describe('UrlService Tests', () => {
     beforeEach(() => {
         service = TestBed.inject(UrlService);
         configurationProvider = TestBed.inject(ConfigurationProvider);
+        flowHelper = TestBed.inject(FlowHelper);
     });
 
     it('should create', () => {
@@ -291,21 +293,43 @@ describe('UrlService Tests', () => {
             expect(value).toEqual(expectValue);
         });
 
-        it('createEndSessionUrl default', () => {
-            const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-            config.redirectUrl = 'https://localhost:44386';
-            config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-            config.responseType = 'id_token token';
-            config.scope = 'openid email profile';
-            config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        it('createEndSessionUrl create url when all parameters given', () => {
+            const config = {
+                stsServer: 'https://localhost:5001',
+                redirectUrl: 'https://localhost:44386',
+                clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
+                responseType: 'id_token token',
+                scope: 'openid email profile',
+                postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
+            };
 
             const endSessionEndpoint = 'http://example';
-            configurationProvider.setConfig(config, { endSessionEndpoint } as AuthWellKnownEndpoints);
+            configurationProvider.setConfig(config, { endSessionEndpoint });
 
             const value = service.createEndSessionUrl('mytoken');
 
             const expectValue =
                 'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
+
+            expect(value).toEqual(expectValue);
+        });
+
+        it('createEndSessionUrl returns null if no wellknownEndpoints given', () => {
+            configurationProvider.setConfig({}, null);
+
+            const value = service.createEndSessionUrl('mytoken');
+
+            const expectValue = null;
+
+            expect(value).toEqual(expectValue);
+        });
+
+        it('createEndSessionUrl returns null if no wellknownEndpoints.endSessionEndpoint given', () => {
+            configurationProvider.setConfig({}, { endSessionEndpoint: null });
+
+            const value = service.createEndSessionUrl('mytoken');
+
+            const expectValue = null;
 
             expect(value).toEqual(expectValue);
         });
@@ -460,6 +484,58 @@ describe('UrlService Tests', () => {
             const expectValue = 'http://example';
 
             expect(value).toEqual(expectValue);
+        });
+    });
+
+    describe('getAuthorizeUrl', () => {
+        it('calls createUrlCodeFlowAuthorize if current flow is code flow', () => {
+            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
+            const spy = spyOn(service as any, 'createUrlCodeFlowAuthorize');
+            service.getAuthorizeUrl();
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it('calls createUrlImplicitFlowAuthorize if current flow is NOT code flow', () => {
+            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
+            const spyCreateUrlCodeFlowAuthorize = spyOn(service as any, 'createUrlCodeFlowAuthorize');
+            const spyCreateUrlImplicitFlowAuthorize = spyOn(service as any, 'createUrlImplicitFlowAuthorize');
+            service.getAuthorizeUrl();
+            expect(spyCreateUrlCodeFlowAuthorize).not.toHaveBeenCalled();
+            expect(spyCreateUrlImplicitFlowAuthorize).toHaveBeenCalled();
+        });
+
+        it('return empty string if flow is not code flow and createUrlImplicitFlowAuthorize returns falsy', () => {
+            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
+            const spy = spyOn(service as any, 'createUrlImplicitFlowAuthorize').and.returnValue('');
+            const result = service.getAuthorizeUrl();
+            expect(spy).toHaveBeenCalled();
+            expect(result).toBe('');
+        });
+    });
+
+    describe('getRefreshSessionSilentRenewUrl', () => {
+        it('calls createUrlCodeFlowWithSilentRenew if current flow is code flow', () => {
+            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
+            const spy = spyOn(service as any, 'createUrlCodeFlowWithSilentRenew');
+            service.getRefreshSessionSilentRenewUrl();
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it('calls createUrlImplicitFlowWithSilentRenew if current flow is NOT code flow', () => {
+            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
+            const spyCreateUrlCodeFlowWithSilentRenew = spyOn(service as any, 'createUrlCodeFlowWithSilentRenew');
+            const spyCreateUrlImplicitFlowWithSilentRenew = spyOn(service as any, 'createUrlImplicitFlowWithSilentRenew');
+            service.getRefreshSessionSilentRenewUrl();
+            expect(spyCreateUrlCodeFlowWithSilentRenew).not.toHaveBeenCalled();
+            expect(spyCreateUrlImplicitFlowWithSilentRenew).toHaveBeenCalled();
+        });
+
+        it('return empty string if flow is not code flow and createUrlImplicitFlowWithSilentRenew returns falsy', () => {
+            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
+            const spy = spyOn(service as any, 'createUrlImplicitFlowWithSilentRenew').and.returnValue('');
+            const result = service.getRefreshSessionSilentRenewUrl();
+            expect(spy).toHaveBeenCalled();
+            expect(result).toBe('');
         });
     });
 });
