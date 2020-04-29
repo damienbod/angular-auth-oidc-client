@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { async, TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { AuthModule } from './auth.module';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
@@ -13,12 +13,13 @@ import { LoggerService } from './logging/logger.service';
 import { LoggerServiceMock } from './logging/logger.service-mock';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { OidcSecurityService } from './oidc.security.service';
+import { EventTypes, PublicEventsService } from './public-events';
 import { StoragePersistanceService } from './storage';
 import { StoragePersistanceServiceMock } from './storage/storage-persistance.service-mock';
 import { UserService } from './userData/user-service';
 import { UrlService } from './utils';
 
-fdescribe('OidcSecurityService', () => {
+describe('OidcSecurityService', () => {
     let oidcSecurityService: OidcSecurityService;
     let configurationProvider: ConfigurationProvider;
     let storagePersistanceService: StoragePersistanceService;
@@ -27,6 +28,7 @@ fdescribe('OidcSecurityService', () => {
     let userService: UserService;
     let checkSessionService: CheckSessionService;
     let callBackService: CallbackService;
+    let publicEventsService: PublicEventsService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -46,6 +48,7 @@ fdescribe('OidcSecurityService', () => {
                 UserService,
                 CheckSessionService,
                 CallbackService,
+                PublicEventsService,
             ],
         });
     });
@@ -59,6 +62,7 @@ fdescribe('OidcSecurityService', () => {
         authStateService = TestBed.inject(AuthStateService);
         checkSessionService = TestBed.inject(CheckSessionService);
         callBackService = TestBed.inject(CallbackService);
+        publicEventsService = TestBed.inject(PublicEventsService);
     });
 
     it('should create', () => {
@@ -145,6 +149,40 @@ fdescribe('OidcSecurityService', () => {
         it('returns callbackService.stsCallback$', async(() => {
             const spy = spyOn(configurationProvider, 'hasValidConfig').and.returnValue(false);
             oidcSecurityService.checkAuth().subscribe((result) => expect(result).toBeFalse());
+        }));
+
+        it('calls callbackService.handlePossibleStsCallback with current url', async(() => {
+            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+            const spy = spyOn(callBackService, 'handlePossibleStsCallback').and.returnValue(of(null));
+            oidcSecurityService.checkAuth().subscribe((result) => expect(result).toBeFalse());
+
+            expect(spy).toHaveBeenCalled();
+        }));
+
+        it('fires public Service  Event', async(() => {
+            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+            spyOn(callBackService, 'handlePossibleStsCallback').and.returnValue(of(null));
+            const spy = spyOn(publicEventsService, 'fireEvent');
+            oidcSecurityService.checkAuth().subscribe((result) => expect(result).toBeFalse());
+
+            expect(spy).toHaveBeenCalledWith(EventTypes.ModuleSetup, true);
+        }));
+
+        it('fires moduleSetup$ event first with default and then with real value', async(() => {
+            const spy = jasmine.createSpy('spy');
+            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+            spyOn(callBackService, 'handlePossibleStsCallback').and.returnValue(of(null));
+            spyOnProperty(oidcSecurityService, 'moduleSetup$', 'get').and.callThrough();
+
+            oidcSecurityService.moduleSetup$.subscribe((result) => spy(result));
+            oidcSecurityService.checkAuth().subscribe((result) => expect(result).toBeFalse());
+
+            expect(spy.calls.count()).toBe(2);
+            expect(spy.calls.first().args[0]).toEqual(false); // Emits default first
+            expect(spy.calls.mostRecent().args[0]).toEqual(true); // Emits true when emitting
         }));
     });
 
