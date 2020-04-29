@@ -7,7 +7,7 @@ import { FlowsService } from '../flows/flows.service';
 import { CheckSessionService } from '../iframe';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage';
-import { UrlService } from '../utils';
+import { RedirectService, UrlService } from '../utils';
 
 @Injectable()
 export class LogoffRevocationService {
@@ -17,7 +17,8 @@ export class LogoffRevocationService {
         private loggerService: LoggerService,
         private urlService: UrlService,
         private checkSessionService: CheckSessionService,
-        private flowsService: FlowsService
+        private flowsService: FlowsService,
+        private redirectService: RedirectService
     ) {}
 
     // Logs out on the server and the local client.
@@ -37,7 +38,7 @@ export class LogoffRevocationService {
         } else if (urlHandler) {
             urlHandler(endSessionUrl);
         } else {
-            this.redirectTo(endSessionUrl);
+            this.redirectService.redirectTo(endSessionUrl);
         }
     }
 
@@ -123,9 +124,5 @@ export class LogoffRevocationService {
     getEndSessionUrl(): string | null {
         const idTokenHint = this.storagePersistanceService.idToken;
         return this.urlService.createEndSessionUrl(idTokenHint);
-    }
-
-    private redirectTo(url: string) {
-        window.location.href = url;
     }
 }
