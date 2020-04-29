@@ -2,7 +2,7 @@ import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { PlatformProvider } from './platform.provider';
 
-describe('ConfigurationProviderTests', () => {
+describe('PlatformProvider Tests', () => {
     it('should create', () => {
         TestBed.configureTestingModule({
             providers: [PlatformProvider, { provide: PLATFORM_ID, useValue: 'browser' }],

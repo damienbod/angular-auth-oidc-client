@@ -18,6 +18,7 @@ import { UrlService } from './url.service';
 describe('UrlService Tests', () => {
     let service: UrlService;
     let configurationProvider: ConfigurationProvider;
+    let flowHelper: FlowHelper;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -41,6 +42,7 @@ describe('UrlService Tests', () => {
     beforeEach(() => {
         service = TestBed.inject(UrlService);
         configurationProvider = TestBed.inject(ConfigurationProvider);
+        flowHelper = TestBed.inject(FlowHelper);
     });
 
     it('should create', () => {
@@ -460,6 +462,32 @@ describe('UrlService Tests', () => {
             const expectValue = 'http://example';
 
             expect(value).toEqual(expectValue);
+        });
+    });
+
+    describe('getAuthorizeUrl', () => {
+        it('calls createUrlCodeFlowAuthorize if current flow is code flow', () => {
+            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
+            const spy = spyOn(service as any, 'createUrlCodeFlowAuthorize').and.returnValue('someresult');
+            service.getAuthorizeUrl();
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it('calls createUrlImplicitFlowAuthorize if current flow is NOT code flow', () => {
+            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
+            const spyCreateUrlCodeFlowAuthorize = spyOn(service as any, 'createUrlCodeFlowAuthorize');
+            const spyCreateUrlImplicitFlowAuthorize = spyOn(service as any, 'createUrlImplicitFlowAuthorize');
+            service.getAuthorizeUrl();
+            expect(spyCreateUrlCodeFlowAuthorize).not.toHaveBeenCalled();
+            expect(spyCreateUrlImplicitFlowAuthorize).toHaveBeenCalled();
+        });
+
+        it('return empty string if flow is not code flow and createUrlImplicitFlowAuthorize returns falsy', () => {
+            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
+            const spy = spyOn(service as any, 'createUrlImplicitFlowAuthorize').and.returnValue('');
+            const result = service.getAuthorizeUrl();
+            expect(spy).toHaveBeenCalled();
+            expect(result).toBe('');
         });
     });
 });
