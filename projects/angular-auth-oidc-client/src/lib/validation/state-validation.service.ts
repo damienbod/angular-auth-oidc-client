@@ -219,13 +219,14 @@ export class StateValidationService {
             return toReturn;
         }
 
-        const alg = (toReturn.decodedIdToken = this.tokenHelperService.getHeaderFromToken(toReturn.idToken, false));
+        const idTokenHeader = this.tokenHelperService.getHeaderFromToken(toReturn.idToken, false);
+
         if (
             !this.tokenValidationService.validateIdTokenAtHash(
                 toReturn.accessToken,
                 toReturn.decodedIdToken.at_hash,
                 isCurrentFlowCodeFlow,
-                alg
+                idTokenHeader.alg // 'RSA256'
             ) ||
             !toReturn.accessToken
         ) {
