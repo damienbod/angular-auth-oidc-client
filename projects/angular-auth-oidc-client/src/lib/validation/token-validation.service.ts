@@ -304,7 +304,7 @@ export class TokenValidationService {
         const kid = headerData.kid;
         const alg = headerData.alg;
 
-        if (this.keyAlgorithms.includes(alg as string)) {
+        if (!this.keyAlgorithms.includes(alg as string)) {
             this.loggerService.logWarning('alg not supported', alg);
             return false;
         }
@@ -407,12 +407,13 @@ export class TokenValidationService {
             }
         }
 
-        const testdata = this.generateAtHash('' + accessToken);
+        // 'sha256' 'sha384' 'sha512'
+        const testdata = this.generateAtHash('' + accessToken, 'sha384');
         this.loggerService.logDebug('at_hash client validation not decoded:' + testdata);
         if (testdata === (atHash as string)) {
             return true; // isValid;
         } else {
-            const testValue = this.generateAtHash('' + decodeURIComponent(accessToken));
+            const testValue = this.generateAtHash('' + decodeURIComponent(accessToken), 'sha384');
             this.loggerService.logDebug('-gen access--' + testValue);
             if (testValue === (atHash as string)) {
                 return true; // isValid
@@ -422,8 +423,8 @@ export class TokenValidationService {
         return false;
     }
 
-    private generateAtHash(accessToken: any): string {
-        const hash = KJUR.crypto.Util.hashString(accessToken, 'sha256');
+    private generateAtHash(accessToken: any, sha: string): string {
+        const hash = KJUR.crypto.Util.hashString(accessToken, sha);
         const first128bits = hash.substr(0, hash.length / 2);
         const testdata = hextob64u(first128bits);
 
