@@ -411,7 +411,7 @@ export class TokenValidationService {
         let sha = 'sha256';
         if (idTokenAlg.includes('384')) {
             sha = 'sha384';
-        } else if (idTokenAlg.includes('384')) {
+        } else if (idTokenAlg.includes('512')) {
             sha = 'sha512';
         }
 
