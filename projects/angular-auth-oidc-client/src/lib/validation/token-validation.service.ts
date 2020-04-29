@@ -51,7 +51,7 @@ import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.servi
 @Injectable()
 export class TokenValidationService {
     static RefreshTokenNoncePlaceholder = '--RefreshToken--';
-
+    keyAlgorithms: string[] = ['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'PS256', 'PS384', 'PS512'];
     constructor(private tokenHelperService: TokenHelperService, private flowHelper: FlowHelper, private loggerService: LoggerService) {}
 
     // id_token C7: The current time MUST be before the time represented by the exp Claim
@@ -304,19 +304,24 @@ export class TokenValidationService {
         const kid = headerData.kid;
         const alg = headerData.alg;
 
-        if ('RS256' !== (alg as string)) {
-            this.loggerService.logWarning('Only RS256 supported');
+        if (this.keyAlgorithms.includes(alg as string)) {
+            this.loggerService.logWarning('alg not supported', alg);
             return false;
+        }
+
+        let jwtKtyToUse = 'RSA';
+        if ((alg as string).charAt(0) === 'E') {
+            jwtKtyToUse = 'EC';
         }
 
         let isValid = false;
 
         if (!headerData.hasOwnProperty('kid')) {
             // exactly 1 key in the jwtkeys and no kid in the Jose header
-            // kty	"RSA" use "sig"
+            // kty	"RSA" or EC use "sig"
             let amountOfMatchingKeys = 0;
             for (const key of jwtkeys.keys) {
-                if ((key.kty as string) === 'RSA' && (key.use as string) === 'sig') {
+                if ((key.kty as string) === jwtKtyToUse && (key.use as string) === 'sig') {
                     amountOfMatchingKeys = amountOfMatchingKeys + 1;
                 }
             }
@@ -324,19 +329,21 @@ export class TokenValidationService {
             if (amountOfMatchingKeys === 0) {
                 this.loggerService.logWarning('no keys found, incorrect Signature, validation failed for id_token');
                 return false;
-            } else if (amountOfMatchingKeys > 1) {
+            }
+
+            if (amountOfMatchingKeys > 1) {
                 this.loggerService.logWarning('no ID Token kid claim in JOSE header and multiple supplied in jwks_uri');
                 return false;
-            } else {
-                for (const key of jwtkeys.keys) {
-                    if ((key.kty as string) === 'RSA' && (key.use as string) === 'sig') {
-                        const publickey = KEYUTIL.getKey(key);
-                        isValid = KJUR.jws.JWS.verify(idToken, publickey, ['RS256']);
-                        if (!isValid) {
-                            this.loggerService.logWarning('incorrect Signature, validation failed for id_token');
-                        }
-                        return isValid;
+            }
+
+            for (const key of jwtkeys.keys) {
+                if ((key.kty as string) === jwtKtyToUse && (key.use as string) === 'sig') {
+                    const publickey = KEYUTIL.getKey(key);
+                    isValid = KJUR.jws.JWS.verify(idToken, publickey, [alg]);
+                    if (!isValid) {
+                        this.loggerService.logWarning('incorrect Signature, validation failed for id_token');
                     }
+                    return isValid;
                 }
             }
         } else {
@@ -344,7 +351,7 @@ export class TokenValidationService {
             for (const key of jwtkeys.keys) {
                 if ((key.kid as string) === (kid as string)) {
                     const publickey = KEYUTIL.getKey(key);
-                    isValid = KJUR.jws.JWS.verify(idToken, publickey, ['RS256']);
+                    isValid = KJUR.jws.JWS.verify(idToken, publickey, [alg]);
                     if (!isValid) {
                         this.loggerService.logWarning('incorrect Signature, validation failed for id_token');
                     }

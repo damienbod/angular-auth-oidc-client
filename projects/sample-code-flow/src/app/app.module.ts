@@ -9,7 +9,7 @@ import { AppComponent } from './app.component';
 export function configureAuth(oidcConfigService: OidcConfigService) {
     return () =>
         oidcConfigService.withConfig({
-            stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+            stsServer: 'https://localhost:44318',
             redirectUrl: 'https://localhost:4200',
             postLogoutRedirectUri: 'https://localhost:4200',
             clientId: 'angularClient',
