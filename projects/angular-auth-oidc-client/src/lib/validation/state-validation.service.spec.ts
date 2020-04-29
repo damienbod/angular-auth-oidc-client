@@ -467,7 +467,7 @@ describe('State Validation Service', () => {
         };
         const state = stateValidationService.validateState(callbackContext);
 
-        expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback token expired');
+        expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback id token expired');
 
         expect(state.accessToken).toBe('access_tokenTEST');
         expect(state.idToken).toBe('id_tokenTEST');

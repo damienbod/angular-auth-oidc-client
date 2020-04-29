@@ -1,7 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { hextob64u, KEYUTIL, KJUR } from 'jsrsasign-reduced';
 import { LoggerService } from '../logging/logger.service';
-import { EqualityService } from '../utils/equality/equality.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
 
@@ -53,12 +52,7 @@ import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.servi
 export class TokenValidationService {
     static RefreshTokenNoncePlaceholder = '--RefreshToken--';
 
-    constructor(
-        private arrayHelperService: EqualityService,
-        private tokenHelperService: TokenHelperService,
-        private flowHelper: FlowHelper,
-        private loggerService: LoggerService
-    ) {}
+    constructor(private tokenHelperService: TokenHelperService, private flowHelper: FlowHelper, private loggerService: LoggerService) {}
 
     // id_token C7: The current time MUST be before the time represented by the exp Claim
     // (possibly allowing for some small leeway to account for clock skew).

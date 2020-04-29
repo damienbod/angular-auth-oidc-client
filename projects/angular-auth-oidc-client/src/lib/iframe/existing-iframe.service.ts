@@ -10,6 +10,7 @@ export class IFrameService {
         if (this.isIFrameElement(iFrameOnParent)) {
             return iFrameOnParent;
         }
+
         const iFrameOnSelf = this.getIFrameFromWindow(identifier);
         if (this.isIFrameElement(iFrameOnSelf)) {
             return iFrameOnSelf;
