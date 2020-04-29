@@ -109,4 +109,36 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 }
 ```
 
-## Redirect after login (not implemented yet)
+
+## onAuthorizationResult: Observable<AuthorizationResult>
+
+This event returns the result of the authorization callback.
+
+
+Subscribe to the event:
+
+```typescript
+//...
+    this.onAuthorizationResultSubscription = this.oidcSecurityService.onAuthorizationResult.pipe(
+        tap((authorizationResult: AuthorizationResult) => {
+            console.log('Auth result received AuthorizationState:'
+                + authorizationResult.authorizationState
+                + ' validationResult:' + authorizationResult.validationResult
+                + ' isRenewProcess:' + authorizationResult.isRenewProcess);
+        }),
+        map((authorizationResult: AuthorizationResult) => authorizationResult.authorizationState),
+        filter((authorizationState: AuthorizationState) => authorizationState === AuthorizationState.unauthorized)
+    ).subscribe(() => {
+        this.router.navigate(['/unauthorized']);
+    });
+//...
+
+private onAuthorizationResultSubscription: Subscription;
+
+ngOnDestroy(): void {
+    if(this.onAuthorizationResultSubscription) {
+        this.onAuthorizationResultSubscription.unsubscribe();
+    }
+}
+```
+
