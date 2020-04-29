@@ -107,7 +107,14 @@ export class StoragePersistanceServiceMock {
     public set silentRenewRunning(value: SilentRenewState) {
         this.store(this.storageSilentRenewRunning, value);
     }
+    private storageAccessTokenExpiresIn = 'access_token_expires_at';
+    get accessTokenExpiresIn(): any {
+        return this.retrieve(this.storageAccessTokenExpiresIn);
+    }
 
+    set accessTokenExpiresIn(value: any) {
+        this.store(this.storageAccessTokenExpiresIn, value);
+    }
     private retrieve(key: string): any {
         const keyToRead = this.createKeyWithPrefix(key);
         return this.itemsInternal.find((x) => x.key === keyToRead)?.value;

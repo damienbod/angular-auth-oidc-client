@@ -12,7 +12,7 @@ import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.servic
 import { EventTypes } from './public-events';
 import { PublicEventsService } from './public-events/public-events.service';
 import { UserService } from './userData/user-service';
-import { UrlService } from './utils';
+import { RedirectService, UrlService } from './utils';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
 import { TokenValidationService } from './validation/token-validation.service';
 
@@ -60,7 +60,8 @@ export class OidcSecurityService {
         private flowsDataService: FlowsDataService,
         private flowsService: FlowsService,
         private callbackService: CallbackService,
-        private logoffRevocationService: LogoffRevocationService
+        private logoffRevocationService: LogoffRevocationService,
+        private redirectService: RedirectService
     ) {}
 
     checkAuth(): Observable<boolean> {
@@ -149,7 +150,7 @@ export class OidcSecurityService {
         if (urlHandler) {
             urlHandler(url);
         } else {
-            this.redirectTo(url);
+            this.redirectService.redirectTo(url);
         }
     }
 
@@ -187,9 +188,5 @@ export class OidcSecurityService {
 
     getEndSessionUrl(): string | null {
         return this.logoffRevocationService.getEndSessionUrl();
-    }
-
-    private redirectTo(url: string) {
-        window.location.href = url;
     }
 }
