@@ -219,11 +219,13 @@ export class StateValidationService {
             return toReturn;
         }
 
+        const alg = (toReturn.decodedIdToken = this.tokenHelperService.getHeaderFromToken(toReturn.idToken, false));
         if (
             !this.tokenValidationService.validateIdTokenAtHash(
                 toReturn.accessToken,
                 toReturn.decodedIdToken.at_hash,
-                isCurrentFlowCodeFlow
+                isCurrentFlowCodeFlow,
+                alg
             ) ||
             !toReturn.accessToken
         ) {

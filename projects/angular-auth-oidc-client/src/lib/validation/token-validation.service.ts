@@ -396,7 +396,7 @@ export class TokenValidationService {
     // access_token C2: Take the left- most half of the hash and base64url- encode it.
     // access_token C3: The value of at_hash in the ID Token MUST match the value produced in the previous step if at_hash
     // is present in the ID Token.
-    validateIdTokenAtHash(accessToken: any, atHash: any, isCodeFlow: boolean): boolean {
+    validateIdTokenAtHash(accessToken: any, atHash: any, isCodeFlow: boolean, idTokenAlg: string): boolean {
         this.loggerService.logDebug('at_hash from the server:' + atHash);
 
         // The at_hash is optional for the code flow
@@ -408,12 +408,19 @@ export class TokenValidationService {
         }
 
         // 'sha256' 'sha384' 'sha512'
-        const testdata = this.generateAtHash('' + accessToken, 'sha384');
+        let sha = 'sha256';
+        if (idTokenAlg.includes('384')) {
+            sha = 'sha384';
+        } else if (idTokenAlg.includes('384')) {
+            sha = 'sha512';
+        }
+
+        const testdata = this.generateAtHash('' + accessToken, sha);
         this.loggerService.logDebug('at_hash client validation not decoded:' + testdata);
         if (testdata === (atHash as string)) {
             return true; // isValid;
         } else {
-            const testValue = this.generateAtHash('' + decodeURIComponent(accessToken), 'sha384');
+            const testValue = this.generateAtHash('' + decodeURIComponent(accessToken), sha);
             this.loggerService.logDebug('-gen access--' + testValue);
             if (testValue === (atHash as string)) {
                 return true; // isValid
