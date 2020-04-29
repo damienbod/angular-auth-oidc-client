@@ -46,4 +46,8 @@
     generateCodeVerifier(codeChallenge: any): string {
         return '';
     }
+
+    validateAccessTokenNotExpired(accessTokenExpiresAt: Date, offsetSeconds?: number): boolean {
+        return true;
+    }
 }

@@ -38,7 +38,7 @@ export class ConfigurationProvider {
     }
 
     hasValidConfig() {
-        return !!this.wellKnownEndpointsInternal && this.openIdConfigurationInternal;
+        return !!this.wellKnownEndpointsInternal && !!this.openIdConfigurationInternal;
     }
 
     constructor(private platformProvider: PlatformProvider) {}
