@@ -106,16 +106,16 @@ export class UrlService {
             return null;
         }
 
-        const url = oneLineTrim`grant_type=authorization_code
+        const dataForBody = oneLineTrim`grant_type=authorization_code
             &client_id=${this.configurationProvider.openIDConfiguration.clientId}
             &code_verifier=${codeVerifier}
             &code=${code}`;
 
         if (this.flowsDataService.isSilentRenewRunning()) {
-            return oneLineTrim`${url}&redirect_uri=${this.configurationProvider.openIDConfiguration.silentRenewUrl}`;
+            return oneLineTrim`${dataForBody}&redirect_uri=${this.configurationProvider.openIDConfiguration.silentRenewUrl}`;
         }
 
-        return oneLineTrim`${url}&redirect_uri=${this.configurationProvider.openIDConfiguration.redirectUrl}`;
+        return oneLineTrim`${dataForBody}&redirect_uri=${this.configurationProvider.openIDConfiguration.redirectUrl}`;
     }
 
     createBodyForCodeFlowRefreshTokensRequest(refreshtoken: string): string {
