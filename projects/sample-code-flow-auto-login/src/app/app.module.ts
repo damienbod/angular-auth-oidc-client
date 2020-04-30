@@ -14,15 +14,15 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
     return () =>
         oidcConfigService.withConfig({
             stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
-            redirectUrl: 'https://localhost:4203',
+            redirectUrl: window.location.origin,
             clientId: 'angularJwtClient',
             scope: 'openid profile email',
             responseType: 'code',
             triggerAuthorizationResultEvent: true,
-            postLogoutRedirectUri: 'https://localhost:4203/unauthorized',
+            postLogoutRedirectUri: `${window.location.origin}/unauthorized`,
             startCheckSession: false,
             silentRenew: true,
-            silentRenewUrl: 'https://localhost:4203/silent-renew.html',
+            silentRenewUrl: `${window.location.origin}/silent-renew.html`,
             postLoginRoute: '/home',
             forbiddenRoute: '/forbidden',
             unauthorizedRoute: '/unauthorized',

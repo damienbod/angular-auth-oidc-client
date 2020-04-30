@@ -10,8 +10,8 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
     return () =>
         oidcConfigService.withConfig({
             stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
-            redirectUrl: 'https://localhost:4204',
-            postLogoutRedirectUri: 'https://localhost:4204',
+            redirectUrl: window.location.origin,
+            postLogoutRedirectUri: window.location.origin,
             clientId: 'angularCodeRefreshTokens',
             scope: 'openid profile email taler_api offline_access',
             responseType: 'code',

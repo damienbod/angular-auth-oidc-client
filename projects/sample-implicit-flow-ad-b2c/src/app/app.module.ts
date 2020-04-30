@@ -19,14 +19,14 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
             stsServer: 'https://login.microsoftonline.com/damienbod.onmicrosoft.com/v2.0',
             authWellknownEndpoint:
                 'https://damienbod.b2clogin.com/damienbod.onmicrosoft.com/B2C_1_b2cpolicydamien/v2.0/.well-known/openid-configuration',
-            redirectUrl: 'https://localhost:65328',
-            postLogoutRedirectUri: 'https://localhost:65328',
+            redirectUrl: window.location.origin,
+            postLogoutRedirectUri: window.location.origin,
             clientId: 'f1934a6e-958d-4198-9f36-6127cfc4cdb3',
             scope: 'openid https://damienbod.onmicrosoft.com/testapi/demo.read',
             responseType: 'id_token token',
             silentRenew: false,
             autoUserinfo: false,
-            silentRenewUrl: 'https://localhost:65328/silent-renew.html',
+            silentRenewUrl: window.location.origin + '/silent-renew.html',
             logLevel: LogLevel.Debug,
             customParams: {
                 response_mode: 'fragment',

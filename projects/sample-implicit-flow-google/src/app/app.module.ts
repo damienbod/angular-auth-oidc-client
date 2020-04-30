@@ -15,15 +15,15 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
     return () =>
         oidcConfigService.withConfig({
             stsServer: 'https://accounts.google.com',
-            redirectUrl: 'https://localhost:44386',
+            redirectUrl: window.location.origin,
             clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
             responseType: 'id_token token',
             scope: 'openid email profile',
             triggerAuthorizationResultEvent: true,
-            postLogoutRedirectUri: 'https://localhost:44386/unauthorized',
+            postLogoutRedirectUri: window.location.origin + '/unauthorized',
             startCheckSession: false,
             silentRenew: false,
-            silentRenewUrl: 'https://localhost:44386/silent-renew.html',
+            silentRenewUrl: window.location.origin + '/silent-renew.html',
             postLoginRoute: '/home',
             forbiddenRoute: '/forbidden',
             unauthorizedRoute: '/unauthorized',
