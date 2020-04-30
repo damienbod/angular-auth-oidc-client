@@ -530,6 +530,14 @@ describe('UrlService Tests', () => {
 
             expect(value).toBeNull();
         });
+
+        it('getRevocationEndpointUrl returns null when there is no wellKnownEndpoints given', () => {
+            configurationProvider.setConfig(null, null);
+
+            const value = service.getRevocationEndpointUrl();
+
+            expect(value).toBeNull();
+        });
     });
 
     describe('getAuthorizeUrl', () => {
@@ -618,6 +626,16 @@ describe('UrlService Tests', () => {
             const expected = `grant_type=authorization_code&client_id=${clientId}&code_verifier=${codeVerifier}&code=${code}&redirect_uri=${silentRenewUrl}`;
 
             expect(result).toBe(expected);
+        });
+    });
+
+    describe('createBodyForCodeFlowRefreshTokensRequest', () => {
+        it('returns correct url', () => {
+            const clientId = 'clientId';
+            const refreshToken = 'refreshToken';
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId });
+            const result = service.createBodyForCodeFlowRefreshTokensRequest(refreshToken);
+            expect(result).toBe(`grant_type=refresh_token&client_id=${clientId}&refresh_token=${refreshToken}`);
         });
     });
 });
