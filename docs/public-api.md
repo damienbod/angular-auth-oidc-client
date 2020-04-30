@@ -1,25 +1,70 @@
 # Public API
 
+The most public accessible observables, properties and methods are placed in the `OidcSecurityService`. Below you can find the descirption of everys single one of them.
+
 TBD
 
 ```
    this.configuration = this.oidcSecurityService.configuration;
-        this.userData$ = this.oidcSecurityService.userData$;
-        this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
         this.isModuleSetUp$ = this.oidcSecurityService.moduleSetup$;
 ```
 
 ## get configuration()
 
-## get userData\$()
+## Userdata
 
-## get isAuthenticated\$()
+The `userData$` observable provides the information about the user after he has logged in.
 
-## get checkSessionChanged\$()
+Example:
+
+```ts
+this.userData$ = this.oidcSecurityService.userData$;
+```
+
+```json
+{
+    "sub": "...",
+    "preferred_username": "john@doe.org",
+    "name": "john@doe.org",
+    "email": "john@doe.org",
+    "email_verified": false,
+    "given_name": "john@doe.org",
+    "role": "user",
+    "amr": "pwd"
+}
+```
+
+## IsAuthenticated
+
+Is a `boolean` telling you if you are authenticated at the client or not.
+
+```ts
+this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
+```
+
+## CheckSessionChanged
+
+Example:
+
+```ts
+this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
+```
+
+The `checkSessionChanged$` observable gets emitted values everytime the server comes back with a checksession and the value `changed`. If you want to get an information about when the CheckSession Event has been received, take a look at the [public events](features.md#public-events).
 
 ## get moduleSetup\$()
 
-## get stsCallback\$()
+TBD
+
+## StsCallback
+
+The `stsCallback$` observable gets emitted _after_ the library has handles the possible sts callback. You can perform initial setups and custom workflows inside your application when the STS redirects you back to your app.
+
+Example:
+
+```ts
+this.checkSessionChanged$ = this.oidcSecurityService.stsCallback$;
+```
 
 ## checkAuth(): Observable<boolean>
 
