@@ -147,3 +147,9 @@ const httpOptions = {
 ## License
 
 MIT
+
+## Version 10
+
+if you need information about version 10 please search here
+
+https://github.com/damienbod/angular-auth-oidc-client/tree/version-10
