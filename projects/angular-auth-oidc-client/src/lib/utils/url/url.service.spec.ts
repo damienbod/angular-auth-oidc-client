@@ -12,8 +12,22 @@ import { TokenValidationServiceMock } from '../../validation/token-validation.se
 import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { PlatformProvider } from '../platform-provider/platform.provider';
 import { PlatformProviderMock } from '../platform-provider/platform.provider-mock';
+import { WindowToken } from '../window/window.reference';
 import { AuthWellKnownEndpoints } from './../../config/auth-well-known-endpoints';
 import { UrlService } from './url.service';
+
+const MockWindow = {
+    location: {
+        _href: '',
+        set href(url: string) {
+            this._href = url;
+        },
+        get href() {
+            return this._href;
+        },
+        toString() {},
+    },
+};
 
 describe('UrlService Tests', () => {
     let service: UrlService;
@@ -35,6 +49,7 @@ describe('UrlService Tests', () => {
                 { provide: TokenValidationService, useClass: TokenValidationServiceMock },
                 RandomService,
                 FlowHelper,
+                { provide: WindowToken, useValue: MockWindow },
             ],
         });
     });
@@ -47,6 +62,12 @@ describe('UrlService Tests', () => {
 
     it('should create', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('should create adads', () => {
+        const spy = spyOn(MockWindow.location, 'toString').and.callFake(() => {});
+        service.isCallbackFromSts();
+        expect(spy).toHaveBeenCalled();
     });
 
     describe('getUrlParameter', () => {
