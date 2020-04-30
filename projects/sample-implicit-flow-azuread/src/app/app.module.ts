@@ -23,6 +23,7 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
             scope: 'openid profile email',
             responseType: 'id_token token',
             silentRenew: false,
+            maxIdTokenIatOffsetAllowedInSeconds: 600,
             silentRenewUrl: 'https://localhost:44347/silent-renew.html',
             logLevel: LogLevel.Debug,
             customParams: {
