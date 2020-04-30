@@ -64,10 +64,23 @@ describe('UrlService Tests', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should create adads', () => {
-        const spy = spyOn(MockWindow.location, 'toString').and.callFake(() => {});
-        service.isCallbackFromSts();
-        expect(spy).toHaveBeenCalled();
+    describe('isCallbackFromSts', () => {
+        const testingValues = [
+            { param: 'code', isCallbackFromSts: true },
+            { param: 'state', isCallbackFromSts: true },
+            { param: 'token', isCallbackFromSts: true },
+            { param: 'id_token', isCallbackFromSts: true },
+            { param: 'some_param', isCallbackFromSts: false },
+        ];
+
+        testingValues.forEach(({ param, isCallbackFromSts }) => {
+            it(`should return ${isCallbackFromSts} when param is ${param}`, () => {
+                const spy = spyOn(MockWindow.location, 'toString').and.callFake(() => `https://any.url/?${param}=anyvalue`);
+                const result = service.isCallbackFromSts();
+                expect(spy).toHaveBeenCalled();
+                expect(result).toBe(isCallbackFromSts);
+            });
+        });
     });
 
     describe('getUrlParameter', () => {
