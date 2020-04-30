@@ -101,20 +101,19 @@ export class UrlService {
         const codeVerifier = this.flowsDataService.getCodeVerifier();
         if (!codeVerifier) {
             this.loggerService.logWarning(`CodeVerifier is not set `, codeVerifier);
+            return null;
         }
 
-        let data = oneLineTrim`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.clientId}
+        const url = oneLineTrim`grant_type=authorization_code
+            &client_id=${this.configurationProvider.openIDConfiguration.clientId}
             &code_verifier=${codeVerifier}
-            &code=${code}&redirect_uri=${this.configurationProvider.openIDConfiguration.redirectUrl}`;
+            &code=${code}`;
 
         if (this.flowsDataService.isSilentRenewRunning()) {
-            data = oneLineTrim`grant_type=authorization_code&client_id=${this.configurationProvider.openIDConfiguration.clientId}
-                &code_verifier=${codeVerifier}
-                &code=${code}
-                &redirect_uri=${this.configurationProvider.openIDConfiguration.silentRenewUrl}`;
+            return oneLineTrim`${url}&redirect_uri=${this.configurationProvider.openIDConfiguration.silentRenewUrl}`;
         }
 
-        return data;
+        return oneLineTrim`${url}&redirect_uri=${this.configurationProvider.openIDConfiguration.redirectUrl}`;
     }
 
     createBodyForCodeFlowRefreshTokensRequest(refreshtoken: string): string {

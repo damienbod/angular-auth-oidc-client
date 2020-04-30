@@ -33,6 +33,7 @@ describe('UrlService Tests', () => {
     let service: UrlService;
     let configurationProvider: ConfigurationProvider;
     let flowHelper: FlowHelper;
+    let flowsDataService: FlowsDataService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -49,6 +50,7 @@ describe('UrlService Tests', () => {
                 { provide: TokenValidationService, useClass: TokenValidationServiceMock },
                 RandomService,
                 FlowHelper,
+                FlowsDataService,
                 { provide: WindowToken, useValue: MockWindow },
             ],
         });
@@ -58,6 +60,7 @@ describe('UrlService Tests', () => {
         service = TestBed.inject(UrlService);
         configurationProvider = TestBed.inject(ConfigurationProvider);
         flowHelper = TestBed.inject(FlowHelper);
+        flowsDataService = TestBed.inject(FlowsDataService);
     });
 
     it('should create', () => {
@@ -484,7 +487,7 @@ describe('UrlService Tests', () => {
             expect(value).toEqual(expectValue);
         });
 
-        it('createRevocationUrl with params', () => {
+        it('getRevocationEndpointUrl with params', () => {
             const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
             config.redirectUrl = 'https://localhost:44386';
             config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
@@ -502,7 +505,7 @@ describe('UrlService Tests', () => {
             expect(value).toEqual(expectValue);
         });
 
-        it('createRevocationUrl default', () => {
+        it('getRevocationEndpointUrl default', () => {
             const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
             config.redirectUrl = 'https://localhost:44386';
             config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
@@ -518,6 +521,14 @@ describe('UrlService Tests', () => {
             const expectValue = 'http://example';
 
             expect(value).toEqual(expectValue);
+        });
+
+        it('getRevocationEndpointUrl returns null when there is not revociationendpoint given', () => {
+            configurationProvider.setConfig(null, { revocationEndpoint: null });
+
+            const value = service.getRevocationEndpointUrl();
+
+            expect(value).toBeNull();
         });
     });
 
@@ -570,6 +581,43 @@ describe('UrlService Tests', () => {
             const result = service.getRefreshSessionSilentRenewUrl();
             expect(spy).toHaveBeenCalled();
             expect(result).toBe('');
+        });
+    });
+
+    describe('createBodyForCodeFlowCodeRequest', () => {
+        it('returns null if no code verifier is set', () => {
+            spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(null);
+            const result = service.createBodyForCodeFlowCodeRequest('notRelevantParam');
+            expect(result).toBeNull();
+        });
+
+        it('returns correctUrl with silentrenewRunning is false', () => {
+            const codeVerifier = 'codeverifier';
+            const code = 'code';
+            const redirectUrl = 'redirectUrl';
+            const clientId = 'clientId';
+            spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId, redirectUrl });
+
+            const result = service.createBodyForCodeFlowCodeRequest(code);
+            const expected = `grant_type=authorization_code&client_id=${clientId}&code_verifier=${codeVerifier}&code=${code}&redirect_uri=${redirectUrl}`;
+
+            expect(result).toBe(expected);
+        });
+
+        it('returns correctUrl with silentrenewRunning is true', () => {
+            const codeVerifier = 'codeverifier';
+            const code = 'code';
+            const silentRenewUrl = 'silentRenewUrl';
+            const clientId = 'clientId';
+            spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
+            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId, silentRenewUrl });
+
+            const result = service.createBodyForCodeFlowCodeRequest(code);
+            const expected = `grant_type=authorization_code&client_id=${clientId}&code_verifier=${codeVerifier}&code=${code}&redirect_uri=${silentRenewUrl}`;
+
+            expect(result).toBe(expected);
         });
     });
 });
