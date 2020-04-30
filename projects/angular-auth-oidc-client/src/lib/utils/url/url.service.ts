@@ -335,7 +335,7 @@ export class UrlService {
     private getPostLogoutRedirectUrl() {
         const postLogoutRedirectUri = this.configurationProvider.openIDConfiguration?.postLogoutRedirectUri;
         if (!postLogoutRedirectUri) {
-            this.loggerService.logError(`createEndSessionUrl could not add postLogoutRedirectUri because it was: `, postLogoutRedirectUri);
+            this.loggerService.logError(`could not get postLogoutRedirectUri, was: `, postLogoutRedirectUri);
             return null;
         }
 
@@ -345,7 +345,7 @@ export class UrlService {
     private getClientId() {
         const clientId = this.configurationProvider.openIDConfiguration?.clientId;
         if (!clientId) {
-            this.loggerService.logError(`createRevocationEndpointBodyAccessToken could not add clientId because it was: `, clientId);
+            this.loggerService.logError(`could not get clientId, was: `, clientId);
             return null;
         }
 
