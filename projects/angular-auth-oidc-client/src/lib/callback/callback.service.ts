@@ -8,7 +8,6 @@ import { AuthorizedState } from '../authState/authorized-state';
 import { ConfigurationProvider } from '../config/';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
-import { CheckSessionService } from '../iframe/check-session.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
 import { UserService } from '../userData/user-service';
@@ -36,7 +35,6 @@ export class CallbackService {
         private router: Router,
         private flowsDataService: FlowsDataService,
         private loggerService: LoggerService,
-        private checkSessionService: CheckSessionService,
         private silentRenewService: SilentRenewService,
         private userService: UserService,
         private authStateService: AuthStateService
