@@ -10,14 +10,14 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
     return () =>
         oidcConfigService.withConfig({
             stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
-            redirectUrl: 'https://localhost:4202',
-            postLogoutRedirectUri: 'https://localhost:4202',
+            redirectUrl: window.location.origin,
+            postLogoutRedirectUri: window.location.origin,
             clientId: 'angularImplicitClient',
             scope: 'openid profile email',
             responseType: 'id_token token',
             startCheckSession: true,
             silentRenew: true,
-            silentRenewUrl: 'https://localhost:4202/silent-renew.html',
+            silentRenewUrl: window.location.origin + '/silent-renew.html',
             logLevel: LogLevel.Debug,
         });
 }

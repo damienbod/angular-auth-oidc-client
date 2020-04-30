@@ -33,13 +33,13 @@ The HttpClient allows you to write [interceptors](https://angular.io/guide/http#
 ```typescript
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-    private routesToAddTokenTo = ['http://my.route.io/secureapi'];
+    private secureRoutes = ['http://my.route.io/secureapi'];
 
     constructor(private oidcSecurityService: OidcSecurityService) {}
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         // Ensure we send the token only to routes which are secured
-        if (!this.routesToAddTokenTo.find((x) => x === req.url)) {
+        if (!this.secureRoutes.find((x) => req.url.startsWith(x))) {
             return next.handle(request);
         }
 

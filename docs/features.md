@@ -109,25 +109,16 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 }
 ```
 
-
 ## onAuthorizationResult: Observable<AuthorizationResult>
 
 This event returns the result of the authorization callback.
-
 
 Subscribe to the event:
 
 ```typescript
 //...
     this.onAuthorizationResultSubscription = this.oidcSecurityService.onAuthorizationResult.pipe(
-        tap((authorizationResult: AuthorizationResult) => {
-            console.log('Auth result received AuthorizationState:'
-                + authorizationResult.authorizationState
-                + ' validationResult:' + authorizationResult.validationResult
-                + ' isRenewProcess:' + authorizationResult.isRenewProcess);
-        }),
-        map((authorizationResult: AuthorizationResult) => authorizationResult.authorizationState),
-        filter((authorizationState: AuthorizationState) => authorizationState === AuthorizationState.unauthorized)
+        filter((authorizationState: AuthorizationState) => authorizationResult.authorizationState === AuthorizationState.unauthorized)
     ).subscribe(() => {
         this.router.navigate(['/unauthorized']);
     });
@@ -141,4 +132,3 @@ ngOnDestroy(): void {
     }
 }
 ```
-
