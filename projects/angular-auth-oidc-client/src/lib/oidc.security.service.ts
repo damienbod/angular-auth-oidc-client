@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthOptions } from './auth-options';
 import { AuthStateService } from './authState/auth-state.service';
@@ -10,7 +10,6 @@ import { FlowsService } from './flows/flows.service';
 import { CheckSessionService, SilentRenewService } from './iframe';
 import { LoggerService } from './logging/logger.service';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
-import { EventTypes } from './public-events';
 import { PublicEventsService } from './public-events/public-events.service';
 import { UserService } from './userData/user-service';
 import { RedirectService, UrlService } from './utils';
@@ -20,8 +19,6 @@ import { TokenValidationService } from './validation/token-validation.service';
 @Injectable()
 export class OidcSecurityService {
     private TOKEN_REFRESH_INTERVALL_IN_SECONDS = 3;
-
-    private isModuleSetupInternal$ = new BehaviorSubject<boolean>(false);
 
     get configuration() {
         return this.configurationProvider.configuration;
@@ -37,10 +34,6 @@ export class OidcSecurityService {
 
     get checkSessionChanged$() {
         return this.checkSessionService.checkSessionChanged$;
-    }
-
-    get moduleSetup$() {
-        return this.isModuleSetupInternal$.asObservable();
     }
 
     get stsCallback$() {
@@ -78,7 +71,6 @@ export class OidcSecurityService {
         return this.callbackService.handlePossibleStsCallback(currentUrl).pipe(
             map(() => {
                 const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
-                // validate storage and @@set authorized@@ if true
                 if (isAuthenticated) {
                     this.authStateService.setAuthorizedAndFireEvent();
                     this.userService.publishUserdataIfExists();
@@ -95,10 +87,6 @@ export class OidcSecurityService {
                 }
 
                 this.loggerService.logDebug('checkAuth completed fire events, auth: ' + isAuthenticated);
-
-                // TODO EXTRACT THIS IN SERVICE LATER
-                this.publicEventsService.fireEvent(EventTypes.ModuleSetup, true);
-                this.isModuleSetupInternal$.next(true);
 
                 return isAuthenticated;
             })

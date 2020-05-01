@@ -14,7 +14,6 @@ Currently the events
 ```typescript
 {
     ConfigLoaded,
-    ModuleSetup,
     CheckSessionReceived,
     UserDataChanged,
     NewAuthorizationResult,

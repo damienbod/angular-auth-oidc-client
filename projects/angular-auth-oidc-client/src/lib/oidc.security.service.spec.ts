@@ -15,7 +15,7 @@ import { LoggerService } from './logging/logger.service';
 import { LoggerServiceMock } from './logging/logger.service-mock';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { OidcSecurityService } from './oidc.security.service';
-import { EventTypes, PublicEventsService } from './public-events';
+import { PublicEventsService } from './public-events';
 import { StoragePersistanceService } from './storage';
 import { StoragePersistanceServiceMock } from './storage/storage-persistance.service-mock';
 import { UserService } from './userData/user-service';
@@ -143,18 +143,6 @@ describe('OidcSecurityService', () => {
         });
     });
 
-    describe('moduleSetup', () => {
-        it('is of type observable', () => {
-            expect(oidcSecurityService.moduleSetup$).toEqual(jasmine.any(Observable));
-        });
-
-        it('returns checkSessionService.checkSessionChanged$', () => {
-            const spy = spyOn((oidcSecurityService as any).isModuleSetupInternal$, 'asObservable');
-            const result = oidcSecurityService.moduleSetup$;
-            expect(spy).toHaveBeenCalled();
-        });
-    });
-
     describe('stsCallback', () => {
         it('is of type observable', () => {
             expect(oidcSecurityService.stsCallback$).toEqual(jasmine.any(Observable));
@@ -184,34 +172,6 @@ describe('OidcSecurityService', () => {
             oidcSecurityService.checkAuth().subscribe((result) => {
                 expect(result).toBeFalse();
                 expect(spy).toHaveBeenCalled();
-            });
-        }));
-
-        it('fires public Service  Event', async(() => {
-            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-            spyOn(callBackService, 'handlePossibleStsCallback').and.returnValue(of(null));
-            const spy = spyOn(publicEventsService, 'fireEvent');
-            oidcSecurityService.checkAuth().subscribe((result) => {
-                expect(result).toBeFalse();
-
-                expect(spy).toHaveBeenCalledWith(EventTypes.ModuleSetup, true);
-            });
-        }));
-
-        it('fires moduleSetup$ event first with default and then with real value', async(() => {
-            const spy = jasmine.createSpy('spy');
-            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-            spyOn(callBackService, 'handlePossibleStsCallback').and.returnValue(of(null));
-            spyOnProperty(oidcSecurityService, 'moduleSetup$', 'get').and.callThrough();
-
-            oidcSecurityService.moduleSetup$.subscribe((result) => spy(result));
-            oidcSecurityService.checkAuth().subscribe((result) => {
-                expect(result).toBeFalse();
-                expect(spy.calls.count()).toBe(2);
-                expect(spy.calls.first().args[0]).toEqual(false); // Emits default first
-                expect(spy.calls.mostRecent().args[0]).toEqual(true); // Emits true when emitting
             });
         }));
 
