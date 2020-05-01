@@ -50,12 +50,12 @@ export class UrlService {
         return this.createUrlImplicitFlowWithSilentRenew() || '';
     }
 
-    getAuthorizeUrl(): string {
+    getAuthorizeUrl(customParams?: { [key: string]: string | number | boolean }): string {
         if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            return this.createUrlCodeFlowAuthorize();
+            return this.createUrlCodeFlowAuthorize(customParams);
         }
 
-        return this.createUrlImplicitFlowAuthorize() || '';
+        return this.createUrlImplicitFlowAuthorize(customParams) || '';
     }
 
     createEndSessionUrl(idTokenHint: string) {
@@ -162,7 +162,14 @@ export class UrlService {
           &refresh_token=${refreshtoken}`;
     }
 
-    private createAuthorizeUrl(codeChallenge: string, redirectUrl: string, nonce: string, state: string, prompt?: string): string {
+    private createAuthorizeUrl(
+        codeChallenge: string,
+        redirectUrl: string,
+        nonce: string,
+        state: string,
+        prompt?: string,
+        customRequestParams?: { [key: string]: string | number | boolean }
+    ): string {
         const authorizationEndpoint = this.configurationProvider?.wellKnownEndpoints?.authorizationEndpoint;
 
         if (!authorizationEndpoint) {
@@ -215,8 +222,10 @@ export class UrlService {
             params = params.append('hd', hdParam);
         }
 
-        if (customParams) {
-            for (const [key, value] of Object.entries(customParams)) {
+        if (customParams || customRequestParams) {
+            const customParamsToAdd = { ...(customParams || {}), ...(customRequestParams || {}) };
+
+            for (const [key, value] of Object.entries(customParamsToAdd)) {
                 params = params.append(key, value.toString());
             }
         }
@@ -268,7 +277,7 @@ export class UrlService {
         return null;
     }
 
-    private createUrlImplicitFlowAuthorize(): string {
+    private createUrlImplicitFlowAuthorize(customParams?: { [key: string]: string | number | boolean }): string {
         const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
         const nonce = this.flowsDataService.createNonce();
         this.loggerService.logDebug('Authorize created. adding myautostate: ' + state);
@@ -280,14 +289,14 @@ export class UrlService {
         }
 
         if (this.configurationProvider.wellKnownEndpoints) {
-            return this.createAuthorizeUrl('', redirectUrl, nonce, state);
+            return this.createAuthorizeUrl('', redirectUrl, nonce, state, null, customParams);
         }
 
         this.loggerService.logError('authWellKnownEndpoints is undefined');
         return null;
     }
 
-    private createUrlCodeFlowAuthorize(): string {
+    private createUrlCodeFlowAuthorize(customParams?: { [key: string]: string | number | boolean }): string {
         const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
         const nonce = this.flowsDataService.createNonce();
         this.loggerService.logDebug('Authorize created. adding myautostate: ' + state);
@@ -303,11 +312,11 @@ export class UrlService {
         const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
 
         if (this.configurationProvider.wellKnownEndpoints) {
-            return this.createAuthorizeUrl(codeChallenge, redirectUrl, nonce, state);
+            return this.createAuthorizeUrl(codeChallenge, redirectUrl, nonce, state, null, customParams);
         }
 
         this.loggerService.logError('authWellKnownEndpoints is undefined');
-        return '';
+        return null;
     }
 
     private getRedirectUrl() {

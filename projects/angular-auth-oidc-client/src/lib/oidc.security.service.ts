@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AuthOptions } from './auth-options';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
 import { ConfigurationProvider } from './config';
@@ -130,14 +131,14 @@ export class OidcSecurityService {
     }
 
     // Code Flow with PCKE or Implicit Flow
-    authorize(urlHandler?: (url: string) => any) {
+    authorize(authOptions?: AuthOptions) {
         if (!this.configurationProvider.hasValidConfig()) {
             this.loggerService.logError('Well known endpoints must be loaded before user can login!');
             return;
         }
 
         if (!this.tokenValidationService.configValidateResponseType(this.configurationProvider.openIDConfiguration.responseType)) {
-            // invalid response_type
+            this.loggerService.logError('Invalid response type!');
             return;
         }
 
@@ -145,7 +146,9 @@ export class OidcSecurityService {
 
         this.loggerService.logDebug('BEGIN Authorize OIDC Flow, no auth data');
 
-        const url = this.urlService.getAuthorizeUrl();
+        const { urlHandler, customParams } = authOptions || {};
+
+        const url = this.urlService.getAuthorizeUrl(customParams);
 
         if (urlHandler) {
             urlHandler(url);
