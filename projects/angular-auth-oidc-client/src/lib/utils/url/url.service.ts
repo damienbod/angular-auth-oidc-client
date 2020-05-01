@@ -1,14 +1,13 @@
 import { HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { oneLineTrim } from 'common-tags';
 import { ConfigurationProvider } from '../../config/config.provider';
 import { FlowsDataService } from '../../flows/flows-data.service';
 import { LoggerService } from '../../logging/logger.service';
 import { TokenValidationService } from '../../validation/token-validation.service';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
+import { WINDOW } from '../window/window.reference';
 import { UriEncoder } from './uri-encoder';
-
-declare var window: any;
 
 @Injectable()
 export class UrlService {
@@ -19,7 +18,8 @@ export class UrlService {
         private readonly loggerService: LoggerService,
         private readonly flowsDataService: FlowsDataService,
         private readonly flowHelper: FlowHelper,
-        private tokenValidationService: TokenValidationService
+        private tokenValidationService: TokenValidationService,
+        @Inject(WINDOW) private window: any
     ) {}
 
     getUrlParameter(urlToCheck: any, name: any): string {
@@ -38,7 +38,7 @@ export class UrlService {
     }
 
     isCallbackFromSts() {
-        const anyParameterIsGiven = this.CALLBACK_PARAMS_TO_CHECK.some((x) => !!this.getUrlParameter(window.location.toString(), x));
+        const anyParameterIsGiven = this.CALLBACK_PARAMS_TO_CHECK.some((x) => !!this.getUrlParameter(this.window.location.toString(), x));
         return anyParameterIsGiven;
     }
 
