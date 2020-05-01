@@ -63,21 +63,52 @@ this.checkSessionChanged$ = this.oidcSecurityService.stsCallback$;
 
 ## checkAuth(): Observable<boolean>
 
+The `checkAuth()` method kicks off the complete setup flow, you can call it to start the whole authentication flow and get back if you are authenticated or not.
+
 ## getToken(): string
+
+Returns the `accesstoken` for you login scenario.
 
 ## getIdToken(): string
 
+Returns the `id_token` for you login scenario.
+
 ## getRefreshToken(): string
+
+Returns the `refresh token` for you login scenario if there is one.
 
 ## getPayloadFromIdToken(encode = false): any
 
+???
+
 ## setState(state: string): void
+
+???
 
 ## getState(): string
 
-## authorize(urlHandler?: (url: string) => any)
+???
 
-Code Flow with PCKE or Implicit Flow
+## authorize(authOptions?: AuthOptions)
+
+This method is being called when you want to redirect to the sts and login your user.
+
+```typescript
+login() {
+    this.oidcSecurityService.authorize();
+}
+```
+
+You can pass optional `AuthOptions`
+
+```ts
+export interface AuthOptions {
+    customParams?: { [key: string]: string | number | boolean };
+    urlHandler?(url: string): any;
+}
+```
+
+where you can pass a custom `urlHandler` which is getting called instead of the redirect and you can pass custom parameters which can maybe change everytime you want to login. See also [Custom parameters](features.md/#custom-parameters)
 
 ## logoffAndRevokeTokens(urlHandler?: (url: string) => any)
 
@@ -88,6 +119,8 @@ The refresh token and and the access token are revoked on the server. If the ref
 Logs out on the server and the local client. If the server state has changed, checksession, then only a local logout.
 
 ## logoffLocal()
+
+???
 
 ## revokeAccessToken(accessToken?: any)
 
@@ -102,3 +135,5 @@ If no token is provided, then the token from the storage is revoked. You can pas
 This makes it possible to manage your own tokens.
 
 ## getEndSessionUrl(): string | null
+
+???
