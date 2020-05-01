@@ -130,13 +130,14 @@ export class OidcSecurityService {
     }
 
     // Code Flow with PCKE or Implicit Flow
-    authorize(urlHandler?: (url: string) => any) {
+    authorize(urlHandler?: (url: string) => any, customParams?: { [key: string]: string | number | boolean }) {
         if (!this.configurationProvider.hasValidConfig()) {
             this.loggerService.logError('Well known endpoints must be loaded before user can login!');
             return;
         }
 
         if (!this.tokenValidationService.configValidateResponseType(this.configurationProvider.openIDConfiguration.responseType)) {
+            this.loggerService.logError('Invalid response type!');
             // invalid response_type
             return;
         }
@@ -145,7 +146,7 @@ export class OidcSecurityService {
 
         this.loggerService.logDebug('BEGIN Authorize OIDC Flow, no auth data');
 
-        const url = this.urlService.getAuthorizeUrl();
+        const url = this.urlService.getAuthorizeUrl(customParams);
 
         if (urlHandler) {
             urlHandler(url);

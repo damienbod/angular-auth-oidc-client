@@ -162,6 +162,7 @@ describe('UrlService Tests', () => {
 
             expect(value).toEqual(expectValue);
         });
+
         it('returns null when no authoizationendpoint given -> configurationProvider null', () => {
             (service as any).configurationProvider = null;
 
@@ -296,6 +297,37 @@ describe('UrlService Tests', () => {
             expect(value).toEqual(expectValue);
         });
 
+        it('createAuthorizeUrl with prompt and custom values adds prompt value and custom values', () => {
+            const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+            config.redirectUrl = 'https://localhost:44386';
+            config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+            config.responseType = 'id_token token';
+            config.scope = 'openid email profile';
+
+            configurationProvider.setConfig(config, { authorizationEndpoint: 'http://example' });
+
+            const value = (service as any).createAuthorizeUrl(
+                '', // Implicit Flow
+                config.redirectUrl,
+                'nonce',
+                'state',
+                'myprompt',
+                { to: 'add', as: 'well' }
+            );
+
+            const expectValue =
+                'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
+                '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
+                '&response_type=id_token%20token' +
+                '&scope=openid%20email%20profile' +
+                '&nonce=nonce' +
+                '&state=state' +
+                '&prompt=myprompt' +
+                '&to=add&as=well';
+
+            expect(value).toEqual(expectValue);
+        });
+
         it('createAuthorizeUrl with hdParam adds hdparam value', () => {
             const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
             config.redirectUrl = 'https://localhost:44386';
@@ -387,6 +419,110 @@ describe('UrlService Tests', () => {
                 '&scope=openid%20email%20profile' +
                 '&nonce=nonce' +
                 '&state=state&t4=ABC%20abc%20123&t3=%23&t2=-_.!~*()&t1=%3B%2C%2F%3F%3A%40%26%3D%2B%24';
+
+            expect(value).toEqual(expectValue);
+        });
+
+        it('createAuthorizeUrl creates url with with custom values and dynamic custom values', () => {
+            const config = {
+                stsServer: 'https://localhost:5001',
+                redirectUrl: 'https://localhost:44386',
+                clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
+                responseType: 'id_token token',
+                scope: 'openid email profile',
+                customParams: {
+                    t4: 'ABC abc 123',
+                    t3: '#',
+                    t2: '-_.!~*()',
+                    t1: ';,/?:@&=+$',
+                },
+            };
+
+            configurationProvider.setConfig(config, { authorizationEndpoint: 'http://example' });
+
+            const value = (service as any).createAuthorizeUrl(
+                '', // Implicit Flow
+                config.redirectUrl,
+                'nonce',
+                'state',
+                null,
+                { to: 'add', as: 'well' }
+            );
+
+            const expectValue =
+                'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
+                '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
+                '&response_type=id_token%20token' +
+                '&scope=openid%20email%20profile' +
+                '&nonce=nonce' +
+                '&state=state' +
+                '&t4=ABC%20abc%20123&t3=%23&t2=-_.!~*()&t1=%3B%2C%2F%3F%3A%40%26%3D%2B%24' +
+                '&to=add&as=well';
+
+            expect(value).toEqual(expectValue);
+        });
+
+        it('createAuthorizeUrl creates url with custom values equals null and dynamic custom values', () => {
+            const config = {
+                stsServer: 'https://localhost:5001',
+                redirectUrl: 'https://localhost:44386',
+                clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
+                responseType: 'id_token token',
+                scope: 'openid email profile',
+                customParams: null,
+            };
+
+            configurationProvider.setConfig(config, { authorizationEndpoint: 'http://example' });
+
+            const value = (service as any).createAuthorizeUrl(
+                '', // Implicit Flow
+                config.redirectUrl,
+                'nonce',
+                'state',
+                null,
+                { to: 'add', as: 'well' }
+            );
+
+            const expectValue =
+                'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
+                '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
+                '&response_type=id_token%20token' +
+                '&scope=openid%20email%20profile' +
+                '&nonce=nonce' +
+                '&state=state' +
+                '&to=add&as=well';
+
+            expect(value).toEqual(expectValue);
+        });
+
+        it('createAuthorizeUrl creates url with custom values not given and dynamic custom values', () => {
+            const config = {
+                stsServer: 'https://localhost:5001',
+                redirectUrl: 'https://localhost:44386',
+                clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
+                responseType: 'id_token token',
+                scope: 'openid email profile',
+            };
+
+            configurationProvider.setConfig(config, { authorizationEndpoint: 'http://example' });
+
+            const value = (service as any).createAuthorizeUrl(
+                '', // Implicit Flow
+                config.redirectUrl,
+                'nonce',
+                'state',
+                null,
+                { to: 'add', as: 'well' }
+            );
+
+            const expectValue =
+                'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
+                '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
+                '&response_type=id_token%20token' +
+                '&scope=openid%20email%20profile' +
+                '&nonce=nonce' +
+                '&state=state' +
+                '&to=add&as=well';
 
             expect(value).toEqual(expectValue);
         });
@@ -843,7 +979,7 @@ describe('UrlService Tests', () => {
     });
 
     describe('createUrlCodeFlowWithSilentRenew', () => {
-        it('returns null if silentrenewUrl  is falsy', () => {
+        it('returns null if silentrenewUrl is falsy', () => {
             const state = 'testState';
             const nonce = 'testNonce';
             const silentRenewUrl = null;
@@ -1021,6 +1157,39 @@ describe('UrlService Tests', () => {
             );
         });
 
+        it('returns correct url if wellknownendpoints and custom params are given', () => {
+            const state = 'testState';
+            const nonce = 'testNonce';
+            const scope = 'testScope';
+            const redirectUrl = 'http://any-url.com';
+            const authorizationEndpoint = 'authorizationEndpoint';
+            const clientId = 'clientId';
+            const responseType = 'responseType';
+            const codeVerifier = 'codeVerifier';
+            const codeChallenge = 'codeChallenge ';
+
+            spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
+            spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
+            spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
+            spyOn(tokenValidationService, 'generateCodeVerifier').and.returnValue(codeChallenge);
+
+            spyOnProperty(configurationProvider, 'wellKnownEndpoints', 'get').and.returnValue({ authorizationEndpoint });
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+                redirectUrl,
+                clientId,
+                responseType,
+                scope,
+            });
+
+            const serviceAsAny = service as any;
+
+            const result = serviceAsAny.createUrlCodeFlowAuthorize({ to: 'add', as: 'well' });
+            expect(result).toBe(
+                `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com` +
+                    `&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&to=add&as=well`
+            );
+        });
+
         it('returns empty string if no wellknownendpoints are given', () => {
             const state = 'testState';
             const nonce = 'testNonce';
@@ -1041,7 +1210,7 @@ describe('UrlService Tests', () => {
             const serviceAsAny = service as any;
 
             const result = serviceAsAny.createUrlCodeFlowAuthorize();
-            expect(result).toBe(``);
+            expect(result).toBe(null);
         });
     });
 });
