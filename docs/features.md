@@ -140,7 +140,7 @@ If you want to pass dynamic custom parameters with the request url to the sts yo
 
 ```typescript
 login() {
-    this.oidcSecurityService.authorize(null, { to: 'add', as: 'well' });
+    this.oidcSecurityService.authorize({ customParams: { to: 'add', as: 'well' });
 }
 
 ```

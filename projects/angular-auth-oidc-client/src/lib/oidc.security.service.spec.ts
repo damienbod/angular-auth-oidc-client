@@ -436,10 +436,24 @@ describe('OidcSecurityService', () => {
             const urlHandler = (url) => {
                 spy(url);
             };
-            const result = oidcSecurityService.authorize(urlHandler);
+            const result = oidcSecurityService.authorize({ urlHandler });
             expect(result).toBeUndefined();
             expect(spy).toHaveBeenCalledWith('someUrl');
             expect(redirectspy).not.toHaveBeenCalled();
+        }));
+
+        it('calls getAuthorizeUrl with custom params if they are given as parameter', async(() => {
+            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
+            spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
+            spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
+            const getAuthorizeUrlSpy = spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
+            const redirectspy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
+
+            const result = oidcSecurityService.authorize({ customParams: { to: 'add', as: 'well' } });
+            expect(result).toBeUndefined();
+            expect(redirectspy).toHaveBeenCalledWith('someUrl');
+            expect(getAuthorizeUrlSpy).toHaveBeenCalledWith({ to: 'add', as: 'well' });
         }));
     });
 

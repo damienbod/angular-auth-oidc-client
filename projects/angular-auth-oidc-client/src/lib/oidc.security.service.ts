@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AuthOptions } from './auth-options';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
 import { ConfigurationProvider } from './config';
@@ -130,7 +131,7 @@ export class OidcSecurityService {
     }
 
     // Code Flow with PCKE or Implicit Flow
-    authorize(urlHandler?: (url: string) => any, customParams?: { [key: string]: string | number | boolean }) {
+    authorize(authOptions?: AuthOptions) {
         if (!this.configurationProvider.hasValidConfig()) {
             this.loggerService.logError('Well known endpoints must be loaded before user can login!');
             return;
@@ -144,6 +145,8 @@ export class OidcSecurityService {
         this.flowsService.resetAuthorizationData();
 
         this.loggerService.logDebug('BEGIN Authorize OIDC Flow, no auth data');
+
+        const { urlHandler, customParams } = authOptions || {};
 
         const url = this.urlService.getAuthorizeUrl(customParams);
 
