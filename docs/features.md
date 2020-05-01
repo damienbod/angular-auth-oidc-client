@@ -3,6 +3,7 @@
 -   [Public Events](#public-events)
 -   [Custom Storage](#custom-storage)
 -   [Custom parameters](#custom-parameters)
+-   [OnAuthorizationResult Event](#onauthorizationresult-event)
 
 ## Public Events
 
@@ -109,7 +110,7 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 }
 ```
 
-## onAuthorizationResult: Observable<AuthorizationResult>
+## OnAuthorizationResult Event
 
 This event returns the result of the authorization callback.
 
@@ -132,3 +133,16 @@ ngOnDestroy(): void {
     }
 }
 ```
+
+## Dynamic custom parameters
+
+If you want to pass dynamic custom parameters with the request url to the sts you can do that by passing the parameters into the `authorize` method.
+
+```typescript
+login() {
+    this.oidcSecurityService.authorize(null, { to: 'add', as: 'well' });
+}
+
+```
+
+> If you want to pass staitc parameters to the sts everytime please use the custom parameters in the [Configuration](configuration.md) instead!
