@@ -50,7 +50,6 @@ describe('UrlService Tests', () => {
                 { provide: TokenValidationService, useClass: TokenValidationServiceMock },
                 RandomService,
                 FlowHelper,
-                Window,
             ],
         });
     });

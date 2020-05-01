@@ -58,7 +58,6 @@ export class AuthModule {
                     provide: AbstractSecurityStorage,
                     useClass: token.storage || BrowserStorageService,
                 },
-                { provide: Window, useValue: window },
             ],
         };
     }
