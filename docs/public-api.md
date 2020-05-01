@@ -6,7 +6,6 @@ TBD
 
 ```
    this.configuration = this.oidcSecurityService.configuration;
-        this.isModuleSetUp$ = this.oidcSecurityService.moduleSetup$;
 ```
 
 ## get configuration()
@@ -50,11 +49,7 @@ Example:
 this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 ```
 
-The `checkSessionChanged$` observable gets emitted values everytime the server comes back with a checksession and the value `changed`. If you want to get an information about when the CheckSession Event has been received, take a look at the [public events](features.md#public-events).
-
-## get moduleSetup\$()
-
-TBD
+The `checkSessionChanged$` observable gets emitted values everytime the server comes back with a checksession and the value `changed`. If you want to get an information about when the CheckSession Event has been received generally take a look at the [public events](features.md#public-events).
 
 ## StsCallback
 
