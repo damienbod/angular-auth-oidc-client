@@ -3,8 +3,6 @@
 <div *ngIf="isAuthenticated$ | async as isAuthenticated; else noAuth">
     <button (click)="logout()">Logout</button>
     <hr />
-    Is ModuleSetup :
-    <pre>{{ isModuleSetUp$ | async | json }}</pre>
 
     <br />
 

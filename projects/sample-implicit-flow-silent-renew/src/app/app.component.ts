@@ -8,7 +8,6 @@ import { Observable } from 'rxjs';
 })
 export class AppComponent implements OnInit {
     configuration: PublicConfiguration;
-    isModuleSetUp$: Observable<boolean>;
     userDataChanged$: Observable<OidcClientNotification<any>>;
     userData$: Observable<any>;
     isAuthenticated$: Observable<boolean>;
@@ -20,7 +19,6 @@ export class AppComponent implements OnInit {
         this.configuration = this.oidcSecurityService.configuration;
         this.userData$ = this.oidcSecurityService.userData$;
         this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
-        this.isModuleSetUp$ = this.oidcSecurityService.moduleSetup$;
         this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 
         this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
