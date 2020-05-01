@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
-
-declare var window: any;
+import { Inject, Injectable } from '@angular/core';
+import { WINDOW } from '../window/window.reference';
 
 @Injectable({ providedIn: 'root' })
 export class RedirectService {
+    constructor(@Inject(WINDOW) private window: any) {}
+
     redirectTo(url) {
-        window.location.href = url;
+        this.window.location.href = url;
     }
 }

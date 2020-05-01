@@ -1,6 +1,7 @@
 import { InjectionToken } from '@angular/core';
 
-export const WindowToken = new InjectionToken('Window');
-export function windowProvider() {
+export function _window(): any {
     return window;
 }
+
+export const WINDOW = new InjectionToken('WindowToken');

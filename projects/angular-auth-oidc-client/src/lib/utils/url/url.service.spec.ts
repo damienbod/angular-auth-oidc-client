@@ -12,21 +12,9 @@ import { TokenValidationServiceMock } from '../../validation/token-validation.se
 import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { PlatformProvider } from '../platform-provider/platform.provider';
 import { PlatformProviderMock } from '../platform-provider/platform.provider-mock';
+import { WINDOW } from '../window/window.reference';
 import { AuthWellKnownEndpoints } from './../../config/auth-well-known-endpoints';
 import { UrlService } from './url.service';
-
-const MockWindow = {
-    location: {
-        _href: '',
-        set href(url: string) {
-            this._href = url;
-        },
-        get href() {
-            return this._href;
-        },
-        toString() {},
-    },
-};
 
 describe('UrlService Tests', () => {
     let service: UrlService;
@@ -34,6 +22,7 @@ describe('UrlService Tests', () => {
     let flowHelper: FlowHelper;
     let flowsDataService: FlowsDataService;
     let tokenValidationService: TokenValidationService;
+    let _window: any;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -50,6 +39,17 @@ describe('UrlService Tests', () => {
                 { provide: TokenValidationService, useClass: TokenValidationServiceMock },
                 RandomService,
                 FlowHelper,
+                {
+                    provide: WINDOW,
+                    useValue: {
+                        location: {
+                            get href() {
+                                return 'fakeUrl';
+                            },
+                            set href(v) {},
+                        },
+                    },
+                },
             ],
         });
     });
@@ -60,6 +60,7 @@ describe('UrlService Tests', () => {
         flowHelper = TestBed.inject(FlowHelper);
         flowsDataService = TestBed.inject(FlowsDataService);
         tokenValidationService = TestBed.inject(TokenValidationService);
+        _window = TestBed.inject(WINDOW);
     });
 
     afterEach(() => {
@@ -68,9 +69,10 @@ describe('UrlService Tests', () => {
 
     it('should create', () => {
         expect(service).toBeTruthy();
+        expect(_window).toBeTruthy();
     });
 
-    xdescribe('isCallbackFromSts', () => {
+    describe('isCallbackFromSts', () => {
         const testingValues = [
             { param: 'code', isCallbackFromSts: true },
             { param: 'state', isCallbackFromSts: true },
@@ -81,7 +83,7 @@ describe('UrlService Tests', () => {
 
         testingValues.forEach(({ param, isCallbackFromSts }) => {
             it(`should return ${isCallbackFromSts} when param is ${param}`, () => {
-                const spy = spyOn(MockWindow.location, 'toString').and.callFake(() => `https://any.url/?${param}=anyvalue`);
+                const spy = spyOn(_window.location, 'toString').and.callFake(() => `https://any.url/?${param}=anyvalue`);
                 const result = service.isCallbackFromSts();
                 expect(spy).toHaveBeenCalled();
                 expect(result).toBe(isCallbackFromSts);
