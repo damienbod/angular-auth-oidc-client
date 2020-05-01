@@ -1,6 +1,6 @@
 ## angular-auth-oidc-client Changelog
 
-### 2020-05-xx Version 11.0.0
+### 2020-05-02 Version 11.0.0
 
 - Refactor lib config to make it easier to use
 - Update project to Angular 9 #610
@@ -28,9 +28,15 @@
 - Remove avoidable anys #624
 - Use returned expired value of access token for expired validation
 - Id_Token is rejected because of timing issue when server hour is different then client hour
+- fix validate, fix max time offset #175
+- Support azp and multiple audiences #582
+- Add extra Refresh token validation #687
+- Notification that checking session is initialized #686
+- Refactor rxjs events, user profile events, silent renew, check session
+- Add support for EC certificates #645
+- id_token : alg : HS256 support #597
+- redesign docs
 
-#175
-fix validate, fix max time offset
 
 ### 2020-02-14 version 10.0.15
 * Subscribe startRenew after isAuthorized is true
