@@ -138,7 +138,6 @@ export class OidcSecurityService {
 
         if (!this.tokenValidationService.configValidateResponseType(this.configurationProvider.openIDConfiguration.responseType)) {
             this.loggerService.logError('Invalid response type!');
-            // invalid response_type
             return;
         }
 
