@@ -20,7 +20,6 @@ import { PlatformProvider, UrlService } from './utils';
 import { EqualityService } from './utils/equality/equality.service';
 import { FlowHelper } from './utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
-import { windowProvider, WindowToken } from './utils/window/window.reference';
 import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';
 
@@ -59,7 +58,7 @@ export class AuthModule {
                     provide: AbstractSecurityStorage,
                     useClass: token.storage || BrowserStorageService,
                 },
-                { provide: WindowToken, useFactory: windowProvider },
+                { provide: Window, useValue: window },
             ],
         };
     }
