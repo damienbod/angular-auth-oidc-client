@@ -4,7 +4,7 @@ import { RedirectService } from './redirect.service';
 
 describe('Redirect Service Tests', () => {
     let service: RedirectService;
-    let _window: any;
+    let mywindow: any;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -24,7 +24,7 @@ describe('Redirect Service Tests', () => {
             ],
         });
 
-        _window = TestBed.inject(WINDOW);
+        mywindow = TestBed.inject(WINDOW);
     });
 
     beforeEach(() => {
@@ -33,11 +33,11 @@ describe('Redirect Service Tests', () => {
 
     it('should create', () => {
         expect(service).toBeTruthy();
-        expect(_window).toBeTruthy();
+        expect(mywindow).toBeTruthy();
     });
 
     it('redirectTo sets window location href', () => {
-        const spy = spyOnProperty(_window.location, 'href', 'set');
+        const spy = spyOnProperty(mywindow.location, 'href', 'set');
         service.redirectTo('anyurl');
         expect(spy).toHaveBeenCalledWith('anyurl');
     });
