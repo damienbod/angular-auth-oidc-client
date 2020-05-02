@@ -163,14 +163,74 @@ export class AppModule {}
 
 ## App module simple
 
+NgModule is the same as above.
+
 ### old 
 
 ```typescript
+export function loadConfig(oidcConfigService: OidcConfigService) {
+    console.log('APP_INITIALIZER STARTING');
+    return () => oidcConfigService.load_using_stsServer('https://localhost:44318');
+}
+
+export class AppModule {
+    constructor(
+        private oidcSecurityService: OidcSecurityService,
+        private oidcConfigService: OidcConfigService,
+    ) {
+        this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
+
+            const config: OpenIdConfiguration = {
+                stsServer: 'https://localhost:44318',
+                redirect_url: 'https://localhost:44395',
+                client_id: 'angularclient2',
+                response_type: 'code',
+                scope: 'dataEventRecords openid profile email',
+                post_logout_redirect_uri: 'https://localhost:44395/unauthorized',
+                start_checksession: false,
+                silent_renew: true,
+                silent_renew_url: 'https://localhost:44395/silent-renew.html',
+                post_login_route: '/dm',
+                forbidden_route: '/unauthorized',
+                unauthorized_route: '/unauthorized',
+                log_console_warning_active: true,
+                log_console_debug_active: false,
+                max_id_token_iat_offset_allowed_in_seconds: 10,
+                history_cleanup_off: true
+                // iss_validation_off: false
+                // disable_iat_offset_validation: true
+            };
+
+            this.oidcSecurityService.setupModule(config, configResult.authWellknownEndpoints);
+        });
+
+        console.log('APP STARTING');
+    }
+}
 ```
 
 ### new 
 
 ```typescript
+export function configureAuth(oidcConfigService: OidcConfigService) {
+    return () =>
+        oidcConfigService.withConfig({
+            stsServer: 'https://localhost:44318',
+            redirectUrl: window.location.origin,
+            postLogoutRedirectUri: 'https://localhost:44395/unauthorized',
+            clientId: 'angularclient2',
+            scope: 'dataEventRecords openid profile email',
+            responseType: 'code',
+            silentRenew: true,
+            silentRenewUrl: `${window.location.origin}/silent-renew.html`,
+            renewTimeBeforeTokenExpiresInSeconds: 10,
+            logLevel: LogLevel.Debug,
+			postLoginRoute: '/dm',
+			forbiddenRoute: '/unauthorized',
+            unauthorizedRoute: '/unauthorized',
+            historyCleanupOff: true
+        });
+}
 ```
 
 ## App Component
@@ -248,6 +308,7 @@ export class AppComponent implements OnInit {
 
     ngOnInit() {
          this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
+		 
 		 this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
     }
 }
