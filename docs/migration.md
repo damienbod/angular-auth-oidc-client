@@ -1,4 +1,3 @@
-
 # Migrations
 
 ## App module
@@ -11,13 +10,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { Configuration } from './app.constants';
 import { AppComponent } from './app.component';
-import {
-    AuthModule,
-    OidcSecurityService,
-    ConfigResult,
-    OidcConfigService,
-    OpenIdConfiguration
-} from 'angular-auth-oidc-client';
+import { AuthModule, OidcSecurityService, ConfigResult, OidcConfigService, OpenIdConfiguration } from 'angular-auth-oidc-client';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
     console.log('APP_INITIALIZER STARTING');
@@ -30,9 +23,7 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
         //:..
     ],
 
-    declarations: [
-        AppComponent
-    ],
+    declarations: [AppComponent],
 
     providers: [
         OidcSecurityService,
@@ -41,22 +32,16 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
             provide: APP_INITIALIZER,
             useFactory: loadConfig,
             deps: [OidcConfigService],
-            multi: true
+            multi: true,
         },
-        Configuration
+        Configuration,
     ],
 
     bootstrap: [AppComponent],
 })
-
 export class AppModule {
-
-    constructor(
-        private oidcSecurityService: OidcSecurityService,
-        private oidcConfigService: OidcConfigService,
-    ) {
+    constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
         this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
-
             const config: OpenIdConfiguration = {
                 stsServer: configResult.customConfig.stsServer,
                 redirect_url: configResult.customConfig.redirect_url,
@@ -73,7 +58,7 @@ export class AppModule {
                 log_console_warning_active: configResult.customConfig.log_console_warning_active,
                 log_console_debug_active: configResult.customConfig.log_console_debug_active,
                 max_id_token_iat_offset_allowed_in_seconds: configResult.customConfig.max_id_token_iat_offset_allowed_in_seconds,
-                history_cleanup_off: true
+                history_cleanup_off: true,
                 // iss_validation_off: false
                 // disable_iat_offset_validation: true
             };
@@ -84,11 +69,9 @@ export class AppModule {
         console.log('APP STARTING');
     }
 }
-
-
 ```
 
-### new 
+### new
 
 ```typescript
 import { NgModule, APP_INITIALIZER } from '@angular/core';
@@ -114,7 +97,7 @@ export function configureAuth(oidcConfigService: OidcConfigService, httpClient: 
                 scope: customConfig.scope,
                 postLogoutRedirectUri: customConfig.post_logout_redirect_uri,
                 startCheckSession: customConfig.start_checksession,
-                silentRenew:  true,
+                silentRenew: true,
                 silentRenewUrl: customConfig.redirect_url + '/silent-renew.html',
                 postLoginRoute: customConfig.startup_route,
                 forbiddenRoute: customConfig.forbidden_route,
@@ -139,9 +122,7 @@ export function configureAuth(oidcConfigService: OidcConfigService, httpClient: 
         // ...
     ],
 
-    declarations: [
-        AppComponent
-    ],
+    declarations: [AppComponent],
 
     providers: [
         OidcConfigService,
@@ -151,21 +132,19 @@ export function configureAuth(oidcConfigService: OidcConfigService, httpClient: 
             deps: [OidcConfigService, HttpClient],
             multi: true,
         },
-        Configuration
+        Configuration,
     ],
 
     bootstrap: [AppComponent],
 })
-
 export class AppModule {}
-
 ```
 
 ## App module simple
 
 NgModule is the same as above.
 
-### old 
+### old
 
 ```typescript
 export function loadConfig(oidcConfigService: OidcConfigService) {
@@ -174,12 +153,8 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 }
 
 export class AppModule {
-    constructor(
-        private oidcSecurityService: OidcSecurityService,
-        private oidcConfigService: OidcConfigService,
-    ) {
+    constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
         this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
-
             const config: OpenIdConfiguration = {
                 stsServer: 'https://localhost:44318',
                 redirect_url: 'https://localhost:44395',
@@ -196,7 +171,7 @@ export class AppModule {
                 log_console_warning_active: true,
                 log_console_debug_active: false,
                 max_id_token_iat_offset_allowed_in_seconds: 10,
-                history_cleanup_off: true
+                history_cleanup_off: true,
                 // iss_validation_off: false
                 // disable_iat_offset_validation: true
             };
@@ -209,7 +184,7 @@ export class AppModule {
 }
 ```
 
-### new 
+### new
 
 ```typescript
 export function configureAuth(oidcConfigService: OidcConfigService) {
@@ -225,10 +200,10 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
             silentRenewUrl: `${window.location.origin}/silent-renew.html`,
             renewTimeBeforeTokenExpiresInSeconds: 10,
             logLevel: LogLevel.Debug,
-			postLoginRoute: '/dm',
-			forbiddenRoute: '/unauthorized',
+            postLoginRoute: '/dm',
+            forbiddenRoute: '/unauthorized',
             unauthorizedRoute: '/unauthorized',
-            historyCleanupOff: true
+            historyCleanupOff: true,
         });
 }
 ```
@@ -246,11 +221,9 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 @Component({
     selector: 'app-component',
     templateUrl: 'app.component.html',
-    styleUrls: ['./app.component.scss']
+    styleUrls: ['./app.component.scss'],
 })
-
 export class AppComponent implements OnInit, OnDestroy {
-
     isAuthorizedSubscription: Subscription | undefined;
     isAuthorized = false;
 
@@ -265,10 +238,9 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.isAuthorizedSubscription = this.oidcSecurityService.getIsAuthorized().subscribe(
-            (isAuthorized: boolean) => {
-                this.isAuthorized = isAuthorized;
-            });
+        this.isAuthorizedSubscription = this.oidcSecurityService.getIsAuthorized().subscribe((isAuthorized: boolean) => {
+            this.isAuthorized = isAuthorized;
+        });
     }
 
     ngOnDestroy(): void {
@@ -283,10 +255,9 @@ export class AppComponent implements OnInit, OnDestroy {
         this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());
     }
 }
-
 ```
 
-### new 
+### new
 
 ```typescript
 import { Component, OnInit } from '@angular/core';
@@ -297,50 +268,37 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 @Component({
     selector: 'app-component',
     templateUrl: 'app.component.html',
-    styleUrls: ['./app.component.scss']
+    styleUrls: ['./app.component.scss'],
 })
-
 export class AppComponent implements OnInit {
-
     isAuthenticated$: Observable<boolean>;
 
     constructor(public oidcSecurityService: OidcSecurityService) {}
 
     ngOnInit() {
-         this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
-		 
-		 this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
+        this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
+
+        this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
     }
 }
-
 ```
-
 
 ## isAuthenticated
 
 ### old
 
 ```typescript
-this.isAuthorizedSubscription = this.oidcSecurityService.getIsAuthorized().subscribe(
-	(isAuthenticated: boolean) => {
-		this.isAuthenticated = isAuthenticated;
-		if (isAuthenticated) {
-			console.log('isAuthenticated');
-		}
-	});
+this.oidcSecurityService.getIsAuthorized().subscribe((isAuthenticated: boolean) => {
+    //  work with `isAuthenticated`
+});
 ```
 
-
-### new 
+### new
 
 ```typescript
-this.oidcSecurityService.isAuthenticated$.subscribe(
-	(isAuthenticated: boolean) => {
-		this.isAuthenticated = isAuthenticated;
-		if (isAuthenticated) {
-			console.log('isAuthenticated');
-		}
-	});
+this.oidcSecurityService.isAuthenticated$.subscribe((isAuthenticated: boolean) => {
+    // work with `isAuthenticated`
+});
 ```
 
 ## User data
@@ -348,19 +306,15 @@ this.oidcSecurityService.isAuthenticated$.subscribe(
 ### old
 
 ```typescript
-this.userDataSubscription = this.oidcSecurityService.getUserData().subscribe(
-	(userData: any) => {
-
-		console.log('userData got data');
-	});
+this.oidcSecurityService.getUserData().subscribe((userData: any) => {
+    // work with `userData`
+});
 ```
 
-## new 
+## new
 
 ```typescript
- this.oidcSecurityService.userData$.subscribe(
-	(userData: any) => {
-
-		console.log('userData got data');
-	});
+this.oidcSecurityService.userData$.subscribe((userData: any) => {
+    // work with `userData`
+});
 ```

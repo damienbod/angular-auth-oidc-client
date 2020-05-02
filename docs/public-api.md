@@ -61,7 +61,7 @@ this.checkSessionChanged$ = this.oidcSecurityService.stsCallback$;
 
 ## checkAuth(): Observable<boolean>
 
-The `checkAuth()` method kicks off the complete setup flow, you can call it to start the whole authentication flow and get back if you are authenticated or not.
+The `checkAuth()` method kicks off the complete setup flow, you can call it to start the whole authentication flow and get back if you are authenticated or not as an observable.
 
 ## getToken(): string
 
@@ -81,7 +81,7 @@ returns the payload from the id_token. This can be used to get claims from the t
 
 ## setState(state: string): void
 
-You can set the state value used for the authorize request, if you have the | `autoCleanStateAfterAuthentication` set to false. Can be used for custom state logic handling, the state is not automatically reset, when set to false. 
+You can set the state value used for the authorize request, if you have the | `autoCleanStateAfterAuthentication` set to false. Can be used for custom state logic handling, the state is not automatically reset, when set to false.
 
 ## getState(): string
 
