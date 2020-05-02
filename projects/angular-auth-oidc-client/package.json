@@ -1,15 +1,15 @@
 {
     "name": "angular-auth-oidc-client",
+    "author": "Damien Bowden & Fabian Gosebrink",
     "peerDependencies": {
         "rxjs": ">= 6.0.0",
-        "@angular/core": ">= 6.0.0",
-        "@angular/common": ">= 6.0.0",
-        "@angular/router": ">= 6.0.0"
+        "@angular/core": ">= 8.0.0",
+        "@angular/common": ">= 8.0.0",
+        "@angular/router": ">= 8.0.0"
     },
     "dependencies": {
-        "tslib": "^1.9.0",
-        "jsrsasign-reduced": "8.0.12",
-        "common-tags": "1.8.0"
+        "common-tags": "^1.8.0",
+        "jsrsasign-reduced": "^8.0.15"
     },
     "repository": {
         "type": "git",
@@ -25,9 +25,17 @@
         "oauth2",
         "openid",
         "security",
-        "typescript"
+        "typescript",
+        "openidconnect",
+        "auth",
+        "authn",
+        "authentication",
+        "identity",
+        "certified",
+        "oauth",
+        "authorization"
     ],
     "license": "MIT",
-    "version": "10.0.15",
+    "version": "11.0.0",
     "description": "An OpenID Connect Code Flow with PKCE,Implicit Flow client for Angular"
 }

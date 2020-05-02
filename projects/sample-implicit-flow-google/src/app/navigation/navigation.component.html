@@ -1,0 +1,33 @@
+<nav class="bg-dark mb-4 navbar navbar-dark navbar-expand-md">
+    <a [routerLink]="['/home']" class="navbar-brand">
+        <em>Angular OIDC Google Implicit Flow Auto Login</em>
+    </a>
+    <button
+        aria-controls="navbarCollapse"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+        class="navbar-toggler"
+        data-target="#topNavbarCollapse"
+        data-toggle="collapse"
+        type="button"
+    >
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div *ngIf="isAuthenticated$ | async as isAuthenticated; else noAuth">
+        <div class="collapse navbar-collapse" id="topNavbarCollapse">
+            <ul class="mr-auto navbar-nav">
+                <li class="nav-item"><a class="nav-link" (click)="logout()">Logout</a></li>
+            </ul>
+            <ul class="navbar-nav"></ul>
+        </div>
+    </div>
+</nav>
+
+<ng-template #noAuth>
+    <div class="collapse navbar-collapse" id="topNavbarCollapse">
+        <ul class="mr-auto navbar-nav">
+            <li class="nav-item"><a class="nav-link" (click)="login()">Login</a></li>
+        </ul>
+        <ul class="navbar-nav"></ul>
+    </div>
+</ng-template>

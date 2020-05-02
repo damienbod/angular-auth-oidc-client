@@ -1,37 +1,24 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ConfigResult, OidcConfigService, OidcSecurityService } from 'angular-auth-oidc-client';
+import { OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-root',
     templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit, OnDestroy {
-    isAuthenticated: boolean;
-    isConfigurationLoaded: boolean;
-    userData: any;
+    configuration: PublicConfiguration;
+    userDataChanged$: Observable<OidcClientNotification<any>>;
+    userData$: Observable<any>;
+    isAuthenticated$: Observable<boolean>;
 
-    constructor(private oidcConfigService: OidcConfigService, public oidcSecurityService: OidcSecurityService) {
-        if (this.oidcSecurityService.moduleSetup) {
-            this.doCallbackLogicIfRequired();
-        } else {
-            this.oidcSecurityService.onModuleSetup.subscribe(() => {
-                this.doCallbackLogicIfRequired();
-            });
-        }
-    }
+    constructor(public oidcSecurityService: OidcSecurityService) {}
 
     ngOnInit() {
-        this.oidcConfigService.onConfigurationLoaded.subscribe((value: ConfigResult) => {
-            this.isConfigurationLoaded = true;
-        });
-
-        this.oidcSecurityService.getIsAuthorized().subscribe(auth => {
-            this.isAuthenticated = auth;
-        });
-
-        this.oidcSecurityService.getUserData().subscribe(userData => {
-            this.userData = userData;
-        });
+        this.configuration = this.oidcSecurityService.configuration;
+        this.userData$ = this.oidcSecurityService.userData$;
+        this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
+        this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
     }
 
     ngOnDestroy(): void {}
@@ -42,10 +29,5 @@ export class AppComponent implements OnInit, OnDestroy {
 
     logout() {
         this.oidcSecurityService.logoff();
-    }
-
-    private doCallbackLogicIfRequired() {
-        // Will do a callback, if the url has a code and state parameter.
-        this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());
     }
 }

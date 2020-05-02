@@ -1,0 +1,24 @@
+<nav class="bg-dark mb-4 navbar navbar-dark navbar-expand-md">
+    <a [routerLink]="['/home']" class="navbar-brand">
+        <em>Angular OIDC Code Flow Auto Login</em>
+    </a>
+    <button
+        aria-controls="navbarCollapse"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+        class="navbar-toggler"
+        data-target="#topNavbarCollapse"
+        data-toggle="collapse"
+        type="button"
+    >
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="topNavbarCollapse" *ngIf="isAuthenticated$ | async as isAuthenticated">
+        <ul class="mr-auto navbar-nav">
+            <li class="nav-item"><a class="nav-link" *ngIf="!isAuthenticated" href (click)="login()">Login</a></li>
+            <li class="nav-item"><a class="nav-link" *ngIf="isAuthenticated" href (click)="logout()">Logout</a></li>
+            <li class="nav-item"><a class="nav-link" *ngIf="isAuthenticated" [routerLink]="['forbidden']">Forbidden</a></li>
+        </ul>
+        <ul class="navbar-nav"></ul>
+    </div>
+</nav>

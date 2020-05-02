@@ -5,17 +5,19 @@
         "outDir": "./dist/out-tsc",
         "sourceMap": true,
         "declaration": false,
-        "module": "es2015",
-        "moduleResolution": "node",
-        "emitDecoratorMetadata": true,
+        "downlevelIteration": true,
         "experimentalDecorators": true,
-        "strictNullChecks": true,
+        "module": "esnext",
+        "moduleResolution": "node",
         "importHelpers": true,
-        "target": "es5",
-        "typeRoots": ["node_modules/@types"],
+        "target": "es2015",
         "lib": ["es2018", "dom"],
         "paths": {
-            "angular-auth-oidc-client": ["dist/angular-auth-oidc-client"]
+            "angular-auth-oidc-client": ["dist/angular-auth-oidc-client/angular-auth-oidc-client", "dist/angular-auth-oidc-client"]
         }
+    },
+    "angularCompilerOptions": {
+        "fullTemplateTypeCheck": true,
+        "strictInjectionParameters": true
     }
 }
