@@ -2,8 +2,6 @@
 
 The most public accessible observables, properties and methods are placed in the `OidcSecurityService`. Below you can find the descirption of everys single one of them.
 
-TBD
-
 ```
    this.configuration = this.oidcSecurityService.configuration;
 ```
@@ -79,15 +77,15 @@ Returns the `refresh token` for you login scenario if there is one.
 
 ## getPayloadFromIdToken(encode = false): any
 
-???
+returns the payload from the id_token. This can be used to get claims from the token.
 
 ## setState(state: string): void
 
-???
+You can set the state value used for the authorize request, if you have the | `autoCleanStateAfterAuthentication` set to false. Can be used for custom state logic handling, the state is not automatically reset, when set to false. 
 
 ## getState(): string
 
-???
+read to set state, helpful when implementing custom state logic.
 
 ## authorize(authOptions?: AuthOptions)
 
@@ -120,7 +118,7 @@ Logs out on the server and the local client. If the server state has changed, ch
 
 ## logoffLocal()
 
-???
+The `logoffLocal()` function is used to reset you local session in the browser, but not sending anything to the server.
 
 ## revokeAccessToken(accessToken?: any)
 
@@ -136,4 +134,4 @@ This makes it possible to manage your own tokens.
 
 ## getEndSessionUrl(): string | null
 
-???
+Creates the ens session URL which can be used to implement youe own custom server logout.
