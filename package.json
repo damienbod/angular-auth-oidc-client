@@ -1,7 +1,7 @@
 {
     "name": "angular-auth-oidc-client",
-	"author": "Damien Bowden & Fabian Gosebrink",
-	"repository": {
+    "author": "Damien Bowden & Fabian Gosebrink",
+    "repository": {
         "type": "git",
         "url": "https://github.com/damienbod/angular-auth-oidc-client.git"
     },
