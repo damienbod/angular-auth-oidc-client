@@ -22,7 +22,7 @@ describe('UrlService Tests', () => {
     let flowHelper: FlowHelper;
     let flowsDataService: FlowsDataService;
     let tokenValidationService: TokenValidationService;
-    let _window: any;
+    let mywindow: any;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -60,7 +60,7 @@ describe('UrlService Tests', () => {
         flowHelper = TestBed.inject(FlowHelper);
         flowsDataService = TestBed.inject(FlowsDataService);
         tokenValidationService = TestBed.inject(TokenValidationService);
-        _window = TestBed.inject(WINDOW);
+        mywindow = TestBed.inject(WINDOW);
     });
 
     afterEach(() => {
@@ -69,7 +69,7 @@ describe('UrlService Tests', () => {
 
     it('should create', () => {
         expect(service).toBeTruthy();
-        expect(_window).toBeTruthy();
+        expect(mywindow).toBeTruthy();
     });
 
     describe('isCallbackFromSts', () => {
@@ -83,7 +83,7 @@ describe('UrlService Tests', () => {
 
         testingValues.forEach(({ param, isCallbackFromSts }) => {
             it(`should return ${isCallbackFromSts} when param is ${param}`, () => {
-                const spy = spyOn(_window.location, 'toString').and.callFake(() => `https://any.url/?${param}=anyvalue`);
+                const spy = spyOn(mywindow.location, 'toString').and.callFake(() => `https://any.url/?${param}=anyvalue`);
                 const result = service.isCallbackFromSts();
                 expect(spy).toHaveBeenCalled();
                 expect(result).toBe(isCallbackFromSts);
