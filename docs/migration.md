@@ -1,26 +1,126 @@
 # Migrations
 
-## App module
+## App module simple
 
 ### old
 
 ```typescript
+export function loadConfig(oidcConfigService: OidcConfigService) {
+    return () => oidcConfigService.load_using_stsServer('https://localhost:44318');
+}
+
+@NgModule({
+    imports: [
+        HttpClientModule,
+        AuthModule.forRoot(),
+        // ...
+    ],
+
+    declarations: [AppComponent],
+
+    providers: [
+        OidcConfigService,
+        {
+            provide: APP_INITIALIZER,
+            useFactory: configureAuth,
+            deps: [OidcConfigService, HttpClient],
+            multi: true,
+        },
+        Configuration,
+    ],
+
+    bootstrap: [AppComponent],
+})
+export class AppModule {
+    constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
+        this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
+            const config: OpenIdConfiguration = {
+                stsServer: 'https://localhost:44318',
+                redirect_url: 'https://localhost:44395',
+                client_id: 'angularclient2',
+                response_type: 'code',
+                scope: 'dataEventRecords openid profile email',
+                post_logout_redirect_uri: 'https://localhost:44395/unauthorized',
+                start_checksession: false,
+                silent_renew: true,
+                silent_renew_url: 'https://localhost:44395/silent-renew.html',
+                post_login_route: '/dm',
+                forbidden_route: '/unauthorized',
+                unauthorized_route: '/unauthorized',
+                log_console_warning_active: true,
+                log_console_debug_active: false,
+                max_id_token_iat_offset_allowed_in_seconds: 10,
+                history_cleanup_off: true,
+                // iss_validation_off: false
+                // disable_iat_offset_validation: true
+            };
+
+            this.oidcSecurityService.setupModule(config, configResult.authWellknownEndpoints);
+        });
+    }
+}
+```
+
+### new
+
+```typescript
+// imports
 import { NgModule, APP_INITIALIZER } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
-import { Configuration } from './app.constants';
-import { AppComponent } from './app.component';
-import { AuthModule, OidcSecurityService, ConfigResult, OidcConfigService, OpenIdConfiguration } from 'angular-auth-oidc-client';
+import { AuthModule, OidcConfigService } from 'angular-auth-oidc-client';
+
+export function configureAuth(oidcConfigService: OidcConfigService) {
+    return () =>
+        oidcConfigService.withConfig({
+            stsServer: 'https://localhost:44318',
+            redirectUrl: window.location.origin,
+            postLogoutRedirectUri: 'https://localhost:44395/unauthorized',
+            clientId: 'angularclient2',
+            scope: 'dataEventRecords openid profile email',
+            responseType: 'code',
+            silentRenew: true,
+            silentRenewUrl: `${window.location.origin}/silent-renew.html`,
+            renewTimeBeforeTokenExpiresInSeconds: 10,
+            logLevel: LogLevel.Debug,
+            postLoginRoute: '/dm',
+            forbiddenRoute: '/unauthorized',
+            unauthorizedRoute: '/unauthorized',
+            historyCleanupOff: true,
+        });
+}
+
+@NgModule({
+    imports: [AuthModule.forRoot()],
+    // declarations, etc.
+    providers: [
+        OidcConfigService,
+        {
+            provide: APP_INITIALIZER,
+            useFactory: configureAuth,
+            deps: [OidcConfigService],
+            multi: true,
+        },
+    ],
+})
+export class AppModule {}
+```
+
+## App module (when loading config from an http endpoint)
+
+### old
+
+```typescript
+// imports
+import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { AuthModule, OidcConfigService, ConfigResult, OpenIdConfiguration } from 'angular-auth-oidc-client';
 
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    console.log('APP_INITIALIZER STARTING');
     return () => oidcConfigService.load(`${window.location.origin}/api/ClientAppSettings`);
 }
 @NgModule({
     imports: [
         HttpClientModule,
         AuthModule.forRoot(),
-        //:..
+        //...
     ],
 
     declarations: [AppComponent],
@@ -65,8 +165,6 @@ export class AppModule {
 
             this.oidcSecurityService.setupModule(config, configResult.authWellknownEndpoints);
         });
-
-        console.log('APP STARTING');
     }
 }
 ```
@@ -75,15 +173,8 @@ export class AppModule {
 
 ```typescript
 import { NgModule, APP_INITIALIZER } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-
-import { AppComponent } from './app.component';
-import { AppRoutes } from './app.routes';
-import { Configuration } from './app.constants';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-
 import { AuthModule, OidcConfigService } from 'angular-auth-oidc-client';
-
 import { map, switchMap } from 'rxjs/operators';
 
 export function configureAuth(oidcConfigService: OidcConfigService, httpClient: HttpClient) {
@@ -111,19 +202,16 @@ export function configureAuth(oidcConfigService: OidcConfigService, httpClient: 
         switchMap((config) => oidcConfigService.withConfig(config))
     );
 
-    return () => setupAction$.toPromise();
+    return () => setupAction$;
 }
 
 @NgModule({
     imports: [
         HttpClientModule,
         AuthModule.forRoot(),
-        CoreModule.forRoot(),
         // ...
     ],
-
-    declarations: [AppComponent],
-
+    // ...
     providers: [
         OidcConfigService,
         {
@@ -132,7 +220,6 @@ export function configureAuth(oidcConfigService: OidcConfigService, httpClient: 
             deps: [OidcConfigService, HttpClient],
             multi: true,
         },
-        Configuration,
     ],
 
     bootstrap: [AppComponent],
@@ -140,82 +227,13 @@ export function configureAuth(oidcConfigService: OidcConfigService, httpClient: 
 export class AppModule {}
 ```
 
-## App module simple
-
-NgModule is the same as above.
+## App Component
 
 ### old
 
 ```typescript
-export function loadConfig(oidcConfigService: OidcConfigService) {
-    console.log('APP_INITIALIZER STARTING');
-    return () => oidcConfigService.load_using_stsServer('https://localhost:44318');
-}
-
-export class AppModule {
-    constructor(private oidcSecurityService: OidcSecurityService, private oidcConfigService: OidcConfigService) {
-        this.oidcConfigService.onConfigurationLoaded.subscribe((configResult: ConfigResult) => {
-            const config: OpenIdConfiguration = {
-                stsServer: 'https://localhost:44318',
-                redirect_url: 'https://localhost:44395',
-                client_id: 'angularclient2',
-                response_type: 'code',
-                scope: 'dataEventRecords openid profile email',
-                post_logout_redirect_uri: 'https://localhost:44395/unauthorized',
-                start_checksession: false,
-                silent_renew: true,
-                silent_renew_url: 'https://localhost:44395/silent-renew.html',
-                post_login_route: '/dm',
-                forbidden_route: '/unauthorized',
-                unauthorized_route: '/unauthorized',
-                log_console_warning_active: true,
-                log_console_debug_active: false,
-                max_id_token_iat_offset_allowed_in_seconds: 10,
-                history_cleanup_off: true,
-                // iss_validation_off: false
-                // disable_iat_offset_validation: true
-            };
-
-            this.oidcSecurityService.setupModule(config, configResult.authWellknownEndpoints);
-        });
-
-        console.log('APP STARTING');
-    }
-}
-```
-
-### new
-
-```typescript
-export function configureAuth(oidcConfigService: OidcConfigService) {
-    return () =>
-        oidcConfigService.withConfig({
-            stsServer: 'https://localhost:44318',
-            redirectUrl: window.location.origin,
-            postLogoutRedirectUri: 'https://localhost:44395/unauthorized',
-            clientId: 'angularclient2',
-            scope: 'dataEventRecords openid profile email',
-            responseType: 'code',
-            silentRenew: true,
-            silentRenewUrl: `${window.location.origin}/silent-renew.html`,
-            renewTimeBeforeTokenExpiresInSeconds: 10,
-            logLevel: LogLevel.Debug,
-            postLoginRoute: '/dm',
-            forbiddenRoute: '/unauthorized',
-            unauthorizedRoute: '/unauthorized',
-            historyCleanupOff: true,
-        });
-}
-```
-
-## App Component
-
-## old
-
-```typescript
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
@@ -250,7 +268,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private doCallbackLogicIfRequired() {
-        console.log(window.location);
         // Will do a callback, if the url has a code and state parameter.
         this.oidcSecurityService.authorizedCallbackWithCode(window.location.toString());
     }
@@ -262,7 +279,6 @@ export class AppComponent implements OnInit, OnDestroy {
 ```typescript
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
