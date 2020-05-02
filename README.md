@@ -35,18 +35,18 @@ or with yarn
 
 ## Documentation
 
--   [Quickstart](docs/quickstart.md)
--   [Samples](docs/samples.md)
--   [Silent renew](docs/silent-renew.md)
--   [Guards](docs/guards.md)
--   [Features](docs/features.md)
--   [Logout](docs/logout.md)
--   [Using and revoking the access token](docs/using-access-tokens.md)
--   [CSP & CORS](docs/csp-cors-config.md)
--   [Public API](docs/public-api.md)
--   [Configuration](docs/configuration.md)
--   [Migration](docs/migration.md)
--   [Changelog](CHANGELOG.md)
+-   [Quickstart](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/quickstart.md)
+-   [Samples](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md)
+-   [Silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/silent-renew.md)
+-   [Guards](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/guards.md)
+-   [Features](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md)
+-   [Logout](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/logout.md)
+-   [Using and revoking the access token](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/using-access-tokens.md)
+-   [CSP & CORS](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/csp-cors-config.md)
+-   [Public API](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/public-api.md)
+-   [Configuration](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/configuration.md)
+-   [Migration](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/migration.md)
+-   [Changelog](https://github.com/damienbod/angular-auth-oidc-client/tree/master/CHANGELOG.md)
 
 ## Quickstart
 
