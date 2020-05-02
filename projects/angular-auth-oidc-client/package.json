@@ -1,5 +1,6 @@
 {
     "name": "angular-auth-oidc-client",
+	"author": "Damien Bowden & Fabian Gosebrink",
     "peerDependencies": {
         "rxjs": ">= 6.0.0",
         "@angular/core": ">= 8.0.0",
@@ -24,7 +25,15 @@
         "oauth2",
         "openid",
         "security",
-        "typescript"
+        "typescript",
+		"openidconnect",
+		"auth",
+		"authn",
+		"authentication",
+		"identity",
+		"certified",
+		"oauth",
+		"authorization"
     ],
     "license": "MIT",
     "version": "11.0.0",

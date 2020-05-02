@@ -1,5 +1,13 @@
 {
     "name": "angular-auth-oidc-client",
+	"author": "Damien Bowden & Fabian Gosebrink",
+	"repository": {
+        "type": "git",
+        "url": "https://github.com/damienbod/angular-auth-oidc-client.git"
+    },
+    "bugs": {
+        "url": "https://github.com/damienbod/angular-auth-oidc-client/issues"
+    },
     "version": "11.0.0",
     "scripts": {
         "ng": "ng",
