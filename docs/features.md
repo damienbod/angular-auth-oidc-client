@@ -115,7 +115,7 @@ If you want to pass dynamic custom parameters with the request url to the sts yo
 
 ```typescript
 login() {
-    this.oidcSecurityService.authorize({ customParams: { to: 'ui_locales: 'de-CH' });
+    this.oidcSecurityService.authorize({ customParams: { 'ui_locales: 'de-CH' });
 }
 
 ```
