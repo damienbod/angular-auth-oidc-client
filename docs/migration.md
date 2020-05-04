@@ -202,7 +202,7 @@ export function configureAuth(oidcConfigService: OidcConfigService, httpClient: 
         switchMap((config) => oidcConfigService.withConfig(config))
     );
 
-    return () => setupAction$;
+    return () => setupAction$.toPromise();
 }
 
 @NgModule({
