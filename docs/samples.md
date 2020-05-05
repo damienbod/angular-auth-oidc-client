@@ -110,3 +110,19 @@ The example uses the Implicit Flow with silent renew with Azure B2C. This flow i
 [app.component.ts](../projects/sample-implicit-flow-ad-b2c/src/app/app.component.ts)
 
 [app.component.html](../projects/sample-implicit-flow-ad-b2c/src/app/app.component.html)
+
+## Code flow with a lazy loaded module
+
+The example uses the Code flow with silent renew but you authenticate in a lazy loaded module
+
+### [src code](../projects/sample-code-flow-lazy-loaded)
+
+[app.module.ts](../projects/sample-code-flow-lazy-loaded/src/app/app.module.ts)
+
+[app.component.ts](../projects/sample-code-flow-lazy-loaded/src/app/app.component.ts)
+
+[app.component.html](../projects/sample-code-flow-lazy-loaded/src/app/app.component.html)
+
+[lazy.component.ts](../projects/sample-code-flow-lazy-loaded/src/app/lazy/lazy.component.ts)
+
+[lazy.component.html](../projects/sample-code-flow-lazy-loaded/src/app/lazy/lazy.component.html)

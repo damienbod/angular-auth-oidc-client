@@ -955,6 +955,119 @@
                     }
                 }
             }
+        },
+        "sample-code-flow-lazy-loaded": {
+            "projectType": "application",
+            "schematics": {},
+            "root": "projects/sample-code-flow-lazy-loaded",
+            "sourceRoot": "projects/sample-code-flow-lazy-loaded/src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "outputPath": "dist/sample-code-flow-lazy-loaded",
+                        "index": "projects/sample-code-flow-lazy-loaded/src/index.html",
+                        "main": "projects/sample-code-flow-lazy-loaded/src/main.ts",
+                        "polyfills": "projects/sample-code-flow-lazy-loaded/src/polyfills.ts",
+                        "tsConfig": "projects/sample-code-flow-lazy-loaded/tsconfig.app.json",
+                        "aot": true,
+                        "assets": [
+                            "projects/sample-code-flow-lazy-loaded/src/favicon.ico",
+                            "projects/sample-code-flow-lazy-loaded/src/assets"
+                        ],
+                        "styles": ["projects/sample-code-flow-lazy-loaded/src/styles.css"],
+                        "scripts": []
+                    },
+                    "configurations": {
+                        "production": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "projects/sample-code-flow-lazy-loaded/src/environments/environment.ts",
+                                    "with": "projects/sample-code-flow-lazy-loaded/src/environments/environment.prod.ts"
+                                }
+                            ],
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true,
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "2mb",
+                                    "maximumError": "5mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb",
+                                    "maximumError": "10kb"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "options": {
+                        "browserTarget": "sample-code-flow-lazy-loaded:build",
+                        "sslKey": "certs/dev_localhost.key",
+                        "sslCert": "certs/dev_localhost.pem"
+                    },
+                    "configurations": {
+                        "production": {
+                            "browserTarget": "sample-code-flow-lazy-loaded:build:production"
+                        }
+                    }
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "browserTarget": "sample-code-flow-lazy-loaded:build"
+                    }
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "main": "projects/sample-code-flow-lazy-loaded/src/test.ts",
+                        "polyfills": "projects/sample-code-flow-lazy-loaded/src/polyfills.ts",
+                        "tsConfig": "projects/sample-code-flow-lazy-loaded/tsconfig.spec.json",
+                        "karmaConfig": "projects/sample-code-flow-lazy-loaded/karma.conf.js",
+                        "assets": [
+                            "projects/sample-code-flow-lazy-loaded/src/favicon.ico",
+                            "projects/sample-code-flow-lazy-loaded/src/assets"
+                        ],
+                        "styles": ["projects/sample-code-flow-lazy-loaded/src/styles.css"],
+                        "scripts": []
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "projects/sample-code-flow-lazy-loaded/tsconfig.app.json",
+                            "projects/sample-code-flow-lazy-loaded/tsconfig.spec.json",
+                            "projects/sample-code-flow-lazy-loaded/e2e/tsconfig.json"
+                        ],
+                        "exclude": ["**/node_modules/**"]
+                    }
+                },
+                "e2e": {
+                    "builder": "@angular-devkit/build-angular:protractor",
+                    "options": {
+                        "protractorConfig": "projects/sample-code-flow-lazy-loaded/e2e/protractor.conf.js",
+                        "devServerTarget": "sample-code-flow-lazy-loaded:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "sample-code-flow-lazy-loaded:serve:production"
+                        }
+                    }
+                }
+            }
         }
     },
     "cli": {
