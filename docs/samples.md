@@ -8,6 +8,7 @@
 -   [Implicit Flow google (Not recommended)](#implicit-flow-google-not-recommended)
 -   [Implicit Flow Azure AD (Not recommended)](#implicit-flow-azure-ad-not-recommended)
 -   [Implicit Flow Azure B2C (Not recommended)](#implicit-flow-azure-b2c-not-recommended)
+-   [Code flow with a lazy loaded module](#code-flow-with-a-lazy-loaded-module)
 
 ## Code Flow with PKCE Using a configuration from an http source and silent renew
 
