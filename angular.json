@@ -976,9 +976,7 @@
                             "projects/sample-code-flow-lazy-loaded/src/favicon.ico",
                             "projects/sample-code-flow-lazy-loaded/src/assets"
                         ],
-                        "styles": [
-                            "projects/sample-code-flow-lazy-loaded/src/styles.css"
-                        ],
+                        "styles": ["projects/sample-code-flow-lazy-loaded/src/styles.css"],
                         "scripts": []
                     },
                     "configurations": {
@@ -1015,7 +1013,9 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "sample-code-flow-lazy-loaded:build"
+                        "browserTarget": "sample-code-flow-lazy-loaded:build",
+                        "sslKey": "certs/dev_localhost.key",
+                        "sslCert": "certs/dev_localhost.pem"
                     },
                     "configurations": {
                         "production": {
@@ -1040,9 +1040,7 @@
                             "projects/sample-code-flow-lazy-loaded/src/favicon.ico",
                             "projects/sample-code-flow-lazy-loaded/src/assets"
                         ],
-                        "styles": [
-                            "projects/sample-code-flow-lazy-loaded/src/styles.css"
-                        ],
+                        "styles": ["projects/sample-code-flow-lazy-loaded/src/styles.css"],
                         "scripts": []
                     }
                 },
@@ -1054,9 +1052,7 @@
                             "projects/sample-code-flow-lazy-loaded/tsconfig.spec.json",
                             "projects/sample-code-flow-lazy-loaded/e2e/tsconfig.json"
                         ],
-                        "exclude": [
-                            "**/node_modules/**"
-                        ]
+                        "exclude": ["**/node_modules/**"]
                     }
                 },
                 "e2e": {
