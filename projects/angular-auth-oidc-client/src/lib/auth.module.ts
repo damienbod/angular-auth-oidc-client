@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
@@ -28,7 +29,11 @@ import { WINDOW, _window } from './utils/window/window.reference';
 import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';
 
-@NgModule()
+@NgModule({
+    imports: [CommonModule],
+    declarations: [],
+    exports: [],
+})
 export class AuthModule {
     static forRoot(token: Token = {}) {
         return {
