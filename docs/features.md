@@ -148,90 +148,53 @@ ngOnDestroy(): void {
 
 ## Using the OIDC package in a module or a Angular lib
 
-This example shows how you could set the configuration just before you use the OIDC package, and start the checkAuth then as required.
-This is useful if using in a lib or require to set the configurations on the fly.
+This example shows how you could set the configuration when loading a child module.
+
+> This is not recommended. Please use the initialization on root level.
+
+You can use the `APP_INITIALIZER` also in child modules with the same syntax.
 
 ```typescript
-import { Component, OnInit } from '@angular/core';
-import { Observable, from } from 'rxjs';
-import { filter, switchMap } from 'rxjs/operators';
-import { OidcSecurityService, OidcConfigService, LogLevel, PublicEventsService, EventTypes } from 'angular-auth-oidc-client';
-
-@Component({
-    selector: 'lib-oidc-lib',
-    templateUrl: 'oidc-lib.component.html',
-    styles: [],
-})
-export class OidcLibComponent implements OnInit {
-    userData$: Observable<any>;
-    isAuthenticated$: Observable<boolean>;
-
-    constructor(
-        public oidcSecurityService: OidcSecurityService,
-        private oidcConfigService: OidcConfigService,
-        private publicEventsService: PublicEventsService
-    ) {}
-
-    ngOnInit() {
-        this.userData$ = this.oidcSecurityService.userData$;
-        this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
-
-        from(
-            this.oidcConfigService.withConfig({
-                stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
-                redirectUrl: window.location.origin,
-                postLogoutRedirectUri: window.location.origin,
-                clientId: 'angularClient',
-                scope: 'openid profile email',
-                responseType: 'code',
-                silentRenew: true,
-                silentRenewUrl: `${window.location.origin}/silent-renew.html`,
-                renewTimeBeforeTokenExpiresInSeconds: 10,
-                logLevel: LogLevel.Debug,
-            })
-        )
-            .pipe(switchMap(() => this.oidcSecurityService.checkAuth()))
-            .subscribe((isAuth) => console.log(isAuth));
-    }
-
-    login() {
-        this.oidcSecurityService.authorize();
-    }
-
-    logout() {
-        this.oidcSecurityService.logoff();
-    }
-}
-```
-
-The auth module requires only the OidcLibModule module.
-
-```typescript
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-
-import { AppComponent } from './app.component';
-import { OidcLibModule } from 'oidc-lib';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { AuthModule, OidcConfigService, LogLevel } from 'angular-auth-oidc-client';
+import { HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-@NgModule({
-    declarations: [AppComponent],
-    imports: [BrowserModule, OidcLibModule, RouterModule.forRoot([])],
-    providers: [],
-    bootstrap: [AppComponent],
-})
-export class AppModule {}
-```
-
-The OidcLibModule is injected in the root.
-
-```typescript
-import { Injectable } from '@angular/core';
-
-@Injectable({
-    providedIn: 'root',
-})
-export class OidcLibService {
-    constructor() {}
+export function configureAuth(oidcConfigService: OidcConfigService) {
+    const action$ = oidcConfigService.withConfig({
+        stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+        redirectUrl: window.location.origin,
+        postLogoutRedirectUri: window.location.origin,
+        clientId: 'angularClient',
+        scope: 'openid profile email',
+        responseType: 'code',
+        silentRenew: true,
+        silentRenewUrl: `${window.location.origin}/silent-renew.html`,
+        renewTimeBeforeTokenExpiresInSeconds: 10,
+        logLevel: LogLevel.Debug,
+    });
+    return () => action$;
 }
+
+@NgModule({
+    declarations: [
+        /* */
+    ],
+    imports: [AuthModule.forRoot(), HttpClientModule, CommonModule, RouterModule],
+    exports: [
+        /* */
+    ],
+    providers: [
+        {
+            provide: APP_INITIALIZER,
+            useFactory: configureAuth,
+            deps: [OidcConfigService],
+            multi: true,
+        },
+    ],
+})
+export class ChildModule {}
 ```
+
+The components code is the same then as using it in the main or any other module.
