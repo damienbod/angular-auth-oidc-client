@@ -122,7 +122,6 @@ login() {
 
 > If you want to pass staitc parameters to the sts everytime please use the custom parameters in the [Configuration](configuration.md) instead!
 
-
 ## OnAuthorizationResult Event
 
 This event returns the result of the authorization callback.
@@ -146,3 +145,56 @@ ngOnDestroy(): void {
     }
 }
 ```
+
+## Using the OIDC package in a module or a Angular lib
+
+This example shows how you could set the configuration when loading a child module.
+
+> This is not recommended. Please use the initialization on root level.
+
+You can use the `APP_INITIALIZER` also in child modules with the same syntax.
+
+```typescript
+import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { AuthModule, OidcConfigService, LogLevel } from 'angular-auth-oidc-client';
+import { HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+
+export function configureAuth(oidcConfigService: OidcConfigService) {
+    const action$ = oidcConfigService.withConfig({
+        stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+        redirectUrl: window.location.origin,
+        postLogoutRedirectUri: window.location.origin,
+        clientId: 'angularClient',
+        scope: 'openid profile email',
+        responseType: 'code',
+        silentRenew: true,
+        silentRenewUrl: `${window.location.origin}/silent-renew.html`,
+        renewTimeBeforeTokenExpiresInSeconds: 10,
+        logLevel: LogLevel.Debug,
+    });
+    return () => action$;
+}
+
+@NgModule({
+    declarations: [
+        /* */
+    ],
+    imports: [AuthModule.forRoot(), HttpClientModule, CommonModule, RouterModule],
+    exports: [
+        /* */
+    ],
+    providers: [
+        {
+            provide: APP_INITIALIZER,
+            useFactory: configureAuth,
+            deps: [OidcConfigService],
+            multi: true,
+        },
+    ],
+})
+export class ChildModule {}
+```
+
+The components code is the same then as using it in the main or any other module.

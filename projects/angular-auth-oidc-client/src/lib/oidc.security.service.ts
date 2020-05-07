@@ -11,7 +11,6 @@ import { CheckSessionService } from './iframe/check-session.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
 import { LoggerService } from './logging/logger.service';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
-import { PublicEventsService } from './public-events/public-events.service';
 import { UserService } from './userData/user-service';
 import { RedirectService } from './utils/redirect/redirect.service';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
@@ -50,7 +49,6 @@ export class OidcSecurityService {
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,
         private configurationProvider: ConfigurationProvider,
-        private publicEventsService: PublicEventsService,
         private urlService: UrlService,
         private authStateService: AuthStateService,
         private flowsDataService: FlowsDataService,
