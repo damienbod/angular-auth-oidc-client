@@ -1,4 +1,4 @@
-# Angular Lib for OpenID Connect Code Flow with PKCE and Implicit Flow
+# Angular Lib for OpenID Connect & OAuth2
 
 [![Build Status](https://travis-ci.org/damienbod/angular-auth-oidc-client.svg?branch=master)](https://travis-ci.org/damienbod/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/v/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/dm/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/l/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client)
 
@@ -109,7 +109,7 @@ export class AppComponent implements OnInit {
     constructor(public oidcSecurityService: OidcSecurityService) {}
 
     ngOnInit() {
-        this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
+        this.oidcSecurityService.checkAuth().subscribe((auth) => console.log('is authenticated', auth));
     }
 
     login() {
