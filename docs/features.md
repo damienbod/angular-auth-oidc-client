@@ -146,7 +146,7 @@ ngOnDestroy(): void {
 }
 ```
 
-## Using in a OIDC package in a module or a Angular lib
+## Using the OIDC package in a module or a Angular lib
 
 This example shows how you could set the configuration just before you use the OIDC package, and start the checkAuth then as required.
 This is useful if using in a lib or require to set the configurations on the fly.
