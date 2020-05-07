@@ -41,10 +41,10 @@ export class OidcConfigService {
                     introspectionEndpoint: wellKnownEndpoints.introspection_endpoint,
                 };
             }),
+            tap((mappedWellKnownEndpoints) => this.configurationProvider.setConfig(passedConfig, mappedWellKnownEndpoints)),
             tap((mappedWellKnownEndpoints) =>
                 this.publicEventsService.fireEvent(EventTypes.ConfigLoaded, { passedConfig, mappedWellKnownEndpoints })
-            ),
-            tap((mappedWellKnownEndpoints) => this.configurationProvider.setConfig(passedConfig, mappedWellKnownEndpoints))
+            )
         );
 
         return loadConfig$.toPromise();
