@@ -82,6 +82,7 @@ describe('ConfigurationProviderTests', () => {
             historyCleanupOff: false,
             maxIdTokenIatOffsetAllowedInSeconds: 120,
             disableIatOffsetValidation: false,
+            storage: sessionStorage,
             customParams: {},
         };
 

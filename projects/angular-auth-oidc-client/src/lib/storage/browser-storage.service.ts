@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 
 @Injectable()
 export class BrowserStorageService implements AbstractSecurityStorage {
-    constructor(private loggerService: LoggerService) {}
+    constructor(private configProvider: ConfigurationProvider, private loggerService: LoggerService) {}
 
     read(key: string): any {
         if (!this.hasStorage()) {
@@ -41,7 +42,7 @@ export class BrowserStorageService implements AbstractSecurityStorage {
     }
 
     private getStorage() {
-        return sessionStorage;
+        return this.configProvider.openIDConfiguration?.storage;
     }
 
     private hasStorage() {

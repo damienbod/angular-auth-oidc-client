@@ -27,5 +27,6 @@ export const DEFAULT_CONFIG: OpenIdConfiguration = {
     historyCleanupOff: false,
     maxIdTokenIatOffsetAllowedInSeconds: 120,
     disableIatOffsetValidation: false,
+    storage: typeof Storage !== 'undefined' ? sessionStorage : null,
     customParams: {},
 };
