@@ -47,7 +47,7 @@ export class ConfigurationProvider {
         this.wellKnownEndpointsInternal = wellKnownEndpoints;
         this.openIdConfigurationInternal = { ...DEFAULT_CONFIG, ...configuration };
 
-        if (configuration.storage) {
+        if (configuration?.storage) {
             console.warn(
                 'PLEASE NOTE: The storage in the config will be deprecated in future versions: Please pass the custom storage in forRoot() as documented'
             );
