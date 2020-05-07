@@ -122,7 +122,6 @@ login() {
 
 > If you want to pass staitc parameters to the sts everytime please use the custom parameters in the [Configuration](configuration.md) instead!
 
-
 ## OnAuthorizationResult Event
 
 This event returns the result of the authorization callback.
@@ -144,5 +143,95 @@ ngOnDestroy(): void {
     if(this.onAuthorizationResultSubscription) {
         this.onAuthorizationResultSubscription.unsubscribe();
     }
+}
+```
+
+## Using in a lib
+
+This example shows how you could set the configuration just before you use the OIDC package, and start the checkAuth then as required.
+This is useful if using in a lib or require to set the configurations on the fly.
+
+```typescript
+import { Component, OnInit } from '@angular/core';
+import { Observable, from } from 'rxjs';
+import { filter, switchMap } from 'rxjs/operators';
+import { OidcSecurityService, OidcConfigService, LogLevel, PublicEventsService, EventTypes } from 'angular-auth-oidc-client';
+
+@Component({
+    selector: 'lib-oidc-lib',
+    templateUrl: 'oidc-lib.component.html',
+    styles: [],
+})
+export class OidcLibComponent implements OnInit {
+    userData$: Observable<any>;
+    isAuthenticated$: Observable<boolean>;
+
+    constructor(
+        public oidcSecurityService: OidcSecurityService,
+        private oidcConfigService: OidcConfigService,
+        private publicEventsService: PublicEventsService
+    ) {}
+
+    ngOnInit() {
+        this.userData$ = this.oidcSecurityService.userData$;
+        this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
+
+        from(
+            this.oidcConfigService.withConfig({
+                stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+                redirectUrl: window.location.origin,
+                postLogoutRedirectUri: window.location.origin,
+                clientId: 'angularClient',
+                scope: 'openid profile email',
+                responseType: 'code',
+                silentRenew: true,
+                silentRenewUrl: `${window.location.origin}/silent-renew.html`,
+                renewTimeBeforeTokenExpiresInSeconds: 10,
+                logLevel: LogLevel.Debug,
+            })
+        )
+            .pipe(switchMap(() => this.oidcSecurityService.checkAuth()))
+            .subscribe((isAuth) => console.log(isAuth));
+    }
+
+    login() {
+        this.oidcSecurityService.authorize();
+    }
+
+    logout() {
+        this.oidcSecurityService.logoff();
+    }
+}
+```
+
+The auth module requires only the OidcLibModule module.
+
+```typescript
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+
+import { AppComponent } from './app.component';
+import { OidcLibModule } from 'oidc-lib';
+import { RouterModule } from '@angular/router';
+
+@NgModule({
+    declarations: [AppComponent],
+    imports: [BrowserModule, OidcLibModule, RouterModule.forRoot([])],
+    providers: [],
+    bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
+
+The OidcLibModule is injected in the root.
+
+```typescript
+import { Injectable } from '@angular/core';
+
+@Injectable({
+    providedIn: 'root',
+})
+export class OidcLibService {
+    constructor() {}
 }
 ```
