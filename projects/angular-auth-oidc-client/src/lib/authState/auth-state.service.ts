@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { ConfigurationProvider } from '../config';
+import { EventTypes, PublicEventsService } from '../../public-api';
+import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
-import { EventTypes, PublicEventsService } from '../public-events';
-import { StoragePersistanceService } from '../storage';
+import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { TokenValidationService } from '../validation/token-validation.service';
 import { AuthorizationResult } from './authorization-result';
 import { AuthorizedState } from './authorized-state';

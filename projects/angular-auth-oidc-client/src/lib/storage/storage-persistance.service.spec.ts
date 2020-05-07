@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../config/config.provider';
 import { ConfigurationProviderMock } from '../config/config.provider-mock';
-import { AbstractSecurityStorage, StoragePersistanceService } from '../storage';
+import { AbstractSecurityStorage } from './abstract-security-storage';
 import { BrowserStorageMock } from './browser-storage.service-mock';
+import { StoragePersistanceService } from './storage-persistance.service';
 
 describe('Storage Persistance Service', () => {
     let service: StoragePersistanceService;

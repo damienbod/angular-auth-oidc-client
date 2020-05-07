@@ -1,11 +1,12 @@
 import { async, TestBed } from '@angular/core/testing';
-import { ConfigurationProvider } from '../config';
+import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { OidcSecurityService } from '../oidc.security.service';
-import { PublicEventsService } from '../public-events';
-import { AbstractSecurityStorage, StoragePersistanceService } from '../storage';
+import { PublicEventsService } from '../public-events/public-events.service';
+import { AbstractSecurityStorage } from '../storage/abstract-security-storage';
 import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
+import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';

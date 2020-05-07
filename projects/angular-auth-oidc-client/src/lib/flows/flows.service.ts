@@ -8,7 +8,7 @@ import { AuthorizedState } from '../authState/authorized-state';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { UserService } from '../userData/user-service';
-import { UrlService } from '../utils';
+import { UrlService } from '../utils/url/url.service';
 import { StateValidationResult } from '../validation/state-validation-result';
 import { StateValidationService } from '../validation/state-validation.service';
 import { TokenValidationService } from '../validation/token-validation.service';

@@ -5,14 +5,14 @@ import { interval, Observable, of, Subject, Subscription, throwError } from 'rxj
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
-import { ConfigurationProvider } from '../config/';
+import { ConfigurationProvider } from '../config/config.provider';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
 import { UserService } from '../userData/user-service';
-import { UrlService } from '../utils';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
+import { UrlService } from '../utils/url/url.service';
 import { ValidationResult } from '../validation/validation-result';
 
 @Injectable({ providedIn: 'root' })

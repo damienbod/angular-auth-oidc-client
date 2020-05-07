@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
-import { ConfigurationProvider } from '../config';
+import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
-import { EventTypes, PublicEventsService } from '../public-events';
-import { StoragePersistanceService } from '../storage';
+import { EventTypes } from '../public-events/event-types';
+import { PublicEventsService } from '../public-events/public-events.service';
+import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
 

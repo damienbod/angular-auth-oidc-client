@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ConfigurationProvider } from '../../config';
+import { ConfigurationProvider } from '../../config/config.provider';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { TokenHelperService } from './oidc-token-helper.service';

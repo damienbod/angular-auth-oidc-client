@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { AuthorizedState } from '../authState/authorized-state';
-import { ConfigurationProvider } from '../config';
+import { ConfigurationProvider } from '../config/config.provider';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 
 export type SilentRenewState = 'running' | '';
