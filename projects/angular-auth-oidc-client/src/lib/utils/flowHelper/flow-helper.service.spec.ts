@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ConfigurationProvider } from '../../config';
+import { ConfigurationProvider } from '../../config/config.provider';
 import { PlatformProvider } from '../platform-provider/platform.provider';
 import { PlatformProviderMock } from '../platform-provider/platform.provider-mock';
 import { FlowHelper } from './flow-helper.service';

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { ConfigurationProvider } from '../config';
+import { ConfigurationProvider } from '../config/config.provider';
 import { CallbackContext } from '../flows/callback-context';
 import { LoggerService } from '../logging/logger.service';
-import { StoragePersistanceService } from '../storage';
+import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
 import { StateValidationResult } from './state-validation-result';

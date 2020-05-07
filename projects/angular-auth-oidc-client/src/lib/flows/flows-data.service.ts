@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { StoragePersistanceService } from '../storage';
+import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { RandomService } from './random/random.service';
 
 @Injectable()

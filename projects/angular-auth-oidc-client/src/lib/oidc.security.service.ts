@@ -4,16 +4,18 @@ import { map } from 'rxjs/operators';
 import { AuthOptions } from './auth-options';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
-import { ConfigurationProvider } from './config';
+import { ConfigurationProvider } from './config/config.provider';
 import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsService } from './flows/flows.service';
-import { CheckSessionService, SilentRenewService } from './iframe';
+import { CheckSessionService } from './iframe/check-session.service';
+import { SilentRenewService } from './iframe/silent-renew.service';
 import { LoggerService } from './logging/logger.service';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { PublicEventsService } from './public-events/public-events.service';
 import { UserService } from './userData/user-service';
-import { RedirectService, UrlService } from './utils';
+import { RedirectService } from './utils/redirect/redirect.service';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
+import { UrlService } from './utils/url/url.service';
 import { TokenValidationService } from './validation/token-validation.service';
 
 @Injectable()

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ConfigurationProvider } from '../../config';
+import { ConfigurationProvider } from '../../config/config.provider';
 
 // TODO  TESTING
 @Injectable()

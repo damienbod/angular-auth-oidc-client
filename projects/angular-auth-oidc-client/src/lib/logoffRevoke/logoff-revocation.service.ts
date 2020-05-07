@@ -4,10 +4,11 @@ import { of, throwError } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { FlowsService } from '../flows/flows.service';
-import { CheckSessionService } from '../iframe';
+import { CheckSessionService } from '../iframe/check-session.service';
 import { LoggerService } from '../logging/logger.service';
-import { StoragePersistanceService } from '../storage';
-import { RedirectService, UrlService } from '../utils';
+import { StoragePersistanceService } from '../storage/storage-persistance.service';
+import { RedirectService } from '../utils/redirect/redirect.service';
+import { UrlService } from '../utils/url/url.service';
 
 @Injectable()
 export class LogoffRevocationService {

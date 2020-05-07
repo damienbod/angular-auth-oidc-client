@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AbstractSecurityStorage } from '.';
+import { AbstractSecurityStorage } from './abstract-security-storage';
 
 @Injectable()
 export class BrowserStorageMock implements AbstractSecurityStorage {

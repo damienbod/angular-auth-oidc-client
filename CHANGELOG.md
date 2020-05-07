@@ -1,5 +1,8 @@
 ## angular-auth-oidc-client Changelog
 
+### 2020-05-xx Version 11.0.1
+- Removing barrels from the lib
+
 ### 2020-05-02 Version 11.0.0
 
 - Refactor lib config to make it easier to use

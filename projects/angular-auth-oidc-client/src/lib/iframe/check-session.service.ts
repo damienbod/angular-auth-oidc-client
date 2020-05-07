@@ -1,9 +1,10 @@
 import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { ConfigurationProvider } from '../config';
+import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
-import { EventTypes, PublicEventsService } from '../public-events';
-import { StoragePersistanceService } from '../storage';
+import { EventTypes } from '../public-events/event-types';
+import { PublicEventsService } from '../public-events/public-events.service';
+import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { IFrameService } from './existing-iframe.service';
 
 const IFRAME_FOR_CHECK_SESSION_IDENTIFIER = 'myiFrameForCheckSession';
