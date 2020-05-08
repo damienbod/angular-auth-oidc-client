@@ -4,6 +4,7 @@
 -   [Custom Storage](#custom-storage)
 -   [Custom parameters](#custom-parameters)
 -   [OnAuthorizationResult Event](#onauthorizationresult-event)
+-   [Using the OIDC package in a module or a Angular lib](#using-the-oidc-package-in-a-module-or-a-angular-lib)
 
 ## Public Events
 
