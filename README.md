@@ -16,7 +16,7 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 -   Supports Code Flow PKCE with Refresh tokens
 -   Supports Revocation Endpoint
 -   Support for current best practice
--   Implements OIDC validations as specified
+-   Implements OIDC validation as specified
 -   [Supports OpenID Connect Implicit Flow](http://openid.net/specs/openid-connect-implicit-1_0.html)
 -   Complete client side validation for REQUIRED features
 -   [OpenID Connect Session Management 1.0](http://openid.net/specs/openid-connect-session-1_0.html)
