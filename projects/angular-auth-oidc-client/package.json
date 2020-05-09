@@ -37,5 +37,5 @@
     ],
     "license": "MIT",
     "version": "11.0.1",
-    "description": "An OpenID Connect Code Flow with PKCE,Implicit Flow client for Angular"
+    "description": "Angular Lib for OpenID Connect & OAuth2"
 }
