@@ -1,4 +1,4 @@
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { FlowsServiceMock } from '../flows/flows.service-mock';
@@ -56,21 +56,25 @@ describe('Signin Key Data Service', () => {
     });
 
     describe('revokeAccessToken', () => {
-        fit('run', async(() => {
-            const token = 'ddddddd';
-            // spyOn(urlService, 'createRevocationEndpointBodyAccessToken').and.returnValue(
-            //     `client_id=test&token=${token}&token_type_hint=access_token`
-            // );
+        it('uses token parameter if token as parameter is passed in the method', () => {
+            // Arrange
+            const paramToken = 'passedTokenAsParam';
+            const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+            // Act
+            service.revokeAccessToken(paramToken);
+            // Assert
+            expect(revocationSpy).toHaveBeenCalledWith(paramToken);
+        });
 
-            const result = service.revokeAccessToken(token);
-
-            result.subscribe({
-                error: (err) => {
-                    expect(err).toBeTruthy();
-                },
-            });
-
-            // expect(urlService.createRevocationEndpointBodyAccessToken).toHaveBeenCalled();
-        }));
+        it('uses token parameter from persistance if no param is provided', () => {
+            // Arrange
+            const paramToken = 'damien';
+            spyOnProperty(storagePersistanceService, 'accessToken', 'get').and.returnValue(paramToken);
+            const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+            // Act
+            service.revokeAccessToken();
+            // Assert
+            expect(revocationSpy).toHaveBeenCalledWith(paramToken);
+        });
     });
 });
