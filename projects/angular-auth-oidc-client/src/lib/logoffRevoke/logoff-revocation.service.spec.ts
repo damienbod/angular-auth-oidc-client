@@ -77,4 +77,27 @@ describe('Signin Key Data Service', () => {
             expect(revocationSpy).toHaveBeenCalledWith(paramToken);
         });
     });
+
+    describe('revokeRefreshToken', () => {
+        it('uses refresh token parameter if token as parameter is passed in the method', () => {
+            // Arrange
+            const paramToken = 'passedTokenAsParam';
+            const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyRefreshToken');
+            // Act
+            service.revokeAccessToken(paramToken);
+            // Assert
+            expect(revocationSpy).toHaveBeenCalledWith(paramToken);
+        });
+
+        it('uses refresh token parameter from persistance if no param is provided', () => {
+            // Arrange
+            const paramToken = 'damien';
+            spyOnProperty(storagePersistanceService, 'accessToken', 'get').and.returnValue(paramToken);
+            const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyRefreshToken');
+            // Act
+            service.revokeAccessToken();
+            // Assert
+            expect(revocationSpy).toHaveBeenCalledWith(paramToken);
+        });
+    });
 });
