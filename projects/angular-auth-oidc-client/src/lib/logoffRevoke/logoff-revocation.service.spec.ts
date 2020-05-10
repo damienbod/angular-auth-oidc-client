@@ -1,4 +1,5 @@
-import { TestBed } from '@angular/core/testing';
+import { async, TestBed } from '@angular/core/testing';
+import { Observable, of, throwError } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { FlowsServiceMock } from '../flows/flows.service-mock';
@@ -76,6 +77,52 @@ describe('Logout and Revoke Service', () => {
             // Assert
             expect(revocationSpy).toHaveBeenCalledWith(paramToken);
         });
+
+        it('returns type observable', () => {
+            // Arrange
+            const paramToken = 'damien';
+            spyOnProperty(storagePersistanceService, 'accessToken', 'get').and.returnValue(paramToken);
+            spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+
+            // Act
+            const result = service.revokeAccessToken();
+
+            // Assert
+            expect(result).toEqual(jasmine.any(Observable));
+        });
+
+        it('loggs and returns unmodified response if request is positive', async(() => {
+            // Arrange
+            const paramToken = 'damien';
+            spyOnProperty(storagePersistanceService, 'accessToken', 'get').and.returnValue(paramToken);
+            spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+            const loggerSpy = spyOn(loggerService, 'logDebug');
+            spyOn(dataService, 'post').and.returnValue(of({ data: 'anything' }));
+
+            // Act
+            service.revokeAccessToken().subscribe((result) => {
+                // Assert
+                expect(result).toEqual({ data: 'anything' });
+                expect(loggerSpy).toHaveBeenCalled();
+            });
+        }));
+
+        it('loggs error when request is negative', async(() => {
+            // Arrange
+            const paramToken = 'damien';
+            spyOnProperty(storagePersistanceService, 'accessToken', 'get').and.returnValue(paramToken);
+            spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+            const loggerSpy = spyOn(loggerService, 'logError');
+            spyOn(dataService, 'post').and.returnValue(throwError('FAILUUURE'));
+
+            // Act
+            service.revokeAccessToken().subscribe({
+                error: (err) => {
+                    expect(loggerSpy).toHaveBeenCalled();
+                    expect(err).toBeTruthy();
+                },
+            });
+        }));
     });
 
     describe('revokeRefreshToken', () => {
@@ -99,6 +146,52 @@ describe('Logout and Revoke Service', () => {
             // Assert
             expect(revocationSpy).toHaveBeenCalledWith(paramToken);
         });
+
+        it('returns type observable', () => {
+            // Arrange
+            const paramToken = 'damien';
+            spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
+            spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+
+            // Act
+            const result = service.revokeRefreshToken();
+
+            // Assert
+            expect(result).toEqual(jasmine.any(Observable));
+        });
+
+        it('loggs and returns unmodified response if request is positive', async(() => {
+            // Arrange
+            const paramToken = 'damien';
+            spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
+            spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+            const loggerSpy = spyOn(loggerService, 'logDebug');
+            spyOn(dataService, 'post').and.returnValue(of({ data: 'anything' }));
+
+            // Act
+            service.revokeRefreshToken().subscribe((result) => {
+                // Assert
+                expect(result).toEqual({ data: 'anything' });
+                expect(loggerSpy).toHaveBeenCalled();
+            });
+        }));
+
+        it('loggs error when request is negative', async(() => {
+            // Arrange
+            const paramToken = 'damien';
+            spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
+            spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+            const loggerSpy = spyOn(loggerService, 'logError');
+            spyOn(dataService, 'post').and.returnValue(throwError('FAILUUURE'));
+
+            // Act
+            service.revokeRefreshToken().subscribe({
+                error: (err) => {
+                    expect(loggerSpy).toHaveBeenCalled();
+                    expect(err).toBeTruthy();
+                },
+            });
+        }));
     });
 
     describe('getEndSessionUrl', () => {
@@ -115,16 +208,67 @@ describe('Logout and Revoke Service', () => {
         });
     });
 
-    describe('logout', () => {
-        it('uses id_token parameter from persistance if no param is provided', () => {
+    describe('logoff', () => {
+        it('logs and retuns if `endSessionUrl` is false', () => {
             // Arrange
-            const data = service.getEndSessionUrl();
-            const revocationSpy = spyOn(redirectService, 'redirectTo');
-            // Act
+            spyOn(service, 'getEndSessionUrl').and.returnValue('');
+            const serverStateChangedSpy = spyOn(checkSessionService, 'serverStateChanged');
             // Act
             service.logoff();
             // Assert
-            expect(revocationSpy).toHaveBeenCalledWith(data);
+            expect(serverStateChangedSpy).not.toHaveBeenCalled();
+        });
+
+        it('logs and retuns if `serverStateChanged` is true', () => {
+            // Arrange
+            spyOn(service, 'getEndSessionUrl').and.returnValue('someValue');
+            const redirectSpy = spyOn(redirectService, 'redirectTo');
+            spyOn(checkSessionService, 'serverStateChanged').and.returnValue(true);
+            // Act
+            service.logoff();
+            // Assert
+            expect(redirectSpy).not.toHaveBeenCalled();
+        });
+
+        it('calls urlHandler if urlhandler is passed', () => {
+            // Arrange
+            spyOn(service, 'getEndSessionUrl').and.returnValue('someValue');
+            const spy = jasmine.createSpy();
+            const urlHandler = (url) => {
+                spy(url);
+            };
+            const redirectSpy = spyOn(redirectService, 'redirectTo');
+            spyOn(checkSessionService, 'serverStateChanged').and.returnValue(false);
+            // Act
+            service.logoff(urlHandler);
+            // Assert
+            expect(redirectSpy).not.toHaveBeenCalled();
+            expect(spy).toHaveBeenCalledWith('someValue');
+        });
+
+        it('calls reidrect service if no urlhandler is passed', () => {
+            // Arrange
+            spyOn(service, 'getEndSessionUrl').and.returnValue('someValue');
+
+            const redirectSpy = spyOn(redirectService, 'redirectTo');
+            spyOn(checkSessionService, 'serverStateChanged').and.returnValue(false);
+            // Act
+            service.logoff();
+            // Assert
+            expect(redirectSpy).toHaveBeenCalledWith('someValue');
         });
     });
+
+    describe('logoffLocal', () => {
+        it('calls flowsService.resetAuthorizationData', () => {
+            // Arrange
+            const resetAuthorizationDataSpy = spyOn(flowsService, 'resetAuthorizationData');
+            // Act
+            service.logoffLocal();
+            // Assert
+            expect(resetAuthorizationDataSpy).toHaveBeenCalled();
+        });
+    });
+
+    describe('logoffAndRevokeTokens', () => {});
 });
