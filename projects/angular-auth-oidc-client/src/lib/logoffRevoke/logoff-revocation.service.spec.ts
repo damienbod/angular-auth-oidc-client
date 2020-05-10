@@ -114,4 +114,17 @@ describe('Logout and Revoke Service', () => {
             expect(revocationSpy).toHaveBeenCalledWith(paramToken);
         });
     });
+
+    describe('logout', () => {
+        it('uses id_token parameter from persistance if no param is provided', () => {
+            // Arrange
+            const data = service.getEndSessionUrl();
+            const revocationSpy = spyOn(redirectService, 'redirectTo');
+            // Act
+            // Act
+            service.logoff();
+            // Assert
+            expect(revocationSpy).toHaveBeenCalledWith(data);
+        });
+    });
 });
