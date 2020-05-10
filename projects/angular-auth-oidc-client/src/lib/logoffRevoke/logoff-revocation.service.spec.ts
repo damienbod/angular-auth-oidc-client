@@ -92,7 +92,7 @@ describe('Logout and Revoke Service', () => {
         it('uses refresh token parameter from persistance if no param is provided', () => {
             // Arrange
             const paramToken = 'damien';
-            spyOnProperty(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
+            spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
             const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyRefreshToken');
             // Act
             service.revokeRefreshToken();
