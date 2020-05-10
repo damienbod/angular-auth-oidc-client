@@ -100,4 +100,18 @@ describe('Logout and Revoke Service', () => {
             expect(revocationSpy).toHaveBeenCalledWith(paramToken);
         });
     });
+
+    describe('getEndSessionUrl', () => {
+        it('uses id_token parameter from persistance if no param is provided', () => {
+            // Arrange
+            const paramToken = 'damienId';
+            spyOnProperty(storagePersistanceService, 'idToken', 'get').and.returnValue(paramToken);
+            const revocationSpy = spyOn(urlService, 'createEndSessionUrl');
+            // Act
+            // Act
+            service.getEndSessionUrl();
+            // Assert
+            expect(revocationSpy).toHaveBeenCalledWith(paramToken);
+        });
+    });
 });
