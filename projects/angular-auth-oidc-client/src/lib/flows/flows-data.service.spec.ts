@@ -123,4 +123,20 @@ describe('Flows Data Service', () => {
             expect(setSpy).toHaveBeenCalledWith(result);
         });
     });
+
+    describe('setSilentRenewRunning', () => {
+        it('set setSilentRenewRunning to `running` when called', () => {
+            const spy = spyOnProperty(storagePersistanceService, 'silentRenewRunning', 'set');
+            service.setSilentRenewRunning();
+            expect(spy).toHaveBeenCalledWith('running');
+        });
+    });
+
+    describe('resetSilentRenewRunning', () => {
+        it('set resetSilentRenewRunning to `` when called', () => {
+            const spy = spyOnProperty(storagePersistanceService, 'silentRenewRunning', 'set');
+            service.resetSilentRenewRunning();
+            expect(spy).toHaveBeenCalledWith('');
+        });
+    });
 });

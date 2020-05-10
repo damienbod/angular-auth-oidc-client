@@ -278,5 +278,19 @@ describe('Auth State Service', () => {
             expect(spy).toHaveBeenCalledWith(date, 5);
             expect(result).toEqual(expectedResult);
         });
+
+        it('throws event when token is expired', () => {
+            const validateAccessTokenNotExpiredResult = false;
+            const expectedResult = !validateAccessTokenNotExpiredResult;
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ renewTimeBeforeTokenExpiresInSeconds: 5 });
+            const date = new Date();
+
+            spyOn(eventsService, 'fireEvent');
+
+            spyOnProperty(storagePersistanceService, 'accessTokenExpiresIn', 'get').and.returnValue(date);
+            spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(validateAccessTokenNotExpiredResult);
+            authStateService.hasAccessTokenExpiredIfExpiryExists();
+            expect(eventsService.fireEvent).toHaveBeenCalledWith(EventTypes.TokenExpired, expectedResult);
+        });
     });
 });
