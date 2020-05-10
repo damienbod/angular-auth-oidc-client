@@ -15,7 +15,7 @@ import { RedirectService } from './../utils/redirect/redirect.service';
 import { UrlServiceMock } from './../utils/url/url.service-mock';
 import { LogoffRevocationService } from './logoff-revocation.service';
 
-describe('Signin Key Data Service', () => {
+describe('Logout and Revoke Service', () => {
     let service: LogoffRevocationService;
     let dataService: DataService;
     let loggerService: LoggerService;
@@ -84,7 +84,7 @@ describe('Signin Key Data Service', () => {
             const paramToken = 'passedTokenAsParam';
             const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyRefreshToken');
             // Act
-            service.revokeAccessToken(paramToken);
+            service.revokeRefreshToken(paramToken);
             // Assert
             expect(revocationSpy).toHaveBeenCalledWith(paramToken);
         });
@@ -92,10 +92,10 @@ describe('Signin Key Data Service', () => {
         it('uses refresh token parameter from persistance if no param is provided', () => {
             // Arrange
             const paramToken = 'damien';
-            spyOnProperty(storagePersistanceService, 'accessToken', 'get').and.returnValue(paramToken);
+            spyOnProperty(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
             const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyRefreshToken');
             // Act
-            service.revokeAccessToken();
+            service.revokeRefreshToken();
             // Assert
             expect(revocationSpy).toHaveBeenCalledWith(paramToken);
         });
