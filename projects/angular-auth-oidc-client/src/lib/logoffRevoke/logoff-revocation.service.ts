@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { of, throwError } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
+import { ConfigurationProvider } from '../config/config.provider';
 import { FlowsService } from '../flows/flows.service';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { LoggerService } from '../logging/logger.service';
@@ -19,7 +20,8 @@ export class LogoffRevocationService {
         private urlService: UrlService,
         private checkSessionService: CheckSessionService,
         private flowsService: FlowsService,
-        private redirectService: RedirectService
+        private redirectService: RedirectService,
+        private configurationProvider: ConfigurationProvider
     ) {}
 
     // Logs out on the server and the local client.
@@ -50,6 +52,11 @@ export class LogoffRevocationService {
     // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
     // only the access token is revoked. Then the logout run.
     logoffAndRevokeTokens(urlHandler?: (url: string) => any) {
+        if (!this.configurationProvider.wellKnownEndpoints?.revocationEndpoint) {
+            this.loggerService.logDebug('revocation endpoint not supported');
+            this.logoff(urlHandler);
+        }
+
         if (this.storagePersistanceService.getRefreshToken()) {
             return this.revokeRefreshToken().pipe(
                 switchMap((result) => this.revokeAccessToken(result)),

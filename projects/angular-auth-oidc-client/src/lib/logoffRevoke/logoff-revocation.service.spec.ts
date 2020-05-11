@@ -2,6 +2,8 @@ import { async, TestBed } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
+import { ConfigurationProvider } from '../config/config.provider';
+import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { FlowsServiceMock } from '../flows/flows.service-mock';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { CheckSessionServiceMock } from '../iframe/check-session.service-mock';
@@ -25,6 +27,7 @@ describe('Logout and Revoke Service', () => {
     let checkSessionService: CheckSessionService;
     let flowsService: FlowsService;
     let redirectService: RedirectService;
+    let configurationProvider: ConfigurationProvider;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -37,6 +40,7 @@ describe('Logout and Revoke Service', () => {
                 { provide: CheckSessionService, useClass: CheckSessionServiceMock },
                 { provide: FlowsService, useClass: FlowsServiceMock },
                 { provide: RedirectService, useClass: RedirectServiceMock },
+                { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
             ],
         });
     });
@@ -50,6 +54,7 @@ describe('Logout and Revoke Service', () => {
         checkSessionService = TestBed.inject(CheckSessionService);
         flowsService = TestBed.inject(FlowsService);
         redirectService = TestBed.inject(RedirectService);
+        configurationProvider = TestBed.inject(ConfigurationProvider);
     });
 
     it('should create', () => {
