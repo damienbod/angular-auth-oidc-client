@@ -18,7 +18,7 @@ export class StateValidationService {
         private loggerService: LoggerService,
         private readonly configurationProvider: ConfigurationProvider,
         private readonly flowHelper: FlowHelper
-    ) {}
+    ) { }
 
     getValidatedStateResult(callbackContext: CallbackContext): StateValidationResult {
         if (callbackContext?.authResult.error) {
@@ -221,7 +221,10 @@ export class StateValidationService {
 
         const idTokenHeader = this.tokenHelperService.getHeaderFromToken(toReturn.idToken, false);
 
-        if (
+        // The at_hash is optional for the code flow
+        if (isCurrentFlowCodeFlow && !(toReturn.decodedIdToken.at_hash as string)) {
+            this.loggerService.logDebug('Code Flow active, and no at_hash in the id_token, skipping check!');
+        } else if (
             !this.tokenValidationService.validateIdTokenAtHash(
                 toReturn.accessToken,
                 toReturn.decodedIdToken.at_hash,
