@@ -23,15 +23,15 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
             postLogoutRedirectUri: window.location.origin,
             clientId: 'f1934a6e-958d-4198-9f36-6127cfc4cdb3',
             scope: 'openid https://damienbod.onmicrosoft.com/testapi/demo.read',
-            responseType: 'id_token token',
+            responseType: 'code',
             silentRenew: false,
             autoUserinfo: false,
             silentRenewUrl: window.location.origin + '/silent-renew.html',
             logLevel: LogLevel.Debug,
-            customParams: {
-                response_mode: 'fragment',
-                prompt: 'consent',
-            },
+            // customParams: {
+            //     response_mode: 'fragment',
+            //     prompt: 'consent',
+            // },
         });
 }
 
