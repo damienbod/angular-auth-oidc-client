@@ -125,6 +125,7 @@ describe('ConfigurationProviderTests', () => {
             disableIatOffsetValidation: false,
             storage: sessionStorage,
             customParams: {},
+            disableRefreshIdTokenAuthTimeValidation: false,
         };
 
         configurationProvider.setConfig(config, null);
@@ -167,6 +168,7 @@ describe('ConfigurationProviderTests', () => {
             disableIatOffsetValidation: false,
             storage: sessionStorage,
             customParams: {},
+            disableRefreshIdTokenAuthTimeValidation: false,
         };
 
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
