@@ -8,7 +8,7 @@
     "bugs": {
         "url": "https://github.com/damienbod/angular-auth-oidc-client/issues"
     },
-    "version": "11.0.1",
+    "version": "11.0.2",
     "scripts": {
         "ng": "ng",
         "build": "npm run build-lib",
@@ -33,7 +33,7 @@
         "start-sample-code-flow": "ng serve --ssl true --project sample-code-flow -o",
         "start-sample-code-flow-http-config": "ng serve --ssl true sample-code-flow-http-config -o",
         "start-sample-code-flow-refresh-tokens": "ng serve --ssl true sample-code-flow-refresh-tokens -o",
-        "start-sample-implicit-flow-ad-b2c": "ng serve --ssl true sample-implicit-flow-ad-b2c -o",
+        "start-sample-code-flow-refresh-tokens-azure-b2c": "ng serve --ssl true sample-code-flow-refresh-tokens-azure-b2c -o",
         "start-sample-implicit-flow-azuread": "ng serve --ssl true sample-implicit-flow-azuread -o",
         "start-sample-implicit-flow-google": "ng serve --ssl true sample-implicit-flow-google -o",
         "start-sample-implicit-flow-silent-renew": "ng serve --ssl true sample-implicit-flow-silent-renew -o",

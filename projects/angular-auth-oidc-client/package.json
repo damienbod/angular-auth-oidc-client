@@ -36,6 +36,6 @@
         "authorization"
     ],
     "license": "MIT",
-    "version": "11.0.1",
+    "version": "11.0.2",
     "description": "Angular Lib for OpenID Connect & OAuth2"
 }

@@ -22,16 +22,16 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
             redirectUrl: window.location.origin,
             postLogoutRedirectUri: window.location.origin,
             clientId: 'f1934a6e-958d-4198-9f36-6127cfc4cdb3',
-            scope: 'openid https://damienbod.onmicrosoft.com/testapi/demo.read',
-            responseType: 'id_token token',
-            silentRenew: false,
+            scope: 'openid offline_access https://damienbod.onmicrosoft.com/testapi/demo.read',
+            responseType: 'code',
+            silentRenew: true,
             autoUserinfo: false,
             silentRenewUrl: window.location.origin + '/silent-renew.html',
             logLevel: LogLevel.Debug,
-            customParams: {
-                response_mode: 'fragment',
-                prompt: 'consent',
-            },
+            renewTimeBeforeTokenExpiresInSeconds: 60,
+            useRefreshToken: true,
+            ignoreNonceAfterRefresh: true,
+            disableRefreshIdTokenAuthTimeValidation: true,
         });
 }
 
