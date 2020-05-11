@@ -28,8 +28,8 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
             autoUserinfo: false,
             silentRenewUrl: window.location.origin + '/silent-renew.html',
             logLevel: LogLevel.Debug,
-            renewTimeBeforeTokenExpiresInSeconds: 3500,
-            // useRefreshToken: true,
+            renewTimeBeforeTokenExpiresInSeconds: 60,
+            // useRefreshToken: true, // for refresh renew, but revocation and one time usage is missing from server impl.
             // ignoreNonceAfterRefresh: true,
             // disableRefreshIdTokenAuthTimeValidation: true,
         });
