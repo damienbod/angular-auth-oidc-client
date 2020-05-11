@@ -69,7 +69,7 @@ describe('User Service', () => {
                 responseType: 'notcode',
             };
 
-            configProvider.setConfig(config, null);
+            configProvider.setConfig(config);
 
             spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
 
@@ -88,7 +88,7 @@ describe('User Service', () => {
                 responseType: 'notcode',
             };
 
-            configProvider.setConfig(config, null);
+            configProvider.setConfig(config);
 
             spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
             spyOn(userService, 'setUserDataToStore');
@@ -110,7 +110,7 @@ describe('User Service', () => {
                 responseType: 'code',
             };
 
-            configProvider.setConfig(config, null);
+            configProvider.setConfig(config);
 
             spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
 
@@ -130,7 +130,7 @@ describe('User Service', () => {
                 responseType: 'code',
             };
 
-            configProvider.setConfig(config, null);
+            configProvider.setConfig(config);
 
             spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
             const spy = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
@@ -155,7 +155,7 @@ describe('User Service', () => {
                 responseType: 'code',
             };
 
-            configProvider.setConfig(config, null);
+            configProvider.setConfig(config);
 
             spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
             const spy = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
@@ -183,7 +183,7 @@ describe('User Service', () => {
                 responseType: 'code',
             };
 
-            configProvider.setConfig(config, null);
+            configProvider.setConfig(config);
 
             spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
             const spyGetIdentityUserData = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));

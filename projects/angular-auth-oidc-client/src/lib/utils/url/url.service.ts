@@ -4,6 +4,7 @@ import { oneLineTrim } from 'common-tags';
 import { ConfigurationProvider } from '../../config/config.provider';
 import { FlowsDataService } from '../../flows/flows-data.service';
 import { LoggerService } from '../../logging/logger.service';
+import { StoragePersistanceService } from '../../storage/storage-persistance.service';
 import { TokenValidationService } from '../../validation/token-validation.service';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { WINDOW } from '../window/window.reference';
@@ -19,6 +20,7 @@ export class UrlService {
         private readonly flowsDataService: FlowsDataService,
         private readonly flowHelper: FlowHelper,
         private tokenValidationService: TokenValidationService,
+        private storagePersistanceService: StoragePersistanceService,
         @Inject(WINDOW) private window: any
     ) {}
 
@@ -59,7 +61,7 @@ export class UrlService {
     }
 
     createEndSessionUrl(idTokenHint: string) {
-        const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints?.endSessionEndpoint;
+        const endSessionEndpoint = this.storagePersistanceService.authWellKnownEndPoints?.endSessionEndpoint;
 
         if (!endSessionEndpoint) {
             return null;
@@ -105,13 +107,13 @@ export class UrlService {
     }
 
     getRevocationEndpointUrl() {
-        const endSessionEndpoint = this.configurationProvider.wellKnownEndpoints?.revocationEndpoint;
+        const revocationEndpoint = this.storagePersistanceService.authWellKnownEndPoints?.revocationEndpoint;
 
-        if (!endSessionEndpoint) {
+        if (!revocationEndpoint) {
             return null;
         }
 
-        const urlParts = endSessionEndpoint.split('?');
+        const urlParts = revocationEndpoint.split('?');
 
         const revocationEndpointUrl = urlParts[0];
         return revocationEndpointUrl;
@@ -170,7 +172,7 @@ export class UrlService {
         prompt?: string,
         customRequestParams?: { [key: string]: string | number | boolean }
     ): string {
-        const authorizationEndpoint = this.configurationProvider?.wellKnownEndpoints?.authorizationEndpoint;
+        const authorizationEndpoint = this.storagePersistanceService.authWellKnownEndPoints?.authorizationEndpoint;
 
         if (!authorizationEndpoint) {
             this.loggerService.logError(`Can not create an authorize url when authorizationEndpoint is '${authorizationEndpoint}'`);
@@ -245,7 +247,7 @@ export class UrlService {
 
         this.loggerService.logDebug('RefreshSession created. adding myautostate: ', state);
 
-        if (this.configurationProvider.wellKnownEndpoints) {
+        if (this.storagePersistanceService.authWellKnownEndPoints) {
             return this.createAuthorizeUrl('', silentRenewUrl, nonce, state, 'none');
         }
 
@@ -269,7 +271,7 @@ export class UrlService {
             return null;
         }
 
-        if (this.configurationProvider.wellKnownEndpoints) {
+        if (this.storagePersistanceService.authWellKnownEndPoints) {
             return this.createAuthorizeUrl(codeChallenge, silentRenewUrl, nonce, state, 'none');
         }
 
@@ -288,7 +290,7 @@ export class UrlService {
             return null;
         }
 
-        if (this.configurationProvider.wellKnownEndpoints) {
+        if (this.storagePersistanceService.authWellKnownEndPoints) {
             return this.createAuthorizeUrl('', redirectUrl, nonce, state, null, customParams);
         }
 
@@ -311,7 +313,7 @@ export class UrlService {
         const codeVerifier = this.flowsDataService.createCodeVerifier();
         const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
 
-        if (this.configurationProvider.wellKnownEndpoints) {
+        if (this.storagePersistanceService.authWellKnownEndPoints) {
             return this.createAuthorizeUrl(codeChallenge, redirectUrl, nonce, state, null, customParams);
         }
 

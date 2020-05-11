@@ -57,7 +57,7 @@ describe('TokenValidationService', () => {
         config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
-        configProvider.setConfig(config, null);
+        configProvider.setConfig(config);
 
         const dataIdToken = { aud: 'banana' };
         const valueTrue = tokenvalidationService.validateIdTokenAud(dataIdToken, 'banana');
@@ -83,7 +83,7 @@ describe('TokenValidationService', () => {
         config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
-        configProvider.setConfig(config, null);
+        configProvider.setConfig(config);
 
         const dataIdToken = {
             aud: ['banana', 'apple', 'https://nice.dom'],
@@ -144,7 +144,7 @@ describe('TokenValidationService', () => {
         config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
-        configProvider.setConfig(config, null);
+        configProvider.setConfig(config);
 
         const dataIdToken = {
             aud: ['banana', 'apple', '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com'],
@@ -179,7 +179,7 @@ describe('TokenValidationService', () => {
         config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
-        configProvider.setConfig(config, null);
+        configProvider.setConfig(config);
 
         const dataIdToken = {
             aud: 'banana',
@@ -213,7 +213,7 @@ describe('TokenValidationService', () => {
         config.logLevel = LogLevel.Debug;
         config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
-        configProvider.setConfig(config, null);
+        configProvider.setConfig(config);
 
         const dataIdToken = {
             aud: ['banana'],

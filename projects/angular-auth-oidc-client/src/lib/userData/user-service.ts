@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
-import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -24,7 +23,6 @@ export class UserService {
         private eventService: PublicEventsService,
         private loggerService: LoggerService,
         private tokenHelperService: TokenHelperService,
-        private readonly configurationProvider: ConfigurationProvider,
         private readonly flowHelper: FlowHelper
     ) {}
 
@@ -108,22 +106,21 @@ export class UserService {
     private getIdentityUserData(): Observable<any> {
         const token = this.storagePersistanceService.getAccessToken();
 
-        if (!this.configurationProvider.wellKnownEndpoints) {
+        if (!this.storagePersistanceService.authWellKnownEndPoints) {
             this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
-
             return throwError('authWellKnownEndpoints is undefined');
         }
 
-        const canGetUserData = this.configurationProvider?.wellKnownEndpoints?.userinfoEndpoint;
+        const { userinfoEndpoint } = this.storagePersistanceService.authWellKnownEndPoints;
 
-        if (!canGetUserData) {
+        if (!userinfoEndpoint) {
             this.loggerService.logError(
                 'init check session: authWellKnownEndpoints.userinfo_endpoint is undefined; set auto_userinfo = false in config'
             );
             return throwError('authWellKnownEndpoints.userinfo_endpoint is undefined');
         }
 
-        return this.oidcDataService.get(this.configurationProvider.wellKnownEndpoints.userinfoEndpoint, token);
+        return this.oidcDataService.get(userinfoEndpoint, token);
     }
 
     private validateUserdataSubIdToken(idTokenSub: any, userdataSub: any): boolean {

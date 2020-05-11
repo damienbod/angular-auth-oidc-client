@@ -140,14 +140,14 @@ export class StateValidationService {
                 return toReturn;
             }
 
-            if (this.configurationProvider.wellKnownEndpoints) {
+            if (this.storagePersistanceService.authWellKnownEndPoints) {
                 if (this.configurationProvider.openIDConfiguration.issValidationOff) {
                     this.loggerService.logDebug('iss validation is turned off, this is not recommended!');
                 } else if (
                     !this.configurationProvider.openIDConfiguration.issValidationOff &&
                     !this.tokenValidationService.validateIdTokenIss(
                         toReturn.decodedIdToken,
-                        this.configurationProvider.wellKnownEndpoints.issuer
+                        this.storagePersistanceService.authWellKnownEndPoints.issuer
                     )
                 ) {
                     this.loggerService.logWarning('authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer');

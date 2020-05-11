@@ -18,6 +18,8 @@ describe('SecurityCheckSessionTests', () => {
     let loggerService: LoggerService;
     let configurationProvider: ConfigurationProvider;
     let iFrameService: IFrameService;
+    let storagePersistanceService: StoragePersistanceService;
+
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
@@ -42,6 +44,7 @@ describe('SecurityCheckSessionTests', () => {
         configurationProvider = TestBed.inject(ConfigurationProvider);
         loggerService = TestBed.inject(LoggerService);
         iFrameService = TestBed.inject(IFrameService);
+        storagePersistanceService = TestBed.inject(StoragePersistanceService);
     });
 
     afterEach(() => {
@@ -55,7 +58,7 @@ describe('SecurityCheckSessionTests', () => {
         }
 
         // reset config after each test
-        configurationProvider.setConfig(null, null);
+        configurationProvider.setConfig(null);
     });
 
     it('should create', () => {
@@ -86,7 +89,7 @@ describe('SecurityCheckSessionTests', () => {
             checkSessionIframe: 'someTestingValue',
         };
 
-        configurationProvider.setConfig(null, authWellKnownEndpoints);
+        spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
         spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
 
         (checkSessionService as any).init();
@@ -111,7 +114,7 @@ describe('SecurityCheckSessionTests', () => {
     it('log warning if authWellKnownEndpoints.check_session_iframe is not existing', () => {
         const spyLogWarning = spyOn<any>(loggerService, 'logWarning');
         spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
-        configurationProvider.setConfig(null, { checkSessionIframe: undefined });
+        spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue({ checkSessionIframe: undefined });
         (checkSessionService as any).init();
 
         expect(spyLogWarning).toHaveBeenCalledWith('init check session: checkSessionIframe is not configured to run');
@@ -119,7 +122,7 @@ describe('SecurityCheckSessionTests', () => {
 
     it('start() calls pollserversession() with clientId if no scheduledheartbeat is set', () => {
         const spy = spyOn<any>(checkSessionService, 'pollServerSession');
-        configurationProvider.setConfig({ clientId: 'clientId' }, null);
+        configurationProvider.setConfig({ clientId: 'clientId' });
         checkSessionService.start();
         expect(spy).toHaveBeenCalledWith('clientId');
     });

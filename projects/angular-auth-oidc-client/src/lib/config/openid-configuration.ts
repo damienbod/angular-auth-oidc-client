@@ -28,4 +28,5 @@ export interface OpenIdConfiguration {
     disableIatOffsetValidation?: boolean;
     storage?: any;
     customParams?: { [key: string]: string | number | boolean };
+    eagerLoadAuthWellKnownEndpoints?: boolean;
 }

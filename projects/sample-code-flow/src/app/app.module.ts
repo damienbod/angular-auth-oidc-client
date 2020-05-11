@@ -19,6 +19,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
             silentRenewUrl: `${window.location.origin}/silent-renew.html`,
             renewTimeBeforeTokenExpiresInSeconds: 10,
             logLevel: LogLevel.Debug,
+            eagerLoadAuthWellKnownEndpoints: false,
         });
 }
 

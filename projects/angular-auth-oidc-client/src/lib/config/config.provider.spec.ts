@@ -25,7 +25,7 @@ describe('ConfigurationProviderTests', () => {
     });
 
     it('setup defines openIDConfiguration', () => {
-        configurationProvider.setConfig({ stsServer: 'hello' }, null);
+        configurationProvider.setConfig({ stsServer: 'hello' });
 
         expect(configurationProvider.openIDConfiguration).toBeDefined();
     });
@@ -33,26 +33,6 @@ describe('ConfigurationProviderTests', () => {
     it('get openIDConfiguration returns null when openIdConfigurationInternal is falsy', () => {
         // do not set anything
         expect(configurationProvider.openIDConfiguration).toBeNull();
-    });
-
-    it('setup defines authwellknownendpoints', () => {
-        const toPass = {
-            issuer: '',
-            jwks_uri: '',
-            authorization_endpoint: '',
-            token_endpoint: '',
-            userinfo_endpoint: '',
-            end_session_endpoint: '',
-            check_session_iframe: '',
-            revocation_endpoint: '',
-            introspection_endpoint: '',
-        };
-
-        const expected = { ...toPass };
-
-        configurationProvider.setConfig(null, toPass);
-
-        expect(configurationProvider.wellKnownEndpoints).toEqual(expected);
     });
 
     it('setup defines default openIDConfiguration', () => {
@@ -84,9 +64,10 @@ describe('ConfigurationProviderTests', () => {
             disableIatOffsetValidation: false,
             storage: sessionStorage,
             customParams: {},
+            eagerLoadAuthWellKnownEndpoints: true,
         };
 
-        configurationProvider.setConfig({ stsServer: 'https://please_set' }, null);
+        configurationProvider.setConfig({ stsServer: 'https://please_set' });
 
         expect(configurationProvider.openIDConfiguration).toEqual(defaultConfig);
     });
@@ -124,9 +105,10 @@ describe('ConfigurationProviderTests', () => {
             disableIatOffsetValidation: false,
             storage: sessionStorage,
             customParams: {},
+            eagerLoadAuthWellKnownEndpoints: true,
         };
 
-        configurationProvider.setConfig(config, null);
+        configurationProvider.setConfig(config);
 
         expect(configurationProvider.openIDConfiguration).toEqual(expected);
     });
@@ -166,11 +148,12 @@ describe('ConfigurationProviderTests', () => {
             disableIatOffsetValidation: false,
             storage: sessionStorage,
             customParams: {},
+            eagerLoadAuthWellKnownEndpoints: true,
         };
 
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
 
-        configurationProvider.setConfig(config, null);
+        configurationProvider.setConfig(config);
 
         expect(configurationProvider.openIDConfiguration).toEqual(expected);
     });
@@ -185,7 +168,7 @@ describe('ConfigurationProviderTests', () => {
 
         const spy = spyOn(configurationProvider as any, 'setSpecialCases');
 
-        configurationProvider.setConfig(config, null);
+        configurationProvider.setConfig(config);
 
         expect(spy).toHaveBeenCalled();
     });
@@ -200,7 +183,7 @@ describe('ConfigurationProviderTests', () => {
 
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(true);
 
-        configurationProvider.setConfig(config, null);
+        configurationProvider.setConfig(config);
 
         expect(configurationProvider.openIDConfiguration.silentRenew).toEqual(true);
         expect(configurationProvider.openIDConfiguration.startCheckSession).toEqual(true);
@@ -216,42 +199,18 @@ describe('ConfigurationProviderTests', () => {
 
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
 
-        configurationProvider.setConfig(config, null);
+        configurationProvider.setConfig(config);
 
         expect(configurationProvider.openIDConfiguration.silentRenew).toEqual(false);
         expect(configurationProvider.openIDConfiguration.startCheckSession).toEqual(false);
     });
 
-    it('asking for public config returns null when internal configs are both not set', () => {
-        configurationProvider.setConfig(null, null);
-
-        const currentConfig = configurationProvider.configuration;
-
-        expect(currentConfig).toBeNull();
-    });
-
     it('public config has default config if config is not getting passed', () => {
-        configurationProvider.setConfig(null, {});
+        configurationProvider.setConfig(null);
 
-        const currentConfig = configurationProvider.configuration;
-
-        expect(currentConfig).not.toBeNull();
-        expect(currentConfig.configuration).toEqual(DEFAULT_CONFIG);
-    });
-
-    it('asking for public config returns null when internal configs if wellknown is not set', () => {
-        configurationProvider.setConfig({}, null);
-
-        const currentConfig = configurationProvider.configuration;
-
-        expect(currentConfig).toBeNull();
-    });
-
-    it('asking for public config returns config when internal configs are both set', () => {
-        configurationProvider.setConfig({}, {});
-
-        const currentConfig = configurationProvider.configuration;
+        const currentConfig = configurationProvider.openIDConfiguration;
 
         expect(currentConfig).not.toBeNull();
+        expect(currentConfig).toEqual(DEFAULT_CONFIG);
     });
 });

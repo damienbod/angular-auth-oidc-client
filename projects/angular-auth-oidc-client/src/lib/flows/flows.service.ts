@@ -7,6 +7,7 @@ import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
+import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { UserService } from '../userData/user-service';
 import { UrlService } from '../utils/url/url.service';
 import { StateValidationResult } from '../validation/state-validation-result';
@@ -29,7 +30,8 @@ export class FlowsService {
         private readonly signinKeyDataService: SigninKeyDataService,
         private readonly dataService: DataService,
         private readonly userService: UserService,
-        private readonly stateValidationService: StateValidationService
+        private readonly stateValidationService: StateValidationService,
+        private readonly storagePersistanceService: StoragePersistanceService
     ) {}
 
     resetAuthorizationData(): void {
@@ -179,14 +181,14 @@ export class FlowsService {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-        const tokenRequestUrl = this.getTokenEndpoint();
-        if (!tokenRequestUrl) {
+        const { tokenEndpoint } = this.storagePersistanceService.authWellKnownEndPoints;
+        if (!tokenEndpoint) {
             return throwError('Token Endpoint not defined');
         }
 
         const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken);
 
-        return this.dataService.post(tokenRequestUrl, data, headers).pipe(
+        return this.dataService.post(tokenEndpoint, data, headers).pipe(
             switchMap((response: any) => {
                 this.loggerService.logDebug('token refresh response: ', response);
                 let authResult: any = new Object();
@@ -216,8 +218,8 @@ export class FlowsService {
             return throwError('codeFlowCodeRequest incorrect state');
         }
 
-        const tokenRequestUrl = this.getTokenEndpoint();
-        if (!tokenRequestUrl) {
+        const { tokenEndpoint } = this.storagePersistanceService.authWellKnownEndPoints;
+        if (!tokenEndpoint) {
             return throwError('Token Endpoint not defined');
         }
 
@@ -226,7 +228,7 @@ export class FlowsService {
 
         const bodyForCodeFlow = this.urlService.createBodyForCodeFlowCodeRequest(callbackContext.code);
 
-        return this.dataService.post(tokenRequestUrl, bodyForCodeFlow, headers).pipe(
+        return this.dataService.post(tokenEndpoint, bodyForCodeFlow, headers).pipe(
             switchMap((response) => {
                 let authResult: any = new Object();
                 authResult = response;
@@ -384,10 +386,6 @@ export class FlowsService {
             validationResult,
             isRenewProcess,
         });
-    }
-
-    private getTokenEndpoint(): string {
-        return this.configurationProvider.wellKnownEndpoints?.tokenEndpoint || null;
     }
 
     private historyCleanUpTurnedOn() {

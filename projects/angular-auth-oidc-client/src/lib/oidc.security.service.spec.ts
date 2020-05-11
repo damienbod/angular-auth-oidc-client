@@ -15,6 +15,7 @@ import { IFrameService } from './iframe/existing-iframe.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
 import { LoggerService } from './logging/logger.service';
 import { LoggerServiceMock } from './logging/logger.service-mock';
+import { LoginService } from './login/login.service';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { OidcSecurityService } from './oidc.security.service';
 import { StoragePersistanceService } from './storage/storage-persistance.service';
@@ -43,6 +44,7 @@ describe('OidcSecurityService', () => {
     let flowsService: FlowsService;
     let redirectService: RedirectService;
     let logoffRevocationService: LogoffRevocationService;
+    let loginService: LoginService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -69,6 +71,7 @@ describe('OidcSecurityService', () => {
                 TokenValidationService,
                 FlowsService,
                 RedirectService,
+                LoginService,
             ],
         });
     });
@@ -91,6 +94,7 @@ describe('OidcSecurityService', () => {
         flowsService = TestBed.inject(FlowsService);
         redirectService = TestBed.inject(RedirectService);
         logoffRevocationService = TestBed.inject(LogoffRevocationService);
+        loginService = TestBed.inject(LoginService);
     });
 
     it('should create', () => {
@@ -103,7 +107,7 @@ describe('OidcSecurityService', () => {
         });
 
         it('returns configProvider.configuration', () => {
-            const spy = spyOnProperty(configurationProvider, 'configuration', 'get');
+            const spy = spyOnProperty(configurationProvider, 'openIDConfiguration', 'get');
             const result = oidcSecurityService.configuration;
             expect(spy).toHaveBeenCalled();
         });
@@ -118,6 +122,20 @@ describe('OidcSecurityService', () => {
             const spy = spyOnProperty(userService, 'userData$', 'get');
             const result = oidcSecurityService.userData$;
             expect(spy).toHaveBeenCalled();
+        });
+    });
+
+    describe('authorize', () => {
+        it('calls loginservice login', () => {
+            const spy = spyOn(loginService, 'login');
+            oidcSecurityService.authorize();
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it('calls loginservice login with params if given', () => {
+            const spy = spyOn(loginService, 'login');
+            oidcSecurityService.authorize({ customParams: { any: 'thing' } });
+            expect(spy).toHaveBeenCalledWith({ customParams: { any: 'thing' } });
         });
     });
 
@@ -326,98 +344,7 @@ describe('OidcSecurityService', () => {
         }));
     });
 
-    describe('authorize', () => {
-        it('does nothing if it has no valid config and logs error', async(() => {
-            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(false);
-            const spy = spyOn(loggerService, 'logError');
-            const result = oidcSecurityService.authorize();
-            expect(result).toBeUndefined();
-            expect(spy).toHaveBeenCalled();
-        }));
-
-        it('does nothing if it has no valid config and logs error', async(() => {
-            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(false);
-            const spy = spyOn(loggerService, 'logError');
-            const result = oidcSecurityService.authorize();
-            expect(result).toBeUndefined();
-            expect(spy).toHaveBeenCalled();
-        }));
-
-        it('does nothing if it has an invalid response type', async(() => {
-            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
-            const spy = spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(false);
-            const result = oidcSecurityService.authorize();
-            expect(result).toBeUndefined();
-            expect(spy).toHaveBeenCalled();
-        }));
-
-        it('calls flowsService.resetAuthorizationData() if everything fits', async(() => {
-            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
-            spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            const spy = spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
-            spyOn(redirectService, 'redirectTo').and.callFake(() => {});
-            const result = oidcSecurityService.authorize();
-            expect(result).toBeUndefined();
-            expect(spy).toHaveBeenCalled();
-        }));
-
-        it('calls urlService.getAuthorizeUrl() if everything fits', async(() => {
-            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
-            spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
-            const spy = spyOn(urlService, 'getAuthorizeUrl');
-            spyOn(redirectService, 'redirectTo').and.callFake(() => {});
-            const result = oidcSecurityService.authorize();
-            expect(result).toBeUndefined();
-            expect(spy).toHaveBeenCalled();
-        }));
-
-        it('redirects to url with no url handler', async(() => {
-            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
-            spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
-            spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
-            const redirectspy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
-            const result = oidcSecurityService.authorize();
-            expect(result).toBeUndefined();
-            expect(redirectspy).toHaveBeenCalledWith('someUrl');
-        }));
-
-        it('redirects to url with url handler when urlhandler is given', async(() => {
-            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
-            spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
-            spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
-            const redirectspy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
-            const spy = jasmine.createSpy();
-            const urlHandler = (url) => {
-                spy(url);
-            };
-            const result = oidcSecurityService.authorize({ urlHandler });
-            expect(result).toBeUndefined();
-            expect(spy).toHaveBeenCalledWith('someUrl');
-            expect(redirectspy).not.toHaveBeenCalled();
-        }));
-
-        it('calls getAuthorizeUrl with custom params if they are given as parameter', async(() => {
-            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
-            spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
-            const getAuthorizeUrlSpy = spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
-            const redirectspy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
-
-            const result = oidcSecurityService.authorize({ customParams: { to: 'add', as: 'well' } });
-            expect(result).toBeUndefined();
-            expect(redirectspy).toHaveBeenCalledWith('someUrl');
-            expect(getAuthorizeUrlSpy).toHaveBeenCalledWith({ to: 'add', as: 'well' });
-        }));
-    });
+    describe('authorize', () => {});
 
     describe('logoffAndRevokeTokens', () => {
         it('calls logoffRevocationService.logoffAndRevokeTokens if no urlHandler is given', async(() => {

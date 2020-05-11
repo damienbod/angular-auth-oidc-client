@@ -67,15 +67,16 @@ export class CheckSessionService {
             return;
         }
 
-        if (!this.configurationProvider.wellKnownEndpoints) {
+        if (!this.storagePersistanceService.authWellKnownEndPoints) {
             this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined. Returning.');
             return;
         }
 
         const existingIframe = this.getOrCreateIframe();
+        const { checkSessionIframe } = this.storagePersistanceService.authWellKnownEndPoints;
 
-        if (this.configurationProvider.wellKnownEndpoints.checkSessionIframe) {
-            existingIframe.contentWindow.location.replace(this.configurationProvider.wellKnownEndpoints.checkSessionIframe);
+        if (checkSessionIframe) {
+            existingIframe.contentWindow.location.replace(checkSessionIframe);
         } else {
             this.loggerService.logWarning('init check session: checkSessionIframe is not configured to run');
         }

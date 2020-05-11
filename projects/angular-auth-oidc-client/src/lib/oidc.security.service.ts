@@ -1,28 +1,25 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { AuthOptions } from './auth-options';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
 import { ConfigurationProvider } from './config/config.provider';
 import { FlowsDataService } from './flows/flows-data.service';
-import { FlowsService } from './flows/flows.service';
 import { CheckSessionService } from './iframe/check-session.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
 import { LoggerService } from './logging/logger.service';
+import { AuthOptions } from './login/auth-options';
+import { LoginService } from './login/login.service';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { UserService } from './userData/user-service';
-import { RedirectService } from './utils/redirect/redirect.service';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
-import { UrlService } from './utils/url/url.service';
-import { TokenValidationService } from './validation/token-validation.service';
 
 @Injectable()
 export class OidcSecurityService {
     private TOKEN_REFRESH_INTERVALL_IN_SECONDS = 3;
 
     get configuration() {
-        return this.configurationProvider.configuration;
+        return this.configurationProvider.openIDConfiguration;
     }
 
     get userData$() {
@@ -45,17 +42,14 @@ export class OidcSecurityService {
         private checkSessionService: CheckSessionService,
         private silentRenewService: SilentRenewService,
         private userService: UserService,
-        private tokenValidationService: TokenValidationService,
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,
         private configurationProvider: ConfigurationProvider,
-        private urlService: UrlService,
         private authStateService: AuthStateService,
         private flowsDataService: FlowsDataService,
-        private flowsService: FlowsService,
         private callbackService: CallbackService,
         private logoffRevocationService: LogoffRevocationService,
-        private redirectService: RedirectService
+        private loginService: LoginService
     ) {}
 
     checkAuth(): Observable<boolean> {
@@ -120,29 +114,7 @@ export class OidcSecurityService {
 
     // Code Flow with PCKE or Implicit Flow
     authorize(authOptions?: AuthOptions) {
-        if (!this.configurationProvider.hasValidConfig()) {
-            this.loggerService.logError('Well known endpoints must be loaded before user can login!');
-            return;
-        }
-
-        if (!this.tokenValidationService.configValidateResponseType(this.configurationProvider.openIDConfiguration.responseType)) {
-            this.loggerService.logError('Invalid response type!');
-            return;
-        }
-
-        this.flowsService.resetAuthorizationData();
-
-        this.loggerService.logDebug('BEGIN Authorize OIDC Flow, no auth data');
-
-        const { urlHandler, customParams } = authOptions || {};
-
-        const url = this.urlService.getAuthorizeUrl(customParams);
-
-        if (urlHandler) {
-            urlHandler(url);
-        } else {
-            this.redirectService.redirectTo(url);
-        }
+        this.loginService.login(authOptions);
     }
 
     // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
