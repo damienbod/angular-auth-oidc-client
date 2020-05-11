@@ -26,7 +26,7 @@ export class NavMenuComponent implements OnInit {
     }
 
     logout() {
-        this.oidcSecurityService.logoffAndRevokeTokens().subscribe((result) => console.log(result));
+        this.oidcSecurityService.logout();
     }
 
     collapse() {
