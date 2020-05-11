@@ -133,7 +133,7 @@ export class UrlService {
         const dataForBody = oneLineTrim`grant_type=authorization_code
             &client_id=${clientId}
             &code_verifier=${codeVerifier}
-            &code=${code}&client_secret=hP:oSyAg3XHitZZfTb20@7/H@vSBUkr1`;
+            &code=${code}`;
 
         const silentRenewUrl = this.getSilentRenewUrl();
 
