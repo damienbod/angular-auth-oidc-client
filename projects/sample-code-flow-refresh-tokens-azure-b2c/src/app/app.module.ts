@@ -28,10 +28,10 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
             autoUserinfo: false,
             silentRenewUrl: window.location.origin + '/silent-renew.html',
             logLevel: LogLevel.Debug,
-            renewTimeBeforeTokenExpiresInSeconds: 60,
-            useRefreshToken: true,
-            ignoreNonceAfterRefresh: true,
-            disableRefreshIdTokenAuthTimeValidation: true,
+            renewTimeBeforeTokenExpiresInSeconds: 3500,
+            // useRefreshToken: true,
+            // ignoreNonceAfterRefresh: true,
+            // disableRefreshIdTokenAuthTimeValidation: true,
         });
 }
 

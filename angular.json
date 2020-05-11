@@ -631,7 +631,8 @@
                         "aot": true,
                         "assets": [
                             "projects/sample-code-flow-refresh-tokens-azure-b2c/src/favicon.ico",
-                            "projects/sample-code-flow-refresh-tokens-azure-b2c/src/assets"
+                            "projects/sample-code-flow-refresh-tokens-azure-b2c/src/assets",
+                            "projects/sample-code-flow-refresh-tokens-azure-b2c/src/silent-renew.html"
                         ],
                         "styles": ["projects/sample-code-flow-refresh-tokens-azure-b2c/src/styles.css"],
                         "scripts": []
