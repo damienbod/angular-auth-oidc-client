@@ -28,4 +28,7 @@ export interface OpenIdConfiguration {
     disableIatOffsetValidation?: boolean;
     storage?: any;
     customParams?: { [key: string]: string | number | boolean };
+
+    // Azure B2C have implemented this incorrectly. Add support for to disable this until fixed.
+    disableRefreshIdTokenAuthTimeValidation?: boolean;
 }

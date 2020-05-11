@@ -18,7 +18,7 @@ export class StateValidationService {
         private loggerService: LoggerService,
         private readonly configurationProvider: ConfigurationProvider,
         private readonly flowHelper: FlowHelper
-    ) { }
+    ) {}
 
     getValidatedStateResult(callbackContext: CallbackContext): StateValidationResult {
         if (callbackContext?.authResult.error) {
@@ -45,27 +45,37 @@ export class StateValidationService {
 
         // its iss Claim Value MUST be the same as in the ID Token issued when the original authentication occurred,
         if (decodedIdToken.iss !== newIdToken.iss) {
+            this.loggerService.logDebug(`iss do not match: ${decodedIdToken.iss} ${newIdToken.iss}`);
             return false;
         }
         // its azp Claim Value MUST be the same as in the ID Token issued when the original authentication occurred;
         //   if no azp Claim was present in the original ID Token, one MUST NOT be present in the new ID Token, and
         // otherwise, the same rules apply as apply when issuing an ID Token at the time of the original authentication.
         if (decodedIdToken.azp !== newIdToken.azp) {
+            this.loggerService.logDebug(`azp do not match: ${decodedIdToken.azp} ${newIdToken.azp}`);
             return false;
         }
         // its sub Claim Value MUST be the same as in the ID Token issued when the original authentication occurred,
         if (decodedIdToken.sub !== newIdToken.sub) {
+            this.loggerService.logDebug(`sub do not match: ${decodedIdToken.sub} ${newIdToken.sub}`);
             return false;
         }
 
         // its aud Claim Value MUST be the same as in the ID Token issued when the original authentication occurred,
         if (decodedIdToken.aud !== newIdToken.aud) {
+            this.loggerService.logDebug(`aud do not match: ${decodedIdToken.aud} ${newIdToken.aud}`);
             return false;
         }
+
+        if (this.configurationProvider.openIDConfiguration.disableRefreshIdTokenAuthTimeValidation) {
+            return true;
+        }
+
         // its iat Claim MUST represent the time that the new ID Token is issued,
         // if the ID Token contains an auth_time Claim, its value MUST represent the time of the original authentication
         // - not the time that the new ID token is issued,
         if (decodedIdToken.auth_time !== newIdToken.auth_time) {
+            this.loggerService.logDebug(`auth_time do not match: ${decodedIdToken.auth_time} ${newIdToken.auth_time}`);
             return false;
         }
 
