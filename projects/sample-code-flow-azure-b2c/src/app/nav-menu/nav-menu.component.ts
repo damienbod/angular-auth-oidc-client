@@ -26,7 +26,7 @@ export class NavMenuComponent implements OnInit {
     }
 
     logout() {
-        this.oidcSecurityService.logout();
+        this.oidcSecurityService.logoff();
     }
 
     collapse() {
