@@ -465,7 +465,7 @@ describe('State Validation Service', () => {
             validationResult: null,
             existingIdToken: null,
         };
-        const state = stateValidationService.validateState(callbackContext);
+        const state = stateValidationService.getValidatedStateResult(callbackContext);
 
         expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback id token expired');
 
@@ -1186,5 +1186,33 @@ describe('State Validation Service', () => {
         const isValid = (stateValidationService as any).isIdTokenAfterRefreshTokenRequestValid(callbackContext, decodedIdToken);
 
         expect(isValid).toBe(false);
+    });
+
+    it('should return invalid context error', () => {
+        spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
+
+        config.responseType = 'id_token token';
+
+        config.maxIdTokenIatOffsetAllowedInSeconds = 0;
+        spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(false);
+        configProvider.setConfig(config, authWellKnownEndpoints);
+
+        const callbackContext = {
+            code: 'fdffsdfsdf',
+            refreshToken: null,
+            state: 'fdffsggggggdfsdf',
+            sessionState: 'fdffsggggggdfsdf',
+            existingIdToken: null,
+            authResult: {
+                error: 'access_tokenTEST',
+            },
+            isRenewProcess: false,
+            jwtKeys: new JwtKeys(),
+            validationResult: null,
+        };
+
+        const isValid = stateValidationService.getValidatedStateResult(callbackContext);
+
+        expect(isValid.authResponseIsValid).toBe(false);
     });
 });
