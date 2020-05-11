@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
 import { ConfigurationProvider } from './config/config.provider';
+import { PublicConfiguration } from './config/public-configuration';
 import { FlowsDataService } from './flows/flows-data.service';
 import { CheckSessionService } from './iframe/check-session.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
@@ -11,6 +12,7 @@ import { LoggerService } from './logging/logger.service';
 import { AuthOptions } from './login/auth-options';
 import { LoginService } from './login/login.service';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
+import { StoragePersistanceService } from './storage/storage-persistance.service';
 import { UserService } from './userData/user-service';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
 
@@ -18,8 +20,11 @@ import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.servic
 export class OidcSecurityService {
     private TOKEN_REFRESH_INTERVALL_IN_SECONDS = 3;
 
-    get configuration() {
-        return this.configurationProvider.openIDConfiguration;
+    get configuration(): PublicConfiguration {
+        return {
+            configuration: this.configurationProvider.openIDConfiguration,
+            wellknown: this.storagePersistanceService.authWellKnownEndPoints,
+        };
     }
 
     get userData$() {
@@ -49,7 +54,8 @@ export class OidcSecurityService {
         private flowsDataService: FlowsDataService,
         private callbackService: CallbackService,
         private logoffRevocationService: LogoffRevocationService,
-        private loginService: LoginService
+        private loginService: LoginService,
+        private storagePersistanceService: StoragePersistanceService
     ) {}
 
     checkAuth(): Observable<boolean> {
