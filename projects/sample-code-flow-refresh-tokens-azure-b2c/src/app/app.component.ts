@@ -28,21 +28,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {}
 
-    login() {
-        console.log('start login');
-        this.oidcSecurityService.authorize();
-    }
-
-    refreshSession() {
-        console.log('start refreshSession');
-        this.oidcSecurityService.authorize();
-    }
-
-    logout() {
-        console.log('start logoff');
-        this.oidcSecurityService.logoff();
-    }
-
     private navigateToStoredEndpoint() {
         const path = this.read('redirect');
 
