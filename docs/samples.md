@@ -4,7 +4,7 @@
 -   [Code Flow PKCE with Refresh tokens](#code-flow-pkce-with-refresh-tokens)
 -   [Code Flow PKCE Auto login](#code-flow-pkce-auto-login)
 -   [Code Flow with PKCE basic with silent renew](#code-flow-with-pkce-basic-with-silent-renew)
--   [Azure B2C Code Flow PKCE with Refresh tokens](#azure-b2c-code-flow-pkce-with-refresh-tokens)
+-   [Azure B2C Code Flow PKCE with Refresh tokens](#azure-b2c-code-flow-pkce-with-silent-renew)
 -   [Implicit Flow with silent renew (Not recommended)](#implicit-flow-with-silent-renew-not-recommended)
 -   [Implicit Flow google (Not recommended)](#implicit-flow-google-not-recommended)
 -   [Implicit Flow Azure AD (Not recommended)](#implicit-flow-azure-ad-not-recommended)
@@ -64,17 +64,17 @@ The is the basic example of the Code Flow with PKCE.
 
 [app.component.html](../projects/sample-code-flow/src/app/app.component.html)
 
-## Azure B2C Code Flow PKCE with Refresh tokens
+## Azure B2C Code Flow PKCE with Silent renew
 
-The example uses the Code Flow PKCE with Refresh tokens with Azure B2C as the STS.
+The example uses the Code Flow PKCE with Silent renew with Azure B2C as the STS.
 
-### [src code](../projects/sample-code-flow-refresh-tokens-azure-b2c)
+### [src code](../projects/sample-code-flow-azure-b2c)
 
-[app.module.ts](../projects/sample-code-flow-refresh-tokens-azure-b2c/src/app/app.module.ts)
+[app.module.ts](../projects/sample-code-flow-azure-b2c/src/app/app.module.ts)
 
-[app.component.ts](../projects/sample-code-flow-refresh-tokens-azure-b2c/src/app/app.component.ts)
+[app.component.ts](../projects/sample-code-flow-azure-b2c/src/app/app.component.ts)
 
-[app.component.html](../projects/sample-code-flow-refresh-tokens-azure-b2c/src/app/app.component.html)
+[app.component.html](../projects/sample-code-flow-azure-b2c/src/app/app.component.html)
 
 ## Implicit Flow with silent renew (Not recommended)
 
