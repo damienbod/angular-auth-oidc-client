@@ -4,10 +4,10 @@
 -   [Code Flow PKCE with Refresh tokens](#code-flow-pkce-with-refresh-tokens)
 -   [Code Flow PKCE Auto login](#code-flow-pkce-auto-login)
 -   [Code Flow with PKCE basic with silent renew](#code-flow-with-pkce-basic-with-silent-renew)
+-   [Azure B2C Code Flow PKCE with Refresh tokens](#implicit-flow-azure-b2c-not-recommended)
 -   [Implicit Flow with silent renew (Not recommended)](#implicit-flow-with-silent-renew-not-recommended)
 -   [Implicit Flow google (Not recommended)](#implicit-flow-google-not-recommended)
 -   [Implicit Flow Azure AD (Not recommended)](#implicit-flow-azure-ad-not-recommended)
--   [Implicit Flow Azure B2C (Not recommended)](#implicit-flow-azure-b2c-not-recommended)
 -   [Code flow with a lazy loaded module](#code-flow-with-a-lazy-loaded-module)
 
 ## Code Flow with PKCE Using a configuration from an http source and silent renew
@@ -100,17 +100,17 @@ The example uses the Implicit Flow with silent renew with Azure AD. This flow is
 
 [app.component.html](../projects/sample-implicit-flow-azuread/src/app/app.component.html)
 
-## Implicit Flow Azure B2C (Not recommended)
+## Azure B2C Code Flow PKCE with Refresh tokens
 
 The example uses the Implicit Flow with silent renew with Azure B2C. This flow is no longer recommended, but some servers support this flow only, and not the Code flow with PKCE.
 
-### [src code](../projects/sample-implicit-flow-ad-b2c)
+### [src code](../projects/sample-code-flow-refresh-tokens-azure-b2c)
 
-[app.module.ts](../projects/sample-implicit-flow-ad-b2c/src/app/app.module.ts)
+[app.module.ts](../projects/sample-code-flow-refresh-tokens-azure-b2c/src/app/app.module.ts)
 
-[app.component.ts](../projects/sample-implicit-flow-ad-b2c/src/app/app.component.ts)
+[app.component.ts](../projects/sample-code-flow-refresh-tokens-azure-b2c/src/app/app.component.ts)
 
-[app.component.html](../projects/sample-implicit-flow-ad-b2c/src/app/app.component.html)
+[app.component.html](../projects/sample-code-flow-refresh-tokens-azure-b2c/src/app/app.component.html)
 
 ## Code flow with a lazy loaded module
 
