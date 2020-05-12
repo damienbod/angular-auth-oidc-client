@@ -1,4 +1,3 @@
-import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
@@ -23,17 +22,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
 
 @NgModule({
     declarations: [AppComponent],
-    imports: [
-        BrowserModule,
-        HttpClientModule,
-        RouterModule.forRoot([
-            { path: '', component: AppComponent },
-            { path: 'home', component: AppComponent },
-            { path: 'forbidden', component: AppComponent },
-            { path: 'unauthorized', component: AppComponent },
-        ]),
-        AuthModule.forRoot(),
-    ],
+    imports: [BrowserModule, RouterModule.forRoot([]), AuthModule.forRoot()],
     providers: [
         OidcConfigService,
         {
