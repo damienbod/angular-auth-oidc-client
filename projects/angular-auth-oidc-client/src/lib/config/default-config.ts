@@ -30,4 +30,5 @@ export const DEFAULT_CONFIG: OpenIdConfiguration = {
     storage: typeof Storage !== 'undefined' ? sessionStorage : null,
     customParams: {},
     eagerLoadAuthWellKnownEndpoints: true,
+    disableRefreshIdTokenAuthTimeValidation: false,
 };

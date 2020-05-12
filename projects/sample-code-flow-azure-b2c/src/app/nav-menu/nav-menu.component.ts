@@ -28,6 +28,7 @@ export class NavMenuComponent implements OnInit {
     logout() {
         this.oidcSecurityService.logoff();
     }
+
     collapse() {
         this.isExpanded = false;
     }

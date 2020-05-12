@@ -1,5 +1,11 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2020-05-11 Version 11.0.2
+
+-   Add configuration property to disable auth_time validation in refresh flows with Azure B2C (Azure B2C implements this incorrectly)
+-   Fix disable at_hash validation in refresh, this is not a required property
+-   only use revocation endpoint if supported by the STS
+
 ### 2020-05-08 Version 11.0.1
 
 -   Fixing the `Can't resolve all parameters for ...` error
