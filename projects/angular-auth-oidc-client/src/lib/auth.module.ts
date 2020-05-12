@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
@@ -33,7 +34,7 @@ import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';
 
 @NgModule({
-    imports: [CommonModule],
+    imports: [CommonModule, HttpClientModule],
     declarations: [],
     exports: [],
 })
