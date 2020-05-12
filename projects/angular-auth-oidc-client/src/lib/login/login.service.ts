@@ -48,7 +48,7 @@ export class LoginService {
             const url = this.urlService.getAuthorizeUrl(customParams);
 
             if (!url) {
-                this.loggerService.logDebug('Could not create url', url);
+                this.loggerService.logError('Could not create url', url);
                 return;
             }
 
