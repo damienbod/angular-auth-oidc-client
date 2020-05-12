@@ -21,6 +21,7 @@ describe('Configuration Service', () => {
     let configurationProvider: ConfigurationProvider;
     let dataService: DataService;
     let authWellKnownService: AuthWellKnownService;
+    let storagePersistanceService: StoragePersistanceService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -58,6 +59,7 @@ describe('Configuration Service', () => {
         configurationProvider = TestBed.inject(ConfigurationProvider);
         dataService = TestBed.inject(DataService);
         authWellKnownService = TestBed.inject(AuthWellKnownService);
+        storagePersistanceService = TestBed.inject(StoragePersistanceService);
     });
 
     it('should create', () => {
@@ -82,17 +84,18 @@ describe('Configuration Service', () => {
 
         it('if authWellKnownEndPointsAlreadyStored the events are fired and resolve', async(() => {
             const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: null };
-            spyOn(oidcConfigService as any, 'authWellKnownEndPointsAlreadyStored').and.returnValue(true);
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ any: 'thing' });
             const eventServiceSpy = spyOn(eventsService, 'fireEvent');
 
             const promise = oidcConfigService.withConfig(config);
 
             promise.then(() => {
                 expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
-                    passedConfig: {
+                    configuration: {
                         stsServer: 'stsServerForTesting',
                         authWellknownEndpoint: 'stsServerForTesting',
                     },
+                    wellknown: { any: 'thing' },
                 });
             });
         }));
@@ -100,7 +103,7 @@ describe('Configuration Service', () => {
         it('if passedAuthWellKnownEndpoints are passed, set these, fire event and resolve', async(() => {
             const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: null };
             const authWellKnown = { issuer: 'issuerForTesting' };
-            spyOn(oidcConfigService as any, 'authWellKnownEndPointsAlreadyStored').and.returnValue(false);
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
             const eventServiceSpy = spyOn(eventsService, 'fireEvent');
             const storeWellKnownEndpointsSpy = spyOn(oidcConfigService as any, 'storeWellKnownEndpoints');
 
@@ -109,18 +112,18 @@ describe('Configuration Service', () => {
             promise.then(() => {
                 expect(storeWellKnownEndpointsSpy).toHaveBeenCalledWith(authWellKnown);
                 expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
-                    passedConfig: {
+                    configuration: {
                         stsServer: 'stsServerForTesting',
                         authWellknownEndpoint: 'stsServerForTesting',
                     },
-                    wellknownEndPoints: authWellKnown,
+                    wellknown: authWellKnown,
                 });
             });
         }));
 
         it('if eagerLoadAuthWellKnownEndpoints is true: call getWellKnownEndPointsFromUrl', async(() => {
             const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
-            spyOn(oidcConfigService as any, 'authWellKnownEndPointsAlreadyStored').and.returnValue(false);
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
             spyOn(configurationProvider, 'setConfig').and.returnValue(config);
             const getWellKnownEndPointsFromUrlSpy = spyOn(authWellKnownService, 'getWellKnownEndPointsFromUrl').and.returnValue(of(null));
 
@@ -133,7 +136,7 @@ describe('Configuration Service', () => {
 
         it('if eagerLoadAuthWellKnownEndpoints is true: call storeWellKnownEndpoints', async(() => {
             const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
-            spyOn(oidcConfigService as any, 'authWellKnownEndPointsAlreadyStored').and.returnValue(false);
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
             const storeWellKnownEndpointsSpy = spyOn(oidcConfigService as any, 'storeWellKnownEndpoints').and.returnValue(false);
             spyOn(configurationProvider, 'setConfig').and.returnValue(config);
             spyOn(authWellKnownService, 'getWellKnownEndPointsFromUrl').and.returnValue(of({ issuer: 'issuerForTesting' }));
@@ -147,7 +150,7 @@ describe('Configuration Service', () => {
 
         it('if eagerLoadAuthWellKnownEndpoints is true: fire event', async(() => {
             const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
-            spyOn(oidcConfigService as any, 'authWellKnownEndPointsAlreadyStored').and.returnValue(false);
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
             spyOn(oidcConfigService as any, 'storeWellKnownEndpoints').and.returnValue(false);
             spyOn(configurationProvider, 'setConfig').and.returnValue(config);
             spyOn(authWellKnownService, 'getWellKnownEndPointsFromUrl').and.returnValue(of({ issuer: 'issuerForTesting' }));
@@ -157,8 +160,8 @@ describe('Configuration Service', () => {
 
             promise.then(() => {
                 expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
-                    passedConfig: { ...config, authWellknownEndpoint: 'stsServerForTesting' },
-                    wellknownEndPoints: { issuer: 'issuerForTesting' },
+                    configuration: { ...config, authWellknownEndpoint: 'stsServerForTesting' },
+                    wellknown: { issuer: 'issuerForTesting' },
                 });
             });
         }));

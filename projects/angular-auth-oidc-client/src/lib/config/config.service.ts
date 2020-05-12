@@ -8,6 +8,7 @@ import { StoragePersistanceService } from '../storage/storage-persistance.servic
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 import { AuthWellKnownService } from './auth-well-known.service';
 import { OpenIdConfiguration } from './openid-configuration';
+import { PublicConfiguration } from './public-configuration';
 
 @Injectable()
 export class OidcConfigService {
@@ -32,17 +33,23 @@ export class OidcConfigService {
 
             const usedConfig = this.configurationProvider.setConfig(passedConfig);
 
-            if (this.authWellKnownEndPointsAlreadyStored()) {
-                this.publicEventsService.fireEvent(EventTypes.ConfigLoaded, { passedConfig });
+            const alreadyExistingAuthWellKnownEndpoints = this.storagePersistanceService.authWellKnownEndPoints;
+            if (!!alreadyExistingAuthWellKnownEndpoints) {
+                this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
+                    configuration: passedConfig,
+                    wellknown: alreadyExistingAuthWellKnownEndpoints,
+                });
+
                 return resolve();
             }
 
             if (!!passedAuthWellKnownEndpoints) {
                 this.storeWellKnownEndpoints(passedAuthWellKnownEndpoints);
-                this.publicEventsService.fireEvent(EventTypes.ConfigLoaded, {
-                    passedConfig,
-                    wellknownEndPoints: passedAuthWellKnownEndpoints,
+                this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
+                    configuration: passedConfig,
+                    wellknown: passedAuthWellKnownEndpoints,
                 });
+
                 return resolve();
             }
 
@@ -50,7 +57,10 @@ export class OidcConfigService {
                 this.loadAndStoreAuthWellKnownEndPoints(usedConfig.authWellknownEndpoint)
                     .pipe(
                         tap((wellknownEndPoints) =>
-                            this.publicEventsService.fireEvent(EventTypes.ConfigLoaded, { passedConfig, wellknownEndPoints })
+                            this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
+                                configuration: passedConfig,
+                                wellknown: wellknownEndPoints,
+                            })
                         )
                     )
                     .subscribe(() => resolve());
@@ -68,9 +78,5 @@ export class OidcConfigService {
         return this.authWellKnownService
             .getWellKnownEndPointsFromUrl(authWellknownEndpoint)
             .pipe(tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(mappedWellKnownEndpoints)));
-    }
-
-    private authWellKnownEndPointsAlreadyStored() {
-        return !!this.storagePersistanceService.authWellKnownEndPoints;
     }
 }
