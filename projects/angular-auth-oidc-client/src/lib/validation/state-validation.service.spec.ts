@@ -702,7 +702,7 @@ describe('State Validation Service', () => {
             disableRefreshIdTokenAuthTimeValidation: true,
         };
 
-        configProvider.setConfig(configRefresh, authWellKnownEndpoints);
+        configProvider.setConfig(configRefresh);
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
         const callbackContext = {
@@ -768,7 +768,7 @@ describe('State Validation Service', () => {
             disableRefreshIdTokenAuthTimeValidation: true,
         };
 
-        configProvider.setConfig(configRefresh, authWellKnownEndpoints);
+        configProvider.setConfig(configRefresh);
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
         const callbackContext = {
@@ -834,7 +834,7 @@ describe('State Validation Service', () => {
             disableRefreshIdTokenAuthTimeValidation: true,
         };
 
-        configProvider.setConfig(configRefresh, authWellKnownEndpoints);
+        configProvider.setConfig(configRefresh);
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
         const callbackContext = {
@@ -900,7 +900,7 @@ describe('State Validation Service', () => {
             disableRefreshIdTokenAuthTimeValidation: false,
         };
 
-        configProvider.setConfig(configRefresh, authWellKnownEndpoints);
+        configProvider.setConfig(configRefresh);
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
         const callbackContext = {
@@ -966,7 +966,7 @@ describe('State Validation Service', () => {
             disableRefreshIdTokenAuthTimeValidation: false,
         };
 
-        configProvider.setConfig(configRefresh, authWellKnownEndpoints);
+        configProvider.setConfig(configRefresh);
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
         const callbackContext = {
@@ -1032,7 +1032,7 @@ describe('State Validation Service', () => {
             disableRefreshIdTokenAuthTimeValidation: false,
         };
 
-        configProvider.setConfig(configRefresh, authWellKnownEndpoints);
+        configProvider.setConfig(configRefresh);
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
         const callbackContext = {
@@ -1098,7 +1098,7 @@ describe('State Validation Service', () => {
             disableRefreshIdTokenAuthTimeValidation: false,
         };
 
-        configProvider.setConfig(configRefresh, authWellKnownEndpoints);
+        configProvider.setConfig(configRefresh);
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
         const callbackContext = {
@@ -1164,7 +1164,7 @@ describe('State Validation Service', () => {
             disableRefreshIdTokenAuthTimeValidation: false,
         };
 
-        configProvider.setConfig(configRefresh, authWellKnownEndpoints);
+        configProvider.setConfig(configRefresh);
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
         const callbackContext = {
@@ -1210,7 +1210,7 @@ describe('State Validation Service', () => {
 
         config.maxIdTokenIatOffsetAllowedInSeconds = 0;
         spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(false);
-        configProvider.setConfig(config, authWellKnownEndpoints);
+        configProvider.setConfig(config);
 
         const callbackContext = {
             code: 'fdffsdfsdf',
