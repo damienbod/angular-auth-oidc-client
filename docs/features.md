@@ -5,6 +5,7 @@
 -   [Custom parameters](#custom-parameters)
 -   [OnAuthorizationResult Event](#onauthorizationresult-event)
 -   [Using the OIDC package in a module or a Angular lib](#using-the-oidc-package-in-a-module-or-a-angular-lib)
+-   [Delay the loading or pass an existing AuthWellKnownEndpoints config](#delay-the-loading-or-pass-an-existing-authwellknownendpoints-config)
 
 ## Public Events
 
