@@ -152,7 +152,6 @@ export class StoragePersistanceService {
         this.store(this.storageSilentRenewRunning, '');
         this.store(this.storageCodeVerifier, '');
         this.store(this.storageUserData, '');
-        this.store(this.authWellKnownEndPointsKey, '');
     }
 
     resetAuthStateInStorage() {
@@ -160,7 +159,6 @@ export class StoragePersistanceService {
         this.store(this.storageAccessToken, '');
         this.store(this.storageIdToken, '');
         this.store(this.storageAuthResult, '');
-        this.store(this.authWellKnownEndPointsKey, '');
     }
 
     getAccessToken(): any {
