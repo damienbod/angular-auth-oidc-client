@@ -68,7 +68,16 @@ describe('LoginService', () => {
     describe('login', () => {
         it('does nothing if it has an invalid response type', async(() => {
             spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
-            const spy = spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(false);
+            spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(false);
+            const loggerSpy = spyOn(loggerService, 'logError');
+            const result = loginService.login();
+            expect(result).toBeUndefined();
+            expect(loggerSpy).toHaveBeenCalled();
+        }));
+
+        it('does nothing if no well known endpoint is given', async(() => {
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
+            const spy = spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
             const result = loginService.login();
             expect(result).toBeUndefined();
             expect(spy).toHaveBeenCalled();
