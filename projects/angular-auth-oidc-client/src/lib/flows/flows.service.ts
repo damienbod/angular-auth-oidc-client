@@ -181,7 +181,7 @@ export class FlowsService {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-        const { tokenEndpoint } = this.storagePersistanceService.authWellKnownEndPoints;
+        const tokenEndpoint = this.storagePersistanceService.authWellKnownEndPoints?.tokenEndpoint;
         if (!tokenEndpoint) {
             return throwError('Token Endpoint not defined');
         }
@@ -218,7 +218,7 @@ export class FlowsService {
             return throwError('codeFlowCodeRequest incorrect state');
         }
 
-        const { tokenEndpoint } = this.storagePersistanceService.authWellKnownEndPoints;
+        const tokenEndpoint = this.storagePersistanceService.authWellKnownEndPoints?.tokenEndpoint;
         if (!tokenEndpoint) {
             return throwError('Token Endpoint not defined');
         }

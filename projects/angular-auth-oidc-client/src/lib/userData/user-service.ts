@@ -111,7 +111,7 @@ export class UserService {
             return throwError('authWellKnownEndpoints is undefined');
         }
 
-        const { userinfoEndpoint } = this.storagePersistanceService.authWellKnownEndPoints;
+        const userinfoEndpoint = this.storagePersistanceService.authWellKnownEndPoints?.userinfoEndpoint;
 
         if (!userinfoEndpoint) {
             this.loggerService.logError(

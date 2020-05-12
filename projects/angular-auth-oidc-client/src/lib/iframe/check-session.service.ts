@@ -73,7 +73,7 @@ export class CheckSessionService {
         }
 
         const existingIframe = this.getOrCreateIframe();
-        const { checkSessionIframe } = this.storagePersistanceService.authWellKnownEndPoints;
+        const checkSessionIframe = this.storagePersistanceService.authWellKnownEndPoints?.checkSessionIframe;
 
         if (checkSessionIframe) {
             existingIframe.contentWindow.location.replace(checkSessionIframe);
