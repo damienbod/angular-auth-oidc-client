@@ -199,3 +199,20 @@ export class ChildModule {}
 ```
 
 The components code is the same then as using it in the main or any other module.
+
+## Delay the loading or pass an existing AuthWellKnownEndpoints config
+
+Currently the Authwellknownendpoints are collected via an HTTP call when starting the application in the `APP_INITIALIZER`. This HTTP call may affect your first page loading time or you want ot load the AuthWellKnownEndpoints later when the user calls `authenticate` for any other reason.
+
+The property `eagerLoadAuthWellKnownEndpoints` in the config sets this. The default is set to `false`, so the AuthWellKnownEndpoints are loaded at the start as is previous versions. Setting this to `true` the AuthWellKnownEndpoints are being loaded when the user calls `authenticate`.
+
+Also you can pass the already existing AuthWellKnownEndpoints into the `withConfig` method as a second parameter.
+
+```ts
+oidcConfigService.withonfig(
+    {
+        /* config */
+    },
+    { issuer: 'myIssuer' /* more authwellknownEndpointsProperties */ }
+);
+```
