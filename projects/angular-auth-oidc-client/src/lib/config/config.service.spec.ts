@@ -166,37 +166,4 @@ describe('Configuration Service', () => {
             });
         }));
     });
-
-    // describe('getWellKnownDocument', () => {
-    //     it('should add suffix if it does not exist on current url', () => {
-    //         const dataServiceSpy = spyOn(dataService, 'get').and.callFake((url) => {
-    //             return of(null);
-    //         });
-
-    //         const urlWithoutSuffix = 'myUrl';
-    //         const urlWithSuffix = `${urlWithoutSuffix}/.well-known/openid-configuration`;
-    //         (oidcConfigService as any).getWellKnownDocument(urlWithoutSuffix);
-    //         expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix);
-    //     });
-
-    //     it('should not add suffix if it does exist on current url', () => {
-    //         const dataServiceSpy = spyOn(dataService, 'get').and.callFake((url) => {
-    //             return of(null);
-    //         });
-
-    //         const urlWithSuffix = `myUrl/.well-known/openid-configuration`;
-    //         (oidcConfigService as any).getWellKnownDocument(urlWithSuffix);
-    //         expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix);
-    //     });
-
-    //     it('should not add suffix if it does exist in the middle of current url', () => {
-    //         const dataServiceSpy = spyOn(dataService, 'get').and.callFake((url) => {
-    //             return of(null);
-    //         });
-
-    //         const urlWithSuffix = `myUrl/.well-known/openid-configuration/and/some/more/stuff`;
-    //         (oidcConfigService as any).getWellKnownDocument(urlWithSuffix);
-    //         expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix);
-    //     });
-    // });
 });
