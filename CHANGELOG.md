@@ -1,5 +1,9 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2020-05-13 Version 11.1.0
+
+-   Eager loading of well known endpoints can be configured: Made it possible to load the well known endpoints late (per configuration)
+
 ### 2020-05-12 Version 11.0.2
 
 -   Add configuration property to disable auth_time validation in refresh flows with Azure B2C (Azure B2C implements this incorrectly)
