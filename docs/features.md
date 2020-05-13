@@ -207,7 +207,7 @@ The secure token server `.well-known/openid-configuration` configuration can be 
 
 The property `eagerLoadAuthWellKnownEndpoints` in the configuration sets exactly this. The default is set to `false`, so the `.well-known/openid-configuration` is loaded at the start as in previous versions. Setting this to `true` the `.well-known/openid-configuration` will be loaded when the user starts the authentication.
 
-You alos have the option to pass the already existing `.well-known/openid-configuration` into the `withConfig` method as a second parameter. In this case no HTTPS call to load the `.well-known/openid-configuration` will be made.
+You also have the option to pass the already existing `.well-known/openid-configuration` into the `withConfig` method as a second parameter. In this case no HTTPS call to load the `.well-known/openid-configuration` will be made.
 
 ```typescript
 oidcConfigService.withonfig(
