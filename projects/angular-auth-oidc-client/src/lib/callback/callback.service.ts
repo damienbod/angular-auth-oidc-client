@@ -54,6 +54,30 @@ export class CallbackService {
         return callback$.pipe(tap(() => this.stsCallbackInternal$.next()));
     }
 
+    refreshSession() {
+        const idToken = this.authStateService.getIdToken();
+        const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
+        const userDataFromStore = this.userService.getUserDataFromStore();
+
+        this.loggerService.logDebug(
+            `Checking: silentRenewRunning: ${isSilentRenewRunning} id_token: ${!!idToken} userData: ${!!userDataFromStore}`
+        );
+
+        const shouldBeExecuted = userDataFromStore && !isSilentRenewRunning && idToken;
+
+        if (!shouldBeExecuted) {
+            return of(null);
+        }
+
+        this.flowsDataService.setSilentRenewRunning();
+
+        if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
+            // Refresh Session using Refresh tokens
+            return this.refreshSessionWithRefreshTokens();
+        }
+
+        return this.refreshSessionWithIframe();
+    }
     startTokenValidationPeriodically(repeatAfterSeconds: number) {
         if (!!this.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
             return;
