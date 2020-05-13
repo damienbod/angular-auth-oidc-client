@@ -5,8 +5,6 @@ import { RouterModule } from '@angular/router';
 import { AuthModule, OidcConfigService } from 'angular-auth-oidc-client';
 import { map, switchMap } from 'rxjs/operators';
 import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
-import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 
 export function configureAuth(oidcConfigService: OidcConfigService, httpClient: HttpClient) {
     const setupAction$ = httpClient.get<any>(`https://offeringsolutions-sts.azurewebsites.net/api/ClientAppSettings`).pipe(
@@ -37,17 +35,8 @@ export function configureAuth(oidcConfigService: OidcConfigService, httpClient: 
 }
 
 @NgModule({
-    declarations: [AppComponent, HomeComponent, UnauthorizedComponent],
-    imports: [
-        BrowserModule,
-        RouterModule.forRoot([
-            { path: '', redirectTo: 'home', pathMatch: 'full' },
-            { path: 'home', component: HomeComponent },
-            { path: 'forbidden', component: UnauthorizedComponent },
-            { path: 'unauthorized', component: UnauthorizedComponent },
-        ]),
-        AuthModule.forRoot(),
-    ],
+    declarations: [AppComponent],
+    imports: [BrowserModule, RouterModule.forRoot([]), AuthModule.forRoot()],
     providers: [
         OidcConfigService,
         {
