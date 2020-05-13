@@ -258,7 +258,7 @@ describe('Auth State Service', () => {
 
     describe('hasIdTokenExpired', () => {
         it('tokenValidationService gets called with id token if id_token is set', () => {
-            configurationProvider.setConfig({ renewTimeBeforeTokenExpiresInSeconds: 30 }, null);
+            configurationProvider.setConfig({ renewTimeBeforeTokenExpiresInSeconds: 30 });
             const spy = spyOn(tokenValidationService, 'hasIdTokenExpired').and.callFake((a, b) => true);
             spyOnProperty(storagePersistanceService, 'idToken', 'get').and.returnValue('idToken');
             authStateService.hasIdTokenExpired();

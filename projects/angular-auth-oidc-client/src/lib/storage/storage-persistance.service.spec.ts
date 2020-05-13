@@ -300,7 +300,7 @@ describe('Storage Persistance Service', () => {
     });
 
     describe('resetStorageFlowData', () => {
-        it('resets all four values', () => {
+        it('resets all values', () => {
             const writeSpy = spyOn(securityStorage, 'write').and.callFake(() => {});
             service.resetStorageFlowData();
 
@@ -308,7 +308,7 @@ describe('Storage Persistance Service', () => {
         });
     });
     describe('resetAuthStateInStorage', () => {
-        it('resets all four values', () => {
+        it('resets all values', () => {
             const writeSpy = spyOn(securityStorage, 'write').and.callFake(() => {});
             service.resetAuthStateInStorage();
 

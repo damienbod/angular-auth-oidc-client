@@ -2,15 +2,15 @@ import { async, TestBed } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
-import { ConfigurationProvider } from '../config/config.provider';
-import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
+import { StoragePersistanceService } from '../storage/storage-persistance.service';
+import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
 import { SigninKeyDataService } from './signin-key-data.service';
 
 describe('Signin Key Data Service', () => {
     let service: SigninKeyDataService;
-    let configProvider: ConfigurationProvider;
+    let storagePersistanceService: StoragePersistanceService;
     let dataService: DataService;
     let loggerService: LoggerService;
 
@@ -20,14 +20,14 @@ describe('Signin Key Data Service', () => {
                 SigninKeyDataService,
                 { provide: DataService, useClass: DataServiceMock },
                 { provide: LoggerService, useClass: LoggerServiceMock },
-                { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
+                { provide: StoragePersistanceService, useClass: StoragePersistanceServiceMock },
             ],
         });
     });
 
     beforeEach(() => {
         service = TestBed.inject(SigninKeyDataService);
-        configProvider = TestBed.inject(ConfigurationProvider);
+        storagePersistanceService = TestBed.inject(StoragePersistanceService);
         dataService = TestBed.inject(DataService);
         loggerService = TestBed.inject(LoggerService);
     });
@@ -38,7 +38,7 @@ describe('Signin Key Data Service', () => {
 
     describe('getSigningKeys', () => {
         it('throws error when no wellknownendpoints given', async(() => {
-            spyOnProperty(configProvider, 'wellKnownEndpoints').and.returnValue(null);
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue(null);
             const result = service.getSigningKeys();
 
             result.subscribe({
@@ -49,7 +49,7 @@ describe('Signin Key Data Service', () => {
         }));
 
         it('throws error when no jwksUri given', async(() => {
-            spyOnProperty(configProvider, 'wellKnownEndpoints').and.returnValue({ jwksUri: null });
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue({ jwksUri: null });
             const result = service.getSigningKeys();
 
             result.subscribe({
@@ -60,7 +60,7 @@ describe('Signin Key Data Service', () => {
         }));
 
         it('calls dataservice if jwksurl is given', async(() => {
-            spyOnProperty(configProvider, 'wellKnownEndpoints').and.returnValue({ jwksUri: 'someUrl' });
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
             const spy = spyOn(dataService, 'get').and.callFake(() => {
                 return of();
             });

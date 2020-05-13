@@ -115,6 +115,16 @@ export class StoragePersistanceServiceMock {
     set accessTokenExpiresIn(value: any) {
         this.store(this.storageAccessTokenExpiresIn, value);
     }
+
+    private authWellKnownEndPointsKey = 'authWellKnownEndPoints';
+    get authWellKnownEndPoints() {
+        return this.retrieve(this.authWellKnownEndPointsKey);
+    }
+
+    set authWellKnownEndPoints(value: any) {
+        this.store(this.authWellKnownEndPointsKey, value);
+    }
+
     private retrieve(key: string): any {
         const keyToRead = this.createKeyWithPrefix(key);
         return this.itemsInternal.find((x) => x.key === keyToRead)?.value;

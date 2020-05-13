@@ -1,25 +1,3 @@
-<div *ngIf="isAuthenticated$ | async as isAuthenticated; else noAuth">
-    <button (click)="logout()">Logout</button>
-    <button (click)="logoffAndRevokeTokens()">Logout and revoke tokens</button>
-    <button (click)="revokeAccessToken()">Revoke access token</button>
-    <button (click)="revokeRefreshToken()">Revoke refresh token</button>
-    <hr />
+<h2>Sample Code Flow with refresh tokens</h2>
 
-    <br />
-
-    Is Authenticated: {{ isAuthenticated }}
-
-    <br />
-    userData
-    <pre>{{ userData$ | async | json }}</pre>
-
-    <br />
-</div>
-
-<ng-template #noAuth>
-    <button (click)="login()">Login</button>
-    <hr />
-</ng-template>
-
-Configuration loaded:
-<pre>{{ configuration | json }}</pre>
+<router-outlet></router-outlet>

@@ -1,56 +1,46 @@
-import { oneLineTrim } from 'common-tags';
+import { Injectable } from '@angular/core';
 
+@Injectable()
 export class UrlServiceMock {
+    constructor() {}
+
     getUrlParameter(urlToCheck: any, name: any): string {
-        return 'got';
+        return '';
     }
 
     isCallbackFromSts() {
-        return false;
+        return true;
     }
 
     getRefreshSessionSilentRenewUrl(): string {
-        return 'https://testrenew';
+        return '';
     }
 
     getAuthorizeUrl(customParams?: { [key: string]: string | number | boolean }): string {
-        return 'https://testrenew';
+        return '';
     }
 
     createEndSessionUrl(idTokenHint: string) {
-        return 'https://endsession.co';
+        return '';
     }
 
     createRevocationEndpointBodyAccessToken(token: any) {
-        return `client_id=test&token=${token}&token_type_hint=access_token`;
+        return '';
     }
 
     createRevocationEndpointBodyRefreshToken(token: any) {
-        return `client_id=test&token=${token}&token_type_hint=refresh_token`;
+        return '';
     }
 
     getRevocationEndpointUrl() {
-        return 'https://revoke.co';
+        return '';
     }
 
     createBodyForCodeFlowCodeRequest(code: string): string {
-        return oneLineTrim`${code}&redirect_uri=https://ret`;
+        return '';
     }
 
     createBodyForCodeFlowRefreshTokensRequest(refreshtoken: string): string {
-        return oneLineTrim`grant_type=refresh_token
-          &client_id=test
-          &refresh_token=${refreshtoken}`;
-    }
-
-    private createAuthorizeUrl(
-        codeChallenge: string,
-        redirectUrl: string,
-        nonce: string,
-        state: string,
-        prompt?: string,
-        customRequestParams?: { [key: string]: string | number | boolean }
-    ): string {
-        return `https://authUrl?some=sss`;
+        return '';
     }
 }

@@ -6,6 +6,10 @@ import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
+import { StoragePersistanceService } from '../storage/storage-persistance.service';
+import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
+import { AuthWellKnownService } from './auth-well-known.service';
+import { AuthWellKnownServiceMock } from './auth-well-known.service-mock';
 import { ConfigurationProvider } from './config.provider';
 import { ConfigurationProviderMock } from './config.provider-mock';
 import { OidcConfigService } from './config.service';
@@ -16,6 +20,8 @@ describe('Configuration Service', () => {
     let eventsService: PublicEventsService;
     let configurationProvider: ConfigurationProvider;
     let dataService: DataService;
+    let authWellKnownService: AuthWellKnownService;
+    let storagePersistanceService: StoragePersistanceService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -33,6 +39,14 @@ describe('Configuration Service', () => {
                     provide: DataService,
                     useClass: DataServiceMock,
                 },
+                {
+                    provide: AuthWellKnownService,
+                    useClass: AuthWellKnownServiceMock,
+                },
+                {
+                    provide: StoragePersistanceService,
+                    useClass: StoragePersistanceServiceMock,
+                },
                 PublicEventsService,
             ],
         });
@@ -44,186 +58,112 @@ describe('Configuration Service', () => {
         eventsService = TestBed.inject(PublicEventsService);
         configurationProvider = TestBed.inject(ConfigurationProvider);
         dataService = TestBed.inject(DataService);
+        authWellKnownService = TestBed.inject(AuthWellKnownService);
+        storagePersistanceService = TestBed.inject(StoragePersistanceService);
     });
 
     it('should create', () => {
         expect(oidcConfigService).toBeTruthy();
     });
 
+    it('should return a promise', () => {
+        expect(oidcConfigService.withConfig({})).toEqual(jasmine.any(Promise));
+    });
+
     describe('withConfig', () => {
-        it('no given sts server does nothing and logs error', () => {
+        it('no given sts server does nothing and logs error', async(() => {
             const config = {};
             spyOn(loggerService, 'logError');
 
-            const promiseReturn = oidcConfigService.withConfig(config);
+            const promise = oidcConfigService.withConfig(config);
 
-            expect(promiseReturn).toBeUndefined();
-            expect(loggerService.logError).toHaveBeenCalled();
-        });
-
-        it('has authWellknownEndpoint but stsServer the sts server is being used', () => {
-            const config = {
-                stsServer: 'mySTSServer',
-            };
-
-            const spy = spyOn(oidcConfigService as any, 'getWellKnownDocument').and.callFake(() => {
-                return of({});
-            });
-
-            oidcConfigService.withConfig(config);
-
-            expect(spy).toHaveBeenCalledWith(config.stsServer);
-        });
-
-        it('maps wellknownendpoints correct', async(() => {
-            const config = {
-                stsServer: 'mySTSServer',
-            };
-
-            const returnedWellKnownEndpoints = {
-                issuer: 'isserToTest',
-                jwks_uri: 'jwks_uri ToTest',
-                authorization_endpoint: 'authorization_endpoint ToTest',
-                token_endpoint: 'token_endpoint ToTest',
-                userinfo_endpoint: 'userinfo_endpointToTest',
-                end_session_endpoint: 'end_session_endpoint ToTest',
-                check_session_iframe: 'check_session_iframe ToTest',
-                revocation_endpoint: 'revocation_endpoint ToTest',
-                introspection_endpoint: 'introspection_endpoint ToTest',
-            };
-
-            const expectedWellKnownEndpoints = {
-                issuer: returnedWellKnownEndpoints.issuer,
-                jwksUri: returnedWellKnownEndpoints.jwks_uri,
-                authorizationEndpoint: returnedWellKnownEndpoints.authorization_endpoint,
-                tokenEndpoint: returnedWellKnownEndpoints.token_endpoint,
-                userinfoEndpoint: returnedWellKnownEndpoints.userinfo_endpoint,
-                endSessionEndpoint: returnedWellKnownEndpoints.end_session_endpoint,
-                checkSessionIframe: returnedWellKnownEndpoints.check_session_iframe,
-                revocationEndpoint: returnedWellKnownEndpoints.revocation_endpoint,
-                introspectionEndpoint: returnedWellKnownEndpoints.introspection_endpoint,
-            };
-
-            spyOn(oidcConfigService as any, 'getWellKnownDocument').and.callFake(() => {
-                return of(returnedWellKnownEndpoints);
-            });
-
-            oidcConfigService.withConfig(config).then((result) => {
-                expect(result).toEqual(expectedWellKnownEndpoints);
+            promise.catch(() => {
+                expect(loggerService.logError).toHaveBeenCalled();
             });
         }));
 
-        it('Fires the ConfigLoaded Event with correct params', async(() => {
-            const config = {
-                stsServer: 'mySTSServer',
-            };
+        it('if authWellKnownEndPointsAlreadyStored the events are fired and resolve', async(() => {
+            const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: null };
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ any: 'thing' });
+            const eventServiceSpy = spyOn(eventsService, 'fireEvent');
 
-            const returnedWellKnownEndpoints = {
-                issuer: 'isserToTest',
-                jwks_uri: 'jwks_uri ToTest',
-                authorization_endpoint: 'authorization_endpoint ToTest',
-                token_endpoint: 'token_endpoint ToTest',
-                userinfo_endpoint: 'userinfo_endpointToTest',
-                end_session_endpoint: 'end_session_endpoint ToTest',
-                check_session_iframe: 'check_session_iframe ToTest',
-                revocation_endpoint: 'revocation_endpoint ToTest',
-                introspection_endpoint: 'introspection_endpoint ToTest',
-            };
+            const promise = oidcConfigService.withConfig(config);
 
-            const mappedWellKnownEndpoints = {
-                issuer: returnedWellKnownEndpoints.issuer,
-                jwksUri: returnedWellKnownEndpoints.jwks_uri,
-                authorizationEndpoint: returnedWellKnownEndpoints.authorization_endpoint,
-                tokenEndpoint: returnedWellKnownEndpoints.token_endpoint,
-                userinfoEndpoint: returnedWellKnownEndpoints.userinfo_endpoint,
-                endSessionEndpoint: returnedWellKnownEndpoints.end_session_endpoint,
-                checkSessionIframe: returnedWellKnownEndpoints.check_session_iframe,
-                revocationEndpoint: returnedWellKnownEndpoints.revocation_endpoint,
-                introspectionEndpoint: returnedWellKnownEndpoints.introspection_endpoint,
-            };
-
-            spyOn(oidcConfigService as any, 'getWellKnownDocument').and.callFake(() => {
-                return of(mappedWellKnownEndpoints);
-            });
-
-            const eventSpy = spyOn(eventsService, 'fireEvent');
-
-            oidcConfigService.withConfig(config).then((result) => {
-                expect(eventSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, { passedConfig: config, mappedWellKnownEndpoints: result });
+            promise.then(() => {
+                expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
+                    configuration: {
+                        stsServer: 'stsServerForTesting',
+                        authWellknownEndpoint: 'stsServerForTesting',
+                    },
+                    wellknown: { any: 'thing' },
+                });
             });
         }));
 
-        it('Calls configurationProvider.setconfig with correct params', async(() => {
-            const config = {
-                stsServer: 'mySTSServer',
-            };
+        it('if passedAuthWellKnownEndpoints are passed, set these, fire event and resolve', async(() => {
+            const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: null };
+            const authWellKnown = { issuer: 'issuerForTesting' };
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
+            const eventServiceSpy = spyOn(eventsService, 'fireEvent');
+            const storeWellKnownEndpointsSpy = spyOn(oidcConfigService as any, 'storeWellKnownEndpoints');
 
-            const returnedWellKnownEndpoints = {
-                issuer: 'isserToTest',
-                jwks_uri: 'jwks_uri ToTest',
-                authorization_endpoint: 'authorization_endpoint ToTest',
-                token_endpoint: 'token_endpoint ToTest',
-                userinfo_endpoint: 'userinfo_endpointToTest',
-                end_session_endpoint: 'end_session_endpoint ToTest',
-                check_session_iframe: 'check_session_iframe ToTest',
-                revocation_endpoint: 'revocation_endpoint ToTest',
-                introspection_endpoint: 'introspection_endpoint ToTest',
-            };
+            const promise = oidcConfigService.withConfig(config, authWellKnown);
 
-            const mappedWellKnownEndpoints = {
-                issuer: returnedWellKnownEndpoints.issuer,
-                jwksUri: returnedWellKnownEndpoints.jwks_uri,
-                authorizationEndpoint: returnedWellKnownEndpoints.authorization_endpoint,
-                tokenEndpoint: returnedWellKnownEndpoints.token_endpoint,
-                userinfoEndpoint: returnedWellKnownEndpoints.userinfo_endpoint,
-                endSessionEndpoint: returnedWellKnownEndpoints.end_session_endpoint,
-                checkSessionIframe: returnedWellKnownEndpoints.check_session_iframe,
-                revocationEndpoint: returnedWellKnownEndpoints.revocation_endpoint,
-                introspectionEndpoint: returnedWellKnownEndpoints.introspection_endpoint,
-            };
-
-            spyOn(oidcConfigService as any, 'getWellKnownDocument').and.callFake(() => {
-                return of(mappedWellKnownEndpoints);
-            });
-
-            const configSpy = spyOn(configurationProvider, 'setConfig');
-
-            oidcConfigService.withConfig(config).then((result) => {
-                expect(configSpy).toHaveBeenCalledWith(config, result);
+            promise.then(() => {
+                expect(storeWellKnownEndpointsSpy).toHaveBeenCalledWith(authWellKnown);
+                expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
+                    configuration: {
+                        stsServer: 'stsServerForTesting',
+                        authWellknownEndpoint: 'stsServerForTesting',
+                    },
+                    wellknown: authWellKnown,
+                });
             });
         }));
-    });
 
-    describe('getWellKnownDocument', () => {
-        it('should add suffix if it does not exist on current url', () => {
-            const dataServiceSpy = spyOn(dataService, 'get').and.callFake((url) => {
-                return of(null);
+        it('if eagerLoadAuthWellKnownEndpoints is true: call getWellKnownEndPointsFromUrl', async(() => {
+            const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
+            spyOn(configurationProvider, 'setConfig').and.returnValue(config);
+            const getWellKnownEndPointsFromUrlSpy = spyOn(authWellKnownService, 'getWellKnownEndPointsFromUrl').and.returnValue(of(null));
+
+            const promise = oidcConfigService.withConfig(config);
+
+            promise.then(() => {
+                expect(getWellKnownEndPointsFromUrlSpy).toHaveBeenCalledWith('stsServerForTesting');
             });
+        }));
 
-            const urlWithoutSuffix = 'myUrl';
-            const urlWithSuffix = `${urlWithoutSuffix}/.well-known/openid-configuration`;
-            (oidcConfigService as any).getWellKnownDocument(urlWithoutSuffix);
-            expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix);
-        });
+        it('if eagerLoadAuthWellKnownEndpoints is true: call storeWellKnownEndpoints', async(() => {
+            const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
+            const storeWellKnownEndpointsSpy = spyOn(oidcConfigService as any, 'storeWellKnownEndpoints').and.returnValue(false);
+            spyOn(configurationProvider, 'setConfig').and.returnValue(config);
+            spyOn(authWellKnownService, 'getWellKnownEndPointsFromUrl').and.returnValue(of({ issuer: 'issuerForTesting' }));
 
-        it('should not add suffix if it does exist on current url', () => {
-            const dataServiceSpy = spyOn(dataService, 'get').and.callFake((url) => {
-                return of(null);
+            const promise = oidcConfigService.withConfig(config);
+
+            promise.then(() => {
+                expect(storeWellKnownEndpointsSpy).toHaveBeenCalledWith({ issuer: 'issuerForTesting' });
             });
+        }));
 
-            const urlWithSuffix = `myUrl/.well-known/openid-configuration`;
-            (oidcConfigService as any).getWellKnownDocument(urlWithSuffix);
-            expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix);
-        });
+        it('if eagerLoadAuthWellKnownEndpoints is true: fire event', async(() => {
+            const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
+            spyOn(oidcConfigService as any, 'storeWellKnownEndpoints').and.returnValue(false);
+            spyOn(configurationProvider, 'setConfig').and.returnValue(config);
+            spyOn(authWellKnownService, 'getWellKnownEndPointsFromUrl').and.returnValue(of({ issuer: 'issuerForTesting' }));
+            const eventServiceSpy = spyOn(eventsService, 'fireEvent');
 
-        it('should not add suffix if it does exist in the middle of current url', () => {
-            const dataServiceSpy = spyOn(dataService, 'get').and.callFake((url) => {
-                return of(null);
+            const promise = oidcConfigService.withConfig(config);
+
+            promise.then(() => {
+                expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
+                    configuration: { ...config, authWellknownEndpoint: 'stsServerForTesting' },
+                    wellknown: { issuer: 'issuerForTesting' },
+                });
             });
-
-            const urlWithSuffix = `myUrl/.well-known/openid-configuration/and/some/more/stuff`;
-            (oidcConfigService as any).getWellKnownDocument(urlWithSuffix);
-            expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix);
-        });
+        }));
     });
 });

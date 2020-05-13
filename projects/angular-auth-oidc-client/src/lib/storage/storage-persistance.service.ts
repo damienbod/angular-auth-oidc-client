@@ -1,5 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { AuthorizedState } from '../authState/authorized-state';
+import { AuthWellKnownEndpoints } from '../config/auth-well-known-endpoints';
 import { ConfigurationProvider } from '../config/config.provider';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 
@@ -105,7 +106,16 @@ export class StoragePersistanceService {
         this.store(this.storageAccessTokenExpiresIn, value);
     }
 
+    get authWellKnownEndPoints(): AuthWellKnownEndpoints {
+        return this.retrieve(this.authWellKnownEndPointsKey);
+    }
+
+    set authWellKnownEndPoints(value: AuthWellKnownEndpoints) {
+        this.store(this.authWellKnownEndPointsKey, value);
+    }
+
     private storageAuthResult = 'authorizationResult';
+    private authWellKnownEndPointsKey = 'authWellKnownEndPoints';
 
     private storageAccessToken = 'authorizationData';
 
@@ -162,6 +172,7 @@ export class StoragePersistanceService {
     getRefreshToken(): any {
         return this.authResult?.refresh_token;
     }
+
     private createKeyWithPrefix(key: string) {
         const prefix = this.configurationProvider.openIDConfiguration.clientId;
 

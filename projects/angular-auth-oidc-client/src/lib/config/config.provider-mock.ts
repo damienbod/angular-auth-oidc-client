@@ -1,13 +1,8 @@
-import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 import { OpenIdConfiguration } from './openid-configuration';
 import { PublicConfiguration } from './public-configuration';
 
 export class ConfigurationProviderMock {
     get openIDConfiguration(): OpenIdConfiguration {
-        return null;
-    }
-
-    get wellKnownEndpoints(): AuthWellKnownEndpoints {
         return null;
     }
 
@@ -19,5 +14,5 @@ export class ConfigurationProviderMock {
         return true;
     }
 
-    setConfig(configuration: OpenIdConfiguration, wellKnownEndpoints: AuthWellKnownEndpoints) {}
+    setConfig(configuration: OpenIdConfiguration) {}
 }

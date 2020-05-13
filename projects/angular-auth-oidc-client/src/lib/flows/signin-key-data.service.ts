@@ -2,30 +2,29 @@ import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
-import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
+import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { JwtKeys } from '../validation/jwtkeys';
 
 @Injectable()
 export class SigninKeyDataService {
     constructor(
-        private configurationProvider: ConfigurationProvider,
+        private storagePesistanceService: StoragePersistanceService,
         private loggerService: LoggerService,
         private dataService: DataService
     ) {}
 
     getSigningKeys() {
-        if (!this.configurationProvider.wellKnownEndpoints?.jwksUri) {
-            const error = `getSigningKeys: authWellKnownEndpoints.jwksUri is: '${this.configurationProvider.wellKnownEndpoints?.jwksUri}'`;
+        const jwksUri = this.storagePesistanceService?.authWellKnownEndPoints?.jwksUri;
+        if (!jwksUri) {
+            const error = `getSigningKeys: authWellKnownEndpoints.jwksUri is: '${jwksUri}'`;
             this.loggerService.logWarning(error);
             return throwError(error);
         }
 
-        this.loggerService.logDebug('Getting signinkeys from ', this.configurationProvider.wellKnownEndpoints.jwksUri);
+        this.loggerService.logDebug('Getting signinkeys from ', jwksUri);
 
-        return this.dataService
-            .get<JwtKeys>(this.configurationProvider.wellKnownEndpoints.jwksUri)
-            .pipe(catchError(this.handleErrorGetSigningKeys));
+        return this.dataService.get<JwtKeys>(jwksUri).pipe(catchError(this.handleErrorGetSigningKeys));
     }
 
     private handleErrorGetSigningKeys(error: Response | any) {

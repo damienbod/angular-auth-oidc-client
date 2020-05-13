@@ -5,6 +5,7 @@
 -   [Custom parameters](#custom-parameters)
 -   [OnAuthorizationResult Event](#onauthorizationresult-event)
 -   [Using the OIDC package in a module or a Angular lib](#using-the-oidc-package-in-a-module-or-a-angular-lib)
+-   [Delay the loading or pass an existing AuthWellKnownEndpoints config](#delay-the-loading-or-pass-an-existing-authwellknownendpoints-config)
 
 ## Public Events
 
@@ -199,3 +200,20 @@ export class ChildModule {}
 ```
 
 The components code is the same then as using it in the main or any other module.
+
+## Delay the loading or pass an existing `.well-known/openid-configuration` configuration
+
+The secure token server `.well-known/openid-configuration` configuration can be requested via an HTTPS call when starting the application in the `APP_INITIALIZER`. This HTTPS call may affect your first page loading time. You can disable this and configure the loading of the `.well-known/openid-configuration` later, just before you start the authentication process. You as a user, can decide when you want to request the well known endpoints.
+
+The property `eagerLoadAuthWellKnownEndpoints` in the configuration sets exactly this. The default is set to `false`, so the `.well-known/openid-configuration` is loaded at the start as in previous versions. Setting this to `true` the `.well-known/openid-configuration` will be loaded when the user starts the authentication.
+
+You also have the option to pass the already existing `.well-known/openid-configuration` into the `withConfig` method as a second parameter. In this case no HTTPS call to load the `.well-known/openid-configuration` will be made.
+
+```typescript
+oidcConfigService.withonfig(
+    {
+        /* config */
+    },
+    { issuer: 'myIssuer' /* more .well-known/openid-configuration Properties */ }
+);
+```
