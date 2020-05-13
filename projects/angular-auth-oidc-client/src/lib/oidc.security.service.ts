@@ -124,7 +124,7 @@ export class OidcSecurityService {
     }
 
     forceRefreshSession() {
-        this.callbackService.refreshSession();
+        return this.callbackService.refreshSession();
     }
 
     // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
