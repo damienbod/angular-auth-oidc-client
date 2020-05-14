@@ -210,7 +210,7 @@ The property `eagerLoadAuthWellKnownEndpoints` in the configuration sets exactly
 You also have the option to pass the already existing `.well-known/openid-configuration` into the `withConfig` method as a second parameter. In this case no HTTPS call to load the `.well-known/openid-configuration` will be made.
 
 ```typescript
-oidcConfigService.withonfig(
+oidcConfigService.withConfig(
     {
         /* config */
     },
