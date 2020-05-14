@@ -3,7 +3,9 @@
 ### 2020-05-14 Version 11.1.0
 
 -   Eager loading of well known endpoints can be configured: Made it possible to load the well known endpoints late (per configuration)
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/724) // [Docs](https://github.com/damienbod/angular-auth-oidc-client/blob/master/docs/features.md#delay-the-loading-or-pass-an-existing-well-knownopenid-configuration-configuration)
 -   make it possible to force a session refresh
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/730)
 
 ### 2020-05-12 Version 11.0.2
 
