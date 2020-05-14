@@ -2,6 +2,7 @@
 import { tap } from 'rxjs/operators';
 import { ConfigValidationService } from '../config-validation/config-validation.service';
 import { ConfigurationProvider } from '../config/config.provider';
+import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
@@ -13,6 +14,7 @@ import { PublicConfiguration } from './public-configuration';
 @Injectable()
 export class OidcConfigService {
     constructor(
+        private readonly loggerService: LoggerService,
         private readonly publicEventsService: PublicEventsService,
         private readonly configurationProvider: ConfigurationProvider,
         private readonly authWellKnownService: AuthWellKnownService,
@@ -23,6 +25,7 @@ export class OidcConfigService {
     withConfig(passedConfig: OpenIdConfiguration, passedAuthWellKnownEndpoints?: AuthWellKnownEndpoints): Promise<any> {
         return new Promise((resolve, reject) => {
             if (!this.configValidationService.validateConfig(passedConfig)) {
+                this.loggerService.logError('Validation of config rejected with errors');
                 return reject();
             }
 
