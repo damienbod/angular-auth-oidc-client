@@ -12,11 +12,12 @@ export class ConfigValidationService {
 
         const allMessages = allValidationResults.filter((x) => x.messages.length > 0);
 
-        const allErrors = allMessages.filter((x) => x.level === 'error');
-        allErrors.map((message) => this.loggerService.logError(message));
+        const allErroMessages = allMessages.filter((x) => x.level === 'error').map((result) => result.messages);
+        const allFlatErrorMessages = allErroMessages.reduce((acc, val) => acc.concat(val), []);
+        allFlatErrorMessages.map((message) => this.loggerService.logError(message));
 
         allMessages.filter((x) => x.level === 'warning').map((message) => this.loggerService.logWarning(message));
 
-        return allErrors.length === 0;
+        return allFlatErrorMessages.length === 0;
     }
 }
