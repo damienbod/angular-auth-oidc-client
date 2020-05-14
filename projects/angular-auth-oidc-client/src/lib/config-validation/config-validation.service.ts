@@ -17,6 +17,6 @@ export class ConfigValidationService {
 
         allMessages.filter((x) => x.level === 'warning').map((message) => this.loggerService.logWarning(message));
 
-        return allErrors.length > 0;
+        return allErrors.length === 0;
     }
 }

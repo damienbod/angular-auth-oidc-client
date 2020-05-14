@@ -4,7 +4,8 @@ import { POSITIVE_VALIDATION_RESULT, RuleValidationResult } from '../rule';
 export function useOfflineScopeWithSilentRenew(passedConfig: OpenIdConfiguration): RuleValidationResult {
     const hasRefreshToken = passedConfig.useRefreshToken;
     const hasSilentRenew = passedConfig.silentRenew;
-    const hasOfflineScope = passedConfig.scope.split(' ').includes('offline_access');
+    const scope = passedConfig.scope || '';
+    const hasOfflineScope = scope.split(' ').includes('offline_access');
 
     if (hasRefreshToken && hasSilentRenew && !hasOfflineScope) {
         return {
