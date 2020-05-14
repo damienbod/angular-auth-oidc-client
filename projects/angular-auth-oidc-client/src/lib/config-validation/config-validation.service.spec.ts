@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { LogLevel } from 'angular-auth-oidc-client';
+import { LogLevel } from '../logging/log-level';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { ConfigValidationService } from './config-validation.service';
