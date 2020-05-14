@@ -135,3 +135,14 @@ This makes it possible to manage your own tokens.
 ## getEndSessionUrl(): string | null
 
 Creates the ens session URL which can be used to implement youe own custom server logout.
+
+## forceRefreshSession(): Observable
+
+Makes it possible to refresh the tokens at any time you require.
+
+```
+refreshSession() {
+        this.oidcSecurityService.forceRefreshSession()
+          .subscribe((result) => console.log(result));
+    }
+```

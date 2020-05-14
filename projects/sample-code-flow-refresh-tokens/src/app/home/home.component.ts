@@ -17,12 +17,14 @@ export class HomeComponent implements OnInit {
         this.configuration = this.oidcSecurityService.configuration;
         this.userData$ = this.oidcSecurityService.userData$;
         this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
-
-        this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
     }
 
     login() {
         this.oidcSecurityService.authorize();
+    }
+
+    refreshSession() {
+        this.oidcSecurityService.forceRefreshSession().subscribe((result) => console.log(result));
     }
 
     logout() {
