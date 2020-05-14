@@ -4,6 +4,8 @@
 
 -   Added validation for the lib configuration
 -   fixed some doc typos
+-   fixed bug 2 auth events emitter on STS callback 
+    -   https://github.com/damienbod/angular-auth-oidc-client/issues/734
 
 ### 2020-05-14 Version 11.1.0
 
