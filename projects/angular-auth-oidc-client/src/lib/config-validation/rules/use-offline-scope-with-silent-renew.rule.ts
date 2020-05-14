@@ -11,7 +11,7 @@ export function useOfflineScopeWithSilentRenew(passedConfig: OpenIdConfiguration
         return {
             result: false,
             messages: ['When using silent renew and refresh tokens please set the `offline_access` scope'],
-            level: 'warning',
+            level: 'error',
         };
     }
 
