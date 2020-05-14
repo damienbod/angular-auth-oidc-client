@@ -5,7 +5,7 @@ export function ensureClientId(passedConfig: OpenIdConfiguration): RuleValidatio
     if (!passedConfig.clientId) {
         return {
             result: false,
-            messages: ['Please provide a clientId'],
+            messages: ['The clientId is required  and missing from your config!'],
             level: 'error',
         };
     }

@@ -9,7 +9,7 @@ export function ensureSilentRenewUrlWhenNoRefreshTokenUsed(passedConfig: OpenIdC
     if (usesSilentRenew && !usesRefreshToken && !hasSilentRenewUrl) {
         return {
             result: false,
-            messages: ['Please provide a silent renew URL'],
+            messages: ['Please provide a silent renew URL if using renew and not refresh tokens'],
             level: 'error',
         };
     }

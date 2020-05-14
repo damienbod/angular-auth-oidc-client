@@ -5,7 +5,7 @@ export function ensureStsServer(passedConfig: OpenIdConfiguration): RuleValidati
     if (!passedConfig.stsServer) {
         return {
             result: false,
-            messages: ['Please provide at least an sts server'],
+            messages: ['The STS URL MUST be provided in the configuration!'],
             level: 'error',
         };
     }
