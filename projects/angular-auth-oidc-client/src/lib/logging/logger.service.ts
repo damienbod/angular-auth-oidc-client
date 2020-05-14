@@ -23,6 +23,14 @@ export class LoggerService {
     }
 
     private currentLogLevelIsEqualOrSmallerThan(logLevel: LogLevel) {
-        return this.configurationProvider.openIDConfiguration.logLevel <= logLevel;
+        if (this.logLevelIsSet()) {
+            return this.configurationProvider.openIDConfiguration.logLevel <= logLevel;
+        }
+
+        return true;
+    }
+
+    private logLevelIsSet() {
+        return !!this.configurationProvider.openIDConfiguration?.logLevel;
     }
 }

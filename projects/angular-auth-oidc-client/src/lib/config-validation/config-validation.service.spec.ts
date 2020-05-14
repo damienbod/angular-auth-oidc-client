@@ -83,10 +83,10 @@ describe('Config Validation Service', () => {
         it('return true but warning when silent renew is used with useRefreshToken but no offline_access scope is given', () => {
             const config = { ...VALID_CONFIG, silentRenew: true, useRefreshToken: true, scopes: 'scope1 scope2 but_no_offline_access' };
 
-            const loggerSpy = spyOn(loggerService, 'logWarning');
+            const loggerSpy = spyOn(loggerService, 'logError');
 
             const result = configValidationService.validateConfig(config);
-            expect(result).toBeTrue();
+            expect(result).toBeFalse();
             expect(loggerSpy).toHaveBeenCalled();
         });
     });

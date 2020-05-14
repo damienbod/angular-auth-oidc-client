@@ -18,7 +18,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
             responseType: 'id_token token',
             startCheckSession: true,
             silentRenew: true,
-            silentRenewUrl: window.location.origin + '/silent-renew.html',
+            silentRenewUrl: '',
             logLevel: LogLevel.Debug,
         });
 }
