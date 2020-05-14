@@ -67,13 +67,16 @@ export class OidcSecurityService {
         this.loggerService.logDebug('STS server: ' + this.configurationProvider.openIDConfiguration.stsServer);
 
         const currentUrl = window.location.toString();
+        const isCallback = this.callbackService.isCallback();
 
         return this.callbackService.handlePossibleStsCallback(currentUrl).pipe(
             map(() => {
                 const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
                 if (isAuthenticated) {
-                    this.authStateService.setAuthorizedAndFireEvent();
-                    this.userService.publishUserdataIfExists();
+                    if (!isCallback) {
+                        this.authStateService.setAuthorizedAndFireEvent();
+                        this.userService.publishUserdataIfExists();
+                    }
 
                     if (this.checkSessionService.isCheckSessionConfigured()) {
                         this.checkSessionService.start();
