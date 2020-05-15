@@ -185,20 +185,65 @@ describe('OidcSecurityService', () => {
             oidcSecurityService.checkAuth().subscribe((result) => expect(result).toBeFalse());
         }));
 
-        it('calls callbackService.handlePossibleStsCallback with current url', async(() => {
+        it('calls callbackService.handlePossibleStsCallback with current url when callback is true', async(() => {
             spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-            const spy = spyOn(callBackService, 'handlePossibleStsCallback').and.returnValue(of(null));
+            spyOn(callBackService, 'isCallback').and.returnValue(true);
+            spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+            const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
+            oidcSecurityService.checkAuth().subscribe((result) => {
+                expect(result).toBeTrue();
+                expect(spy).toHaveBeenCalled();
+            });
+        }));
+
+        it('does NOT call handleCallbackAndFireEvents with current url when callback is false', async(() => {
+            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+            spyOn(callBackService, 'isCallback').and.returnValue(false);
+            const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
             oidcSecurityService.checkAuth().subscribe((result) => {
                 expect(result).toBeFalse();
-                expect(spy).toHaveBeenCalled();
+                expect(spy).not.toHaveBeenCalled();
+            });
+        }));
+
+        it('does fire the auth and userdata events when it is not a callback from the sts and is authenticated', async(() => {
+            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+            spyOn(callBackService, 'isCallback').and.returnValue(false);
+            spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+            spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
+
+            const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
+            const userServiceSpy = spyOn(userService, 'publishUserdataIfExists');
+            oidcSecurityService.checkAuth().subscribe((result) => {
+                expect(result).toBeTrue();
+                expect(setAuthorizedAndFireEventSpy).toHaveBeenCalled();
+                expect(userServiceSpy).toHaveBeenCalled();
+            });
+        }));
+
+        it('does NOT fire the auth and userdata events when it is not a callback from the sts and is NOT authenticated', async(() => {
+            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+            spyOn(callBackService, 'isCallback').and.returnValue(false);
+            spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
+            spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
+
+            const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
+            const userServiceSpy = spyOn(userService, 'publishUserdataIfExists');
+            oidcSecurityService.checkAuth().subscribe((result) => {
+                expect(result).toBeFalse();
+                expect(setAuthorizedAndFireEventSpy).not.toHaveBeenCalled();
+                expect(userServiceSpy).not.toHaveBeenCalled();
             });
         }));
 
         it('if authenticated return true', async(() => {
             spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-            spyOn(callBackService, 'handlePossibleStsCallback').and.returnValue(of(null));
+            spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
             spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
             oidcSecurityService.checkAuth().subscribe((result) => {
@@ -209,7 +254,7 @@ describe('OidcSecurityService', () => {
         it('if authenticated set auth and fires event ', async(() => {
             spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-            spyOn(callBackService, 'handlePossibleStsCallback').and.returnValue(of(null));
+            spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
             spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
             const spy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
@@ -222,7 +267,7 @@ describe('OidcSecurityService', () => {
         it('if authenticated publishUserdataIfExists ', async(() => {
             spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-            spyOn(callBackService, 'handlePossibleStsCallback').and.returnValue(of(null));
+            spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
             spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
             const spy = spyOn(userService, 'publishUserdataIfExists');
@@ -235,7 +280,7 @@ describe('OidcSecurityService', () => {
         it('if authenticated callbackService startTokenValidationPeriodically', async(() => {
             spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-            spyOn(callBackService, 'handlePossibleStsCallback').and.returnValue(of(null));
+            spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
             spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
             const spy = spyOn(callBackService, 'startTokenValidationPeriodically');
@@ -248,7 +293,7 @@ describe('OidcSecurityService', () => {
         it('if isCheckSessionConfigured call checkSessionService.start()', async(() => {
             spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-            spyOn(callBackService, 'handlePossibleStsCallback').and.returnValue(of(null));
+            spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
             spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
             spyOn(checkSessionService, 'isCheckSessionConfigured').and.returnValue(true);
@@ -262,7 +307,7 @@ describe('OidcSecurityService', () => {
         it('if isSilentRenewConfigured call getOrCreateIframe()', async(() => {
             spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-            spyOn(callBackService, 'handlePossibleStsCallback').and.returnValue(of(null));
+            spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
             spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
             spyOn(silentRenewService, 'isSilentRenewConfigured').and.returnValue(true);
