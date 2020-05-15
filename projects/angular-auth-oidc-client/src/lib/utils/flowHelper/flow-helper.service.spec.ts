@@ -133,4 +133,33 @@ describe('Flow Helper Service', () => {
 
         expect(result).toBeTrue();
     });
+
+    describe('isCurrentFlowAnyImplicitFlow', () => {
+        it('returns true if currentFlowIsImplicitFlowWithAccessToken is true', () => {
+            spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(true);
+            spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithoutAccessToken').and.returnValue(false);
+
+            const result = flowHelper.isCurrentFlowAnyImplicitFlow();
+
+            expect(result).toBeTrue();
+        });
+
+        it('returns true if isCurrentFlowImplicitFlowWithoutAccessToken is true', () => {
+            spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(false);
+            spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithoutAccessToken').and.returnValue(true);
+
+            const result = flowHelper.isCurrentFlowAnyImplicitFlow();
+
+            expect(result).toBeTrue();
+        });
+
+        it('returns false it is not any implicit flow', () => {
+            spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(false);
+            spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithoutAccessToken').and.returnValue(false);
+
+            const result = flowHelper.isCurrentFlowAnyImplicitFlow();
+
+            expect(result).toBeFalse();
+        });
+    });
 });
