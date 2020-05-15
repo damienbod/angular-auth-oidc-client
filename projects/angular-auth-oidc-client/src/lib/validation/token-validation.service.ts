@@ -52,7 +52,7 @@ import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.servi
 export class TokenValidationService {
     static RefreshTokenNoncePlaceholder = '--RefreshToken--';
     keyAlgorithms: string[] = ['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'PS256', 'PS384', 'PS512'];
-    constructor(private tokenHelperService: TokenHelperService, private flowHelper: FlowHelper, private loggerService: LoggerService) { }
+    constructor(private tokenHelperService: TokenHelperService, private flowHelper: FlowHelper, private loggerService: LoggerService) {}
 
     // id_token C7: The current time MUST be before the time represented by the exp Claim
     // (possibly allowing for some small leeway to account for clock skew).
@@ -180,9 +180,9 @@ export class TokenValidationService {
 
         this.loggerService.logDebug(
             'validate_id_token_iat_max_offset: ' +
-            (new Date().valueOf() - dateTimeIatIdToken.valueOf()) +
-            ' < ' +
-            maxOffsetAllowedInSeconds * 1000
+                (new Date().valueOf() - dateTimeIatIdToken.valueOf()) +
+                ' < ' +
+                maxOffsetAllowedInSeconds * 1000
         );
 
         const diff = new Date().valueOf() - dateTimeIatIdToken.valueOf();
@@ -220,9 +220,9 @@ export class TokenValidationService {
         if ((dataIdToken.iss as string) !== (authWellKnownEndpointsIssuer as string)) {
             this.loggerService.logDebug(
                 'Validate_id_token_iss failed, dataIdToken.iss: ' +
-                dataIdToken.iss +
-                ' authWellKnownEndpoints issuer:' +
-                authWellKnownEndpointsIssuer
+                    dataIdToken.iss +
+                    ' authWellKnownEndpoints issuer:' +
+                    authWellKnownEndpointsIssuer
             );
             return false;
         }
@@ -396,7 +396,7 @@ export class TokenValidationService {
     // access_token C2: Take the left- most half of the hash and base64url- encode it.
     // access_token C3: The value of at_hash in the ID Token MUST match the value produced in the previous step if at_hash
     // is present in the ID Token.
-    validateIdTokenAtHash(accessToken: any, atHash: any, isCodeFlow: boolean, idTokenAlg: string): boolean {
+    validateIdTokenAtHash(accessToken: any, atHash: any, idTokenAlg: string): boolean {
         this.loggerService.logDebug('at_hash from the server:' + atHash);
 
         // 'sha256' 'sha384' 'sha512'
