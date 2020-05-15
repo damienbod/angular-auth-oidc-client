@@ -125,6 +125,14 @@ describe('OidcSecurityService', () => {
         });
     });
 
+    describe('forceRefreshSession', () => {
+        it('calls callbackService refreshSession', () => {
+            const spy = spyOn(callBackService, 'refreshSession');
+            const result = oidcSecurityService.forceRefreshSession();
+            expect(spy).toHaveBeenCalled();
+        });
+    });
+
     describe('authorize', () => {
         it('calls loginservice login', () => {
             const spy = spyOn(loginService, 'login');
