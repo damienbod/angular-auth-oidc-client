@@ -40,6 +40,10 @@ export class CallbackService {
         private authStateService: AuthStateService
     ) {}
 
+    isCallback(): boolean {
+        return this.urlService.isCallbackFromSts();
+    }
+
     handlePossibleStsCallback(currentCallbackUrl: string) {
         let callback$: Observable<any>;
 

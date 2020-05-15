@@ -2,6 +2,7 @@ import { async, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
+import { ConfigValidationService } from '../config-validation/config-validation.service';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { EventTypes } from '../public-events/event-types';
@@ -22,6 +23,7 @@ describe('Configuration Service', () => {
     let dataService: DataService;
     let authWellKnownService: AuthWellKnownService;
     let storagePersistanceService: StoragePersistanceService;
+    let configValidationService: ConfigValidationService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -48,6 +50,7 @@ describe('Configuration Service', () => {
                     useClass: StoragePersistanceServiceMock,
                 },
                 PublicEventsService,
+                ConfigValidationService,
             ],
         });
     });
@@ -60,6 +63,7 @@ describe('Configuration Service', () => {
         dataService = TestBed.inject(DataService);
         authWellKnownService = TestBed.inject(AuthWellKnownService);
         storagePersistanceService = TestBed.inject(StoragePersistanceService);
+        configValidationService = TestBed.inject(ConfigValidationService);
     });
 
     it('should create', () => {
@@ -71,9 +75,10 @@ describe('Configuration Service', () => {
     });
 
     describe('withConfig', () => {
-        it('no given sts server does nothing and logs error', async(() => {
+        it('not valid config does nothing and logs error', async(() => {
             const config = {};
             spyOn(loggerService, 'logError');
+            spyOn(configValidationService, 'validateConfig').and.returnValue(false);
 
             const promise = oidcConfigService.withConfig(config);
 
@@ -86,6 +91,7 @@ describe('Configuration Service', () => {
             const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: null };
             spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ any: 'thing' });
             const eventServiceSpy = spyOn(eventsService, 'fireEvent');
+            spyOn(configValidationService, 'validateConfig').and.returnValue(true);
 
             const promise = oidcConfigService.withConfig(config);
 
@@ -104,6 +110,7 @@ describe('Configuration Service', () => {
             const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: null };
             const authWellKnown = { issuer: 'issuerForTesting' };
             spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
+            spyOn(configValidationService, 'validateConfig').and.returnValue(true);
             const eventServiceSpy = spyOn(eventsService, 'fireEvent');
             const storeWellKnownEndpointsSpy = spyOn(oidcConfigService as any, 'storeWellKnownEndpoints');
 
@@ -125,6 +132,7 @@ describe('Configuration Service', () => {
             const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
             spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
             spyOn(configurationProvider, 'setConfig').and.returnValue(config);
+            spyOn(configValidationService, 'validateConfig').and.returnValue(true);
             const getWellKnownEndPointsFromUrlSpy = spyOn(authWellKnownService, 'getWellKnownEndPointsFromUrl').and.returnValue(of(null));
 
             const promise = oidcConfigService.withConfig(config);
@@ -139,6 +147,7 @@ describe('Configuration Service', () => {
             spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
             const storeWellKnownEndpointsSpy = spyOn(oidcConfigService as any, 'storeWellKnownEndpoints').and.returnValue(false);
             spyOn(configurationProvider, 'setConfig').and.returnValue(config);
+            spyOn(configValidationService, 'validateConfig').and.returnValue(true);
             spyOn(authWellKnownService, 'getWellKnownEndPointsFromUrl').and.returnValue(of({ issuer: 'issuerForTesting' }));
 
             const promise = oidcConfigService.withConfig(config);
@@ -153,6 +162,7 @@ describe('Configuration Service', () => {
             spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
             spyOn(oidcConfigService as any, 'storeWellKnownEndpoints').and.returnValue(false);
             spyOn(configurationProvider, 'setConfig').and.returnValue(config);
+            spyOn(configValidationService, 'validateConfig').and.returnValue(true);
             spyOn(authWellKnownService, 'getWellKnownEndPointsFromUrl').and.returnValue(of({ issuer: 'issuerForTesting' }));
             const eventServiceSpy = spyOn(eventsService, 'fireEvent');
 

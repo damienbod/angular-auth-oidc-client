@@ -1,5 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { tap } from 'rxjs/operators';
+import { ConfigValidationService } from '../config-validation/config-validation.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
@@ -17,14 +18,15 @@ export class OidcConfigService {
         private readonly publicEventsService: PublicEventsService,
         private readonly configurationProvider: ConfigurationProvider,
         private readonly authWellKnownService: AuthWellKnownService,
-        private storagePersistanceService: StoragePersistanceService
+        private storagePersistanceService: StoragePersistanceService,
+        private configValidationService: ConfigValidationService
     ) {}
 
     withConfig(passedConfig: OpenIdConfiguration, passedAuthWellKnownEndpoints?: AuthWellKnownEndpoints): Promise<any> {
         return new Promise((resolve, reject) => {
-            if (!passedConfig.stsServer) {
-                this.loggerService.logError('please provide at least an stsServer');
-                return reject();
+            if (!this.configValidationService.validateConfig(passedConfig)) {
+                this.loggerService.logError('Validation of config rejected with errors. Config is NOT set.');
+                return resolve();
             }
 
             if (!passedConfig.authWellknownEndpoint) {

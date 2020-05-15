@@ -1,5 +1,13 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2020-05-xx Version 11.1.1
+
+-   Added validation for the lib configuration
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/731) // Fixes [#725](https://github.com/damienbod/angular-auth-oidc-client/issues/725)
+-   fixed some doc typos
+-   fixed bug 2 auth events emitter on STS callback
+    -   Fixes [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/731) // [#734](https://github.com/damienbod/angular-auth-oidc-client/issues/734)
+
 ### 2020-05-14 Version 11.1.0
 
 -   Eager loading of well known endpoints can be configured: Made it possible to load the well known endpoints late (per configuration)
