@@ -238,7 +238,6 @@ export class StateValidationService {
             !this.tokenValidationService.validateIdTokenAtHash(
                 toReturn.accessToken,
                 toReturn.decodedIdToken.at_hash,
-                isCurrentFlowCodeFlow,
                 idTokenHeader.alg // 'RSA256'
             ) ||
             !toReturn.accessToken
