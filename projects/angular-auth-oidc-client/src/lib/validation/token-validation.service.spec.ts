@@ -11,6 +11,7 @@ import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { AbstractSecurityStorage } from '../storage/abstract-security-storage';
 import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
 import { EqualityService } from '../utils/equality/equality.service';
+import { FlowHelper } from './../utils/flowHelper/flow-helper.service';
 import { TokenValidationService } from './token-validation.service';
 
 describe('TokenValidationService', () => {
@@ -32,6 +33,7 @@ describe('TokenValidationService', () => {
                     provide: LoggerService,
                     useClass: LoggerServiceMock,
                 },
+                FlowHelper,
             ],
         });
     });
@@ -735,5 +737,110 @@ describe('TokenValidationService', () => {
 
         const valueFalse3 = tokenvalidationService.validateIdTokenAtHash(token, 'bad', '512');
         expect(valueFalse3).toEqual(false);
+    });
+
+    it('validateStateFromHashCallback', () => {
+        const good = tokenvalidationService.validateStateFromHashCallback('sssd', 'sssd');
+        expect(good).toEqual(true);
+
+        const test: any = 'sssd';
+        const good1 = tokenvalidationService.validateStateFromHashCallback('sssd', test);
+        expect(good1).toEqual(true);
+
+        const bad = tokenvalidationService.validateStateFromHashCallback('sssd', 'bad');
+        expect(bad).toEqual(false);
+    });
+
+    it('configValidateResponseType', () => {
+        const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+        config.redirectUrl = 'https://localhost:44386';
+        config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+        config.responseType = 'id_token token';
+        config.scope = 'openid email profile';
+        config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        config.postLoginRoute = '/home';
+        config.forbiddenRoute = '/Forbidden';
+        config.unauthorizedRoute = '/Unauthorized';
+        config.startCheckSession = false;
+        config.silentRenew = false;
+        config.renewTimeBeforeTokenExpiresInSeconds = 0;
+        config.logLevel = LogLevel.Debug;
+        config.maxIdTokenIatOffsetAllowedInSeconds = 10;
+
+        configProvider.setConfig(config);
+
+        const good1 = tokenvalidationService.configValidateResponseType('id_token token');
+        expect(good1).toEqual(true);
+    });
+
+    it('configValidateResponseType', () => {
+        const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+        config.redirectUrl = 'https://localhost:44386';
+        config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+        config.responseType = 'code';
+        config.scope = 'openid email profile';
+        config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        config.postLoginRoute = '/home';
+        config.forbiddenRoute = '/Forbidden';
+        config.unauthorizedRoute = '/Unauthorized';
+        config.startCheckSession = false;
+        config.silentRenew = false;
+        config.renewTimeBeforeTokenExpiresInSeconds = 0;
+        config.logLevel = LogLevel.Debug;
+        config.maxIdTokenIatOffsetAllowedInSeconds = 10;
+
+        configProvider.setConfig(config);
+
+        const good1 = tokenvalidationService.configValidateResponseType('code');
+        expect(good1).toEqual(true);
+    });
+
+    it('configValidateResponseType', () => {
+        const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+        config.redirectUrl = 'https://localhost:44386';
+        config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+        config.responseType = 'code id_token';
+        config.scope = 'openid email profile';
+        config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        config.postLoginRoute = '/home';
+        config.forbiddenRoute = '/Forbidden';
+        config.unauthorizedRoute = '/Unauthorized';
+        config.startCheckSession = false;
+        config.silentRenew = false;
+        config.renewTimeBeforeTokenExpiresInSeconds = 0;
+        config.logLevel = LogLevel.Debug;
+        config.maxIdTokenIatOffsetAllowedInSeconds = 10;
+
+        configProvider.setConfig(config);
+
+        const bad = tokenvalidationService.configValidateResponseType('code id_token');
+        expect(bad).toEqual(false);
+    });
+
+    it('generateCodeVerifier', () => {
+        const good = tokenvalidationService.generateCodeVerifier('44445543344242132145455aaabbdc3b4');
+        expect(good).toEqual('R2TWD45Vtcf_kfAqjuE3LMSRF3JDE5fsFndnn6-a0nQ');
+
+        const bad = tokenvalidationService.generateCodeVerifier('44445543344242132145455aaabbdc3b4');
+        expect(bad === 'bad').toBeFalse();
+    });
+
+    it('validateIdTokenExpNotExpired', () => {
+        const idToken =
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
+
+        const notExpired = tokenvalidationService.validateIdTokenExpNotExpired(idToken, 0);
+        expect(notExpired).toEqual(false);
+    });
+
+    it('validateAccessTokenNotExpired', () => {
+        const notExpired = tokenvalidationService.validateAccessTokenNotExpired(new Date(1589210086), 0);
+        expect(notExpired).toEqual(false);
+
+        const notExpired3 = tokenvalidationService.validateAccessTokenNotExpired(new Date(2550, 10), 0);
+        expect(notExpired3).toEqual(true);
+
+        const notExpired2 = tokenvalidationService.validateAccessTokenNotExpired(null, 300);
+        expect(notExpired2).toEqual(true);
     });
 });
