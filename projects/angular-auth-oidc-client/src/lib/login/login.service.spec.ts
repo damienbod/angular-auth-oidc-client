@@ -90,11 +90,9 @@ describe('LoginService', () => {
             });
             spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
             spyOn(loginService as any, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-            const spy = spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
             spyOn(redirectService, 'redirectTo').and.callFake(() => {});
             const result = loginService.login();
             expect(result).toBeUndefined();
-            expect(spy).toHaveBeenCalled();
         }));
 
         it('calls urlService.getAuthorizeUrl() if everything fits', async(() => {
