@@ -11,6 +11,7 @@ import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { AbstractSecurityStorage } from '../storage/abstract-security-storage';
 import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
 import { EqualityService } from '../utils/equality/equality.service';
+import { FlowHelper } from './../utils/flowHelper/flow-helper.service';
 import { TokenValidationService } from './token-validation.service';
 
 describe('TokenValidationService', () => {
@@ -32,6 +33,7 @@ describe('TokenValidationService', () => {
                     provide: LoggerService,
                     useClass: LoggerServiceMock,
                 },
+                FlowHelper,
             ],
         });
     });
@@ -735,5 +737,83 @@ describe('TokenValidationService', () => {
 
         const valueFalse3 = tokenvalidationService.validateIdTokenAtHash(token, 'bad', '512');
         expect(valueFalse3).toEqual(false);
+    });
+
+    it('validateStateFromHashCallback', () => {
+        const good = tokenvalidationService.validateStateFromHashCallback('sssd', 'sssd');
+        expect(good).toEqual(true);
+
+        const test: any = 'sssd';
+        const good1 = tokenvalidationService.validateStateFromHashCallback('sssd', test);
+        expect(good1).toEqual(true);
+
+        const bad = tokenvalidationService.validateStateFromHashCallback('sssd', 'bad');
+        expect(bad).toEqual(false);
+    });
+
+    it('configValidateResponseType', () => {
+        const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+        config.redirectUrl = 'https://localhost:44386';
+        config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+        config.responseType = 'id_token token';
+        config.scope = 'openid email profile';
+        config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        config.postLoginRoute = '/home';
+        config.forbiddenRoute = '/Forbidden';
+        config.unauthorizedRoute = '/Unauthorized';
+        config.startCheckSession = false;
+        config.silentRenew = false;
+        config.renewTimeBeforeTokenExpiresInSeconds = 0;
+        config.logLevel = LogLevel.Debug;
+        config.maxIdTokenIatOffsetAllowedInSeconds = 10;
+
+        configProvider.setConfig(config);
+
+        const good1 = tokenvalidationService.configValidateResponseType('id_token token');
+        expect(good1).toEqual(true);
+    });
+
+    it('configValidateResponseType', () => {
+        const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+        config.redirectUrl = 'https://localhost:44386';
+        config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+        config.responseType = 'code';
+        config.scope = 'openid email profile';
+        config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        config.postLoginRoute = '/home';
+        config.forbiddenRoute = '/Forbidden';
+        config.unauthorizedRoute = '/Unauthorized';
+        config.startCheckSession = false;
+        config.silentRenew = false;
+        config.renewTimeBeforeTokenExpiresInSeconds = 0;
+        config.logLevel = LogLevel.Debug;
+        config.maxIdTokenIatOffsetAllowedInSeconds = 10;
+
+        configProvider.setConfig(config);
+
+        const good1 = tokenvalidationService.configValidateResponseType('code');
+        expect(good1).toEqual(true);
+    });
+
+    it('configValidateResponseType', () => {
+        const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+        config.redirectUrl = 'https://localhost:44386';
+        config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+        config.responseType = 'code id_token';
+        config.scope = 'openid email profile';
+        config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+        config.postLoginRoute = '/home';
+        config.forbiddenRoute = '/Forbidden';
+        config.unauthorizedRoute = '/Unauthorized';
+        config.startCheckSession = false;
+        config.silentRenew = false;
+        config.renewTimeBeforeTokenExpiresInSeconds = 0;
+        config.logLevel = LogLevel.Debug;
+        config.maxIdTokenIatOffsetAllowedInSeconds = 10;
+
+        configProvider.setConfig(config);
+
+        const bad = tokenvalidationService.configValidateResponseType('code id_token');
+        expect(bad).toEqual(false);
     });
 });
