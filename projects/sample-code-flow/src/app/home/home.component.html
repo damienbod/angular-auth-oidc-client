@@ -1,8 +1,7 @@
 <div>Welcome to home Route</div>
 
-<div *ngIf="isAuthenticated; else noAuth">
+<div *ngIf="isAuthenticated$ | async as isAuthenticated; else noAuth">
     <button (click)="logout()">Logout</button>
-    <button (click)="refreshSession()">Refresh session</button>
     <hr />
 
     <br />
