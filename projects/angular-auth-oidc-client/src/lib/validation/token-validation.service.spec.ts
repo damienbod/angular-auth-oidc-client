@@ -816,4 +816,13 @@ describe('TokenValidationService', () => {
         const bad = tokenvalidationService.configValidateResponseType('code id_token');
         expect(bad).toEqual(false);
     });
+
+    it('generateCodeVerifier', () => {
+        const good = tokenvalidationService.generateCodeVerifier('44445543344242132145455aaabbdc3b4');
+        console.warn(good);
+        expect(good).toEqual('R2TWD45Vtcf_kfAqjuE3LMSRF3JDE5fsFndnn6-a0nQ');
+
+        const bad = tokenvalidationService.generateCodeVerifier('44445543344242132145455aaabbdc3b4');
+        expect(bad === 'bad').toBeFalse();
+    });
 });
