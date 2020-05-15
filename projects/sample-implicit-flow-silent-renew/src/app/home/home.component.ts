@@ -10,7 +10,7 @@ export class HomeComponent implements OnInit {
     configuration: PublicConfiguration;
     userDataChanged$: Observable<OidcClientNotification<any>>;
     userData$: Observable<any>;
-    isAuthenticated = false;
+    isAuthenticated$: Observable<boolean>;
     checkSessionChanged$: Observable<boolean>;
     checkSessionChanged: any;
 
@@ -20,11 +20,7 @@ export class HomeComponent implements OnInit {
         this.userData$ = this.oidcSecurityService.userData$;
         this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 
-        this.oidcSecurityService.isAuthenticated$.subscribe((authenticated) => {
-            this.isAuthenticated = authenticated;
-
-            console.warn('authenticated: ', authenticated);
-        });
+        this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
     }
     login() {
         console.log('start login');
