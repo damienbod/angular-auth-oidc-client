@@ -44,12 +44,10 @@ export class CallbackService {
         return this.urlService.isCallbackFromSts();
     }
 
-    handlePossibleStsCallback(currentCallbackUrl: string) {
+    handleCallbackAndFireEvents(currentCallbackUrl: string) {
         let callback$: Observable<any>;
 
-        if (!this.urlService.isCallbackFromSts()) {
-            callback$ = of(null);
-        } else if (this.flowHelper.isCurrentFlowCodeFlow()) {
+        if (this.flowHelper.isCurrentFlowCodeFlow()) {
             callback$ = this.authorizedCallbackWithCode(currentCallbackUrl);
         } else if (this.flowHelper.isCurrentFlowAnyImplicitFlow()) {
             callback$ = this.authorizedImplicitFlowCallback();

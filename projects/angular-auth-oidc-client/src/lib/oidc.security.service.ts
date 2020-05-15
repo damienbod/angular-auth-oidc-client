@@ -69,23 +69,17 @@ export class OidcSecurityService {
         const currentUrl = window.location.toString();
         const isCallback = this.callbackService.isCallback();
 
-        return this.callbackService.handlePossibleStsCallback(currentUrl).pipe(
+        const callback$ = isCallback ? this.callbackService.handleCallbackAndFireEvents(currentUrl) : of(null);
+
+        return callback$.pipe(
             map(() => {
                 const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
                 if (isAuthenticated) {
+                    this.startCheckSessionAndValidation();
+
                     if (!isCallback) {
                         this.authStateService.setAuthorizedAndFireEvent();
                         this.userService.publishUserdataIfExists();
-                    }
-
-                    if (this.checkSessionService.isCheckSessionConfigured()) {
-                        this.checkSessionService.start();
-                    }
-
-                    this.callbackService.startTokenValidationPeriodically(this.TOKEN_REFRESH_INTERVALL_IN_SECONDS);
-
-                    if (this.silentRenewService.isSilentRenewConfigured()) {
-                        this.silentRenewService.getOrCreateIframe();
                     }
                 }
 
@@ -94,6 +88,16 @@ export class OidcSecurityService {
                 return isAuthenticated;
             })
         );
+    }
+
+    private startCheckSessionAndValidation() {
+        if (this.checkSessionService.isCheckSessionConfigured()) {
+            this.checkSessionService.start();
+        }
+        this.callbackService.startTokenValidationPeriodically(this.TOKEN_REFRESH_INTERVALL_IN_SECONDS);
+        if (this.silentRenewService.isSilentRenewConfigured()) {
+            this.silentRenewService.getOrCreateIframe();
+        }
     }
 
     getToken(): string {

@@ -41,8 +41,6 @@ export class LoginService {
         this.loggerService.logDebug('BEGIN Authorize OIDC Flow, no auth data');
 
         this.getAuthWellKnownEndPoints(authWellknownEndpoint).subscribe(() => {
-            this.flowsService.resetAuthorizationData();
-
             const { urlHandler, customParams } = authOptions || {};
 
             const url = this.urlService.getAuthorizeUrl(customParams);
