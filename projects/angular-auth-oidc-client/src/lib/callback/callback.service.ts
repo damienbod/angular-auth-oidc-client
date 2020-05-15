@@ -43,6 +43,7 @@ export class CallbackService {
     isCallback(): boolean {
         return this.urlService.isCallbackFromSts();
     }
+
     handlePossibleStsCallback(currentCallbackUrl: string) {
         let callback$: Observable<any>;
 
