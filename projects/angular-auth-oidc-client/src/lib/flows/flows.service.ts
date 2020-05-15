@@ -47,7 +47,6 @@ export class FlowsService {
     processCodeFlowCallback(urlToCheck: string) {
         return this.codeFlowCallback(urlToCheck).pipe(
             switchMap((callbackContext) => this.codeFlowCodeRequest(callbackContext)),
-            switchMap((callbackContext) => this.codeFlowSilentRenewCheck(callbackContext)),
             switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
             switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
             switchMap((callbackContext) => this.callbackUser(callbackContext))
@@ -56,7 +55,6 @@ export class FlowsService {
 
     processSilentRenewCodeFlowCallback(firstContext: CallbackContext) {
         return this.codeFlowCodeRequest(firstContext).pipe(
-            switchMap((callbackContext) => this.codeFlowSilentRenewCheck(callbackContext)),
             switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
             switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
             switchMap((callbackContext) => this.callbackUser(callbackContext))
@@ -74,7 +72,6 @@ export class FlowsService {
     processRefreshToken() {
         return this.refreshSessionWithRefreshTokens().pipe(
             switchMap((callbackContext) => this.refreshTokensRequestTokens(callbackContext)),
-            switchMap((callbackContext) => this.codeFlowSilentRenewCheck(callbackContext)),
             switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
             switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
             switchMap((callbackContext) => this.callbackUser(callbackContext))
@@ -246,19 +243,7 @@ export class FlowsService {
         );
     }
 
-    // STEP 3 Code Flow, STEP 3 Refresh Token
-    private codeFlowSilentRenewCheck(callbackContext: CallbackContext): Observable<CallbackContext> {
-        callbackContext.isRenewProcess = this.flowsDataService.isSilentRenewRunning();
-
-        this.loggerService.logDebug('BEGIN authorized Code Flow Callback, no auth data');
-        if (!callbackContext.isRenewProcess) {
-            this.resetAuthorizationData();
-        }
-
-        return of(callbackContext);
-    }
-
-    // STEP 4 Code Flow, STEP 2 Implicit Flow, STEP 4 Refresh Token
+    // STEP 3 Code Flow, STEP 2 Implicit Flow, STEP 3 Refresh Token
     private callbackHistoryAndResetJwtKeys(callbackContext: CallbackContext): Observable<CallbackContext> {
         this.authStateService.setAuthResultInStorage(callbackContext.authResult);
 
@@ -300,7 +285,7 @@ export class FlowsService {
         );
     }
 
-    // STEP 5 All flows
+    // STEP 4 All flows
     private callbackStateValidation(callbackContext: CallbackContext): Observable<CallbackContext> {
         const validationResult = this.stateValidationService.getValidatedStateResult(callbackContext);
         callbackContext.validationResult = validationResult;
@@ -318,7 +303,7 @@ export class FlowsService {
         }
     }
 
-    // STEP 6 userData
+    // STEP 5 userData
     private callbackUser(callbackContext: CallbackContext): Observable<CallbackContext> {
         if (!this.configurationProvider.openIDConfiguration.autoUserinfo) {
             if (!callbackContext.isRenewProcess) {
