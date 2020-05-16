@@ -1,6 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
-import { TestBed } from '@angular/core/testing';
+import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { of, Subscription } from 'rxjs';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
 import { ConfigurationProvider } from '../config/config.provider';
@@ -31,6 +32,7 @@ describe('Callbackservice ', () => {
     let silentRenewService: SilentRenewService;
     let userService: UserService;
     let authStateService: AuthStateService;
+    let flowHelper: FlowHelper;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -60,9 +62,150 @@ describe('Callbackservice ', () => {
         loggerService = TestBed.inject(LoggerService);
         flowsService = TestBed.inject(FlowsService);
         callbackService = TestBed.inject(CallbackService);
+        flowHelper = TestBed.inject(FlowHelper);
     });
 
-    it('should create', () => {
-        expect(callbackService).toBeTruthy();
+    describe('handleCallbackAndFireEvents', () => {
+        it('calls authorizedCallbackWithCode if current flow is code flow', async(() => {
+            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
+            const authorizedCallbackWithCodeSpy = spyOn(callbackService as any, 'authorizedCallbackWithCode').and.returnValue(of(true));
+
+            callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
+                expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl');
+            });
+        }));
+
+        it('calls authorizedImplicitFlowCallback if current flow is implicit flow', async(() => {
+            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
+            spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(true);
+            const authorizedCallbackWithCodeSpy = spyOn(callbackService as any, 'authorizedImplicitFlowCallback').and.returnValue(of(true));
+
+            callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
+                expect(authorizedCallbackWithCodeSpy).toHaveBeenCalled();
+            });
+        }));
+
+        it('emits callbackinternal no matter which flow it is', () => {
+            const callbackSpy = spyOn((callbackService as any).stsCallbackInternal$, 'next');
+            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
+            const authorizedCallbackWithCodeSpy = spyOn(callbackService as any, 'authorizedCallbackWithCode').and.returnValue(of(true));
+
+            callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
+                expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl');
+                expect(callbackSpy).toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe('refreshSession', () => {
+        it('returns null if no userdata', async(() => {
+            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
+            spyOn(authStateService, 'getIdToken').and.returnValue('someIdToken');
+            spyOn(userService, 'getUserDataFromStore').and.returnValue(null);
+
+            callbackService.refreshSession().subscribe((result) => {
+                expect(result).toBe(null);
+            });
+        }));
+
+        it('returns null if silent renew Is running', async(() => {
+            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
+            spyOn(authStateService, 'getIdToken').and.returnValue('someIdToken');
+            spyOn(userService, 'getUserDataFromStore').and.returnValue('userdata');
+
+            callbackService.refreshSession().subscribe((result) => {
+                expect(result).toBe(null);
+            });
+        }));
+
+        it('returns null if no id token is set', async(() => {
+            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
+            spyOn(authStateService, 'getIdToken').and.returnValue(null);
+            spyOn(userService, 'getUserDataFromStore').and.returnValue('userdata');
+
+            callbackService.refreshSession().subscribe((result) => {
+                expect(result).toBe(null);
+            });
+        }));
+
+        it('calls `setSilentRenewRunning` when should be executed', async(() => {
+            const setSilentRenewRunningSpy = spyOn(flowsDataService, 'setSilentRenewRunning');
+
+            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
+            spyOn(authStateService, 'getIdToken').and.returnValue('someIdToken');
+            spyOn(userService, 'getUserDataFromStore').and.returnValue('userdata');
+
+            spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
+            spyOn(callbackService as any, 'refreshSessionWithRefreshTokens').and.returnValue(of(null));
+
+            callbackService.refreshSession().subscribe(() => {
+                expect(setSilentRenewRunningSpy).toHaveBeenCalled();
+            });
+        }));
+
+        it('calls refreshSessionWithRefreshTokens when current flow is codeflow with refresh tokens', async(() => {
+            spyOn(flowsDataService, 'setSilentRenewRunning');
+
+            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
+            spyOn(authStateService, 'getIdToken').and.returnValue('someIdToken');
+            spyOn(userService, 'getUserDataFromStore').and.returnValue('userdata');
+
+            spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
+            const refreshSessionWithRefreshTokensSpy = spyOn(callbackService as any, 'refreshSessionWithRefreshTokens').and.returnValue(
+                of(null)
+            );
+
+            callbackService.refreshSession().subscribe(() => {
+                expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalled();
+            });
+        }));
+
+        it('calls refreshSessionWithIframe when current flow is NOT codeflow with refresh tokens', async(() => {
+            spyOn(flowsDataService, 'setSilentRenewRunning');
+
+            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
+            spyOn(authStateService, 'getIdToken').and.returnValue('someIdToken');
+            spyOn(userService, 'getUserDataFromStore').and.returnValue('userdata');
+
+            spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
+            const refreshSessionWithRefreshTokensSpy = spyOn(callbackService as any, 'refreshSessionWithRefreshTokens').and.returnValue(
+                of(null)
+            );
+
+            const refreshSessionWithIframeSpy = spyOn(callbackService as any, 'refreshSessionWithIframe').and.returnValue(of(null));
+
+            callbackService.refreshSession().subscribe(() => {
+                expect(refreshSessionWithRefreshTokensSpy).not.toHaveBeenCalled();
+                expect(refreshSessionWithIframeSpy).toHaveBeenCalled();
+            });
+        }));
+    });
+
+    describe('startTokenValidationPeriodically', () => {
+        it('returns if runTokenValidationRunning', () => {
+            spyOn(callbackService as any, 'runTokenValidationRunning').and.returnValue(new Subscription());
+
+            const result = callbackService.startTokenValidationPeriodically(99);
+
+            expect(result).toBeUndefined();
+        });
+
+        it('returns if openIDConfiguration.silentrenew is false', () => {
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: false });
+
+            const result = callbackService.startTokenValidationPeriodically(99);
+
+            expect(result).toBeUndefined();
+        });
+
+        it('starts interval with correct time', fakeAsync(() => {
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: true });
+            const isCurrentFlowCodeFlowWithRefeshTokensSpy = spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens');
+            callbackService.startTokenValidationPeriodically(1);
+            tick(1000);
+            (callbackService as any).runTokenValidationRunning.unsubscribe();
+            (callbackService as any).runTokenValidationRunning = null;
+            expect(isCurrentFlowCodeFlowWithRefeshTokensSpy).toHaveBeenCalled();
+        }));
     });
 });

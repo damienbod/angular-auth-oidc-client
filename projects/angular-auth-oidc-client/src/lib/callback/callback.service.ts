@@ -80,7 +80,9 @@ export class CallbackService {
 
         return this.refreshSessionWithIframe();
     }
+
     startTokenValidationPeriodically(repeatAfterSeconds: number) {
+        console.log('this.runTokenValidationRunning', this.runTokenValidationRunning);
         if (!!this.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
             return;
         }
