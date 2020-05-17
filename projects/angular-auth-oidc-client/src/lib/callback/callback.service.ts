@@ -18,7 +18,6 @@ import { ValidationResult } from '../validation/validation-result';
 @Injectable({ providedIn: 'root' })
 export class CallbackService {
     private runTokenValidationRunning: Subscription = null;
-    private scheduledHeartBeatInternal: any;
     private boundSilentRenewEvent: any;
 
     private stsCallbackInternal$ = new Subject();
@@ -149,12 +148,8 @@ export class CallbackService {
     }
 
     private stopPeriodicallTokenCheck(): void {
-        if (this.scheduledHeartBeatInternal) {
-            clearTimeout(this.scheduledHeartBeatInternal);
-            this.scheduledHeartBeatInternal = null;
-            this.runTokenValidationRunning.unsubscribe();
-            this.runTokenValidationRunning = null;
-        }
+        this.runTokenValidationRunning.unsubscribe();
+        this.runTokenValidationRunning = null;
     }
 
     // Code Flow Callback
