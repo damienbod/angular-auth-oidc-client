@@ -162,10 +162,10 @@ export class CallbackService {
             }),
             catchError((error) => {
                 this.flowsDataService.resetSilentRenewRunning();
+                this.stopPeriodicallTokenCheck();
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
-                this.stopPeriodicallTokenCheck();
                 return throwError(error);
             })
         );
@@ -181,10 +181,10 @@ export class CallbackService {
             }),
             catchError((error) => {
                 this.flowsDataService.resetSilentRenewRunning();
+                this.stopPeriodicallTokenCheck();
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
-                this.stopPeriodicallTokenCheck();
                 return throwError(error);
             })
         );
@@ -201,11 +201,11 @@ export class CallbackService {
 
         return this.flowsService.processRefreshToken().pipe(
             catchError((error) => {
+                this.stopPeriodicallTokenCheck();
+                this.flowsService.resetAuthorizationData();
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
-                this.stopPeriodicallTokenCheck();
-                this.flowsService.resetAuthorizationData();
                 return throwError(error);
             })
         );

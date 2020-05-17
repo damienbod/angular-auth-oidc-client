@@ -1,13 +1,14 @@
 import { HttpClientModule } from '@angular/common/http';
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of, Subscription } from 'rxjs';
+import { of, Subscription, throwError } from 'rxjs';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
 import { ConfigurationProvider } from '../config/config.provider';
 import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { FlowsDataService } from '../flows/flows-data.service';
-import { FlowsDataServiceMock } from '../flows/flows-data.servoce-mock';
+import { FlowsDataServiceMock } from '../flows/flows-data.service-mock';
 import { FlowsService } from '../flows/flows.service';
 import { FlowsServiceMock } from '../flows/flows.service-mock';
 import { SilentRenewService } from '../iframe/silent-renew.service';
@@ -19,6 +20,7 @@ import { UserServiceMock } from '../userData/user-service-mock';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { UrlService } from '../utils/url/url.service';
 import { UrlServiceMock } from '../utils/url/url.service-mock';
+import { JwtKeys } from '../validation/jwtkeys';
 import { CallbackService } from './callback.service';
 
 describe('Callbackservice ', () => {
@@ -33,6 +35,7 @@ describe('Callbackservice ', () => {
     let userService: UserService;
     let authStateService: AuthStateService;
     let flowHelper: FlowHelper;
+    let router;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -63,6 +66,7 @@ describe('Callbackservice ', () => {
         flowsService = TestBed.inject(FlowsService);
         callbackService = TestBed.inject(CallbackService);
         flowHelper = TestBed.inject(FlowHelper);
+        router = TestBed.inject(Router);
     });
 
     describe('handleCallbackAndFireEvents', () => {
@@ -291,12 +295,12 @@ describe('Callbackservice ', () => {
         }));
 
         it('calls refreshSessionWithRefreshTokens if current flow is Code flow wiht refresh tokens', fakeAsync(() => {
-            const silentRenewSpy = spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: true });
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: true });
             spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
             spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
             spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
-            const resetAuthorizationdataSpy = spyOn(flowsService, 'resetAuthorizationData');
+            spyOn(flowsService, 'resetAuthorizationData');
 
             spyOn(authStateService, 'hasIdTokenExpired').and.returnValue(true);
             spyOn(authStateService, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(true);
@@ -315,12 +319,282 @@ describe('Callbackservice ', () => {
     });
 
     describe('stopPeriodicallTokenCheck', () => {
-        it('returns if scheduledHeartBeatInternal is falsy', () => {
-            spyOn(callbackService as any, 'runTokenValidationRunning').and.returnValue(new Subscription());
+        it('calls unsubscribe and sets to null', () => {
+            const serviceAsAny = callbackService as any;
+            serviceAsAny.runTokenValidationRunning = new Subscription();
+            const spy = spyOn(serviceAsAny.runTokenValidationRunning, 'unsubscribe');
 
-            const result = callbackService.startTokenValidationPeriodically(99);
+            serviceAsAny.stopPeriodicallTokenCheck();
 
-            expect(result).toBeUndefined();
+            expect(spy).toHaveBeenCalled();
+            expect(serviceAsAny.runTokenValidationRunning).toBeNull();
         });
+    });
+
+    describe('authorizedCallbackWithCode', () => {
+        it('calls flowsService.processCodeFlowCallback with correct url', () => {
+            const serviceAsAny = callbackService as any;
+            const spy = spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(of(null));
+            serviceAsAny.authorizedCallbackWithCode('some-url');
+            expect(spy).toHaveBeenCalledWith('some-url');
+        });
+
+        it('does nothing if triggerAuthorizationResultEvent is true and isRenewProcess is true', async(() => {
+            const serviceAsAny = callbackService as any;
+            const callbackContext = {
+                code: '',
+                refreshToken: '',
+                state: '',
+                sessionState: null,
+                authResult: '',
+                isRenewProcess: true,
+                jwtKeys: new JwtKeys(),
+                validationResult: null,
+                existingIdToken: '',
+            };
+            const spy = spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(of(callbackContext));
+            const routerSpy = spyOn(router, 'navigate');
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
+            serviceAsAny.authorizedCallbackWithCode('some-url').subscribe(() => {
+                expect(spy).toHaveBeenCalledWith('some-url');
+                expect(routerSpy).not.toHaveBeenCalled();
+            });
+        }));
+
+        it('calls router if triggerAuthorizationResultEvent is false and isRenewProcess is false', async(() => {
+            const serviceAsAny = callbackService as any;
+            const callbackContext = {
+                code: '',
+                refreshToken: '',
+                state: '',
+                sessionState: null,
+                authResult: '',
+                isRenewProcess: false,
+                jwtKeys: new JwtKeys(),
+                validationResult: null,
+                existingIdToken: '',
+            };
+            const spy = spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(of(callbackContext));
+            const routerSpy = spyOn(router, 'navigate');
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+                triggerAuthorizationResultEvent: false,
+                postLoginRoute: 'postLoginRoute',
+            });
+            serviceAsAny.authorizedCallbackWithCode('some-url').subscribe(() => {
+                expect(spy).toHaveBeenCalledWith('some-url');
+                expect(routerSpy).toHaveBeenCalledWith(['postLoginRoute']);
+            });
+        }));
+
+        it('resetSilentRenewRunning and stopPeriodicallTokenCheck in case of error', async(() => {
+            const serviceAsAny = callbackService as any;
+
+            spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(throwError('error'));
+            const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
+            const stopPeriodicallTokenCheckSpy = spyOn(serviceAsAny, 'stopPeriodicallTokenCheck');
+
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+                triggerAuthorizationResultEvent: false,
+                postLoginRoute: 'postLoginRoute',
+            });
+            serviceAsAny.authorizedCallbackWithCode('some-url').subscribe({
+                error: (err) => {
+                    expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+                    expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
+                    expect(err).toBeTruthy();
+                },
+            });
+        }));
+
+        it(`navigates to unauthorizedRoute in case of error and  in case of error and
+        triggerAuthorizationResultEvent is false`, async(() => {
+            const serviceAsAny = callbackService as any;
+
+            spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(throwError('error'));
+            const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
+            const stopPeriodicallTokenCheckSpy = spyOn(serviceAsAny, 'stopPeriodicallTokenCheck');
+            const routerSpy = spyOn(router, 'navigate');
+
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+                triggerAuthorizationResultEvent: false,
+                unauthorizedRoute: 'unauthorizedRoute',
+            });
+            serviceAsAny.authorizedCallbackWithCode('some-url').subscribe({
+                error: (err) => {
+                    expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+                    expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
+                    expect(err).toBeTruthy();
+                    expect(routerSpy).toHaveBeenCalledWith(['unauthorizedRoute']);
+                },
+            });
+        }));
+    });
+
+    describe('authorizedImplicitFlowCallback', () => {
+        it('calls flowsService.processImplicitFlowCallback with has if given', () => {
+            const serviceAsAny = callbackService as any;
+            const spy = spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(of(null));
+            serviceAsAny.authorizedImplicitFlowCallback('some-hash');
+            expect(spy).toHaveBeenCalledWith('some-hash');
+        });
+
+        it('does nothing if triggerAuthorizationResultEvent is true and isRenewProcess is true', async(() => {
+            const serviceAsAny = callbackService as any;
+            const callbackContext = {
+                code: '',
+                refreshToken: '',
+                state: '',
+                sessionState: null,
+                authResult: '',
+                isRenewProcess: true,
+                jwtKeys: new JwtKeys(),
+                validationResult: null,
+                existingIdToken: '',
+            };
+            const spy = spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(of(callbackContext));
+            const routerSpy = spyOn(router, 'navigate');
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
+            serviceAsAny.authorizedImplicitFlowCallback('some-hash').subscribe(() => {
+                expect(spy).toHaveBeenCalledWith('some-hash');
+                expect(routerSpy).not.toHaveBeenCalled();
+            });
+        }));
+
+        it('calls router if triggerAuthorizationResultEvent is false and isRenewProcess is false', async(() => {
+            const serviceAsAny = callbackService as any;
+            const callbackContext = {
+                code: '',
+                refreshToken: '',
+                state: '',
+                sessionState: null,
+                authResult: '',
+                isRenewProcess: false,
+                jwtKeys: new JwtKeys(),
+                validationResult: null,
+                existingIdToken: '',
+            };
+            const spy = spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(of(callbackContext));
+            const routerSpy = spyOn(router, 'navigate');
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+                triggerAuthorizationResultEvent: false,
+                postLoginRoute: 'postLoginRoute',
+            });
+            serviceAsAny.authorizedImplicitFlowCallback('some-hash').subscribe(() => {
+                expect(spy).toHaveBeenCalledWith('some-hash');
+                expect(routerSpy).toHaveBeenCalledWith(['postLoginRoute']);
+            });
+        }));
+
+        it('resetSilentRenewRunning and stopPeriodicallTokenCheck in case of error', async(() => {
+            const serviceAsAny = callbackService as any;
+
+            spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(throwError('error'));
+            const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
+            const stopPeriodicallTokenCheckSpy = spyOn(serviceAsAny, 'stopPeriodicallTokenCheck');
+
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+                triggerAuthorizationResultEvent: false,
+                postLoginRoute: 'postLoginRoute',
+            });
+            serviceAsAny.authorizedImplicitFlowCallback('some-hash').subscribe({
+                error: (err) => {
+                    expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+                    expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
+                    expect(err).toBeTruthy();
+                },
+            });
+        }));
+
+        it(`navigates to unauthorizedRoute in case of error and  in case of error and
+        triggerAuthorizationResultEvent is false`, async(() => {
+            const serviceAsAny = callbackService as any;
+
+            spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(throwError('error'));
+            const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
+            const stopPeriodicallTokenCheckSpy = spyOn(serviceAsAny, 'stopPeriodicallTokenCheck');
+            const routerSpy = spyOn(router, 'navigate');
+
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+                triggerAuthorizationResultEvent: false,
+                unauthorizedRoute: 'unauthorizedRoute',
+            });
+            serviceAsAny.authorizedImplicitFlowCallback('some-hash').subscribe({
+                error: (err) => {
+                    expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+                    expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
+                    expect(err).toBeTruthy();
+                    expect(routerSpy).toHaveBeenCalledWith(['unauthorizedRoute']);
+                },
+            });
+        }));
+    });
+
+    describe('refreshSessionWithIframe', () => {
+        it('calls sendAuthorizeReqestUsingSilentRenew with created url', async(() => {
+            const serviceAsAny = callbackService as any;
+
+            spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
+            const sendAuthorizeReqestUsingSilentRenewSpy = spyOn(serviceAsAny, 'sendAuthorizeReqestUsingSilentRenew').and.returnValue(
+                of(null)
+            );
+
+            serviceAsAny.refreshSessionWithIframe().subscribe(() => {
+                expect(sendAuthorizeReqestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url');
+            });
+        }));
+    });
+
+    describe('refreshSessionWithRefreshTokens', () => {
+        it('calls flowsService.processRefreshToken()', async(() => {
+            const serviceAsAny = callbackService as any;
+
+            const spy = spyOn(flowsService, 'processRefreshToken').and.returnValue(of(null));
+
+            serviceAsAny.refreshSessionWithRefreshTokens().subscribe(() => {
+                expect(spy).toHaveBeenCalled();
+            });
+        }));
+
+        it('resetAuthorizationData and stopPeriodicallTokenCheck in case of error', async(() => {
+            const serviceAsAny = callbackService as any;
+
+            spyOn(flowsService, 'processRefreshToken').and.returnValue(throwError('error'));
+            const resetSilentRenewRunningSpy = spyOn(flowsService, 'resetAuthorizationData');
+            const stopPeriodicallTokenCheckSpy = spyOn(serviceAsAny, 'stopPeriodicallTokenCheck');
+
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+                triggerAuthorizationResultEvent: true,
+            });
+            serviceAsAny.refreshSessionWithRefreshTokens().subscribe({
+                error: (err) => {
+                    expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+                    expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
+                    expect(err).toBeTruthy();
+                },
+            });
+        }));
+
+        it(`navigates to unauthorizedRoute in case of error and  in case of error and
+          triggerAuthorizationResultEvent is false`, async(() => {
+            const serviceAsAny = callbackService as any;
+
+            spyOn(flowsService, 'processRefreshToken').and.returnValue(throwError('error'));
+            const resetSilentRenewRunningSpy = spyOn(flowsService, 'resetAuthorizationData');
+            const stopPeriodicallTokenCheckSpy = spyOn(serviceAsAny, 'stopPeriodicallTokenCheck');
+            const routerSpy = spyOn(router, 'navigate');
+
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+                triggerAuthorizationResultEvent: false,
+                unauthorizedRoute: 'unauthorizedRoute',
+            });
+            serviceAsAny.refreshSessionWithRefreshTokens().subscribe({
+                error: (err) => {
+                    expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+                    expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
+                    expect(err).toBeTruthy();
+                    expect(routerSpy).toHaveBeenCalledWith(['unauthorizedRoute']);
+                },
+            });
+        }));
     });
 });
