@@ -18,7 +18,6 @@ import { ValidationResult } from '../validation/validation-result';
 @Injectable({ providedIn: 'root' })
 export class CallbackService {
     private runTokenValidationRunning: Subscription = null;
-    private scheduledHeartBeatInternal: any;
     private boundSilentRenewEvent: any;
 
     private stsCallbackInternal$ = new Subject();
@@ -80,6 +79,7 @@ export class CallbackService {
 
         return this.refreshSessionWithIframe();
     }
+
     startTokenValidationPeriodically(repeatAfterSeconds: number) {
         if (!!this.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
             return;
@@ -147,12 +147,8 @@ export class CallbackService {
     }
 
     private stopPeriodicallTokenCheck(): void {
-        if (this.scheduledHeartBeatInternal) {
-            clearTimeout(this.scheduledHeartBeatInternal);
-            this.scheduledHeartBeatInternal = null;
-            this.runTokenValidationRunning.unsubscribe();
-            this.runTokenValidationRunning = null;
-        }
+        this.runTokenValidationRunning.unsubscribe();
+        this.runTokenValidationRunning = null;
     }
 
     // Code Flow Callback
@@ -165,10 +161,10 @@ export class CallbackService {
             }),
             catchError((error) => {
                 this.flowsDataService.resetSilentRenewRunning();
+                this.stopPeriodicallTokenCheck();
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
-                this.stopPeriodicallTokenCheck();
                 return throwError(error);
             })
         );
@@ -184,10 +180,10 @@ export class CallbackService {
             }),
             catchError((error) => {
                 this.flowsDataService.resetSilentRenewRunning();
+                this.stopPeriodicallTokenCheck();
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
-                this.stopPeriodicallTokenCheck();
                 return throwError(error);
             })
         );
@@ -204,11 +200,11 @@ export class CallbackService {
 
         return this.flowsService.processRefreshToken().pipe(
             catchError((error) => {
+                this.stopPeriodicallTokenCheck();
+                this.flowsService.resetAuthorizationData();
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
-                this.stopPeriodicallTokenCheck();
-                this.flowsService.resetAuthorizationData();
                 return throwError(error);
             })
         );
