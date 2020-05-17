@@ -116,27 +116,6 @@ describe('Storage Persistance Service', () => {
         });
     });
 
-    describe('authorizedState', () => {
-        it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
-            const returnValue = 'someValue';
-            const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-            const result = service.authorizedState;
-
-            expect(result).toBe(returnValue);
-            const keyToRead = `${storagePrefix}_storageAuthorizedState`;
-            expect(spy).toHaveBeenCalledWith(keyToRead);
-        });
-
-        it('set calls "oidcSecurityStorage.write" with correct prefix_key and value', () => {
-            const valueToStore = 'someValue';
-            const writeSpy = spyOn(securityStorage, 'write').and.callFake(() => {});
-            service.authorizedState = valueToStore;
-
-            const keyToWrite = `${storagePrefix}_storageAuthorizedState`;
-            expect(writeSpy).toHaveBeenCalledWith(keyToWrite, valueToStore);
-        });
-    });
-
     describe('userData', () => {
         it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
             const returnValue = 'someValue';
@@ -312,7 +291,7 @@ describe('Storage Persistance Service', () => {
             const writeSpy = spyOn(securityStorage, 'write').and.callFake(() => {});
             service.resetAuthStateInStorage();
 
-            expect(writeSpy).toHaveBeenCalledTimes(4);
+            expect(writeSpy).toHaveBeenCalledTimes(3);
         });
     });
 

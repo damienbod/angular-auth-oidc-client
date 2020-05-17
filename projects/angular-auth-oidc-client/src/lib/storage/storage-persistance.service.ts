@@ -1,5 +1,4 @@
 ﻿import { Injectable } from '@angular/core';
-import { AuthorizedState } from '../authState/authorized-state';
 import { AuthWellKnownEndpoints } from '../config/auth-well-known-endpoints';
 import { ConfigurationProvider } from '../config/config.provider';
 import { AbstractSecurityStorage } from './abstract-security-storage';
@@ -41,14 +40,6 @@ export class StoragePersistanceService {
 
     set idToken(value: string) {
         this.store(this.storageIdToken, value);
-    }
-
-    get authorizedState(): string | undefined {
-        return this.retrieve(this.storageAuthorizedState);
-    }
-
-    set authorizedState(value: string | undefined) {
-        this.store(this.storageAuthorizedState, value);
     }
 
     get userData(): any {
@@ -121,8 +112,6 @@ export class StoragePersistanceService {
 
     private storageIdToken = 'authorizationDataIdToken';
 
-    private storageAuthorizedState = 'storageAuthorizedState';
-
     private storageUserData = 'userData';
 
     private storageAuthNonce = 'authNonce';
@@ -155,7 +144,6 @@ export class StoragePersistanceService {
     }
 
     resetAuthStateInStorage() {
-        this.store(this.storageAuthorizedState, AuthorizedState.Unknown);
         this.store(this.storageAccessToken, '');
         this.store(this.storageIdToken, '');
         this.store(this.storageAuthResult, '');
