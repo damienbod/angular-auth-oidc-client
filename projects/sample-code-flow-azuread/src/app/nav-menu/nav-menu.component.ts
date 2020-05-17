@@ -22,7 +22,7 @@ export class NavMenuComponent implements OnInit {
     }
 
     refreshSession() {
-        this.oidcSecurityService.authorize();
+        this.oidcSecurityService.forceRefreshSession().subscribe((result) => console.log(result));
     }
 
     logout() {
