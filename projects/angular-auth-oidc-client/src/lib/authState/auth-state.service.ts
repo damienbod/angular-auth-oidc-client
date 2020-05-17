@@ -7,16 +7,17 @@ import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { TokenValidationService } from '../validation/token-validation.service';
 import { AuthorizationResult } from './authorization-result';
-import { AuthorizedState } from './authorized-state';
 
 @Injectable()
 export class AuthStateService {
-    // event which contains the state
     private authorizedInternal$ = new BehaviorSubject<boolean>(false);
-    private authState = AuthorizedState.Unknown;
 
     get authorized$() {
         return this.authorizedInternal$.asObservable();
+    }
+
+    private get isAuthorized() {
+        return !!this.storagePersistanceService.getAccessToken() && !!this.storagePersistanceService.getIdToken();
     }
 
     constructor(
@@ -28,26 +29,12 @@ export class AuthStateService {
     ) {}
 
     setAuthorizedAndFireEvent(): void {
-        // set the correct values in storage
-        this.authState = AuthorizedState.Authorized;
-        this.persistAuthStateInStorage(this.authState);
         this.authorizedInternal$.next(true);
     }
 
     setUnauthorizedAndFireEvent(): void {
-        // set the correct values in storage
-        this.authState = AuthorizedState.Unauthorized;
         this.storagePersistanceService.resetAuthStateInStorage();
         this.authorizedInternal$.next(false);
-    }
-
-    initStateFromStorage(): void {
-        const currentAuthorizedState = this.getCurrentlyPersistedAuthState();
-        if (currentAuthorizedState === AuthorizedState.Authorized) {
-            this.authState = AuthorizedState.Authorized;
-        } else {
-            this.authState = AuthorizedState.Unknown;
-        }
     }
 
     updateAndPublishAuthState(authorizationResult: AuthorizationResult) {
@@ -66,7 +53,7 @@ export class AuthStateService {
     }
 
     getAccessToken(): string {
-        if (!(this.authState === AuthorizedState.Authorized)) {
+        if (!this.isAuthorized) {
             return '';
         }
 
@@ -75,7 +62,7 @@ export class AuthStateService {
     }
 
     getIdToken(): string {
-        if (!(this.authState === AuthorizedState.Authorized)) {
+        if (!this.isAuthorized) {
             return '';
         }
 
@@ -84,7 +71,7 @@ export class AuthStateService {
     }
 
     getRefreshToken(): string {
-        if (!(this.authState === AuthorizedState.Authorized)) {
+        if (!this.isAuthorized) {
             return '';
         }
 
@@ -93,13 +80,9 @@ export class AuthStateService {
     }
 
     areAuthStorageTokensValid() {
-        const currentAuthState = this.getCurrentlyPersistedAuthState();
-
-        if (currentAuthState !== AuthorizedState.Authorized) {
+        if (!this.isAuthorized) {
             return false;
         }
-
-        this.loggerService.logDebug(`authorizedState in storage is ${currentAuthState}`);
 
         if (this.hasIdTokenExpired()) {
             this.loggerService.logDebug('persisted id_token is expired');
@@ -147,13 +130,5 @@ export class AuthStateService {
         }
 
         return hasExpired;
-    }
-
-    private getCurrentlyPersistedAuthState() {
-        return this.storagePersistanceService.authorizedState;
-    }
-
-    private persistAuthStateInStorage(authState: AuthorizedState) {
-        this.storagePersistanceService.authorizedState = authState;
     }
 }

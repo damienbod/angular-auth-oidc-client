@@ -11,7 +11,6 @@ import { PlatformProviderMock } from '../utils/platform-provider/platform.provid
 import { TokenValidationService } from '../validation/token-validation.service';
 import { TokenValidationServiceMock } from '../validation/token-validation.service-mock';
 import { AuthStateService } from './auth-state.service';
-import { AuthorizedState } from './authorized-state';
 
 describe('Auth State Service', () => {
     let authStateService: AuthStateService;
@@ -54,17 +53,6 @@ describe('Auth State Service', () => {
     });
 
     describe('setAuthorizedAndFireEvent', () => {
-        it('sets the authstate to AuthorizedState.Authorized', () => {
-            authStateService.setAuthorizedAndFireEvent();
-            expect((authStateService as any).authState).toBe(AuthorizedState.Authorized);
-        });
-
-        it('persist AuthState In Storage', () => {
-            const spy = spyOnProperty(storagePersistanceService, 'authorizedState', 'set');
-            authStateService.setAuthorizedAndFireEvent();
-            expect(spy).toHaveBeenCalledWith(AuthorizedState.Authorized);
-        });
-
         it('throws event when state is being set to `true`', () => {
             const spy = spyOn((authStateService as any).authorizedInternal$, 'next');
             authStateService.setAuthorizedAndFireEvent();
@@ -73,11 +61,6 @@ describe('Auth State Service', () => {
     });
 
     describe('setUnauthorizedAndFireEvent', () => {
-        it('sets the authstate to AuthorizedState.Unauthorized', () => {
-            authStateService.setUnauthorizedAndFireEvent();
-            expect((authStateService as any).authState).toBe(AuthorizedState.Unauthorized);
-        });
-
         it('persist AuthState In Storage', () => {
             const spy = spyOn(storagePersistanceService, 'resetAuthStateInStorage');
             authStateService.setUnauthorizedAndFireEvent();
@@ -88,26 +71,6 @@ describe('Auth State Service', () => {
             const spy = spyOn((authStateService as any).authorizedInternal$, 'next');
             authStateService.setUnauthorizedAndFireEvent();
             expect(spy).toHaveBeenCalledWith(false);
-        });
-    });
-
-    describe('initStateFromStorage', () => {
-        it('authState is set to AuthorizedState.Authorized when persisted state is AuthorizedState.Authorized', () => {
-            spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Authorized);
-            authStateService.initStateFromStorage();
-            expect((authStateService as any).authState).toBe(AuthorizedState.Authorized);
-        });
-
-        it('authState is set to AuthorizedState.Unknown when persisted state is AuthorizedState.Unknown', () => {
-            spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Unknown);
-            authStateService.initStateFromStorage();
-            expect((authStateService as any).authState).toBe(AuthorizedState.Unknown);
-        });
-
-        it('authState is set to AuthorizedState.Unknown when persisted state is AuthorizedState.Unauthorized', () => {
-            spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Unauthorized);
-            authStateService.initStateFromStorage();
-            expect((authStateService as any).authState).toBe(AuthorizedState.Unknown);
         });
     });
 
@@ -140,99 +103,86 @@ describe('Auth State Service', () => {
     });
 
     describe('getAccessToken', () => {
-        it('authState is Unknown returns empty string', () => {
-            (authStateService as any).authState = AuthorizedState.Unknown;
+        it('isAuthorized is false returns empty string', () => {
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('');
+            spyOn(storagePersistanceService, 'getIdToken').and.returnValue('');
             const result = authStateService.getAccessToken();
             expect(result).toBe('');
         });
 
-        it('authState is Unauthorized returns empty string', () => {
-            (authStateService as any).authState = AuthorizedState.Unauthorized;
-            const result = authStateService.getAccessToken();
-            expect(result).toBe('');
-        });
-
-        it('authState is Authorized returns decodeURIComponent(token)', () => {
-            (authStateService as any).authState = AuthorizedState.Authorized;
+        it('isAuthorized is true returns decodeURIComponent(token)', () => {
             spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('HenloLegger');
+            spyOn(storagePersistanceService, 'getIdToken').and.returnValue('HenloFuriend');
             const result = authStateService.getAccessToken();
             expect(result).toBe(decodeURIComponent('HenloLegger'));
         });
     });
 
     describe('getIdToken', () => {
-        it('authState is Unknown returns empty string', () => {
-            (authStateService as any).authState = AuthorizedState.Unknown;
+        it('isAuthorized is false returns empty string', () => {
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('');
+            spyOn(storagePersistanceService, 'getIdToken').and.returnValue('');
             const result = authStateService.getIdToken();
             expect(result).toBe('');
         });
 
-        it('authState is Unauthorized returns empty string', () => {
-            (authStateService as any).authState = AuthorizedState.Unauthorized;
+        it('isAuthorized is true returns decodeURIComponent(token)', () => {
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('HenloLegger');
+            spyOn(storagePersistanceService, 'getIdToken').and.returnValue('HenloFuriend');
             const result = authStateService.getIdToken();
-            expect(result).toBe('');
-        });
-
-        it('authState is Authorized returns decodeURIComponent(token)', () => {
-            (authStateService as any).authState = AuthorizedState.Authorized;
-            spyOn(storagePersistanceService, 'getIdToken').and.returnValue('HenloLegger');
-            const result = authStateService.getIdToken();
-            expect(result).toBe(decodeURIComponent('HenloLegger'));
+            expect(result).toBe(decodeURIComponent('HenloFuriend'));
         });
     });
 
     describe('getRefreshToken', () => {
-        it('authState is Unknown returns empty string', () => {
-            (authStateService as any).authState = AuthorizedState.Unknown;
+        it('isAuthorized is false returns empty string', () => {
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('');
+            spyOn(storagePersistanceService, 'getIdToken').and.returnValue('');
             const result = authStateService.getRefreshToken();
             expect(result).toBe('');
         });
 
-        it('authState is Unauthorized returns empty string', () => {
-            (authStateService as any).authState = AuthorizedState.Unauthorized;
+        it('isAuthorized is truereturns decodeURIComponent(token)', () => {
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('HenloLegger');
+            spyOn(storagePersistanceService, 'getIdToken').and.returnValue('HenloFuriend');
+            spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue('HenloRefreshLegger');
             const result = authStateService.getRefreshToken();
-            expect(result).toBe('');
-        });
-
-        it('authState is Authorized returns decodeURIComponent(token)', () => {
-            (authStateService as any).authState = AuthorizedState.Authorized;
-            spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue('HenloLegger');
-            const result = authStateService.getRefreshToken();
-            expect(result).toBe(decodeURIComponent('HenloLegger'));
+            expect(result).toBe(decodeURIComponent('HenloRefreshLegger'));
         });
     });
 
     describe('areAuthStorageTokensValid', () => {
-        it('authState is AuthorizedState.Unknown returns false', () => {
-            spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Unknown);
+        it('isAuthorized is false returns false', () => {
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('');
+            spyOn(storagePersistanceService, 'getIdToken').and.returnValue('');
             const result = authStateService.areAuthStorageTokensValid();
             expect(result).toBeFalse();
         });
 
-        it('authState is AuthorizedState.Unauthorized returns false', () => {
-            spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Unauthorized);
-            const result = authStateService.areAuthStorageTokensValid();
-            expect(result).toBeFalse();
-        });
+        it('isAuthorized is true and id_token is expired returns true', () => {
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('HenloLegger');
+            spyOn(storagePersistanceService, 'getIdToken').and.returnValue('HenloFuriend');
 
-        it('authState is AuthorizedState.Authorized and id_token is expired returns true', () => {
-            spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Authorized);
             spyOn(authStateService as any, 'hasIdTokenExpired').and.returnValue(true);
             spyOn(authStateService as any, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(false);
             const result = authStateService.areAuthStorageTokensValid();
             expect(result).toBeFalse();
         });
 
-        it('authState is AuthorizedState.Authorized and access_token is expired returns true', () => {
-            spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Authorized);
+        it('isAuthorized is true  and access_token is expired returns true', () => {
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('HenloLegger');
+            spyOn(storagePersistanceService, 'getIdToken').and.returnValue('HenloFuriend');
+
             spyOn(authStateService as any, 'hasIdTokenExpired').and.returnValue(false);
             spyOn(authStateService as any, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(true);
             const result = authStateService.areAuthStorageTokensValid();
             expect(result).toBeFalse();
         });
 
-        it('authState is AuthorizedState.Authorized and id_token is not expired returns true', () => {
-            spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Authorized);
+        it('isAuthorized is true  and id_token is not expired returns true', () => {
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('HenloLegger');
+            spyOn(storagePersistanceService, 'getIdToken').and.returnValue('HenloFuriend');
+
             spyOn(authStateService as any, 'hasIdTokenExpired').and.returnValue(false);
             spyOn(authStateService as any, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(false);
             const result = authStateService.areAuthStorageTokensValid();
@@ -240,7 +190,9 @@ describe('Auth State Service', () => {
         });
 
         it('authState is AuthorizedState.Authorized and id_token is not expired fires event', () => {
-            spyOnProperty(storagePersistanceService, 'authorizedState', 'get').and.returnValue(AuthorizedState.Authorized);
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('HenloLegger');
+            spyOn(storagePersistanceService, 'getIdToken').and.returnValue('HenloFuriend');
+
             spyOn(authStateService as any, 'hasIdTokenExpired').and.returnValue(false);
             spyOn(authStateService as any, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(false);
             const result = authStateService.areAuthStorageTokensValid();
@@ -263,6 +215,30 @@ describe('Auth State Service', () => {
             spyOnProperty(storagePersistanceService, 'idToken', 'get').and.returnValue('idToken');
             authStateService.hasIdTokenExpired();
             expect(spy).toHaveBeenCalledWith('idToken', 30);
+        });
+
+        it('fires event if idToken is expired', () => {
+            configurationProvider.setConfig({ renewTimeBeforeTokenExpiresInSeconds: 30 });
+            spyOn(tokenValidationService, 'hasIdTokenExpired').and.callFake((a, b) => true);
+
+            const spy = spyOn(eventsService, 'fireEvent');
+
+            spyOnProperty(storagePersistanceService, 'idToken', 'get').and.returnValue('idToken');
+            const result = authStateService.hasIdTokenExpired();
+            expect(result).toBe(true);
+            expect(spy).toHaveBeenCalledWith(EventTypes.IdTokenExpired, true);
+        });
+
+        it('does NOT fire event if idToken is NOT expired', () => {
+            configurationProvider.setConfig({ renewTimeBeforeTokenExpiresInSeconds: 30 });
+            spyOn(tokenValidationService, 'hasIdTokenExpired').and.callFake((a, b) => false);
+
+            const spy = spyOn(eventsService, 'fireEvent');
+
+            spyOnProperty(storagePersistanceService, 'idToken', 'get').and.returnValue('idToken');
+            const result = authStateService.hasIdTokenExpired();
+            expect(result).toBe(false);
+            expect(spy).not.toHaveBeenCalled();
         });
     });
 
