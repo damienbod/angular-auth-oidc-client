@@ -5,9 +5,9 @@
 -   [Code Flow PKCE Auto login](#code-flow-pkce-auto-login)
 -   [Code Flow with PKCE basic with silent renew](#code-flow-with-pkce-basic-with-silent-renew)
 -   [Azure B2C Code Flow PKCE with silent renew](#azure-b2c-code-flow-pkce-with-silent-renew)
+-   [Azure AD Code Flow PKCE with silent renew](#azure-ad-oidc-code-flow-with-pkce)
 -   [Implicit Flow with silent renew (Not recommended)](#implicit-flow-with-silent-renew-not-recommended)
 -   [Implicit Flow google (Not recommended)](#implicit-flow-google-not-recommended)
--   [Implicit Flow Azure AD (Not recommended)](#implicit-flow-azure-ad-not-recommended)
 -   [Code flow with a lazy loaded module](#code-flow-with-a-lazy-loaded-module)
 
 ## Code Flow with PKCE Using a configuration from an http source and silent renew
@@ -76,6 +76,18 @@ The example uses the Code Flow PKCE with Silent renew with Azure B2C as the STS.
 
 [app.component.html](../projects/sample-code-flow-azure-b2c/src/app/app.component.html)
 
+## Azure AD OIDC Code Flow with PKCE
+
+Azure AD sample using OpenID Connect Code Flow with PKCE and a iframe silent renew
+
+### [src code](../projects/sample-code-flow-azuread)
+
+[app.module.ts](../projects/sample-code-flow-azuread/src/app/app.module.ts)
+
+[app.component.ts](../projects/sample-code-flow-azuread/src/app/app.component.ts)
+
+[app.component.html](../projects/sample-code-flow-azuread/src/app/app.component.html)
+
 ## Implicit Flow with silent renew (Not recommended)
 
 The example uses the Implicit Flow with silent renew. This flow is no longer recommended, but some servers support this flow only, and not the Code flow with PKCE.
@@ -99,16 +111,6 @@ The example uses the Implicit Flow with silent renew with google. This flow is n
 [app.component.ts](../projects/sample-implicit-flow-google/src/app/app.component.ts)
 
 [app.component.html](../projects/sample-implicit-flow-google/src/app/app.component.html)
-
-## Azure AD OIDC Code Flow with PKCE
-
-### [src code](../projects/sample-code-flow-azuread)
-
-[app.module.ts](../projects/sample-code-flow-azuread/src/app/app.module.ts)
-
-[app.component.ts](../projects/sample-code-flow-azuread/src/app/app.component.ts)
-
-[app.component.html](../projects/sample-code-flow-azuread/src/app/app.component.html)
 
 ## Code flow with a lazy loaded module
 
