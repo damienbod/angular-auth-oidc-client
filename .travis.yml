@@ -24,7 +24,8 @@ before_script:
     - export DISPLAY=:99.0
     - sh -e /etc/init.d/xvfb start
     - sleep 3
+after_success:
+    - codecov
 notifications:
     email: false
-notifications:
-  slack: damienandfabian:jBlE2pSSKe18mysZZh1vtPUM
+    slack: damienandfabian:jBlE2pSSKe18mysZZh1vtPUM
