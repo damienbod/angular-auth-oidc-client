@@ -28,5 +28,3 @@ before_script:
 notifications:
     email: false
     slack: damienandfabian:jBlE2pSSKe18mysZZh1vtPUM
-after_success:
-  - codecov
