@@ -22,11 +22,11 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
             clientId: 'e38ea64a-2962-4cde-bfe7-dd2822fdab32',
             scope: 'openid profile User.Read email',
             responseType: 'code',
-            silentRenew: false,
+            silentRenew: true,
             maxIdTokenIatOffsetAllowedInSeconds: 600,
             issValidationOff: true,
             autoUserinfo: false,
-            // silentRenewUrl: window.location.origin + '/silent-renew.html',
+            silentRenewUrl: window.location.origin + '/silent-renew.html',
             logLevel: LogLevel.Debug,
             // customParams: {
             //     response_mode: 'fragment',
