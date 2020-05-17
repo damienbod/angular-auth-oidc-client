@@ -100,17 +100,15 @@ The example uses the Implicit Flow with silent renew with google. This flow is n
 
 [app.component.html](../projects/sample-implicit-flow-google/src/app/app.component.html)
 
-## Implicit Flow Azure AD (Not recommended)
+## Azure AD OIDC Code Flow with PKCE
 
-The example uses the Implicit Flow with silent renew with Azure AD. This flow is no longer recommended, but some servers support this flow only, and not the Code flow with PKCE.
+### [src code](../projects/sample-code-flow-azuread)
 
-### [src code](../projects/sample-implicit-flow-azuread)
+[app.module.ts](../projects/sample-code-flow-azuread/src/app/app.module.ts)
 
-[app.module.ts](../projects/sample-implicit-flow-azuread/src/app/app.module.ts)
+[app.component.ts](../projects/sample-code-flow-azuread/src/app/app.component.ts)
 
-[app.component.ts](../projects/sample-implicit-flow-azuread/src/app/app.component.ts)
-
-[app.component.html](../projects/sample-implicit-flow-azuread/src/app/app.component.html)
+[app.component.html](../projects/sample-code-flow-azuread/src/app/app.component.html)
 
 ## Code flow with a lazy loaded module
 
