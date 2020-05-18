@@ -82,7 +82,7 @@ describe('Configuration Service', () => {
 
             const promise = oidcConfigService.withConfig(config);
 
-            promise.catch(() => {
+            promise.then(() => {
                 expect(loggerService.logError).toHaveBeenCalled();
             });
         }));
