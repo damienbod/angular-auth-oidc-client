@@ -215,4 +215,42 @@ describe('Flows Service', () => {
             });
         }));
     });
+
+    describe('implicitFlowCallback', () => {
+        it('calls "resetAuthorizationData" if silent renew is not running', async(() => {
+            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
+            const resetAuthorizationDataSpy = spyOn(service as any, 'resetAuthorizationData');
+
+            (service as any).implicitFlowCallback('any-hash').subscribe(() => {
+                expect(resetAuthorizationDataSpy).toHaveBeenCalled();
+            });
+        }));
+
+        it('does NOT calls "resetAuthorizationData" if silent renew is running', async(() => {
+            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
+            const resetAuthorizationDataSpy = spyOn(service as any, 'resetAuthorizationData');
+
+            (service as any).implicitFlowCallback('any-hash').subscribe(() => {
+                expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
+            });
+        }));
+
+        it('returns callbackContext if all params are good', async(() => {
+            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
+            const expectedCallbackContext = {
+                code: null,
+                refreshToken: null,
+                state: null,
+                sessionState: null,
+                authResult: { anyHash: '' },
+                isRenewProcess: true,
+                jwtKeys: null,
+                validationResult: null,
+                existingIdToken: null,
+            };
+            (service as any).implicitFlowCallback('anyHash').subscribe((callbackContext) => {
+                expect(callbackContext).toEqual(expectedCallbackContext);
+            });
+        }));
+    });
 });
