@@ -1,6 +1,6 @@
 import { HttpHeaders } from '@angular/common/http';
 import { async, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { AuthStateService } from '../authState/auth-state.service';
@@ -323,6 +323,65 @@ describe('Flows Service', () => {
                 const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
                 expect(httpHeaders.has('Content-Type')).toBeTrue();
                 expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
+            });
+        }));
+
+        it('returns error in case of http error', async(() => {
+            spyOn(dataService, 'post').and.returnValue(throwError({}));
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ stsServer: 'stsServer' });
+
+            (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
+                error: (err) => {
+                    console.log(err);
+                    expect(err).toBeTruthy();
+                },
+            });
+        }));
+    });
+
+    describe('codeFlowCodeRequest ', () => {
+        it('throws error if no tokenEndpoint is given', async(() => {
+            (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
+                error: (err) => {
+                    expect(err).toBeTruthy();
+                },
+            });
+        }));
+
+        it('calls dataservice if all params are good', async(() => {
+            const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+
+            (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
+                expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
+                const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
+                expect(httpHeaders.has('Content-Type')).toBeTrue();
+                expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
+            });
+        }));
+
+        it('calls dataservice with correct headers if all params are good', async(() => {
+            const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+
+            (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
+                const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
+                expect(httpHeaders.has('Content-Type')).toBeTrue();
+                expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
+            });
+        }));
+
+        it('returns error in case of http error', async(() => {
+            spyOn(dataService, 'post').and.returnValue(throwError({}));
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ stsServer: 'stsServer' });
+
+            (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
+                error: (err) => {
+                    console.log(err);
+                    expect(err).toBeTruthy();
+                },
             });
         }));
     });
