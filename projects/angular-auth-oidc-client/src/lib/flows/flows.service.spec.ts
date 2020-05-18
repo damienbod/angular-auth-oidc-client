@@ -1,3 +1,4 @@
+import { HttpHeaders } from '@angular/common/http';
 import { async, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { DataService } from '../api/data.service';
@@ -32,6 +33,8 @@ describe('Flows Service', () => {
     let flowsDataService: FlowsDataService;
     let authStateService: AuthStateService;
     let urlService: UrlService;
+    let dataService: DataService;
+    let storagePersistanceService: StoragePersistanceService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -59,6 +62,8 @@ describe('Flows Service', () => {
         flowsDataService = TestBed.inject(FlowsDataService);
         authStateService = TestBed.inject(AuthStateService);
         urlService = TestBed.inject(UrlService);
+        dataService = TestBed.inject(DataService);
+        storagePersistanceService = TestBed.inject(StoragePersistanceService);
     });
 
     it('should create', () => {
@@ -250,6 +255,74 @@ describe('Flows Service', () => {
             };
             (service as any).implicitFlowCallback('anyHash').subscribe((callbackContext) => {
                 expect(callbackContext).toEqual(expectedCallbackContext);
+            });
+        }));
+    });
+
+    describe('refreshSessionWithRefreshTokens', () => {
+        it('returns callbackContext if all params are good', async(() => {
+            spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('state-data');
+            spyOn(authStateService, 'getRefreshToken').and.returnValue('henlo-furiend');
+            spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
+
+            const expectedCallbackContext = {
+                code: null,
+                refreshToken: 'henlo-furiend',
+                state: 'state-data',
+                sessionState: null,
+                authResult: null,
+                isRenewProcess: false,
+                jwtKeys: null,
+                validationResult: null,
+                existingIdToken: 'henlo-legger',
+            };
+            (service as any).refreshSessionWithRefreshTokens().subscribe((callbackContext) => {
+                expect(callbackContext).toEqual(expectedCallbackContext);
+            });
+        }));
+
+        it('throws error if no refresh token is given', async(() => {
+            spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('state-data');
+            spyOn(authStateService, 'getRefreshToken').and.returnValue(null);
+            spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
+
+            (service as any).refreshSessionWithRefreshTokens().subscribe({
+                error: (err) => {
+                    expect(err).toBeTruthy();
+                },
+            });
+        }));
+    });
+
+    describe('refreshTokensRequestTokens', () => {
+        it('throws error if no tokenEndpoint is given', async(() => {
+            (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
+                error: (err) => {
+                    expect(err).toBeTruthy();
+                },
+            });
+        }));
+
+        it('calls dataservice if all params are good', async(() => {
+            const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+
+            (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
+                expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
+                const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
+                expect(httpHeaders.has('Content-Type')).toBeTrue();
+                expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
+            });
+        }));
+
+        it('calls dataservice with correct headers if all params are good', async(() => {
+            const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+
+            (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
+                const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
+                expect(httpHeaders.has('Content-Type')).toBeTrue();
+                expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
             });
         }));
     });
