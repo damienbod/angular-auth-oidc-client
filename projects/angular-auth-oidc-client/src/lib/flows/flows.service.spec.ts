@@ -31,6 +31,7 @@ describe('Flows Service', () => {
     let userService: UserService;
     let flowsDataService: FlowsDataService;
     let authStateService: AuthStateService;
+    let urlService: UrlService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -57,6 +58,7 @@ describe('Flows Service', () => {
         userService = TestBed.inject(UserService);
         flowsDataService = TestBed.inject(FlowsDataService);
         authStateService = TestBed.inject(AuthStateService);
+        urlService = TestBed.inject(UrlService);
     });
 
     it('should create', () => {
@@ -166,6 +168,50 @@ describe('Flows Service', () => {
                 expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
                 expect(callbackStateValidationSpy).toHaveBeenCalled();
                 expect(callbackUserSpy).toHaveBeenCalled();
+            });
+        }));
+    });
+
+    describe('codeFlowCallback', () => {
+        it('throws error if no state is given', async(() => {
+            const getUrlParameterSpy = spyOn(urlService, 'getUrlParameter').and.returnValue('params');
+            getUrlParameterSpy.withArgs('any-url', 'state').and.returnValue(null);
+
+            (service as any).codeFlowCallback('any-url').subscribe({
+                error: (err) => {
+                    expect(err).toBeTruthy();
+                },
+            });
+        }));
+
+        it('throws error if no code is given', async(() => {
+            const getUrlParameterSpy = spyOn(urlService, 'getUrlParameter').and.returnValue('params');
+            getUrlParameterSpy.withArgs('any-url', 'code').and.returnValue(null);
+
+            (service as any).codeFlowCallback('any-url').subscribe({
+                error: (err) => {
+                    expect(err).toBeTruthy();
+                },
+            });
+        }));
+
+        it('returns callbackContext if all params are good', async(() => {
+            spyOn(urlService, 'getUrlParameter').and.returnValue('params');
+
+            const expectedCallbackContext = {
+                code: 'params',
+                refreshToken: null,
+                state: 'params',
+                sessionState: 'params',
+                authResult: null,
+                isRenewProcess: false,
+                jwtKeys: null,
+                validationResult: null,
+                existingIdToken: null,
+            };
+
+            (service as any).codeFlowCallback('any-url').subscribe((callbackContext) => {
+                expect(callbackContext).toEqual(expectedCallbackContext);
             });
         }));
     });
