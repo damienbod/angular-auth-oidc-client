@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
                 //     },
                 //     scope: 'openid profile email',
                 // };
-                this.oidcSecurityService.forceRefreshSession();
+                this.oidcSecurityService.forceRefreshSession().subscribe();
             }
         });
     }
