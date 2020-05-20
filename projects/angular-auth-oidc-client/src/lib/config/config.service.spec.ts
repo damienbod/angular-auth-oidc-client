@@ -157,6 +157,20 @@ describe('Configuration Service', () => {
             });
         }));
 
+        it('if eagerLoadAuthWellKnownEndpoints is false: DO NOT call storeWellKnownEndpoints', async(() => {
+            const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: false };
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
+            const storeWellKnownEndpointsSpy = spyOn(oidcConfigService as any, 'storeWellKnownEndpoints').and.returnValue(false);
+            spyOn(configurationProvider, 'setConfig').and.returnValue(config);
+            spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+
+            const promise = oidcConfigService.withConfig(config);
+
+            promise.then(() => {
+                expect(storeWellKnownEndpointsSpy).not.toHaveBeenCalledWith({ issuer: 'issuerForTesting' });
+            });
+        }));
+
         it('if eagerLoadAuthWellKnownEndpoints is true: fire event', async(() => {
             const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
             spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
