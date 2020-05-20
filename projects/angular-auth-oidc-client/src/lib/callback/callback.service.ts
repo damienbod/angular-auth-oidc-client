@@ -56,15 +56,16 @@ export class CallbackService {
     }
 
     refreshSession() {
-        const idToken = this.authStateService.getIdToken();
+        // const idToken = this.authStateService.getIdToken();
         const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
-        const userDataFromStore = this.userService.getUserDataFromStore();
+        //  const userDataFromStore = this.userService.getUserDataFromStore();
 
-        this.loggerService.logDebug(
-            `Checking: silentRenewRunning: ${isSilentRenewRunning} id_token: ${!!idToken} userData: ${!!userDataFromStore}`
-        );
+        // this.loggerService.logDebug(
+        //     `Checking: silentRenewRunning: ${isSilentRenewRunning} id_token: ${!!idToken} userData: ${!!userDataFromStore}`
+        // );
 
-        const shouldBeExecuted = userDataFromStore && !isSilentRenewRunning && idToken;
+        // const shouldBeExecuted = userDataFromStore && !isSilentRenewRunning && idToken;
+        const shouldBeExecuted = !isSilentRenewRunning;
 
         if (!shouldBeExecuted) {
             return of(null);
