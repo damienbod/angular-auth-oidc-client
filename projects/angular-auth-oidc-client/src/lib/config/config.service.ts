@@ -66,9 +66,9 @@ export class OidcConfigService {
                         )
                     )
                     .subscribe(() => resolve());
+            } else {
+                resolve();
             }
-
-            resolve();
         });
     }
 
