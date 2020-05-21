@@ -89,7 +89,7 @@ describe('Configuration Service', () => {
 
         it('if authWellKnownEndPointsAlreadyStored the events are fired and resolve', async(() => {
             const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: null };
-            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ any: 'thing' });
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ any: 'thing' });
             const eventServiceSpy = spyOn(eventsService, 'fireEvent');
             spyOn(configValidationService, 'validateConfig').and.returnValue(true);
 
@@ -109,7 +109,7 @@ describe('Configuration Service', () => {
         it('if passedAuthWellKnownEndpoints are passed, set these, fire event and resolve', async(() => {
             const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: null };
             const authWellKnown = { issuer: 'issuerForTesting' };
-            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
             spyOn(configValidationService, 'validateConfig').and.returnValue(true);
             const eventServiceSpy = spyOn(eventsService, 'fireEvent');
             const storeWellKnownEndpointsSpy = spyOn(oidcConfigService as any, 'storeWellKnownEndpoints');
@@ -130,7 +130,7 @@ describe('Configuration Service', () => {
 
         it('if eagerLoadAuthWellKnownEndpoints is true: call getWellKnownEndPointsFromUrl', async(() => {
             const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
-            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
             spyOn(configurationProvider, 'setConfig').and.returnValue(config);
             spyOn(configValidationService, 'validateConfig').and.returnValue(true);
             const getWellKnownEndPointsFromUrlSpy = spyOn(authWellKnownService, 'getWellKnownEndPointsFromUrl').and.returnValue(of(null));
@@ -144,7 +144,7 @@ describe('Configuration Service', () => {
 
         it('if eagerLoadAuthWellKnownEndpoints is true: call storeWellKnownEndpoints', async(() => {
             const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
-            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
             const storeWellKnownEndpointsSpy = spyOn(oidcConfigService as any, 'storeWellKnownEndpoints').and.returnValue(false);
             spyOn(configurationProvider, 'setConfig').and.returnValue(config);
             spyOn(configValidationService, 'validateConfig').and.returnValue(true);
@@ -159,7 +159,7 @@ describe('Configuration Service', () => {
 
         it('if eagerLoadAuthWellKnownEndpoints is false: DO NOT call storeWellKnownEndpoints', async(() => {
             const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: false };
-            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
             const storeWellKnownEndpointsSpy = spyOn(oidcConfigService as any, 'storeWellKnownEndpoints').and.returnValue(false);
             spyOn(configurationProvider, 'setConfig').and.returnValue(config);
             spyOn(configValidationService, 'validateConfig').and.returnValue(true);
@@ -173,7 +173,7 @@ describe('Configuration Service', () => {
 
         it('if eagerLoadAuthWellKnownEndpoints is true: fire event', async(() => {
             const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
-            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
             spyOn(oidcConfigService as any, 'storeWellKnownEndpoints').and.returnValue(false);
             spyOn(configurationProvider, 'setConfig').and.returnValue(config);
             spyOn(configValidationService, 'validateConfig').and.returnValue(true);

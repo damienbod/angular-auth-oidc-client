@@ -38,7 +38,7 @@ describe('Signin Key Data Service', () => {
 
     describe('getSigningKeys', () => {
         it('throws error when no wellknownendpoints given', async(() => {
-            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue(null);
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
             const result = service.getSigningKeys();
 
             result.subscribe({
@@ -49,7 +49,7 @@ describe('Signin Key Data Service', () => {
         }));
 
         it('throws error when no jwksUri given', async(() => {
-            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue({ jwksUri: null });
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: null });
             const result = service.getSigningKeys();
 
             result.subscribe({
@@ -60,7 +60,7 @@ describe('Signin Key Data Service', () => {
         }));
 
         it('calls dataservice if jwksurl is given', async(() => {
-            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
             const spy = spyOn(dataService, 'get').and.callFake(() => {
                 return of();
             });

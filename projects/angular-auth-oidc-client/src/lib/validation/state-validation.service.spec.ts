@@ -101,7 +101,9 @@ describe('State Validation Service', () => {
 
     it('should return invalid result if validateStateFromHashCallback is false', () => {
         configProvider.setConfig(config);
-        spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        const readSpy = spyOn(storagePersistanceService, 'read');
+        readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
         spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
         const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
@@ -161,7 +163,11 @@ describe('State Validation Service', () => {
         config.autoCleanStateAfterAuthentication = false;
 
         configProvider.setConfig(config);
-        spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+
+        const readSpy = spyOn(storagePersistanceService, 'read');
+        readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
+        readSpy.withArgs('authNonce').and.returnValue('authNonce');
 
         const callbackContext = {
             code: 'fdffsdfsdf',
@@ -192,7 +198,9 @@ describe('State Validation Service', () => {
         spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
         spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(false);
         configProvider.setConfig(config);
-        spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        const readSpy = spyOn(storagePersistanceService, 'read');
+        readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
         const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
         const callbackContext = {
@@ -227,7 +235,10 @@ describe('State Validation Service', () => {
         spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
         spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(false);
         configProvider.setConfig(config);
-        spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        const readSpy = spyOn(storagePersistanceService, 'read');
+        readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
+        readSpy.withArgs('authNonce').and.returnValue('authNonce');
 
         const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
@@ -268,7 +279,10 @@ describe('State Validation Service', () => {
 
         spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(false);
         configProvider.setConfig(config);
-        spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        const readSpy = spyOn(storagePersistanceService, 'read');
+        readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
+        readSpy.withArgs('authNonce').and.returnValue('authNonce');
         const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
         const callbackContext = {
@@ -312,7 +326,10 @@ describe('State Validation Service', () => {
 
         config.maxIdTokenIatOffsetAllowedInSeconds = 0;
         configProvider.setConfig(config);
-        spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        const readSpy = spyOn(storagePersistanceService, 'read');
+        readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
+        readSpy.withArgs('authNonce').and.returnValue('authNonce');
         const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const callbackContext = {
@@ -359,7 +376,10 @@ describe('State Validation Service', () => {
         config.maxIdTokenIatOffsetAllowedInSeconds = 0;
         spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(false);
         configProvider.setConfig(config);
-        spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        const readSpy = spyOn(storagePersistanceService, 'read');
+        readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
+        readSpy.withArgs('authNonce').and.returnValue('authNonce');
         const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const callbackContext = {
@@ -408,7 +428,10 @@ describe('State Validation Service', () => {
 
         config.clientId = '';
         configProvider.setConfig(config);
-        spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        const readSpy = spyOn(storagePersistanceService, 'read');
+        readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
+        readSpy.withArgs('authNonce').and.returnValue('authNonce');
         const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
         const callbackContext = {
@@ -458,7 +481,10 @@ describe('State Validation Service', () => {
         config.clientId = '';
         spyOn(oidcSecurityValidation, 'validateIdTokenExpNotExpired').and.returnValue(false);
         configProvider.setConfig(config);
-        spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        const readSpy = spyOn(storagePersistanceService, 'read');
+        readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
+        readSpy.withArgs('authNonce').and.returnValue('authNonce');
 
         const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
@@ -501,7 +527,10 @@ describe('State Validation Service', () => {
         config.responseType = 'NOT id_token token';
         config.autoCleanStateAfterAuthentication = false;
         configProvider.setConfig(config);
-        spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        const readSpy = spyOn(storagePersistanceService, 'read');
+        readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
+        readSpy.withArgs('authNonce').and.returnValue('authNonce');
 
         const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
@@ -547,7 +576,10 @@ describe('State Validation Service', () => {
         config.autoCleanStateAfterAuthentication = false;
         spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(false);
         configProvider.setConfig(config);
-        spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        const readSpy = spyOn(storagePersistanceService, 'read');
+        readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
+        readSpy.withArgs('authNonce').and.returnValue('authNonce');
 
         const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
@@ -591,7 +623,10 @@ describe('State Validation Service', () => {
         spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(true);
         config.responseType = 'id_token token';
         configProvider.setConfig(config);
-        spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        const readSpy = spyOn(storagePersistanceService, 'read');
+        readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
+        readSpy.withArgs('authNonce').and.returnValue('authNonce');
 
         const logDebugSpy = spyOn(loggerService, 'logDebug'); // .and.callFake(() => {});
 
@@ -649,7 +684,10 @@ describe('State Validation Service', () => {
         config.autoCleanStateAfterAuthentication = false;
 
         configProvider.setConfig(config);
-        spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        const readSpy = spyOn(storagePersistanceService, 'read');
+        readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
+        readSpy.withArgs('authNonce').and.returnValue('authNonce');
 
         const callbackContext = {
             code: 'fdffsdfsdf',

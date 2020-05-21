@@ -89,7 +89,7 @@ describe('SecurityCheckSessionTests', () => {
             checkSessionIframe: 'someTestingValue',
         };
 
-        spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
         spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
 
         (checkSessionService as any).init();
@@ -114,7 +114,7 @@ describe('SecurityCheckSessionTests', () => {
     it('log warning if authWellKnownEndpoints.check_session_iframe is not existing', () => {
         const spyLogWarning = spyOn<any>(loggerService, 'logWarning');
         spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
-        spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints').and.returnValue({ checkSessionIframe: undefined });
+        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ checkSessionIframe: undefined });
         (checkSessionService as any).init();
 
         expect(spyLogWarning).toHaveBeenCalledWith('init check session: checkSessionIframe is not configured to run');
