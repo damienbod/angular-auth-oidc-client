@@ -401,6 +401,7 @@ describe('Callbackservice ', () => {
         triggerAuthorizationResultEvent is false`, async(() => {
             const serviceAsAny = callbackService as any;
 
+            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
             spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(throwError('error'));
             const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
             const stopPeriodicallTokenCheckSpy = spyOn(serviceAsAny, 'stopPeriodicallTokenCheck');
@@ -500,6 +501,7 @@ describe('Callbackservice ', () => {
         triggerAuthorizationResultEvent is false`, async(() => {
             const serviceAsAny = callbackService as any;
 
+            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
             spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(throwError('error'));
             const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
             const stopPeriodicallTokenCheckSpy = spyOn(serviceAsAny, 'stopPeriodicallTokenCheck');
