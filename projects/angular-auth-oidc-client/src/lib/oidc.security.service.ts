@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
 import { ConfigurationProvider } from './config/config.provider';
@@ -86,6 +86,18 @@ export class OidcSecurityService {
                 this.loggerService.logDebug('checkAuth completed fire events, auth: ' + isAuthenticated);
 
                 return isAuthenticated;
+            })
+        );
+    }
+
+    checkAuthIncludingServer(): Observable<boolean> {
+        return this.checkAuth().pipe(
+            switchMap((isAuthenticated) => {
+                if (!isAuthenticated) {
+                    return this.callbackService.refreshSession();
+                }
+
+                return of(isAuthenticated);
             })
         );
     }

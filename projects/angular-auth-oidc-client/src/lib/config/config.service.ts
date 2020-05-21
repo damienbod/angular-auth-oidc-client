@@ -68,6 +68,10 @@ export class OidcConfigService {
                     )
                     .subscribe(() => resolve());
             } else {
+                this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
+                    configuration: passedConfig,
+                    wellknown: null,
+                });
                 resolve();
             }
         });
