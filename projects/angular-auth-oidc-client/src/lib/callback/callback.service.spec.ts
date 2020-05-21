@@ -5,6 +5,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subscription, throwError } from 'rxjs';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
+import { AuthWellKnownService } from '../config/auth-well-known.service';
+import { AuthWellKnownServiceMock } from '../config/auth-well-known.service-mock';
 import { ConfigurationProvider } from '../config/config.provider';
 import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { FlowsDataService } from '../flows/flows-data.service';
@@ -50,6 +52,7 @@ describe('Callbackservice ', () => {
                 { provide: UserService, useClass: UserServiceMock },
                 { provide: AuthStateService, useClass: AuthStateServiceMock },
                 { provide: FlowsDataService, useClass: FlowsDataServiceMock },
+                { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
                 FlowHelper,
             ],
         });

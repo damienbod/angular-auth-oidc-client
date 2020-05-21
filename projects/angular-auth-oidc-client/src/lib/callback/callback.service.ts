@@ -11,7 +11,6 @@ import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { UserService } from '../userData/user-service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { UrlService } from '../utils/url/url.service';
@@ -39,8 +38,7 @@ export class CallbackService {
         private silentRenewService: SilentRenewService,
         private userService: UserService,
         private authStateService: AuthStateService,
-        private authWellKnownService: AuthWellKnownService,
-        private storagePersistanceService: StoragePersistanceService
+        private authWellKnownService: AuthWellKnownService
     ) {}
 
     isCallback(): boolean {
