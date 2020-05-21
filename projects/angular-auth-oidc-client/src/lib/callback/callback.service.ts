@@ -5,11 +5,14 @@ import { interval, Observable, of, Subject, Subscription, throwError } from 'rxj
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
+import { AuthWellKnownEndpoints } from '../config/auth-well-known-endpoints';
+import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
+import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { UserService } from '../userData/user-service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { UrlService } from '../utils/url/url.service';
@@ -36,7 +39,9 @@ export class CallbackService {
         private loggerService: LoggerService,
         private silentRenewService: SilentRenewService,
         private userService: UserService,
-        private authStateService: AuthStateService
+        private authStateService: AuthStateService,
+        private authWellKnownService: AuthWellKnownService,
+        private storagePersistanceService: StoragePersistanceService
     ) {}
 
     isCallback(): boolean {
@@ -56,29 +61,46 @@ export class CallbackService {
     }
 
     refreshSession() {
-        // const idToken = this.authStateService.getIdToken();
         const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
-        //  const userDataFromStore = this.userService.getUserDataFromStore();
-
-        // this.loggerService.logDebug(
-        //     `Checking: silentRenewRunning: ${isSilentRenewRunning} id_token: ${!!idToken} userData: ${!!userDataFromStore}`
-        // );
-
-        // const shouldBeExecuted = userDataFromStore && !isSilentRenewRunning && idToken;
+        this.loggerService.logDebug(`Checking: silentRenewRunning: ${isSilentRenewRunning}`);
         const shouldBeExecuted = !isSilentRenewRunning;
 
         if (!shouldBeExecuted) {
             return of(null);
         }
 
-        this.flowsDataService.setSilentRenewRunning();
+        const authWellknownEndpoint = this.configurationProvider.openIDConfiguration?.authWellknownEndpoint;
 
-        if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
-            // Refresh Session using Refresh tokens
-            return this.refreshSessionWithRefreshTokens();
+        if (!authWellknownEndpoint) {
+            this.loggerService.logError('no authwellknownendpoint given!');
+            return;
         }
 
-        return this.refreshSessionWithIframe();
+        this.getAuthWellKnownEndPoints(authWellknownEndpoint).subscribe(() => {
+            this.flowsDataService.setSilentRenewRunning();
+
+            if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
+                // Refresh Session using Refresh tokens
+                return this.refreshSessionWithRefreshTokens();
+            }
+
+            return this.refreshSessionWithIframe();
+        });
+    }
+
+    private getAuthWellKnownEndPoints(authWellknownEndpoint: string) {
+        const alreadySavedWellKnownEndpoints = this.storagePersistanceService.authWellKnownEndPoints;
+        if (!!alreadySavedWellKnownEndpoints) {
+            return of(alreadySavedWellKnownEndpoints);
+        }
+
+        return this.authWellKnownService
+            .getWellKnownEndPointsFromUrl(authWellknownEndpoint)
+            .pipe(tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(mappedWellKnownEndpoints)));
+    }
+
+    private storeWellKnownEndpoints(mappedWellKnownEndpoints: AuthWellKnownEndpoints) {
+        this.storagePersistanceService.authWellKnownEndPoints = mappedWellKnownEndpoints;
     }
 
     startTokenValidationPeriodically(repeatAfterSeconds: number) {
