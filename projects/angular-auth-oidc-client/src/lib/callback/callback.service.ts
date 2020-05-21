@@ -76,16 +76,16 @@ export class CallbackService {
             return;
         }
 
-        this.getAuthWellKnownEndPoints(authWellknownEndpoint).subscribe(() => {
-            this.flowsDataService.setSilentRenewRunning();
+        this.getAuthWellKnownEndPoints(authWellknownEndpoint).subscribe(() => {});
 
-            if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
-                // Refresh Session using Refresh tokens
-                return this.refreshSessionWithRefreshTokens();
-            }
+        this.flowsDataService.setSilentRenewRunning();
 
-            return this.refreshSessionWithIframe();
-        });
+        if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
+            // Refresh Session using Refresh tokens
+            return this.refreshSessionWithRefreshTokens();
+        }
+
+        return this.refreshSessionWithIframe();
     }
 
     private getAuthWellKnownEndPoints(authWellknownEndpoint: string) {
