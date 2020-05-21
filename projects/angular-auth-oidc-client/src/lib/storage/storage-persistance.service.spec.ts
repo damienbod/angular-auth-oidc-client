@@ -35,297 +35,117 @@ describe('Storage Persistance Service', () => {
         expect(service).toBeTruthy();
     });
 
-    // describe('authResult', () => {
-    //     it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
-    //         const returnValue = 'someValue';
-    //         const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-    //         const result = service.authResult;
+    describe('read', () => {
+        it('reads from oidcSecuriyStorage with correct key', () => {
+            const spy = spyOn(securityStorage, 'read');
+            service.read('authNonce');
 
-    //         expect(result).toBe(returnValue);
-    //         const keyToRead = `${storagePrefix}_authorizationResult`;
-    //         expect(spy).toHaveBeenCalledWith(keyToRead);
-    //     });
+            const keyToRead = `${storagePrefix}_authNonce`;
+            expect(spy).toHaveBeenCalledWith(keyToRead);
+        });
+    });
 
-    //     it('set calls "oidcSecurityStorage.write" with correct prefix_key and value', () => {
-    //         const valueToStore = 'someValue';
-    //         const writeSpy = spyOn(securityStorage, 'write').and.callFake(() => {});
-    //         service.authResult = valueToStore;
+    describe('write', () => {
+        it('writes to oidcSecuriyStorage with correct key', () => {
+            const spy = spyOn(securityStorage, 'write');
+            service.write('authNonce', 'anyValue');
 
-    //         const keyToWrite = `${storagePrefix}_authorizationResult`;
-    //         expect(writeSpy).toHaveBeenCalledWith(keyToWrite, valueToStore);
-    //     });
-    // });
+            const keyToWrite = `${storagePrefix}_authNonce`;
+            expect(spy).toHaveBeenCalledWith(keyToWrite, 'anyValue');
+        });
+    });
 
-    // describe('accessToken', () => {
-    //     it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
-    //         const returnValue = 'someValue';
-    //         const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-    //         const result = service.accessToken;
+    describe('resetStorageFlowData', () => {
+        it('resets the correct calues', () => {
+            const spy = spyOn(securityStorage, 'write');
+            service.resetStorageFlowData();
 
-    //         expect(result).toBe(returnValue);
-    //         const keyToRead = `${storagePrefix}_authorizationData`;
-    //         expect(spy).toHaveBeenCalledWith(keyToRead);
-    //     });
+            expect(spy.calls.argsFor(0)).toEqual(['storagePrefix_session_state', null]);
+            expect(spy.calls.argsFor(1)).toEqual(['storagePrefix_storageSilentRenewRunning', null]);
+            expect(spy.calls.argsFor(2)).toEqual(['storagePrefix_codeVerifier', null]);
+            expect(spy.calls.argsFor(3)).toEqual(['storagePrefix_userData', null]);
+        });
+    });
 
-    //     it('get calls oidcSecurityStorage.read with correct key and returns null -> expect empty string', () => {
-    //         const spy = spyOn(securityStorage, 'read').and.returnValue(null);
-    //         const result = service.accessToken;
+    describe('resetAuthStateInStorage', () => {
+        it('resets the correct calues', () => {
+            const spy = spyOn(securityStorage, 'write');
+            service.resetAuthStateInStorage();
 
-    //         expect(result).toBe('');
-    //         const keyToRead = `${storagePrefix}_authorizationData`;
-    //         expect(spy).toHaveBeenCalledWith(keyToRead);
-    //     });
+            expect(spy.calls.argsFor(0)).toEqual(['storagePrefix_authorizationData', '']);
+            expect(spy.calls.argsFor(1)).toEqual(['storagePrefix_authorizationDataIdToken', '']);
+        });
+    });
 
-    //     it('set calls "oidcSecurityStorage.write" with correct prefix_key and value', () => {
-    //         const valueToStore = 'someValue';
-    //         const writeSpy = spyOn(securityStorage, 'write').and.callFake(() => {});
-    //         service.accessToken = valueToStore;
+    describe('accessToken', () => {
+        it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
+            const returnValue = 'someValue';
+            const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
+            const result = service.getAccessToken();
 
-    //         const keyToWrite = `${storagePrefix}_authorizationData`;
-    //         expect(writeSpy).toHaveBeenCalledWith(keyToWrite, valueToStore);
-    //     });
-    // });
+            expect(result).toBe(returnValue);
+            const keyToRead = `${storagePrefix}_authorizationData`;
+            expect(spy).toHaveBeenCalledWith(keyToRead);
+        });
 
-    // describe('idToken', () => {
-    //     it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
-    //         const returnValue = 'someValue';
-    //         const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-    //         const result = service.idToken;
+        it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
+            const spy = spyOn(securityStorage, 'read').and.returnValue(null);
+            const result = service.getAccessToken();
 
-    //         expect(result).toBe(returnValue);
-    //         const keyToRead = `${storagePrefix}_authorizationDataIdToken`;
-    //         expect(spy).toHaveBeenCalledWith(keyToRead);
-    //     });
+            expect(result).toBe(null);
+            const keyToRead = `${storagePrefix}_authorizationData`;
+            expect(spy).toHaveBeenCalledWith(keyToRead);
+        });
+    });
 
-    //     it('get calls oidcSecurityStorage.read with correct key and returns null -> expect empty string', () => {
-    //         const spy = spyOn(securityStorage, 'read').and.returnValue(null);
-    //         const result = service.idToken;
+    describe('idToken', () => {
+        it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
+            const returnValue = 'someValue';
+            const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
+            const result = service.getIdToken();
 
-    //         expect(result).toBe('');
-    //         const keyToRead = `${storagePrefix}_authorizationDataIdToken`;
-    //         expect(spy).toHaveBeenCalledWith(keyToRead);
-    //     });
+            expect(result).toBe(returnValue);
+            const keyToRead = `${storagePrefix}_authorizationDataIdToken`;
+            expect(spy).toHaveBeenCalledWith(keyToRead);
+        });
 
-    //     it('set calls "oidcSecurityStorage.write" with correct prefix_key and value', () => {
-    //         const valueToStore = 'someValue';
-    //         const writeSpy = spyOn(securityStorage, 'write').and.callFake(() => {});
-    //         service.idToken = valueToStore;
+        it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
+            const spy = spyOn(securityStorage, 'read').and.returnValue(null);
+            const result = service.getIdToken();
 
-    //         const keyToWrite = `${storagePrefix}_authorizationDataIdToken`;
-    //         expect(writeSpy).toHaveBeenCalledWith(keyToWrite, valueToStore);
-    //     });
-    // });
+            expect(result).toBe(null);
+            const keyToRead = `${storagePrefix}_authorizationDataIdToken`;
+            expect(spy).toHaveBeenCalledWith(keyToRead);
+        });
+    });
 
-    // describe('userData', () => {
-    //     it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
-    //         const returnValue = 'someValue';
-    //         const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-    //         const result = service.userData;
+    describe('getRefreshToken', () => {
+        it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
+            const returnValue = 'someValue';
+            const keyToRead = `${storagePrefix}_authorizationData`;
+            const spy = spyOn(securityStorage, 'read').withArgs(keyToRead).and.returnValue({ refresh_token: returnValue });
+            const result = service.getRefreshToken();
 
-    //         expect(result).toBe(returnValue);
-    //         const keyToRead = `${storagePrefix}_userData`;
-    //         expect(spy).toHaveBeenCalledWith(keyToRead);
-    //     });
+            expect(result).toBe(returnValue);
+            expect(spy).toHaveBeenCalledWith(keyToRead);
+        });
 
-    //     it('set calls "oidcSecurityStorage.write" with correct prefix_key and value', () => {
-    //         const valueToStore = 'someValue';
-    //         const writeSpy = spyOn(securityStorage, 'write').and.callFake(() => {});
-    //         service.userData = valueToStore;
+        it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
+            const keyToRead = `${storagePrefix}_authorizationData`;
+            const spy = spyOn(securityStorage, 'read').withArgs(keyToRead).and.returnValue({ NO_refresh_token: '' });
+            const result = service.getRefreshToken();
 
-    //         const keyToWrite = `${storagePrefix}_userData`;
-    //         expect(writeSpy).toHaveBeenCalledWith(keyToWrite, valueToStore);
-    //     });
-    // });
+            expect(result).toBeUndefined();
+            expect(spy).toHaveBeenCalledWith(keyToRead);
+        });
 
-    // describe('authNonce', () => {
-    //     it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
-    //         const returnValue = 'someValue';
-    //         const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-    //         const result = service.authNonce;
+        it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
+            const keyToRead = `${storagePrefix}_authorizationData`;
+            const spy = spyOn(securityStorage, 'read').withArgs(keyToRead).and.returnValue(null);
+            const result = service.getRefreshToken();
 
-    //         expect(result).toBe(returnValue);
-    //         const keyToRead = `${storagePrefix}_authNonce`;
-    //         expect(spy).toHaveBeenCalledWith(keyToRead);
-    //     });
-
-    //     it('get calls oidcSecurityStorage.read with correct key and returns null -> expect empty string', () => {
-    //         const spy = spyOn(securityStorage, 'read').and.returnValue(null);
-    //         const result = service.authNonce;
-
-    //         expect(result).toBe('');
-    //         const keyToRead = `${storagePrefix}_authNonce`;
-    //         expect(spy).toHaveBeenCalledWith(keyToRead);
-    //     });
-
-    //     it('set calls "oidcSecurityStorage.write" with correct prefix_key and value', () => {
-    //         const valueToStore = 'someValue';
-    //         const writeSpy = spyOn(securityStorage, 'write').and.callFake(() => {});
-    //         service.authNonce = valueToStore;
-
-    //         const keyToWrite = `${storagePrefix}_authNonce`;
-    //         expect(writeSpy).toHaveBeenCalledWith(keyToWrite, valueToStore);
-    //     });
-    // });
-
-    // describe('codeVerifier', () => {
-    //     it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
-    //         const returnValue = 'someValue';
-    //         const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-    //         const result = service.codeVerifier;
-
-    //         expect(result).toBe(returnValue);
-    //         const keyToRead = `${storagePrefix}_codeVerifier`;
-    //         expect(spy).toHaveBeenCalledWith(keyToRead);
-    //     });
-
-    //     it('get calls oidcSecurityStorage.read with correct key and returns null -> expect empty string', () => {
-    //         const spy = spyOn(securityStorage, 'read').and.returnValue(null);
-    //         const result = service.codeVerifier;
-
-    //         expect(result).toBe('');
-    //         const keyToRead = `${storagePrefix}_codeVerifier`;
-    //         expect(spy).toHaveBeenCalledWith(keyToRead);
-    //     });
-
-    //     it('set calls "oidcSecurityStorage.write" with correct prefix_key and value', () => {
-    //         const valueToStore = 'someValue';
-    //         const writeSpy = spyOn(securityStorage, 'write').and.callFake(() => {});
-    //         service.codeVerifier = valueToStore;
-
-    //         const keyToWrite = `${storagePrefix}_codeVerifier`;
-    //         expect(writeSpy).toHaveBeenCalledWith(keyToWrite, valueToStore);
-    //     });
-    // });
-
-    // describe('authStateControl', () => {
-    //     it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
-    //         const returnValue = 'someValue';
-    //         const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-    //         const result = service.authStateControl;
-
-    //         expect(result).toBe(returnValue);
-    //         const keyToRead = `${storagePrefix}_authStateControl`;
-    //         expect(spy).toHaveBeenCalledWith(keyToRead);
-    //     });
-
-    //     it('get calls oidcSecurityStorage.read with correct key and returns null -> expect empty string', () => {
-    //         const spy = spyOn(securityStorage, 'read').and.returnValue(null);
-    //         const result = service.authStateControl;
-
-    //         expect(result).toBe('');
-    //         const keyToRead = `${storagePrefix}_authStateControl`;
-    //         expect(spy).toHaveBeenCalledWith(keyToRead);
-    //     });
-
-    //     it('set calls "oidcSecurityStorage.write" with correct prefix_key and value', () => {
-    //         const valueToStore = 'someValue';
-    //         const writeSpy = spyOn(securityStorage, 'write').and.callFake(() => {});
-    //         service.authStateControl = valueToStore;
-
-    //         const keyToWrite = `${storagePrefix}_authStateControl`;
-    //         expect(writeSpy).toHaveBeenCalledWith(keyToWrite, valueToStore);
-    //     });
-    // });
-
-    // describe('session_state', () => {
-    //     it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
-    //         const returnValue = 'someValue';
-    //         const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-    //         const result = service.sessionState;
-
-    //         expect(result).toBe(returnValue);
-    //         const keyToRead = `${storagePrefix}_session_state`;
-    //         expect(spy).toHaveBeenCalledWith(keyToRead);
-    //     });
-
-    //     it('set calls "oidcSecurityStorage.write" with correct prefix_key and value', () => {
-    //         const valueToStore = 'someValue';
-    //         const writeSpy = spyOn(securityStorage, 'write').and.callFake(() => {});
-    //         service.sessionState = valueToStore;
-
-    //         const keyToWrite = `${storagePrefix}_session_state`;
-    //         expect(writeSpy).toHaveBeenCalledWith(keyToWrite, valueToStore);
-    //     });
-    // });
-
-    // describe('silentRenewRunning', () => {
-    //     it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
-    //         const returnValue = 'someValue';
-    //         const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-    //         const result = service.silentRenewRunning;
-
-    //         expect(result).toBe(returnValue);
-    //         const keyToRead = `${storagePrefix}_storageSilentRenewRunning`;
-    //         expect(spy).toHaveBeenCalledWith(keyToRead);
-    //     });
-
-    //     it('get calls oidcSecurityStorage.read with correct key and returns null -> expect empty string', () => {
-    //         const spy = spyOn(securityStorage, 'read').and.returnValue(null);
-    //         const result = service.silentRenewRunning;
-
-    //         expect(result).toBe('');
-    //         const keyToRead = `${storagePrefix}_storageSilentRenewRunning`;
-    //         expect(spy).toHaveBeenCalledWith(keyToRead);
-    //     });
-
-    //     it('set calls "oidcSecurityStorage.write" with correct prefix_key and value', () => {
-    //         const valueToStore = 'running';
-    //         const writeSpy = spyOn(securityStorage, 'write').and.callFake(() => {});
-    //         service.silentRenewRunning = valueToStore;
-
-    //         const keyToWrite = `${storagePrefix}_storageSilentRenewRunning`;
-    //         expect(writeSpy).toHaveBeenCalledWith(keyToWrite, valueToStore);
-    //     });
-    // });
-
-    // describe('resetStorageFlowData', () => {
-    //     it('resets all values', () => {
-    //         const writeSpy = spyOn(securityStorage, 'write').and.callFake(() => {});
-    //         service.resetStorageFlowData();
-
-    //         expect(writeSpy).toHaveBeenCalledTimes(4);
-    //     });
-    // });
-    // describe('resetAuthStateInStorage', () => {
-    //     it('resets all values', () => {
-    //         const writeSpy = spyOn(securityStorage, 'write').and.callFake(() => {});
-    //         service.resetAuthStateInStorage();
-
-    //         expect(writeSpy).toHaveBeenCalledTimes(3);
-    //     });
-    // });
-
-    // describe('getAccessToken', () => {
-    //     it('calls "oidcSecurityStorage.read" with correct prefix_key', () => {
-    //         const returnValue = 'someValue';
-    //         const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-    //         const result = service.getAccessToken();
-    //         expect(spy).toHaveBeenCalledWith('storagePrefix_authorizationData');
-    //         expect(result).toBe(result);
-    //     });
-    // });
-
-    // describe('getIdToken', () => {
-    //     it('calls "oidcSecurityStorage.read" with correct prefix_key', () => {
-    //         const returnValue = 'someValue';
-    //         const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-    //         const result = service.getIdToken();
-    //         expect(spy).toHaveBeenCalledWith('storagePrefix_authorizationDataIdToken');
-    //         expect(result).toBe(result);
-    //     });
-    // });
-
-    // describe('getRefreshToken', () => {
-    //     it('returns null if there is not authresult', () => {
-    //         spyOnProperty(service, 'authResult', 'get').and.returnValue(null);
-    //         const result = service.getRefreshToken();
-    //         expect(result).toBeFalsy();
-    //     });
-
-    //     it('returns refresh_token if there is an authresult.refreshtoken', () => {
-    //         spyOnProperty(service, 'authResult', 'get').and.returnValue({ refresh_token: 'refresh_token' });
-    //         const result = service.getRefreshToken();
-    //         expect(result).toBe('refresh_token');
-    //     });
-    // });
+            expect(result).toBeUndefined();
+            expect(spy).toHaveBeenCalledWith(keyToRead);
+        });
+    });
 });
