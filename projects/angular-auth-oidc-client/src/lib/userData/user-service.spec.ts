@@ -21,11 +21,11 @@ describe('User Service', () => {
     let userService: UserService;
     let storagePersistanceService: StoragePersistanceService;
     let eventsService: PublicEventsService;
+    let dataService: DataService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
-                DataService,
                 {
                     provide: StoragePersistanceService,
                     useClass: StoragePersistanceServiceMock,
@@ -48,6 +48,7 @@ describe('User Service', () => {
         userService = TestBed.inject(UserService);
         storagePersistanceService = TestBed.inject(StoragePersistanceService);
         eventsService = TestBed.inject(PublicEventsService);
+        dataService = TestBed.inject(DataService);
     });
 
     it('should create', () => {
@@ -299,5 +300,41 @@ describe('User Service', () => {
             expect(result).toBeFalse();
             expect(loggerspy).toHaveBeenCalledWith('validateUserdataSubIdToken failed', 'something', 'something2');
         });
+    });
+
+    describe('getIdentityUserData', () => {
+        it('does nothing if no authwellknownepdints are set', async(() => {
+            const serviceAsAny = userService as any;
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+            serviceAsAny.getIdentityUserData().subscribe({
+                error: (err) => {
+                    expect(err).toBeTruthy();
+                },
+            });
+        }));
+
+        it('does nothing if no userinfoEndpoint is set', async(() => {
+            const serviceAsAny = userService as any;
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ userinfoEndpoint: null });
+            serviceAsAny.getIdentityUserData().subscribe({
+                error: (err) => {
+                    expect(err).toBeTruthy();
+                },
+            });
+        }));
+
+        it('gets userdata if authwell and userinfoendpoint is set', async(() => {
+            const serviceAsAny = userService as any;
+            const spy = spyOn(dataService, 'get').and.returnValue(of({}));
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
+            spyOn(storagePersistanceService, 'read')
+                .withArgs('authWellKnownEndPoints')
+                .and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
+            serviceAsAny.getIdentityUserData().subscribe(() => {
+                expect(spy).toHaveBeenCalledWith('userinfoEndpoint', 'accessToken');
+            });
+        }));
     });
 });
