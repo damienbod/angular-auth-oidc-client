@@ -84,7 +84,7 @@ export class LogoffRevocationService {
     // the storage is revoked. You can pass any token to revoke. This makes it possible to
     // manage your own tokens. The is a public API.
     revokeAccessToken(accessToken?: any) {
-        const accessTok = accessToken || this.storagePersistanceService.read('authorizationData');
+        const accessTok = accessToken || this.storagePersistanceService.getAccessToken();
         const body = this.urlService.createRevocationEndpointBodyAccessToken(accessTok);
         const url = this.urlService.getRevocationEndpointUrl();
 
@@ -130,7 +130,7 @@ export class LogoffRevocationService {
     }
 
     getEndSessionUrl(): string | null {
-        const idTokenHint = this.storagePersistanceService.read('authorizationDataIdToken');
-        return this.urlService.createEndSessionUrl(idTokenHint);
+        const idToken = this.storagePersistanceService.getIdToken();
+        return this.urlService.createEndSessionUrl(idToken);
     }
 }

@@ -99,7 +99,7 @@ export class AuthStateService {
     }
 
     hasIdTokenExpired() {
-        const tokenToCheck = this.storagePersistanceService.read('authorizationDataIdToken');
+        const tokenToCheck = this.storagePersistanceService.getIdToken();
         const idTokenExpired = this.tokenValidationService.hasIdTokenExpired(
             tokenToCheck,
             this.configurationProvider.openIDConfiguration.renewTimeBeforeTokenExpiresInSeconds

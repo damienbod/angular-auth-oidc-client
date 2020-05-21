@@ -29,7 +29,7 @@ export class UserService {
     // TODO CHECK PARAMETERS
     //  validationResult.idToken can be the complete valudationResult
     getAndPersistUserDataInStore(isRenewProcess = false, idToken?: any, decodedIdToken?: any): Observable<any> {
-        idToken = idToken || this.storagePersistanceService.read('authorizationDataIdToken');
+        idToken = idToken || this.storagePersistanceService.getIdToken();
         decodedIdToken = decodedIdToken || this.tokenHelperService.getPayloadFromToken(idToken, false);
 
         const existingUserDataFromStorage = this.getUserDataFromStore();
@@ -37,7 +37,7 @@ export class UserService {
         const isCurrentFlowImplicitFlowWithAccessToken = this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken();
         const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow();
 
-        const accessToken = this.storagePersistanceService.read('authorizationData');
+        const accessToken = this.storagePersistanceService.getAccessToken();
         if (!(isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow)) {
             this.loggerService.logDebug('authorizedCallback id_token flow');
             this.loggerService.logDebug('accessToken', accessToken);
