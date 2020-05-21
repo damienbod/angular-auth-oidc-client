@@ -140,4 +140,33 @@ describe('SecurityCheckSessionTests', () => {
         const heartBeat = (checkSessionService as any).scheduledHeartBeatRunning;
         expect(heartBeat).toBeNull();
     });
+
+    it('stopCheckingSession does nothing if scheduledHeartBeatRunning is not set', () => {
+        (checkSessionService as any).scheduledHeartBeatRunning = null;
+        const spy = spyOn<any>(checkSessionService, 'clearScheduledHeartBeat');
+        checkSessionService.stop();
+        expect(spy).not.toHaveBeenCalledWith();
+    });
+
+    describe('serverStateChanged', () => {
+        it('returns false if startCheckSession is not configured', () => {
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ startCheckSession: false });
+            const result = checkSessionService.serverStateChanged();
+            expect(result).toBeFalsy();
+        });
+
+        it('returns false if checkSessionReceived is false', () => {
+            (checkSessionService as any).checkSessionReceived = false;
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ startCheckSession: true });
+            const result = checkSessionService.serverStateChanged();
+            expect(result).toBeFalse();
+        });
+
+        it('returns true if startCheckSession is configured and checkSessionReceived is true', () => {
+            (checkSessionService as any).checkSessionReceived = true;
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ startCheckSession: true });
+            const result = checkSessionService.serverStateChanged();
+            expect(result).toBeTrue();
+        });
+    });
 });
