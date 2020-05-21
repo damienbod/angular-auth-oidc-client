@@ -46,7 +46,7 @@ export class OidcConfigService {
             }
 
             if (!!passedAuthWellKnownEndpoints) {
-                this.storeWellKnownEndpoints(passedAuthWellKnownEndpoints);
+                this.authWellKnownService.storeWellKnownEndpoints(passedAuthWellKnownEndpoints);
                 this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
                     configuration: passedConfig,
                     wellknown: passedAuthWellKnownEndpoints,
@@ -56,7 +56,8 @@ export class OidcConfigService {
             }
 
             if (usedConfig.eagerLoadAuthWellKnownEndpoints) {
-                this.loadAndStoreAuthWellKnownEndPoints(usedConfig.authWellknownEndpoint)
+                this.authWellKnownService
+                    .getAuthWellKnownEndPoints(usedConfig.authWellknownEndpoint)
                     .pipe(
                         tap((wellknownEndPoints) =>
                             this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
@@ -70,15 +71,5 @@ export class OidcConfigService {
                 resolve();
             }
         });
-    }
-
-    storeWellKnownEndpoints(mappedWellKnownEndpoints: AuthWellKnownEndpoints) {
-        this.storagePersistanceService.authWellKnownEndPoints = mappedWellKnownEndpoints;
-    }
-
-    private loadAndStoreAuthWellKnownEndPoints(authWellknownEndpoint: string) {
-        return this.authWellKnownService
-            .getWellKnownEndPointsFromUrl(authWellknownEndpoint)
-            .pipe(tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(mappedWellKnownEndpoints)));
     }
 }

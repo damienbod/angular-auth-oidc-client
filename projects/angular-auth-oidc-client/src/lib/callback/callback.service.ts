@@ -5,7 +5,6 @@ import { interval, Observable, of, Subject, Subscription, throwError } from 'rxj
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
-import { AuthWellKnownEndpoints } from '../config/auth-well-known-endpoints';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { FlowsDataService } from '../flows/flows-data.service';
@@ -76,7 +75,7 @@ export class CallbackService {
             return;
         }
 
-        return this.getAuthWellKnownEndPoints(authWellknownEndpointAdress).pipe(
+        return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointAdress).pipe(
             switchMap(() => {
                 this.flowsDataService.setSilentRenewRunning();
 
@@ -88,21 +87,6 @@ export class CallbackService {
                 return this.refreshSessionWithIframe();
             })
         );
-    }
-
-    private getAuthWellKnownEndPoints(authWellknownEndpoint: string) {
-        const alreadySavedWellKnownEndpoints = this.storagePersistanceService.authWellKnownEndPoints;
-        if (!!alreadySavedWellKnownEndpoints) {
-            return of(alreadySavedWellKnownEndpoints);
-        }
-
-        return this.authWellKnownService
-            .getWellKnownEndPointsFromUrl(authWellknownEndpoint)
-            .pipe(tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(mappedWellKnownEndpoints)));
-    }
-
-    private storeWellKnownEndpoints(mappedWellKnownEndpoints: AuthWellKnownEndpoints) {
-        this.storagePersistanceService.authWellKnownEndPoints = mappedWellKnownEndpoints;
     }
 
     startTokenValidationPeriodically(repeatAfterSeconds: number) {
