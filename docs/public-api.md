@@ -140,9 +140,25 @@ Creates the ens session URL which can be used to implement youe own custom serve
 
 Makes it possible to refresh the tokens at any time you require.
 
-```
+```typescript
 refreshSession() {
         this.oidcSecurityService.forceRefreshSession()
           .subscribe((result) => console.log(result));
     }
+```
+
+## checkAuthIncludingServer(): Observable
+
+The `checkAuthIncludingServer` can be used to check the server for an authenticated session using the iframe silent renew if not locally authenticated. This is useful when opening an APP in a new tab and you are already authenticated. This method ONLY works with iframe silent renew. It will not work with refresh tokens. With refresh tokens, you cannot do this, as consent is required.
+
+```typescript
+export class AppComponent implements OnInit {
+    constructor(public oidcSecurityService: OidcSecurityService) {}
+
+    ngOnInit() {
+        this.oidcSecurityService.checkAuthIncludingServer().subscribe((isAuthenticated) => {
+            console.log('app authenticated', isAuthenticated);
+        });
+    }
+}
 ```
