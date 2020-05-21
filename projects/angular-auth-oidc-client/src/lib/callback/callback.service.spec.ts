@@ -105,10 +105,8 @@ describe('Callbackservice ', () => {
     });
 
     describe('refreshSession', () => {
-        it('returns null if no userdata', async(() => {
+        it('returns null if no auth well known endpoint defined', async(() => {
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-            spyOn(authStateService, 'getIdToken').and.returnValue('someIdToken');
-            spyOn(userService, 'getUserDataFromStore').and.returnValue(null);
 
             callbackService.refreshSession().subscribe((result) => {
                 expect(result).toBe(null);
@@ -117,18 +115,6 @@ describe('Callbackservice ', () => {
 
         it('returns null if silent renew Is running', async(() => {
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-            spyOn(authStateService, 'getIdToken').and.returnValue('someIdToken');
-            spyOn(userService, 'getUserDataFromStore').and.returnValue('userdata');
-
-            callbackService.refreshSession().subscribe((result) => {
-                expect(result).toBe(null);
-            });
-        }));
-
-        it('returns null if no id token is set', async(() => {
-            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-            spyOn(authStateService, 'getIdToken').and.returnValue(null);
-            spyOn(userService, 'getUserDataFromStore').and.returnValue('userdata');
 
             callbackService.refreshSession().subscribe((result) => {
                 expect(result).toBe(null);
@@ -139,8 +125,7 @@ describe('Callbackservice ', () => {
             const setSilentRenewRunningSpy = spyOn(flowsDataService, 'setSilentRenewRunning');
 
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-            spyOn(authStateService, 'getIdToken').and.returnValue('someIdToken');
-            spyOn(userService, 'getUserDataFromStore').and.returnValue('userdata');
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
 
             spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
             spyOn(callbackService as any, 'refreshSessionWithRefreshTokens').and.returnValue(of(null));
@@ -154,8 +139,7 @@ describe('Callbackservice ', () => {
             spyOn(flowsDataService, 'setSilentRenewRunning');
 
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-            spyOn(authStateService, 'getIdToken').and.returnValue('someIdToken');
-            spyOn(userService, 'getUserDataFromStore').and.returnValue('userdata');
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
 
             spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
             const refreshSessionWithRefreshTokensSpy = spyOn(callbackService as any, 'refreshSessionWithRefreshTokens').and.returnValue(
@@ -171,8 +155,7 @@ describe('Callbackservice ', () => {
             spyOn(flowsDataService, 'setSilentRenewRunning');
 
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-            spyOn(authStateService, 'getIdToken').and.returnValue('someIdToken');
-            spyOn(userService, 'getUserDataFromStore').and.returnValue('userdata');
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
 
             spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
             const refreshSessionWithRefreshTokensSpy = spyOn(callbackService as any, 'refreshSessionWithRefreshTokens').and.returnValue(

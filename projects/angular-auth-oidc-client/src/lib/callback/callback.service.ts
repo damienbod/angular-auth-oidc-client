@@ -70,7 +70,7 @@ export class CallbackService {
 
         if (!authWellknownEndpointAdress) {
             this.loggerService.logError('no authwellknownendpoint given!');
-            return;
+            return of(null);
         }
 
         return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointAdress).pipe(
