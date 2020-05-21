@@ -190,9 +190,10 @@ export class CallbackService {
                 }
             }),
             catchError((error) => {
+                const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
                 this.flowsDataService.resetSilentRenewRunning();
                 this.stopPeriodicallTokenCheck();
-                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
+                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
                 return throwError(error);
@@ -213,9 +214,6 @@ export class CallbackService {
             catchError((error) => {
                 this.stopPeriodicallTokenCheck();
                 this.flowsService.resetAuthorizationData();
-                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
-                    this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
-                }
                 return throwError(error);
             })
         );
