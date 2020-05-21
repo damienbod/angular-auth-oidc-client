@@ -1,9 +1,11 @@
 import { async, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { ConfigValidationService } from '../config-validation/config-validation.service';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
+import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
@@ -85,95 +87,81 @@ describe('Configuration Service', () => {
             });
         }));
 
-        // it('if authWellKnownEndPointsAlreadyStored the events are fired and resolve', async(() => {
-        //     // const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: null };
-        //     // spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ any: 'thing' });
-        //     // const eventServiceSpy = spyOn(eventsService, 'fireEvent');
-        //     // spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        //     // const promise = oidcConfigService.withConfig(config);
-        //     // promise.then(() => {
-        //     //     expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
-        //     //         configuration: {
-        //     //             stsServer: 'stsServerForTesting',
-        //     //             authWellknownEndpoint: 'stsServerForTesting',
-        //     //         },
-        //     //         wellknown: { any: 'thing' },
-        //     //     });
-        //     // });
-        // }));
+        it('if authWellKnownEndPointsAlreadyStored the events are fired and resolve', async(() => {
+            const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: null };
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ any: 'thing' });
+            const eventServiceSpy = spyOn(eventsService, 'fireEvent');
+            spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+            const promise = oidcConfigService.withConfig(config);
+            promise.then(() => {
+                expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
+                    configuration: {
+                        stsServer: 'stsServerForTesting',
+                        authWellknownEndpoint: 'stsServerForTesting',
+                    },
+                    wellknown: { any: 'thing' },
+                });
+            });
+        }));
 
-        // it('if passedAuthWellKnownEndpoints are passed, set these, fire event and resolve', async(() => {
-        //     // const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: null };
-        //     // const authWellKnown = { issuer: 'issuerForTesting' };
-        //     // spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
-        //     // spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        //     // const eventServiceSpy = spyOn(eventsService, 'fireEvent');
-        //     // const storeWellKnownEndpointsSpy = spyOn(oidcConfigService as any, 'storeWellKnownEndpoints');
-        //     // const promise = oidcConfigService.withConfig(config, authWellKnown);
-        //     // promise.then(() => {
-        //     //     expect(storeWellKnownEndpointsSpy).toHaveBeenCalledWith(authWellKnown);
-        //     //     expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
-        //     //         configuration: {
-        //     //             stsServer: 'stsServerForTesting',
-        //     //             authWellknownEndpoint: 'stsServerForTesting',
-        //     //         },
-        //     //         wellknown: authWellKnown,
-        //     //     });
-        //     // });
-        // }));
+        it('if passedAuthWellKnownEndpoints are passed, set these, fire event and resolve', async(() => {
+            const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: null };
+            const authWellKnown = { issuer: 'issuerForTesting' };
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
+            spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+            const eventServiceSpy = spyOn(eventsService, 'fireEvent');
+            const storeWellKnownEndpointsSpy = spyOn(authWellKnownService, 'storeWellKnownEndpoints');
+            const promise = oidcConfigService.withConfig(config, authWellKnown);
+            promise.then(() => {
+                expect(storeWellKnownEndpointsSpy).toHaveBeenCalledWith(authWellKnown);
+                expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
+                    configuration: {
+                        stsServer: 'stsServerForTesting',
+                        authWellknownEndpoint: 'stsServerForTesting',
+                    },
+                    wellknown: authWellKnown,
+                });
+            });
+        }));
 
-        // it('if eagerLoadAuthWellKnownEndpoints is true: call getWellKnownEndPointsFromUrl', async(() => {
-        //     // const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
-        //     // spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
-        //     // spyOn(configurationProvider, 'setConfig').and.returnValue(config);
-        //     // spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        //     // const getWellKnownEndPointsFromUrlSpy = spyOn(authWellKnownService, 'getWellKnownEndPointsFromUrl').and.returnValue(of(null));
-        //     // const promise = oidcConfigService.withConfig(config);
-        //     // promise.then(() => {
-        //     //     expect(getWellKnownEndPointsFromUrlSpy).toHaveBeenCalledWith('stsServerForTesting');
-        //     // });
-        // }));
+        it('if eagerLoadAuthWellKnownEndpoints is true: call getAuthWellKnownEndPoints', async(() => {
+            const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
+            spyOn(configurationProvider, 'setConfig').and.returnValue(config);
+            spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+            const getWellKnownEndPointsFromUrlSpy = spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
+            const promise = oidcConfigService.withConfig(config);
+            promise.then(() => {
+                expect(getWellKnownEndPointsFromUrlSpy).toHaveBeenCalledWith('stsServerForTesting');
+            });
+        }));
 
-        // it('if eagerLoadAuthWellKnownEndpoints is true: call storeWellKnownEndpoints', async(() => {
-        //     // const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
-        //     // spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
-        //     // const storeWellKnownEndpointsSpy = spyOn(oidcConfigService as any, 'storeWellKnownEndpoints').and.returnValue(false);
-        //     // spyOn(configurationProvider, 'setConfig').and.returnValue(config);
-        //     // spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        //     // spyOn(authWellKnownService, 'getWellKnownEndPointsFromUrl').and.returnValue(of({ issuer: 'issuerForTesting' }));
-        //     // const promise = oidcConfigService.withConfig(config);
-        //     // promise.then(() => {
-        //     //     expect(storeWellKnownEndpointsSpy).toHaveBeenCalledWith({ issuer: 'issuerForTesting' });
-        //     // });
-        // }));
+        it('if eagerLoadAuthWellKnownEndpoints is false: DO NOT call getAuthWellKnownEndPoints', async(() => {
+            const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: false };
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
+            const storeWellKnownEndpointsSpy = spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
+            spyOn(configurationProvider, 'setConfig').and.returnValue(config);
+            spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+            const promise = oidcConfigService.withConfig(config);
+            promise.then(() => {
+                expect(storeWellKnownEndpointsSpy).not.toHaveBeenCalled();
+            });
+        }));
 
-        // it('if eagerLoadAuthWellKnownEndpoints is false: DO NOT call storeWellKnownEndpoints', async(() => {
-        //     // const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: false };
-        //     // spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
-        //     // const storeWellKnownEndpointsSpy = spyOn(oidcConfigService as any, 'storeWellKnownEndpoints').and.returnValue(false);
-        //     // spyOn(configurationProvider, 'setConfig').and.returnValue(config);
-        //     // spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        //     // const promise = oidcConfigService.withConfig(config);
-        //     // promise.then(() => {
-        //     //     expect(storeWellKnownEndpointsSpy).not.toHaveBeenCalledWith({ issuer: 'issuerForTesting' });
-        //     // });
-        // }));
-
-        // it('if eagerLoadAuthWellKnownEndpoints is true: fire event', async(() => {
-        //     // const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
-        //     // spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
-        //     // spyOn(oidcConfigService as any, 'storeWellKnownEndpoints').and.returnValue(false);
-        //     // spyOn(configurationProvider, 'setConfig').and.returnValue(config);
-        //     // spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        //     // spyOn(authWellKnownService, 'getWellKnownEndPointsFromUrl').and.returnValue(of({ issuer: 'issuerForTesting' }));
-        //     // const eventServiceSpy = spyOn(eventsService, 'fireEvent');
-        //     // const promise = oidcConfigService.withConfig(config);
-        //     // promise.then(() => {
-        //     //     expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
-        //     //         configuration: { ...config, authWellknownEndpoint: 'stsServerForTesting' },
-        //     //         wellknown: { issuer: 'issuerForTesting' },
-        //     //     });
-        //     // });
-        // }));
+        it('if eagerLoadAuthWellKnownEndpoints is true: fire event', async(() => {
+            const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
+            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue(null);
+            spyOn(configurationProvider, 'setConfig').and.returnValue(config);
+            spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+            spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
+            const eventServiceSpy = spyOn(eventsService, 'fireEvent');
+            const promise = oidcConfigService.withConfig(config);
+            promise.then(() => {
+                expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
+                    configuration: { ...config, authWellknownEndpoint: 'stsServerForTesting' },
+                    wellknown: { issuer: 'issuerForTesting' },
+                });
+            });
+        }));
     });
 });
