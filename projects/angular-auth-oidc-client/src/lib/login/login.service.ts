@@ -4,7 +4,6 @@ import { tap } from 'rxjs/operators';
 import { AuthWellKnownEndpoints } from '../config/auth-well-known-endpoints';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { ConfigurationProvider } from '../config/config.provider';
-import { FlowsService } from '../flows/flows.service';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { RedirectService } from '../utils/redirect/redirect.service';
@@ -18,7 +17,6 @@ export class LoginService {
         private loggerService: LoggerService,
         private tokenValidationService: TokenValidationService,
         private urlService: UrlService,
-        private flowsService: FlowsService,
         private redirectService: RedirectService,
         private configurationProvider: ConfigurationProvider,
         private authWellKnownService: AuthWellKnownService,
@@ -59,7 +57,7 @@ export class LoginService {
     }
 
     private getAuthWellKnownEndPoints(authWellknownEndpoint: string) {
-        const alreadySavedWellKnownEndpoints = this.storagePersistanceService.authWellKnownEndPoints;
+        const alreadySavedWellKnownEndpoints = this.storagePersistanceService.read('authWellKnownEndPoints');
         if (!!alreadySavedWellKnownEndpoints) {
             return of(alreadySavedWellKnownEndpoints);
         }
@@ -70,6 +68,6 @@ export class LoginService {
     }
 
     private storeWellKnownEndpoints(mappedWellKnownEndpoints: AuthWellKnownEndpoints) {
-        this.storagePersistanceService.authWellKnownEndPoints = mappedWellKnownEndpoints;
+        this.storagePersistanceService.write('authWellKnownEndPoints', mappedWellKnownEndpoints);
     }
 }

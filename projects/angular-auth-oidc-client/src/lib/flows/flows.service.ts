@@ -178,7 +178,8 @@ export class FlowsService {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-        const tokenEndpoint = this.storagePersistanceService.authWellKnownEndPoints?.tokenEndpoint;
+        const authWellKnown = this.storagePersistanceService.read('authWellKnownEndPoints');
+        const tokenEndpoint = authWellKnown?.tokenEndpoint;
         if (!tokenEndpoint) {
             return throwError('Token Endpoint not defined');
         }
@@ -215,7 +216,8 @@ export class FlowsService {
             return throwError('codeFlowCodeRequest incorrect state');
         }
 
-        const tokenEndpoint = this.storagePersistanceService.authWellKnownEndPoints?.tokenEndpoint;
+        const authWellKnown = this.storagePersistanceService.read('authWellKnownEndPoints');
+        const tokenEndpoint = authWellKnown?.tokenEndpoint;
         if (!tokenEndpoint) {
             return throwError('Token Endpoint not defined');
         }
@@ -245,7 +247,7 @@ export class FlowsService {
 
     // STEP 3 Code Flow, STEP 2 Implicit Flow, STEP 3 Refresh Token
     private callbackHistoryAndResetJwtKeys(callbackContext: CallbackContext): Observable<CallbackContext> {
-        this.authStateService.setAuthResultInStorage(callbackContext.authResult);
+        this.storagePersistanceService.write('authorizationResult', callbackContext.authResult);
 
         if (this.historyCleanUpTurnedOn() && !callbackContext.isRenewProcess) {
             this.resetBrowserHistory();

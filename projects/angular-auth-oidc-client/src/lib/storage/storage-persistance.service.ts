@@ -1,9 +1,21 @@
 ﻿import { Injectable } from '@angular/core';
-import { AuthWellKnownEndpoints } from '../config/auth-well-known-endpoints';
 import { ConfigurationProvider } from '../config/config.provider';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 
 export type SilentRenewState = 'running' | '';
+
+export type StorageKeys =
+    | 'authorizationResult'
+    | 'authWellKnownEndPoints'
+    | 'authorizationData'
+    | 'authorizationDataIdToken'
+    | 'userData'
+    | 'authNonce'
+    | 'codeVerifier'
+    | 'authStateControl'
+    | 'session_state'
+    | 'storageSilentRenewRunning'
+    | 'access_token_expires_at';
 
 @Injectable()
 export class StoragePersistanceService {
@@ -11,159 +23,43 @@ export class StoragePersistanceService {
         private readonly oidcSecurityStorage: AbstractSecurityStorage,
         private readonly configurationProvider: ConfigurationProvider
     ) {}
-
-    get authResult(): any {
-        return this.retrieve(this.storageAuthResult);
-    }
-
-    set authResult(value: any) {
-        this.store(this.storageAuthResult, value);
-
-        const expiresIn = this.authResult?.expires_in;
-        if (expiresIn) {
-            const accessTokenExpiryTime = new Date().valueOf() + expiresIn * 1000;
-            this.accessTokenExpiresIn = accessTokenExpiryTime;
-        }
-    }
-
-    get accessToken(): string {
-        return this.retrieve(this.storageAccessToken) || '';
-    }
-
-    set accessToken(value: string) {
-        this.store(this.storageAccessToken, value);
-    }
-
-    get idToken(): string {
-        return this.retrieve(this.storageIdToken) || '';
-    }
-
-    set idToken(value: string) {
-        this.store(this.storageIdToken, value);
-    }
-
-    get userData(): any {
-        return this.retrieve(this.storageUserData);
-    }
-
-    set userData(value: any) {
-        this.store(this.storageUserData, value);
-    }
-
-    get authNonce(): string {
-        return this.retrieve(this.storageAuthNonce) || '';
-    }
-
-    set authNonce(value: string) {
-        this.store(this.storageAuthNonce, value);
-    }
-
-    get codeVerifier(): string {
-        return this.retrieve(this.storageCodeVerifier) || '';
-    }
-
-    set codeVerifier(value: string) {
-        this.store(this.storageCodeVerifier, value);
-    }
-
-    get authStateControl(): string {
-        return this.retrieve(this.storageAuthStateControl) || '';
-    }
-
-    set authStateControl(value: string) {
-        this.store(this.storageAuthStateControl, value);
-    }
-
-    get sessionState(): any {
-        return this.retrieve(this.storageSessionState);
-    }
-
-    set sessionState(value: any) {
-        this.store(this.storageSessionState, value);
-    }
-
-    get silentRenewRunning(): SilentRenewState {
-        return this.retrieve(this.storageSilentRenewRunning) || '';
-    }
-
-    set silentRenewRunning(value: SilentRenewState) {
-        this.store(this.storageSilentRenewRunning, value);
-    }
-    get accessTokenExpiresIn(): any {
-        return this.retrieve(this.storageAccessTokenExpiresIn);
-    }
-
-    set accessTokenExpiresIn(value: any) {
-        this.store(this.storageAccessTokenExpiresIn, value);
-    }
-
-    get authWellKnownEndPoints(): AuthWellKnownEndpoints {
-        return this.retrieve(this.authWellKnownEndPointsKey);
-    }
-
-    set authWellKnownEndPoints(value: AuthWellKnownEndpoints) {
-        this.store(this.authWellKnownEndPointsKey, value);
-    }
-
-    private storageAuthResult = 'authorizationResult';
-    private authWellKnownEndPointsKey = 'authWellKnownEndPoints';
-
-    private storageAccessToken = 'authorizationData';
-
-    private storageIdToken = 'authorizationDataIdToken';
-
-    private storageUserData = 'userData';
-
-    private storageAuthNonce = 'authNonce';
-
-    private storageCodeVerifier = 'codeVerifier';
-
-    private storageAuthStateControl = 'authStateControl';
-
-    private storageSessionState = 'session_state';
-
-    private storageSilentRenewRunning = 'storageSilentRenewRunning';
-
-    private storageAccessTokenExpiresIn = 'access_token_expires_at';
-
-    private retrieve(key: string): any {
+    read(key: StorageKeys) {
         const keyToRead = this.createKeyWithPrefix(key);
         return this.oidcSecurityStorage.read(keyToRead);
     }
 
-    private store(key: string, value: any) {
+    write(key: StorageKeys, value: any) {
         const keyToStore = this.createKeyWithPrefix(key);
         this.oidcSecurityStorage.write(keyToStore, value);
     }
 
     resetStorageFlowData() {
-        this.store(this.storageSessionState, '');
-        this.store(this.storageSilentRenewRunning, '');
-        this.store(this.storageCodeVerifier, '');
-        this.store(this.storageUserData, '');
+        // this.store(this.storageSessionState, '');
+        // this.store(this.storageSilentRenewRunning, '');
+        // this.store(this.storageCodeVerifier, '');
+        // this.store(this.storageUserData, '');
     }
 
     resetAuthStateInStorage() {
-        this.store(this.storageAccessToken, '');
-        this.store(this.storageIdToken, '');
-        this.store(this.storageAuthResult, '');
+        // this.store(this.storageAccessToken, '');
+        // this.store(this.storageIdToken, '');
+        // this.store(this.storageAuthResult, '');
     }
 
     getAccessToken(): any {
-        return this.retrieve(this.storageAccessToken);
+        return this.read('authorizationData');
     }
 
     getIdToken(): any {
-        return this.retrieve(this.storageIdToken);
+        return this.read('authorizationDataIdToken');
     }
 
     getRefreshToken(): any {
-        return this.authResult?.refresh_token;
+        return this.read('authorizationData')?.refresh_token;
     }
 
     private createKeyWithPrefix(key: string) {
         const prefix = this.configurationProvider.openIDConfiguration.clientId;
-
         return `${prefix}_${key}`;
     }
 }

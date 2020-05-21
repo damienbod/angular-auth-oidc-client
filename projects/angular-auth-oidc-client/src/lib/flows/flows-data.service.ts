@@ -4,7 +4,7 @@ import { RandomService } from './random/random.service';
 
 @Injectable()
 export class FlowsDataService {
-    constructor(private storagePersistanceService: StoragePersistanceService, private readonly randomService: RandomService) {}
+    constructor(private storagePersistanceService: StoragePersistanceService, private randomService: RandomService) {}
 
     createNonce(): string {
         const nonce = this.randomService.createRandom(40);
@@ -13,27 +13,28 @@ export class FlowsDataService {
     }
 
     setNonce(nonce: string) {
-        this.storagePersistanceService.authNonce = nonce;
+        this.storagePersistanceService.write('authNonce', nonce);
     }
 
     getAuthStateControl(): any {
-        return this.storagePersistanceService.authStateControl;
+        return this.storagePersistanceService.read('authStateControl');
     }
+
     setAuthStateControl(authStateControl: string) {
-        this.storagePersistanceService.authStateControl = authStateControl;
+        this.storagePersistanceService.write('authStateControl', authStateControl);
     }
 
     getExistingOrCreateAuthStateControl(): any {
-        let state = this.storagePersistanceService.authStateControl;
+        let state = this.storagePersistanceService.read('authStateControl');
         if (!state) {
             state = this.randomService.createRandom(40);
-            this.storagePersistanceService.authStateControl = state;
+            this.storagePersistanceService.write('authStateControl', state);
         }
         return state;
     }
 
     setSessionState(sessionState: any) {
-        this.storagePersistanceService.sessionState = sessionState;
+        this.storagePersistanceService.write('session_state', sessionState);
     }
 
     resetStorageFlowData() {
@@ -41,23 +42,24 @@ export class FlowsDataService {
     }
 
     getCodeVerifier() {
-        return this.storagePersistanceService.codeVerifier;
+        return this.storagePersistanceService.read('codeVerifier');
     }
 
     createCodeVerifier() {
         const codeVerifier = this.randomService.createRandom(67);
-        this.storagePersistanceService.codeVerifier = codeVerifier;
+        this.storagePersistanceService.write('codeVerifier', codeVerifier);
         return codeVerifier;
     }
 
     isSilentRenewRunning() {
-        return this.storagePersistanceService.silentRenewRunning === 'running';
+        return this.storagePersistanceService.read('storageSilentRenewRunning') === 'running';
     }
 
     setSilentRenewRunning() {
-        this.storagePersistanceService.silentRenewRunning = 'running';
+        this.storagePersistanceService.write('storageSilentRenewRunning', 'running');
     }
+
     resetSilentRenewRunning() {
-        this.storagePersistanceService.silentRenewRunning = '';
+        this.storagePersistanceService.write('storageSilentRenewRunning', '');
     }
 }

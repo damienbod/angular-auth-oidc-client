@@ -84,12 +84,9 @@ export class StateValidationService {
 
     validateState(callbackContext): StateValidationResult {
         const toReturn = new StateValidationResult();
-        if (
-            !this.tokenValidationService.validateStateFromHashCallback(
-                callbackContext.authResult.state,
-                this.storagePersistanceService.authStateControl
-            )
-        ) {
+        const authStateControl = this.storagePersistanceService.read('authStateControl');
+
+        if (!this.tokenValidationService.validateStateFromHashCallback(callbackContext.authResult.state, authStateControl)) {
             this.loggerService.logWarning('authorizedCallback incorrect state');
             toReturn.state = ValidationResult.StatesDoNotMatch;
             this.handleUnsuccessfulValidation();
@@ -115,10 +112,12 @@ export class StateValidationService {
                 return toReturn;
             }
 
+            const authNonce = this.storagePersistanceService.read('authNonce');
+
             if (
                 !this.tokenValidationService.validateIdTokenNonce(
                     toReturn.decodedIdToken,
-                    this.storagePersistanceService.authNonce,
+                    authNonce,
                     this.configurationProvider.openIDConfiguration.ignoreNonceAfterRefresh
                 )
             ) {
@@ -150,15 +149,14 @@ export class StateValidationService {
                 return toReturn;
             }
 
-            if (this.storagePersistanceService.authWellKnownEndPoints) {
+            const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+
+            if (authWellKnownEndPoints) {
                 if (this.configurationProvider.openIDConfiguration.issValidationOff) {
                     this.loggerService.logDebug('iss validation is turned off, this is not recommended!');
                 } else if (
                     !this.configurationProvider.openIDConfiguration.issValidationOff &&
-                    !this.tokenValidationService.validateIdTokenIss(
-                        toReturn.decodedIdToken,
-                        this.storagePersistanceService.authWellKnownEndPoints.issuer
-                    )
+                    !this.tokenValidationService.validateIdTokenIss(toReturn.decodedIdToken, authWellKnownEndPoints.issuer)
                 ) {
                     this.loggerService.logWarning('authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer');
                     toReturn.state = ValidationResult.IssDoesNotMatchIssuer;
@@ -255,19 +253,19 @@ export class StateValidationService {
     }
 
     private handleSuccessfulValidation() {
-        this.storagePersistanceService.authNonce = '';
+        this.storagePersistanceService.write('authNonce', '');
 
         if (this.configurationProvider.openIDConfiguration.autoCleanStateAfterAuthentication) {
-            this.storagePersistanceService.authStateControl = '';
+            this.storagePersistanceService.write('authStateControl', '');
         }
         this.loggerService.logDebug('AuthorizedCallback token(s) validated, continue');
     }
 
     private handleUnsuccessfulValidation() {
-        this.storagePersistanceService.authNonce = '';
+        this.storagePersistanceService.write('authNonce', '');
 
         if (this.configurationProvider.openIDConfiguration.autoCleanStateAfterAuthentication) {
-            this.storagePersistanceService.authStateControl = '';
+            this.storagePersistanceService.write('authStateControl', '');
         }
         this.loggerService.logDebug('AuthorizedCallback token(s) invalid');
     }

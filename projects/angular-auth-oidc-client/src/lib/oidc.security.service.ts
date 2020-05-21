@@ -23,7 +23,7 @@ export class OidcSecurityService {
     get configuration(): PublicConfiguration {
         return {
             configuration: this.configurationProvider.openIDConfiguration,
-            wellknown: this.storagePersistanceService.authWellKnownEndPoints,
+            wellknown: this.storagePersistanceService.read('authWellKnownEndPoints'),
         };
     }
 

@@ -46,8 +46,8 @@ export class AuthStateService {
         this.loggerService.logDebug(idToken);
         this.loggerService.logDebug('storing to storage, getting the roles');
 
-        this.storagePersistanceService.accessToken = accessToken;
-        this.storagePersistanceService.idToken = idToken;
+        this.storagePersistanceService.write('authorizationData', accessToken);
+        this.storagePersistanceService.write('authorizationDataIdToken', idToken);
 
         this.setAuthorizedAndFireEvent();
     }
@@ -98,12 +98,8 @@ export class AuthStateService {
         return true;
     }
 
-    setAuthResultInStorage(authResult: any) {
-        this.storagePersistanceService.authResult = authResult;
-    }
-
     hasIdTokenExpired() {
-        const tokenToCheck = this.storagePersistanceService.idToken;
+        const tokenToCheck = this.storagePersistanceService.read('authorizationDataIdToken');
         const idTokenExpired = this.tokenValidationService.hasIdTokenExpired(
             tokenToCheck,
             this.configurationProvider.openIDConfiguration.renewTimeBeforeTokenExpiresInSeconds
@@ -117,7 +113,7 @@ export class AuthStateService {
     }
 
     hasAccessTokenExpiredIfExpiryExists() {
-        const accessTokenExpiresIn = this.storagePersistanceService.accessTokenExpiresIn;
+        const accessTokenExpiresIn = this.storagePersistanceService.read('access_token_expires_at');
         const accessTokenHasNotExpired = this.tokenValidationService.validateAccessTokenNotExpired(
             accessTokenExpiresIn,
             this.configurationProvider.openIDConfiguration.renewTimeBeforeTokenExpiresInSeconds
