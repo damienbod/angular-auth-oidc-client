@@ -29,7 +29,7 @@ export class UserService {
     // TODO CHECK PARAMETERS
     //  validationResult.idToken can be the complete valudationResult
     getAndPersistUserDataInStore(isRenewProcess = false, idToken?: any, decodedIdToken?: any): Observable<any> {
-        idToken = idToken || this.storagePersistanceService.idToken;
+        idToken = idToken || this.storagePersistanceService.read('authorizationDataIdToken');
         decodedIdToken = decodedIdToken || this.tokenHelperService.getPayloadFromToken(idToken, false);
 
         const existingUserDataFromStorage = this.getUserDataFromStore();
@@ -37,9 +37,10 @@ export class UserService {
         const isCurrentFlowImplicitFlowWithAccessToken = this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken();
         const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow();
 
+        const accessToken = this.storagePersistanceService.read('authorizationData');
         if (!(isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow)) {
             this.loggerService.logDebug('authorizedCallback id_token flow');
-            this.loggerService.logDebug(this.storagePersistanceService.accessToken);
+            this.loggerService.logDebug('accessToken', accessToken);
 
             this.setUserDataToStore(decodedIdToken);
             return of(decodedIdToken);
@@ -50,7 +51,7 @@ export class UserService {
                 switchMap((userData) => {
                     this.loggerService.logDebug('Received user data', userData);
                     if (!!userData) {
-                        this.loggerService.logDebug(this.storagePersistanceService.accessToken);
+                        this.loggerService.logDebug('accessToken', accessToken);
                         return of(userData);
                     } else {
                         return throwError('no user data, request failed');
@@ -63,7 +64,7 @@ export class UserService {
     }
 
     getUserDataFromStore(): any {
-        return this.storagePersistanceService.userData || null;
+        return this.storagePersistanceService.read('userData') || null;
     }
 
     publishUserdataIfExists() {
@@ -75,13 +76,13 @@ export class UserService {
     }
 
     setUserDataToStore(value: any): void {
-        this.storagePersistanceService.userData = value;
+        this.storagePersistanceService.write('userData', value);
         this.userDataInternal$.next(value);
         this.eventService.fireEvent(EventTypes.UserDataChanged, value);
     }
 
     resetUserDataInStore(): void {
-        this.storagePersistanceService.userData = null;
+        this.storagePersistanceService.write('userData', null);
         this.eventService.fireEvent(EventTypes.UserDataChanged, null);
         this.userDataInternal$.next(null);
     }
@@ -106,12 +107,14 @@ export class UserService {
     private getIdentityUserData(): Observable<any> {
         const token = this.storagePersistanceService.getAccessToken();
 
-        if (!this.storagePersistanceService.authWellKnownEndPoints) {
+        const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+
+        if (!authWellKnownEndPoints) {
             this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
             return throwError('authWellKnownEndpoints is undefined');
         }
 
-        const userinfoEndpoint = this.storagePersistanceService.authWellKnownEndPoints?.userinfoEndpoint;
+        const userinfoEndpoint = authWellKnownEndPoints.userinfoEndpoint;
 
         if (!userinfoEndpoint) {
             this.loggerService.logError(

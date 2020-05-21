@@ -61,7 +61,8 @@ export class UrlService {
     }
 
     createEndSessionUrl(idTokenHint: string) {
-        const endSessionEndpoint = this.storagePersistanceService.authWellKnownEndPoints?.endSessionEndpoint;
+        const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+        const endSessionEndpoint = authWellKnownEndPoints?.endSessionEndpoint;
 
         if (!endSessionEndpoint) {
             return null;
@@ -107,7 +108,8 @@ export class UrlService {
     }
 
     getRevocationEndpointUrl() {
-        const revocationEndpoint = this.storagePersistanceService.authWellKnownEndPoints?.revocationEndpoint;
+        const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+        const revocationEndpoint = authWellKnownEndPoints?.revocationEndpoint;
 
         if (!revocationEndpoint) {
             return null;
@@ -172,7 +174,8 @@ export class UrlService {
         prompt?: string,
         customRequestParams?: { [key: string]: string | number | boolean }
     ): string {
-        const authorizationEndpoint = this.storagePersistanceService.authWellKnownEndPoints?.authorizationEndpoint;
+        const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+        const authorizationEndpoint = authWellKnownEndPoints?.authorizationEndpoint;
 
         if (!authorizationEndpoint) {
             this.loggerService.logError(`Can not create an authorize url when authorizationEndpoint is '${authorizationEndpoint}'`);
@@ -247,7 +250,8 @@ export class UrlService {
 
         this.loggerService.logDebug('RefreshSession created. adding myautostate: ', state);
 
-        if (this.storagePersistanceService.authWellKnownEndPoints) {
+        const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+        if (authWellKnownEndPoints) {
             return this.createAuthorizeUrl('', silentRenewUrl, nonce, state, 'none');
         }
 
@@ -271,7 +275,8 @@ export class UrlService {
             return null;
         }
 
-        if (this.storagePersistanceService.authWellKnownEndPoints) {
+        const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+        if (authWellKnownEndPoints) {
             return this.createAuthorizeUrl(codeChallenge, silentRenewUrl, nonce, state, 'none');
         }
 
@@ -290,7 +295,8 @@ export class UrlService {
             return null;
         }
 
-        if (this.storagePersistanceService.authWellKnownEndPoints) {
+        const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+        if (authWellKnownEndPoints) {
             return this.createAuthorizeUrl('', redirectUrl, nonce, state, null, customParams);
         }
 
@@ -313,7 +319,8 @@ export class UrlService {
         const codeVerifier = this.flowsDataService.createCodeVerifier();
         const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
 
-        if (this.storagePersistanceService.authWellKnownEndPoints) {
+        const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+        if (authWellKnownEndPoints) {
             return this.createAuthorizeUrl(codeChallenge, redirectUrl, nonce, state, null, customParams);
         }
 

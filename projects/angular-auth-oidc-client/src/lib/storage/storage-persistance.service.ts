@@ -2,8 +2,6 @@
 import { ConfigurationProvider } from '../config/config.provider';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 
-export type SilentRenewState = 'running' | '';
-
 export type StorageKeys =
     | 'authorizationResult'
     | 'authWellKnownEndPoints'
@@ -23,6 +21,7 @@ export class StoragePersistanceService {
         private readonly oidcSecurityStorage: AbstractSecurityStorage,
         private readonly configurationProvider: ConfigurationProvider
     ) {}
+
     read(key: StorageKeys) {
         const keyToRead = this.createKeyWithPrefix(key);
         return this.oidcSecurityStorage.read(keyToRead);
@@ -34,16 +33,15 @@ export class StoragePersistanceService {
     }
 
     resetStorageFlowData() {
-        // this.store(this.storageSessionState, '');
-        // this.store(this.storageSilentRenewRunning, '');
-        // this.store(this.storageCodeVerifier, '');
-        // this.store(this.storageUserData, '');
+        this.write('session_state', null);
+        this.write('storageSilentRenewRunning', null);
+        this.write('codeVerifier', null);
+        this.write('userData', null);
     }
 
     resetAuthStateInStorage() {
-        // this.store(this.storageAccessToken, '');
-        // this.store(this.storageIdToken, '');
-        // this.store(this.storageAuthResult, '');
+        this.write('authorizationData', '');
+        this.write('authorizationDataIdToken', '');
     }
 
     getAccessToken(): any {
