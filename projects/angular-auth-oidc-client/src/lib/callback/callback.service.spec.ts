@@ -38,6 +38,7 @@ describe('Callbackservice ', () => {
     let authStateService: AuthStateService;
     let flowHelper: FlowHelper;
     let router;
+    let authWellKnownService: AuthWellKnownService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -70,6 +71,7 @@ describe('Callbackservice ', () => {
         callbackService = TestBed.inject(CallbackService);
         flowHelper = TestBed.inject(FlowHelper);
         router = TestBed.inject(Router);
+        authWellKnownService = TestBed.inject(AuthWellKnownService);
     });
 
     describe('handleCallbackAndFireEvents', () => {
@@ -126,6 +128,7 @@ describe('Callbackservice ', () => {
 
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
             spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
+            spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
 
             spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
             spyOn(callbackService as any, 'refreshSessionWithRefreshTokens').and.returnValue(of(null));
@@ -140,6 +143,7 @@ describe('Callbackservice ', () => {
 
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
             spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
+            spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
 
             spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
             const refreshSessionWithRefreshTokensSpy = spyOn(callbackService as any, 'refreshSessionWithRefreshTokens').and.returnValue(
@@ -156,6 +160,7 @@ describe('Callbackservice ', () => {
 
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
             spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
+            spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
 
             spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
             const refreshSessionWithRefreshTokensSpy = spyOn(callbackService as any, 'refreshSessionWithRefreshTokens').and.returnValue(
