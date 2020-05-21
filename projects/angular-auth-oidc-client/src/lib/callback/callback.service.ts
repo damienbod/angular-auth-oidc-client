@@ -69,23 +69,25 @@ export class CallbackService {
             return of(null);
         }
 
-        const authWellknownEndpoint = this.configurationProvider.openIDConfiguration?.authWellknownEndpoint;
+        const authWellknownEndpointAdress = this.configurationProvider.openIDConfiguration?.authWellknownEndpoint;
 
-        if (!authWellknownEndpoint) {
+        if (!authWellknownEndpointAdress) {
             this.loggerService.logError('no authwellknownendpoint given!');
             return;
         }
 
-        this.getAuthWellKnownEndPoints(authWellknownEndpoint).subscribe(() => {});
+        return this.getAuthWellKnownEndPoints(authWellknownEndpointAdress).pipe(
+            switchMap(() => {
+                this.flowsDataService.setSilentRenewRunning();
 
-        this.flowsDataService.setSilentRenewRunning();
+                if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
+                    // Refresh Session using Refresh tokens
+                    return this.refreshSessionWithRefreshTokens();
+                }
 
-        if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
-            // Refresh Session using Refresh tokens
-            return this.refreshSessionWithRefreshTokens();
-        }
-
-        return this.refreshSessionWithIframe();
+                return this.refreshSessionWithIframe();
+            })
+        );
     }
 
     private getAuthWellKnownEndPoints(authWellknownEndpoint: string) {
@@ -170,8 +172,10 @@ export class CallbackService {
     }
 
     private stopPeriodicallTokenCheck(): void {
-        this.runTokenValidationRunning.unsubscribe();
-        this.runTokenValidationRunning = null;
+        if (this.runTokenValidationRunning) {
+            this.runTokenValidationRunning.unsubscribe();
+            this.runTokenValidationRunning = null;
+        }
     }
 
     // Code Flow Callback
