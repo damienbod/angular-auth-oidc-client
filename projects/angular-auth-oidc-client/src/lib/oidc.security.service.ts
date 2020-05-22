@@ -94,7 +94,11 @@ export class OidcSecurityService {
         return this.checkAuth().pipe(
             switchMap((isAuthenticated) => {
                 if (!isAuthenticated) {
-                    return this.callbackService.refreshSession();
+                    return this.callbackService.refreshSession().pipe(
+                        switchMap(() => {
+                            return this.isAuthenticated$;
+                        })
+                    );
                 }
 
                 return of(isAuthenticated);
