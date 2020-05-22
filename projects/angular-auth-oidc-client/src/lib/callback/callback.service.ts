@@ -188,6 +188,7 @@ export class CallbackService {
 
     // Code Flow Callback
     private authorizedCallbackWithCode(urlToCheck: string) {
+        const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
         return this.flowsService.processCodeFlowCallback(urlToCheck).pipe(
             tap((callbackContext) => {
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
@@ -197,7 +198,7 @@ export class CallbackService {
             catchError((error) => {
                 this.flowsDataService.resetSilentRenewRunning();
                 this.stopPeriodicallTokenCheck();
-                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
+                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
                 return throwError(error);
