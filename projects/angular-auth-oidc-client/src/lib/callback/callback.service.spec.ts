@@ -110,7 +110,7 @@ describe('Callbackservice ', () => {
         it('returns null if no auth well known endpoint defined', async(() => {
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
 
-            callbackService.refreshSession().subscribe((result) => {
+            callbackService.startRefreshSession().subscribe((result) => {
                 expect(result).toBe(null);
             });
         }));
@@ -118,7 +118,7 @@ describe('Callbackservice ', () => {
         it('returns null if silent renew Is running', async(() => {
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
 
-            callbackService.refreshSession().subscribe((result) => {
+            callbackService.startRefreshSession().subscribe((result) => {
                 expect(result).toBe(null);
             });
         }));
@@ -133,7 +133,7 @@ describe('Callbackservice ', () => {
             spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
             spyOn(callbackService as any, 'refreshSessionWithRefreshTokens').and.returnValue(of(null));
 
-            callbackService.refreshSession().subscribe(() => {
+            callbackService.startRefreshSession().subscribe(() => {
                 expect(setSilentRenewRunningSpy).toHaveBeenCalled();
             });
         }));
@@ -150,7 +150,7 @@ describe('Callbackservice ', () => {
                 of(null)
             );
 
-            callbackService.refreshSession().subscribe(() => {
+            callbackService.startRefreshSession().subscribe(() => {
                 expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalled();
             });
         }));
@@ -169,7 +169,7 @@ describe('Callbackservice ', () => {
 
             const refreshSessionWithIframeSpy = spyOn(callbackService as any, 'refreshSessionWithIframe').and.returnValue(of(null));
 
-            callbackService.refreshSession().subscribe(() => {
+            callbackService.startRefreshSession().subscribe(() => {
                 expect(refreshSessionWithRefreshTokensSpy).not.toHaveBeenCalled();
                 expect(refreshSessionWithIframeSpy).toHaveBeenCalled();
             });

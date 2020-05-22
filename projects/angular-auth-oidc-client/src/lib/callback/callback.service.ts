@@ -1,6 +1,7 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { CallbackContext } from 'dist/angular-auth-oidc-client/lib/flows/callback-context';
 import { interval, Observable, of, Subject, Subscription, throwError } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
@@ -22,6 +23,8 @@ export class CallbackService {
     private boundSilentRenewEvent: any;
 
     private stsCallbackInternal$ = new Subject();
+
+    refreshSessionWithIFrameCompleted$ = new Subject<CallbackContext>();
 
     get stsCallback$() {
         return this.stsCallbackInternal$.asObservable();
@@ -57,7 +60,7 @@ export class CallbackService {
         return callback$.pipe(tap(() => this.stsCallbackInternal$.next()));
     }
 
-    refreshSession() {
+    startRefreshSession() {
         const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
         this.loggerService.logDebug(`Checking: silentRenewRunning: ${isSilentRenewRunning}`);
         const shouldBeExecuted = !isSilentRenewRunning;
@@ -209,9 +212,11 @@ export class CallbackService {
         this.loggerService.logDebug('BEGIN refresh session Authorize');
 
         return this.flowsService.processRefreshToken().pipe(
+            tap((callbackContext) => this.refreshSessionWithIFrameCompleted$.next(callbackContext)),
             catchError((error) => {
                 this.stopPeriodicallTokenCheck();
                 this.flowsService.resetAuthorizationData();
+                this.refreshSessionWithIFrameCompleted$.next(null);
                 return throwError(error);
             })
         );
@@ -239,30 +244,29 @@ export class CallbackService {
         if (!e.detail) {
             return;
         }
-        if (this.flowHelper.isCurrentFlowCodeFlow()) {
+
+        let callback$ = of(null);
+
+        const isCodeFlow = this.flowHelper.isCurrentFlowCodeFlow();
+
+        if (isCodeFlow) {
             const urlParts = e.detail.toString().split('?');
-            // Code Flow Callback silent renew iframe
-            this.codeFlowCallbackSilentRenewIframe(urlParts).subscribe(
-                () => {
-                    this.flowsDataService.resetSilentRenewRunning();
-                },
-                (err: any) => {
-                    this.loggerService.logError('Error: ' + err);
-                    this.flowsDataService.resetSilentRenewRunning();
-                }
-            );
+            callback$ = this.codeFlowCallbackSilentRenewIframe(urlParts);
         } else {
-            // Implicit Flow Callback silent renew iframe
-            this.authorizedImplicitFlowCallback(e.detail).subscribe(
-                () => {
-                    this.flowsDataService.resetSilentRenewRunning();
-                },
-                (err: any) => {
-                    this.loggerService.logError('Error: ' + err);
-                    this.flowsDataService.resetSilentRenewRunning();
-                }
-            );
+            callback$ = this.authorizedImplicitFlowCallback(e.detail);
         }
+
+        callback$.subscribe(
+            (callbackContext) => {
+                this.refreshSessionWithIFrameCompleted$.next(callbackContext);
+                this.flowsDataService.resetSilentRenewRunning();
+            },
+            (err: any) => {
+                this.loggerService.logError('Error: ' + err);
+                this.refreshSessionWithIFrameCompleted$.next(null);
+                this.flowsDataService.resetSilentRenewRunning();
+            }
+        );
     }
 
     private codeFlowCallbackSilentRenewIframe(urlParts) {

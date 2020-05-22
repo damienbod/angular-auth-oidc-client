@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
@@ -92,8 +92,23 @@ export class OidcSecurityService {
 
     checkAuthIncludingServer(): Observable<boolean> {
         return this.checkAuth().pipe(
-            switchMap((isAuthenticated) => (isAuthenticated ? of(isAuthenticated) : this.callbackService.refreshSession())),
-            switchMap(() => this.isAuthenticated$)
+            switchMap((isAuthenticated) => {
+                if (isAuthenticated) {
+                    return of(isAuthenticated);
+                }
+
+                return this.forceRefreshSession().pipe(
+                    switchMap(({ idToken, accessToken }) => {
+                        const isAuth = !!idToken && !!accessToken;
+                        if (isAuth) {
+                            this.startCheckSessionAndValidation();
+                            return of(isAuth);
+                        }
+
+                        return of(isAuth);
+                    })
+                );
+            })
         );
     }
 
@@ -138,7 +153,19 @@ export class OidcSecurityService {
     }
 
     forceRefreshSession() {
-        return this.callbackService.refreshSession();
+        return forkJoin({
+            startRefreshSession: this.callbackService.startRefreshSession(),
+            callbackContext: this.callbackService.refreshSessionWithIFrameCompleted$,
+        }).pipe(
+            map(({ callbackContext }) => {
+                const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
+                if (isAuthenticated) {
+                    return { idToken: callbackContext?.authResult?.idToken, accessToken: callbackContext?.authResult?.accessToken };
+                }
+
+                return null;
+            })
+        );
     }
 
     // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
