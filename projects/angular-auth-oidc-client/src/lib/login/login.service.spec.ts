@@ -92,7 +92,7 @@ describe('LoginService', () => {
                 responseType: 'stubValue',
             });
             spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            spyOn(authWellKnownService as any, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+            spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
             spyOn(redirectService, 'redirectTo').and.callFake(() => {});
             const result = loginService.login();
             expect(result).toBeUndefined();
@@ -104,7 +104,7 @@ describe('LoginService', () => {
                 responseType: 'stubValue',
             });
             spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            spyOn(authWellKnownService as any, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+            spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
             spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
             const spy = spyOn(urlService, 'getAuthorizeUrl');
             spyOn(redirectService, 'redirectTo').and.callFake(() => {});
@@ -113,13 +113,13 @@ describe('LoginService', () => {
             expect(spy).toHaveBeenCalled();
         }));
 
-        it('redirects to url with no url handler', async(() => {
+        fit('redirects to url with no url handler', async(() => {
             spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
                 authWellknownEndpoint: 'authWellknownEndpoint',
                 responseType: 'stubValue',
             });
             spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            spyOn(loginService as any, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+            spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
             spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
             spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
             const redirectspy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
@@ -134,7 +134,7 @@ describe('LoginService', () => {
                 responseType: 'stubValue',
             });
             spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            spyOn(loginService as any, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+            spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
             spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
             spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
             const redirectspy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
@@ -154,7 +154,7 @@ describe('LoginService', () => {
                 responseType: 'stubValue',
             });
             spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            spyOn(loginService as any, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+            spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
             spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
             const getAuthorizeUrlSpy = spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
             const redirectspy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
