@@ -96,7 +96,6 @@ export class OidcSecurityService {
                 if (isAuthenticated) {
                     return of(isAuthenticated);
                 }
-                console.log('@@@@ isAuthenticated', isAuthenticated);
                 return this.forceRefreshSession().pipe(
                     switchMap((result) => {
                         const isAuth = !!result?.idToken && !!result?.accessToken;
