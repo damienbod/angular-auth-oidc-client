@@ -1,7 +1,7 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { interval, Observable, of, Subject, Subscription, throwError } from 'rxjs';
+import { forkJoin, interval, Observable, of, Subject, Subscription, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
@@ -157,21 +157,20 @@ export class CallbackService {
     }
 
     forceRefreshSession() {
-        return this.startRefreshSession().pipe(
-            switchMap(() => {
-                return this.refreshSessionWithIFrameCompleted$.pipe(
-                    map((callbackContext) => {
-                        const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
-                        if (isAuthenticated) {
-                            return {
-                                idToken: callbackContext?.authResult?.id_token,
-                                accessToken: callbackContext?.authResult?.access_token,
-                            };
-                        }
+        return forkJoin({
+            refreshSession: this.startRefreshSession(),
+            callbackContext: this.refreshSessionWithIFrameCompleted$,
+        }).pipe(
+            map(({ callbackContext }) => {
+                const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
+                if (isAuthenticated) {
+                    return {
+                        idToken: callbackContext?.authResult?.id_token,
+                        accessToken: callbackContext?.authResult?.access_token,
+                    };
+                }
 
-                        return null;
-                    })
-                );
+                return null;
             })
         );
     }
@@ -232,11 +231,15 @@ export class CallbackService {
         this.loggerService.logDebug('BEGIN refresh session Authorize');
 
         return this.flowsService.processRefreshToken().pipe(
-            tap((callbackContext) => this.refreshSessionWithIFrameCompleted$.next(callbackContext)),
+            tap((callbackContext) => {
+                this.refreshSessionWithIFrameCompleted$.next(callbackContext);
+                this.refreshSessionWithIFrameCompleted$.complete();
+            }),
             catchError((error) => {
                 this.stopPeriodicallTokenCheck();
                 this.flowsService.resetAuthorizationData();
                 this.refreshSessionWithIFrameCompleted$.next(null);
+                this.refreshSessionWithIFrameCompleted$.complete();
                 return throwError(error);
             })
         );
@@ -279,11 +282,13 @@ export class CallbackService {
         callback$.subscribe(
             (callbackContext) => {
                 this.refreshSessionWithIFrameCompleted$.next(callbackContext);
+                this.refreshSessionWithIFrameCompleted$.complete();
                 this.flowsDataService.resetSilentRenewRunning();
             },
             (err: any) => {
                 this.loggerService.logError('Error: ' + err);
                 this.refreshSessionWithIFrameCompleted$.next(null);
+                this.refreshSessionWithIFrameCompleted$.complete();
                 this.flowsDataService.resetSilentRenewRunning();
             }
         );
