@@ -98,11 +98,10 @@ export class OidcSecurityService {
                 }
 
                 return this.callbackService.forceRefreshSession().pipe(
-                    switchMap((result) => {
-                        const isAuth = !!result?.idToken && !!result?.accessToken;
+                    map((result) => !!result?.idToken && !!result?.accessToken),
+                    switchMap((isAuth) => {
                         if (isAuth) {
                             this.startCheckSessionAndValidation();
-                            return of(isAuth);
                         }
 
                         return of(isAuth);
