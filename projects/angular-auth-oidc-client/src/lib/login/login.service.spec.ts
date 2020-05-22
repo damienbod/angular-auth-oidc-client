@@ -113,7 +113,7 @@ describe('LoginService', () => {
             expect(spy).toHaveBeenCalled();
         }));
 
-        fit('redirects to url with no url handler', async(() => {
+        it('redirects to url with no url handler', async(() => {
             spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
                 authWellknownEndpoint: 'authWellknownEndpoint',
                 responseType: 'stubValue',
