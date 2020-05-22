@@ -28,6 +28,7 @@ describe('LoginService', () => {
     let tokenValidationService: TokenValidationService;
     let flowsService: FlowsService;
     let redirectService: RedirectService;
+    let authWellKnownService: AuthWellKnownService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -45,6 +46,7 @@ describe('LoginService', () => {
                 { provide: UrlService, useClass: UrlServiceMock },
                 { provide: FlowsService, useClass: FlowsServiceMock },
                 { provide: RedirectService, useClass: RedirectServiceMock },
+                { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
             ],
         });
     });
@@ -59,6 +61,7 @@ describe('LoginService', () => {
         tokenValidationService = TestBed.inject(TokenValidationService);
         flowsService = TestBed.inject(FlowsService);
         redirectService = TestBed.inject(RedirectService);
+        authWellKnownService = TestBed.inject(AuthWellKnownService);
     });
 
     it('should create', () => {
@@ -89,7 +92,7 @@ describe('LoginService', () => {
                 responseType: 'stubValue',
             });
             spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            spyOn(loginService as any, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+            spyOn(authWellKnownService as any, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
             spyOn(redirectService, 'redirectTo').and.callFake(() => {});
             const result = loginService.login();
             expect(result).toBeUndefined();
@@ -101,7 +104,7 @@ describe('LoginService', () => {
                 responseType: 'stubValue',
             });
             spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            spyOn(loginService as any, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+            spyOn(authWellKnownService as any, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
             spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
             const spy = spyOn(urlService, 'getAuthorizeUrl');
             spyOn(redirectService, 'redirectTo').and.callFake(() => {});
