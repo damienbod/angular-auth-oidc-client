@@ -92,13 +92,7 @@ export class OidcSecurityService {
 
     checkAuthIncludingServer(): Observable<boolean> {
         return this.checkAuth().pipe(
-            switchMap((isAuthenticated) => {
-                if (!isAuthenticated) {
-                    return this.callbackService.refreshSession();
-                }
-
-                return of(isAuthenticated);
-            }),
+            switchMap((isAuthenticated) => (isAuthenticated ? of(isAuthenticated) : this.callbackService.refreshSession())),
             switchMap(() => this.isAuthenticated$)
         );
     }
