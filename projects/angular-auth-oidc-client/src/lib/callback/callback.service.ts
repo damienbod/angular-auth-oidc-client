@@ -24,10 +24,14 @@ export class CallbackService {
 
     private stsCallbackInternal$ = new Subject();
 
-    refreshSessionWithIFrameCompleted$ = new Subject<CallbackContext>();
+    refreshSessionWithIFrameCompletedInternal$ = new Subject<CallbackContext>();
 
     get stsCallback$() {
         return this.stsCallbackInternal$.asObservable();
+    }
+
+    get refreshSessionWithIFrameCompleted$() {
+        return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
     }
 
     constructor(
@@ -231,15 +235,11 @@ export class CallbackService {
         this.loggerService.logDebug('BEGIN refresh session Authorize');
 
         return this.flowsService.processRefreshToken().pipe(
-            tap((callbackContext) => {
-                this.refreshSessionWithIFrameCompleted$.next(callbackContext);
-                this.refreshSessionWithIFrameCompleted$.complete();
-            }),
+            tap((callbackContext) => this.fireRefreshWithIframeCompleted(callbackContext)),
             catchError((error) => {
                 this.stopPeriodicallTokenCheck();
                 this.flowsService.resetAuthorizationData();
-                this.refreshSessionWithIFrameCompleted$.next(null);
-                this.refreshSessionWithIFrameCompleted$.complete();
+                this.fireRefreshWithIframeCompleted(null);
                 return throwError(error);
             })
         );
@@ -281,14 +281,12 @@ export class CallbackService {
 
         callback$.subscribe(
             (callbackContext) => {
-                this.refreshSessionWithIFrameCompleted$.next(callbackContext);
-                this.refreshSessionWithIFrameCompleted$.complete();
+                this.fireRefreshWithIframeCompleted(callbackContext);
                 this.flowsDataService.resetSilentRenewRunning();
             },
             (err: any) => {
                 this.loggerService.logError('Error: ' + err);
-                this.refreshSessionWithIFrameCompleted$.next(null);
-                this.refreshSessionWithIFrameCompleted$.complete();
+                this.fireRefreshWithIframeCompleted(null);
                 this.flowsDataService.resetSilentRenewRunning();
             }
         );
@@ -361,5 +359,10 @@ export class CallbackService {
                 detail: instanceId,
             })
         );
+    }
+
+    private fireRefreshWithIframeCompleted(callbackContext: CallbackContext) {
+        this.refreshSessionWithIFrameCompletedInternal$.next(callbackContext);
+        this.refreshSessionWithIFrameCompletedInternal$.complete();
     }
 }

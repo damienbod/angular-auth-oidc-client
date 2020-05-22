@@ -5,9 +5,16 @@ export interface CallbackContext {
     refreshToken: string;
     state: string;
     sessionState: string | null;
-    authResult: any;
+    authResult: AuthResult;
     isRenewProcess: boolean;
     jwtKeys: JwtKeys;
     validationResult: StateValidationResult;
     existingIdToken: any;
+}
+
+export interface AuthResult {
+    id_token: string;
+    access_token: string;
+    error: any;
+    session_state: any;
 }
