@@ -1,13 +1,13 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { CallbackContext } from 'dist/angular-auth-oidc-client/lib/flows/callback-context';
 import { interval, Observable, of, Subject, Subscription, throwError } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { ConfigurationProvider } from '../config/config.provider';
+import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
