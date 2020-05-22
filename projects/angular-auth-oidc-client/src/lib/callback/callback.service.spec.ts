@@ -587,4 +587,48 @@ describe('Callbackservice ', () => {
             });
         }));
     });
+
+    describe('silentRenewEventHandler', () => {
+        it('returns if authorizedImplicitFlowCallback', () => {
+            spyOn(callbackService as any, 'runTokenValidationRunning').and.returnValue(new Subscription());
+            spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
+            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
+            spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(true);
+            const authorizedCallbackWithCodeSpy = spyOn(callbackService as any, 'authorizedImplicitFlowCallback').and.returnValue(of(true));
+            const serviceAsAny = callbackService as any;
+            const eventData: any = {};
+
+            serviceAsAny.silentRenewEventHandler(eventData);
+
+            eventData.detail = 'detail';
+
+            serviceAsAny.silentRenewEventHandler(eventData);
+
+            callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
+                expect(authorizedCallbackWithCodeSpy).toHaveBeenCalled();
+            });
+        });
+
+        // fit('returns if codeFlowCallbackSilentRenewIframe', () => {
+        //     spyOn(callbackService as any, 'runTokenValidationRunning').and.returnValue(new Subscription());
+        //     spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
+        //     spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
+        //     spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(true);
+        //     const authorizedCallbackWithCodeSpy = spyOn(callbackService as any, 'codeFlowCallbackSilentRenewIframe').and.returnValue(
+        //         of(true)
+        //     );
+        //     const serviceAsAny = callbackService as any;
+        //     const eventData: any = {};
+
+        //     serviceAsAny.silentRenewEventHandler(eventData);
+
+        //     eventData.detail = 'https//localhost:4200?detail=test&state=efff';
+
+        //     serviceAsAny.silentRenewEventHandler(eventData);
+
+        //     callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
+        //         expect(authorizedCallbackWithCodeSpy).toHaveBeenCalled();
+        //     });
+        // });
+    });
 });
