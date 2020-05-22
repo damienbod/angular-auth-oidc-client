@@ -2,15 +2,9 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class LoggerServiceMock {
-    logError(message: any, ...args: any[]) {
-        console.error(message, ...args);
-    }
+    logError(message: any, ...args: any[]) {}
 
-    logWarning(message: any) {
-        console.warn(message);
-    }
+    logWarning(message: any) {}
 
-    logDebug(message: any) {
-        console.log(message);
-    }
+    logDebug(message: any) {}
 }
