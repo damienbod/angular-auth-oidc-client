@@ -207,6 +207,7 @@ export class CallbackService {
 
     // Implicit Flow Callback
     private authorizedImplicitFlowCallback(hash?: string) {
+        const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
         return this.flowsService.processImplicitFlowCallback(hash).pipe(
             tap((callbackContext) => {
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
@@ -214,7 +215,6 @@ export class CallbackService {
                 }
             }),
             catchError((error) => {
-                const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
                 this.flowsDataService.resetSilentRenewRunning();
                 this.stopPeriodicallTokenCheck();
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
