@@ -567,14 +567,12 @@ describe('Callbackservice ', () => {
             });
         }));
 
-        it(`navigates to unauthorizedRoute in case of error and  in case of error and
-          triggerAuthorizationResultEvent is false`, async(() => {
+        it(`case of error and  in case of error and triggerAuthorizationResultEvent is false`, async(() => {
             const serviceAsAny = callbackService as any;
 
             spyOn(flowsService, 'processRefreshToken').and.returnValue(throwError('error'));
             const resetSilentRenewRunningSpy = spyOn(flowsService, 'resetAuthorizationData');
             const stopPeriodicallTokenCheckSpy = spyOn(serviceAsAny, 'stopPeriodicallTokenCheck');
-            const routerSpy = spyOn(router, 'navigate');
 
             spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
                 triggerAuthorizationResultEvent: false,
@@ -585,7 +583,6 @@ describe('Callbackservice ', () => {
                     expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
                     expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
                     expect(err).toBeTruthy();
-                    expect(routerSpy).toHaveBeenCalledWith(['unauthorizedRoute']);
                 },
             });
         }));
