@@ -328,6 +328,22 @@ describe('OidcSecurityService', () => {
         }));
     });
 
+    describe('checkAuthIncludingServer', () => {
+        it('if isSilentRenewConfigured call getOrCreateIframe()', async(() => {
+            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+            spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
+            spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+
+            spyOn(silentRenewService, 'isSilentRenewConfigured').and.returnValue(true);
+            const spy = spyOn(silentRenewService, 'getOrCreateIframe');
+
+            oidcSecurityService.checkAuthIncludingServer().subscribe((result) => {
+                expect(spy).toHaveBeenCalled();
+            });
+        }));
+    });
+
     describe('getToken', () => {
         it('calls authStateService.getAccessToken()', async(() => {
             const spy = spyOn(authStateService, 'getAccessToken');
