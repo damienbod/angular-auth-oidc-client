@@ -14,8 +14,8 @@ export interface CallbackContext {
 }
 
 export interface AuthResult {
-    id_token: string;
-    access_token: string;
-    error: any;
-    session_state: any;
+    id_token?: string;
+    access_token?: string;
+    error?: any;
+    session_state?: any;
 }

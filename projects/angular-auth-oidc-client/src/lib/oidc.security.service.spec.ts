@@ -126,11 +126,12 @@ describe('OidcSecurityService', () => {
     });
 
     describe('forceRefreshSession', () => {
-        it('calls callbackService refreshSession', () => {
-            const spy = spyOn(callBackService, 'refreshSession');
-            const result = oidcSecurityService.forceRefreshSession();
-            expect(spy).toHaveBeenCalled();
-        });
+        it('calls callBackService forceRefreshSession', async(() => {
+            const spy = spyOn(callBackService, 'forceRefreshSession').and.returnValue(of(null));
+            const result = oidcSecurityService.forceRefreshSession().subscribe(() => {
+                expect(spy).toHaveBeenCalled();
+            });
+        }));
     });
 
     describe('authorize', () => {
