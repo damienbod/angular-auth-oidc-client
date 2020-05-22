@@ -157,15 +157,21 @@ export class CallbackService {
     }
 
     forceRefreshSession() {
-        this.startRefreshSession().subscribe();
-        return this.refreshSessionWithIFrameCompleted$.pipe(
-            map((callbackContext) => {
-                const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
-                if (isAuthenticated) {
-                    return { idToken: callbackContext?.authResult?.id_token, accessToken: callbackContext?.authResult?.access_token };
-                }
+        return this.startRefreshSession().pipe(
+            switchMap(() => {
+                return this.refreshSessionWithIFrameCompleted$.pipe(
+                    map((callbackContext) => {
+                        const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
+                        if (isAuthenticated) {
+                            return {
+                                idToken: callbackContext?.authResult?.id_token,
+                                accessToken: callbackContext?.authResult?.access_token,
+                            };
+                        }
 
-                return null;
+                        return null;
+                    })
+                );
             })
         );
     }
