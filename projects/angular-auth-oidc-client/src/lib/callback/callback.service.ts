@@ -2,7 +2,7 @@ import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { interval, Observable, of, Subject, Subscription, throwError } from 'rxjs';
-import { catchError, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
@@ -60,7 +60,7 @@ export class CallbackService {
         return callback$.pipe(tap(() => this.stsCallbackInternal$.next()));
     }
 
-    startRefreshSession() {
+    private startRefreshSession() {
         const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
         this.loggerService.logDebug(`Checking: silentRenewRunning: ${isSilentRenewRunning}`);
         const shouldBeExecuted = !isSilentRenewRunning;
@@ -154,6 +154,20 @@ export class CallbackService {
                     this.flowsDataService.resetSilentRenewRunning();
                 }
             });
+    }
+
+    forceRefreshSession() {
+        this.startRefreshSession().subscribe();
+        return this.refreshSessionWithIFrameCompleted$.pipe(
+            map((callbackContext) => {
+                const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
+                if (isAuthenticated) {
+                    return { idToken: callbackContext?.authResult?.id_token, accessToken: callbackContext?.authResult?.access_token };
+                }
+
+                return null;
+            })
+        );
     }
 
     private stopPeriodicallTokenCheck(): void {

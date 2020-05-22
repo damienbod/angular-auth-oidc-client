@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { forkJoin, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
@@ -96,10 +96,10 @@ export class OidcSecurityService {
                 if (isAuthenticated) {
                     return of(isAuthenticated);
                 }
-
+                console.log('@@@@ isAuthenticated', isAuthenticated);
                 return this.forceRefreshSession().pipe(
-                    switchMap(({ idToken, accessToken }) => {
-                        const isAuth = !!idToken && !!accessToken;
+                    switchMap((result) => {
+                        const isAuth = !!result?.idToken && !!result?.accessToken;
                         if (isAuth) {
                             this.startCheckSessionAndValidation();
                             return of(isAuth);
@@ -153,19 +153,7 @@ export class OidcSecurityService {
     }
 
     forceRefreshSession() {
-        return forkJoin({
-            startRefreshSession: this.callbackService.startRefreshSession(),
-            callbackContext: this.callbackService.refreshSessionWithIFrameCompleted$,
-        }).pipe(
-            map(({ callbackContext }) => {
-                const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
-                if (isAuthenticated) {
-                    return { idToken: callbackContext?.authResult?.idToken, accessToken: callbackContext?.authResult?.accessToken };
-                }
-
-                return null;
-            })
-        );
+        return this.callbackService.forceRefreshSession();
     }
 
     // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
