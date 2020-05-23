@@ -17,7 +17,7 @@ export class BrowserStorageService implements AbstractSecurityStorage {
 
         if (!item) {
             this.loggerService.logDebug(`Wanted to read '${key}' but nothing was found`);
-            return false;
+            return null;
         }
 
         return JSON.parse(item);

@@ -1,11 +1,13 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { interval, Observable, of, Subject, Subscription, throwError } from 'rxjs';
-import { catchError, switchMap, tap } from 'rxjs/operators';
+import { forkJoin, interval, Observable, of, Subject, Subscription, throwError } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
+import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { ConfigurationProvider } from '../config/config.provider';
+import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
@@ -22,8 +24,14 @@ export class CallbackService {
 
     private stsCallbackInternal$ = new Subject();
 
+    refreshSessionWithIFrameCompletedInternal$ = new Subject<CallbackContext>();
+
     get stsCallback$() {
         return this.stsCallbackInternal$.asObservable();
+    }
+
+    get refreshSessionWithIFrameCompleted$() {
+        return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
     }
 
     constructor(
@@ -36,7 +44,8 @@ export class CallbackService {
         private loggerService: LoggerService,
         private silentRenewService: SilentRenewService,
         private userService: UserService,
-        private authStateService: AuthStateService
+        private authStateService: AuthStateService,
+        private authWellKnownService: AuthWellKnownService
     ) {}
 
     isCallback(): boolean {
@@ -55,29 +64,34 @@ export class CallbackService {
         return callback$.pipe(tap(() => this.stsCallbackInternal$.next()));
     }
 
-    refreshSession() {
-        const idToken = this.authStateService.getIdToken();
+    private startRefreshSession() {
         const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
-        const userDataFromStore = this.userService.getUserDataFromStore();
-
-        this.loggerService.logDebug(
-            `Checking: silentRenewRunning: ${isSilentRenewRunning} id_token: ${!!idToken} userData: ${!!userDataFromStore}`
-        );
-
-        const shouldBeExecuted = userDataFromStore && !isSilentRenewRunning && idToken;
+        this.loggerService.logDebug(`Checking: silentRenewRunning: ${isSilentRenewRunning}`);
+        const shouldBeExecuted = !isSilentRenewRunning;
 
         if (!shouldBeExecuted) {
             return of(null);
         }
 
-        this.flowsDataService.setSilentRenewRunning();
+        const authWellknownEndpointAdress = this.configurationProvider.openIDConfiguration?.authWellknownEndpoint;
 
-        if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
-            // Refresh Session using Refresh tokens
-            return this.refreshSessionWithRefreshTokens();
+        if (!authWellknownEndpointAdress) {
+            this.loggerService.logError('no authwellknownendpoint given!');
+            return of(null);
         }
 
-        return this.refreshSessionWithIframe();
+        return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointAdress).pipe(
+            switchMap(() => {
+                this.flowsDataService.setSilentRenewRunning();
+
+                if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
+                    // Refresh Session using Refresh tokens
+                    return this.refreshSessionWithRefreshTokens();
+                }
+
+                return this.refreshSessionWithIframe();
+            })
+        );
     }
 
     startTokenValidationPeriodically(repeatAfterSeconds: number) {
@@ -146,13 +160,35 @@ export class CallbackService {
             });
     }
 
+    forceRefreshSession() {
+        return forkJoin({
+            refreshSession: this.startRefreshSession(),
+            callbackContext: this.refreshSessionWithIFrameCompleted$,
+        }).pipe(
+            map(({ callbackContext }) => {
+                const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
+                if (isAuthenticated) {
+                    return {
+                        idToken: callbackContext?.authResult?.id_token,
+                        accessToken: callbackContext?.authResult?.access_token,
+                    };
+                }
+
+                return null;
+            })
+        );
+    }
+
     private stopPeriodicallTokenCheck(): void {
-        this.runTokenValidationRunning.unsubscribe();
-        this.runTokenValidationRunning = null;
+        if (this.runTokenValidationRunning) {
+            this.runTokenValidationRunning.unsubscribe();
+            this.runTokenValidationRunning = null;
+        }
     }
 
     // Code Flow Callback
     private authorizedCallbackWithCode(urlToCheck: string) {
+        const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
         return this.flowsService.processCodeFlowCallback(urlToCheck).pipe(
             tap((callbackContext) => {
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
@@ -162,7 +198,7 @@ export class CallbackService {
             catchError((error) => {
                 this.flowsDataService.resetSilentRenewRunning();
                 this.stopPeriodicallTokenCheck();
-                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
+                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
                 return throwError(error);
@@ -172,6 +208,7 @@ export class CallbackService {
 
     // Implicit Flow Callback
     private authorizedImplicitFlowCallback(hash?: string) {
+        const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
         return this.flowsService.processImplicitFlowCallback(hash).pipe(
             tap((callbackContext) => {
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
@@ -181,7 +218,7 @@ export class CallbackService {
             catchError((error) => {
                 this.flowsDataService.resetSilentRenewRunning();
                 this.stopPeriodicallTokenCheck();
-                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
+                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }
                 return throwError(error);
@@ -199,12 +236,11 @@ export class CallbackService {
         this.loggerService.logDebug('BEGIN refresh session Authorize');
 
         return this.flowsService.processRefreshToken().pipe(
+            tap((callbackContext) => this.fireRefreshWithIframeCompleted(callbackContext)),
             catchError((error) => {
                 this.stopPeriodicallTokenCheck();
                 this.flowsService.resetAuthorizationData();
-                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent /* TODO && !this.isRenewProcess */) {
-                    this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
-                }
+                this.fireRefreshWithIframeCompleted(null);
                 return throwError(error);
             })
         );
@@ -232,30 +268,29 @@ export class CallbackService {
         if (!e.detail) {
             return;
         }
-        if (this.flowHelper.isCurrentFlowCodeFlow()) {
+
+        let callback$ = of(null);
+
+        const isCodeFlow = this.flowHelper.isCurrentFlowCodeFlow();
+
+        if (isCodeFlow) {
             const urlParts = e.detail.toString().split('?');
-            // Code Flow Callback silent renew iframe
-            this.codeFlowCallbackSilentRenewIframe(urlParts).subscribe(
-                () => {
-                    this.flowsDataService.resetSilentRenewRunning();
-                },
-                (err: any) => {
-                    this.loggerService.logError('Error: ' + err);
-                    this.flowsDataService.resetSilentRenewRunning();
-                }
-            );
+            callback$ = this.codeFlowCallbackSilentRenewIframe(urlParts);
         } else {
-            // Implicit Flow Callback silent renew iframe
-            this.authorizedImplicitFlowCallback(e.detail).subscribe(
-                () => {
-                    this.flowsDataService.resetSilentRenewRunning();
-                },
-                (err: any) => {
-                    this.loggerService.logError('Error: ' + err);
-                    this.flowsDataService.resetSilentRenewRunning();
-                }
-            );
+            callback$ = this.authorizedImplicitFlowCallback(e.detail);
         }
+
+        callback$.subscribe(
+            (callbackContext) => {
+                this.fireRefreshWithIframeCompleted(callbackContext);
+                this.flowsDataService.resetSilentRenewRunning();
+            },
+            (err: any) => {
+                this.loggerService.logError('Error: ' + err);
+                this.fireRefreshWithIframeCompleted(null);
+                this.flowsDataService.resetSilentRenewRunning();
+            }
+        );
     }
 
     private codeFlowCallbackSilentRenewIframe(urlParts) {
@@ -325,5 +360,10 @@ export class CallbackService {
                 detail: instanceId,
             })
         );
+    }
+
+    private fireRefreshWithIframeCompleted(callbackContext: CallbackContext) {
+        this.refreshSessionWithIFrameCompletedInternal$.next(callbackContext);
+        this.refreshSessionWithIFrameCompletedInternal$.complete();
     }
 }

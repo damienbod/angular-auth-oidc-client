@@ -30,6 +30,12 @@ describe('ConfigurationProviderTests', () => {
         expect(configurationProvider.openIDConfiguration).toBeDefined();
     });
 
+    it('hasValidConfig is true if config is set', () => {
+        configurationProvider.setConfig({ stsServer: 'hello' });
+
+        expect(configurationProvider.hasValidConfig()).toBeTrue();
+    });
+
     it('get openIDConfiguration returns null when openIdConfigurationInternal is falsy', () => {
         // do not set anything
         expect(configurationProvider.openIDConfiguration).toBeNull();
@@ -215,5 +221,17 @@ describe('ConfigurationProviderTests', () => {
 
         expect(currentConfig).not.toBeNull();
         expect(currentConfig).toEqual(DEFAULT_CONFIG);
+    });
+
+    it('wirtes warning if storage is being passed', () => {
+        const config: OpenIdConfiguration = {
+            storage: 'anything',
+        };
+
+        const spy = spyOn(console, 'warn');
+
+        configurationProvider.setConfig(config);
+
+        expect(spy).toHaveBeenCalled();
     });
 });

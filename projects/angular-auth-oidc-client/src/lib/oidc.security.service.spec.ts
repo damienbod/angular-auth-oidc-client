@@ -126,11 +126,12 @@ describe('OidcSecurityService', () => {
     });
 
     describe('forceRefreshSession', () => {
-        it('calls callbackService refreshSession', () => {
-            const spy = spyOn(callBackService, 'refreshSession');
-            const result = oidcSecurityService.forceRefreshSession();
-            expect(spy).toHaveBeenCalled();
-        });
+        it('calls callBackService forceRefreshSession', async(() => {
+            const spy = spyOn(callBackService, 'forceRefreshSession').and.returnValue(of(null));
+            const result = oidcSecurityService.forceRefreshSession().subscribe(() => {
+                expect(spy).toHaveBeenCalled();
+            });
+        }));
     });
 
     describe('authorize', () => {
@@ -323,6 +324,41 @@ describe('OidcSecurityService', () => {
 
             oidcSecurityService.checkAuth().subscribe((result) => {
                 expect(spy).toHaveBeenCalled();
+            });
+        }));
+    });
+
+    describe('checkAuthIncludingServer', () => {
+        it('if isSilentRenewConfigured call getOrCreateIframe()', async(() => {
+            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+            spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
+            spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+
+            spyOn(silentRenewService, 'isSilentRenewConfigured').and.returnValue(true);
+            const spy = spyOn(silentRenewService, 'getOrCreateIframe');
+
+            oidcSecurityService.checkAuthIncludingServer().subscribe((result) => {
+                expect(spy).toHaveBeenCalled();
+            });
+        }));
+
+        it('does forceRefreshSession get called and is NOT authenticated', async(() => {
+            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+            spyOn(callBackService, 'isCallback').and.returnValue(false);
+            spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
+            spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
+
+            spyOn(callBackService, 'forceRefreshSession').and.returnValue(
+                of({
+                    idToken: 'idToken',
+                    accessToken: 'access_token',
+                })
+            );
+
+            oidcSecurityService.checkAuthIncludingServer().subscribe((result) => {
+                expect(result).toBeTruthy();
             });
         }));
     });
