@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of, Subscription, throwError } from 'rxjs';
+import { Observable, of, Subscription, throwError } from 'rxjs';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
@@ -118,6 +118,14 @@ describe('Callbackservice ', () => {
         it('returns null if silent renew Is running', async(() => {
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
 
+            (callbackService as any).startRefreshSession().subscribe((result) => {
+                expect(result).toBe(null);
+            });
+        }));
+
+        it('returns null if no authwellknownendpoints are given', async(() => {
+            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: null });
             (callbackService as any).startRefreshSession().subscribe((result) => {
                 expect(result).toBe(null);
             });
@@ -588,6 +596,12 @@ describe('Callbackservice ', () => {
         }));
     });
 
+    describe('refreshSessionWithIFrameCompleted', () => {
+        it('is of type observable', () => {
+            expect(callbackService.refreshSessionWithIFrameCompleted$).toEqual(jasmine.any(Observable));
+        });
+    });
+
     describe('silentRenewEventHandler', () => {
         it('returns if authorizedImplicitFlowCallback', () => {
             spyOn(callbackService as any, 'runTokenValidationRunning').and.returnValue(new Subscription());
@@ -596,11 +610,7 @@ describe('Callbackservice ', () => {
             spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(true);
             const authorizedCallbackWithCodeSpy = spyOn(callbackService as any, 'authorizedImplicitFlowCallback').and.returnValue(of(true));
             const serviceAsAny = callbackService as any;
-            const eventData: any = {};
-
-            serviceAsAny.silentRenewEventHandler(eventData);
-
-            eventData.detail = 'detail';
+            const eventData = { detail: 'detail' };
 
             serviceAsAny.silentRenewEventHandler(eventData);
 
