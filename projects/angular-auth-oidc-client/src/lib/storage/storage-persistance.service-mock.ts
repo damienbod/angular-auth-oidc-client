@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 
 export type StorageKeys =
-    | 'authorizationResult'
+    | 'authnResult'
     | 'authWellKnownEndPoints'
-    | 'authorizationData'
+    | 'authzData'
     | 'authorizationDataIdToken'
     | 'userData'
     | 'authNonce'
@@ -27,12 +27,12 @@ export class StoragePersistanceServiceMock {
     }
 
     resetAuthStateInStorage() {
-        this.write('authorizationData', '');
+        this.write('authnResult', '');
         this.write('authorizationDataIdToken', '');
     }
 
     getAccessToken(): any {
-        return this.read('authorizationData');
+        return this.read('authzData');
     }
 
     getIdToken(): any {

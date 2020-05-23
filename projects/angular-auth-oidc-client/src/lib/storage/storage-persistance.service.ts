@@ -3,9 +3,9 @@ import { ConfigurationProvider } from '../config/config.provider';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 
 export type StorageKeys =
-    | 'authorizationResult'
+    | 'authnResult'
+    | 'authzData'
     | 'authWellKnownEndPoints'
-    | 'authorizationData'
     | 'authorizationDataIdToken'
     | 'userData'
     | 'authNonce'
@@ -40,12 +40,12 @@ export class StoragePersistanceService {
     }
 
     resetAuthStateInStorage() {
-        this.write('authorizationData', '');
+        this.write('authzData', '');
         this.write('authorizationDataIdToken', '');
     }
 
     getAccessToken(): any {
-        return this.read('authorizationData');
+        return this.read('authzData');
     }
 
     getIdToken(): any {
@@ -53,7 +53,7 @@ export class StoragePersistanceService {
     }
 
     getRefreshToken(): any {
-        return this.read('authorizationData')?.refresh_token;
+        return this.read('authnResult')?.refresh_token;
     }
 
     private createKeyWithPrefix(key: string) {

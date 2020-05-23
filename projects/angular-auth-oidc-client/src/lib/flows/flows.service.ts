@@ -247,7 +247,7 @@ export class FlowsService {
 
     // STEP 3 Code Flow, STEP 2 Implicit Flow, STEP 3 Refresh Token
     private callbackHistoryAndResetJwtKeys(callbackContext: CallbackContext): Observable<CallbackContext> {
-        this.storagePersistanceService.write('authorizationResult', callbackContext.authResult);
+        this.storagePersistanceService.write('authnResult', callbackContext.authResult);
         this.persistExpirationTime(callbackContext.authResult);
 
         if (this.historyCleanUpTurnedOn() && !callbackContext.isRenewProcess) {
