@@ -161,6 +161,22 @@ export class CallbackService {
     }
 
     forceRefreshSession() {
+        if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
+            return this.startRefreshSession().pipe(
+                map(({ callbackContext }) => {
+                    const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
+                    if (isAuthenticated) {
+                        return {
+                            idToken: callbackContext?.authResult?.id_token,
+                            accessToken: callbackContext?.authResult?.access_token,
+                        };
+                    }
+
+                    return null;
+                })
+            );
+        }
+
         return forkJoin({
             refreshSession: this.startRefreshSession(),
             callbackContext: this.refreshSessionWithIFrameCompleted$,
@@ -236,11 +252,10 @@ export class CallbackService {
         this.loggerService.logDebug('BEGIN refresh session Authorize');
 
         return this.flowsService.processRefreshToken().pipe(
-            tap((callbackContext) => this.fireRefreshWithIframeCompleted(callbackContext)),
             catchError((error) => {
                 this.stopPeriodicallTokenCheck();
                 this.flowsService.resetAuthorizationData();
-                this.fireRefreshWithIframeCompleted(null);
+
                 return throwError(error);
             })
         );
