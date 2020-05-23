@@ -86,7 +86,7 @@ describe('Auth State Service', () => {
         it('stores accessToken', () => {
             const spy = spyOn(storagePersistanceService, 'write');
             authStateService.setAuthorizationData('accesstoken', 'not used');
-            expect(spy).toHaveBeenCalledWith('authorizationData', 'accesstoken');
+            expect(spy).toHaveBeenCalledWith('authzData', 'accesstoken');
         });
 
         it('stores accessToken', () => {

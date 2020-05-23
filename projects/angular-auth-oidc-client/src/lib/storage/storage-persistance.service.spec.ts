@@ -122,7 +122,7 @@ describe('Storage Persistance Service', () => {
     describe('getRefreshToken', () => {
         it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
             const returnValue = 'someValue';
-            const keyToRead = `${storagePrefix}_authzData`;
+            const keyToRead = `${storagePrefix}_authnData`;
             const spy = spyOn(securityStorage, 'read').withArgs(keyToRead).and.returnValue({ refresh_token: returnValue });
             const result = service.getRefreshToken();
 
@@ -131,7 +131,7 @@ describe('Storage Persistance Service', () => {
         });
 
         it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
-            const keyToRead = `${storagePrefix}_authzData`;
+            const keyToRead = `${storagePrefix}_authnData`;
             const spy = spyOn(securityStorage, 'read').withArgs(keyToRead).and.returnValue({ NO_refresh_token: '' });
             const result = service.getRefreshToken();
 
@@ -140,7 +140,7 @@ describe('Storage Persistance Service', () => {
         });
 
         it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
-            const keyToRead = `${storagePrefix}_authzData`;
+            const keyToRead = `${storagePrefix}_authnData`;
             const spy = spyOn(securityStorage, 'read').withArgs(keyToRead).and.returnValue(null);
             const result = service.getRefreshToken();
 
