@@ -43,11 +43,9 @@ export class AuthStateService {
 
     setAuthorizationData(accessToken: any, idToken: any) {
         this.loggerService.logDebug(accessToken);
-        this.loggerService.logDebug(idToken);
-        this.loggerService.logDebug('storing to storage, getting the roles');
+        this.loggerService.logDebug('storing the accessToken');
 
         this.storagePersistanceService.write('authzData', accessToken);
-        this.storagePersistanceService.write('authorizationDataIdToken', idToken);
 
         this.setAuthorizedAndFireEvent();
     }

@@ -4,7 +4,6 @@ export type StorageKeys =
     | 'authnResult'
     | 'authWellKnownEndPoints'
     | 'authzData'
-    | 'authorizationDataIdToken'
     | 'userData'
     | 'authNonce'
     | 'codeVerifier'
@@ -28,18 +27,17 @@ export class StoragePersistanceServiceMock {
 
     resetAuthStateInStorage() {
         this.write('authnResult', '');
-        this.write('authorizationDataIdToken', '');
     }
 
     getAccessToken(): any {
-        return this.read('authzData');
+        return null;
     }
 
     getIdToken(): any {
-        return this.read('authorizationDataIdToken');
+        return null;
     }
 
     getRefreshToken(): any {
-        return '';
+        return null;
     }
 }

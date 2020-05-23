@@ -73,7 +73,7 @@ describe('Storage Persistance Service', () => {
             service.resetAuthStateInStorage();
 
             expect(spy.calls.argsFor(0)).toEqual(['storagePrefix_authzData', '']);
-            expect(spy.calls.argsFor(1)).toEqual(['storagePrefix_authorizationDataIdToken', '']);
+            expect(spy.calls.argsFor(1)).toEqual(['storagePrefix_authnResult', '']);
         });
     });
 
@@ -92,7 +92,7 @@ describe('Storage Persistance Service', () => {
             const spy = spyOn(securityStorage, 'read').and.returnValue(null);
             const result = service.getAccessToken();
 
-            expect(result).toBe(null);
+            expect(result).toBeFalsy();
             const keyToRead = `${storagePrefix}_authzData`;
             expect(spy).toHaveBeenCalledWith(keyToRead);
         });
@@ -100,12 +100,12 @@ describe('Storage Persistance Service', () => {
 
     describe('idToken', () => {
         it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
-            const returnValue = 'someValue';
+            const returnValue = { id_token: 'someValue' };
             const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
             const result = service.getIdToken();
 
-            expect(result).toBe(returnValue);
-            const keyToRead = `${storagePrefix}_authorizationDataIdToken`;
+            expect(result).toBe('someValue');
+            const keyToRead = `${storagePrefix}_authnResult`;
             expect(spy).toHaveBeenCalledWith(keyToRead);
         });
 
@@ -113,8 +113,8 @@ describe('Storage Persistance Service', () => {
             const spy = spyOn(securityStorage, 'read').and.returnValue(null);
             const result = service.getIdToken();
 
-            expect(result).toBe(null);
-            const keyToRead = `${storagePrefix}_authorizationDataIdToken`;
+            expect(result).toBeFalsy();
+            const keyToRead = `${storagePrefix}_authnResult`;
             expect(spy).toHaveBeenCalledWith(keyToRead);
         });
     });
@@ -122,7 +122,7 @@ describe('Storage Persistance Service', () => {
     describe('getRefreshToken', () => {
         it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
             const returnValue = 'someValue';
-            const keyToRead = `${storagePrefix}_authnData`;
+            const keyToRead = `${storagePrefix}_authnResult`;
             const spy = spyOn(securityStorage, 'read').withArgs(keyToRead).and.returnValue({ refresh_token: returnValue });
             const result = service.getRefreshToken();
 
@@ -131,7 +131,7 @@ describe('Storage Persistance Service', () => {
         });
 
         it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
-            const keyToRead = `${storagePrefix}_authnData`;
+            const keyToRead = `${storagePrefix}_authnResult`;
             const spy = spyOn(securityStorage, 'read').withArgs(keyToRead).and.returnValue({ NO_refresh_token: '' });
             const result = service.getRefreshToken();
 
@@ -140,7 +140,7 @@ describe('Storage Persistance Service', () => {
         });
 
         it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
-            const keyToRead = `${storagePrefix}_authnData`;
+            const keyToRead = `${storagePrefix}_authnResult`;
             const spy = spyOn(securityStorage, 'read').withArgs(keyToRead).and.returnValue(null);
             const result = service.getRefreshToken();
 
