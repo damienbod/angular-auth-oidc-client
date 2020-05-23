@@ -85,13 +85,33 @@ describe('Auth State Service', () => {
     describe('setAuthorizationData', () => {
         it('stores accessToken', () => {
             const spy = spyOn(storagePersistanceService, 'write');
-            authStateService.setAuthorizationData('accesstoken', 'not used');
+            const authResult = {
+                id_token: 'idtoken',
+                access_token: 'accesstoken',
+                expires_in: 330,
+                token_type: 'Bearer',
+                refresh_token: '9UuSQKx_UaGJSEvfHW2NK6FxAPSVvK-oVyeOb1Sstz0',
+                scope: 'openid profile email taler_api offline_access',
+                state: '7bad349c97cd7391abb6dfc41ec8c8e8ee8yeprJL',
+                session_state: 'gjNckdb8h4HS5us_3oz68oqsAhvNMOMpgsJNqrhy7kM.rBe66j0WPYpSx_c4vLM-5w',
+            };
+            authStateService.setAuthorizationData('accesstoken', authResult);
             expect(spy).toHaveBeenCalledWith('authzData', 'accesstoken');
         });
 
         it('calls setAuthorizedAndFireEvent() method', () => {
             const spy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
-            authStateService.setAuthorizationData('not used', 'idtoken');
+            const authResult = {
+                id_token: 'idtoken',
+                access_token: 'accesstoken',
+                expires_in: 330,
+                token_type: 'Bearer',
+                refresh_token: '9UuSQKx_UaGJSEvfHW2NK6FxAPSVvK-oVyeOb1Sstz0',
+                scope: 'openid profile email taler_api offline_access',
+                state: '7bad349c97cd7391abb6dfc41ec8c8e8ee8yeprJL',
+                session_state: 'gjNckdb8h4HS5us_3oz68oqsAhvNMOMpgsJNqrhy7kM.rBe66j0WPYpSx_c4vLM-5w',
+            };
+            authStateService.setAuthorizationData('not used', authResult);
             expect(spy).toHaveBeenCalled();
         });
     });

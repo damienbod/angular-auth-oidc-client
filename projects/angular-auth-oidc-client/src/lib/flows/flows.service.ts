@@ -293,8 +293,7 @@ export class FlowsService {
         callbackContext.validationResult = validationResult;
 
         if (validationResult.authResponseIsValid) {
-            this.authStateService.setAuthorizationData(validationResult.accessToken, callbackContext);
-
+            this.authStateService.setAuthorizationData(validationResult.accessToken, callbackContext.authResult);
             return of(callbackContext);
         } else {
             const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${window.location.hash}`;

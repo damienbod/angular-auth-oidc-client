@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ConfigurationProvider } from '../config/config.provider';
-import { CallbackContext } from '../flows/callback-context';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -42,12 +41,12 @@ export class AuthStateService {
         this.publicEventsService.fireEvent<AuthorizationResult>(EventTypes.NewAuthorizationResult, authorizationResult);
     }
 
-    setAuthorizationData(accessToken: any, callbackContext: CallbackContext) {
+    setAuthorizationData(accessToken: any, authResult: any) {
         this.loggerService.logDebug(accessToken);
         this.loggerService.logDebug('storing the accessToken');
 
         this.storagePersistanceService.write('authzData', accessToken);
-        this.persistAccessTokenExpirationTime(callbackContext.authResult);
+        this.persistAccessTokenExpirationTime(authResult);
         this.setAuthorizedAndFireEvent();
     }
 
