@@ -163,12 +163,12 @@ export class CallbackService {
     forceRefreshSession() {
         if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
             return this.startRefreshSession().pipe(
-                map(({ callbackContext }) => {
+                map(() => {
                     const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
                     if (isAuthenticated) {
                         return {
-                            idToken: callbackContext?.authResult?.id_token,
-                            accessToken: callbackContext?.authResult?.access_token,
+                            idToken: this.authStateService.getIdToken(),
+                            accessToken: this.authStateService.getAccessToken(),
                         };
                     }
 
