@@ -328,6 +328,16 @@ describe('Callbackservice ', () => {
             expect(spy).toHaveBeenCalled();
             expect(serviceAsAny.runTokenValidationRunning).toBeNull();
         });
+
+        it('does nothing if `runTokenValidationRunning` is null', () => {
+            const serviceAsAny = callbackService as any;
+            const aFalsyValue = '';
+            serviceAsAny.runTokenValidationRunning = aFalsyValue;
+
+            serviceAsAny.stopPeriodicallTokenCheck();
+
+            expect(serviceAsAny.runTokenValidationRunning).toBe(aFalsyValue);
+        });
     });
 
     describe('authorizedCallbackWithCode', () => {
