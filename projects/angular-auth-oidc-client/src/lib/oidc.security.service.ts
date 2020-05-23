@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
 import { ConfigurationProvider } from './config/config.provider';
@@ -90,6 +90,27 @@ export class OidcSecurityService {
         );
     }
 
+    checkAuthIncludingServer(): Observable<boolean> {
+        return this.checkAuth().pipe(
+            switchMap((isAuthenticated) => {
+                if (isAuthenticated) {
+                    return of(isAuthenticated);
+                }
+
+                return this.callbackService.forceRefreshSession().pipe(
+                    map((result) => !!result?.idToken && !!result?.accessToken),
+                    switchMap((isAuth) => {
+                        if (isAuth) {
+                            this.startCheckSessionAndValidation();
+                        }
+
+                        return of(isAuth);
+                    })
+                );
+            })
+        );
+    }
+
     private startCheckSessionAndValidation() {
         if (this.checkSessionService.isCheckSessionConfigured()) {
             this.checkSessionService.start();
@@ -131,7 +152,7 @@ export class OidcSecurityService {
     }
 
     forceRefreshSession() {
-        return this.callbackService.refreshSession();
+        return this.callbackService.forceRefreshSession();
     }
 
     // The refresh token and and the access token are revoked on the server. If the refresh token does not exist

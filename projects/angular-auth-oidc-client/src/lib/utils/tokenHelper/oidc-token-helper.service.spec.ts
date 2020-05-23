@@ -220,6 +220,13 @@ describe('Token Helper Service', () => {
             const result = tokenHelperService.getHeaderFromToken(token, true);
             expect(expected).toEqual(result);
         });
+
+        it('returns payload if token is correct, encode is false', () => {
+            const token = 'eyJ0ZXh0IjogIkhlbGxvIFdvcmxkIDEyMyEifQ=.SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
+            const expected = JSON.parse(`{"text": "Hello World 123!"}`);
+            const result = tokenHelperService.getHeaderFromToken(token, false);
+            expect(expected).toEqual(result);
+        });
     });
 
     describe('getSignatureFromToken', () => {

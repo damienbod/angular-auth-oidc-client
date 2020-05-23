@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { of } from 'rxjs';
+import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 
 @Injectable()
 export class AuthWellKnownServiceMock {
-    getWellKnownEndPointsFromUrl(authWellknownEndpoint: string) {
-        return of();
+    getAuthWellKnownEndPoints(authWellknownEndpoint: string) {
+        return null;
     }
+
+    storeWellKnownEndpoints(mappedWellKnownEndpoints: AuthWellKnownEndpoints) {}
 }

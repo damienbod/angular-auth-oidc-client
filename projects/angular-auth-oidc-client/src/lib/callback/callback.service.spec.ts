@@ -2,9 +2,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of, Subscription, throwError } from 'rxjs';
+import { Observable, of, Subscription, throwError } from 'rxjs';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
+import { AuthWellKnownService } from '../config/auth-well-known.service';
+import { AuthWellKnownServiceMock } from '../config/auth-well-known.service-mock';
 import { ConfigurationProvider } from '../config/config.provider';
 import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { FlowsDataService } from '../flows/flows-data.service';
@@ -36,6 +38,7 @@ describe('Callbackservice ', () => {
     let authStateService: AuthStateService;
     let flowHelper: FlowHelper;
     let router;
+    let authWellKnownService: AuthWellKnownService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -50,6 +53,7 @@ describe('Callbackservice ', () => {
                 { provide: UserService, useClass: UserServiceMock },
                 { provide: AuthStateService, useClass: AuthStateServiceMock },
                 { provide: FlowsDataService, useClass: FlowsDataServiceMock },
+                { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
                 FlowHelper,
             ],
         });
@@ -67,6 +71,7 @@ describe('Callbackservice ', () => {
         callbackService = TestBed.inject(CallbackService);
         flowHelper = TestBed.inject(FlowHelper);
         router = TestBed.inject(Router);
+        authWellKnownService = TestBed.inject(AuthWellKnownService);
     });
 
     describe('handleCallbackAndFireEvents', () => {
@@ -102,32 +107,26 @@ describe('Callbackservice ', () => {
     });
 
     describe('refreshSession', () => {
-        it('returns null if no userdata', async(() => {
+        it('returns null if no auth well known endpoint defined', async(() => {
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-            spyOn(authStateService, 'getIdToken').and.returnValue('someIdToken');
-            spyOn(userService, 'getUserDataFromStore').and.returnValue(null);
 
-            callbackService.refreshSession().subscribe((result) => {
+            (callbackService as any).startRefreshSession().subscribe((result) => {
                 expect(result).toBe(null);
             });
         }));
 
         it('returns null if silent renew Is running', async(() => {
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-            spyOn(authStateService, 'getIdToken').and.returnValue('someIdToken');
-            spyOn(userService, 'getUserDataFromStore').and.returnValue('userdata');
 
-            callbackService.refreshSession().subscribe((result) => {
+            (callbackService as any).startRefreshSession().subscribe((result) => {
                 expect(result).toBe(null);
             });
         }));
 
-        it('returns null if no id token is set', async(() => {
+        it('returns null if no authwellknownendpoints are given', async(() => {
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-            spyOn(authStateService, 'getIdToken').and.returnValue(null);
-            spyOn(userService, 'getUserDataFromStore').and.returnValue('userdata');
-
-            callbackService.refreshSession().subscribe((result) => {
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: null });
+            (callbackService as any).startRefreshSession().subscribe((result) => {
                 expect(result).toBe(null);
             });
         }));
@@ -136,13 +135,13 @@ describe('Callbackservice ', () => {
             const setSilentRenewRunningSpy = spyOn(flowsDataService, 'setSilentRenewRunning');
 
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-            spyOn(authStateService, 'getIdToken').and.returnValue('someIdToken');
-            spyOn(userService, 'getUserDataFromStore').and.returnValue('userdata');
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
+            spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
 
             spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
             spyOn(callbackService as any, 'refreshSessionWithRefreshTokens').and.returnValue(of(null));
 
-            callbackService.refreshSession().subscribe(() => {
+            (callbackService as any).startRefreshSession().subscribe(() => {
                 expect(setSilentRenewRunningSpy).toHaveBeenCalled();
             });
         }));
@@ -151,15 +150,15 @@ describe('Callbackservice ', () => {
             spyOn(flowsDataService, 'setSilentRenewRunning');
 
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-            spyOn(authStateService, 'getIdToken').and.returnValue('someIdToken');
-            spyOn(userService, 'getUserDataFromStore').and.returnValue('userdata');
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
+            spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
 
             spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
             const refreshSessionWithRefreshTokensSpy = spyOn(callbackService as any, 'refreshSessionWithRefreshTokens').and.returnValue(
                 of(null)
             );
 
-            callbackService.refreshSession().subscribe(() => {
+            (callbackService as any).startRefreshSession().subscribe(() => {
                 expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalled();
             });
         }));
@@ -168,8 +167,8 @@ describe('Callbackservice ', () => {
             spyOn(flowsDataService, 'setSilentRenewRunning');
 
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-            spyOn(authStateService, 'getIdToken').and.returnValue('someIdToken');
-            spyOn(userService, 'getUserDataFromStore').and.returnValue('userdata');
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
+            spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
 
             spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
             const refreshSessionWithRefreshTokensSpy = spyOn(callbackService as any, 'refreshSessionWithRefreshTokens').and.returnValue(
@@ -178,7 +177,7 @@ describe('Callbackservice ', () => {
 
             const refreshSessionWithIframeSpy = spyOn(callbackService as any, 'refreshSessionWithIframe').and.returnValue(of(null));
 
-            callbackService.refreshSession().subscribe(() => {
+            (callbackService as any).startRefreshSession().subscribe(() => {
                 expect(refreshSessionWithRefreshTokensSpy).not.toHaveBeenCalled();
                 expect(refreshSessionWithIframeSpy).toHaveBeenCalled();
             });
@@ -329,6 +328,16 @@ describe('Callbackservice ', () => {
             expect(spy).toHaveBeenCalled();
             expect(serviceAsAny.runTokenValidationRunning).toBeNull();
         });
+
+        it('does nothing if `runTokenValidationRunning` is null', () => {
+            const serviceAsAny = callbackService as any;
+            const aFalsyValue = '';
+            serviceAsAny.runTokenValidationRunning = aFalsyValue;
+
+            serviceAsAny.stopPeriodicallTokenCheck();
+
+            expect(serviceAsAny.runTokenValidationRunning).toBe(aFalsyValue);
+        });
     });
 
     describe('authorizedCallbackWithCode', () => {
@@ -346,7 +355,7 @@ describe('Callbackservice ', () => {
                 refreshToken: '',
                 state: '',
                 sessionState: null,
-                authResult: '',
+                authResult: null,
                 isRenewProcess: true,
                 jwtKeys: new JwtKeys(),
                 validationResult: null,
@@ -368,7 +377,7 @@ describe('Callbackservice ', () => {
                 refreshToken: '',
                 state: '',
                 sessionState: null,
-                authResult: '',
+                authResult: null,
                 isRenewProcess: false,
                 jwtKeys: new JwtKeys(),
                 validationResult: null,
@@ -410,6 +419,7 @@ describe('Callbackservice ', () => {
         triggerAuthorizationResultEvent is false`, async(() => {
             const serviceAsAny = callbackService as any;
 
+            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
             spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(throwError('error'));
             const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
             const stopPeriodicallTokenCheckSpy = spyOn(serviceAsAny, 'stopPeriodicallTokenCheck');
@@ -445,7 +455,7 @@ describe('Callbackservice ', () => {
                 refreshToken: '',
                 state: '',
                 sessionState: null,
-                authResult: '',
+                authResult: null,
                 isRenewProcess: true,
                 jwtKeys: new JwtKeys(),
                 validationResult: null,
@@ -467,7 +477,7 @@ describe('Callbackservice ', () => {
                 refreshToken: '',
                 state: '',
                 sessionState: null,
-                authResult: '',
+                authResult: null,
                 isRenewProcess: false,
                 jwtKeys: new JwtKeys(),
                 validationResult: null,
@@ -509,6 +519,7 @@ describe('Callbackservice ', () => {
         triggerAuthorizationResultEvent is false`, async(() => {
             const serviceAsAny = callbackService as any;
 
+            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
             spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(throwError('error'));
             const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
             const stopPeriodicallTokenCheckSpy = spyOn(serviceAsAny, 'stopPeriodicallTokenCheck');
@@ -574,14 +585,12 @@ describe('Callbackservice ', () => {
             });
         }));
 
-        it(`navigates to unauthorizedRoute in case of error and  in case of error and
-          triggerAuthorizationResultEvent is false`, async(() => {
+        it(`case of error and  in case of error and triggerAuthorizationResultEvent is false`, async(() => {
             const serviceAsAny = callbackService as any;
 
             spyOn(flowsService, 'processRefreshToken').and.returnValue(throwError('error'));
             const resetSilentRenewRunningSpy = spyOn(flowsService, 'resetAuthorizationData');
             const stopPeriodicallTokenCheckSpy = spyOn(serviceAsAny, 'stopPeriodicallTokenCheck');
-            const routerSpy = spyOn(router, 'navigate');
 
             spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
                 triggerAuthorizationResultEvent: false,
@@ -592,9 +601,54 @@ describe('Callbackservice ', () => {
                     expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
                     expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
                     expect(err).toBeTruthy();
-                    expect(routerSpy).toHaveBeenCalledWith(['unauthorizedRoute']);
                 },
             });
         }));
+    });
+
+    describe('refreshSessionWithIFrameCompleted', () => {
+        it('is of type observable', () => {
+            expect(callbackService.refreshSessionWithIFrameCompleted$).toEqual(jasmine.any(Observable));
+        });
+    });
+
+    describe('silentRenewEventHandler', () => {
+        it('returns if authorizedImplicitFlowCallback', () => {
+            spyOn(callbackService as any, 'runTokenValidationRunning').and.returnValue(new Subscription());
+            spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
+            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
+            spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(true);
+            const authorizedCallbackWithCodeSpy = spyOn(callbackService as any, 'authorizedImplicitFlowCallback').and.returnValue(of(true));
+            const serviceAsAny = callbackService as any;
+            const eventData = { detail: 'detail' };
+
+            serviceAsAny.silentRenewEventHandler(eventData);
+
+            callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
+                expect(authorizedCallbackWithCodeSpy).toHaveBeenCalled();
+            });
+        });
+
+        // fit('returns if codeFlowCallbackSilentRenewIframe', () => {
+        //     spyOn(callbackService as any, 'runTokenValidationRunning').and.returnValue(new Subscription());
+        //     spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
+        //     spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
+        //     spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(true);
+        //     const authorizedCallbackWithCodeSpy = spyOn(callbackService as any, 'codeFlowCallbackSilentRenewIframe').and.returnValue(
+        //         of(true)
+        //     );
+        //     const serviceAsAny = callbackService as any;
+        //     const eventData: any = {};
+
+        //     serviceAsAny.silentRenewEventHandler(eventData);
+
+        //     eventData.detail = 'https//localhost:4200?detail=test&state=efff';
+
+        //     serviceAsAny.silentRenewEventHandler(eventData);
+
+        //     callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
+        //         expect(authorizedCallbackWithCodeSpy).toHaveBeenCalled();
+        //     });
+        // });
     });
 });

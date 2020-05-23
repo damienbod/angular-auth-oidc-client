@@ -47,6 +47,16 @@ describe('Config Validation Service', () => {
         expect(result).toBeTrue();
     });
 
+    it('calls `logWarning` if one rule has warning level', () => {
+        const loggerWarningSpy = spyOn(loggerService, 'logWarning');
+        const messageTypeSpy = spyOn(configValidationService as any, 'getAllMessagesOfType');
+        messageTypeSpy.withArgs('warning', jasmine.any(Array)).and.returnValue(['A warning message']);
+        messageTypeSpy.withArgs('error', jasmine.any(Array)).and.callThrough();
+        const anyConfig = VALID_CONFIG;
+        configValidationService.validateConfig(anyConfig);
+        expect(loggerWarningSpy).toHaveBeenCalled();
+    });
+
     describe('ensure-clientId.rule', () => {
         it('return false when no clientId is set', () => {
             const config = { ...VALID_CONFIG, clientId: null };

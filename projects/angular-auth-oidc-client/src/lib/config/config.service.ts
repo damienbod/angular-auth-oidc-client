@@ -35,7 +35,7 @@ export class OidcConfigService {
 
             const usedConfig = this.configurationProvider.setConfig(passedConfig);
 
-            const alreadyExistingAuthWellKnownEndpoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+            const alreadyExistingAuthWellKnownEndpoints = this.storagePersistanceService.authWellKnownEndPoints;
             if (!!alreadyExistingAuthWellKnownEndpoints) {
                 this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
                     configuration: passedConfig,
@@ -46,7 +46,7 @@ export class OidcConfigService {
             }
 
             if (!!passedAuthWellKnownEndpoints) {
-                this.storeWellKnownEndpoints(passedAuthWellKnownEndpoints);
+                this.authWellKnownService.storeWellKnownEndpoints(passedAuthWellKnownEndpoints);
                 this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
                     configuration: passedConfig,
                     wellknown: passedAuthWellKnownEndpoints,
@@ -56,7 +56,8 @@ export class OidcConfigService {
             }
 
             if (usedConfig.eagerLoadAuthWellKnownEndpoints) {
-                this.loadAndStoreAuthWellKnownEndPoints(usedConfig.authWellknownEndpoint)
+                this.authWellKnownService
+                    .getAuthWellKnownEndPoints(usedConfig.authWellknownEndpoint)
                     .pipe(
                         tap((wellknownEndPoints) =>
                             this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
@@ -67,18 +68,12 @@ export class OidcConfigService {
                     )
                     .subscribe(() => resolve());
             } else {
+                this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
+                    configuration: passedConfig,
+                    wellknown: null,
+                });
                 resolve();
             }
         });
-    }
-
-    storeWellKnownEndpoints(mappedWellKnownEndpoints: AuthWellKnownEndpoints) {
-        this.storagePersistanceService.write('authWellKnownEndPoints', mappedWellKnownEndpoints);
-    }
-
-    private loadAndStoreAuthWellKnownEndPoints(authWellknownEndpoint: string) {
-        return this.authWellKnownService
-            .getWellKnownEndPointsFromUrl(authWellknownEndpoint)
-            .pipe(tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(mappedWellKnownEndpoints)));
     }
 }

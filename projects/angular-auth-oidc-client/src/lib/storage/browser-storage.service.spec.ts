@@ -37,7 +37,7 @@ describe('Browser Service', () => {
         it('returns false if getStorage returns null', () => {
             spyOn(service as any, 'hasStorage').and.returnValue(true);
             spyOn(service as any, 'getStorage').and.returnValue(null);
-            expect(service.read('anything')).toBeFalse();
+            expect(service.read('anything')).toBeFalsy();
         });
 
         it('returns null if getItem returns null', () => {
@@ -49,7 +49,7 @@ describe('Browser Service', () => {
                     return returnValue;
                 },
             });
-            expect(service.read('anything')).toBeFalse();
+            expect(service.read('anything')).toBeFalsy();
         });
 
         it('returns the item if getItem returns an item', () => {

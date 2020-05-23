@@ -1,11 +1,7 @@
 import { Injectable } from '@angular/core';
-import { of } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { AuthWellKnownEndpoints } from '../config/auth-well-known-endpoints';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { RedirectService } from '../utils/redirect/redirect.service';
 import { UrlService } from '../utils/url/url.service';
 import { TokenValidationService } from '../validation/token-validation.service';
@@ -19,8 +15,7 @@ export class LoginService {
         private urlService: UrlService,
         private redirectService: RedirectService,
         private configurationProvider: ConfigurationProvider,
-        private authWellKnownService: AuthWellKnownService,
-        private storagePersistanceService: StoragePersistanceService
+        private authWellKnownService: AuthWellKnownService
     ) {}
 
     login(authOptions?: AuthOptions) {
@@ -38,7 +33,7 @@ export class LoginService {
 
         this.loggerService.logDebug('BEGIN Authorize OIDC Flow, no auth data');
 
-        this.getAuthWellKnownEndPoints(authWellknownEndpoint).subscribe(() => {
+        this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint).subscribe(() => {
             const { urlHandler, customParams } = authOptions || {};
 
             const url = this.urlService.getAuthorizeUrl(customParams);
@@ -54,20 +49,5 @@ export class LoginService {
                 this.redirectService.redirectTo(url);
             }
         });
-    }
-
-    private getAuthWellKnownEndPoints(authWellknownEndpoint: string) {
-        const alreadySavedWellKnownEndpoints = this.storagePersistanceService.read('authWellKnownEndPoints');
-        if (!!alreadySavedWellKnownEndpoints) {
-            return of(alreadySavedWellKnownEndpoints);
-        }
-
-        return this.authWellKnownService
-            .getWellKnownEndPointsFromUrl(authWellknownEndpoint)
-            .pipe(tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(mappedWellKnownEndpoints)));
-    }
-
-    private storeWellKnownEndpoints(mappedWellKnownEndpoints: AuthWellKnownEndpoints) {
-        this.storagePersistanceService.write('authWellKnownEndPoints', mappedWellKnownEndpoints);
     }
 }
