@@ -14,7 +14,7 @@ export type StorageKeys =
 
 @Injectable()
 export class StoragePersistanceServiceMock {
-    read(key: StorageKeys) {}
+    read(key: StorageKeys): any {}
 
     write(key: StorageKeys, value: any) {}
 
@@ -30,14 +30,14 @@ export class StoragePersistanceServiceMock {
     }
 
     getAccessToken(): any {
-        return null;
+        return this.read('authzData');
     }
 
     getIdToken(): any {
-        return null;
+        return this.read('authnResult')?.id_token;
     }
 
     getRefreshToken(): any {
-        return null;
+        return this.read('authnResult')?.refresh_token;
     }
 }
