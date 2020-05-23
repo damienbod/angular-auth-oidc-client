@@ -3,7 +3,7 @@
 ### 2020-05-xx Version 11.1.2
 
 -   Added support to check the STS for an authenticated session if not locally logged in (iframe silent renew)
-    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/752) // Fixes [#744()]https://github.com/damienbod/angular-auth-oidc-client/issues/744)
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/752) // Fixes [#744](https://github.com/damienbod/angular-auth-oidc-client/issues/744)
 -   fix config bug with eager loading of the well known endpoints
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/748)
 -   prevent routing in silent renew requests with iframes
