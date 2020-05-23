@@ -248,7 +248,6 @@ export class FlowsService {
     // STEP 3 Code Flow, STEP 2 Implicit Flow, STEP 3 Refresh Token
     private callbackHistoryAndResetJwtKeys(callbackContext: CallbackContext): Observable<CallbackContext> {
         this.storagePersistanceService.write('authnResult', callbackContext.authResult);
-        this.persistExpirationTime(callbackContext.authResult);
 
         if (this.historyCleanUpTurnedOn() && !callbackContext.isRenewProcess) {
             this.resetBrowserHistory();
@@ -294,7 +293,7 @@ export class FlowsService {
         callbackContext.validationResult = validationResult;
 
         if (validationResult.authResponseIsValid) {
-            this.authStateService.setAuthorizationData(validationResult.accessToken, validationResult.idToken);
+            this.authStateService.setAuthorizationData(validationResult.accessToken, callbackContext);
 
             return of(callbackContext);
         } else {
@@ -382,12 +381,5 @@ export class FlowsService {
 
     private resetBrowserHistory() {
         window.history.replaceState({}, window.document.title, window.location.origin + window.location.pathname);
-    }
-
-    private persistExpirationTime(authResult: any) {
-        if (authResult?.expires_in) {
-            const accessTokenExpiryTime = new Date().valueOf() + authResult.expires_in * 1000;
-            this.storagePersistanceService.write('access_token_expires_at', accessTokenExpiryTime);
-        }
     }
 }

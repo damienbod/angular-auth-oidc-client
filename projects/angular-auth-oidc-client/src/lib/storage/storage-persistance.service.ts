@@ -5,14 +5,14 @@ import { AbstractSecurityStorage } from './abstract-security-storage';
 export type StorageKeys =
     | 'authnResult'
     | 'authzData'
+    | 'access_token_expires_at'
     | 'authWellKnownEndPoints'
     | 'userData'
     | 'authNonce'
     | 'codeVerifier'
     | 'authStateControl'
     | 'session_state'
-    | 'storageSilentRenewRunning'
-    | 'access_token_expires_at';
+    | 'storageSilentRenewRunning';
 
 @Injectable()
 export class StoragePersistanceService {

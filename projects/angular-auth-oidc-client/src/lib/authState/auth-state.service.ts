@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ConfigurationProvider } from '../config/config.provider';
+import { CallbackContext } from '../flows/callback-context';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -41,12 +42,12 @@ export class AuthStateService {
         this.publicEventsService.fireEvent<AuthorizationResult>(EventTypes.NewAuthorizationResult, authorizationResult);
     }
 
-    setAuthorizationData(accessToken: any, idToken: any) {
+    setAuthorizationData(accessToken: any, callbackContext: CallbackContext) {
         this.loggerService.logDebug(accessToken);
         this.loggerService.logDebug('storing the accessToken');
 
         this.storagePersistanceService.write('authzData', accessToken);
-
+        this.persistAccessTokenExpirationTime(callbackContext.authResult);
         this.setAuthorizedAndFireEvent();
     }
 
@@ -124,5 +125,12 @@ export class AuthStateService {
         }
 
         return hasExpired;
+    }
+
+    private persistAccessTokenExpirationTime(authResult: any) {
+        if (authResult?.expires_in) {
+            const accessTokenExpiryTime = new Date().valueOf() + authResult.expires_in * 1000;
+            this.storagePersistanceService.write('access_token_expires_at', accessTokenExpiryTime);
+        }
     }
 }
