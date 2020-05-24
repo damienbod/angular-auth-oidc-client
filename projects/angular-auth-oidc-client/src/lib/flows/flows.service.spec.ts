@@ -1,19 +1,14 @@
-import { HttpClientModule, HttpHeaders } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { async, TestBed } from '@angular/core/testing';
-import { BrowserModule } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
-import { AuthModule } from '../auth.module';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
 import { ConfigurationProvider } from '../config/config.provider';
-import { OpenIdConfiguration } from '../config/openid-configuration';
+import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
-import { AbstractSecurityStorage } from '../storage/abstract-security-storage';
-import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
 import { UserService } from '../userData/user-service';
@@ -43,20 +38,14 @@ describe('Flows Service', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [BrowserModule, HttpClientModule, RouterTestingModule, AuthModule.forRoot()],
             providers: [
                 FlowsService,
-                ConfigurationProvider,
                 { provide: UrlService, useClass: UrlServiceMock },
                 { provide: FlowsDataService, useClass: FlowsDataServiceMock },
                 { provide: LoggerService, useClass: LoggerServiceMock },
                 { provide: TokenValidationService, useClass: TokenValidationServiceMock },
                 { provide: StoragePersistanceService, useClass: StoragePersistanceServiceMock },
-                //  { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
-                {
-                    provide: AbstractSecurityStorage,
-                    useClass: BrowserStorageMock,
-                },
+                { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
                 { provide: AuthStateService, useClass: AuthStateServiceMock },
                 { provide: StateValidationService, useClass: StateValidationServiceMock },
                 { provide: UserService, useClass: UserServiceMock },
@@ -398,45 +387,19 @@ describe('Flows Service', () => {
     });
 
     describe('historyCleanUpTurnedOn ', () => {
-        it('check for true', () => {
-            const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-            config.redirectUrl = 'https://localhost:44386';
-            config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-            config.responseType = 'id_token token';
-            config.scope = 'openid email profile';
-            config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
-            config.postLoginRoute = '/home';
-            config.forbiddenRoute = '/Forbidden';
-            config.unauthorizedRoute = '/Unauthorized';
-            config.startCheckSession = false;
-            config.silentRenew = false;
-            config.renewTimeBeforeTokenExpiresInSeconds = 0;
-            config.maxIdTokenIatOffsetAllowedInSeconds = 10;
-            config.historyCleanupOff = true;
-
-            configurationProvider.setConfig(config);
+        it('check for false', () => {
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+                historyCleanupOff: true,
+            });
 
             const value = (service as any).historyCleanUpTurnedOn();
             expect(value).toEqual(false);
         });
 
         it('check for true', () => {
-            const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-            config.redirectUrl = 'https://localhost:44386';
-            config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-            config.responseType = 'id_token token';
-            config.scope = 'openid email profile';
-            config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
-            config.postLoginRoute = '/home';
-            config.forbiddenRoute = '/Forbidden';
-            config.unauthorizedRoute = '/Unauthorized';
-            config.startCheckSession = false;
-            config.silentRenew = false;
-            config.renewTimeBeforeTokenExpiresInSeconds = 0;
-            config.maxIdTokenIatOffsetAllowedInSeconds = 10;
-            config.historyCleanupOff = false;
-
-            configurationProvider.setConfig(config);
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+                historyCleanupOff: false,
+            });
 
             const value = (service as any).historyCleanUpTurnedOn();
             expect(value).toEqual(true);
