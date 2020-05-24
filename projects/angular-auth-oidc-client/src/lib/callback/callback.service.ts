@@ -1,10 +1,8 @@
-import { HttpParams } from '@angular/common/http';
 import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 import { Router } from '@angular/router';
 import { forkJoin, interval, Observable, of, Subject, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
-import { AuthorizedState } from '../authState/authorized-state';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { CallbackContext } from '../flows/callback-context';
@@ -15,7 +13,7 @@ import { LoggerService } from '../logging/logger.service';
 import { UserService } from '../userData/user-service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { UrlService } from '../utils/url/url.service';
-import { ValidationResult } from '../validation/validation-result';
+import { CodeFlowCallbackService } from './code-flow-callback.service';
 import { ImplicitFlowCallbackService } from './implicit-flow-callback.service';
 import { PeriodicallyTokenCheckService } from './periodically-token-check-service';
 
@@ -46,6 +44,7 @@ export class CallbackService {
         private authWellKnownService: AuthWellKnownService,
         private periodicallyTokenCheckService: PeriodicallyTokenCheckService,
         private implicitFlowCallbackService: ImplicitFlowCallbackService,
+        private codeFlowCallbackService: CodeFlowCallbackService,
         rendererFactory: RendererFactory2
     ) {
         this.renderer = rendererFactory.createRenderer(null, null);
@@ -59,7 +58,7 @@ export class CallbackService {
         let callback$: Observable<any>;
 
         if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            callback$ = this.authorizedCallbackWithCode(currentCallbackUrl);
+            callback$ = this.codeFlowCallbackService.authorizedCallbackWithCode(currentCallbackUrl);
         } else if (this.flowHelper.isCurrentFlowAnyImplicitFlow()) {
             callback$ = this.implicitFlowCallbackService.authorizedImplicitFlowCallback();
         }
@@ -198,26 +197,6 @@ export class CallbackService {
         );
     }
 
-    // Code Flow Callback
-    private authorizedCallbackWithCode(urlToCheck: string) {
-        const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
-        return this.flowsService.processCodeFlowCallback(urlToCheck).pipe(
-            tap((callbackContext) => {
-                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
-                    this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
-                }
-            }),
-            catchError((error) => {
-                this.flowsDataService.resetSilentRenewRunning();
-                this.periodicallyTokenCheckService.stopPeriodicallTokenCheck();
-                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
-                    this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
-                }
-                return throwError(error);
-            })
-        );
-    }
-
     private refreshSessionWithIframe(): Observable<boolean> {
         this.loggerService.logDebug('BEGIN refresh session Authorize Iframe renew');
         const url = this.urlService.getRefreshSessionSilentRenewUrl();
@@ -266,7 +245,7 @@ export class CallbackService {
 
         if (isCodeFlow) {
             const urlParts = e.detail.toString().split('?');
-            callback$ = this.codeFlowCallbackSilentRenewIframe(urlParts);
+            callback$ = this.codeFlowCallbackService.codeFlowCallbackSilentRenewIframe(urlParts);
         } else {
             callback$ = this.implicitFlowCallbackService.authorizedImplicitFlowCallback(e.detail);
         }
@@ -281,50 +260,6 @@ export class CallbackService {
                 this.fireRefreshWithIframeCompleted(null);
                 this.flowsDataService.resetSilentRenewRunning();
             }
-        );
-    }
-
-    private codeFlowCallbackSilentRenewIframe(urlParts) {
-        const params = new HttpParams({
-            fromString: urlParts[1],
-        });
-
-        const error = params.get('error');
-
-        if (error) {
-            this.authStateService.updateAndPublishAuthState({
-                authorizationState: AuthorizedState.Unauthorized,
-                validationResult: ValidationResult.LoginRequired,
-                isRenewProcess: true,
-            });
-            this.flowsService.resetAuthorizationData();
-            this.flowsDataService.setNonce('');
-            this.periodicallyTokenCheckService.stopPeriodicallTokenCheck();
-            return throwError(error);
-        }
-
-        const code = params.get('code');
-        const state = params.get('state');
-        const sessionState = params.get('session_state');
-
-        const callbackContext = {
-            code,
-            refreshToken: null,
-            state,
-            sessionState,
-            authResult: null,
-            isRenewProcess: false,
-            jwtKeys: null,
-            validationResult: null,
-            existingIdToken: null,
-        };
-
-        return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext).pipe(
-            catchError((errorFromFlow) => {
-                this.periodicallyTokenCheckService.stopPeriodicallTokenCheck();
-                this.flowsService.resetAuthorizationData();
-                return throwError(errorFromFlow);
-            })
         );
     }
 
