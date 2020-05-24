@@ -612,6 +612,54 @@ describe('Callbackservice ', () => {
         });
     });
 
+    describe('forceRefreshSession', () => {
+        it('only calls start refresh session and returns idtoken and accesstoken if auth is true', async(() => {
+            spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
+            spyOn(callbackService as any, 'startRefreshSession').and.returnValue(of(null));
+            spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+
+            callbackService.forceRefreshSession().subscribe((result) => {
+                expect(result.idToken).not.toBeUndefined();
+                expect(result.accessToken).not.toBeUndefined();
+            });
+        }));
+
+        it('only calls start refresh session and returns null if auth is false', async(() => {
+            spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
+            spyOn(callbackService as any, 'startRefreshSession').and.returnValue(of(null));
+            spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
+
+            callbackService.forceRefreshSession().subscribe((result) => {
+                expect(result).toBeNull();
+            });
+        }));
+
+        it('calls start refresh session and waits for completed, returns idtoken and accesstoken if auth is true', async(() => {
+            spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
+            spyOn(callbackService as any, 'startRefreshSession').and.returnValue(of(null));
+            spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+
+            callbackService.forceRefreshSession().subscribe((result) => {
+                expect(result.idToken).not.toBeUndefined();
+                expect(result.accessToken).not.toBeUndefined();
+            });
+
+            (callbackService as any).fireRefreshWithIframeCompleted({ authResult: { id_token: 'id_token', access_token: 'access_token' } });
+        }));
+
+        it('calls start refresh session and waits for completed, returns null if auth is false', async(() => {
+            spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
+            spyOn(callbackService as any, 'startRefreshSession').and.returnValue(of(null));
+            spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
+
+            callbackService.forceRefreshSession().subscribe((result) => {
+                expect(result).toBeNull();
+            });
+
+            (callbackService as any).fireRefreshWithIframeCompleted({ authResult: { id_token: 'id_token', access_token: 'access_token' } });
+        }));
+    });
+
     describe('silentRenewEventHandler', () => {
         it('returns if authorizedImplicitFlowCallback', () => {
             spyOn(callbackService as any, 'runTokenValidationRunning').and.returnValue(new Subscription());
@@ -628,27 +676,5 @@ describe('Callbackservice ', () => {
                 expect(authorizedCallbackWithCodeSpy).toHaveBeenCalled();
             });
         });
-
-        // fit('returns if codeFlowCallbackSilentRenewIframe', () => {
-        //     spyOn(callbackService as any, 'runTokenValidationRunning').and.returnValue(new Subscription());
-        //     spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
-        //     spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-        //     spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(true);
-        //     const authorizedCallbackWithCodeSpy = spyOn(callbackService as any, 'codeFlowCallbackSilentRenewIframe').and.returnValue(
-        //         of(true)
-        //     );
-        //     const serviceAsAny = callbackService as any;
-        //     const eventData: any = {};
-
-        //     serviceAsAny.silentRenewEventHandler(eventData);
-
-        //     eventData.detail = 'https//localhost:4200?detail=test&state=efff';
-
-        //     serviceAsAny.silentRenewEventHandler(eventData);
-
-        //     callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
-        //         expect(authorizedCallbackWithCodeSpy).toHaveBeenCalled();
-        //     });
-        // });
     });
 });

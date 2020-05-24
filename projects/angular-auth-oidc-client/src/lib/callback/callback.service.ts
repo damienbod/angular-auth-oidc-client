@@ -64,36 +64,6 @@ export class CallbackService {
         return callback$.pipe(tap(() => this.stsCallbackInternal$.next()));
     }
 
-    private startRefreshSession() {
-        const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
-        this.loggerService.logDebug(`Checking: silentRenewRunning: ${isSilentRenewRunning}`);
-        const shouldBeExecuted = !isSilentRenewRunning;
-
-        if (!shouldBeExecuted) {
-            return of(null);
-        }
-
-        const authWellknownEndpointAdress = this.configurationProvider.openIDConfiguration?.authWellknownEndpoint;
-
-        if (!authWellknownEndpointAdress) {
-            this.loggerService.logError('no authwellknownendpoint given!');
-            return of(null);
-        }
-
-        return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointAdress).pipe(
-            switchMap(() => {
-                this.flowsDataService.setSilentRenewRunning();
-
-                if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
-                    // Refresh Session using Refresh tokens
-                    return this.refreshSessionWithRefreshTokens();
-                }
-
-                return this.refreshSessionWithIframe();
-            })
-        );
-    }
-
     startTokenValidationPeriodically(repeatAfterSeconds: number) {
         if (!!this.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
             return;
@@ -179,7 +149,7 @@ export class CallbackService {
 
         return forkJoin({
             refreshSession: this.startRefreshSession(),
-            callbackContext: this.refreshSessionWithIFrameCompleted$,
+            callbackContext: this.refreshSessionWithIFrameCompletedInternal$,
         }).pipe(
             map(({ callbackContext }) => {
                 const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
@@ -191,6 +161,36 @@ export class CallbackService {
                 }
 
                 return null;
+            })
+        );
+    }
+
+    private startRefreshSession() {
+        const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
+        this.loggerService.logDebug(`Checking: silentRenewRunning: ${isSilentRenewRunning}`);
+        const shouldBeExecuted = !isSilentRenewRunning;
+
+        if (!shouldBeExecuted) {
+            return of(null);
+        }
+
+        const authWellknownEndpointAdress = this.configurationProvider.openIDConfiguration?.authWellknownEndpoint;
+
+        if (!authWellknownEndpointAdress) {
+            this.loggerService.logError('no authwellknownendpoint given!');
+            return of(null);
+        }
+
+        return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointAdress).pipe(
+            switchMap(() => {
+                this.flowsDataService.setSilentRenewRunning();
+
+                if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
+                    // Refresh Session using Refresh tokens
+                    return this.refreshSessionWithRefreshTokens();
+                }
+
+                return this.refreshSessionWithIframe();
             })
         );
     }
