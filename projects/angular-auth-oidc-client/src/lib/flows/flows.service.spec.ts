@@ -387,7 +387,7 @@ describe('Flows Service', () => {
     });
 
     describe('historyCleanUpTurnedOn ', () => {
-        it('check for false', () => {
+        it('check for false if historyCleanUpTurnedOn is on', () => {
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
                 historyCleanupOff: true,
             });
@@ -396,7 +396,7 @@ describe('Flows Service', () => {
             expect(value).toEqual(false);
         });
 
-        it('check for true', () => {
+        it('check for true if historyCleanUpTurnedOn is off', () => {
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
                 historyCleanupOff: false,
             });
