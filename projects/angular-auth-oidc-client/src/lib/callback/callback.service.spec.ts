@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Observable, of, Subscription, throwError } from 'rxjs';
+import { of, Subscription, throwError } from 'rxjs';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
@@ -604,12 +604,6 @@ describe('Callbackservice ', () => {
                 },
             });
         }));
-    });
-
-    describe('refreshSessionWithIFrameCompleted', () => {
-        it('is of type observable', () => {
-            expect(callbackService.refreshSessionWithIFrameCompleted$).toEqual(jasmine.any(Observable));
-        });
     });
 
     describe('forceRefreshSession', () => {

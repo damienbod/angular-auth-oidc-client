@@ -30,10 +30,6 @@ export class CallbackService {
         return this.stsCallbackInternal$.asObservable();
     }
 
-    get refreshSessionWithIFrameCompleted$() {
-        return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
-    }
-
     constructor(
         private urlService: UrlService,
         private flowsService: FlowsService,

@@ -28,13 +28,13 @@ import { SigninKeyDataServiceMock } from './signin-key-data.service-mock';
 
 describe('Flows Service', () => {
     let service: FlowsService;
-    let configurationProvider: ConfigurationProvider;
     let userService: UserService;
     let flowsDataService: FlowsDataService;
     let authStateService: AuthStateService;
     let urlService: UrlService;
     let dataService: DataService;
     let storagePersistanceService: StoragePersistanceService;
+    let configurationProvider: ConfigurationProvider;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -384,5 +384,25 @@ describe('Flows Service', () => {
                 },
             });
         }));
+    });
+
+    describe('historyCleanUpTurnedOn ', () => {
+        it('check for false if historyCleanUpTurnedOn is on', () => {
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+                historyCleanupOff: true,
+            });
+
+            const value = (service as any).historyCleanUpTurnedOn();
+            expect(value).toEqual(false);
+        });
+
+        it('check for true if historyCleanUpTurnedOn is off', () => {
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+                historyCleanupOff: false,
+            });
+
+            const value = (service as any).historyCleanUpTurnedOn();
+            expect(value).toEqual(true);
+        });
     });
 });
