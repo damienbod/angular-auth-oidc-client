@@ -35,7 +35,7 @@ export class OidcConfigService {
 
             const usedConfig = this.configurationProvider.setConfig(passedConfig);
 
-            const alreadyExistingAuthWellKnownEndpoints = this.storagePersistanceService.authWellKnownEndPoints;
+            const alreadyExistingAuthWellKnownEndpoints = this.storagePersistanceService.read('authWellKnownEndPoints');
             if (!!alreadyExistingAuthWellKnownEndpoints) {
                 this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
                     configuration: passedConfig,

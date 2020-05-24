@@ -27,6 +27,10 @@ export class HomeComponent implements OnInit {
         this.oidcSecurityService.authorize();
     }
 
+    refreshSession() {
+        this.oidcSecurityService.forceRefreshSession().subscribe((result) => console.log(result));
+    }
+
     logout() {
         this.oidcSecurityService.logoff();
     }

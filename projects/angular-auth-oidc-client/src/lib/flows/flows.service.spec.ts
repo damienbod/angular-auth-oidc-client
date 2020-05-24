@@ -305,7 +305,7 @@ describe('Flows Service', () => {
 
         it('calls dataservice if all params are good', async(() => {
             const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
             (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
                 expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
@@ -317,7 +317,7 @@ describe('Flows Service', () => {
 
         it('calls dataservice with correct headers if all params are good', async(() => {
             const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
             (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
                 const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
@@ -328,7 +328,7 @@ describe('Flows Service', () => {
 
         it('returns error in case of http error', async(() => {
             spyOn(dataService, 'post').and.returnValue(throwError({}));
-            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ stsServer: 'stsServer' });
 
             (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
@@ -351,7 +351,7 @@ describe('Flows Service', () => {
 
         it('calls dataservice if all params are good', async(() => {
             const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
             (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
                 expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
@@ -363,7 +363,7 @@ describe('Flows Service', () => {
 
         it('calls dataservice with correct headers if all params are good', async(() => {
             const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
             (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
                 const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
@@ -374,7 +374,7 @@ describe('Flows Service', () => {
 
         it('returns error in case of http error', async(() => {
             spyOn(dataService, 'post').and.returnValue(throwError({}));
-            spyOnProperty(storagePersistanceService, 'authWellKnownEndPoints', 'get').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ stsServer: 'stsServer' });
 
             (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({

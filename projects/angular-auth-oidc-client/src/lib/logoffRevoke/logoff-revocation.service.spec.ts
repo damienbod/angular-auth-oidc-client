@@ -75,7 +75,7 @@ describe('Logout and Revoke Service', () => {
         it('uses token parameter from persistance if no param is provided', () => {
             // Arrange
             const paramToken = 'damien';
-            spyOnProperty(storagePersistanceService, 'accessToken', 'get').and.returnValue(paramToken);
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue(paramToken);
             const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
             // Act
             service.revokeAccessToken();
@@ -86,7 +86,7 @@ describe('Logout and Revoke Service', () => {
         it('returns type observable', () => {
             // Arrange
             const paramToken = 'damien';
-            spyOnProperty(storagePersistanceService, 'accessToken', 'get').and.returnValue(paramToken);
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue(paramToken);
             spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
 
             // Act
@@ -99,7 +99,7 @@ describe('Logout and Revoke Service', () => {
         it('loggs and returns unmodified response if request is positive', async(() => {
             // Arrange
             const paramToken = 'damien';
-            spyOnProperty(storagePersistanceService, 'accessToken', 'get').and.returnValue(paramToken);
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue(paramToken);
             spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
             const loggerSpy = spyOn(loggerService, 'logDebug');
             spyOn(dataService, 'post').and.returnValue(of({ data: 'anything' }));
@@ -115,7 +115,7 @@ describe('Logout and Revoke Service', () => {
         it('loggs error when request is negative', async(() => {
             // Arrange
             const paramToken = 'damien';
-            spyOnProperty(storagePersistanceService, 'accessToken', 'get').and.returnValue(paramToken);
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue(paramToken);
             spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
             const loggerSpy = spyOn(loggerService, 'logError');
             spyOn(dataService, 'post').and.returnValue(throwError('FAILUUURE'));
@@ -203,7 +203,7 @@ describe('Logout and Revoke Service', () => {
         it('uses id_token parameter from persistance if no param is provided', () => {
             // Arrange
             const paramToken = 'damienId';
-            spyOnProperty(storagePersistanceService, 'idToken', 'get').and.returnValue(paramToken);
+            spyOn(storagePersistanceService, 'getIdToken').and.returnValue(paramToken);
             const revocationSpy = spyOn(urlService, 'createEndSessionUrl');
             // Act
             // Act

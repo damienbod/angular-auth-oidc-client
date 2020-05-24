@@ -1,9 +1,10 @@
 <div>Welcome to home Route</div>
 
-<button *ngIf="checkSessionChanged$ | async" (click)="login()">Refresh Session</button>
+<button *ngIf="checkSessionChanged$ | async" (click)="login()">checkSessionChanged Login</button>
 
 <div *ngIf="isAuthenticated$ | async as isAuthenticated; else noAuth">
     <button (click)="logout()">Logout</button>
+    <button (click)="refreshSession()">refreshSession</button>
     <hr />
 
     <br />

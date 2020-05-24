@@ -10,7 +10,7 @@ export class AuthWellKnownService {
     constructor(private dataService: AuthWellKnownDataService, private storagePersistanceService: StoragePersistanceService) {}
 
     getAuthWellKnownEndPoints(authWellknownEndpoint: string) {
-        const alreadySavedWellKnownEndpoints = this.storagePersistanceService.authWellKnownEndPoints;
+        const alreadySavedWellKnownEndpoints = this.storagePersistanceService.read('authWellKnownEndPoints');
         if (!!alreadySavedWellKnownEndpoints) {
             return of(alreadySavedWellKnownEndpoints);
         }
@@ -21,7 +21,7 @@ export class AuthWellKnownService {
     }
 
     storeWellKnownEndpoints(mappedWellKnownEndpoints: AuthWellKnownEndpoints) {
-        this.storagePersistanceService.authWellKnownEndPoints = mappedWellKnownEndpoints;
+        this.storagePersistanceService.write('authWellKnownEndPoints', mappedWellKnownEndpoints);
     }
 
     private getWellKnownEndPointsFromUrl(authWellknownEndpoint: string) {

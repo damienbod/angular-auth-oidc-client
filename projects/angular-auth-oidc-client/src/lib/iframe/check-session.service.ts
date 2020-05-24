@@ -31,7 +31,7 @@ export class CheckSessionService {
         private iFrameService: IFrameService,
         private zone: NgZone,
         private eventService: PublicEventsService,
-        private readonly configurationProvider: ConfigurationProvider
+        private configurationProvider: ConfigurationProvider
     ) {}
 
     isCheckSessionConfigured() {
@@ -67,13 +67,15 @@ export class CheckSessionService {
             return;
         }
 
-        if (!this.storagePersistanceService.authWellKnownEndPoints) {
+        const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+
+        if (!authWellKnownEndPoints) {
             this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined. Returning.');
             return;
         }
 
         const existingIframe = this.getOrCreateIframe();
-        const checkSessionIframe = this.storagePersistanceService.authWellKnownEndPoints?.checkSessionIframe;
+        const checkSessionIframe = authWellKnownEndPoints.checkSessionIframe;
 
         if (checkSessionIframe) {
             existingIframe.contentWindow.location.replace(checkSessionIframe);
@@ -95,7 +97,7 @@ export class CheckSessionService {
             const existingIframe = this.getExistingIframe();
             if (existingIframe && clientId) {
                 this.loggerService.logDebug(existingIframe);
-                const sessionState = this.storagePersistanceService.sessionState;
+                const sessionState = this.storagePersistanceService.read('session_state');
                 if (sessionState) {
                     this.outstandingMessages++;
                     existingIframe.contentWindow.postMessage(

@@ -15,7 +15,8 @@ export class SigninKeyDataService {
     ) {}
 
     getSigningKeys() {
-        const jwksUri = this.storagePesistanceService?.authWellKnownEndPoints?.jwksUri;
+        const authWellKnownEndPoints = this.storagePesistanceService.read('authWellKnownEndPoints');
+        const jwksUri = authWellKnownEndPoints?.jwksUri;
         if (!jwksUri) {
             const error = `getSigningKeys: authWellKnownEndpoints.jwksUri is: '${jwksUri}'`;
             this.loggerService.logWarning(error);

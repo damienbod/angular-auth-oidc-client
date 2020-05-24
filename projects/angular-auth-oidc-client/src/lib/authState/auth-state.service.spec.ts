@@ -84,20 +84,34 @@ describe('Auth State Service', () => {
 
     describe('setAuthorizationData', () => {
         it('stores accessToken', () => {
-            const spy = spyOnProperty(storagePersistanceService, 'accessToken', 'set');
-            authStateService.setAuthorizationData('accesstoken', 'not used');
-            expect(spy).toHaveBeenCalledWith('accesstoken');
-        });
-
-        it('stores accessToken', () => {
-            const spy = spyOnProperty(storagePersistanceService, 'idToken', 'set');
-            authStateService.setAuthorizationData('not used', 'idtoken');
-            expect(spy).toHaveBeenCalledWith('idtoken');
+            const spy = spyOn(storagePersistanceService, 'write');
+            const authResult = {
+                id_token: 'idtoken',
+                access_token: 'accesstoken',
+                expires_in: 330,
+                token_type: 'Bearer',
+                refresh_token: '9UuSQKx_UaGJSEvfHW2NK6FxAPSVvK-oVyeOb1Sstz0',
+                scope: 'openid profile email taler_api offline_access',
+                state: '7bad349c97cd7391abb6dfc41ec8c8e8ee8yeprJL',
+                session_state: 'gjNckdb8h4HS5us_3oz68oqsAhvNMOMpgsJNqrhy7kM.rBe66j0WPYpSx_c4vLM-5w',
+            };
+            authStateService.setAuthorizationData('accesstoken', authResult);
+            expect(spy).toHaveBeenCalledWith('authzData', 'accesstoken');
         });
 
         it('calls setAuthorizedAndFireEvent() method', () => {
             const spy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
-            authStateService.setAuthorizationData('not used', 'idtoken');
+            const authResult = {
+                id_token: 'idtoken',
+                access_token: 'accesstoken',
+                expires_in: 330,
+                token_type: 'Bearer',
+                refresh_token: '9UuSQKx_UaGJSEvfHW2NK6FxAPSVvK-oVyeOb1Sstz0',
+                scope: 'openid profile email taler_api offline_access',
+                state: '7bad349c97cd7391abb6dfc41ec8c8e8ee8yeprJL',
+                session_state: 'gjNckdb8h4HS5us_3oz68oqsAhvNMOMpgsJNqrhy7kM.rBe66j0WPYpSx_c4vLM-5w',
+            };
+            authStateService.setAuthorizationData('not used', authResult);
             expect(spy).toHaveBeenCalled();
         });
     });
@@ -200,19 +214,11 @@ describe('Auth State Service', () => {
         });
     });
 
-    describe('setAuthResultInStorage', () => {
-        it('sets authresult', () => {
-            const spy = spyOnProperty(storagePersistanceService, 'authResult', 'set');
-            authStateService.setAuthResultInStorage('HENLO FURIEND');
-            expect(spy).toHaveBeenCalledWith('HENLO FURIEND');
-        });
-    });
-
     describe('hasIdTokenExpired', () => {
         it('tokenValidationService gets called with id token if id_token is set', () => {
             configurationProvider.setConfig({ renewTimeBeforeTokenExpiresInSeconds: 30 });
+            spyOn(storagePersistanceService, 'read').withArgs('authnResult').and.returnValue({ id_token: 'idToken' });
             const spy = spyOn(tokenValidationService, 'hasIdTokenExpired').and.callFake((a, b) => true);
-            spyOnProperty(storagePersistanceService, 'idToken', 'get').and.returnValue('idToken');
             authStateService.hasIdTokenExpired();
             expect(spy).toHaveBeenCalledWith('idToken', 30);
         });
@@ -223,7 +229,7 @@ describe('Auth State Service', () => {
 
             const spy = spyOn(eventsService, 'fireEvent');
 
-            spyOnProperty(storagePersistanceService, 'idToken', 'get').and.returnValue('idToken');
+            spyOn(storagePersistanceService, 'read').withArgs('authnResult').and.returnValue('idToken');
             const result = authStateService.hasIdTokenExpired();
             expect(result).toBe(true);
             expect(spy).toHaveBeenCalledWith(EventTypes.IdTokenExpired, true);
@@ -235,7 +241,7 @@ describe('Auth State Service', () => {
 
             const spy = spyOn(eventsService, 'fireEvent');
 
-            spyOnProperty(storagePersistanceService, 'idToken', 'get').and.returnValue('idToken');
+            spyOn(storagePersistanceService, 'read').withArgs('authnResult').and.returnValue('idToken');
             const result = authStateService.hasIdTokenExpired();
             expect(result).toBe(false);
             expect(spy).not.toHaveBeenCalled();
@@ -248,7 +254,7 @@ describe('Auth State Service', () => {
             const expectedResult = !validateAccessTokenNotExpiredResult;
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ renewTimeBeforeTokenExpiresInSeconds: 5 });
             const date = new Date();
-            spyOnProperty(storagePersistanceService, 'accessTokenExpiresIn', 'get').and.returnValue(date);
+            spyOn(storagePersistanceService, 'read').withArgs('access_token_expires_at').and.returnValue(date);
             const spy = spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(validateAccessTokenNotExpiredResult);
             const result = authStateService.hasAccessTokenExpiredIfExpiryExists();
             expect(spy).toHaveBeenCalledWith(date, 5);
@@ -263,7 +269,7 @@ describe('Auth State Service', () => {
 
             spyOn(eventsService, 'fireEvent');
 
-            spyOnProperty(storagePersistanceService, 'accessTokenExpiresIn', 'get').and.returnValue(date);
+            spyOn(storagePersistanceService, 'read').withArgs('access_token_expires_at').and.returnValue(date);
             spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(validateAccessTokenNotExpiredResult);
             authStateService.hasAccessTokenExpiredIfExpiryExists();
             expect(eventsService.fireEvent).toHaveBeenCalledWith(EventTypes.TokenExpired, expectedResult);

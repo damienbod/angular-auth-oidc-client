@@ -21,11 +21,11 @@ describe('User Service', () => {
     let userService: UserService;
     let storagePersistanceService: StoragePersistanceService;
     let eventsService: PublicEventsService;
+    let dataService: DataService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
-                DataService,
                 {
                     provide: StoragePersistanceService,
                     useClass: StoragePersistanceServiceMock,
@@ -48,6 +48,7 @@ describe('User Service', () => {
         userService = TestBed.inject(UserService);
         storagePersistanceService = TestBed.inject(StoragePersistanceService);
         eventsService = TestBed.inject(PublicEventsService);
+        dataService = TestBed.inject(DataService);
     });
 
     it('should create', () => {
@@ -160,14 +161,14 @@ describe('User Service', () => {
             spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
             const spy = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
             spyOn(loggerService, 'logDebug');
-            spyOnProperty(storagePersistanceService, 'accessToken', 'get').and.returnValue('accessToken');
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
 
             userService.getAndPersistUserDataInStore(isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
                 expect(userDataFromSts).toEqual(token);
             });
 
             expect(spy).toHaveBeenCalled();
-            expect(loggerService.logDebug).toHaveBeenCalledWith('accessToken');
+            expect(loggerService.logDebug).toHaveBeenCalled();
         }));
 
         it(`if not currentFlow is id token or code flow and not renewprocess
@@ -188,7 +189,7 @@ describe('User Service', () => {
             spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
             const spyGetIdentityUserData = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
             spyOn(loggerService, 'logDebug');
-            spyOnProperty(storagePersistanceService, 'accessToken', 'get').and.returnValue('accessToken');
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
 
             userService.getAndPersistUserDataInStore(isRenewProcess, idToken, decodedIdToken).subscribe({
                 error: (err) => {
@@ -208,7 +209,7 @@ describe('User Service', () => {
         });
 
         it('returns value if there is data', () => {
-            spyOnProperty(storagePersistanceService, 'userData', 'get').and.returnValue('userData');
+            spyOn(storagePersistanceService, 'read').withArgs('userData').and.returnValue('userData');
             const result = userService.getUserDataFromStore();
             expect(result).toBeTruthy();
         });
@@ -216,9 +217,9 @@ describe('User Service', () => {
 
     describe('setUserDataToStore', () => {
         it('sets userdata in storagePersistanceService', () => {
-            const spy = spyOnProperty(storagePersistanceService, 'userData', 'set');
+            const spy = spyOn(storagePersistanceService, 'write');
             userService.setUserDataToStore('userDataForTest');
-            expect(spy).toHaveBeenCalledWith('userDataForTest');
+            expect(spy).toHaveBeenCalledWith('userData', 'userDataForTest');
         });
 
         it('userDataInternal$ is called when userdata is set', () => {
@@ -236,9 +237,9 @@ describe('User Service', () => {
 
     describe('resetUserDataInStore', () => {
         it('resets userdata sets null in storagePersistanceService', () => {
-            const spy = spyOnProperty(storagePersistanceService, 'userData', 'set');
+            const spy = spyOn(storagePersistanceService, 'write');
             userService.resetUserDataInStore();
-            expect(spy).toHaveBeenCalledWith(null);
+            expect(spy).toHaveBeenCalledWith('userData', null);
         });
 
         it('userDataInternal$ is called with null when userdata is reset', () => {
@@ -299,5 +300,41 @@ describe('User Service', () => {
             expect(result).toBeFalse();
             expect(loggerspy).toHaveBeenCalledWith('validateUserdataSubIdToken failed', 'something', 'something2');
         });
+    });
+
+    describe('getIdentityUserData', () => {
+        it('does nothing if no authwellknownepdints are set', async(() => {
+            const serviceAsAny = userService as any;
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+            serviceAsAny.getIdentityUserData().subscribe({
+                error: (err) => {
+                    expect(err).toBeTruthy();
+                },
+            });
+        }));
+
+        it('does nothing if no userinfoEndpoint is set', async(() => {
+            const serviceAsAny = userService as any;
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ userinfoEndpoint: null });
+            serviceAsAny.getIdentityUserData().subscribe({
+                error: (err) => {
+                    expect(err).toBeTruthy();
+                },
+            });
+        }));
+
+        it('gets userdata if authwell and userinfoendpoint is set', async(() => {
+            const serviceAsAny = userService as any;
+            const spy = spyOn(dataService, 'get').and.returnValue(of({}));
+            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
+            spyOn(storagePersistanceService, 'read')
+                .withArgs('authWellKnownEndPoints')
+                .and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
+            serviceAsAny.getIdentityUserData().subscribe(() => {
+                expect(spy).toHaveBeenCalledWith('userinfoEndpoint', 'accessToken');
+            });
+        }));
     });
 });

@@ -52,7 +52,7 @@ export class LogoffRevocationService {
     // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
     // only the access token is revoked. Then the logout run.
     logoffAndRevokeTokens(urlHandler?: (url: string) => any) {
-        if (!this.storagePersistanceService.authWellKnownEndPoints?.revocationEndpoint) {
+        if (!this.storagePersistanceService.read('authWellKnownEndPoints')?.revocationEndpoint) {
             this.loggerService.logDebug('revocation endpoint not supported');
             this.logoff(urlHandler);
         }
@@ -84,7 +84,7 @@ export class LogoffRevocationService {
     // the storage is revoked. You can pass any token to revoke. This makes it possible to
     // manage your own tokens. The is a public API.
     revokeAccessToken(accessToken?: any) {
-        const accessTok = accessToken || this.storagePersistanceService.accessToken;
+        const accessTok = accessToken || this.storagePersistanceService.getAccessToken();
         const body = this.urlService.createRevocationEndpointBodyAccessToken(accessTok);
         const url = this.urlService.getRevocationEndpointUrl();
 
@@ -130,7 +130,7 @@ export class LogoffRevocationService {
     }
 
     getEndSessionUrl(): string | null {
-        const idTokenHint = this.storagePersistanceService.idToken;
-        return this.urlService.createEndSessionUrl(idTokenHint);
+        const idToken = this.storagePersistanceService.getIdToken();
+        return this.urlService.createEndSessionUrl(idToken);
     }
 }
