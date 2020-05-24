@@ -1,5 +1,5 @@
 import { HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 import { Router } from '@angular/router';
 import { forkJoin, interval, Observable, of, Subject, Subscription, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
@@ -21,6 +21,7 @@ import { ValidationResult } from '../validation/validation-result';
 export class CallbackService {
     private runTokenValidationRunning: Subscription = null;
     private boundSilentRenewEvent: any;
+    private renderer: Renderer2;
 
     private stsCallbackInternal$ = new Subject();
 
@@ -41,8 +42,11 @@ export class CallbackService {
         private silentRenewService: SilentRenewService,
         private userService: UserService,
         private authStateService: AuthStateService,
-        private authWellKnownService: AuthWellKnownService
-    ) {}
+        private authWellKnownService: AuthWellKnownService,
+        rendererFactory: RendererFactory2
+    ) {
+        this.renderer = rendererFactory.createRenderer(null, null);
+    }
 
     isCallback(): boolean {
         return this.urlService.isCallbackFromSts();
@@ -356,15 +360,17 @@ export class CallbackService {
         //      We only ever want the latest setup service to be reacting to this event.
         this.boundSilentRenewEvent = this.silentRenewEventHandler.bind(this);
 
-        const boundSilentRenewInitEvent: any = ((e: CustomEvent) => {
-            if (e.detail !== instanceId) {
-                window.removeEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent);
-                window.removeEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent);
-            }
-        }).bind(this);
-
-        window.addEventListener('oidc-silent-renew-init', boundSilentRenewInitEvent, false);
-        window.addEventListener('oidc-silent-renew-message', this.boundSilentRenewEvent, false);
+        const initDestroyHandler = this.renderer.listen(
+            'window',
+            'oidc-silent-renew-init',
+            ((e: CustomEvent) => {
+                if (e.detail !== instanceId) {
+                    initDestroyHandler();
+                    renewDestroyHandler();
+                }
+            }).bind(this)
+        );
+        const renewDestroyHandler = this.renderer.listen('window', 'oidc-silent-renew-message', this.boundSilentRenewEvent);
 
         window.dispatchEvent(
             new CustomEvent('oidc-silent-renew-init', {
