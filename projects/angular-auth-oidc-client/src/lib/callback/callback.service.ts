@@ -5,7 +5,6 @@ import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { ConfigurationProvider } from '../config/config.provider';
-import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
@@ -23,8 +22,6 @@ export class CallbackService {
     private renderer: Renderer2;
 
     private stsCallbackInternal$ = new Subject();
-
-    refreshSessionWithIFrameCompletedInternal$ = new Subject<CallbackContext>();
 
     get stsCallback$() {
         return this.stsCallbackInternal$.asObservable();
@@ -151,7 +148,7 @@ export class CallbackService {
 
         return forkJoin({
             refreshSession: this.startRefreshSession(),
-            callbackContext: this.refreshSessionWithIFrameCompletedInternal$,
+            callbackContext: this.silentRenewService.refreshSessionWithIFrameCompletedInternal$,
         }).pipe(
             map(({ callbackContext }) => {
                 const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
@@ -197,12 +194,6 @@ export class CallbackService {
         );
     }
 
-    private refreshSessionWithIframe(): Observable<boolean> {
-        this.loggerService.logDebug('BEGIN refresh session Authorize Iframe renew');
-        const url = this.urlService.getRefreshSessionSilentRenewUrl();
-        return this.sendAuthorizeReqestUsingSilentRenew(url);
-    }
-
     private refreshSessionWithRefreshTokens() {
         this.loggerService.logDebug('BEGIN refresh session Authorize');
 
@@ -210,10 +201,15 @@ export class CallbackService {
             catchError((error) => {
                 this.periodicallyTokenCheckService.stopPeriodicallTokenCheck();
                 this.flowsService.resetAuthorizationData();
-
                 return throwError(error);
             })
         );
+    }
+
+    private refreshSessionWithIframe(): Observable<boolean> {
+        this.loggerService.logDebug('BEGIN refresh session Authorize Iframe renew');
+        const url = this.urlService.getRefreshSessionSilentRenewUrl();
+        return this.sendAuthorizeReqestUsingSilentRenew(url);
     }
 
     private sendAuthorizeReqestUsingSilentRenew(url: string): Observable<boolean> {
@@ -233,36 +229,6 @@ export class CallbackService {
         });
     }
 
-    private silentRenewEventHandler(e: CustomEvent) {
-        this.loggerService.logDebug('silentRenewEventHandler');
-        if (!e.detail) {
-            return;
-        }
-
-        let callback$ = of(null);
-
-        const isCodeFlow = this.flowHelper.isCurrentFlowCodeFlow();
-
-        if (isCodeFlow) {
-            const urlParts = e.detail.toString().split('?');
-            callback$ = this.codeFlowCallbackService.codeFlowCallbackSilentRenewIframe(urlParts);
-        } else {
-            callback$ = this.implicitFlowCallbackService.authorizedImplicitFlowCallback(e.detail);
-        }
-
-        callback$.subscribe(
-            (callbackContext) => {
-                this.fireRefreshWithIframeCompleted(callbackContext);
-                this.flowsDataService.resetSilentRenewRunning();
-            },
-            (err: any) => {
-                this.loggerService.logError('Error: ' + err);
-                this.fireRefreshWithIframeCompleted(null);
-                this.flowsDataService.resetSilentRenewRunning();
-            }
-        );
-    }
-
     private initSilentRenewRequest() {
         const instanceId = Math.random();
 
@@ -272,17 +238,14 @@ export class CallbackService {
                 renewDestroyHandler();
             }
         });
-        const renewDestroyHandler = this.renderer.listen('window', 'oidc-silent-renew-message', (e) => this.silentRenewEventHandler(e));
+        const renewDestroyHandler = this.renderer.listen('window', 'oidc-silent-renew-message', (e) =>
+            this.silentRenewService.silentRenewEventHandler(e)
+        );
 
         window.dispatchEvent(
             new CustomEvent('oidc-silent-renew-init', {
                 detail: instanceId,
             })
         );
-    }
-
-    private fireRefreshWithIframeCompleted(callbackContext: CallbackContext) {
-        this.refreshSessionWithIFrameCompletedInternal$.next(callbackContext);
-        this.refreshSessionWithIFrameCompletedInternal$.complete();
     }
 }
