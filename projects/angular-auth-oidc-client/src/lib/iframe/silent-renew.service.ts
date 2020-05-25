@@ -19,7 +19,11 @@ const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 
 @Injectable()
 export class SilentRenewService {
-    refreshSessionWithIFrameCompletedInternal$ = new Subject<CallbackContext>();
+    private refreshSessionWithIFrameCompletedInternal$ = new Subject<CallbackContext>();
+
+    get refreshSessionWithIFrameCompleted$() {
+        return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
+    }
 
     constructor(
         private configurationProvider: ConfigurationProvider,

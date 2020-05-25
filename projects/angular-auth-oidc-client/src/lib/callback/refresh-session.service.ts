@@ -44,7 +44,7 @@ export class RefreshSessionService {
 
         return forkJoin({
             refreshSession: this.startRefreshSession(),
-            callbackContext: this.silentRenewService.refreshSessionWithIFrameCompletedInternal$,
+            callbackContext: this.silentRenewService.refreshSessionWithIFrameCompleted$,
         }).pipe(
             map(({ callbackContext }) => {
                 const isAuthenticated = this.authStateService.areAuthStorageTokensValid();

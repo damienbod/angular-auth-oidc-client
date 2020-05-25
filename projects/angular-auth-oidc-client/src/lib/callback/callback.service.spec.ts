@@ -79,84 +79,6 @@ describe('Callbackservice ', () => {
         });
     });
 
-    // describe('refreshSession', () => {
-    //     it('returns null if no auth well known endpoint defined', async(() => {
-    //         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-
-    //         (callbackService as any).startRefreshSession().subscribe((result) => {
-    //             expect(result).toBe(null);
-    //         });
-    //     }));
-
-    //     it('returns null if silent renew Is running', async(() => {
-    //         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-
-    //         (callbackService as any).startRefreshSession().subscribe((result) => {
-    //             expect(result).toBe(null);
-    //         });
-    //     }));
-
-    //     it('returns null if no authwellknownendpoints are given', async(() => {
-    //         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-    //         spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: null });
-    //         (callbackService as any).startRefreshSession().subscribe((result) => {
-    //             expect(result).toBe(null);
-    //         });
-    //     }));
-
-    //     it('calls `setSilentRenewRunning` when should be executed', async(() => {
-    //         const setSilentRenewRunningSpy = spyOn(flowsDataService, 'setSilentRenewRunning');
-
-    //         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-    //         spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
-    //         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-
-    //         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
-    //         spyOn(callbackService as any, 'refreshSessionWithRefreshTokens').and.returnValue(of(null));
-
-    //         (callbackService as any).startRefreshSession().subscribe(() => {
-    //             expect(setSilentRenewRunningSpy).toHaveBeenCalled();
-    //         });
-    //     }));
-
-    //     it('calls refreshSessionWithRefreshTokens when current flow is codeflow with refresh tokens', async(() => {
-    //         spyOn(flowsDataService, 'setSilentRenewRunning');
-
-    //         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-    //         spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
-    //         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-
-    //         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
-    //         const refreshSessionWithRefreshTokensSpy = spyOn(callbackService as any, 'refreshSessionWithRefreshTokens').and.returnValue(
-    //             of(null)
-    //         );
-
-    //         (callbackService as any).startRefreshSession().subscribe(() => {
-    //             expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalled();
-    //         });
-    //     }));
-
-    //     it('calls refreshSessionWithIframe when current flow is NOT codeflow with refresh tokens', async(() => {
-    //         spyOn(flowsDataService, 'setSilentRenewRunning');
-
-    //         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-    //         spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
-    //         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-
-    //         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
-    //         const refreshSessionWithRefreshTokensSpy = spyOn(callbackService as any, 'refreshSessionWithRefreshTokens').and.returnValue(
-    //             of(null)
-    //         );
-
-    //         const refreshSessionWithIframeSpy = spyOn(callbackService as any, 'refreshSessionWithIframe').and.returnValue(of(null));
-
-    //         (callbackService as any).startRefreshSession().subscribe(() => {
-    //             expect(refreshSessionWithRefreshTokensSpy).not.toHaveBeenCalled();
-    //             expect(refreshSessionWithIframeSpy).toHaveBeenCalled();
-    //         });
-    //     }));
-    // });
-
     // describe('stopPeriodicallTokenCheck', () => {
     //     it('calls unsubscribe and sets to null', () => {
     //         const serviceAsAny = callbackService as any;
@@ -292,54 +214,6 @@ describe('Callbackservice ', () => {
     //         serviceAsAny.refreshSessionWithIframe().subscribe(() => {
     //             expect(sendAuthorizeReqestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url');
     //         });
-    //     }));
-    // });
-
-    // describe('forceRefreshSession', () => {
-    //     it('only calls start refresh session and returns idtoken and accesstoken if auth is true', async(() => {
-    //         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
-    //         spyOn(callbackService as any, 'startRefreshSession').and.returnValue(of(null));
-    //         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
-
-    //         callbackService.forceRefreshSession().subscribe((result) => {
-    //             expect(result.idToken).not.toBeUndefined();
-    //             expect(result.accessToken).not.toBeUndefined();
-    //         });
-    //     }));
-
-    //     it('only calls start refresh session and returns null if auth is false', async(() => {
-    //         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
-    //         spyOn(callbackService as any, 'startRefreshSession').and.returnValue(of(null));
-    //         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
-
-    //         callbackService.forceRefreshSession().subscribe((result) => {
-    //             expect(result).toBeNull();
-    //         });
-    //     }));
-
-    //     it('calls start refresh session and waits for completed, returns idtoken and accesstoken if auth is true', async(() => {
-    //         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
-    //         spyOn(callbackService as any, 'startRefreshSession').and.returnValue(of(null));
-    //         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
-
-    //         callbackService.forceRefreshSession().subscribe((result) => {
-    //             expect(result.idToken).not.toBeUndefined();
-    //             expect(result.accessToken).not.toBeUndefined();
-    //         });
-
-    //         (callbackService as any).fireRefreshWithIframeCompleted({ authResult: { id_token: 'id_token', access_token: 'access_token' } });
-    //     }));
-
-    //     it('calls start refresh session and waits for completed, returns null if auth is false', async(() => {
-    //         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
-    //         spyOn(callbackService as any, 'startRefreshSession').and.returnValue(of(null));
-    //         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
-
-    //         callbackService.forceRefreshSession().subscribe((result) => {
-    //             expect(result).toBeNull();
-    //         });
-
-    //         (callbackService as any).fireRefreshWithIframeCompleted({ authResult: { id_token: 'id_token', access_token: 'access_token' } });
     //     }));
     // });
 
