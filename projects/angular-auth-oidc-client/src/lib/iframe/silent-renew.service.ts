@@ -5,7 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
-import { PeriodicallyTokenCheckService } from '../callback/periodically-token-check.service';
+import { IntervallService } from '../callback/intervall.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
@@ -26,11 +26,11 @@ export class SilentRenewService {
         private iFrameService: IFrameService,
         private flowsService: FlowsService,
         private flowsDataService: FlowsDataService,
-        private periodicallyTokenCheckService: PeriodicallyTokenCheckService,
         private authStateService: AuthStateService,
         private loggerService: LoggerService,
         private flowHelper: FlowHelper,
-        private implicitFlowCallbackService: ImplicitFlowCallbackService
+        private implicitFlowCallbackService: ImplicitFlowCallbackService,
+        private intervallService: IntervallService
     ) {}
 
     getOrCreateIframe(): HTMLIFrameElement {
@@ -64,7 +64,7 @@ export class SilentRenewService {
             });
             this.flowsService.resetAuthorizationData();
             this.flowsDataService.setNonce('');
-            this.periodicallyTokenCheckService.stopPeriodicallTokenCheck();
+            this.intervallService.stopPeriodicallTokenCheck();
             return throwError(error);
         }
 
@@ -86,7 +86,7 @@ export class SilentRenewService {
 
         return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext).pipe(
             catchError((errorFromFlow) => {
-                this.periodicallyTokenCheckService.stopPeriodicallTokenCheck();
+                this.intervallService.stopPeriodicallTokenCheck();
                 this.flowsService.resetAuthorizationData();
                 return throwError(errorFromFlow);
             })

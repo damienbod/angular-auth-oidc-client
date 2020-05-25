@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
+import { PeriodicallyTokenCheckService } from './callback/periodically-token-check.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
 import { ConfigurationProvider } from './config/config.provider';
 import { PublicConfiguration } from './config/public-configuration';
@@ -57,7 +58,8 @@ export class OidcSecurityService {
         private logoffRevocationService: LogoffRevocationService,
         private loginService: LoginService,
         private storagePersistanceService: StoragePersistanceService,
-        private refreshSessionService: RefreshSessionService
+        private refreshSessionService: RefreshSessionService,
+        private periodicallyTokenCheckService: PeriodicallyTokenCheckService
     ) {}
 
     checkAuth(): Observable<boolean> {
@@ -117,7 +119,9 @@ export class OidcSecurityService {
         if (this.checkSessionService.isCheckSessionConfigured()) {
             this.checkSessionService.start();
         }
-        this.callbackService.startTokenValidationPeriodically(this.TOKEN_REFRESH_INTERVALL_IN_SECONDS);
+
+        this.periodicallyTokenCheckService.startTokenValidationPeriodically(this.TOKEN_REFRESH_INTERVALL_IN_SECONDS);
+
         if (this.silentRenewService.isSilentRenewConfigured()) {
             this.silentRenewService.getOrCreateIframe();
         }
