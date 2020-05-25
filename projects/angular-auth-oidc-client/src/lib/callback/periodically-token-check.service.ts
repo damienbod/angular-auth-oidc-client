@@ -82,11 +82,16 @@ export class PeriodicallyTokenCheckService {
                     return throwError('periodically check failed');
                 })
             )
-            .subscribe(() => {
-                this.loggerService.logDebug('silent renew finished!');
-                if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
-                    this.flowsDataService.resetSilentRenewRunning();
+            .subscribe(
+                () => {
+                    this.loggerService.logDebug('silent renew finished!');
+                    if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
+                        this.flowsDataService.resetSilentRenewRunning();
+                    }
+                },
+                (err) => {
+                    this.loggerService.logError('silent renew failed!', err);
                 }
-            });
+            );
     }
 }
