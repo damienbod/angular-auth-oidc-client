@@ -428,57 +428,6 @@ describe('Callbackservice ', () => {
     //     }));
     // });
 
-    // describe('refreshSessionWithRefreshTokens', () => {
-    //     it('calls flowsService.processRefreshToken()', async(() => {
-    //         const serviceAsAny = callbackService as any;
-
-    //         const spy = spyOn(flowsService, 'processRefreshToken').and.returnValue(of(null));
-
-    //         serviceAsAny.refreshSessionWithRefreshTokens().subscribe(() => {
-    //             expect(spy).toHaveBeenCalled();
-    //         });
-    //     }));
-
-    //     it('resetAuthorizationData and stopPeriodicallTokenCheck in case of error', async(() => {
-    //         const serviceAsAny = callbackService as any;
-
-    //         spyOn(flowsService, 'processRefreshToken').and.returnValue(throwError('error'));
-    //         const resetSilentRenewRunningSpy = spyOn(flowsService, 'resetAuthorizationData');
-    //         const stopPeriodicallTokenCheckSpy = spyOn(serviceAsAny, 'stopPeriodicallTokenCheck');
-
-    //         spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
-    //             triggerAuthorizationResultEvent: true,
-    //         });
-    //         serviceAsAny.refreshSessionWithRefreshTokens().subscribe({
-    //             error: (err) => {
-    //                 expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-    //                 expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
-    //                 expect(err).toBeTruthy();
-    //             },
-    //         });
-    //     }));
-
-    //     it(`case of error and  in case of error and triggerAuthorizationResultEvent is false`, async(() => {
-    //         const serviceAsAny = callbackService as any;
-
-    //         spyOn(flowsService, 'processRefreshToken').and.returnValue(throwError('error'));
-    //         const resetSilentRenewRunningSpy = spyOn(flowsService, 'resetAuthorizationData');
-    //         const stopPeriodicallTokenCheckSpy = spyOn(serviceAsAny, 'stopPeriodicallTokenCheck');
-
-    //         spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
-    //             triggerAuthorizationResultEvent: false,
-    //             unauthorizedRoute: 'unauthorizedRoute',
-    //         });
-    //         serviceAsAny.refreshSessionWithRefreshTokens().subscribe({
-    //             error: (err) => {
-    //                 expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-    //                 expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
-    //                 expect(err).toBeTruthy();
-    //             },
-    //         });
-    //     }));
-    // });
-
     // describe('forceRefreshSession', () => {
     //     it('only calls start refresh session and returns idtoken and accesstoken if auth is true', async(() => {
     //         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
