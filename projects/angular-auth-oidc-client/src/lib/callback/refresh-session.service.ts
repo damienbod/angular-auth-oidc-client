@@ -1,21 +1,19 @@
 import { Injectable } from '@angular/core';
-import { forkJoin, of, throwError } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { forkJoin, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { FlowsDataService } from '../flows/flows-data.service';
-import { FlowsService } from '../flows/flows.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
-import { PeriodicallyTokenCheckService } from './periodically-token-check.service';
+import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionService {
     constructor(
-        private flowsService: FlowsService,
         private flowHelper: FlowHelper,
         private configurationProvider: ConfigurationProvider,
         private flowsDataService: FlowsDataService,
@@ -23,8 +21,8 @@ export class RefreshSessionService {
         private silentRenewService: SilentRenewService,
         private authStateService: AuthStateService,
         private authWellKnownService: AuthWellKnownService,
-        private periodicallyTokenCheckService: PeriodicallyTokenCheckService,
-        private refreshSessionIframeService: RefreshSessionIframeService
+        private refreshSessionIframeService: RefreshSessionIframeService,
+        private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService
     ) {}
 
     forceRefreshSession() {
@@ -62,18 +60,6 @@ export class RefreshSessionService {
         );
     }
 
-    refreshSessionWithRefreshTokens() {
-        this.loggerService.logDebug('BEGIN refresh session Authorize');
-
-        return this.flowsService.processRefreshToken().pipe(
-            catchError((error) => {
-                this.periodicallyTokenCheckService.stopPeriodicallTokenCheck();
-                this.flowsService.resetAuthorizationData();
-                return throwError(error);
-            })
-        );
-    }
-
     private startRefreshSession() {
         const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
         this.loggerService.logDebug(`Checking: silentRenewRunning: ${isSilentRenewRunning}`);
@@ -96,7 +82,7 @@ export class RefreshSessionService {
 
                 if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
                     // Refresh Session using Refresh tokens
-                    return this.refreshSessionWithRefreshTokens();
+                    return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens();
                 }
 
                 return this.refreshSessionIframeService.refreshSessionWithIframe();

@@ -13,7 +13,7 @@ import { UrlService } from '../utils/url/url.service';
 import { CodeFlowCallbackService } from './code-flow-callback.service';
 import { ImplicitFlowCallbackService } from './implicit-flow-callback.service';
 import { PeriodicallyTokenCheckService } from './periodically-token-check.service';
-import { RefreshSessionService } from './refresh-session.service';
+import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 
 @Injectable({ providedIn: 'root' })
 export class CallbackService {
@@ -36,7 +36,7 @@ export class CallbackService {
         private implicitFlowCallbackService: ImplicitFlowCallbackService,
         private codeFlowCallbackService: CodeFlowCallbackService,
         private refreshSessionIframeService: RefreshSessionIframeService,
-        private refreshSessionService: RefreshSessionService
+        private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService
     ) {}
 
     isCallback(): boolean {
@@ -100,7 +100,7 @@ export class CallbackService {
 
                 if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
                     // Refresh Session using Refresh tokens
-                    return this.refreshSessionService.refreshSessionWithRefreshTokens();
+                    return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens();
                 }
 
                 return this.refreshSessionIframeService.refreshSessionWithIframe();
