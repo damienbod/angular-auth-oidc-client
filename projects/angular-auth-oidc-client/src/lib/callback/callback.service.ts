@@ -1,4 +1,4 @@
-import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { forkJoin, interval, Observable, of, Subject, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
@@ -7,6 +7,7 @@ import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
+import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
 import { UserService } from '../userData/user-service';
@@ -18,9 +19,6 @@ import { PeriodicallyTokenCheckService } from './periodically-token-check-servic
 
 @Injectable({ providedIn: 'root' })
 export class CallbackService {
-    private boundSilentRenewEvent: any;
-    private renderer: Renderer2;
-
     private stsCallbackInternal$ = new Subject();
 
     get stsCallback$() {
@@ -42,10 +40,8 @@ export class CallbackService {
         private periodicallyTokenCheckService: PeriodicallyTokenCheckService,
         private implicitFlowCallbackService: ImplicitFlowCallbackService,
         private codeFlowCallbackService: CodeFlowCallbackService,
-        rendererFactory: RendererFactory2
-    ) {
-        this.renderer = rendererFactory.createRenderer(null, null);
-    }
+        private refreshSessionIframeService: RefreshSessionIframeService
+    ) {}
 
     isCallback(): boolean {
         return this.urlService.isCallbackFromSts();
@@ -111,7 +107,7 @@ export class CallbackService {
                     return this.refreshSessionWithRefreshTokens();
                 }
 
-                return this.refreshSessionWithIframe();
+                return this.refreshSessionIframeService.refreshSessionWithIframe();
             })
         );
 
@@ -189,7 +185,7 @@ export class CallbackService {
                     return this.refreshSessionWithRefreshTokens();
                 }
 
-                return this.refreshSessionWithIframe();
+                return this.refreshSessionIframeService.refreshSessionWithIframe();
             })
         );
     }
@@ -202,49 +198,6 @@ export class CallbackService {
                 this.periodicallyTokenCheckService.stopPeriodicallTokenCheck();
                 this.flowsService.resetAuthorizationData();
                 return throwError(error);
-            })
-        );
-    }
-
-    private refreshSessionWithIframe(): Observable<boolean> {
-        this.loggerService.logDebug('BEGIN refresh session Authorize Iframe renew');
-        const url = this.urlService.getRefreshSessionSilentRenewUrl();
-        return this.sendAuthorizeReqestUsingSilentRenew(url);
-    }
-
-    private sendAuthorizeReqestUsingSilentRenew(url: string): Observable<boolean> {
-        const sessionIframe = this.silentRenewService.getOrCreateIframe();
-        this.initSilentRenewRequest();
-        this.loggerService.logDebug('sendAuthorizeReqestUsingSilentRenew for URL:' + url);
-
-        return new Observable((observer) => {
-            const onLoadHandler = () => {
-                sessionIframe.removeEventListener('load', onLoadHandler);
-                this.loggerService.logDebug('removed event listener from IFrame');
-                observer.next(true);
-                observer.complete();
-            };
-            sessionIframe.addEventListener('load', onLoadHandler);
-            sessionIframe.src = url;
-        });
-    }
-
-    private initSilentRenewRequest() {
-        const instanceId = Math.random();
-
-        const initDestroyHandler = this.renderer.listen('window', 'oidc-silent-renew-init', (e: CustomEvent) => {
-            if (e.detail !== instanceId) {
-                initDestroyHandler();
-                renewDestroyHandler();
-            }
-        });
-        const renewDestroyHandler = this.renderer.listen('window', 'oidc-silent-renew-message', (e) =>
-            this.silentRenewService.silentRenewEventHandler(e)
-        );
-
-        window.dispatchEvent(
-            new CustomEvent('oidc-silent-renew-init', {
-                detail: instanceId,
             })
         );
     }
