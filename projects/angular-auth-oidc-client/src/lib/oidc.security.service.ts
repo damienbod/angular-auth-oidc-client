@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
+import { RefreshSessionService } from './callback/refresh-session.service';
 import { ConfigurationProvider } from './config/config.provider';
 import { PublicConfiguration } from './config/public-configuration';
 import { FlowsDataService } from './flows/flows-data.service';
@@ -55,7 +56,8 @@ export class OidcSecurityService {
         private callbackService: CallbackService,
         private logoffRevocationService: LogoffRevocationService,
         private loginService: LoginService,
-        private storagePersistanceService: StoragePersistanceService
+        private storagePersistanceService: StoragePersistanceService,
+        private refreshSessionService: RefreshSessionService
     ) {}
 
     checkAuth(): Observable<boolean> {
@@ -97,7 +99,7 @@ export class OidcSecurityService {
                     return of(isAuthenticated);
                 }
 
-                return this.callbackService.forceRefreshSession().pipe(
+                return this.refreshSessionService.forceRefreshSession().pipe(
                     map((result) => !!result?.idToken && !!result?.accessToken),
                     switchMap((isAuth) => {
                         if (isAuth) {
@@ -152,7 +154,7 @@ export class OidcSecurityService {
     }
 
     forceRefreshSession() {
-        return this.callbackService.forceRefreshSession();
+        return this.refreshSessionService.forceRefreshSession();
     }
 
     // The refresh token and and the access token are revoked on the server. If the refresh token does not exist

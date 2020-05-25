@@ -6,7 +6,7 @@ import { AuthStateService } from '../authState/auth-state.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
-import { PeriodicallyTokenCheckService } from './periodically-token-check-service';
+import { PeriodicallyTokenCheckService } from './periodically-token-check.service';
 
 @Injectable({ providedIn: 'root' })
 export class CodeFlowCallbackService {

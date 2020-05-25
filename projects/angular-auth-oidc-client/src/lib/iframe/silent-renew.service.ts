@@ -5,7 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
-import { PeriodicallyTokenCheckService } from '../callback/periodically-token-check-service';
+import { PeriodicallyTokenCheckService } from '../callback/periodically-token-check.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
