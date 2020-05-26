@@ -7,6 +7,7 @@ import { PublicEventsService } from '../public-api';
 import { AuthModule } from './auth.module';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
+import { PeriodicallyTokenCheckService } from './callback/periodically-token-check.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
 import { ConfigurationProvider } from './config/config.provider';
 import { FlowsDataService } from './flows/flows-data.service';
@@ -47,6 +48,7 @@ describe('OidcSecurityService', () => {
     let logoffRevocationService: LogoffRevocationService;
     let loginService: LoginService;
     let refreshSessionService: RefreshSessionService;
+    let periodicallyTokenCheckService: PeriodicallyTokenCheckService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -75,6 +77,7 @@ describe('OidcSecurityService', () => {
                 RedirectService,
                 LoginService,
                 RefreshSessionService,
+                PeriodicallyTokenCheckService,
             ],
         });
     });
@@ -99,6 +102,8 @@ describe('OidcSecurityService', () => {
         logoffRevocationService = TestBed.inject(LogoffRevocationService);
         loginService = TestBed.inject(LoginService);
         refreshSessionService = TestBed.inject(RefreshSessionService);
+
+        periodicallyTokenCheckService = TestBed.inject(PeriodicallyTokenCheckService);
     });
 
     it('should create', () => {
@@ -290,18 +295,18 @@ describe('OidcSecurityService', () => {
             });
         }));
 
-        // it('if authenticated callbackService startTokenValidationPeriodically', async(() => {
-        //     spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-        //     spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-        //     spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-        //     spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+        it('if authenticated callbackService startTokenValidationPeriodically', async(() => {
+            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+            spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
+            spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
-        //     const spy = spyOn(callBackService, 'startTokenValidationPeriodically');
+            const spy = spyOn(periodicallyTokenCheckService, 'startTokenValidationPeriodically');
 
-        //     oidcSecurityService.checkAuth().subscribe((result) => {
-        //         expect(spy).toHaveBeenCalledWith(3);
-        //     });
-        // }));
+            oidcSecurityService.checkAuth().subscribe((result) => {
+                expect(spy).toHaveBeenCalledWith(3);
+            });
+        }));
 
         it('if isCheckSessionConfigured call checkSessionService.start()', async(() => {
             spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
