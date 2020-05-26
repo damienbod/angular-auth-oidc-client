@@ -121,4 +121,12 @@ describe('Browser Service', () => {
             expect((service as any).getStorage()).toBeFalsy();
         });
     });
+
+    describe('hasStorage', () => {
+        it('returns false if there is no storage', () => {
+            Storage = undefined;
+            expect((service as any).hasStorage()).toBeFalse();
+            Storage = Storage;
+        });
+    });
 });

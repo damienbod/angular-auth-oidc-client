@@ -7,6 +7,7 @@ import { PublicEventsService } from '../public-api';
 import { AuthModule } from './auth.module';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
+import { RefreshSessionService } from './callback/refresh-session.service';
 import { ConfigurationProvider } from './config/config.provider';
 import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsService } from './flows/flows.service';
@@ -45,6 +46,7 @@ describe('OidcSecurityService', () => {
     let redirectService: RedirectService;
     let logoffRevocationService: LogoffRevocationService;
     let loginService: LoginService;
+    let refreshSessionService: RefreshSessionService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -72,6 +74,7 @@ describe('OidcSecurityService', () => {
                 FlowsService,
                 RedirectService,
                 LoginService,
+                RefreshSessionService,
             ],
         });
     });
@@ -95,6 +98,7 @@ describe('OidcSecurityService', () => {
         redirectService = TestBed.inject(RedirectService);
         logoffRevocationService = TestBed.inject(LogoffRevocationService);
         loginService = TestBed.inject(LoginService);
+        refreshSessionService = TestBed.inject(RefreshSessionService);
     });
 
     it('should create', () => {
@@ -125,14 +129,14 @@ describe('OidcSecurityService', () => {
         });
     });
 
-    // describe('forceRefreshSession', () => {
-    //     it('calls callBackService forceRefreshSession', async(() => {
-    //         const spy = spyOn(callBackService, 'forceRefreshSession').and.returnValue(of(null));
-    //         const result = oidcSecurityService.forceRefreshSession().subscribe(() => {
-    //             expect(spy).toHaveBeenCalled();
-    //         });
-    //     }));
-    // });
+    describe('forceRefreshSession', () => {
+        it('calls refreshSessionService forceRefreshSession', async(() => {
+            const spy = spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(of(null));
+            oidcSecurityService.forceRefreshSession().subscribe(() => {
+                expect(spy).toHaveBeenCalled();
+            });
+        }));
+    });
 
     describe('authorize', () => {
         it('calls loginservice login', () => {
@@ -328,40 +332,40 @@ describe('OidcSecurityService', () => {
         }));
     });
 
-    // describe('checkAuthIncludingServer', () => {
-    //     it('if isSilentRenewConfigured call getOrCreateIframe()', async(() => {
-    //         spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-    //         spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-    //         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-    //         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+    describe('checkAuthIncludingServer', () => {
+        it('if isSilentRenewConfigured call getOrCreateIframe()', async(() => {
+            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+            spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
+            spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
-    //         spyOn(silentRenewService, 'isSilentRenewConfigured').and.returnValue(true);
-    //         const spy = spyOn(silentRenewService, 'getOrCreateIframe');
+            spyOn(silentRenewService, 'isSilentRenewConfigured').and.returnValue(true);
+            const spy = spyOn(silentRenewService, 'getOrCreateIframe');
 
-    //         oidcSecurityService.checkAuthIncludingServer().subscribe((result) => {
-    //             expect(spy).toHaveBeenCalled();
-    //         });
-    //     }));
+            oidcSecurityService.checkAuthIncludingServer().subscribe((result) => {
+                expect(spy).toHaveBeenCalled();
+            });
+        }));
 
-    //     it('does forceRefreshSession get called and is NOT authenticated', async(() => {
-    //         spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-    //         spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-    //         spyOn(callBackService, 'isCallback').and.returnValue(false);
-    //         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
-    //         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
+        it('does forceRefreshSession get called and is NOT authenticated', async(() => {
+            spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+            spyOn(callBackService, 'isCallback').and.returnValue(false);
+            spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
+            spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
 
-    //         spyOn(callBackService, 'forceRefreshSession').and.returnValue(
-    //             of({
-    //                 idToken: 'idToken',
-    //                 accessToken: 'access_token',
-    //             })
-    //         );
+            spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(
+                of({
+                    idToken: 'idToken',
+                    accessToken: 'access_token',
+                })
+            );
 
-    //         oidcSecurityService.checkAuthIncludingServer().subscribe((result) => {
-    //             expect(result).toBeTruthy();
-    //         });
-    //     }));
-    // });
+            oidcSecurityService.checkAuthIncludingServer().subscribe((result) => {
+                expect(result).toBeTruthy();
+            });
+        }));
+    });
 
     describe('getToken', () => {
         it('calls authStateService.getAccessToken()', async(() => {
