@@ -17,7 +17,7 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
     return () =>
         oidcConfigService.withConfig({
             stsServer: 'https://login.microsoftonline.com/7ff95b15-dc21-4ba6-bc92-824856578fc1/v2.0',
-            authWellknownEndpoint: 'https://login.microsoftonline.com/',
+            authWellknownEndpoint: 'https://login.microsoftonline.com/common/v2.0',
             redirectUrl: window.location.origin,
             clientId: 'e38ea64a-2962-4cde-bfe7-dd2822fdab32',
             scope: 'openid profile email api://e38ea64a-2962-4cde-bfe7-dd2822fdab32/access_as_user',
