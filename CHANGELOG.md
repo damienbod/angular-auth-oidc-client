@@ -1,6 +1,6 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
-### 2020-05-xx Version 11.1.2
+### 2020-05-24 Version 11.1.2
 
 -   Added support to check the STS for an authenticated session if not locally logged in (iframe silent renew)
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/752) // Fixes [#744](https://github.com/damienbod/angular-auth-oidc-client/issues/744)
