@@ -125,6 +125,7 @@ export class CheckSessionService {
             });
         };
 
+        pollServerSessionRecur();
         this.zone.runOutsideAngular(() => {
             this.scheduledHeartBeatRunning = setInterval(pollServerSessionRecur, this.heartBeatInterval);
         });
