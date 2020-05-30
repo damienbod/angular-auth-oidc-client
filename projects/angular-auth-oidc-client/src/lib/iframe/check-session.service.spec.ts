@@ -180,6 +180,7 @@ describe('SecurityCheckSessionTests', () => {
             spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue({ contentWindow: { postMessage: () => {} } });
             spyOn(storagePersistanceService, 'read').withArgs('session_state').and.returnValue('session_state');
             spyOn(loggerService, 'logDebug').and.callFake(() => {});
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
             (checkSessionService as any).pollServerSession('clientId');
             expect((checkSessionService as any).outstandingMessages).toBe(1);
         });
