@@ -1,5 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
@@ -43,8 +43,6 @@ export class CheckSessionService {
             return;
         }
 
-        this.init();
-
         const clientId = this.configurationProvider.openIDConfiguration.clientId;
         this.pollServerSession(clientId);
     }
@@ -62,16 +60,16 @@ export class CheckSessionService {
         return this.configurationProvider.openIDConfiguration.startCheckSession && this.checkSessionReceived;
     }
 
-    private init() {
+    private init(): Observable<any> {
         if (this.lastIFrameRefresh + this.iframeRefreshInterval > Date.now()) {
-            return;
+            return of(undefined);
         }
 
         const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
 
         if (!authWellKnownEndPoints) {
             this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined. Returning.');
-            return;
+            return of();
         }
 
         const existingIframe = this.getOrCreateIframe();
@@ -85,40 +83,46 @@ export class CheckSessionService {
 
         this.bindMessageEventToIframe();
 
-        existingIframe.onload = () => {
-            this.lastIFrameRefresh = Date.now();
-        };
+        return new Observable((observer) => {
+            existingIframe.onload = () => {
+                this.lastIFrameRefresh = Date.now();
+                observer.next();
+                observer.complete();
+            };
+        });
     }
 
     private pollServerSession(clientId: string) {
         this.outstandingMessages = 0;
 
         const pollServerSessionRecur = () => {
-            const existingIframe = this.getExistingIframe();
-            if (existingIframe && clientId) {
-                this.loggerService.logDebug(existingIframe);
-                const sessionState = this.storagePersistanceService.read('session_state');
-                if (sessionState) {
-                    this.outstandingMessages++;
-                    existingIframe.contentWindow.postMessage(
-                        clientId + ' ' + sessionState,
-                        this.configurationProvider.openIDConfiguration.stsServer
-                    );
+            this.init().subscribe(() => {
+                const existingIframe = this.getExistingIframe();
+                if (existingIframe && clientId) {
+                    this.loggerService.logDebug(existingIframe);
+                    const sessionState = this.storagePersistanceService.read('session_state');
+                    if (sessionState) {
+                        this.outstandingMessages++;
+                        existingIframe.contentWindow.postMessage(
+                            clientId + ' ' + sessionState,
+                            this.configurationProvider.openIDConfiguration.stsServer
+                        );
+                    } else {
+                        this.loggerService.logDebug('OidcSecurityCheckSession pollServerSession session_state is blank');
+                    }
                 } else {
-                    this.loggerService.logDebug('OidcSecurityCheckSession pollServerSession session_state is blank');
+                    this.loggerService.logWarning('OidcSecurityCheckSession pollServerSession checkSession IFrame does not exist');
+                    this.loggerService.logDebug(clientId);
+                    this.loggerService.logDebug(existingIframe);
                 }
-            } else {
-                this.loggerService.logWarning('OidcSecurityCheckSession pollServerSession checkSession IFrame does not exist');
-                this.loggerService.logDebug(clientId);
-                this.loggerService.logDebug(existingIframe);
-            }
 
-            // after sending three messages with no response, fail.
-            if (this.outstandingMessages > 3) {
-                this.loggerService.logError(
-                    `OidcSecurityCheckSession not receiving check session response messages. Outstanding messages: ${this.outstandingMessages}. Server unreachable?`
-                );
-            }
+                // after sending three messages with no response, fail.
+                if (this.outstandingMessages > 3) {
+                    this.loggerService.logError(
+                        `OidcSecurityCheckSession not receiving check session response messages. Outstanding messages: ${this.outstandingMessages}. Server unreachable?`
+                    );
+                }
+            });
         };
 
         this.zone.runOutsideAngular(() => {
