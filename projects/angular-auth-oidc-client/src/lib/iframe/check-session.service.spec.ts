@@ -177,7 +177,7 @@ describe('SecurityCheckSessionTests', () => {
         });
 
         it('increases outstandingMessages', () => {
-            spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue({});
+            spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue({ contentWindow: { postMessage: () => {} } });
             spyOn(storagePersistanceService, 'read').withArgs('session_state').and.returnValue('session_state');
             spyOn(loggerService, 'logDebug').and.callFake(() => {});
             (checkSessionService as any).pollServerSession('clientId');
