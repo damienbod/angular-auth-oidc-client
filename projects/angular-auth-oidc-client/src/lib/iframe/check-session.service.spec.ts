@@ -1,4 +1,5 @@
 import { async, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
@@ -167,6 +168,45 @@ describe('SecurityCheckSessionTests', () => {
             spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ startCheckSession: true });
             const result = checkSessionService.serverStateChanged();
             expect(result).toBeTrue();
+        });
+    });
+
+    describe('pollServerSession', () => {
+        beforeEach(() => {
+            spyOn<any>(checkSessionService, 'init').and.returnValue(of(undefined));
+        });
+
+        it('increases outstandingMessages', () => {
+            spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue({ contentWindow: { postMessage: () => {} } });
+            spyOn(storagePersistanceService, 'read').withArgs('session_state').and.returnValue('session_state');
+            spyOn(loggerService, 'logDebug').and.callFake(() => {});
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
+            (checkSessionService as any).pollServerSession('clientId');
+            expect((checkSessionService as any).outstandingMessages).toBe(1);
+        });
+
+        it('logs warning if iframe does not exist', () => {
+            spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue(null);
+            const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+            spyOn(loggerService, 'logDebug').and.callFake(() => {});
+            (checkSessionService as any).pollServerSession('clientId');
+            expect(spyLogWarning).toHaveBeenCalledWith('OidcSecurityCheckSession pollServerSession checkSession IFrame does not exist');
+        });
+
+        it('logs warning if clientId is not set', () => {
+            spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue({});
+            const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+            spyOn(loggerService, 'logDebug').and.callFake(() => {});
+            (checkSessionService as any).pollServerSession('');
+            expect(spyLogWarning).toHaveBeenCalledWith('OidcSecurityCheckSession pollServerSession checkSession IFrame does not exist');
+        });
+
+        it('logs debug if session_state is not set', () => {
+            spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue({});
+            spyOn(storagePersistanceService, 'read').withArgs('session_state').and.returnValue(null);
+            const spyLogDebug = spyOn(loggerService, 'logDebug').and.callFake(() => {});
+            (checkSessionService as any).pollServerSession('clientId');
+            expect(spyLogDebug).toHaveBeenCalledWith('OidcSecurityCheckSession pollServerSession session_state is blank');
         });
     });
 });
