@@ -3,6 +3,8 @@
 ### 2020-06-xx Version 11.1.3
 - Refresh checksession iframe regularly
   - PR https://github.com/damienbod/angular-auth-oidc-client/pull/761
+- Load checksession iframe right after checkSessionService.start() is invoked
+  - PR https://github.com/damienbod/angular-auth-oidc-client/pull/766
 
 ### 2020-05-24 Version 11.1.2
 
