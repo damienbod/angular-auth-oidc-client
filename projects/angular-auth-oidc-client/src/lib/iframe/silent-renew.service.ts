@@ -1,6 +1,6 @@
 ﻿import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { of, Subject, throwError } from 'rxjs';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
@@ -19,7 +19,7 @@ const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 
 @Injectable()
 export class SilentRenewService {
-    private refreshSessionWithIFrameCompletedInternal$ = new Subject<CallbackContext>();
+    private refreshSessionWithIFrameCompletedInternal$ = new BehaviorSubject<CallbackContext>(null);
 
     get refreshSessionWithIFrameCompleted$() {
         return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
@@ -116,20 +116,15 @@ export class SilentRenewService {
 
         callback$.subscribe(
             (callbackContext) => {
-                this.fireRefreshWithIframeCompleted(callbackContext);
+                this.refreshSessionWithIFrameCompletedInternal$.next(callbackContext);
                 this.flowsDataService.resetSilentRenewRunning();
             },
             (err: any) => {
                 this.loggerService.logError('Error: ' + err);
-                this.fireRefreshWithIframeCompleted(null);
+                this.refreshSessionWithIFrameCompletedInternal$.next(null);
                 this.flowsDataService.resetSilentRenewRunning();
             }
         );
-    }
-
-    private fireRefreshWithIframeCompleted(callbackContext: CallbackContext) {
-        this.refreshSessionWithIFrameCompletedInternal$.next(callbackContext);
-        this.refreshSessionWithIFrameCompletedInternal$.complete();
     }
 
     private getExistingIframe() {
