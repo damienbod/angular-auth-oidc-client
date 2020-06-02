@@ -1,6 +1,6 @@
 ﻿import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthorizedState } from '../authState/authorized-state';
@@ -19,7 +19,7 @@ const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 
 @Injectable()
 export class SilentRenewService {
-    private refreshSessionWithIFrameCompletedInternal$ = new BehaviorSubject<CallbackContext>(null);
+    private refreshSessionWithIFrameCompletedInternal$ = new Subject<CallbackContext>();
 
     get refreshSessionWithIFrameCompleted$() {
         return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
