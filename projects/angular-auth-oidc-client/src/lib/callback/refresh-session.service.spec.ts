@@ -124,6 +124,24 @@ describe('RefreshSessionService ', () => {
                 authResult: { id_token: 'id_token', access_token: 'access_token' },
             });
         }));
+
+        describe('NOT isCurrentFlowCodeFlowWithRefeshTokens', () => {
+            it('does return null when not authenticated', async(() => {
+                expect('TBD').toBe('TBD');
+            }));
+
+            it('return value is different than before', async(() => {
+                expect('TBD').toBe('TBD');
+            }));
+
+            it('return value only returns once', async(() => {
+                expect('TBD').toBe('TBD');
+            }));
+
+            it('return value gets applied to the storage', async(() => {
+                expect('TBD').toBe('TBD');
+            }));
+        });
     });
 
     describe('startRefreshSession', () => {
