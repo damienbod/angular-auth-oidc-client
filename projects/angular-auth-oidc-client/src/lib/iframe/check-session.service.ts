@@ -1,5 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
@@ -81,8 +82,6 @@ export class CheckSessionService {
             this.loggerService.logWarning('init check session: checkSessionIframe is not configured to run');
         }
 
-        this.bindMessageEventToIframe();
-
         return new Observable((observer) => {
             existingIframe.onload = () => {
                 this.lastIFrameRefresh = Date.now();
@@ -94,35 +93,36 @@ export class CheckSessionService {
 
     private pollServerSession(clientId: string) {
         this.outstandingMessages = 0;
-
         const pollServerSessionRecur = () => {
-            this.init().subscribe(() => {
-                const existingIframe = this.getExistingIframe();
-                if (existingIframe && clientId) {
-                    this.loggerService.logDebug(existingIframe);
-                    const sessionState = this.storagePersistanceService.read('session_state');
-                    if (sessionState) {
-                        this.outstandingMessages++;
-                        existingIframe.contentWindow.postMessage(
-                            clientId + ' ' + sessionState,
-                            this.configurationProvider.openIDConfiguration.stsServer
-                        );
+            this.init()
+                .pipe(take(1))
+                .subscribe(() => {
+                    const existingIframe = this.getExistingIframe();
+                    if (existingIframe && clientId) {
+                        this.loggerService.logDebug(existingIframe);
+                        const sessionState = this.storagePersistanceService.read('session_state');
+                        if (sessionState) {
+                            this.outstandingMessages++;
+                            existingIframe.contentWindow.postMessage(
+                                clientId + ' ' + sessionState,
+                                this.configurationProvider.openIDConfiguration.stsServer
+                            );
+                        } else {
+                            this.loggerService.logDebug('OidcSecurityCheckSession pollServerSession session_state is blank');
+                        }
                     } else {
-                        this.loggerService.logDebug('OidcSecurityCheckSession pollServerSession session_state is blank');
+                        this.loggerService.logWarning('OidcSecurityCheckSession pollServerSession checkSession IFrame does not exist');
+                        this.loggerService.logDebug(clientId);
+                        this.loggerService.logDebug(existingIframe);
                     }
-                } else {
-                    this.loggerService.logWarning('OidcSecurityCheckSession pollServerSession checkSession IFrame does not exist');
-                    this.loggerService.logDebug(clientId);
-                    this.loggerService.logDebug(existingIframe);
-                }
 
-                // after sending three messages with no response, fail.
-                if (this.outstandingMessages > 3) {
-                    this.loggerService.logError(
-                        `OidcSecurityCheckSession not receiving check session response messages. Outstanding messages: ${this.outstandingMessages}. Server unreachable?`
-                    );
-                }
-            });
+                    // after sending three messages with no response, fail.
+                    if (this.outstandingMessages > 3) {
+                        this.loggerService.logError(
+                            `OidcSecurityCheckSession not receiving check session response messages. Outstanding messages: ${this.outstandingMessages}. Server unreachable?`
+                        );
+                    }
+                });
         };
 
         pollServerSessionRecur();
@@ -171,7 +171,9 @@ export class CheckSessionService {
         const existingIframe = this.getExistingIframe();
 
         if (!existingIframe) {
-            return this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
+            const frame = this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
+            this.bindMessageEventToIframe();
+            return frame;
         }
 
         return existingIframe;
