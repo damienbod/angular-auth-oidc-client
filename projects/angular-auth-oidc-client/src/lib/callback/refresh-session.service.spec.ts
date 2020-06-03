@@ -143,12 +143,12 @@ describe('RefreshSessionService ', () => {
             it('return value only returns once', async(async () => {
                 spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
                 spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
-                const spyInsideMap = spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
+                const spyInsideMap = spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
                 refreshSessionService
                     .forceRefreshSession()
                     .toPromise()
-                    .then((result) => expect(result).toBeNull())
+                    .then((result) => expect(result).toEqual({ idToken: 'id_token', accessToken: 'access_token' }))
                     .then(() => expect(spyInsideMap).toHaveBeenCalledTimes(1));
 
                 (silentRenewService as any).fireRefreshWithIframeCompleted({
