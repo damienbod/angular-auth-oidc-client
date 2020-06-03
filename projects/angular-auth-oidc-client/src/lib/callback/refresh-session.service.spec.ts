@@ -140,7 +140,7 @@ describe('RefreshSessionService ', () => {
                 });
             }));
 
-            it('return value only returns once', async(async () => {
+            it('return value only returns once', async(() => {
                 spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
                 spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
                 const spyInsideMap = spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
