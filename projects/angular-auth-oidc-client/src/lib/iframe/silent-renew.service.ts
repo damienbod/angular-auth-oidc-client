@@ -116,20 +116,15 @@ export class SilentRenewService {
 
         callback$.subscribe(
             (callbackContext) => {
-                this.fireRefreshWithIframeCompleted(callbackContext);
+                this.refreshSessionWithIFrameCompletedInternal$.next(callbackContext);
                 this.flowsDataService.resetSilentRenewRunning();
             },
             (err: any) => {
                 this.loggerService.logError('Error: ' + err);
-                this.fireRefreshWithIframeCompleted(null);
+                this.refreshSessionWithIFrameCompletedInternal$.next(null);
                 this.flowsDataService.resetSilentRenewRunning();
             }
         );
-    }
-
-    private fireRefreshWithIframeCompleted(callbackContext: CallbackContext) {
-        this.refreshSessionWithIFrameCompletedInternal$.next(callbackContext);
-        this.refreshSessionWithIFrameCompletedInternal$.complete();
     }
 
     private getExistingIframe() {

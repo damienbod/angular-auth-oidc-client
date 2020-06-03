@@ -59,4 +59,18 @@ describe('RefreshSessionIframeService ', () => {
             });
         }));
     });
+
+    describe('initSilentRenewRequest', () => {
+        it('dispatches customevent to window object', async(() => {
+            const dispatchEventSpy = spyOn(window, 'dispatchEvent');
+
+            (refreshSessionIframeService as any).initSilentRenewRequest();
+
+            expect(dispatchEventSpy).toHaveBeenCalledWith(
+                new CustomEvent('oidc-silent-renew-init', {
+                    detail: jasmine.any(Number),
+                })
+            );
+        }));
+    });
 });

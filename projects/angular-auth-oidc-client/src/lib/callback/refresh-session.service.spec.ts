@@ -102,8 +102,8 @@ describe('RefreshSessionService ', () => {
             spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
             refreshSessionService.forceRefreshSession().subscribe((result) => {
-                expect(result.idToken).not.toBeUndefined();
-                expect(result.accessToken).not.toBeUndefined();
+                expect(result.idToken).toBeDefined();
+                expect(result.accessToken).toBeDefined();
             });
 
             (silentRenewService as any).fireRefreshWithIframeCompleted({
@@ -124,6 +124,42 @@ describe('RefreshSessionService ', () => {
                 authResult: { id_token: 'id_token', access_token: 'access_token' },
             });
         }));
+
+        describe('NOT isCurrentFlowCodeFlowWithRefeshTokens', () => {
+            it('does return null when not authenticated', async(() => {
+                spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
+                spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
+                spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
+
+                refreshSessionService.forceRefreshSession().subscribe((result) => {
+                    expect(result).toBeNull();
+                });
+
+                (silentRenewService as any).fireRefreshWithIframeCompleted({
+                    authResult: { id_token: 'id_token', access_token: 'access_token' },
+                });
+            }));
+
+            it('return value only returns once', async(() => {
+                spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
+                spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
+                const spyInsideMap = spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+
+                refreshSessionService
+                    .forceRefreshSession()
+                    .toPromise()
+                    .then((result) => expect(result).toEqual({ idToken: 'id_token', accessToken: 'access_token' }))
+                    .then(() => expect(spyInsideMap).toHaveBeenCalledTimes(1));
+
+                (silentRenewService as any).fireRefreshWithIframeCompleted({
+                    authResult: { id_token: 'id_token', access_token: 'access_token' },
+                });
+
+                (silentRenewService as any).fireRefreshWithIframeCompleted({
+                    authResult: { id_token: 'id_token2', access_token: 'access_token2' },
+                });
+            }));
+        });
     });
 
     describe('startRefreshSession', () => {
