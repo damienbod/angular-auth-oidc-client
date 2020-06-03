@@ -9,6 +9,7 @@ describe('Storage Persistance Service', () => {
     let service: StoragePersistanceService;
     let configurationProvider: ConfigurationProvider;
     let securityStorage: AbstractSecurityStorage;
+    let storageSpy: jasmine.Spy;
 
     const storagePrefix = 'storagePrefix';
 
@@ -28,7 +29,7 @@ describe('Storage Persistance Service', () => {
         service = TestBed.inject(StoragePersistanceService);
         securityStorage = TestBed.inject(AbstractSecurityStorage);
 
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId: storagePrefix });
+        storageSpy = spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId: storagePrefix });
     });
 
     it('should create', () => {
@@ -41,6 +42,15 @@ describe('Storage Persistance Service', () => {
             service.read('authNonce');
 
             const keyToRead = `${storagePrefix}_authNonce`;
+            expect(spy).toHaveBeenCalledWith(keyToRead);
+        });
+
+        it('reads from oidcSecuriyStorage with fallback key if no config is set (not throw exception)', () => {
+            storageSpy.and.returnValue(null);
+            const spy = spyOn(securityStorage, 'read');
+            service.read('authzData');
+
+            const keyToRead = `_authzData`;
             expect(spy).toHaveBeenCalledWith(keyToRead);
         });
     });
