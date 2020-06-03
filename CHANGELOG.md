@@ -8,8 +8,8 @@
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/766) // fixes [#750](https://github.com/damienbod/angular-auth-oidc-client/issues/750)
 -   Not throwing an exception if interceptor is set and config is loaded from http
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/774) // fixes [#772](https://github.com/damienbod/angular-auth-oidc-client/issues/772)
-- Bug fix: forceRefreshSession prematurely completes its observable #767
-- big fix: Returns tokens but doesn't apply them #759
+- Bug fix: forceRefreshSession prematurely completes its observable [#767](https://github.com/damienbod/angular-auth-oidc-client/issues/767)
+- big fix: Returns tokens but doesn't apply them [#759](https://github.com/damienbod/angular-auth-oidc-client/issues/759)
 
 ### 2020-05-24 Version 11.1.2
 
