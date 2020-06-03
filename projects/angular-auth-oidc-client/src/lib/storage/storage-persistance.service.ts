@@ -56,7 +56,7 @@ export class StoragePersistanceService {
     }
 
     private createKeyWithPrefix(key: string) {
-        const prefix = this.configurationProvider.openIDConfiguration.clientId;
+        const prefix = this.configurationProvider.openIDConfiguration?.clientId || '';
         return `${prefix}_${key}`;
     }
 }
