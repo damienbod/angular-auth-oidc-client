@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { AuthModule, EventTypes, LogLevel, OidcConfigService, PublicEventsService } from 'angular-auth-oidc-client';
 import { filter } from 'rxjs/operators';
+import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
@@ -19,7 +20,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
             silentRenew: true,
             silentRenewUrl: `${window.location.origin}/silent-renew.html`,
             renewTimeBeforeTokenExpiresInSeconds: 10,
-            logLevel: LogLevel.Debug,
+            logLevel: environment.production ? LogLevel.None : LogLevel.Debug,
         });
 }
 
