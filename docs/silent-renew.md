@@ -14,7 +14,7 @@ Point the `silent_renew_url` property to an HTML file which contains the followi
 
 The `renewTimeBeforeTokenExpiresInSeconds` property can be used to start the renew process n-seconds before the tokens expired.
 
-Both the access tokena nd the id_token are used to start this process.
+Both the access token and the id_token are used to start this process.
 
 ## Silent Renew Code Flow with PKCE
 
