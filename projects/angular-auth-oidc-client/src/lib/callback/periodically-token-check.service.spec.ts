@@ -115,14 +115,13 @@ describe('PeriodicallyTokenCheckService', () => {
             expect(resetSilentRenewRunning).toHaveBeenCalled();
         }));
 
-        it('calls hasIdTokenExpired and hasAccessTokenExpiredIfExpiryExists only when it should be executed', fakeAsync(() => {
+        it('calls hasAccessTokenExpiredIfExpiryExists only when it should be executed', fakeAsync(() => {
             spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: true });
             spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens');
             spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
             spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
 
-            const hasIdTokenExpiredSpy = spyOn(authStateService, 'hasIdTokenExpired');
             const hasAccessTokenExpiredIfExpiryExistsSpy = spyOn(authStateService, 'hasAccessTokenExpiredIfExpiryExists');
 
             spyOn(refreshSessionIframeService, 'refreshSessionWithIframe').and.returnValue(of(true));
@@ -132,7 +131,6 @@ describe('PeriodicallyTokenCheckService', () => {
             intervallService.runTokenValidationRunning.unsubscribe();
             intervallService.runTokenValidationRunning = null;
 
-            expect(hasIdTokenExpiredSpy).toHaveBeenCalled();
             expect(hasAccessTokenExpiredIfExpiryExistsSpy).toHaveBeenCalled();
         }));
 
@@ -156,7 +154,6 @@ describe('PeriodicallyTokenCheckService', () => {
             intervallService.runTokenValidationRunning.unsubscribe();
             intervallService.runTokenValidationRunning = null;
 
-            expect(hasIdTokenExpiredSpy).toHaveBeenCalled();
             expect(hasAccessTokenExpiredIfExpiryExistsSpy).toHaveBeenCalled();
         }));
 

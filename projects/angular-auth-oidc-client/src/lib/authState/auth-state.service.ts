@@ -26,7 +26,7 @@ export class AuthStateService {
         private publicEventsService: PublicEventsService,
         private configurationProvider: ConfigurationProvider,
         private tokenValidationService: TokenValidationService
-    ) {}
+    ) { }
 
     setAuthorizedAndFireEvent(): void {
         this.authorizedInternal$.next(true);
@@ -82,17 +82,24 @@ export class AuthStateService {
             return false;
         }
 
-        if (this.hasIdTokenExpired()) {
+        const idTokenExpired = this.hasIdTokenExpired();
+        const accessTokenExpired = this.hasAccessTokenExpiredIfExpiryExists();
+
+        if (idTokenExpired) {
             this.loggerService.logDebug('persisted id_token is expired');
-            return false;
+            //return false;
         }
 
-        if (this.hasAccessTokenExpiredIfExpiryExists()) {
+        if (accessTokenExpired) {
             this.loggerService.logDebug('persisted access_token is expired');
             return false;
         }
 
-        this.loggerService.logDebug('persisted id_token and access token are valid');
+        if (!idTokenExpired)
+            this.loggerService.logDebug('persisted id_token and access token are valid');
+        else
+            this.loggerService.logDebug('persisted access token is valid');
+
         return true;
     }
 

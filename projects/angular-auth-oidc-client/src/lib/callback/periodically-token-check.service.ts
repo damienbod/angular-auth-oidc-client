@@ -25,7 +25,7 @@ export class PeriodicallyTokenCheckService {
         private refreshSessionIframeService: RefreshSessionIframeService,
         private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService,
         private intervallService: IntervallService
-    ) {}
+    ) { }
 
     startTokenValidationPeriodically(repeatAfterSeconds: number) {
         if (!!this.intervallService.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
@@ -50,10 +50,9 @@ export class PeriodicallyTokenCheckService {
                     return of(null);
                 }
 
-                const idTokenHasExpired = this.authStateService.hasIdTokenExpired();
                 const accessTokenHasExpired = this.authStateService.hasAccessTokenExpiredIfExpiryExists();
 
-                if (!idTokenHasExpired && !accessTokenHasExpired) {
+                if (!accessTokenHasExpired) {
                     return of(null);
                 }
 

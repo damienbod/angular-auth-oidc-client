@@ -180,7 +180,7 @@ describe('Auth State Service', () => {
             spyOn(authStateService as any, 'hasIdTokenExpired').and.returnValue(true);
             spyOn(authStateService as any, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(false);
             const result = authStateService.areAuthStorageTokensValid();
-            expect(result).toBeFalse();
+            expect(result).toBeTrue();
         });
 
         it('isAuthorized is true  and access_token is expired returns true', () => {
