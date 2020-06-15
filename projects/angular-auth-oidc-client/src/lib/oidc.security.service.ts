@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
 import { PeriodicallyTokenCheckService } from './callback/periodically-token-check.service';
@@ -90,7 +90,8 @@ export class OidcSecurityService {
                 this.loggerService.logDebug('checkAuth completed fire events, auth: ' + isAuthenticated);
 
                 return isAuthenticated;
-            })
+            }),
+            catchError(() => of(false))
         );
     }
 
