@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { of } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { map, switchMap, take } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
@@ -42,10 +42,8 @@ export class RefreshSessionService {
             );
         }
 
-        return this.startRefreshSession().pipe(
-            switchMap(() => this.silentRenewService.refreshSessionWithIFrameCompleted$),
-            take(1),
-            map((callbackContext) => {
+        return forkJoin([this.startRefreshSession(), this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1))]).pipe(
+            map(([_, callbackContext]) => {
                 const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
                 if (isAuthenticated) {
                     return {
