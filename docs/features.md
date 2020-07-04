@@ -3,7 +3,6 @@
 -   [Public Events](#public-events)
 -   [Custom Storage](#custom-storage)
 -   [Custom parameters](#custom-parameters)
--   [OnAuthorizationResult Event](#onauthorizationresult-event)
 -   [Using the OIDC package in a module or a Angular lib](#using-the-oidc-package-in-a-module-or-a-angular-lib)
 -   [Delay the loading or pass an existing AuthWellKnownEndpoints config](#delay-the-loading-or-pass-an-existing-well-knownopenid-configuration-configuration)
 
@@ -124,29 +123,6 @@ login() {
 
 > If you want to pass staitc parameters to the sts everytime please use the custom parameters in the [Configuration](configuration.md) instead!
 
-## OnAuthorizationResult Event
-
-This event returns the result of the authorization callback.
-
-Subscribe to the event:
-
-```typescript
-//...
-    this.onAuthorizationResultSubscription = this.oidcSecurityService.onAuthorizationResult.pipe(
-        filter((authorizationState: AuthorizationState) => authorizationResult.authorizationState === AuthorizationState.unauthorized)
-    ).subscribe(() => {
-        this.router.navigate(['/unauthorized']);
-    });
-//...
-
-private onAuthorizationResultSubscription: Subscription;
-
-ngOnDestroy(): void {
-    if(this.onAuthorizationResultSubscription) {
-        this.onAuthorizationResultSubscription.unsubscribe();
-    }
-}
-```
 
 ## Using the OIDC package in a module or a Angular lib
 
