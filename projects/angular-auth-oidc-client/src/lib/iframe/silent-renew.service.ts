@@ -82,7 +82,7 @@ export class SilentRenewService {
             state,
             sessionState,
             authResult: null,
-            isRenewProcess: false,
+            isRenewProcess: true,
             jwtKeys: null,
             validationResult: null,
             existingIdToken: null,
