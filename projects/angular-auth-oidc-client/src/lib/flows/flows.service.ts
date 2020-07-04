@@ -146,7 +146,6 @@ export class FlowsService {
         this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + stateData);
         const refreshToken = this.authStateService.getRefreshToken();
         const idToken = this.authStateService.getIdToken();
-        // TODO add id_token data
 
         if (refreshToken) {
             const callbackContext = {
@@ -155,7 +154,7 @@ export class FlowsService {
                 state: stateData,
                 sessionState: null,
                 authResult: null,
-                isRenewProcess: false,
+                isRenewProcess: true,
                 jwtKeys: null,
                 validationResult: null,
                 existingIdToken: idToken,
