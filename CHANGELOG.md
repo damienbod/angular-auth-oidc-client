@@ -4,6 +4,8 @@
 
 -   checkAuthIncludingServer cannot complete without credentials
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/811) // Fixes [#756](https://github.com/damienbod/angular-auth-oidc-client/issues/779)
+-   QueryParams are getting lost when doing a silent renew
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/812) // Fixes [#756](https://github.com/damienbod/angular-auth-oidc-client/issues/795)
 
 ### 2020-06-04 Version 11.1.3
 
