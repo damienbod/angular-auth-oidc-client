@@ -11,6 +11,8 @@ export class AppComponent implements OnInit {
     ngOnInit() {
         this.oidcSecurityService.checkAuthIncludingServer().subscribe((isAuthenticated) => {
             console.warn('app authenticated', isAuthenticated);
+            const at = this.oidcSecurityService.getToken();
+            console.warn(at);
         });
     }
 }
