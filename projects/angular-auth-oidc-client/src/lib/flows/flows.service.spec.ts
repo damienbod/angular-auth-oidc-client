@@ -271,7 +271,7 @@ describe('Flows Service', () => {
                 state: 'state-data',
                 sessionState: null,
                 authResult: null,
-                isRenewProcess: false,
+                isRenewProcess: true,
                 jwtKeys: null,
                 validationResult: null,
                 existingIdToken: 'henlo-legger',
