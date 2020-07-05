@@ -61,8 +61,8 @@ export class LogoffRevocationService {
             return this.revokeRefreshToken().pipe(
                 switchMap((result) => this.revokeAccessToken(result)),
                 catchError((error) => {
-                    const errorMessage = `revoke token failed ${error}`;
-                    this.loggerService.logError(errorMessage);
+                    const errorMessage = `revoke token failed`;
+                    this.loggerService.logError(errorMessage, error);
                     return throwError(errorMessage);
                 }),
                 tap(() => this.logoff(urlHandler))
@@ -70,8 +70,8 @@ export class LogoffRevocationService {
         } else {
             return this.revokeAccessToken().pipe(
                 catchError((error) => {
-                    const errorMessage = `revoke access token failed ${error}`;
-                    this.loggerService.logError(errorMessage);
+                    const errorMessage = `revoke access token failed`;
+                    this.loggerService.logError(errorMessage, error);
                     return throwError(errorMessage);
                 }),
                 tap(() => this.logoff(urlHandler))
@@ -97,8 +97,8 @@ export class LogoffRevocationService {
                 return of(response);
             }),
             catchError((error) => {
-                const errorMessage = `Revocation request failed ${error}`;
-                this.loggerService.logError(errorMessage);
+                const errorMessage = `Revocation request failed`;
+                this.loggerService.logError(errorMessage, error);
                 return throwError(errorMessage);
             })
         );
@@ -122,8 +122,8 @@ export class LogoffRevocationService {
                 return of(response);
             }),
             catchError((error) => {
-                const errorMessage = `Revocation request failed ${error}`;
-                this.loggerService.logError(errorMessage);
+                const errorMessage = `Revocation request failed`;
+                this.loggerService.logError(errorMessage, error);
                 return throwError(errorMessage);
             })
         );

@@ -196,8 +196,8 @@ export class FlowsService {
                 return of(callbackContext);
             }),
             catchError((error) => {
-                const errorMessage = `OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}: ${error}`;
-                this.loggerService.logError(errorMessage);
+                const errorMessage = `OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}`;
+                this.loggerService.logError(errorMessage, error);
                 return throwError(errorMessage);
             })
         );
@@ -237,8 +237,8 @@ export class FlowsService {
                 return of(callbackContext);
             }),
             catchError((error) => {
-                const errorMessage = `OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer} with error ${error}`;
-                this.loggerService.logError(errorMessage);
+                const errorMessage = `OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}`;
+                this.loggerService.logError(errorMessage, error);
                 return throwError(errorMessage);
             })
         );
