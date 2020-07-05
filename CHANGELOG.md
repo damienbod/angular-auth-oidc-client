@@ -6,6 +6,8 @@
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/811) // Fixes [#779](https://github.com/damienbod/angular-auth-oidc-client/issues/779)
 -   QueryParams are getting lost when doing a silent renew
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/812) // Fixes [#795](https://github.com/damienbod/angular-auth-oidc-client/issues/795)
+-   Token endpoint errors not reported correctly
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/813) // Fixes [#805](https://github.com/damienbod/angular-auth-oidc-client/issues/805)
 
 ### 2020-06-04 Version 11.1.3
 
