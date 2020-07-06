@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { of, throwError } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
-import { ConfigurationProvider } from '../config/config.provider';
 import { FlowsService } from '../flows/flows.service';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { LoggerService } from '../logging/logger.service';
@@ -20,8 +19,7 @@ export class LogoffRevocationService {
         private urlService: UrlService,
         private checkSessionService: CheckSessionService,
         private flowsService: FlowsService,
-        private redirectService: RedirectService,
-        private configurationProvider: ConfigurationProvider
+        private redirectService: RedirectService
     ) {}
 
     // Logs out on the server and the local client.
