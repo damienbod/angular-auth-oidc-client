@@ -23,7 +23,7 @@ export class OidcConfigService {
     ) {}
 
     withConfig(passedConfig: OpenIdConfiguration, passedAuthWellKnownEndpoints?: AuthWellKnownEndpoints): Promise<any> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             if (!this.configValidationService.validateConfig(passedConfig)) {
                 this.loggerService.logError('Validation of config rejected with errors. Config is NOT set.');
                 return resolve();
