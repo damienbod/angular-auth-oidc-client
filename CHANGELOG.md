@@ -1,5 +1,6 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+
 ### 2020-07-04 Version 11.1.4
 
 -   checkAuthIncludingServer cannot complete without credentials
