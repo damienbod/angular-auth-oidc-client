@@ -17,7 +17,7 @@
         "build-lib": "ng build angular-auth-oidc-client && npm run copy-readme-to-lib-folder && npm run copy-licence-to-lib-folder",
         "build-lib-prod": "ng build angular-auth-oidc-client --prod && npm run copy-readme-to-lib-folder && npm run copy-licence-to-lib-folder",
         "test-lib": "ng test angular-auth-oidc-client --code-coverage",
-        "test-lib-ci": "ng test angular-auth-oidc-client --watch=false --browsers=ChromeHeadless --code-coverage && npm run coveralls",
+        "test-lib-ci": "ng test angular-auth-oidc-client --watch=false --browsers=ChromeHeadless --code-coverage",
         "lint-lib": "ng lint angular-auth-oidc-client",
         "pack-lib": "npm run build-lib-prod && npm pack ./dist/angular-auth-oidc-client",
         "publish-lib": "npm run build-lib-prod && npm publish ./dist/angular-auth-oidc-client",
