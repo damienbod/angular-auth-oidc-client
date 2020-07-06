@@ -9,7 +9,8 @@
     },
     "dependencies": {
         "common-tags": "^1.8.0",
-        "jsrsasign-reduced": "^8.0.15"
+        "jsrsasign-reduced": "^8.0.15",
+        "tslib": "^2.0.0"
     },
     "repository": {
         "type": "git",
