@@ -122,13 +122,12 @@ export class CheckSessionService {
                             `OidcSecurityCheckSession not receiving check session response messages. Outstanding messages: ${this.outstandingMessages}. Server unreachable?`
                         );
                     }
+
+                    this.scheduledHeartBeatRunning = setTimeout(pollServerSessionRecur, this.heartBeatInterval);
                 });
         };
 
         pollServerSessionRecur();
-        this.zone.runOutsideAngular(() => {
-            this.scheduledHeartBeatRunning = setInterval(pollServerSessionRecur, this.heartBeatInterval);
-        });
     }
 
     private clearScheduledHeartBeat() {
