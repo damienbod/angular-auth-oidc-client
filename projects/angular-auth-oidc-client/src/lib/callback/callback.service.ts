@@ -22,8 +22,8 @@ export class CallbackService {
         private codeFlowCallbackService: CodeFlowCallbackService
     ) {}
 
-    isCallback(): boolean {
-        return this.urlService.isCallbackFromSts();
+    isCallback(currentUrl: string): boolean {
+        return this.urlService.isCallbackFromSts(currentUrl);
     }
 
     handleCallbackAndFireEvents(currentCallbackUrl: string): Observable<CallbackContext> {

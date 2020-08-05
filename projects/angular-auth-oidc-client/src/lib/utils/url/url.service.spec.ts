@@ -84,9 +84,7 @@ describe('UrlService Tests', () => {
 
         testingValues.forEach(({ param, isCallbackFromSts }) => {
             it(`should return ${isCallbackFromSts} when param is ${param}`, () => {
-                const spy = spyOn(mywindow.location, 'toString').and.callFake(() => `https://any.url/?${param}=anyvalue`);
-                const result = service.isCallbackFromSts();
-                expect(spy).toHaveBeenCalled();
+                const result = service.isCallbackFromSts(`https://any.url/?${param}=anyvalue`);
                 expect(result).toBe(isCallbackFromSts);
             });
         });
