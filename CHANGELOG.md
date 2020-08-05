@@ -1,5 +1,9 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2020-07-04 Version 11.2.0
+
+-   added possibility to pass url to check from the outside (for example to use in electron cases)
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/840)
 
 ### 2020-07-04 Version 11.1.4
 
