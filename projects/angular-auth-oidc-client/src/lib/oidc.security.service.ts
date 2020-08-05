@@ -62,7 +62,7 @@ export class OidcSecurityService {
         private periodicallyTokenCheckService: PeriodicallyTokenCheckService
     ) {}
 
-    checkAuth(): Observable<boolean> {
+    checkAuth(url?: string): Observable<boolean> {
         if (!this.configurationProvider.hasValidConfig()) {
             this.loggerService.logError('Please provide a configuration before setting up the module');
             return of(false);
@@ -70,8 +70,10 @@ export class OidcSecurityService {
 
         this.loggerService.logDebug('STS server: ' + this.configurationProvider.openIDConfiguration.stsServer);
 
-        const currentUrl = window.location.toString();
-        const isCallback = this.callbackService.isCallback();
+        const currentUrl = url || window.location.toString();
+        const isCallback = this.callbackService.isCallback(currentUrl);
+
+        this.loggerService.logDebug('currentUrl to check auth with: ', currentUrl);
 
         const callback$ = isCallback ? this.callbackService.handleCallbackAndFireEvents(currentUrl) : of(null);
 
