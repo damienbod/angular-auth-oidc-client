@@ -1,5 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
-import { tap } from 'rxjs/operators';
+import { throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { ConfigValidationService } from '../config-validation/config-validation.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
@@ -23,7 +24,7 @@ export class OidcConfigService {
     ) {}
 
     withConfig(passedConfig: OpenIdConfiguration, passedAuthWellKnownEndpoints?: AuthWellKnownEndpoints): Promise<any> {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             if (!this.configValidationService.validateConfig(passedConfig)) {
                 this.loggerService.logError('Validation of config rejected with errors. Config is NOT set.');
                 return resolve();
@@ -59,6 +60,10 @@ export class OidcConfigService {
                 this.authWellKnownService
                     .getAuthWellKnownEndPoints(usedConfig.authWellknownEndpoint)
                     .pipe(
+                        catchError((error) => {
+                            this.loggerService.logError('Getting auth well known endpoints failed on start', error);
+                            return throwError(error);
+                        }),
                         tap((wellknownEndPoints) =>
                             this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
                                 configuration: passedConfig,
@@ -66,7 +71,10 @@ export class OidcConfigService {
                             })
                         )
                     )
-                    .subscribe(() => resolve());
+                    .subscribe(
+                        () => resolve(),
+                        () => reject()
+                    );
             } else {
                 this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
                     configuration: passedConfig,
