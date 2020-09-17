@@ -24,7 +24,7 @@ describe('Intervall Service ', () => {
             intervallService.runTokenValidationRunning = new Subscription();
             const spy = spyOn(intervallService.runTokenValidationRunning, 'unsubscribe');
 
-            intervallService.stopPeriodicallTokenCheck();
+            intervallService.stopPeriodicallyTokenCheck();
 
             expect(spy).toHaveBeenCalled();
             expect(intervallService.runTokenValidationRunning).toBeNull();
@@ -34,7 +34,7 @@ describe('Intervall Service ', () => {
             intervallService.runTokenValidationRunning = new Subscription();
             const spy = spyOn(intervallService.runTokenValidationRunning, 'unsubscribe');
             intervallService.runTokenValidationRunning = null;
-            intervallService.stopPeriodicallTokenCheck();
+            intervallService.stopPeriodicallyTokenCheck();
 
             expect(spy).not.toHaveBeenCalled();
         });

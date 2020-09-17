@@ -14,7 +14,7 @@ export class FlowHelper {
         return this.isCurrentFlowImplicitFlowWithAccessToken() || this.isCurrentFlowImplicitFlowWithoutAccessToken();
     }
 
-    isCurrentFlowCodeFlowWithRefeshTokens() {
+    isCurrentFlowCodeFlowWithRefreshTokens() {
         if (this.isCurrentFlowCodeFlow() && this.configurationProvider.openIDConfiguration.useRefreshToken) {
             return true;
         }

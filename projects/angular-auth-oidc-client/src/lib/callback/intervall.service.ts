@@ -5,7 +5,7 @@ import { interval, Subscription } from 'rxjs';
 export class IntervallService {
     runTokenValidationRunning: Subscription = null;
 
-    stopPeriodicallTokenCheck(): void {
+    stopPeriodicallyTokenCheck(): void {
         if (this.runTokenValidationRunning) {
             this.runTokenValidationRunning.unsubscribe();
             this.runTokenValidationRunning = null;

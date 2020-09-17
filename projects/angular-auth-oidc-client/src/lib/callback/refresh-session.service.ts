@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { forkJoin, of } from 'rxjs';
-import { map, switchMap, take } from 'rxjs/operators';
+import { forkJoin, of, throwError } from 'rxjs';
+import { catchError, map, switchMap, take } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { ConfigurationProvider } from '../config/config.provider';
@@ -26,7 +26,7 @@ export class RefreshSessionService {
     ) {}
 
     forceRefreshSession() {
-        if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
+        if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
             return this.startRefreshSession().pipe(
                 map(() => {
                     const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
@@ -65,23 +65,27 @@ export class RefreshSessionService {
             return of(null);
         }
 
-        const authWellknownEndpointAdress = this.configurationProvider.openIDConfiguration?.authWellknownEndpoint;
+        const authWellknownEndpointAddress = this.configurationProvider.openIDConfiguration?.authWellknownEndpoint;
 
-        if (!authWellknownEndpointAdress) {
+        if (!authWellknownEndpointAddress) {
             this.loggerService.logError('no authwellknownendpoint given!');
             return of(null);
         }
 
-        return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointAdress).pipe(
+        return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointAddress).pipe(
             switchMap(() => {
                 this.flowsDataService.setSilentRenewRunning();
 
-                if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
+                if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
                     // Refresh Session using Refresh tokens
                     return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens();
                 }
 
                 return this.refreshSessionIframeService.refreshSessionWithIframe();
+            }),
+            catchError(() => {
+                this.flowsDataService.resetSilentRenewRunning();
+                return throwError('startRefreshSession -> getAuthWellKnownEndPoints failed');
             })
         );
     }

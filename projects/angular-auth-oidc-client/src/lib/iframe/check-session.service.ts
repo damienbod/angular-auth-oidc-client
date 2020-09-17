@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config/config.provider';
@@ -30,7 +30,6 @@ export class CheckSessionService {
         private storagePersistanceService: StoragePersistanceService,
         private loggerService: LoggerService,
         private iFrameService: IFrameService,
-        private zone: NgZone,
         private eventService: PublicEventsService,
         private configurationProvider: ConfigurationProvider
     ) {}

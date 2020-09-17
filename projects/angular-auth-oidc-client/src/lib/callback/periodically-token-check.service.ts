@@ -66,7 +66,7 @@ export class PeriodicallyTokenCheckService {
 
                 this.flowsDataService.setSilentRenewRunning();
 
-                if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
+                if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
                     // Refresh Session using Refresh tokens
                     return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens();
                 }
@@ -85,7 +85,7 @@ export class PeriodicallyTokenCheckService {
             .subscribe(
                 () => {
                     this.loggerService.logDebug('silent renew finished!');
-                    if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
+                    if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
                         this.flowsDataService.resetSilentRenewRunning();
                     }
                 },

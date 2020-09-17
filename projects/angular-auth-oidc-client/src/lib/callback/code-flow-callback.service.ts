@@ -12,7 +12,7 @@ export class CodeFlowCallbackService {
     constructor(
         private flowsService: FlowsService,
         private flowsDataService: FlowsDataService,
-        private intervallService: IntervallService,
+        private intervalService: IntervallService,
         private configurationProvider: ConfigurationProvider,
         private router: Router
     ) {}
@@ -28,7 +28,7 @@ export class CodeFlowCallbackService {
             }),
             catchError((error) => {
                 this.flowsDataService.resetSilentRenewRunning();
-                this.intervallService.stopPeriodicallTokenCheck();
+                this.intervalService.stopPeriodicallyTokenCheck();
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }

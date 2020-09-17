@@ -27,7 +27,7 @@ export class ImplicitFlowCallbackService {
             }),
             catchError((error) => {
                 this.flowsDataService.resetSilentRenewRunning();
-                this.intervallService.stopPeriodicallTokenCheck();
+                this.intervallService.stopPeriodicallyTokenCheck();
                 if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
                     this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
                 }

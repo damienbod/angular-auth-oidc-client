@@ -14,7 +14,7 @@ export class RefreshSessionRefreshTokenService {
 
         return this.flowsService.processRefreshToken().pipe(
             catchError((error) => {
-                this.intervallService.stopPeriodicallTokenCheck();
+                this.intervallService.stopPeriodicallyTokenCheck();
                 this.flowsService.resetAuthorizationData();
                 return throwError(error);
             })

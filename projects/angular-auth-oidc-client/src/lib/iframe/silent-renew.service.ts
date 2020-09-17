@@ -34,7 +34,7 @@ export class SilentRenewService {
         private loggerService: LoggerService,
         private flowHelper: FlowHelper,
         private implicitFlowCallbackService: ImplicitFlowCallbackService,
-        private intervallService: IntervallService
+        private intervalService: IntervallService
     ) {}
 
     getOrCreateIframe(): HTMLIFrameElement {
@@ -68,7 +68,7 @@ export class SilentRenewService {
             });
             this.flowsService.resetAuthorizationData();
             this.flowsDataService.setNonce('');
-            this.intervallService.stopPeriodicallTokenCheck();
+            this.intervalService.stopPeriodicallyTokenCheck();
             return throwError(error);
         }
 
@@ -90,7 +90,7 @@ export class SilentRenewService {
 
         return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext).pipe(
             catchError((errorFromFlow) => {
-                this.intervallService.stopPeriodicallTokenCheck();
+                this.intervalService.stopPeriodicallyTokenCheck();
                 this.flowsService.resetAuthorizationData();
                 return throwError(errorFromFlow);
             })

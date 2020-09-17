@@ -111,7 +111,7 @@ describe('Flow Helper Service', () => {
         const config = { responseType: 'not code' };
 
         configProvider.setConfig(config);
-        const result = flowHelper.isCurrentFlowCodeFlowWithRefeshTokens();
+        const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens();
 
         expect(result).toBeFalse();
     });
@@ -120,7 +120,7 @@ describe('Flow Helper Service', () => {
         const config = { responseType: 'not code', useRefreshToken: false };
 
         configProvider.setConfig(config);
-        const result = flowHelper.isCurrentFlowCodeFlowWithRefeshTokens();
+        const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens();
 
         expect(result).toBeFalse();
     });
@@ -129,7 +129,7 @@ describe('Flow Helper Service', () => {
         const config = { responseType: 'code', useRefreshToken: true };
 
         configProvider.setConfig(config);
-        const result = flowHelper.isCurrentFlowCodeFlowWithRefeshTokens();
+        const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens();
 
         expect(result).toBeTrue();
     });
