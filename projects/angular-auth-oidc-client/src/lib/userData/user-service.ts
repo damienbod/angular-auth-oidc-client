@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
+import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -23,7 +24,8 @@ export class UserService {
         private eventService: PublicEventsService,
         private loggerService: LoggerService,
         private tokenHelperService: TokenHelperService,
-        private readonly flowHelper: FlowHelper
+        private readonly flowHelper: FlowHelper,
+        private readonly configurationProvider: ConfigurationProvider
     ) {}
 
     // TODO CHECK PARAMETERS
@@ -46,7 +48,7 @@ export class UserService {
             return of(decodedIdToken);
         }
 
-        if ((!haveUserData && isRenewProcess) || !isRenewProcess) {
+        if (!isRenewProcess || this.configurationProvider.openIDConfiguration.renewUserInfoAfterTokenRenew || !haveUserData) {
             return this.getUserDataOidcFlowAndSave(decodedIdToken.sub).pipe(
                 switchMap((userData) => {
                     this.loggerService.logDebug('Received user data', userData);
