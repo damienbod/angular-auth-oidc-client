@@ -9,12 +9,6 @@ To get the fully-formed authorization URL, pass a handler function to `OidcSecur
 
 ```typescript
 login() {
-
-    const urlHandler = (authUrl) => {
-        // handle the authorization URL
-        window.open(authUrl, '_blank', 'toolbar=0,location=0,menubar=0');
-    }
-
-    this.oidcSecurityService.authorize({ urlhandler });
+    this.oidcSecurityService.authorizeWithPopUp();
 }
 ```
