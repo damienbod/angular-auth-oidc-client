@@ -160,6 +160,22 @@ export class OidcSecurityService {
         this.loginService.login(authOptions);
     }
 
+    authorizeWithPopUp(authOptions?: AuthOptions) {
+        const internalUrlHandler = (authUrl) => {
+            // handle the authorization URL
+            window.open(authUrl, '_blank', 'toolbar=0,location=0,menubar=0');
+        };
+
+        const urlHandler = authOptions?.urlHandler || internalUrlHandler;
+
+        const options = {
+            urlHandler,
+            customParams: authOptions?.customParams,
+        };
+
+        this.authorize(options);
+    }
+
     forceRefreshSession() {
         return this.refreshSessionService.forceRefreshSession();
     }
