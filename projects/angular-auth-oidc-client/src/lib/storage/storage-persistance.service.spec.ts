@@ -66,24 +66,24 @@ describe('Storage Persistance Service', () => {
     });
 
     describe('resetStorageFlowData', () => {
-        it('resets the correct calues', () => {
-            const spy = spyOn(securityStorage, 'write');
+        it('resets the correct values', () => {
+            const spy = spyOn(securityStorage, 'remove');
             service.resetStorageFlowData();
 
-            expect(spy.calls.argsFor(0)).toEqual(['storagePrefix_session_state', null]);
-            expect(spy.calls.argsFor(1)).toEqual(['storagePrefix_storageSilentRenewRunning', null]);
-            expect(spy.calls.argsFor(2)).toEqual(['storagePrefix_codeVerifier', null]);
-            expect(spy.calls.argsFor(3)).toEqual(['storagePrefix_userData', null]);
+            expect(spy.calls.argsFor(0)).toEqual(['storagePrefix_session_state']);
+            expect(spy.calls.argsFor(1)).toEqual(['storagePrefix_storageSilentRenewRunning']);
+            expect(spy.calls.argsFor(2)).toEqual(['storagePrefix_codeVerifier']);
+            expect(spy.calls.argsFor(3)).toEqual(['storagePrefix_userData']);
         });
     });
 
     describe('resetAuthStateInStorage', () => {
-        it('resets the correct calues', () => {
-            const spy = spyOn(securityStorage, 'write');
+        it('resets the correct values', () => {
+            const spy = spyOn(securityStorage, 'remove');
             service.resetAuthStateInStorage();
 
-            expect(spy.calls.argsFor(0)).toEqual(['storagePrefix_authzData', '']);
-            expect(spy.calls.argsFor(1)).toEqual(['storagePrefix_authnResult', '']);
+            expect(spy.calls.argsFor(0)).toEqual(['storagePrefix_authzData']);
+            expect(spy.calls.argsFor(1)).toEqual(['storagePrefix_authnResult']);
         });
     });
 

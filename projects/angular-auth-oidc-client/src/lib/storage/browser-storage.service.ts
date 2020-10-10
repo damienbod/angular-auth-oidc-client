@@ -41,6 +41,22 @@ export class BrowserStorageService implements AbstractSecurityStorage {
         return true;
     }
 
+    remove(key: string): boolean {
+        if (!this.hasStorage()) {
+            this.loggerService.logDebug(`Wanted to remove '${key}' but Storage was falsy`);
+            return false;
+        }
+
+        const storage = this.getStorage();
+        if (!storage) {
+            this.loggerService.logDebug(`Wanted to write '${key}' but Storage was falsy`);
+            return false;
+        }
+
+        storage.removeItem(`${key}`);
+        return true;
+    }
+
     private getStorage() {
         return this.configProvider.openIDConfiguration?.storage;
     }

@@ -18,15 +18,17 @@ export class StoragePersistanceServiceMock {
 
     write(key: StorageKeys, value: any) {}
 
+    remove(key: StorageKeys) {}
+
     resetStorageFlowData() {
-        this.write('session_state', null);
-        this.write('storageSilentRenewRunning', null);
-        this.write('codeVerifier', null);
-        this.write('userData', null);
+        this.remove('session_state');
+        this.remove('storageSilentRenewRunning');
+        this.remove('codeVerifier');
+        this.remove('userData');
     }
 
     resetAuthStateInStorage() {
-        this.write('authnResult', '');
+        this.remove('authnResult');
     }
 
     getAccessToken(): any {
