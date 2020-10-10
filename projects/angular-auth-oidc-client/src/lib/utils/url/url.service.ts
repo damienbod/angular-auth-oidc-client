@@ -39,8 +39,8 @@ export class UrlService {
         return results === null ? '' : decodeURIComponent(results[1]);
     }
 
-    isCallbackFromSts() {
-        const anyParameterIsGiven = this.CALLBACK_PARAMS_TO_CHECK.some((x) => !!this.getUrlParameter(this.window.location.toString(), x));
+    isCallbackFromSts(currentUrl: string) {
+        const anyParameterIsGiven = this.CALLBACK_PARAMS_TO_CHECK.some((x) => !!this.getUrlParameter(currentUrl, x));
         return anyParameterIsGiven;
     }
 
