@@ -19,6 +19,7 @@ export interface OpenIdConfiguration {
     forbiddenRoute?: string;
     unauthorizedRoute?: string;
     autoUserinfo?: boolean;
+    renewUserInfoAfterTokenRenew?: boolean;
     autoCleanStateAfterAuthentication?: boolean;
     triggerAuthorizationResultEvent?: boolean;
     logLevel?: LogLevel;

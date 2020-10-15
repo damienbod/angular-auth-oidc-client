@@ -1,5 +1,9 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2020-09-17 Version 11.2.1
+- renewUserInfoAfterTokenRenew to OpenIdConfiguration
+  -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/856)
+
 ### 2020-08-08 Version 11.2.0
 
 -   added possibility to pass url to check from the outside (for example to use in electron cases)

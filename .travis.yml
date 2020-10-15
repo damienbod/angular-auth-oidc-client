@@ -21,6 +21,7 @@ script:
     - cd ./testProject
     - npm install ../damienbod/angular-auth-oidc-client/dist/angular-auth-oidc-client
     - npm test -- --watch=false --browsers=ChromeHeadless
+    - npm run build -- --prod
 before_script:
     - export DISPLAY=:99.0
     - sh -e /etc/init.d/xvfb start
