@@ -9,7 +9,7 @@
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": true,
         "noImplicitThis": true,
-        "noUnusedParameters": true,
+        "noUnusedParameters": false,
         "noUnusedLocals": true,
         "rootDir": "src/",
         "skipDefaultLibCheck": true,
