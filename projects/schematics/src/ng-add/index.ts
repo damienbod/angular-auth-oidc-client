@@ -46,11 +46,7 @@ function installPackageJsonDependencies(): Rule {
 function addModuleToImports(options: any): Rule {
     return (host: Tree, context: SchematicContext) => {
         const workspace = getWorkspace(host);
-        const project = getProjectFromWorkspace(
-            workspace,
-            // Takes the first project in case it's not provided by CLI
-            options.project ? options.project : workspace.defaultProject
-        );
+        const project = getProjectFromWorkspace(workspace, options.project ? options.project : workspace.defaultProject);
         const moduleName = 'AuthenticationModule';
 
         addModuleImportToRootModule(host, moduleName, './auth/auth.module', project as WorkspaceProject<ProjectType.Application>);
@@ -61,8 +57,11 @@ function addModuleToImports(options: any): Rule {
 }
 
 function copyModuleFile(options: any): Rule {
-    return (tree: Tree) => {
-        const templateSource = apply(url('./files'), [applyTemplates({}), move(normalize('/'))]);
+    return (host: Tree) => {
+        const workspace = getWorkspace(host);
+        const project = getProjectFromWorkspace(workspace, options.project ? options.project : workspace.defaultProject);
+
+        const templateSource = apply(url('./files'), [applyTemplates({}), move(normalize(`${project.sourceRoot}/app/auth`))]);
 
         return chain([mergeWith(templateSource)]);
     };

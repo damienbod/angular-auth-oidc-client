@@ -4,7 +4,7 @@ import { LoggerService } from '../logging/logger.service';
 import { Level, RuleValidationResult } from './rule';
 import { allRules } from './rules';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class ConfigValidationService {
     constructor(private loggerService: LoggerService) {}
 
