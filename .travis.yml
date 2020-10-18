@@ -14,12 +14,13 @@ install:
 script:
     - npm run lint-lib
     - npm run test-lib-ci
-    - npm run build-lib
+    - npm run build-lib-prod
     - cd ../..
     - ls
     - ng new testProject
     - cd ./testProject
     - npm install ../damienbod/angular-auth-oidc-client/dist/angular-auth-oidc-client
+    - ng add angular-auth-oidc-client
     - npm test -- --watch=false --browsers=ChromeHeadless
     - npm run build -- --prod
 before_script:
