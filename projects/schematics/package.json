@@ -11,5 +11,10 @@
     ],
     "author": "",
     "license": "MIT",
-    "schematics": "./src/collection.json"
+    "schematics": "./src/collection.json",
+    "dependencies": {
+        "@angular-devkit/core": "10.1.13",
+        "@angular-devkit/schematics": "10.1.13",
+        "typescript": "3.4.3"
+    }
 }

@@ -1,7 +1,6 @@
 import { experimental } from '@angular-devkit/core';
 import { SchematicsException, Tree } from '@angular-devkit/schematics';
 import ts = require('@schematics/angular/third_party/github.com/Microsoft/TypeScript/lib/typescript');
-
 export const ANGULAR_JSON_FILENAME = 'angular.json';
 
 export function getAngularWorkspace(tree: Tree) {
