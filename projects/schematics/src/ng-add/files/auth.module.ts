@@ -1,7 +1,7 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { AuthModule, OidcConfigService } from 'angular-auth-oidc-client';
 
-export function configureAuth(oidcConfigService: OidcConfigService) {
+export function configureAuth(oidcConfigService: OidcConfigService): void {
     return () => {
         oidcConfigService.withConfig({
             stsServer: 'please-enter-sts',

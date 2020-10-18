@@ -6,20 +6,34 @@ import { getProject, readIntoSourceFile } from '../../utils/angular-utils';
 export function addModuleToImports(options: any): Rule {
     return (host: Tree, context: SchematicContext) => {
         const project = getProject(host, options?.project);
-        const filePath = `${project.sourceRoot}/app/app.module.ts`;
-        const moduleName = 'AuthenticationModule';
 
-        const modulePath = `./auth/auth.module`;
-        const sourcefile = readIntoSourceFile(host, filePath);
-        const importChanges = addImportToModule(sourcefile, modulePath, 'AuthenticationModule', modulePath) as InsertChange[];
+        const modulesToImport = [
+            {
+                target: `${project.sourceRoot}/app/app.module.ts`,
+                moduleName: 'AuthenticationModule',
+                modulePath: `./auth/auth.module`,
+            },
+        ];
 
-        importChanges.forEach((insertChange) => {
-            const exportRecorder = host.beginUpdate(filePath);
-            exportRecorder.insertLeft(insertChange.pos, insertChange.toAdd);
-            host.commitUpdate(exportRecorder);
+        modulesToImport.forEach(({ target, moduleName, modulePath }) => {
+            addImport(host, context, moduleName, modulePath, target);
         });
 
-        context.logger.info(`✅️ '${moduleName}' is imported in '${filePath}'`);
+        context.logger.info(`All imports done, please add the 'RouterModule' as well if you don't have it imported yet.`);
+
         return host;
     };
+}
+
+function addImport(host: Tree, context: SchematicContext, moduleName: string, source: string, target: string) {
+    const sourcefile = readIntoSourceFile(host, target);
+    const importChanges = addImportToModule(sourcefile, source, 'AuthenticationModule', source) as InsertChange[];
+
+    importChanges.forEach((insertChange) => {
+        const exportRecorder = host.beginUpdate(target);
+        exportRecorder.insertLeft(insertChange.pos, insertChange.toAdd);
+        host.commitUpdate(exportRecorder);
+    });
+
+    context.logger.info(`✅️ '${moduleName}' is imported in '${target}'`);
 }
