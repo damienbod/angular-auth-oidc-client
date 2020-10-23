@@ -16,4 +16,10 @@ export abstract class AbstractSecurityStorage {
      * @param value The value for the given key
      */
     public abstract write(key: string, value: any): void;
+
+    /**
+     * This method must contain the logic to remove an item from the storage.
+     * @param key The value for the key to be removed
+     */
+    public abstract remove(key: string): void;
 }

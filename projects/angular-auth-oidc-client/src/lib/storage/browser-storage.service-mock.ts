@@ -13,4 +13,8 @@ export class BrowserStorageMock implements AbstractSecurityStorage {
         value = !value ? null : value;
         this.store[key] = value;
     }
+
+    remove(key: string) {
+        delete this.store[key];
+    }
 }

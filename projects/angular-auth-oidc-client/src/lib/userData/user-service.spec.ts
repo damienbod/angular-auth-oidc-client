@@ -262,9 +262,9 @@ describe('User Service', () => {
 
     describe('resetUserDataInStore', () => {
         it('resets userdata sets null in storagePersistanceService', () => {
-            const spy = spyOn(storagePersistanceService, 'write');
+            const spy = spyOn(storagePersistanceService, 'remove');
             userService.resetUserDataInStore();
-            expect(spy).toHaveBeenCalledWith('userData', null);
+            expect(spy).toHaveBeenCalledWith('userData');
         });
 
         it('userDataInternal$ is called with null when userdata is reset', () => {
