@@ -84,7 +84,7 @@ export class UserService {
     }
 
     resetUserDataInStore(): void {
-        this.storagePersistanceService.write('userData', null);
+        this.storagePersistanceService.remove('userData');
         this.eventService.fireEvent(EventTypes.UserDataChanged, null);
         this.userDataInternal$.next(null);
     }

@@ -31,16 +31,21 @@ export class StoragePersistanceService {
         this.oidcSecurityStorage.write(keyToStore, value);
     }
 
+    remove(key: StorageKeys) {
+        const keyToStore = this.createKeyWithPrefix(key);
+        this.oidcSecurityStorage.remove(keyToStore);
+    }
+
     resetStorageFlowData() {
-        this.write('session_state', null);
-        this.write('storageSilentRenewRunning', null);
-        this.write('codeVerifier', null);
-        this.write('userData', null);
+        this.remove('session_state');
+        this.remove('storageSilentRenewRunning');
+        this.remove('codeVerifier');
+        this.remove('userData');
     }
 
     resetAuthStateInStorage() {
-        this.write('authzData', '');
-        this.write('authnResult', '');
+        this.remove('authzData');
+        this.remove('authnResult');
     }
 
     getAccessToken(): any {
