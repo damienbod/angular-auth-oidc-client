@@ -55,7 +55,7 @@ Pass inside the `filter` the type of event you are interested in and subscribe t
 
 If you need, you can create a custom storage (for example to use cookies).
 
-Implement `AbstractSecurityStorage` and the `read` and `write` methods:
+Implement `AbstractSecurityStorage` and the `read`, `write` and `remove` methods:
 
 ```typescript
 @Injectable()
@@ -70,6 +70,9 @@ export class CustomStorage implements AbstractSecurityStorage {
         ...
     }
 
+    public remove(key: string): void {
+        ...
+    }
 }
 ```
 
@@ -122,7 +125,6 @@ login() {
 ```
 
 > If you want to pass staitc parameters to the sts everytime please use the custom parameters in the [Configuration](configuration.md) instead!
-
 
 ## Using the OIDC package in a module or a Angular lib
 

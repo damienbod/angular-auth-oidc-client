@@ -430,8 +430,8 @@ export class TokenValidationService {
         return testdata;
     }
 
-    generateCodeVerifier(codeChallenge: any): string {
-        const hash = KJUR.crypto.Util.hashString(codeChallenge, 'sha256');
+    generateCodeChallenge(codeVerifier: any): string {
+        const hash = KJUR.crypto.Util.hashString(codeVerifier, 'sha256');
         const testdata = hextob64u(hash);
 
         return testdata;

@@ -43,7 +43,7 @@
         return true;
     }
 
-    generateCodeVerifier(codeChallenge: any): string {
+    generateCodeChallenge(codeVerifier: any): string {
         return '';
     }
 

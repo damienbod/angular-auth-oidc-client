@@ -267,7 +267,7 @@ export class UrlService {
 
         // code_challenge with "S256"
         const codeVerifier = this.flowsDataService.createCodeVerifier();
-        const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
+        const codeChallenge = this.tokenValidationService.generateCodeChallenge(codeVerifier);
 
         const silentRenewUrl = this.getSilentRenewUrl();
 
@@ -317,7 +317,7 @@ export class UrlService {
 
         // code_challenge with "S256"
         const codeVerifier = this.flowsDataService.createCodeVerifier();
-        const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
+        const codeChallenge = this.tokenValidationService.generateCodeChallenge(codeVerifier);
 
         const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
         if (authWellKnownEndPoints) {
