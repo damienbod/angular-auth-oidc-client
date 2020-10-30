@@ -817,11 +817,11 @@ describe('TokenValidationService', () => {
         expect(bad).toEqual(false);
     });
 
-    it('generateCodeVerifier', () => {
-        const good = tokenvalidationService.generateCodeVerifier('44445543344242132145455aaabbdc3b4');
+    it('generateCodeChallenge', () => {
+        const good = tokenvalidationService.generateCodeChallenge('44445543344242132145455aaabbdc3b4');
         expect(good).toEqual('R2TWD45Vtcf_kfAqjuE3LMSRF3JDE5fsFndnn6-a0nQ');
 
-        const bad = tokenvalidationService.generateCodeVerifier('44445543344242132145455aaabbdc3b4');
+        const bad = tokenvalidationService.generateCodeChallenge('44445543344242132145455aaabbdc3b4');
         expect(bad === 'bad').toBeFalse();
     });
 

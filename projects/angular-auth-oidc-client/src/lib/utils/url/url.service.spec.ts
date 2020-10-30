@@ -1044,7 +1044,7 @@ describe('UrlService Tests', () => {
             spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
             spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
             spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-            spyOn(tokenValidationService, 'generateCodeVerifier').and.returnValue(codeChallenge);
+            spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
                 silentRenewUrl,
@@ -1070,7 +1070,7 @@ describe('UrlService Tests', () => {
             spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
             spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
             spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-            spyOn(tokenValidationService, 'generateCodeVerifier').and.returnValue(codeChallenge);
+            spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
             spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ authorizationEndpoint });
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
@@ -1100,7 +1100,7 @@ describe('UrlService Tests', () => {
             spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
             spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
             spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-            spyOn(tokenValidationService, 'generateCodeVerifier').and.returnValue(codeChallenge);
+            spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
             spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ silentRenewUrl, clientId, responseType });
@@ -1213,7 +1213,7 @@ describe('UrlService Tests', () => {
             spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
             spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
             spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-            spyOn(tokenValidationService, 'generateCodeVerifier').and.returnValue(codeChallenge);
+            spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
             spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ authorizationEndpoint });
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
@@ -1245,7 +1245,7 @@ describe('UrlService Tests', () => {
             spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
             spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
             spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-            spyOn(tokenValidationService, 'generateCodeVerifier').and.returnValue(codeChallenge);
+            spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
             spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ authorizationEndpoint });
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
@@ -1276,7 +1276,7 @@ describe('UrlService Tests', () => {
             spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
             spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
             spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-            spyOn(tokenValidationService, 'generateCodeVerifier').and.returnValue(codeChallenge);
+            spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
             spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ redirectUrl, clientId, responseType });
