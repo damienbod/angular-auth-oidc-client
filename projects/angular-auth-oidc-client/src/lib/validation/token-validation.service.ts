@@ -74,7 +74,7 @@ export class TokenValidationService {
         }
 
         const tokenExpirationValue = tokenExpirationDate.valueOf();
-        const nowWithOffset = new Date().valueOf() + offsetSeconds * 1000;
+        const nowWithOffset = new Date(new Date().toUTCString()).valueOf() + offsetSeconds * 1000;
         const tokenNotExpired = tokenExpirationValue > nowWithOffset;
 
         this.loggerService.logDebug(`Has id_token expired: ${!tokenNotExpired}, ${tokenExpirationValue} > ${nowWithOffset}`);
@@ -91,7 +91,7 @@ export class TokenValidationService {
 
         offsetSeconds = offsetSeconds || 0;
         const accessTokenExpirationValue = accessTokenExpiresAt.valueOf();
-        const nowWithOffset = new Date().valueOf() + offsetSeconds * 1000;
+        const nowWithOffset = new Date(new Date().toUTCString()).valueOf() + offsetSeconds * 1000;
         const tokenNotExpired = accessTokenExpirationValue > nowWithOffset;
 
         this.loggerService.logDebug(`Has access_token expired: ${!tokenNotExpired}, ${accessTokenExpirationValue} > ${nowWithOffset}`);
@@ -180,12 +180,12 @@ export class TokenValidationService {
 
         this.loggerService.logDebug(
             'validate_id_token_iat_max_offset: ' +
-                (new Date().valueOf() - dateTimeIatIdToken.valueOf()) +
+                (new Date(new Date().toUTCString()).valueOf() - dateTimeIatIdToken.valueOf()) +
                 ' < ' +
                 maxOffsetAllowedInSeconds * 1000
         );
 
-        const diff = new Date().valueOf() - dateTimeIatIdToken.valueOf();
+        const diff = new Date(new Date().toUTCString()).valueOf() - dateTimeIatIdToken.valueOf();
         if (diff > 0) {
             return diff < maxOffsetAllowedInSeconds * 1000;
         }

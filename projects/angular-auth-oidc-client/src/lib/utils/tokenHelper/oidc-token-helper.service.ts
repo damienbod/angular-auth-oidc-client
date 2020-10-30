@@ -8,7 +8,7 @@ export class TokenHelperService {
 
     getTokenExpirationDate(dataIdToken: any): Date {
         if (!dataIdToken.hasOwnProperty('exp')) {
-            return new Date();
+            return new Date(new Date().toUTCString());
         }
 
         const date = new Date(0); // The 0 here is the key, which sets the date to the epoch
