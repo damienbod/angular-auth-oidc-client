@@ -128,7 +128,7 @@ export class AuthStateService {
 
     private persistAccessTokenExpirationTime(authResult: any) {
         if (authResult?.expires_in) {
-            const accessTokenExpiryTime = new Date().valueOf() + authResult.expires_in * 1000;
+            const accessTokenExpiryTime = new Date(new Date().toUTCString()).valueOf() + authResult.expires_in * 1000;
             this.storagePersistanceService.write('access_token_expires_at', accessTokenExpiryTime);
         }
     }
