@@ -36,7 +36,7 @@ export class RefreshSessionIframeService {
                 observer.complete();
             };
             sessionIframe.addEventListener('load', onLoadHandler);
-            sessionIframe.src = url;
+            sessionIframe.contentWindow.location.replace(url);
         });
     }
 
