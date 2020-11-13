@@ -109,6 +109,7 @@ export class CheckSessionService {
                             );
                         } else {
                             this.loggerService.logDebug('OidcSecurityCheckSession pollServerSession session_state is blank');
+                            this.checkSessionChangedInternal$.next(true);
                         }
                     } else {
                         this.loggerService.logWarning('OidcSecurityCheckSession pollServerSession checkSession IFrame does not exist');
