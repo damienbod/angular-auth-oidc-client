@@ -1,5 +1,12 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2020-11-13 Version 11.2.2
+
+-   Multiple tabs don't receive any event when session state becomes blank
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/896)
+-   Fixed issue with browser history on silent renew redirect to IS
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/895)
+
 ### 2020-10-23 Version 11.2.1
 
 -   renewUserInfoAfterTokenRenew to OpenIdConfiguration
