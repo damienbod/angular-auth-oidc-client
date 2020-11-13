@@ -6,6 +6,10 @@
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/896)
 -   Fixed issue with browser history on silent renew redirect to IS
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/895)
+-   UTC time fix
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/888)
+-   Small fixes of docs and naming
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/887)
 
 ### 2020-10-23 Version 11.2.1
 
