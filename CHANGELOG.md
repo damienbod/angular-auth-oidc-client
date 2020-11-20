@@ -3,7 +3,7 @@
 ### 2020-11-20 Version 11.2.3
 
 -   Added config tokenRefreshInSeconds which controls the time interval to run the startTokenValidationPeriodically
-    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/896)
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/900)
 
 ### 2020-11-13 Version 11.2.2
 
