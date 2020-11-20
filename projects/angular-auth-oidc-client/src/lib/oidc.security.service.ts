@@ -20,8 +20,6 @@ import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.servic
 
 @Injectable()
 export class OidcSecurityService {
-    private TOKEN_REFRESH_INTERVALL_IN_SECONDS = 3;
-
     get configuration(): PublicConfiguration {
         return {
             configuration: this.configurationProvider.openIDConfiguration,
@@ -123,7 +121,7 @@ export class OidcSecurityService {
             this.checkSessionService.start();
         }
 
-        this.periodicallyTokenCheckService.startTokenValidationPeriodically(this.TOKEN_REFRESH_INTERVALL_IN_SECONDS);
+        this.periodicallyTokenCheckService.startTokenValidationPeriodically(this.configuration.configuration.tokenRefreshInSeconds);
 
         if (this.silentRenewService.isSilentRenewConfigured()) {
             this.silentRenewService.getOrCreateIframe();

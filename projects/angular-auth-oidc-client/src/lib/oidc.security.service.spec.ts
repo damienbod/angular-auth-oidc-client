@@ -296,15 +296,19 @@ describe('OidcSecurityService', () => {
         }));
 
         it('if authenticated callbackService startTokenValidationPeriodically', async(() => {
+            const config = {
+                stsServer: 'stsServer',
+                tokenRefreshInSeconds: 7,
+            };
             spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue(config);
             spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
             spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
             const spy = spyOn(periodicallyTokenCheckService, 'startTokenValidationPeriodically');
 
             oidcSecurityService.checkAuth().subscribe((result) => {
-                expect(spy).toHaveBeenCalledWith(3);
+                expect(spy).toHaveBeenCalledWith(7);
             });
         }));
 

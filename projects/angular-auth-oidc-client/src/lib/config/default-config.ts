@@ -31,4 +31,5 @@ export const DEFAULT_CONFIG: OpenIdConfiguration = {
     customParams: {},
     eagerLoadAuthWellKnownEndpoints: true,
     disableRefreshIdTokenAuthTimeValidation: false,
+    tokenRefreshInSeconds: 3,
 };
