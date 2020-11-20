@@ -84,7 +84,7 @@ export class PeriodicallyTokenCheckService {
             )
             .subscribe(
                 () => {
-                    this.loggerService.logDebug('silent renew finished!');
+                    this.loggerService.logDebug('silent renew, periodic check finished!');
                     if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
                         this.flowsDataService.resetSilentRenewRunning();
                     }
