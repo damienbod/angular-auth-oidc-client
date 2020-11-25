@@ -324,7 +324,9 @@ export class FlowsService {
             .pipe(
                 switchMap((userData) => {
                     if (!!userData) {
-                        this.flowsDataService.setSessionState(callbackContext.authResult.session_state);
+                        if (!callbackContext.refreshToken) {
+                            this.flowsDataService.setSessionState(callbackContext.authResult.session_state);
+                        }
                         this.publishAuthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
                         return of(callbackContext);
                     } else {
