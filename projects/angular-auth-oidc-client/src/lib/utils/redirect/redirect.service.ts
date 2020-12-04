@@ -1,11 +1,14 @@
+import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { WINDOW } from '../window/window.reference';
 
+/** @dynamic */
 @Injectable({ providedIn: 'root' })
 export class RedirectService {
-    constructor(@Inject(WINDOW) private window: any) {}
+    constructor(
+      @Inject(DOCUMENT) private readonly doc: Document,
+    ) {}
 
     redirectTo(url) {
-        this.window.location.href = url;
+        this.doc.location.href = url;
     }
 }
