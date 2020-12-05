@@ -1,5 +1,10 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2020-11-20 Version 11.2.4
+
+-   Do not clear session state when refreshing session with refresh tokens
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/905)
+
 ### 2020-11-20 Version 11.2.3
 
 -   Added config tokenRefreshInSeconds which controls the time interval to run the startTokenValidationPeriodically
