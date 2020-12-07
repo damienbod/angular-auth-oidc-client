@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
@@ -20,6 +21,7 @@ import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.servic
 
 @Injectable()
 export class OidcSecurityService {
+
     get configuration(): PublicConfiguration {
         return {
             configuration: this.configurationProvider.openIDConfiguration,
@@ -44,6 +46,7 @@ export class OidcSecurityService {
     }
 
     constructor(
+        @Inject(DOCUMENT) private readonly doc: Document,
         private checkSessionService: CheckSessionService,
         private silentRenewService: SilentRenewService,
         private userService: UserService,
@@ -68,7 +71,7 @@ export class OidcSecurityService {
 
         this.loggerService.logDebug('STS server: ' + this.configurationProvider.openIDConfiguration.stsServer);
 
-        const currentUrl = url || window.location.toString();
+        const currentUrl = url || this.doc.defaultView.location.toString();
         const isCallback = this.callbackService.isCallback(currentUrl);
 
         this.loggerService.logDebug('currentUrl to check auth with: ', currentUrl);
@@ -161,7 +164,7 @@ export class OidcSecurityService {
     authorizeWithPopUp(authOptions?: AuthOptions) {
         const internalUrlHandler = (authUrl) => {
             // handle the authorization URL
-            window.open(authUrl, '_blank', 'toolbar=0,location=0,menubar=0');
+            this.doc.defaultView.open(authUrl, '_blank', 'toolbar=0,location=0,menubar=0');
         };
 
         const urlHandler = authOptions?.urlHandler || internalUrlHandler;

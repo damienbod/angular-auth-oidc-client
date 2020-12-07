@@ -1,4 +1,6 @@
+import { DOCUMENT } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
+
 import { ConfigurationProvider } from '../../config/config.provider';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { FlowsDataService } from '../../flows/flows-data.service';
@@ -12,7 +14,6 @@ import { TokenValidationServiceMock } from '../../validation/token-validation.se
 import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { PlatformProvider } from '../platform-provider/platform.provider';
 import { PlatformProviderMock } from '../platform-provider/platform.provider-mock';
-import { WINDOW } from '../window/window.reference';
 import { UrlService } from './url.service';
 
 describe('UrlService Tests', () => {
@@ -39,17 +40,6 @@ describe('UrlService Tests', () => {
                 { provide: TokenValidationService, useClass: TokenValidationServiceMock },
                 RandomService,
                 FlowHelper,
-                {
-                    provide: WINDOW,
-                    useValue: {
-                        location: {
-                            get href() {
-                                return 'fakeUrl';
-                            },
-                            set href(v) {},
-                        },
-                    },
-                },
             ],
         });
     });
@@ -61,7 +51,7 @@ describe('UrlService Tests', () => {
         flowsDataService = TestBed.inject(FlowsDataService);
         tokenValidationService = TestBed.inject(TokenValidationService);
         storagePersistanceService = TestBed.inject(StoragePersistanceService);
-        mywindow = TestBed.inject(WINDOW);
+        mywindow = TestBed.inject(DOCUMENT).defaultView;
     });
 
     afterEach(() => {
