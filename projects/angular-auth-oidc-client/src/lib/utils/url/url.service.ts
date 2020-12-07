@@ -278,7 +278,7 @@ export class UrlService {
             return this.createAuthorizeUrl(codeChallenge, silentRenewUrl, nonce, state, 'none');
         }
 
-        // this.loggerService.logWarning('authWellKnownEndpoints is undefined');
+        this.loggerService.logWarning('authWellKnownEndpoints is undefined');
         return null;
     }
 
