@@ -5,7 +5,7 @@ import { LoggerService } from '../../logging/logger.service';
 @Injectable()
 export class RandomService {
     constructor(
-      @Inject(DOCUMENT) private readonly doc: Document,
+      @Inject(DOCUMENT) private readonly doc: any,
       private loggerService: LoggerService,
     ) {}
 

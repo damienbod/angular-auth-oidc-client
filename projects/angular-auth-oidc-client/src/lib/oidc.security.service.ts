@@ -46,7 +46,7 @@ export class OidcSecurityService {
     }
 
     constructor(
-        @Inject(DOCUMENT) private readonly doc: Document,
+        @Inject(DOCUMENT) private readonly doc: any,
         private checkSessionService: CheckSessionService,
         private silentRenewService: SilentRenewService,
         private userService: UserService,

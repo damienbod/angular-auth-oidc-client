@@ -4,10 +4,7 @@ import { LoggerService } from '../logging/logger.service';
 
 @Injectable()
 export class IFrameService {
-    constructor(
-      @Inject(DOCUMENT) private readonly doc: Document,
-      private loggerService: LoggerService,
-    ) {}
+    constructor(@Inject(DOCUMENT) private readonly doc: any, private loggerService: LoggerService) {}
 
     getExistingIFrame(identifier: string): HTMLIFrameElement | null {
         const iFrameOnParent = this.getIFrameFromParentWindow(identifier);

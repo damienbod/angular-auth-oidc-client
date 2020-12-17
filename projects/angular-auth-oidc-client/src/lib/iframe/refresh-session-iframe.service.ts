@@ -10,7 +10,7 @@ export class RefreshSessionIframeService {
     private renderer: Renderer2;
 
     constructor(
-        @Inject(DOCUMENT) private readonly doc: Document,
+        @Inject(DOCUMENT) private readonly doc: any,
         private loggerService: LoggerService,
         private urlService: UrlService,
         private silentRenewService: SilentRenewService,
