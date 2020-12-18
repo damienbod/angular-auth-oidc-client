@@ -48,4 +48,4 @@ jobs:
                   echo '=== Current Directory ==='
                   ls
                   sudo npm install ../angular-auth-oidc-client/dist/angular-auth-oidc-client
-                  sudo npm test -- --watch=false --reporters=progress
+                  npm test -- --watch=false --browsers=ChromeHeadless
