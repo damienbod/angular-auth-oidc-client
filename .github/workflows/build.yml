@@ -39,5 +39,12 @@ jobs:
             - name: Create new Angular Project and install lib in it
               run: |
                   cd ..
-                  echo 'Current Directory'
+                  echo '=== Current Directory ==='
                   ls
+                  sudo npm install -g @angular/cli
+                  echo 'Creating new angular project'
+                  sudo ng new testProject --skip-git
+                  cd testProject
+                  echo '=== Current Directory ==='
+                  ls
+                  npm install ../angular-auth-oidc-client/dist/angular-auth-oidc-client
