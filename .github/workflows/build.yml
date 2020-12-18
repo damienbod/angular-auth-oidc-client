@@ -39,6 +39,12 @@ jobs:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   path-to-lcov: './coverage/angular-auth-oidc-client/lcov.info'
 
+            - name: Coveralls Finished
+              uses: coverallsapp/github-action@master
+              with:
+                  github-token: ${{ secrets.github_token }}
+                  parallel-finished: true
+
             - name: Building Frontend
               run: sudo npm run build-lib-prod
 
