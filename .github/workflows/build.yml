@@ -33,11 +33,11 @@ jobs:
             - name: Testing Frontend
               run: sudo npm run test-lib-ci
 
-            - name: Create Test Coverage
-              uses: romeovs/lcov-reporter-action@v0.2.16
+            - name: Coveralls
+              uses: coverallsapp/github-action@master
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
-                  lcov-file: ./coverage/angular-auth-oidc-client/lcov.info
+                  path-to-lcov: './coverage/angular-auth-oidc-client/lcov.info'
 
             - name: Building Frontend
               run: sudo npm run build-lib-prod
