@@ -47,4 +47,4 @@ jobs:
                   cd testProject
                   echo '=== Current Directory ==='
                   ls
-                  npm install ../angular-auth-oidc-client/dist/angular-auth-oidc-client
+                  sudo npm install ../angular-auth-oidc-client/dist/angular-auth-oidc-client
