@@ -1,4 +1,4 @@
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
@@ -33,44 +33,53 @@ describe('RefreshSessionIframeService ', () => {
     });
 
     describe('refreshSessionWithIframe', () => {
-        it('calls sendAuthorizeReqestUsingSilentRenew with created url', async(() => {
-            spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
-            const sendAuthorizeReqestUsingSilentRenewSpy = spyOn(
-                refreshSessionIframeService as any,
-                'sendAuthorizeReqestUsingSilentRenew'
-            ).and.returnValue(of(null));
+        it(
+            'calls sendAuthorizeReqestUsingSilentRenew with created url',
+            waitForAsync(() => {
+                spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
+                const sendAuthorizeReqestUsingSilentRenewSpy = spyOn(
+                    refreshSessionIframeService as any,
+                    'sendAuthorizeReqestUsingSilentRenew'
+                ).and.returnValue(of(null));
 
-            refreshSessionIframeService.refreshSessionWithIframe().subscribe(() => {
-                expect(sendAuthorizeReqestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url');
-            });
-        }));
+                refreshSessionIframeService.refreshSessionWithIframe().subscribe(() => {
+                    expect(sendAuthorizeReqestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url');
+                });
+            })
+        );
     });
 
     describe('sendAuthorizeReqestUsingSilentRenew', () => {
-        it('calls sendAuthorizeReqestUsingSilentRenew with created url', async(() => {
-            spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
-            const sendAuthorizeReqestUsingSilentRenewSpy = spyOn(
-                refreshSessionIframeService as any,
-                'sendAuthorizeReqestUsingSilentRenew'
-            ).and.returnValue(of(null));
+        it(
+            'calls sendAuthorizeReqestUsingSilentRenew with created url',
+            waitForAsync(() => {
+                spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
+                const sendAuthorizeReqestUsingSilentRenewSpy = spyOn(
+                    refreshSessionIframeService as any,
+                    'sendAuthorizeReqestUsingSilentRenew'
+                ).and.returnValue(of(null));
 
-            refreshSessionIframeService.refreshSessionWithIframe().subscribe(() => {
-                expect(sendAuthorizeReqestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url');
-            });
-        }));
+                refreshSessionIframeService.refreshSessionWithIframe().subscribe(() => {
+                    expect(sendAuthorizeReqestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url');
+                });
+            })
+        );
     });
 
     describe('initSilentRenewRequest', () => {
-        it('dispatches customevent to window object', async(() => {
-            const dispatchEventSpy = spyOn(window, 'dispatchEvent');
+        it(
+            'dispatches customevent to window object',
+            waitForAsync(() => {
+                const dispatchEventSpy = spyOn(window, 'dispatchEvent');
 
-            (refreshSessionIframeService as any).initSilentRenewRequest();
+                (refreshSessionIframeService as any).initSilentRenewRequest();
 
-            expect(dispatchEventSpy).toHaveBeenCalledWith(
-                new CustomEvent('oidc-silent-renew-init', {
-                    detail: jasmine.any(Number),
-                })
-            );
-        }));
+                expect(dispatchEventSpy).toHaveBeenCalledWith(
+                    new CustomEvent('oidc-silent-renew-init', {
+                        detail: jasmine.any(Number),
+                    })
+                );
+            })
+        );
     });
 });

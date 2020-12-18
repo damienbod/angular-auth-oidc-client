@@ -1,5 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { FlowsService } from '../flows/flows.service';
@@ -39,26 +39,32 @@ describe('RefreshSessionRefreshTokenService', () => {
     });
 
     describe('refreshSessionWithRefreshTokens', () => {
-        it('calls flowsService.processRefreshToken()', async(() => {
-            const spy = spyOn(flowsService, 'processRefreshToken').and.returnValue(of(null));
+        it(
+            'calls flowsService.processRefreshToken()',
+            waitForAsync(() => {
+                const spy = spyOn(flowsService, 'processRefreshToken').and.returnValue(of(null));
 
-            refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens().subscribe(() => {
-                expect(spy).toHaveBeenCalled();
-            });
-        }));
+                refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens().subscribe(() => {
+                    expect(spy).toHaveBeenCalled();
+                });
+            })
+        );
 
-        it('resetAuthorizationData and stopPeriodicallTokenCheck in case of error', async(() => {
-            spyOn(flowsService, 'processRefreshToken').and.returnValue(throwError('error'));
-            const resetSilentRenewRunningSpy = spyOn(flowsService, 'resetAuthorizationData');
-            const stopPeriodicallTokenCheckSpy = spyOn(intervallService, 'stopPeriodicallTokenCheck');
+        it(
+            'resetAuthorizationData and stopPeriodicallTokenCheck in case of error',
+            waitForAsync(() => {
+                spyOn(flowsService, 'processRefreshToken').and.returnValue(throwError('error'));
+                const resetSilentRenewRunningSpy = spyOn(flowsService, 'resetAuthorizationData');
+                const stopPeriodicallTokenCheckSpy = spyOn(intervallService, 'stopPeriodicallTokenCheck');
 
-            refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens().subscribe({
-                error: (err) => {
-                    expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-                    expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
-                    expect(err).toBeTruthy();
-                },
-            });
-        }));
+                refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens().subscribe({
+                    error: (err) => {
+                        expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+                        expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
+                        expect(err).toBeTruthy();
+                    },
+                });
+            })
+        );
     });
 });

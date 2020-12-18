@@ -1,5 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { ConfigurationProvider } from '../config/config.provider';
@@ -46,26 +46,34 @@ describe('Callbackservice ', () => {
     });
 
     describe('handleCallbackAndFireEvents', () => {
-        it('calls authorizedCallbackWithCode if current flow is code flow', async(() => {
-            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-            const authorizedCallbackWithCodeSpy = spyOn(codeFlowCallbackService, 'authorizedCallbackWithCode').and.returnValue(of(null));
+        it(
+            'calls authorizedCallbackWithCode if current flow is code flow',
+            waitForAsync(() => {
+                spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
+                const authorizedCallbackWithCodeSpy = spyOn(codeFlowCallbackService, 'authorizedCallbackWithCode').and.returnValue(
+                    of(null)
+                );
 
-            callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
-                expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl');
-            });
-        }));
+                callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
+                    expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl');
+                });
+            })
+        );
 
-        it('calls authorizedImplicitFlowCallback if current flow is implicit flow', async(() => {
-            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
-            spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(true);
-            const authorizedCallbackWithCodeSpy = spyOn(implicitFlowCallbackService, 'authorizedImplicitFlowCallback').and.returnValue(
-                of(null)
-            );
+        it(
+            'calls authorizedImplicitFlowCallback if current flow is implicit flow',
+            waitForAsync(() => {
+                spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
+                spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(true);
+                const authorizedCallbackWithCodeSpy = spyOn(implicitFlowCallbackService, 'authorizedImplicitFlowCallback').and.returnValue(
+                    of(null)
+                );
 
-            callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
-                expect(authorizedCallbackWithCodeSpy).toHaveBeenCalled();
-            });
-        }));
+                callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
+                    expect(authorizedCallbackWithCodeSpy).toHaveBeenCalled();
+                });
+            })
+        );
 
         it('emits callbackinternal no matter which flow it is', () => {
             const callbackSpy = spyOn((callbackService as any).stsCallbackInternal$, 'next');

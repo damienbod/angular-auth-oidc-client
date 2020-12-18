@@ -1,5 +1,10 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2020-12-11 Version 11.2.5
+
+-   Use window object safely by injecting DOCUMENT
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/913)
+
 ### 2020-11-20 Version 11.2.4
 
 -   Do not clear session state when refreshing session with refresh tokens
