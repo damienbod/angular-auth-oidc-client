@@ -1,5 +1,6 @@
+import { HttpResponse } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { Observable, of } from 'rxjs';
+import { isObservable, of } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { LoggerService } from '../logging/logger.service';
@@ -38,7 +39,7 @@ describe('Signin Key Data Service', () => {
 
     describe('getSigningKeys', () => {
         it(
-            'throws error when no wellknownendpoints given',
+            'throws error when no wellKnownEndpoints given',
             waitForAsync(() => {
                 spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
                 const result = service.getSigningKeys();
@@ -88,9 +89,9 @@ describe('Signin Key Data Service', () => {
         it(
             'keeps observable if error is catched',
             waitForAsync(() => {
-                const result = (service as any).handleErrorGetSigningKeys(new Response());
-
-                expect(result).toEqual(jasmine.any(Observable));
+                const result = (service as any).handleErrorGetSigningKeys(new HttpResponse());
+                const hasTypeObservable = isObservable(result);
+                expect(hasTypeObservable).toBeTrue();
             })
         );
 
@@ -98,8 +99,11 @@ describe('Signin Key Data Service', () => {
             'loggs error if error is response',
             waitForAsync(() => {
                 const logSpy = spyOn(loggerService, 'logError');
-                (service as any).handleErrorGetSigningKeys(new Response(null, { status: 400, statusText: 'nono' }));
-                expect(logSpy).toHaveBeenCalledWith('400 - nono {}');
+                (service as any).handleErrorGetSigningKeys(new HttpResponse({ status: 400, statusText: 'nono' })).subscribe({
+                    error: () => {
+                        expect(logSpy).toHaveBeenCalledWith('400 - nono {}');
+                    },
+                });
             })
         );
 
@@ -107,8 +111,11 @@ describe('Signin Key Data Service', () => {
             'loggs error if error is not a response',
             waitForAsync(() => {
                 const logSpy = spyOn(loggerService, 'logError');
-                (service as any).handleErrorGetSigningKeys('Just some Error');
-                expect(logSpy).toHaveBeenCalledWith('Just some Error');
+                (service as any).handleErrorGetSigningKeys('Just some Error').subscribe({
+                    error: () => {
+                        expect(logSpy).toHaveBeenCalledWith('Just some Error');
+                    },
+                });
             })
         );
 
@@ -116,8 +123,11 @@ describe('Signin Key Data Service', () => {
             'loggs error if error with message property is not a response',
             waitForAsync(() => {
                 const logSpy = spyOn(loggerService, 'logError');
-                (service as any).handleErrorGetSigningKeys({ message: 'Just some Error' });
-                expect(logSpy).toHaveBeenCalledWith('Just some Error');
+                (service as any).handleErrorGetSigningKeys({ message: 'Just some Error' }).subscribe({
+                    error: () => {
+                        expect(logSpy).toHaveBeenCalledWith('Just some Error');
+                    },
+                });
             })
         );
     });
