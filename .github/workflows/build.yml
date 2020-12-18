@@ -1,0 +1,52 @@
+name: angular-auth-oidc-client-build
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        types: [opened, synchronize, reopened, closed]
+        branches:
+            - main
+
+jobs:
+    build_job:
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+        runs-on: ubuntu-latest
+        name: Build Job
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                  submodules: true
+
+            - name: Setup Node.js 12
+              uses: actions/setup-node@v1
+              with:
+                  node-version: 12
+
+            - name: Installing Dependencies
+              run: sudo npm install
+
+            - name: Linting Frontend
+              run: sudo npm run lint-lib
+
+            - name: Testing Frontend
+              run: sudo npm run test-lib-ci
+
+            - name: Building Frontend
+              run: sudo npm run build-lib-prod
+
+            - name: Create new Angular Project and install lib in it, test it and build it
+              run: |
+                  cd ..
+                  echo '=== Current Directory ==='
+                  ls
+                  sudo npm install -g @angular/cli
+                  echo 'Creating new angular project'
+                  sudo ng new testProject --skip-git
+                  cd testProject
+                  echo '=== Current Directory ==='
+                  ls
+                  sudo npm install ../angular-auth-oidc-client/dist/angular-auth-oidc-client
+                  npm test -- --watch=false --browsers=ChromeHeadless
+                  sudo npm run build -- --prod
