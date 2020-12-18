@@ -40,9 +40,11 @@ jobs:
               run: |
                   cd ../..
                   sudo npm install -g @angular/cli
+                  echo '======='
                   ls
+                  echo '======='
                   sudo ng new testProject --skip-git
                   cd ./testProject
-                  npm install ../damienbod/angular-auth-oidc-client/dist/angular-auth-oidc-client
+                  npm install ../angular-auth-oidc-client/dist/angular-auth-oidc-client
                   npm test -- --watch=false --browsers=ChromeHeadless --no-sandbox
                   npm run build -- --prod
