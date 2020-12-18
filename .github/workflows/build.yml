@@ -38,5 +38,6 @@ jobs:
 
             - name: Create new Angular Project and install lib in it
               run: |
+                  cd ..
                   echo 'Current Directory'
                   ls
