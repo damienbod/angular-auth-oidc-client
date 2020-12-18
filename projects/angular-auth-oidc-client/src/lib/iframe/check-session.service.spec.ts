@@ -1,4 +1,4 @@
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
@@ -85,19 +85,22 @@ describe('SecurityCheckSessionTests', () => {
       THIS TEST WORKS IN WHEN DEBUGGING...location.replace
        does not return a promise or something we can wait for
     */
-    xit('location of iframe is set to authWellKnownEndpoints.check_session_iframe if existing', async(async () => {
-        const authWellKnownEndpoints = {
-            checkSessionIframe: 'someTestingValue',
-        };
+    xit(
+        'location of iframe is set to authWellKnownEndpoints.check_session_iframe if existing',
+        waitForAsync(async () => {
+            const authWellKnownEndpoints = {
+                checkSessionIframe: 'someTestingValue',
+            };
 
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
-        spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+            spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
 
-        (checkSessionService as any).init();
-        await Promise.resolve().then();
-        const iframe = (checkSessionService as any).getOrCreateIframe();
-        expect(iframe.contentWindow.location.toString()).toContain('someTestingValue');
-    }));
+            (checkSessionService as any).init();
+            await Promise.resolve().then();
+            const iframe = (checkSessionService as any).getOrCreateIframe();
+            expect(iframe.contentWindow.location.toString()).toContain('someTestingValue');
+        })
+    );
 
     it('init appends iframe on body with correct values', () => {
         expect((checkSessionService as any).sessionIframe).toBeFalsy();

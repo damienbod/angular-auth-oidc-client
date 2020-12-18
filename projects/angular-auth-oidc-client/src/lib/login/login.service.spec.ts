@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { AuthWellKnownServiceMock } from '../config/auth-well-known.service-mock';
@@ -69,100 +69,121 @@ describe('LoginService', () => {
     });
 
     describe('login', () => {
-        it('does nothing if it has an invalid response type', async(() => {
-            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
-            spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(false);
-            const loggerSpy = spyOn(loggerService, 'logError');
-            const result = loginService.login();
-            expect(result).toBeUndefined();
-            expect(loggerSpy).toHaveBeenCalled();
-        }));
+        it(
+            'does nothing if it has an invalid response type',
+            waitForAsync(() => {
+                spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
+                spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(false);
+                const loggerSpy = spyOn(loggerService, 'logError');
+                const result = loginService.login();
+                expect(result).toBeUndefined();
+                expect(loggerSpy).toHaveBeenCalled();
+            })
+        );
 
-        it('does nothing if no well known endpoint is given', async(() => {
-            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
-            const spy = spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            const result = loginService.login();
-            expect(result).toBeUndefined();
-            expect(spy).toHaveBeenCalled();
-        }));
+        it(
+            'does nothing if no well known endpoint is given',
+            waitForAsync(() => {
+                spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
+                const spy = spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
+                const result = loginService.login();
+                expect(result).toBeUndefined();
+                expect(spy).toHaveBeenCalled();
+            })
+        );
 
-        it('calls flowsService.resetAuthorizationData() if everything fits', async(() => {
-            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
-                authWellknownEndpoint: 'authWellknownEndpoint',
-                responseType: 'stubValue',
-            });
-            spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-            spyOn(redirectService, 'redirectTo').and.callFake(() => {});
-            const result = loginService.login();
-            expect(result).toBeUndefined();
-        }));
+        it(
+            'calls flowsService.resetAuthorizationData() if everything fits',
+            waitForAsync(() => {
+                spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+                    authWellknownEndpoint: 'authWellknownEndpoint',
+                    responseType: 'stubValue',
+                });
+                spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
+                spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+                spyOn(redirectService, 'redirectTo').and.callFake(() => {});
+                const result = loginService.login();
+                expect(result).toBeUndefined();
+            })
+        );
 
-        it('calls urlService.getAuthorizeUrl() if everything fits', async(() => {
-            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
-                authWellknownEndpoint: 'authWellknownEndpoint',
-                responseType: 'stubValue',
-            });
-            spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-            spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
-            const spy = spyOn(urlService, 'getAuthorizeUrl');
-            spyOn(redirectService, 'redirectTo').and.callFake(() => {});
-            const result = loginService.login();
-            expect(result).toBeUndefined();
-            expect(spy).toHaveBeenCalled();
-        }));
+        it(
+            'calls urlService.getAuthorizeUrl() if everything fits',
+            waitForAsync(() => {
+                spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+                    authWellknownEndpoint: 'authWellknownEndpoint',
+                    responseType: 'stubValue',
+                });
+                spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
+                spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+                spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
+                const spy = spyOn(urlService, 'getAuthorizeUrl');
+                spyOn(redirectService, 'redirectTo').and.callFake(() => {});
+                const result = loginService.login();
+                expect(result).toBeUndefined();
+                expect(spy).toHaveBeenCalled();
+            })
+        );
 
-        it('redirects to url with no url handler', async(() => {
-            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
-                authWellknownEndpoint: 'authWellknownEndpoint',
-                responseType: 'stubValue',
-            });
-            spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-            spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
-            spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
-            const redirectspy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
-            const result = loginService.login();
-            expect(result).toBeUndefined();
-            expect(redirectspy).toHaveBeenCalledWith('someUrl');
-        }));
+        it(
+            'redirects to url with no url handler',
+            waitForAsync(() => {
+                spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+                    authWellknownEndpoint: 'authWellknownEndpoint',
+                    responseType: 'stubValue',
+                });
+                spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
+                spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+                spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
+                spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
+                const redirectspy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
+                const result = loginService.login();
+                expect(result).toBeUndefined();
+                expect(redirectspy).toHaveBeenCalledWith('someUrl');
+            })
+        );
 
-        it('redirects to url with url handler when urlhandler is given', async(() => {
-            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
-                authWellknownEndpoint: 'authWellknownEndpoint',
-                responseType: 'stubValue',
-            });
-            spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-            spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
-            spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
-            const redirectspy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
-            const spy = jasmine.createSpy();
-            const urlHandler = (url) => {
-                spy(url);
-            };
-            const result = loginService.login({ urlHandler });
-            expect(result).toBeUndefined();
-            expect(spy).toHaveBeenCalledWith('someUrl');
-            expect(redirectspy).not.toHaveBeenCalled();
-        }));
+        it(
+            'redirects to url with url handler when urlhandler is given',
+            waitForAsync(() => {
+                spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+                    authWellknownEndpoint: 'authWellknownEndpoint',
+                    responseType: 'stubValue',
+                });
+                spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
+                spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+                spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
+                spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
+                const redirectspy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
+                const spy = jasmine.createSpy();
+                const urlHandler = (url) => {
+                    spy(url);
+                };
+                const result = loginService.login({ urlHandler });
+                expect(result).toBeUndefined();
+                expect(spy).toHaveBeenCalledWith('someUrl');
+                expect(redirectspy).not.toHaveBeenCalled();
+            })
+        );
 
-        it('calls getAuthorizeUrl with custom params if they are given as parameter', async(() => {
-            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
-                authWellknownEndpoint: 'authWellknownEndpoint',
-                responseType: 'stubValue',
-            });
-            spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
-            spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-            spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
-            const getAuthorizeUrlSpy = spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
-            const redirectspy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
+        it(
+            'calls getAuthorizeUrl with custom params if they are given as parameter',
+            waitForAsync(() => {
+                spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+                    authWellknownEndpoint: 'authWellknownEndpoint',
+                    responseType: 'stubValue',
+                });
+                spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
+                spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+                spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
+                const getAuthorizeUrlSpy = spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
+                const redirectspy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
 
-            const result = loginService.login({ customParams: { to: 'add', as: 'well' } });
-            expect(result).toBeUndefined();
-            expect(redirectspy).toHaveBeenCalledWith('someUrl');
-            expect(getAuthorizeUrlSpy).toHaveBeenCalledWith({ to: 'add', as: 'well' });
-        }));
+                const result = loginService.login({ customParams: { to: 'add', as: 'well' } });
+                expect(result).toBeUndefined();
+                expect(redirectspy).toHaveBeenCalledWith('someUrl');
+                expect(getAuthorizeUrlSpy).toHaveBeenCalledWith({ to: 'add', as: 'well' });
+            })
+        );
     });
 });

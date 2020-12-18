@@ -1,4 +1,4 @@
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
@@ -96,38 +96,44 @@ describe('Logout and Revoke Service', () => {
             expect(result).toEqual(jasmine.any(Observable));
         });
 
-        it('loggs and returns unmodified response if request is positive', async(() => {
-            // Arrange
-            const paramToken = 'damien';
-            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue(paramToken);
-            spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
-            const loggerSpy = spyOn(loggerService, 'logDebug');
-            spyOn(dataService, 'post').and.returnValue(of({ data: 'anything' }));
+        it(
+            'loggs and returns unmodified response if request is positive',
+            waitForAsync(() => {
+                // Arrange
+                const paramToken = 'damien';
+                spyOn(storagePersistanceService, 'getAccessToken').and.returnValue(paramToken);
+                spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+                const loggerSpy = spyOn(loggerService, 'logDebug');
+                spyOn(dataService, 'post').and.returnValue(of({ data: 'anything' }));
 
-            // Act
-            service.revokeAccessToken().subscribe((result) => {
-                // Assert
-                expect(result).toEqual({ data: 'anything' });
-                expect(loggerSpy).toHaveBeenCalled();
-            });
-        }));
-
-        it('loggs error when request is negative', async(() => {
-            // Arrange
-            const paramToken = 'damien';
-            spyOn(storagePersistanceService, 'getAccessToken').and.returnValue(paramToken);
-            spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
-            const loggerSpy = spyOn(loggerService, 'logError');
-            spyOn(dataService, 'post').and.returnValue(throwError('FAILUUURE'));
-
-            // Act
-            service.revokeAccessToken().subscribe({
-                error: (err) => {
+                // Act
+                service.revokeAccessToken().subscribe((result) => {
+                    // Assert
+                    expect(result).toEqual({ data: 'anything' });
                     expect(loggerSpy).toHaveBeenCalled();
-                    expect(err).toBeTruthy();
-                },
-            });
-        }));
+                });
+            })
+        );
+
+        it(
+            'loggs error when request is negative',
+            waitForAsync(() => {
+                // Arrange
+                const paramToken = 'damien';
+                spyOn(storagePersistanceService, 'getAccessToken').and.returnValue(paramToken);
+                spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+                const loggerSpy = spyOn(loggerService, 'logError');
+                spyOn(dataService, 'post').and.returnValue(throwError('FAILUUURE'));
+
+                // Act
+                service.revokeAccessToken().subscribe({
+                    error: (err) => {
+                        expect(loggerSpy).toHaveBeenCalled();
+                        expect(err).toBeTruthy();
+                    },
+                });
+            })
+        );
     });
 
     describe('revokeRefreshToken', () => {
@@ -165,38 +171,44 @@ describe('Logout and Revoke Service', () => {
             expect(result).toEqual(jasmine.any(Observable));
         });
 
-        it('loggs and returns unmodified response if request is positive', async(() => {
-            // Arrange
-            const paramToken = 'damien';
-            spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
-            spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
-            const loggerSpy = spyOn(loggerService, 'logDebug');
-            spyOn(dataService, 'post').and.returnValue(of({ data: 'anything' }));
+        it(
+            'loggs and returns unmodified response if request is positive',
+            waitForAsync(() => {
+                // Arrange
+                const paramToken = 'damien';
+                spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
+                spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+                const loggerSpy = spyOn(loggerService, 'logDebug');
+                spyOn(dataService, 'post').and.returnValue(of({ data: 'anything' }));
 
-            // Act
-            service.revokeRefreshToken().subscribe((result) => {
-                // Assert
-                expect(result).toEqual({ data: 'anything' });
-                expect(loggerSpy).toHaveBeenCalled();
-            });
-        }));
-
-        it('loggs error when request is negative', async(() => {
-            // Arrange
-            const paramToken = 'damien';
-            spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
-            spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
-            const loggerSpy = spyOn(loggerService, 'logError');
-            spyOn(dataService, 'post').and.returnValue(throwError('FAILUUURE'));
-
-            // Act
-            service.revokeRefreshToken().subscribe({
-                error: (err) => {
+                // Act
+                service.revokeRefreshToken().subscribe((result) => {
+                    // Assert
+                    expect(result).toEqual({ data: 'anything' });
                     expect(loggerSpy).toHaveBeenCalled();
-                    expect(err).toBeTruthy();
-                },
-            });
-        }));
+                });
+            })
+        );
+
+        it(
+            'loggs error when request is negative',
+            waitForAsync(() => {
+                // Arrange
+                const paramToken = 'damien';
+                spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
+                spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+                const loggerSpy = spyOn(loggerService, 'logError');
+                spyOn(dataService, 'post').and.returnValue(throwError('FAILUUURE'));
+
+                // Act
+                service.revokeRefreshToken().subscribe({
+                    error: (err) => {
+                        expect(loggerSpy).toHaveBeenCalled();
+                        expect(err).toBeTruthy();
+                    },
+                });
+            })
+        );
     });
 
     describe('getEndSessionUrl', () => {
@@ -276,95 +288,113 @@ describe('Logout and Revoke Service', () => {
     });
 
     describe('logoffAndRevokeTokens', () => {
-        it('calls revokeRefreshToken and revokeAccessToken when storage holds a refreshtoken', async(() => {
-            // Arrange
-            const paramToken = 'damien';
-            spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
-            const revokeRefreshTokenSpy = spyOn(service, 'revokeRefreshToken').and.returnValue(of({ any: 'thing' }));
-            const revokeAccessTokenSpy = spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
+        it(
+            'calls revokeRefreshToken and revokeAccessToken when storage holds a refreshtoken',
+            waitForAsync(() => {
+                // Arrange
+                const paramToken = 'damien';
+                spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
+                const revokeRefreshTokenSpy = spyOn(service, 'revokeRefreshToken').and.returnValue(of({ any: 'thing' }));
+                const revokeAccessTokenSpy = spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
 
-            // Act
-            service.logoffAndRevokeTokens().subscribe(() => {
-                // Assert
-                expect(revokeRefreshTokenSpy).toHaveBeenCalled();
-                expect(revokeAccessTokenSpy).toHaveBeenCalled();
-            });
-        }));
+                // Act
+                service.logoffAndRevokeTokens().subscribe(() => {
+                    // Assert
+                    expect(revokeRefreshTokenSpy).toHaveBeenCalled();
+                    expect(revokeAccessTokenSpy).toHaveBeenCalled();
+                });
+            })
+        );
 
-        it('loggs error when revokeaccesstoken throws an error', async(() => {
-            // Arrange
-            const paramToken = 'damien';
-            spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
-            spyOn(service, 'revokeRefreshToken').and.returnValue(of({ any: 'thing' }));
-            const loggerSpy = spyOn(loggerService, 'logError');
-            spyOn(service, 'revokeAccessToken').and.returnValue(throwError('FAILUUURE'));
+        it(
+            'loggs error when revokeaccesstoken throws an error',
+            waitForAsync(() => {
+                // Arrange
+                const paramToken = 'damien';
+                spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
+                spyOn(service, 'revokeRefreshToken').and.returnValue(of({ any: 'thing' }));
+                const loggerSpy = spyOn(loggerService, 'logError');
+                spyOn(service, 'revokeAccessToken').and.returnValue(throwError('FAILUUURE'));
 
-            // Act
-            service.logoffAndRevokeTokens().subscribe({
-                error: (err) => {
-                    expect(loggerSpy).toHaveBeenCalled();
-                    expect(err).toBeTruthy();
-                },
-            });
-        }));
+                // Act
+                service.logoffAndRevokeTokens().subscribe({
+                    error: (err) => {
+                        expect(loggerSpy).toHaveBeenCalled();
+                        expect(err).toBeTruthy();
+                    },
+                });
+            })
+        );
 
-        it('calls logoff in case of success', async(() => {
-            // Arrange
-            const paramToken = 'damien';
-            spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
-            spyOn(service, 'revokeRefreshToken').and.returnValue(of({ any: 'thing' }));
-            spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
-            const logoffSpy = spyOn(service, 'logoff');
+        it(
+            'calls logoff in case of success',
+            waitForAsync(() => {
+                // Arrange
+                const paramToken = 'damien';
+                spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
+                spyOn(service, 'revokeRefreshToken').and.returnValue(of({ any: 'thing' }));
+                spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
+                const logoffSpy = spyOn(service, 'logoff');
 
-            // Act
-            service.logoffAndRevokeTokens().subscribe(() => {
-                // Assert
-                expect(logoffSpy).toHaveBeenCalled();
-            });
-        }));
+                // Act
+                service.logoffAndRevokeTokens().subscribe(() => {
+                    // Assert
+                    expect(logoffSpy).toHaveBeenCalled();
+                });
+            })
+        );
 
-        it('calls logoff with urlhandler in case of success', async(() => {
-            // Arrange
-            const paramToken = 'damien';
-            spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
-            spyOn(service, 'revokeRefreshToken').and.returnValue(of({ any: 'thing' }));
-            spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
-            const logoffSpy = spyOn(service, 'logoff');
-            const urlHandler = (url) => {};
-            // Act
-            service.logoffAndRevokeTokens(urlHandler).subscribe(() => {
-                // Assert
-                expect(logoffSpy).toHaveBeenCalledWith(urlHandler);
-            });
-        }));
+        it(
+            'calls logoff with urlhandler in case of success',
+            waitForAsync(() => {
+                // Arrange
+                const paramToken = 'damien';
+                spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
+                spyOn(service, 'revokeRefreshToken').and.returnValue(of({ any: 'thing' }));
+                spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
+                const logoffSpy = spyOn(service, 'logoff');
+                const urlHandler = (url) => {};
+                // Act
+                service.logoffAndRevokeTokens(urlHandler).subscribe(() => {
+                    // Assert
+                    expect(logoffSpy).toHaveBeenCalledWith(urlHandler);
+                });
+            })
+        );
 
-        it('calls revokeAccessToken when storage does not hold a refreshtoken', async(() => {
-            // Arrange
-            spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(null);
-            const revokeRefreshTokenSpy = spyOn(service, 'revokeRefreshToken');
-            const revokeAccessTokenSpy = spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
+        it(
+            'calls revokeAccessToken when storage does not hold a refreshtoken',
+            waitForAsync(() => {
+                // Arrange
+                spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(null);
+                const revokeRefreshTokenSpy = spyOn(service, 'revokeRefreshToken');
+                const revokeAccessTokenSpy = spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
 
-            // Act
-            service.logoffAndRevokeTokens().subscribe(() => {
-                // Assert
-                expect(revokeRefreshTokenSpy).not.toHaveBeenCalled();
-                expect(revokeAccessTokenSpy).toHaveBeenCalled();
-            });
-        }));
+                // Act
+                service.logoffAndRevokeTokens().subscribe(() => {
+                    // Assert
+                    expect(revokeRefreshTokenSpy).not.toHaveBeenCalled();
+                    expect(revokeAccessTokenSpy).toHaveBeenCalled();
+                });
+            })
+        );
 
-        it('loggs error when revokeaccesstoken throws an error', async(() => {
-            // Arrange
-            spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(null);
-            const loggerSpy = spyOn(loggerService, 'logError');
-            spyOn(service, 'revokeAccessToken').and.returnValue(throwError('FAILUUURE'));
+        it(
+            'loggs error when revokeaccesstoken throws an error',
+            waitForAsync(() => {
+                // Arrange
+                spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(null);
+                const loggerSpy = spyOn(loggerService, 'logError');
+                spyOn(service, 'revokeAccessToken').and.returnValue(throwError('FAILUUURE'));
 
-            // Act
-            service.logoffAndRevokeTokens().subscribe({
-                error: (err) => {
-                    expect(loggerSpy).toHaveBeenCalled();
-                    expect(err).toBeTruthy();
-                },
-            });
-        }));
+                // Act
+                service.logoffAndRevokeTokens().subscribe({
+                    error: (err) => {
+                        expect(loggerSpy).toHaveBeenCalled();
+                        expect(err).toBeTruthy();
+                    },
+                });
+            })
+        );
     });
 });
