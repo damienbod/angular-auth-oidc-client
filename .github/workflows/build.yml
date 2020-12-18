@@ -36,7 +36,7 @@ jobs:
             - name: Building Frontend
               run: sudo npm run build-lib-prod
 
-            - name: Create new Angular Project and install lib in it
+            - name: Create new Angular Project and install lib in it, test it and build it
               run: |
                   cd ..
                   echo '=== Current Directory ==='
@@ -49,3 +49,4 @@ jobs:
                   ls
                   sudo npm install ../angular-auth-oidc-client/dist/angular-auth-oidc-client
                   npm test -- --watch=false --browsers=ChromeHeadless
+                  npm run build -- --prod
