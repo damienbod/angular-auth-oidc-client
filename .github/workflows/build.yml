@@ -33,6 +33,9 @@ jobs:
             - name: Testing Frontend
               run: sudo npm run test-lib-ci
 
+            - name: Create Test Coverage
+              run: make test-coverage
+
             - name: Building Frontend
               run: sudo npm run build-lib-prod
 
