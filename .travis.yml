@@ -14,7 +14,7 @@ install:
 script:
     - npm run lint-lib
     - npm run test-lib-ci
-    - npm run build-lib
+    - npm run build-lib-prod
     - cd ../..
     - ls
     - ng new testProject
