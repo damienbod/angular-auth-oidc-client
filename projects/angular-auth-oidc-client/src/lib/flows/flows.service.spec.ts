@@ -35,6 +35,7 @@ describe('Flows Service', () => {
     let dataService: DataService;
     let storagePersistanceService: StoragePersistanceService;
     let configurationProvider: ConfigurationProvider;
+    let tokenValidationService: TokenValidationService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -64,6 +65,7 @@ describe('Flows Service', () => {
         urlService = TestBed.inject(UrlService);
         dataService = TestBed.inject(DataService);
         storagePersistanceService = TestBed.inject(StoragePersistanceService);
+        tokenValidationService = TestBed.inject(TokenValidationService);
     });
 
     it('should create', () => {
@@ -396,9 +398,22 @@ describe('Flows Service', () => {
 
     describe('codeFlowCodeRequest ', () => {
         it(
+            'throws error if state is not correct',
+            waitForAsync(() => {
+                const spy = spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
+
+                (service as any).codeFlowCodeRequest({} as CallbackContext).subscribe({
+                    error: (err) => {
+                        expect(err).toBeTruthy();
+                    },
+                });
+            })
+        );
+
+        it(
             'throws error if no tokenEndpoint is given',
             waitForAsync(() => {
-                (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
+                (service as any).codeFlowCodeRequest({} as CallbackContext).subscribe({
                     error: (err) => {
                         expect(err).toBeTruthy();
                     },
@@ -414,11 +429,8 @@ describe('Flows Service', () => {
                     .withArgs('authWellKnownEndPoints')
                     .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
-                (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
+                (service as any).codeFlowCodeRequest({} as CallbackContext).subscribe((callbackContext) => {
                     expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
-                    const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
-                    expect(httpHeaders.has('Content-Type')).toBeTrue();
-                    expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
                 });
             })
         );
@@ -431,7 +443,7 @@ describe('Flows Service', () => {
                     .withArgs('authWellKnownEndPoints')
                     .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
-                (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
+                (service as any).codeFlowCodeRequest({} as CallbackContext).subscribe((callbackContext) => {
                     const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
                     expect(httpHeaders.has('Content-Type')).toBeTrue();
                     expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
@@ -448,7 +460,7 @@ describe('Flows Service', () => {
                     .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
                 spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ stsServer: 'stsServer' });
 
-                (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
+                (service as any).codeFlowCodeRequest({} as CallbackContext).subscribe({
                     error: (err) => {
                         console.log(err);
                         expect(err).toBeTruthy();
