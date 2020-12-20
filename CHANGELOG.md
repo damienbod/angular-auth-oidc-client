@@ -1,6 +1,6 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
-### 2020-12-18 Version 11.2.6
+### 2020-12-18 Version 11.3.0
 
 -   Update to Angular 11, fix tslib warnings
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/915)
