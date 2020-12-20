@@ -6,11 +6,6 @@
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/915)
 -   Use window object safely by injecting document
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/917)
-	
-### 2020-12-11 Version 11.2.5
-
--   Use window object safely by injecting DOCUMENT
-    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/913)
 
 ### 2020-11-20 Version 11.2.4
 
