@@ -26,36 +26,41 @@ const httpOptions = {
 
 ## Http Interceptor
 
-The HttpClient allows you to write [interceptors](https://angular.io/guide/http#intercepting-all-requests-or-responses). A common usecase would be to intercept any outgoing HTTP request and add an authorization header.
+The `HttpClient` allows you to write [interceptors](https://angular.io/guide/http#intercepting-requests-and-responses). A common use case would be to intercept any outgoing HTTP request and add an authorization header.
 
 **Note** Do not send the access token with requests for which the access token is not intended!
 
+You can configure the routes you want to send a token with in the configuration
+
 ```typescript
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-    private secureRoutes = ['http://my.route.io/secureapi'];
-
-    constructor(private oidcSecurityService: OidcSecurityService) {}
-
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        // Ensure we send the token only to routes which are secured
-        if (!this.secureRoutes.find((x) => req.url.startsWith(x))) {
-            return next.handle(req);
-        }
-
-        const token = this.oidcSecurityService.getToken();
-
-        if (!token) {
-            return next.handle(req);
-        }
-
-        req = req.clone({
-            headers: req.headers.set('Authorization', 'Bearer ' + token),
+export function configureAuth(oidcConfigService: OidcConfigService) {
+    return () =>
+        oidcConfigService.withConfig({
+            // ...
+            secureRoutes: ['https://my-secure-url.com/', 'https://my-second-secure-url.com/'],
         });
-
-        return next.handle(req);
-    }
 }
+```
+
+and use the interceptor the lib provides you
+
+```typescript
+import { AuthInterceptor /*, ... */ } from 'angular-auth-oidc-client';
+
+@NgModule({
+    declarations: [...],
+    imports: [
+        //...
+        AuthModule.forRoot(),
+        HttpClientModule,
+    ],
+    providers: [
+        // ...
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    ],
+    bootstrap: [AppComponent],
+})
+export class AppModule { }
 ```
 
 ## Revoke the access token
