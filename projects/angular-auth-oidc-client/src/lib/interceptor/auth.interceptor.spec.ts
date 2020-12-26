@@ -79,6 +79,26 @@ describe(`AuthHttpInterceptor`, () => {
     );
 
     it(
+        'should not add an Authorization header when `secureRoutes` is not given',
+        waitForAsync(() => {
+            const actionUrl = `https://jsonplaceholder.typicode.com/`;
+            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({});
+
+            spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
+
+            httpClient.get(actionUrl).subscribe((response) => {
+                expect(response).toBeTruthy();
+            });
+
+            const httpRequest = httpTestingController.expectOne(actionUrl);
+            expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
+
+            httpRequest.flush('something');
+            httpTestingController.verify();
+        })
+    );
+
+    it(
         'should not add an Authorization header when no routes configured',
         waitForAsync(() => {
             const actionUrl = `https://jsonplaceholder.typicode.com/`;
