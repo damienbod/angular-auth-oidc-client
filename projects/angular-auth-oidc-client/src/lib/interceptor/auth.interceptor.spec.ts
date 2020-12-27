@@ -9,16 +9,6 @@ import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { AuthInterceptor } from './auth.interceptor';
 
-export class SampleDataService {
-    actionUrl = `https://jsonplaceholder.typicode.com/todos/1`;
-
-    constructor(private http: HttpClient) {}
-
-    getData() {
-        return this.http.get(this.actionUrl);
-    }
-}
-
 describe(`AuthHttpInterceptor`, () => {
     let httpTestingController: HttpTestingController;
     let configurationProvider: ConfigurationProvider;

@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
@@ -13,13 +12,12 @@ export class HomeComponent implements OnInit {
     userData$: Observable<any>;
     isAuthenticated$: Observable<boolean>;
 
-    constructor(public oidcSecurityService: OidcSecurityService, private httpClient: HttpClient) {}
+    constructor(public oidcSecurityService: OidcSecurityService) {}
 
     ngOnInit() {
         this.configuration = this.oidcSecurityService.configuration;
         this.userData$ = this.oidcSecurityService.userData$;
         this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
-        this.runTestHttpRequest();
     }
 
     login() {
@@ -31,9 +29,5 @@ export class HomeComponent implements OnInit {
     }
     logout() {
         this.oidcSecurityService.logoff();
-    }
-
-    private runTestHttpRequest() {
-        this.httpClient.get('https://jsonplaceholder.typicode.com/todos/1').subscribe((response) => console.log(response));
     }
 }

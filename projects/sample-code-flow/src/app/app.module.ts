@@ -1,8 +1,8 @@
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { AuthInterceptor, AuthModule, EventTypes, LogLevel, OidcConfigService, PublicEventsService } from 'angular-auth-oidc-client';
+import { AuthModule, EventTypes, LogLevel, OidcConfigService, PublicEventsService } from 'angular-auth-oidc-client';
 import { filter } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
@@ -22,7 +22,6 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
             silentRenewUrl: `${window.location.origin}/silent-renew.html`,
             renewTimeBeforeTokenExpiresInSeconds: 10,
             logLevel: environment.production ? LogLevel.None : LogLevel.Debug,
-            secureRoutes: ['https://jsonplaceholder.typicode.com/'],
         });
 }
 
@@ -47,7 +46,6 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
             deps: [OidcConfigService],
             multi: true,
         },
-        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     ],
     bootstrap: [AppComponent],
 })
