@@ -78,7 +78,7 @@ describe('RefreshSessionService ', () => {
         it(
             'only calls start refresh session and returns idtoken and accesstoken if auth is true',
             waitForAsync(() => {
-                spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
+                spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
                 spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
                 spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
@@ -92,7 +92,7 @@ describe('RefreshSessionService ', () => {
         it(
             'only calls start refresh session and returns null if auth is false',
             waitForAsync(() => {
-                spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
+                spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
                 spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
                 spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
 
@@ -105,7 +105,7 @@ describe('RefreshSessionService ', () => {
         it(
             'calls start refresh session and waits for completed, returns idtoken and accesstoken if auth is true',
             waitForAsync(() => {
-                spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
+                spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
                 spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
                 spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
@@ -123,7 +123,7 @@ describe('RefreshSessionService ', () => {
         it(
             'calls start refresh session and waits for completed, returns null if auth is false',
             waitForAsync(() => {
-                spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
+                spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
                 spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
                 spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
 
@@ -137,11 +137,11 @@ describe('RefreshSessionService ', () => {
             })
         );
 
-        describe('NOT isCurrentFlowCodeFlowWithRefeshTokens', () => {
+        describe('NOT isCurrentFlowCodeFlowWithRefreshTokens', () => {
             it(
                 'does return null when not authenticated',
                 waitForAsync(() => {
-                    spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
+                    spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
                     spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
                     spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
 
@@ -158,7 +158,7 @@ describe('RefreshSessionService ', () => {
             it(
                 'return value only returns once',
                 waitForAsync(() => {
-                    spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
+                    spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
                     spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
                     const spyInsideMap = spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
@@ -223,7 +223,7 @@ describe('RefreshSessionService ', () => {
                 spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
                 spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
 
-                spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
+                spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
                 spyOn(refreshSessionRefreshTokenService, 'refreshSessionWithRefreshTokens').and.returnValue(of(null));
 
                 (refreshSessionService as any).startRefreshSession().subscribe(() => {
@@ -241,7 +241,7 @@ describe('RefreshSessionService ', () => {
                 spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
                 spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
 
-                spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
+                spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
                 const refreshSessionWithRefreshTokensSpy = spyOn(
                     refreshSessionRefreshTokenService,
                     'refreshSessionWithRefreshTokens'
@@ -262,7 +262,7 @@ describe('RefreshSessionService ', () => {
                 spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
                 spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
 
-                spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
+                spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
                 const refreshSessionWithRefreshTokensSpy = spyOn(
                     refreshSessionRefreshTokenService,
                     'refreshSessionWithRefreshTokens'

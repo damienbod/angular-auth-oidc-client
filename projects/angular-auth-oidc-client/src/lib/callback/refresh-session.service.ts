@@ -26,7 +26,7 @@ export class RefreshSessionService {
     ) {}
 
     forceRefreshSession() {
-        if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
+        if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
             return this.startRefreshSession().pipe(
                 map(() => {
                     const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
@@ -76,7 +76,7 @@ export class RefreshSessionService {
             switchMap(() => {
                 this.flowsDataService.setSilentRenewRunning();
 
-                if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
+                if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
                     // Refresh Session using Refresh tokens
                     return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens();
                 }

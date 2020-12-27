@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ConfigurationProvider } from '../../config/config.provider';
 
-// TODO  TESTING
 @Injectable()
 export class FlowHelper {
     constructor(private configurationProvider: ConfigurationProvider) {}
@@ -14,7 +13,7 @@ export class FlowHelper {
         return this.isCurrentFlowImplicitFlowWithAccessToken() || this.isCurrentFlowImplicitFlowWithoutAccessToken();
     }
 
-    isCurrentFlowCodeFlowWithRefeshTokens() {
+    isCurrentFlowCodeFlowWithRefreshTokens() {
         if (this.isCurrentFlowCodeFlow() && this.configurationProvider.openIDConfiguration.useRefreshToken) {
             return true;
         }

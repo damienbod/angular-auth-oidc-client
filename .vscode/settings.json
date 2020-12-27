@@ -22,5 +22,10 @@
     },
     "[less]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+    },
+    "cSpell.words": [
+        "jwtkeys",
+        "oidc",
+        "openid"
+    ]
 }
