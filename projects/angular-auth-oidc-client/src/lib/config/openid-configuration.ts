@@ -33,4 +33,6 @@ export interface OpenIdConfiguration {
 
     // Azure B2C have implemented this incorrectly. Add support for to disable this until fixed.
     disableRefreshIdTokenAuthTimeValidation?: boolean;
+    tokenRefreshInSeconds?: number;
+    secureRoutes?: string[];
 }

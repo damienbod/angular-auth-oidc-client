@@ -1,5 +1,33 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2020-12-18 Version 11.3.0
+
+-   Update to Angular 11, fix tslib warnings
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/915)
+-   Use window object safely by injecting document
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/917)
+
+### 2020-11-20 Version 11.2.4
+
+-   Do not clear session state when refreshing session with refresh tokens
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/905)
+
+### 2020-11-20 Version 11.2.3
+
+-   Added config tokenRefreshInSeconds which controls the time interval to run the startTokenValidationPeriodically
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/900)
+
+### 2020-11-13 Version 11.2.2
+
+-   Multiple tabs don't receive any event when session state becomes blank
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/896)
+-   Fixed issue with browser history on silent renew redirect to IS
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/895)
+-   UTC time fix
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/888)
+-   Small fixes of docs and naming
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/887)
+
 ### 2020-10-23 Version 11.2.1
 
 -   renewUserInfoAfterTokenRenew to OpenIdConfiguration

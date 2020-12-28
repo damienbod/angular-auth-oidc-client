@@ -30,7 +30,6 @@ import { FlowHelper } from './utils/flowHelper/flow-helper.service';
 import { PlatformProvider } from './utils/platform-provider/platform.provider';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
 import { UrlService } from './utils/url/url.service';
-import { WINDOW, _window } from './utils/window/window.reference';
 import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';
 
@@ -77,7 +76,6 @@ export class AuthModule {
                     provide: AbstractSecurityStorage,
                     useClass: token.storage || BrowserStorageService,
                 },
-                { provide: WINDOW, useFactory: _window, deps: [] },
             ],
         };
     }

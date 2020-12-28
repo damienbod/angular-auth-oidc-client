@@ -1,4 +1,6 @@
+import { DOCUMENT } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
+
 import { ConfigurationProvider } from '../../config/config.provider';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { FlowsDataService } from '../../flows/flows-data.service';
@@ -12,7 +14,6 @@ import { TokenValidationServiceMock } from '../../validation/token-validation.se
 import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { PlatformProvider } from '../platform-provider/platform.provider';
 import { PlatformProviderMock } from '../platform-provider/platform.provider-mock';
-import { WINDOW } from '../window/window.reference';
 import { UrlService } from './url.service';
 
 describe('UrlService Tests', () => {
@@ -39,17 +40,6 @@ describe('UrlService Tests', () => {
                 { provide: TokenValidationService, useClass: TokenValidationServiceMock },
                 RandomService,
                 FlowHelper,
-                {
-                    provide: WINDOW,
-                    useValue: {
-                        location: {
-                            get href() {
-                                return 'fakeUrl';
-                            },
-                            set href(v) {},
-                        },
-                    },
-                },
             ],
         });
     });
@@ -61,7 +51,7 @@ describe('UrlService Tests', () => {
         flowsDataService = TestBed.inject(FlowsDataService);
         tokenValidationService = TestBed.inject(TokenValidationService);
         storagePersistanceService = TestBed.inject(StoragePersistanceService);
-        mywindow = TestBed.inject(WINDOW);
+        mywindow = TestBed.inject(DOCUMENT).defaultView;
     });
 
     afterEach(() => {
@@ -1044,7 +1034,7 @@ describe('UrlService Tests', () => {
             spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
             spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
             spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-            spyOn(tokenValidationService, 'generateCodeVerifier').and.returnValue(codeChallenge);
+            spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
                 silentRenewUrl,
@@ -1070,7 +1060,7 @@ describe('UrlService Tests', () => {
             spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
             spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
             spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-            spyOn(tokenValidationService, 'generateCodeVerifier').and.returnValue(codeChallenge);
+            spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
             spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ authorizationEndpoint });
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
@@ -1100,7 +1090,7 @@ describe('UrlService Tests', () => {
             spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
             spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
             spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-            spyOn(tokenValidationService, 'generateCodeVerifier').and.returnValue(codeChallenge);
+            spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
             spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ silentRenewUrl, clientId, responseType });
@@ -1213,7 +1203,7 @@ describe('UrlService Tests', () => {
             spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
             spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
             spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-            spyOn(tokenValidationService, 'generateCodeVerifier').and.returnValue(codeChallenge);
+            spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
             spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ authorizationEndpoint });
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
@@ -1245,7 +1235,7 @@ describe('UrlService Tests', () => {
             spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
             spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
             spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-            spyOn(tokenValidationService, 'generateCodeVerifier').and.returnValue(codeChallenge);
+            spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
             spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ authorizationEndpoint });
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
@@ -1276,7 +1266,7 @@ describe('UrlService Tests', () => {
             spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
             spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
             spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-            spyOn(tokenValidationService, 'generateCodeVerifier').and.returnValue(codeChallenge);
+            spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
             spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ redirectUrl, clientId, responseType });

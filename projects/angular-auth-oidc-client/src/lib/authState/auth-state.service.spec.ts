@@ -253,7 +253,7 @@ describe('Auth State Service', () => {
             const validateAccessTokenNotExpiredResult = true;
             const expectedResult = !validateAccessTokenNotExpiredResult;
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ renewTimeBeforeTokenExpiresInSeconds: 5 });
-            const date = new Date();
+            const date = new Date(new Date().toUTCString());
             spyOn(storagePersistanceService, 'read').withArgs('access_token_expires_at').and.returnValue(date);
             const spy = spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(validateAccessTokenNotExpiredResult);
             const result = authStateService.hasAccessTokenExpiredIfExpiryExists();
@@ -265,7 +265,7 @@ describe('Auth State Service', () => {
             const validateAccessTokenNotExpiredResult = false;
             const expectedResult = !validateAccessTokenNotExpiredResult;
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ renewTimeBeforeTokenExpiresInSeconds: 5 });
-            const date = new Date();
+            const date = new Date(new Date().toUTCString());
 
             spyOn(eventsService, 'fireEvent');
 

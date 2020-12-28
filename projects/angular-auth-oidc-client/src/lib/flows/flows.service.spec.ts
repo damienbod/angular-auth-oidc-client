@@ -1,5 +1,5 @@
 import { HttpHeaders } from '@angular/common/http';
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
@@ -35,6 +35,7 @@ describe('Flows Service', () => {
     let dataService: DataService;
     let storagePersistanceService: StoragePersistanceService;
     let configurationProvider: ConfigurationProvider;
+    let tokenValidationService: TokenValidationService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -64,6 +65,7 @@ describe('Flows Service', () => {
         urlService = TestBed.inject(UrlService);
         dataService = TestBed.inject(DataService);
         storagePersistanceService = TestBed.inject(StoragePersistanceService);
+        tokenValidationService = TestBed.inject(TokenValidationService);
     });
 
     it('should create', () => {
@@ -106,284 +108,366 @@ describe('Flows Service', () => {
     });
 
     describe('processCodeFlowCallback', () => {
-        it('calls all methods correctly', async(() => {
-            const codeFlowCallbackSpy = spyOn(service as any, 'codeFlowCallback').and.returnValue(of({}));
-            const codeFlowCodeRequestSpy = spyOn(service as any, 'codeFlowCodeRequest').and.returnValue(of({}));
-            const callbackHistoryAndResetJwtKeysSpy = spyOn(service as any, 'callbackHistoryAndResetJwtKeys').and.returnValue(of({}));
-            const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
-            const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
+        it(
+            'calls all methods correctly',
+            waitForAsync(() => {
+                const codeFlowCallbackSpy = spyOn(service as any, 'codeFlowCallback').and.returnValue(of({}));
+                const codeFlowCodeRequestSpy = spyOn(service as any, 'codeFlowCodeRequest').and.returnValue(of({}));
+                const callbackHistoryAndResetJwtKeysSpy = spyOn(service as any, 'callbackHistoryAndResetJwtKeys').and.returnValue(of({}));
+                const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
+                const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
 
-            service.processCodeFlowCallback('some-url').subscribe((value) => {
-                expect(value).toBeTruthy();
-                expect(codeFlowCallbackSpy).toHaveBeenCalledWith('some-url');
-                expect(codeFlowCodeRequestSpy).toHaveBeenCalled();
-                expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
-                expect(callbackStateValidationSpy).toHaveBeenCalled();
-                expect(callbackUserSpy).toHaveBeenCalled();
-            });
-        }));
+                service.processCodeFlowCallback('some-url').subscribe((value) => {
+                    expect(value).toBeTruthy();
+                    expect(codeFlowCallbackSpy).toHaveBeenCalledWith('some-url');
+                    expect(codeFlowCodeRequestSpy).toHaveBeenCalled();
+                    expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
+                    expect(callbackStateValidationSpy).toHaveBeenCalled();
+                    expect(callbackUserSpy).toHaveBeenCalled();
+                });
+            })
+        );
     });
 
     describe('processSilentRenewCodeFlowCallback', () => {
-        it('calls all methods correctly', async(() => {
-            const codeFlowCodeRequestSpy = spyOn(service as any, 'codeFlowCodeRequest').and.returnValue(of({}));
-            const callbackHistoryAndResetJwtKeysSpy = spyOn(service as any, 'callbackHistoryAndResetJwtKeys').and.returnValue(of({}));
-            const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
-            const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
+        it(
+            'calls all methods correctly',
+            waitForAsync(() => {
+                const codeFlowCodeRequestSpy = spyOn(service as any, 'codeFlowCodeRequest').and.returnValue(of({}));
+                const callbackHistoryAndResetJwtKeysSpy = spyOn(service as any, 'callbackHistoryAndResetJwtKeys').and.returnValue(of({}));
+                const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
+                const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
 
-            service.processSilentRenewCodeFlowCallback({} as CallbackContext).subscribe((value) => {
-                expect(value).toBeTruthy();
-                expect(codeFlowCodeRequestSpy).toHaveBeenCalled();
-                expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
-                expect(callbackStateValidationSpy).toHaveBeenCalled();
-                expect(callbackUserSpy).toHaveBeenCalled();
-            });
-        }));
+                service.processSilentRenewCodeFlowCallback({} as CallbackContext).subscribe((value) => {
+                    expect(value).toBeTruthy();
+                    expect(codeFlowCodeRequestSpy).toHaveBeenCalled();
+                    expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
+                    expect(callbackStateValidationSpy).toHaveBeenCalled();
+                    expect(callbackUserSpy).toHaveBeenCalled();
+                });
+            })
+        );
     });
 
     describe('processImplicitFlowCallback', () => {
-        it('calls all methods correctly', async(() => {
-            const implicitFlowCallbackSpy = spyOn(service as any, 'implicitFlowCallback').and.returnValue(of({}));
-            const callbackHistoryAndResetJwtKeysSpy = spyOn(service as any, 'callbackHistoryAndResetJwtKeys').and.returnValue(of({}));
-            const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
-            const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
+        it(
+            'calls all methods correctly',
+            waitForAsync(() => {
+                const implicitFlowCallbackSpy = spyOn(service as any, 'implicitFlowCallback').and.returnValue(of({}));
+                const callbackHistoryAndResetJwtKeysSpy = spyOn(service as any, 'callbackHistoryAndResetJwtKeys').and.returnValue(of({}));
+                const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
+                const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
 
-            (service as any).processImplicitFlowCallback('any-hash').subscribe((value) => {
-                expect(value).toBeTruthy();
-                expect(implicitFlowCallbackSpy).toHaveBeenCalled();
-                expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
-                expect(callbackStateValidationSpy).toHaveBeenCalled();
-                expect(callbackUserSpy).toHaveBeenCalled();
-            });
-        }));
+                (service as any).processImplicitFlowCallback('any-hash').subscribe((value) => {
+                    expect(value).toBeTruthy();
+                    expect(implicitFlowCallbackSpy).toHaveBeenCalled();
+                    expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
+                    expect(callbackStateValidationSpy).toHaveBeenCalled();
+                    expect(callbackUserSpy).toHaveBeenCalled();
+                });
+            })
+        );
     });
 
     describe('processRefreshToken', () => {
-        it('calls all methods correctly', async(() => {
-            const refreshSessionWithRefreshTokensSpy = spyOn(service as any, 'refreshSessionWithRefreshTokens').and.returnValue(of({}));
-            const refreshTokensRequestTokensSpy = spyOn(service as any, 'refreshTokensRequestTokens').and.returnValue(of({}));
-            const callbackHistoryAndResetJwtKeysSpy = spyOn(service as any, 'callbackHistoryAndResetJwtKeys').and.returnValue(of({}));
-            const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
-            const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
+        it(
+            'calls all methods correctly',
+            waitForAsync(() => {
+                const refreshSessionWithRefreshTokensSpy = spyOn(service as any, 'refreshSessionWithRefreshTokens').and.returnValue(of({}));
+                const refreshTokensRequestTokensSpy = spyOn(service as any, 'refreshTokensRequestTokens').and.returnValue(of({}));
+                const callbackHistoryAndResetJwtKeysSpy = spyOn(service as any, 'callbackHistoryAndResetJwtKeys').and.returnValue(of({}));
+                const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
+                const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
 
-            (service as any).processRefreshToken().subscribe((value) => {
-                expect(value).toBeTruthy();
-                expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalled();
-                expect(refreshTokensRequestTokensSpy).toHaveBeenCalled();
-                expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
-                expect(callbackStateValidationSpy).toHaveBeenCalled();
-                expect(callbackUserSpy).toHaveBeenCalled();
-            });
-        }));
+                (service as any).processRefreshToken().subscribe((value) => {
+                    expect(value).toBeTruthy();
+                    expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalled();
+                    expect(refreshTokensRequestTokensSpy).toHaveBeenCalled();
+                    expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
+                    expect(callbackStateValidationSpy).toHaveBeenCalled();
+                    expect(callbackUserSpy).toHaveBeenCalled();
+                });
+            })
+        );
     });
 
     describe('codeFlowCallback', () => {
-        it('throws error if no state is given', async(() => {
-            const getUrlParameterSpy = spyOn(urlService, 'getUrlParameter').and.returnValue('params');
-            getUrlParameterSpy.withArgs('any-url', 'state').and.returnValue(null);
+        it(
+            'throws error if no state is given',
+            waitForAsync(() => {
+                const getUrlParameterSpy = spyOn(urlService, 'getUrlParameter').and.returnValue('params');
+                getUrlParameterSpy.withArgs('any-url', 'state').and.returnValue(null);
 
-            (service as any).codeFlowCallback('any-url').subscribe({
-                error: (err) => {
-                    expect(err).toBeTruthy();
-                },
-            });
-        }));
+                (service as any).codeFlowCallback('any-url').subscribe({
+                    error: (err) => {
+                        expect(err).toBeTruthy();
+                    },
+                });
+            })
+        );
 
-        it('throws error if no code is given', async(() => {
-            const getUrlParameterSpy = spyOn(urlService, 'getUrlParameter').and.returnValue('params');
-            getUrlParameterSpy.withArgs('any-url', 'code').and.returnValue(null);
+        it(
+            'throws error if no code is given',
+            waitForAsync(() => {
+                const getUrlParameterSpy = spyOn(urlService, 'getUrlParameter').and.returnValue('params');
+                getUrlParameterSpy.withArgs('any-url', 'code').and.returnValue(null);
 
-            (service as any).codeFlowCallback('any-url').subscribe({
-                error: (err) => {
-                    expect(err).toBeTruthy();
-                },
-            });
-        }));
+                (service as any).codeFlowCallback('any-url').subscribe({
+                    error: (err) => {
+                        expect(err).toBeTruthy();
+                    },
+                });
+            })
+        );
 
-        it('returns callbackContext if all params are good', async(() => {
-            spyOn(urlService, 'getUrlParameter').and.returnValue('params');
+        it(
+            'returns callbackContext if all params are good',
+            waitForAsync(() => {
+                spyOn(urlService, 'getUrlParameter').and.returnValue('params');
 
-            const expectedCallbackContext = {
-                code: 'params',
-                refreshToken: null,
-                state: 'params',
-                sessionState: 'params',
-                authResult: null,
-                isRenewProcess: false,
-                jwtKeys: null,
-                validationResult: null,
-                existingIdToken: null,
-            };
+                const expectedCallbackContext = {
+                    code: 'params',
+                    refreshToken: null,
+                    state: 'params',
+                    sessionState: 'params',
+                    authResult: null,
+                    isRenewProcess: false,
+                    jwtKeys: null,
+                    validationResult: null,
+                    existingIdToken: null,
+                };
 
-            (service as any).codeFlowCallback('any-url').subscribe((callbackContext) => {
-                expect(callbackContext).toEqual(expectedCallbackContext);
-            });
-        }));
+                (service as any).codeFlowCallback('any-url').subscribe((callbackContext) => {
+                    expect(callbackContext).toEqual(expectedCallbackContext);
+                });
+            })
+        );
     });
 
     describe('implicitFlowCallback', () => {
-        it('calls "resetAuthorizationData" if silent renew is not running', async(() => {
-            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-            const resetAuthorizationDataSpy = spyOn(service as any, 'resetAuthorizationData');
+        it(
+            'calls "resetAuthorizationData" if silent renew is not running',
+            waitForAsync(() => {
+                spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
+                const resetAuthorizationDataSpy = spyOn(service as any, 'resetAuthorizationData');
 
-            (service as any).implicitFlowCallback('any-hash').subscribe(() => {
-                expect(resetAuthorizationDataSpy).toHaveBeenCalled();
-            });
-        }));
+                (service as any).implicitFlowCallback('any-hash').subscribe(() => {
+                    expect(resetAuthorizationDataSpy).toHaveBeenCalled();
+                });
+            })
+        );
 
-        it('does NOT calls "resetAuthorizationData" if silent renew is running', async(() => {
-            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-            const resetAuthorizationDataSpy = spyOn(service as any, 'resetAuthorizationData');
+        it(
+            'does NOT calls "resetAuthorizationData" if silent renew is running',
+            waitForAsync(() => {
+                spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
+                const resetAuthorizationDataSpy = spyOn(service as any, 'resetAuthorizationData');
 
-            (service as any).implicitFlowCallback('any-hash').subscribe(() => {
-                expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
-            });
-        }));
+                (service as any).implicitFlowCallback('any-hash').subscribe(() => {
+                    expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
+                });
+            })
+        );
 
-        it('returns callbackContext if all params are good', async(() => {
-            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-            const expectedCallbackContext = {
-                code: null,
-                refreshToken: null,
-                state: null,
-                sessionState: null,
-                authResult: { anyHash: '' },
-                isRenewProcess: true,
-                jwtKeys: null,
-                validationResult: null,
-                existingIdToken: null,
-            };
-            (service as any).implicitFlowCallback('anyHash').subscribe((callbackContext) => {
-                expect(callbackContext).toEqual(expectedCallbackContext);
-            });
-        }));
+        it(
+            'returns callbackContext if all params are good',
+            waitForAsync(() => {
+                spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
+                const expectedCallbackContext = {
+                    code: null,
+                    refreshToken: null,
+                    state: null,
+                    sessionState: null,
+                    authResult: { anyHash: '' },
+                    isRenewProcess: true,
+                    jwtKeys: null,
+                    validationResult: null,
+                    existingIdToken: null,
+                };
+                (service as any).implicitFlowCallback('anyHash').subscribe((callbackContext) => {
+                    expect(callbackContext).toEqual(expectedCallbackContext);
+                });
+            })
+        );
     });
 
     describe('refreshSessionWithRefreshTokens', () => {
-        it('returns callbackContext if all params are good', async(() => {
-            spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('state-data');
-            spyOn(authStateService, 'getRefreshToken').and.returnValue('henlo-furiend');
-            spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
+        it(
+            'returns callbackContext if all params are good',
+            waitForAsync(() => {
+                spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('state-data');
+                spyOn(authStateService, 'getRefreshToken').and.returnValue('henlo-furiend');
+                spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
 
-            const expectedCallbackContext = {
-                code: null,
-                refreshToken: 'henlo-furiend',
-                state: 'state-data',
-                sessionState: null,
-                authResult: null,
-                isRenewProcess: true,
-                jwtKeys: null,
-                validationResult: null,
-                existingIdToken: 'henlo-legger',
-            };
-            (service as any).refreshSessionWithRefreshTokens().subscribe((callbackContext) => {
-                expect(callbackContext).toEqual(expectedCallbackContext);
-            });
-        }));
+                const expectedCallbackContext = {
+                    code: null,
+                    refreshToken: 'henlo-furiend',
+                    state: 'state-data',
+                    sessionState: null,
+                    authResult: null,
+                    isRenewProcess: true,
+                    jwtKeys: null,
+                    validationResult: null,
+                    existingIdToken: 'henlo-legger',
+                };
+                (service as any).refreshSessionWithRefreshTokens().subscribe((callbackContext) => {
+                    expect(callbackContext).toEqual(expectedCallbackContext);
+                });
+            })
+        );
 
-        it('throws error if no refresh token is given', async(() => {
-            spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('state-data');
-            spyOn(authStateService, 'getRefreshToken').and.returnValue(null);
-            spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
+        it(
+            'throws error if no refresh token is given',
+            waitForAsync(() => {
+                spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('state-data');
+                spyOn(authStateService, 'getRefreshToken').and.returnValue(null);
+                spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
 
-            (service as any).refreshSessionWithRefreshTokens().subscribe({
-                error: (err) => {
-                    expect(err).toBeTruthy();
-                },
-            });
-        }));
+                (service as any).refreshSessionWithRefreshTokens().subscribe({
+                    error: (err) => {
+                        expect(err).toBeTruthy();
+                    },
+                });
+            })
+        );
     });
 
     describe('refreshTokensRequestTokens', () => {
-        it('throws error if no tokenEndpoint is given', async(() => {
-            (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
-                error: (err) => {
-                    expect(err).toBeTruthy();
-                },
-            });
-        }));
+        it(
+            'throws error if no tokenEndpoint is given',
+            waitForAsync(() => {
+                (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
+                    error: (err) => {
+                        expect(err).toBeTruthy();
+                    },
+                });
+            })
+        );
 
-        it('calls dataservice if all params are good', async(() => {
-            const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        it(
+            'calls dataservice if all params are good',
+            waitForAsync(() => {
+                const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+                spyOn(storagePersistanceService, 'read')
+                    .withArgs('authWellKnownEndPoints')
+                    .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
-            (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
-                expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
-                const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
-                expect(httpHeaders.has('Content-Type')).toBeTrue();
-                expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
-            });
-        }));
+                (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
+                    expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
+                    const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
+                    expect(httpHeaders.has('Content-Type')).toBeTrue();
+                    expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
+                });
+            })
+        );
 
-        it('calls dataservice with correct headers if all params are good', async(() => {
-            const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        it(
+            'calls dataservice with correct headers if all params are good',
+            waitForAsync(() => {
+                const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+                spyOn(storagePersistanceService, 'read')
+                    .withArgs('authWellKnownEndPoints')
+                    .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
-            (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
-                const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
-                expect(httpHeaders.has('Content-Type')).toBeTrue();
-                expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
-            });
-        }));
+                (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
+                    const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
+                    expect(httpHeaders.has('Content-Type')).toBeTrue();
+                    expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
+                });
+            })
+        );
 
-        it('returns error in case of http error', async(() => {
-            spyOn(dataService, 'post').and.returnValue(throwError({}));
-            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
-            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ stsServer: 'stsServer' });
+        it(
+            'returns error in case of http error',
+            waitForAsync(() => {
+                spyOn(dataService, 'post').and.returnValue(throwError({}));
+                spyOn(storagePersistanceService, 'read')
+                    .withArgs('authWellKnownEndPoints')
+                    .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+                spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ stsServer: 'stsServer' });
 
-            (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
-                error: (err) => {
-                    console.log(err);
-                    expect(err).toBeTruthy();
-                },
-            });
-        }));
+                (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
+                    error: (err) => {
+                        console.log(err);
+                        expect(err).toBeTruthy();
+                    },
+                });
+            })
+        );
     });
 
     describe('codeFlowCodeRequest ', () => {
-        it('throws error if no tokenEndpoint is given', async(() => {
-            (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
-                error: (err) => {
-                    expect(err).toBeTruthy();
-                },
-            });
-        }));
+        it(
+            'throws error if state is not correct',
+            waitForAsync(() => {
+                const spy = spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
 
-        it('calls dataservice if all params are good', async(() => {
-            const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+                (service as any).codeFlowCodeRequest({} as CallbackContext).subscribe({
+                    error: (err) => {
+                        expect(err).toBeTruthy();
+                    },
+                });
+            })
+        );
 
-            (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
-                expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
-                const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
-                expect(httpHeaders.has('Content-Type')).toBeTrue();
-                expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
-            });
-        }));
+        it(
+            'throws error if no tokenEndpoint is given',
+            waitForAsync(() => {
+                (service as any).codeFlowCodeRequest({} as CallbackContext).subscribe({
+                    error: (err) => {
+                        expect(err).toBeTruthy();
+                    },
+                });
+            })
+        );
 
-        it('calls dataservice with correct headers if all params are good', async(() => {
-            const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        it(
+            'calls dataservice if all params are good',
+            waitForAsync(() => {
+                const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+                spyOn(storagePersistanceService, 'read')
+                    .withArgs('authWellKnownEndPoints')
+                    .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
-            (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
-                const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
-                expect(httpHeaders.has('Content-Type')).toBeTrue();
-                expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
-            });
-        }));
+                (service as any).codeFlowCodeRequest({} as CallbackContext).subscribe((callbackContext) => {
+                    expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
+                });
+            })
+        );
 
-        it('returns error in case of http error', async(() => {
-            spyOn(dataService, 'post').and.returnValue(throwError({}));
-            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
-            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ stsServer: 'stsServer' });
+        it(
+            'calls dataservice with correct headers if all params are good',
+            waitForAsync(() => {
+                const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+                spyOn(storagePersistanceService, 'read')
+                    .withArgs('authWellKnownEndPoints')
+                    .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
-            (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
-                error: (err) => {
-                    console.log(err);
-                    expect(err).toBeTruthy();
-                },
-            });
-        }));
+                (service as any).codeFlowCodeRequest({} as CallbackContext).subscribe((callbackContext) => {
+                    const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
+                    expect(httpHeaders.has('Content-Type')).toBeTrue();
+                    expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
+                });
+            })
+        );
+
+        it(
+            'returns error in case of http error',
+            waitForAsync(() => {
+                spyOn(dataService, 'post').and.returnValue(throwError({}));
+                spyOn(storagePersistanceService, 'read')
+                    .withArgs('authWellKnownEndPoints')
+                    .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+                spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ stsServer: 'stsServer' });
+
+                (service as any).codeFlowCodeRequest({} as CallbackContext).subscribe({
+                    error: (err) => {
+                        console.log(err);
+                        expect(err).toBeTruthy();
+                    },
+                });
+            })
+        );
     });
 
     describe('historyCleanUpTurnedOn ', () => {

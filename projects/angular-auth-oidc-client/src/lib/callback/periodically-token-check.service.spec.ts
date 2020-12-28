@@ -90,7 +90,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
         it('interval calls resetSilentRenewRunning when current flow is CodeFlowWithRefeshTokens', fakeAsync(() => {
             spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: true });
-            const isCurrentFlowCodeFlowWithRefeshTokensSpy = spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(
+            const isCurrentFlowCodeFlowWithRefreshTokensSpy = spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(
                 true
             );
             const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
@@ -98,7 +98,7 @@ describe('PeriodicallyTokenCheckService', () => {
             tick(1000);
             intervallService.runTokenValidationRunning.unsubscribe();
             intervallService.runTokenValidationRunning = null;
-            expect(isCurrentFlowCodeFlowWithRefeshTokensSpy).toHaveBeenCalled();
+            expect(isCurrentFlowCodeFlowWithRefreshTokensSpy).toHaveBeenCalled();
             expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
         }));
 
@@ -117,7 +117,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
         it('calls hasIdTokenExpired and hasAccessTokenExpiredIfExpiryExists only when it should be executed', fakeAsync(() => {
             spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: true });
-            spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens');
+            spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens');
             spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
             spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
@@ -138,7 +138,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
         it('returns if tokens are not expired', fakeAsync(() => {
             const silentRenewSpy = spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: true });
-            spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens');
+            spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens');
             spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
             spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
@@ -162,7 +162,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
         it('calls resetAuthorizationData and returns if no silent renew is configured', fakeAsync(() => {
             const silentRenewSpy = spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: true });
-            spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens');
+            spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens');
             spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
             spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
@@ -185,7 +185,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
         it('calls refreshSessionWithRefreshTokens if current flow is Code flow wiht refresh tokens', fakeAsync(() => {
             spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: true });
-            spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(true);
+            spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
             spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
             spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');

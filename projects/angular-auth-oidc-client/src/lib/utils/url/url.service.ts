@@ -1,5 +1,5 @@
 import { HttpParams } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { oneLineTrim } from 'common-tags';
 import { ConfigurationProvider } from '../../config/config.provider';
 import { FlowsDataService } from '../../flows/flows-data.service';
@@ -7,7 +7,6 @@ import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistanceService } from '../../storage/storage-persistance.service';
 import { TokenValidationService } from '../../validation/token-validation.service';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
-import { WINDOW } from '../window/window.reference';
 import { UriEncoder } from './uri-encoder';
 
 @Injectable()
@@ -21,7 +20,6 @@ export class UrlService {
         private readonly flowHelper: FlowHelper,
         private tokenValidationService: TokenValidationService,
         private storagePersistanceService: StoragePersistanceService,
-        @Inject(WINDOW) private window: any
     ) {}
 
     getUrlParameter(urlToCheck: any, name: any): string {
@@ -267,7 +265,7 @@ export class UrlService {
 
         // code_challenge with "S256"
         const codeVerifier = this.flowsDataService.createCodeVerifier();
-        const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
+        const codeChallenge = this.tokenValidationService.generateCodeChallenge(codeVerifier);
 
         const silentRenewUrl = this.getSilentRenewUrl();
 
@@ -317,7 +315,7 @@ export class UrlService {
 
         // code_challenge with "S256"
         const codeVerifier = this.flowsDataService.createCodeVerifier();
-        const codeChallenge = this.tokenValidationService.generateCodeVerifier(codeVerifier);
+        const codeChallenge = this.tokenValidationService.generateCodeChallenge(codeVerifier);
 
         const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
         if (authWellKnownEndPoints) {

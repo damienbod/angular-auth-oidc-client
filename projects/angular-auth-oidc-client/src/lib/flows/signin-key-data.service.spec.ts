@@ -1,5 +1,6 @@
-import { async, TestBed } from '@angular/core/testing';
-import { Observable, of } from 'rxjs';
+import { HttpResponse } from '@angular/common/http';
+import { TestBed, waitForAsync } from '@angular/core/testing';
+import { isObservable, of } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { LoggerService } from '../logging/logger.service';
@@ -37,67 +38,97 @@ describe('Signin Key Data Service', () => {
     });
 
     describe('getSigningKeys', () => {
-        it('throws error when no wellknownendpoints given', async(() => {
-            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
-            const result = service.getSigningKeys();
+        it(
+            'throws error when no wellKnownEndpoints given',
+            waitForAsync(() => {
+                spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+                const result = service.getSigningKeys();
 
-            result.subscribe({
-                error: (err) => {
-                    expect(err).toBeTruthy();
-                },
-            });
-        }));
+                result.subscribe({
+                    error: (err) => {
+                        expect(err).toBeTruthy();
+                    },
+                });
+            })
+        );
 
-        it('throws error when no jwksUri given', async(() => {
-            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: null });
-            const result = service.getSigningKeys();
+        it(
+            'throws error when no jwksUri given',
+            waitForAsync(() => {
+                spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: null });
+                const result = service.getSigningKeys();
 
-            result.subscribe({
-                error: (err) => {
-                    expect(err).toBeTruthy();
-                },
-            });
-        }));
+                result.subscribe({
+                    error: (err) => {
+                        expect(err).toBeTruthy();
+                    },
+                });
+            })
+        );
 
-        it('calls dataservice if jwksurl is given', async(() => {
-            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
-            const spy = spyOn(dataService, 'get').and.callFake(() => {
-                return of();
-            });
+        it(
+            'calls dataservice if jwksurl is given',
+            waitForAsync(() => {
+                spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
+                const spy = spyOn(dataService, 'get').and.callFake(() => {
+                    return of();
+                });
 
-            const result = service.getSigningKeys();
+                const result = service.getSigningKeys();
 
-            result.subscribe({
-                complete: () => {
-                    expect(spy).toHaveBeenCalledWith('someUrl');
-                },
-            });
-        }));
+                result.subscribe({
+                    complete: () => {
+                        expect(spy).toHaveBeenCalledWith('someUrl');
+                    },
+                });
+            })
+        );
     });
 
     describe('handleErrorGetSigningKeys', () => {
-        it('keeps observable if error is catched', async(() => {
-            const result = (service as any).handleErrorGetSigningKeys(new Response());
+        it(
+            'keeps observable if error is catched',
+            waitForAsync(() => {
+                const result = (service as any).handleErrorGetSigningKeys(new HttpResponse());
+                const hasTypeObservable = isObservable(result);
+                expect(hasTypeObservable).toBeTrue();
+            })
+        );
 
-            expect(result).toEqual(jasmine.any(Observable));
-        }));
+        it(
+            'loggs error if error is response',
+            waitForAsync(() => {
+                const logSpy = spyOn(loggerService, 'logError');
+                (service as any).handleErrorGetSigningKeys(new HttpResponse({ status: 400, statusText: 'nono' })).subscribe({
+                    error: () => {
+                        expect(logSpy).toHaveBeenCalledWith('400 - nono {}');
+                    },
+                });
+            })
+        );
 
-        it('loggs error if error is response', async(() => {
-            const logSpy = spyOn(loggerService, 'logError');
-            (service as any).handleErrorGetSigningKeys(new Response(null, { status: 400, statusText: 'nono' }));
-            expect(logSpy).toHaveBeenCalledWith('400 - nono {}');
-        }));
+        it(
+            'loggs error if error is not a response',
+            waitForAsync(() => {
+                const logSpy = spyOn(loggerService, 'logError');
+                (service as any).handleErrorGetSigningKeys('Just some Error').subscribe({
+                    error: () => {
+                        expect(logSpy).toHaveBeenCalledWith('Just some Error');
+                    },
+                });
+            })
+        );
 
-        it('loggs error if error is not a response', async(() => {
-            const logSpy = spyOn(loggerService, 'logError');
-            (service as any).handleErrorGetSigningKeys('Just some Error');
-            expect(logSpy).toHaveBeenCalledWith('Just some Error');
-        }));
-
-        it('loggs error if error with message property is not a response', async(() => {
-            const logSpy = spyOn(loggerService, 'logError');
-            (service as any).handleErrorGetSigningKeys({ message: 'Just some Error' });
-            expect(logSpy).toHaveBeenCalledWith('Just some Error');
-        }));
+        it(
+            'loggs error if error with message property is not a response',
+            waitForAsync(() => {
+                const logSpy = spyOn(loggerService, 'logError');
+                (service as any).handleErrorGetSigningKeys({ message: 'Just some Error' }).subscribe({
+                    error: () => {
+                        expect(logSpy).toHaveBeenCalledWith('Just some Error');
+                    },
+                });
+            })
+        );
     });
 });
