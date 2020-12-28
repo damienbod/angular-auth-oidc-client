@@ -62,3 +62,18 @@ jobs:
                   sudo npm install ../angular-auth-oidc-client/dist/angular-auth-oidc-client
                   npm test -- --watch=false --browsers=ChromeHeadless
                   sudo npm run build -- --prod
+
+            - name: Create new Angular Project and use the schematics to add a module
+              run: |
+                  cd ..
+                  echo '=== Current Directory ==='
+                  ls
+                  sudo npm install -g @angular/cli
+                  echo 'Creating new angular project'
+                  sudo ng new testProjectSchematic --skip-git
+                  cd testProjectSchematic
+                  echo '=== Current Directory ==='
+                  ls
+                  sudo ng add ../angular-auth-oidc-client/dist/angular-auth-oidc-client
+                  npm test -- --watch=false --browsers=ChromeHeadless
+                  sudo npm run build -- --prod
