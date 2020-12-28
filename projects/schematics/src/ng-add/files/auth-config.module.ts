@@ -20,7 +20,6 @@ export function configureAuth(oidcConfigService: OidcConfigService): () => void 
 @NgModule({
     imports: [AuthModule.forRoot()],
     exports: [AuthModule],
-    declarations: [],
     providers: [
         OidcConfigService,
         {
@@ -31,4 +30,4 @@ export function configureAuth(oidcConfigService: OidcConfigService): () => void 
         },
     ],
 })
-export class AuthenticationModule {}
+export class AuthConfigModule {}

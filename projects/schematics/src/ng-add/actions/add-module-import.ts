@@ -10,8 +10,8 @@ export function addModuleToImports(options: any): Rule {
         const modulesToImport = [
             {
                 target: `${project.sourceRoot}/app/app.module.ts`,
-                moduleName: 'AuthenticationModule',
-                modulePath: `./auth/auth.module`,
+                moduleName: 'AuthConfigModule',
+                modulePath: `./auth/auth-config.module.ts`,
             },
         ];
 
@@ -27,7 +27,7 @@ export function addModuleToImports(options: any): Rule {
 
 function addImport(host: Tree, context: SchematicContext, moduleName: string, source: string, target: string) {
     const sourcefile = readIntoSourceFile(host, target);
-    const importChanges = addImportToModule(sourcefile, source, 'AuthenticationModule', source) as InsertChange[];
+    const importChanges = addImportToModule(sourcefile, source, 'AuthConfigModule', source) as InsertChange[];
 
     importChanges.forEach((insertChange) => {
         const exportRecorder = host.beginUpdate(target);

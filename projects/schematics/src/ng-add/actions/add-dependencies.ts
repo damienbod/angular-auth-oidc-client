@@ -4,7 +4,7 @@ import { addPackageJsonDependency, NodeDependency, NodeDependencyType } from '@s
 const dependenciesToAdd = [
     {
         name: 'angular-auth-oidc-client',
-        version: '11.2.0',
+        version: '11.3.0',
     },
 ];
 
@@ -24,7 +24,7 @@ function createNodeDependency(pack: any): NodeDependency {
     const { name, version } = pack;
 
     return {
-        type: NodeDependencyType.Dev,
+        type: NodeDependencyType.Default,
         name,
         version,
         overwrite: true,
