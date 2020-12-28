@@ -11,7 +11,7 @@ export function addModuleToImports(options: any): Rule {
             {
                 target: `${project.sourceRoot}/app/app.module.ts`,
                 moduleName: 'AuthConfigModule',
-                modulePath: `./auth/auth-config.module.ts`,
+                modulePath: `./auth/auth-config.module`,
             },
         ];
 
