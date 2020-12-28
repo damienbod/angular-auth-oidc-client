@@ -1,5 +1,6 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
+import { environment } from '../environments/environment';
 
 export function configureAuth(oidcConfigService: OidcConfigService) {
     return () =>
@@ -7,12 +8,13 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
             stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
             redirectUrl: window.location.origin,
             postLogoutRedirectUri: window.location.origin,
-            clientId: 'angularCodeRefreshTokens',
-            scope: 'openid profile email taler_api offline_access',
+            clientId: 'angularClient',
+            scope: 'openid profile email',
             responseType: 'code',
             silentRenew: true,
-            useRefreshToken: true,
-            logLevel: LogLevel.Debug,
+            silentRenewUrl: `${window.location.origin}/silent-renew.html`,
+            renewTimeBeforeTokenExpiresInSeconds: 10,
+            logLevel: environment.production ? LogLevel.None : LogLevel.Debug,
         });
 }
 
@@ -29,4 +31,4 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
     ],
     exports: [AuthModule],
 })
-export class CustomAuthModule {}
+export class AuthConfigModule {}

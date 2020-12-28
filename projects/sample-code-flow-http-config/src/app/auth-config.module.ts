@@ -45,4 +45,4 @@ export function configureAuth(oidcConfigService: OidcConfigService, httpClient: 
     ],
     exports: [AuthModule],
 })
-export class CustomAuthModule {}
+export class AuthConfigModule {}

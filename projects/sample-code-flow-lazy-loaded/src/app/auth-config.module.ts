@@ -7,12 +7,11 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
             stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
             redirectUrl: window.location.origin,
             postLogoutRedirectUri: window.location.origin,
-            clientId: 'angularImplicitClient',
-            scope: 'openid profile email',
-            responseType: 'id_token token',
-            silentRenewUrl: `${window.location.origin}/silent-renew.html`,
-            startCheckSession: true,
+            clientId: 'angularCodeRefreshTokens',
+            scope: 'openid profile email offline_access',
+            responseType: 'code',
             silentRenew: true,
+            useRefreshToken: true,
             logLevel: LogLevel.Debug,
         });
 }
@@ -30,4 +29,4 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
     ],
     exports: [AuthModule],
 })
-export class CustomAuthModule {}
+export class AuthConfigModule {}

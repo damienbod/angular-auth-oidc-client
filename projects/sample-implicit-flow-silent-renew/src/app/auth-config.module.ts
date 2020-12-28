@@ -6,21 +6,14 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
         oidcConfigService.withConfig({
             stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
             redirectUrl: window.location.origin,
-            clientId: 'angularJwtClient',
+            postLogoutRedirectUri: window.location.origin,
+            clientId: 'angularImplicitClient',
             scope: 'openid profile email',
-            responseType: 'code',
-            triggerAuthorizationResultEvent: true,
-            postLogoutRedirectUri: `${window.location.origin}/unauthorized`,
-            startCheckSession: false,
-            silentRenew: true,
+            responseType: 'id_token token',
             silentRenewUrl: `${window.location.origin}/silent-renew.html`,
-            postLoginRoute: '/home',
-            forbiddenRoute: '/forbidden',
-            unauthorizedRoute: '/unauthorized',
+            startCheckSession: true,
+            silentRenew: true,
             logLevel: LogLevel.Debug,
-            historyCleanupOff: true,
-            // iss_validation_off: false
-            // disable_iat_offset_validation: true
         });
 }
 
@@ -37,4 +30,4 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
     ],
     exports: [AuthModule],
 })
-export class CustomAuthModule {}
+export class AuthConfigModule {}

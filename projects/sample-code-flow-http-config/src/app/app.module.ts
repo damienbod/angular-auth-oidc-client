@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
-import { CustomAuthModule } from './custom-auth.module';
+import { AuthConfigModule } from './auth-config.module';
 import { HomeComponent } from './home/home.component';
 import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 
@@ -16,7 +16,7 @@ import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
             { path: 'forbidden', component: UnauthorizedComponent },
             { path: 'unauthorized', component: UnauthorizedComponent },
         ]),
-        CustomAuthModule,
+        AuthConfigModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

@@ -4,22 +4,22 @@ import { AuthModule, LogLevel, OidcConfigService, OidcSecurityService } from 'an
 export function loadConfig(oidcConfigService: OidcConfigService) {
     return () =>
         oidcConfigService.withConfig({
-            stsServer: 'https://login.microsoftonline.com/damienbod.onmicrosoft.com/v2.0',
-            authWellknownEndpoint:
-                'https://damienbod.b2clogin.com/damienbod.onmicrosoft.com/B2C_1_b2cpolicydamien/v2.0/.well-known/openid-configuration',
+            stsServer: 'https://login.microsoftonline.com/7ff95b15-dc21-4ba6-bc92-824856578fc1/v2.0',
+            authWellknownEndpoint: 'https://login.microsoftonline.com/common/v2.0',
             redirectUrl: window.location.origin,
-            postLogoutRedirectUri: window.location.origin,
-            clientId: 'f1934a6e-958d-4198-9f36-6127cfc4cdb3',
-            scope: 'openid https://damienbod.onmicrosoft.com/testapi/demo.read',
+            clientId: 'e38ea64a-2962-4cde-bfe7-dd2822fdab32',
+            scope: 'openid profile email api://e38ea64a-2962-4cde-bfe7-dd2822fdab32/access_as_user',
             responseType: 'code',
             silentRenew: true,
+            maxIdTokenIatOffsetAllowedInSeconds: 600,
+            issValidationOff: true,
             autoUserinfo: false,
             silentRenewUrl: window.location.origin + '/silent-renew.html',
             logLevel: LogLevel.Debug,
-            renewTimeBeforeTokenExpiresInSeconds: 60,
-            // useRefreshToken: true, // for refresh renew, but revocation and one time usage is missing from server impl.
-            // ignoreNonceAfterRefresh: true,
-            // disableRefreshIdTokenAuthTimeValidation: true,
+            // customParams: {
+            //     response_mode: 'fragment',
+            //     prompt: 'consent',
+            // },
         });
 }
 
@@ -37,4 +37,4 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
     ],
     exports: [AuthModule],
 })
-export class CustomAuthModule {}
+export class AuthConfigModule {}
