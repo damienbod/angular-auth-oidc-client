@@ -1,0 +1,9 @@
+{
+    "$schema": "../../../node_modules/@angular-devkit/schematics/collection-schema.json",
+    "schematics": {
+        "ng-add": {
+            "description": "Add angular-auth-oidc-client library to the project.",
+            "factory": "./ng-add/index#ngAdd"
+        }
+    }
+}
