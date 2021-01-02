@@ -1,9 +1,11 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
-### 2020-12-18 Version 11.4.0
+### 2021-01-03 Version 11.4.0
 
 -   Adding schematics
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/876)
+-   Provided interceptor out of the lib
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/924)
 
 ### 2020-12-18 Version 11.3.0
 
