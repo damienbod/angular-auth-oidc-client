@@ -33,7 +33,7 @@ this.userData$ = this.oidcSecurityService.userData$;
 
 ## IsAuthenticated
 
-Is a `boolean` telling you if you are authenticated at the client or not.
+Is an `Observable<boolean>` to receive authenticated events, either true or false.
 
 ```ts
 this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
