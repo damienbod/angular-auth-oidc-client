@@ -1,5 +1,5 @@
 export interface Schema {
-    stsUrl: string;
+    stsUrlOrTenantId: string;
     flowType: FlowType;
 }
 

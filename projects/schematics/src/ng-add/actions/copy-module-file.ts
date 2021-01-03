@@ -42,18 +42,18 @@ export function copyModuleFile(options: Schema): Rule {
 }
 
 function getTemplateConfig(options: Schema) {
-    const { stsUrl, flowType } = options;
+    const { stsUrlOrTenantId, flowType } = options;
 
     if (needsHttp(flowType)) {
-        return { ts: 'ts', stsUrl };
+        return { ts: 'ts', stsUrlOrTenantId };
     }
 
-    const authConfig = getConfig(flowType, stsUrl);
+    const authConfig = getConfig(flowType, stsUrlOrTenantId);
 
     return { ts: 'ts', authConfig };
 }
 
-function getConfig(flowType: FlowType, stsUrl: string) {
+function getConfig(flowType: FlowType, stsUrlOrTenantId: string) {
     let config = DEFAULT_CONFIG;
 
     switch (flowType) {
@@ -86,5 +86,5 @@ function getConfig(flowType: FlowType, stsUrl: string) {
         }
     }
 
-    return config.replace('<stsUrl>', stsUrl);
+    return config.replace('<stsUrlOrTenantId>', stsUrlOrTenantId);
 }
