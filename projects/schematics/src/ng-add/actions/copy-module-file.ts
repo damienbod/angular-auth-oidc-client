@@ -1,10 +1,11 @@
-import { normalize } from '@angular-devkit/core';
-import { apply, applyTemplates, chain, mergeWith, move, Rule, SchematicContext, Tree, url } from '@angular-devkit/schematics';
+import { normalize, strings } from '@angular-devkit/core';
+import { apply, chain, mergeWith, move, Rule, SchematicContext, template, Tree, url } from '@angular-devkit/schematics';
 import { getProject } from '../../utils/angular-utils';
+import { Schema } from '../schema';
 
-export function copyModuleFile(options: any): Rule {
+export function copyModuleFile(options: Schema): Rule {
     return (host: Tree, context: SchematicContext) => {
-        const project = getProject(host, options?.project);
+        const project = getProject(host);
         const filePath = `${project.sourceRoot}/app/auth/auth-config.module.ts`;
 
         if (host.exists(filePath)) {
@@ -12,7 +13,10 @@ export function copyModuleFile(options: any): Rule {
             return host;
         }
 
-        const templateSource = apply(url('./files'), [applyTemplates({}), move(normalize(`${project.sourceRoot}/app/auth`))]);
+        const templateSource = apply(url('./files'), [
+            template({ classify: strings.classify, dasherize: strings.dasherize, ts: 'ts', name: options.name }),
+            move(normalize(`${project.sourceRoot}/app/auth`)),
+        ]);
 
         return chain([mergeWith(templateSource)]);
     };

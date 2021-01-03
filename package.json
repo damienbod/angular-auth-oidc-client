@@ -41,7 +41,7 @@
         "start-sample-code-flow-lazy-loaded": "ng serve sample-code-flow-lazy-loaded --ssl --port=4204 -o",
         "e2e": "ng e2e",
         "schematics-copy": "npm run schematics-ngadd-copy && ncp projects/schematics/src/collection.json ./dist/angular-auth-oidc-client/schematics/collection.json",
-        "schematics-ngadd-copy": "ncp projects/schematics/src/ng-add/files ./dist/angular-auth-oidc-client/schematics/ng-add/files",
+        "schematics-ngadd-copy": "ncp projects/schematics/src/ng-add/files ./dist/angular-auth-oidc-client/schematics/ng-add/files && ncp projects/schematics/src/ng-add/schema.json ./dist/angular-auth-oidc-client/schematics/ng-add/schema.json",
         "schematics-build": "tsc -p projects/schematics/tsconfig.json",
         "copy": "npm run copy-readme-to-lib-folder && npm run copy-licence-to-lib-folder && npm run schematics-copy"
     },

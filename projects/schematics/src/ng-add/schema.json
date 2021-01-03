@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "id": "SchematicsMyService",
+    "title": "My Service Schema",
+    "type": "object",
+    "properties": {
+        "name": {
+            "description": "The name of the sts.",
+            "type": "string",
+            "x-prompt": "What is the url of the sts?"
+        }
+    },
+    "required": ["name"]
+}

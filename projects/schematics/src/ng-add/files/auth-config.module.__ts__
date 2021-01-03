@@ -4,7 +4,7 @@ import { AuthModule, OidcConfigService } from 'angular-auth-oidc-client';
 export function configureAuth(oidcConfigService: OidcConfigService): () => Promise<any> {
     return () =>
         oidcConfigService.withConfig({
-            stsServer: 'please-enter-sts',
+            stsServer: '<%= name %>',
             redirectUrl: window.location.origin,
             postLogoutRedirectUri: window.location.origin,
             clientId: 'please-enter-clientId',
