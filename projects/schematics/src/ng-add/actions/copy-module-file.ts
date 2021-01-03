@@ -30,7 +30,7 @@ export function copyModuleFile(options: Schema): Rule {
 
         const templateConfig = getTemplateConfig(options);
 
-        context.logger.info(`INFO "${filePath}" will be created`);
+        context.logger.info(`✅️ "${filePath}" will be created`);
 
         const templateSource = apply(url(`./files/${moduleFolder}`), [
             template(templateConfig),
