@@ -4,11 +4,22 @@
     "title": "My Service Schema",
     "type": "object",
     "properties": {
-        "name": {
-            "description": "The name of the sts.",
+        "stsUrl": {
+            "description": "The url of the sts.",
             "type": "string",
             "x-prompt": "What is the url of the sts?"
+        },
+        "flowType": {
+            "description": "The flow the user wants to configure",
+            "x-prompt": "What flow to use?",
+            "enum": [
+                "OIDC Code Flow PKCE Azure AD using refresh tokens",
+                "OIDC Code Flow PKCE Azure AD using iframe silent renew",
+                "OIDC Code Flow PKCE using refresh tokens",
+                "OIDC Code Flow PKCE using iframe silent renew",
+                "OIDC Code Flow PKCE using iframe silent renew getting config from http"
+            ]
         }
     },
-    "required": ["name"]
+    "required": ["stsUrl", "flowType"]
 }
