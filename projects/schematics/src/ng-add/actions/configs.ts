@@ -14,7 +14,7 @@ const IFRAME_SILENT_RENEW = `{
             stsServer: '<stsUrlOrTenantId>',
             redirectUrl: window.location.origin,
             postLogoutRedirectUri: window.location.origin,
-            clientId: 'please enter clientId',
+            clientId: 'please-enter-clientId',
             scope: 'please-enter-scopes', // 'openid profile ' + your scopes
             responseType: 'code',
             silentRenew: true,
@@ -26,7 +26,7 @@ const AZURE_AD_SILENT_RENEW = `{
             stsServer: 'https://login.microsoftonline.com/<stsUrlOrTenantId>/v2.0',
             authWellknownEndpoint: 'https://login.microsoftonline.com/common/v2.0',
             redirectUrl: window.location.origin,
-            clientId: 'please enter clientId',
+            clientId: 'please-enter-clientId',
             scope: 'please-enter-scopes', // 'openid profile ' + your scopes
             responseType: 'code',
             silentRenew: true,
@@ -38,9 +38,9 @@ const AZURE_AD_SILENT_RENEW = `{
 
 const AZURE_AD_REFRESH_TOKENS = `{
             stsServer: 'https://login.microsoftonline.com/<stsUrlOrTenantId>/v2.0',
-            authWellknownEndpoint: 'please enter authWellknownEndpoint',
+            authWellknownEndpoint: 'please-enter-authWellknownEndpoint',
             redirectUrl: window.location.origin,
-            clientId: 'please enter clientId',
+            clientId: 'please-enter-clientId',
             scope: 'please-enter-scopes', // 'openid profile offline_access ' + your scopes
             responseType: 'code',
             silentRenew: true,
