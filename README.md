@@ -23,6 +23,18 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 
 ## Installation
 
+### Ng Add
+
+You can use the schematics and `ng add` the library.
+
+```
+ng add angular-auth-oidc-client
+```
+
+And answer the questions. A module will be created which encapsulates your configuration.
+
+### Npm / Yarn
+
 Navigate to the level of your `package.json` and type
 
 ```typescript
