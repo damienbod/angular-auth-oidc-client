@@ -10,42 +10,38 @@ const DEFAULT_CONFIG = `{
               renewTimeBeforeTokenExpiresInSeconds: 30,
           }`;
 
-const AZURE_AD_SILENT_RENEW = `{
-            stsServer: '<stsUrl>',
-            authWellknownEndpoint: 'https://login.microsoftonline.com/common/v2.0',
-            redirectUrl: window.location.origin,
-            clientId: 'please enter clientId',
-            scope: 'please-enter-scopes',
-            responseType: 'code',
-            silentRenew: true,
-            maxIdTokenIatOffsetAllowedInSeconds: 600,
-            issValidationOff: true,
-            autoUserinfo: false,
-            silentRenewUrl: window.location.origin + '/silent-renew.html',
-            // customParams: {
-            //     response_mode: 'fragment',
-            //     prompt: 'consent',
-            // },
-        }`;
-
 const IFRAME_SILENT_RENEW = `{
             stsServer: '<stsUrl>',
             redirectUrl: window.location.origin,
             postLogoutRedirectUri: window.location.origin,
             clientId: 'please enter clientId',
-            scope: 'please-enter-scopes',
+            scope: 'please-enter-scopes', // 'openid profile ' + your scopes
             responseType: 'code',
             silentRenew: true,
             silentRenewUrl: window.location.origin + '/silent-renew.html',
             renewTimeBeforeTokenExpiresInSeconds: 10,
         }`;
 
+const AZURE_AD_SILENT_RENEW = `{
+            stsServer: '', // 'https://login.microsoftonline.com/--tenantId--/v2.0',
+            authWellknownEndpoint: 'https://login.microsoftonline.com/common/v2.0',
+            redirectUrl: window.location.origin,
+            clientId: 'please enter clientId',
+            scope: 'please-enter-scopes', // 'openid profile ' + your scopes
+            responseType: 'code',
+            silentRenew: true,
+            maxIdTokenIatOffsetAllowedInSeconds: 600,
+            issValidationOff: false,
+            autoUserinfo: false,
+            silentRenewUrl: window.location.origin + '/silent-renew.html',
+        }`;
+
 const AZURE_AD_REFRESH_TOKENS = `{
-            stsServer: '<stsUrl>',
+            stsServer: '', // 'https://login.microsoftonline.com/--tenantId--/v2.0',
             authWellknownEndpoint: 'please enter authWellknownEndpoint',
             redirectUrl: window.location.origin,
             clientId: 'please enter clientId',
-            scope: 'please-enter-scopes',
+            scope: 'please-enter-scopes', // 'openid profile offline_access ' + your scopes
             responseType: 'code',
             silentRenew: true,
             useRefreshToken: true,
