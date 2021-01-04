@@ -50,4 +50,15 @@ const AZURE_AD_REFRESH_TOKENS = `{
             autoUserinfo: false,
     }`;
 
-export { DEFAULT_CONFIG, AZURE_AD_SILENT_RENEW, IFRAME_SILENT_RENEW, AZURE_AD_REFRESH_TOKENS };
+const OIDC_PLAIN = `{
+            stsServer: '<stsUrlOrTenantId>',
+            redirectUrl: window.location.origin,
+            postLogoutRedirectUri: window.location.origin,
+            clientId: 'please-enter-clientId',
+            scope: 'please-enter-scopes', // 'openid profile ' + your scopes
+            responseType: 'code',
+            silentRenew: false,
+            renewTimeBeforeTokenExpiresInSeconds: 10,
+        }`;
+
+export { DEFAULT_CONFIG, AZURE_AD_SILENT_RENEW, IFRAME_SILENT_RENEW, AZURE_AD_REFRESH_TOKENS, OIDC_PLAIN };

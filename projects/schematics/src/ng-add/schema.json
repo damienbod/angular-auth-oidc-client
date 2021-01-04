@@ -13,13 +13,14 @@
                 "OIDC Code Flow PKCE using refresh tokens",
                 "OIDC Code Flow PKCE using iframe silent renew",
                 "OIDC Code Flow PKCE using iframe silent renew getting config from http",
+                "OIDC Code Flow PKCE (no renew)",
                 "Default config"
             ]
         },
         "stsUrlOrTenantId": {
-            "description": "The url of the sts or your tenant id",
+            "description": "Please enter your STS URL or Azure tenant id or Http config URL",
             "type": "string",
-            "x-prompt": "What is the url of the sts or your tenant id?"
+            "x-prompt": "Please enter your STS URL or Azure tenant id or Http config URL"
         }
     },
     "required": ["stsUrlOrTenantId", "flowType"]

@@ -14,7 +14,7 @@ import {
 import { getProject } from '../../utils/angular-utils';
 import { NgAddOptions } from '../models/ng-add-options';
 import { FlowType } from '../schema';
-import { AZURE_AD_REFRESH_TOKENS, AZURE_AD_SILENT_RENEW, DEFAULT_CONFIG, IFRAME_SILENT_RENEW } from './configs';
+import { AZURE_AD_REFRESH_TOKENS, AZURE_AD_SILENT_RENEW, DEFAULT_CONFIG, IFRAME_SILENT_RENEW, OIDC_PLAIN } from './configs';
 
 export function copyModuleFile(options: NgAddOptions): Rule {
     return (host: Tree, context: SchematicContext) => {
@@ -74,6 +74,11 @@ function getConfig(flowType: FlowType, stsUrlOrTenantId: string) {
 
         case FlowType.OidcCodeFlowPkceUsingIframeSilentRenewGettingConfigFromHttp: {
             throw new SchematicsException(`With HTTP another module is used. No config but another module`);
+        }
+
+        case FlowType.OIDCCodeFlowPkce: {
+            config = OIDC_PLAIN;
+            break;
         }
 
         case FlowType.OidcCodeFlowPkceUsingRefreshTokens:
