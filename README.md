@@ -101,7 +101,7 @@ import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-clien
 export function configureAuth(oidcConfigService: OidcConfigService) {
     return () =>
         oidcConfigService.withConfig({
-            stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+            stsServer: '<your sts address here>',
             redirectUrl: window.location.origin,
             postLogoutRedirectUri: window.location.origin,
             clientId: 'angularClient',
