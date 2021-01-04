@@ -1,7 +1,8 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
+import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
@@ -12,6 +13,7 @@ describe('AuthWellKnownService', () => {
     let service: AuthWellKnownService;
     let dataService: AuthWellKnownDataService;
     let storagePersistanceService: StoragePersistanceService;
+    let publicEventsService: PublicEventsService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -29,6 +31,7 @@ describe('AuthWellKnownService', () => {
         service = TestBed.inject(AuthWellKnownService);
         dataService = TestBed.inject(AuthWellKnownDataService);
         storagePersistanceService = TestBed.inject(StoragePersistanceService);
+        publicEventsService = TestBed.inject(PublicEventsService);
     });
 
     it('should create', () => {
@@ -70,6 +73,21 @@ describe('AuthWellKnownService', () => {
                     expect(dataServiceSpy).toHaveBeenCalled();
                     expect(storeSpy).toHaveBeenCalled();
                     expect(result).toEqual({ issuer: 'anything' });
+                });
+            })
+        );
+
+        it(
+            'throws `ConfigLoadingFailed` event when error happens from http',
+            waitForAsync(() => {
+                spyOn(dataService, 'getWellKnownEndPointsFromUrl').and.returnValue(throwError('This is an error'));
+                const publicEventsServiceSpy = spyOn(publicEventsService, 'fireEvent');
+                service.getAuthWellKnownEndPoints('any-url').subscribe({
+                    error: (err) => {
+                        expect(err).toBeTruthy();
+                        expect(publicEventsServiceSpy).toHaveBeenCalledTimes(1);
+                        expect(publicEventsServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoadingFailed, null);
+                    },
                 });
             })
         );
