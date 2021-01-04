@@ -2,6 +2,7 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
+import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
 import { AuthWellKnownDataService } from './auth-well-known-data.service';
@@ -19,6 +20,7 @@ describe('AuthWellKnownService', () => {
                 { provide: StoragePersistanceService, useClass: StoragePersistanceServiceMock },
                 { provide: DataService, useClass: DataServiceMock },
                 AuthWellKnownDataService,
+                PublicEventsService,
             ],
         });
     });

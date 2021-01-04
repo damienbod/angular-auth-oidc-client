@@ -55,32 +55,32 @@ export class OidcConfigService {
 
                 resolve();
             }
-            if (!usedConfig.eagerLoadAuthWellKnownEndpoints) {
+            if (usedConfig.eagerLoadAuthWellKnownEndpoints) {
+                this.authWellKnownService
+                    .getAuthWellKnownEndPoints(usedConfig.authWellknownEndpoint)
+                    .pipe(
+                        catchError((error) => {
+                            this.loggerService.logError('Getting auth well known endpoints failed on start', error);
+                            return throwError(error);
+                        }),
+                        tap((wellknownEndPoints) =>
+                            this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
+                                configuration: passedConfig,
+                                wellknown: wellknownEndPoints,
+                            })
+                        )
+                    )
+                    .subscribe(
+                        () => resolve(),
+                        () => reject()
+                    );
+            } else {
                 this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
                     configuration: passedConfig,
                     wellknown: null,
                 });
                 resolve();
             }
-
-            this.authWellKnownService
-                .getAuthWellKnownEndPoints(usedConfig.authWellknownEndpoint)
-                .pipe(
-                    catchError((error) => {
-                        this.loggerService.logError('Getting auth well known endpoints failed on start', error);
-                        return throwError(error);
-                    }),
-                    tap((wellknownEndPoints) =>
-                        this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
-                            configuration: passedConfig,
-                            wellknown: wellknownEndPoints,
-                        })
-                    )
-                )
-                .subscribe(
-                    () => resolve(),
-                    () => reject()
-                );
         });
     }
 }
