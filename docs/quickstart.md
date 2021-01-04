@@ -1,5 +1,7 @@
 # Quickstart
 
+You can either use the schematics with `ng add` or install the lib and adding the needed files manually.
+
 ## Ng Add
 
 You can use the schematics and `ng add` the library.
