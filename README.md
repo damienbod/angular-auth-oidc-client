@@ -88,6 +88,8 @@ or with yarn
 
 > For the example of the Code Flow. For further examples please check the [Samples](docs/samples.md) Section
 
+> NOTE If you have done the installation with the schematics, these modules and files should be available already!!!
+
 Import the module and services in your module.
 
 ```typescript
