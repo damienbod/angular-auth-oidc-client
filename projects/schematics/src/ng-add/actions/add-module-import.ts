@@ -1,15 +1,14 @@
 import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
 import { addImportToModule } from '@schematics/angular/utility/ast-utils';
 import { InsertChange } from '@schematics/angular/utility/change';
-import { getModuleInfo, getProject, readIntoSourceFile } from '../../utils/angular-utils';
-import { Schema } from '../schema';
+import { getProject, readIntoSourceFile } from '../../utils/angular-utils';
+import { NgAddOptions } from '../models/ng-add-options';
 
-export function addModuleToImports(options: Schema): Rule {
+export function addModuleToImports(options: NgAddOptions): Rule {
     return (host: Tree, context: SchematicContext) => {
         const project = getProject(host);
 
-        const { flowType } = options;
-        const { moduleFileName, moduleName } = getModuleInfo(flowType);
+        const { moduleFileName, moduleName } = options.moduleInfo;
 
         const modulesToImport = [
             {

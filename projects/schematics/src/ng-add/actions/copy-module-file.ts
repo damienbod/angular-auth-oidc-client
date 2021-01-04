@@ -11,16 +11,16 @@ import {
     Tree,
     url,
 } from '@angular-devkit/schematics';
-import { getModuleInfo, getProject, needsHttp } from '../../utils/angular-utils';
-import { FlowType, Schema } from '../schema';
+import { getProject } from '../../utils/angular-utils';
+import { NgAddOptions } from '../models/ng-add-options';
+import { FlowType } from '../schema';
 import { AZURE_AD_REFRESH_TOKENS, AZURE_AD_SILENT_RENEW, DEFAULT_CONFIG, IFRAME_SILENT_RENEW } from './configs';
 
-export function copyModuleFile(options: Schema): Rule {
+export function copyModuleFile(options: NgAddOptions): Rule {
     return (host: Tree, context: SchematicContext) => {
         const project = getProject(host);
 
-        const { flowType } = options;
-        const { moduleFileName, moduleFolder } = getModuleInfo(flowType);
+        const { moduleFileName, moduleFolder } = options.moduleInfo;
 
         const filePath = `${project.sourceRoot}/app/auth/${moduleFileName}.ts`;
         if (host.exists(filePath)) {
@@ -41,10 +41,10 @@ export function copyModuleFile(options: Schema): Rule {
     };
 }
 
-function getTemplateConfig(options: Schema) {
+function getTemplateConfig(options: NgAddOptions) {
     const { stsUrlOrTenantId, flowType } = options;
 
-    if (needsHttp(flowType)) {
+    if (options.isHttpOption) {
         return { ts: 'ts', stsUrlOrTenantId };
     }
 
