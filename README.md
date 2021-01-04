@@ -23,6 +23,18 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 
 ## Installation
 
+### Ng Add
+
+You can use the schematics and `ng add` the library.
+
+```
+ng add angular-auth-oidc-client
+```
+
+And answer the questions. A module will be created which encapsulates your configuration.
+
+### Npm / Yarn
+
 Navigate to the level of your `package.json` and type
 
 ```typescript
@@ -42,6 +54,11 @@ or with yarn
 -   [Silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/silent-renew.md)
 -   [Guards](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/guards.md)
 -   [Features](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md)
+    -   [Public Events](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md#public-events)
+    -   [Custom Storage](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md#custom-storage)
+    -   [Custom parameters](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md#custom-parameters)
+    -   [Using the OIDC package in a module or a Angular lib](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md#using-the-oidc-package-in-a-module-or-a-angular-lib)
+    -   [Delay the loading or pass an existing AuthWellKnownEndpoints config](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md#delay-the-loading-or-pass-an-existing-well-knownopenid-configuration-configuration)
 -   [Logout](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/logout.md)
 -   [Using and revoking the access token](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/using-access-tokens.md)
 -   [CSP & CORS](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/csp-cors-config.md)

@@ -2,16 +2,19 @@ import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
 import { addImportToModule } from '@schematics/angular/utility/ast-utils';
 import { InsertChange } from '@schematics/angular/utility/change';
 import { getProject, readIntoSourceFile } from '../../utils/angular-utils';
+import { NgAddOptions } from '../models/ng-add-options';
 
-export function addModuleToImports(options: any): Rule {
+export function addModuleToImports(options: NgAddOptions): Rule {
     return (host: Tree, context: SchematicContext) => {
-        const project = getProject(host, options?.project);
+        const project = getProject(host);
+
+        const { moduleFileName, moduleName } = options.moduleInfo;
 
         const modulesToImport = [
             {
                 target: `${project.sourceRoot}/app/app.module.ts`,
-                moduleName: 'AuthConfigModule',
-                modulePath: `./auth/auth-config.module`,
+                moduleName,
+                modulePath: `./auth/${moduleFileName}`,
             },
         ];
 
@@ -27,7 +30,7 @@ export function addModuleToImports(options: any): Rule {
 
 function addImport(host: Tree, context: SchematicContext, moduleName: string, source: string, target: string) {
     const sourcefile = readIntoSourceFile(host, target);
-    const importChanges = addImportToModule(sourcefile, source, 'AuthConfigModule', source) as InsertChange[];
+    const importChanges = addImportToModule(sourcefile, source, moduleName, source) as InsertChange[];
 
     importChanges.forEach((insertChange) => {
         const exportRecorder = host.beginUpdate(target);
