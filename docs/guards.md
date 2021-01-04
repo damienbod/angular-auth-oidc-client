@@ -1,5 +1,7 @@
 # Using Guards
 
+> The guard should only be applied to protected URLs. The guard should not be active on the default route, where the authorization request is processed.
+
 ```typescript
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
@@ -36,5 +38,3 @@ const appRoutes: Routes = [
   { path: 'protected', component: <yourComponent>, canActivate: [AuthorizationGuard] }
 ];
 ```
-
-> The guard should only be applied to protected URLs. The guard should not be active on the default route, where the authorization request is processed.

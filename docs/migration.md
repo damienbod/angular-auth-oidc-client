@@ -2,7 +2,7 @@
 
 ## App module simple
 
-### old
+### Old
 
 ```typescript
 export function loadConfig(oidcConfigService: OidcConfigService) {
@@ -61,7 +61,7 @@ export class AppModule {
 }
 ```
 
-### new
+### New
 
 ```typescript
 // imports
@@ -106,7 +106,7 @@ export class AppModule {}
 
 ## App module (when loading config from an http endpoint)
 
-### old
+### Old
 
 ```typescript
 // imports
@@ -169,7 +169,7 @@ export class AppModule {
 }
 ```
 
-### new
+### New
 
 ```typescript
 import { NgModule, APP_INITIALIZER } from '@angular/core';
@@ -229,7 +229,7 @@ export class AppModule {}
 
 ## App Component
 
-### old
+### Old
 
 ```typescript
 import { Component, OnInit, OnDestroy } from '@angular/core';
@@ -274,7 +274,7 @@ export class AppComponent implements OnInit, OnDestroy {
 }
 ```
 
-### new
+### New
 
 ```typescript
 import { Component, OnInit } from '@angular/core';
@@ -301,7 +301,7 @@ export class AppComponent implements OnInit {
 
 ## isAuthenticated
 
-### old
+### Old
 
 ```typescript
 this.oidcSecurityService.getIsAuthorized().subscribe((isAuthenticated: boolean) => {
@@ -309,7 +309,7 @@ this.oidcSecurityService.getIsAuthorized().subscribe((isAuthenticated: boolean) 
 });
 ```
 
-### new
+### New
 
 ```typescript
 this.oidcSecurityService.isAuthenticated$.subscribe((isAuthenticated: boolean) => {
@@ -319,7 +319,7 @@ this.oidcSecurityService.isAuthenticated$.subscribe((isAuthenticated: boolean) =
 
 ## User data
 
-### old
+### Old
 
 ```typescript
 this.oidcSecurityService.getUserData().subscribe((userData: any) => {
@@ -327,7 +327,7 @@ this.oidcSecurityService.getUserData().subscribe((userData: any) => {
 });
 ```
 
-## new
+## New
 
 ```typescript
 this.oidcSecurityService.userData$.subscribe((userData: any) => {
