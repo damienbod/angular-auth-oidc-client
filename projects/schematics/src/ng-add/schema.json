@@ -12,7 +12,8 @@
                 "OIDC Code Flow PKCE Azure AD using iframe silent renew",
                 "OIDC Code Flow PKCE using refresh tokens",
                 "OIDC Code Flow PKCE using iframe silent renew",
-                "OIDC Code Flow PKCE using iframe silent renew getting config from http"
+                "OIDC Code Flow PKCE using iframe silent renew getting config from http",
+                "Default config"
             ]
         },
         "stsUrlOrTenantId": {

@@ -76,7 +76,8 @@ function getConfig(flowType: FlowType, stsUrlOrTenantId: string) {
             throw new SchematicsException(`With HTTP another module is used. No config but another module`);
         }
 
-        case FlowType.OidcCodeFlowPkceUsingRefreshTokens: {
+        case FlowType.OidcCodeFlowPkceUsingRefreshTokens:
+        case FlowType.DefaultConfig: {
             config = DEFAULT_CONFIG;
             break;
         }
