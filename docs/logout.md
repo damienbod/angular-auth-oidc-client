@@ -1,4 +1,4 @@
-# Logoff
+# Logout
 
 The `logoff()` function sends an endsesion request to the OIDC server, if it is available, or the check session has not sent a changed event.
 

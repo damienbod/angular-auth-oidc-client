@@ -1,5 +1,29 @@
 # Quickstart
 
+## Ng Add
+
+You can use the schematics and `ng add` the library.
+
+```
+ng add angular-auth-oidc-client
+```
+
+And answer the questions. A module will be created which encapsulates your configuration.
+
+## Npm / Yarn
+
+Navigate to the level of your `package.json` and type
+
+```typescript
+ npm install angular-auth-oidc-client
+```
+
+or with yarn
+
+```typescript
+ yarn add angular-auth-oidc-client
+```
+
 After installing the library you can get started with the lib like below.
 
 ## Using a local configuration
