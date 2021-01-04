@@ -90,7 +90,7 @@ or with yarn
 
 > NOTE If you have done the installation with the schematics, these modules and files should be available already!!!
 
-Import the module and services in your module.
+If not done already: Import the module and services in your module.
 
 ```typescript
 import { HttpClientModule } from '@angular/common/http';
