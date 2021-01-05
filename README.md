@@ -33,6 +33,8 @@ ng add angular-auth-oidc-client
 
 And answer the questions. A module will be created which encapsulates your configuration.
 
+![angular-auth-oidc-client schematics](./.github/angular-auth-oidc-client-schematics-720.gif)
+
 ### Npm / Yarn
 
 Navigate to the level of your `package.json` and type
