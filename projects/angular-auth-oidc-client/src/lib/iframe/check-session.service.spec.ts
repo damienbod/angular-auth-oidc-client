@@ -181,15 +181,23 @@ describe('SecurityCheckSessionTests', () => {
 
         it('increases outstandingMessages', () => {
             spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue({ contentWindow: { postMessage: () => {} } });
-            spyOn(storagePersistanceService, 'read').withArgs('session_state').and.returnValue('session_state');
+            const authWellKnownEndpoints = {
+              checkSessionIframe: 'someTestingValue',
+            };
+            spyOn(storagePersistanceService, 'read')
+              .withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints)
+              .withArgs('session_state').and.returnValue('session_state');
             spyOn(loggerService, 'logDebug').and.callFake(() => {});
-            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
             (checkSessionService as any).pollServerSession('clientId');
             expect((checkSessionService as any).outstandingMessages).toBe(1);
         });
 
         it('logs warning if iframe does not exist', () => {
             spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue(null);
+            const authWellKnownEndpoints = {
+              checkSessionIframe: 'someTestingValue',
+            };
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
             const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => {});
             spyOn(loggerService, 'logDebug').and.callFake(() => {});
             (checkSessionService as any).pollServerSession('clientId');
@@ -198,6 +206,10 @@ describe('SecurityCheckSessionTests', () => {
 
         it('logs warning if clientId is not set', () => {
             spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue({});
+            const authWellKnownEndpoints = {
+              checkSessionIframe: 'someTestingValue',
+            };
+            spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
             const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => {});
             spyOn(loggerService, 'logDebug').and.callFake(() => {});
             (checkSessionService as any).pollServerSession('');
@@ -206,7 +218,12 @@ describe('SecurityCheckSessionTests', () => {
 
         it('logs debug if session_state is not set', () => {
             spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue({});
-            spyOn(storagePersistanceService, 'read').withArgs('session_state').and.returnValue(null);
+            const authWellKnownEndpoints = {
+              checkSessionIframe: 'someTestingValue',
+            };
+            spyOn(storagePersistanceService, 'read')
+              .withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints)
+              .withArgs('session_state').and.returnValue(null);
             const spyLogDebug = spyOn(loggerService, 'logDebug').and.callFake(() => {});
             (checkSessionService as any).pollServerSession('clientId');
             expect(spyLogDebug).toHaveBeenCalledWith('OidcSecurityCheckSession pollServerSession session_state is blank');

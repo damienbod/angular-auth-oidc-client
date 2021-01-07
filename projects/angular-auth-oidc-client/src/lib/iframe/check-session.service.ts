@@ -101,11 +101,12 @@ export class CheckSessionService {
                     if (existingIframe && clientId) {
                         this.loggerService.logDebug(existingIframe);
                         const sessionState = this.storagePersistanceService.read('session_state');
+                        const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
                         if (sessionState) {
                             this.outstandingMessages++;
                             existingIframe.contentWindow.postMessage(
                                 clientId + ' ' + sessionState,
-                                this.configurationProvider.openIDConfiguration.stsServer
+                                authWellKnownEndPoints.checkSessionIframe.Origin
                             );
                         } else {
                             this.loggerService.logDebug('OidcSecurityCheckSession pollServerSession session_state is blank');
@@ -138,10 +139,11 @@ export class CheckSessionService {
 
     private messageHandler(e: any) {
         const existingIFrame = this.getExistingIframe();
+        const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
         this.outstandingMessages = 0;
         if (
             existingIFrame &&
-            this.configurationProvider.openIDConfiguration.stsServer.startsWith(e.origin) &&
+            authWellKnownEndPoints.checkSessionIframe.startsWith(e.origin) &&
             e.source === existingIFrame.contentWindow
         ) {
             if (e.data === 'error') {
