@@ -106,7 +106,7 @@ export class CheckSessionService {
                             this.outstandingMessages++;
                             existingIframe.contentWindow.postMessage(
                                 clientId + ' ' + sessionState,
-                                authWellKnownEndPoints.checkSessionIframe.Origin
+                                new URL(authWellKnownEndPoints.checkSessionIframe).origin
                             );
                         } else {
                             this.loggerService.logDebug('OidcSecurityCheckSession pollServerSession session_state is blank');
