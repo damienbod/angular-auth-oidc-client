@@ -11,6 +11,7 @@ import { SilentRenewServiceMock } from './silent-renew.service-mock';
 describe('RefreshSessionIframeService ', () => {
     let refreshSessionIframeService: RefreshSessionIframeService;
     let urlService: UrlService;
+    let silentRenewService: SilentRenewService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -25,6 +26,7 @@ describe('RefreshSessionIframeService ', () => {
 
     beforeEach(() => {
         refreshSessionIframeService = TestBed.inject(RefreshSessionIframeService);
+        silentRenewService = TestBed.inject(SilentRenewService);
         urlService = TestBed.inject(UrlService);
     });
 
@@ -47,20 +49,27 @@ describe('RefreshSessionIframeService ', () => {
                 });
             })
         );
-    });
 
-    describe('sendAuthorizeReqestUsingSilentRenew', () => {
         it(
-            'calls sendAuthorizeReqestUsingSilentRenew with created url',
+            'returns correct observable',
             waitForAsync(() => {
                 spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
-                const sendAuthorizeReqestUsingSilentRenewSpy = spyOn(
-                    refreshSessionIframeService as any,
-                    'sendAuthorizeReqestUsingSilentRenew'
-                ).and.returnValue(of(null));
+                const sessionIFrame = document.createElement('iframe');
+                sessionIFrame.onload = () => {
+                    // contentWindow is set!
+                };
+                sessionIFrame.src = 'about:blank';
+                document.body.appendChild(sessionIFrame);
 
-                refreshSessionIframeService.refreshSessionWithIframe().subscribe(() => {
-                    expect(sendAuthorizeReqestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url');
+                const addEventListenerSpy = spyOn(sessionIFrame, 'addEventListener');
+
+                spyOn(silentRenewService, 'getOrCreateIframe').and.returnValue(sessionIFrame);
+
+                spyOn(refreshSessionIframeService as any, 'sendAuthorizeReqestUsingSilentRenew').and.callThrough();
+
+                refreshSessionIframeService.refreshSessionWithIframe().subscribe((result) => {
+                    expect(result).toBeTrue();
+                    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
                 });
             })
         );
