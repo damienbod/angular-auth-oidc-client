@@ -38,7 +38,7 @@ export function configureAuth(oidcConfigService: OidcConfigService, httpClient: 
         {
             provide: APP_INITIALIZER,
             useFactory: configureAuth,
-            deps: [OidcConfigService],
+            deps: [OidcConfigService, HttpClient],
             multi: true,
         },
     ],
