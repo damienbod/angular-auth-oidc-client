@@ -15,19 +15,19 @@ import { PublicConfiguration } from './public-configuration';
 @Injectable()
 export class OidcConfigService {
     constructor(
-        private readonly loggerService: LoggerService,
-        private readonly publicEventsService: PublicEventsService,
-        private readonly configurationProvider: ConfigurationProvider,
-        private readonly authWellKnownService: AuthWellKnownService,
+        private loggerService: LoggerService,
+        private publicEventsService: PublicEventsService,
+        private configurationProvider: ConfigurationProvider,
+        private authWellKnownService: AuthWellKnownService,
         private storagePersistanceService: StoragePersistanceService,
         private configValidationService: ConfigValidationService
     ) {}
 
-    withConfig(passedConfig: OpenIdConfiguration, passedAuthWellKnownEndpoints?: AuthWellKnownEndpoints): Promise<any> {
+    withConfig(passedConfig: OpenIdConfiguration, passedAuthWellKnownEndpoints?: AuthWellKnownEndpoints): Promise<void> {
         return new Promise((resolve, reject) => {
             if (!this.configValidationService.validateConfig(passedConfig)) {
                 this.loggerService.logError('Validation of config rejected with errors. Config is NOT set.');
-                return resolve();
+                resolve();
             }
 
             if (!passedConfig.authWellknownEndpoint) {
@@ -43,7 +43,7 @@ export class OidcConfigService {
                     wellknown: alreadyExistingAuthWellKnownEndpoints,
                 });
 
-                return resolve();
+                resolve();
             }
 
             if (!!passedAuthWellKnownEndpoints) {
@@ -53,9 +53,8 @@ export class OidcConfigService {
                     wellknown: passedAuthWellKnownEndpoints,
                 });
 
-                return resolve();
+                resolve();
             }
-
             if (usedConfig.eagerLoadAuthWellKnownEndpoints) {
                 this.authWellKnownService
                     .getAuthWellKnownEndPoints(usedConfig.authWellknownEndpoint)
