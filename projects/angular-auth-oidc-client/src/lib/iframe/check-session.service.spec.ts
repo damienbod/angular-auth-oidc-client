@@ -249,4 +249,21 @@ describe('SecurityCheckSessionTests', () => {
             expect(spyLogDebug).toHaveBeenCalledTimes(3);
         });
     });
+
+    describe('init', () => {
+        it(
+            'returns falsy observable when lastIframerefresh and iframeRefreshInterval are bigger than now',
+            waitForAsync(() => {
+                const serviceAsAny = checkSessionService as any;
+                const dateNow = new Date();
+                const lastRefresh = dateNow.setMinutes(dateNow.getMinutes() + 30);
+                serviceAsAny.lastIFrameRefresh = lastRefresh;
+                serviceAsAny.iframeRefreshInterval = lastRefresh;
+
+                serviceAsAny.init().subscribe((result) => {
+                    expect(result).toBeUndefined();
+                });
+            })
+        );
+    });
 });
