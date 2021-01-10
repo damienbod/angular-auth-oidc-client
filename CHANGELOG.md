@@ -1,5 +1,14 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-01-03 Version 11.4.1
+
+-   Added event to throw when config could not be loaded
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/929)
+-   Check session fails if sts server has a different origin than the check_session_iframe
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/933)
+-   Fix http config example and templates for HTTP config load
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/935)
+
 ### 2021-01-03 Version 11.4.0
 
 -   Adding schematics
