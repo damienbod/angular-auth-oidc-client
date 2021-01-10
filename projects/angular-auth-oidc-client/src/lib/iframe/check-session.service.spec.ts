@@ -223,11 +223,27 @@ describe('SecurityCheckSessionTests', () => {
             const authWellKnownEndpoints = {
                 checkSessionIframe: 'https://some-testing-url.com',
             };
+
             spyOn(storagePersistanceService, 'read')
                 .withArgs('authWellKnownEndPoints')
                 .and.returnValue(authWellKnownEndpoints)
                 .withArgs('session_state')
                 .and.returnValue(null);
+
+            const spyLogDebug = spyOn(loggerService, 'logDebug').and.callFake(() => {});
+            (checkSessionService as any).pollServerSession('clientId');
+            expect(spyLogDebug).toHaveBeenCalledTimes(3);
+        });
+
+        it('logs debug if session_state is set but authWellKnownEndpoints are not set', () => {
+            spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue({});
+            const authWellKnownEndpoints = null;
+
+            spyOn(storagePersistanceService, 'read')
+                .withArgs('authWellKnownEndPoints')
+                .and.returnValue(authWellKnownEndpoints)
+                .withArgs('session_state')
+                .and.returnValue('some_session_state');
             const spyLogDebug = spyOn(loggerService, 'logDebug').and.callFake(() => {});
             (checkSessionService as any).pollServerSession('clientId');
             expect(spyLogDebug).toHaveBeenCalledTimes(3);
