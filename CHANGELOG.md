@@ -1,6 +1,6 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
-### 2021-01-03 Version 11.4.1
+### 2021-01-10 Version 11.4.1
 
 -   Added event to throw when config could not be loaded
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/929)
