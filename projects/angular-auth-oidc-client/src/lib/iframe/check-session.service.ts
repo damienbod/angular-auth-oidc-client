@@ -102,12 +102,11 @@ export class CheckSessionService {
                         this.loggerService.logDebug(existingIframe);
                         const sessionState = this.storagePersistanceService.read('session_state');
                         const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+
                         if (sessionState && authWellKnownEndPoints?.checkSessionIframe) {
+                            const iframeOrigin = new URL(authWellKnownEndPoints.checkSessionIframe)?.origin;
                             this.outstandingMessages++;
-                            existingIframe.contentWindow.postMessage(
-                                clientId + ' ' + sessionState,
-                                new URL(authWellKnownEndPoints.checkSessionIframe)?.origin
-                            );
+                            existingIframe.contentWindow.postMessage(clientId + ' ' + sessionState, iframeOrigin);
                         } else {
                             this.loggerService.logDebug(`OidcSecurityCheckSession pollServerSession session_state is '${sessionState}'`);
                             this.loggerService.logDebug(`AuthWellKnownEndPoints is '${JSON.stringify(authWellKnownEndPoints)}'`);
