@@ -1,5 +1,10 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-01-10 Version 11.4.2
+
+-   Added checksession null checks
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/937)
+
 ### 2021-01-10 Version 11.4.1
 
 -   Added event to throw when config could not be loaded
