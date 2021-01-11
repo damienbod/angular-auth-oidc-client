@@ -52,11 +52,43 @@ export class FlowsDataService {
     }
 
     isSilentRenewRunning() {
-        return this.storagePersistanceService.read('storageSilentRenewRunning') === 'running';
+        const storageObject = JSON.parse(this.storagePersistanceService.read('storageSilentRenewRunning'));
+        console.log('isSilentRenewRunning storageObject =>>', storageObject);
+        if (storageObject) {
+            const dateOfLaunchedProcessUtc = Date.parse(storageObject.dateOfLaunchedProcessUtc);
+            console.log('isSilentRenewRunning dateOfLaunchedProcessUtc =>>', dateOfLaunchedProcessUtc);
+            const currentDateUtc = Date.parse(new Date().toISOString());
+            console.log('isSilentRenewRunning currentDateUtc =>>', currentDateUtc);
+            const elapsedTimeInMilliseconds = Math.abs(currentDateUtc - dateOfLaunchedProcessUtc);
+            console.log('isSilentRenewRunning elapsedTimeInMilliseconds =>>', elapsedTimeInMilliseconds);
+
+            const isProbablyStuck = elapsedTimeInMilliseconds > 15000;
+
+            console.log('isSilentRenewRunning isProbablyStuck =>>', isProbablyStuck);
+
+            if (isProbablyStuck) {
+                console.log('isSilentRenewRunning INSIDE isProbablyStuck');
+                this.resetSilentRenewRunning();
+                return false;
+            }
+
+            console.log('isSilentRenewRunning AFTER isProbablyStuck CHECK, storageObject.state =>>', storageObject.state);
+            console.log('isSilentRenewRunning AFTER isProbablyStuck CHECK, return  =>>', storageObject.state === 'running');
+            return storageObject.state === 'running';
+        }
+
+        console.log('isSilentRenewRunning return FALSE');
+
+        return false;
     }
 
     setSilentRenewRunning() {
-        this.storagePersistanceService.write('storageSilentRenewRunning', 'running');
+        const storageObject = {
+            state: 'running',
+            dateOfLaunchedProcessUtc: new Date().toISOString(),
+        };
+
+        this.storagePersistanceService.write('storageSilentRenewRunning', JSON.stringify(storageObject));
     }
 
     resetSilentRenewRunning() {

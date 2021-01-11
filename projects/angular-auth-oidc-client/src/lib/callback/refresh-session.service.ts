@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, of } from 'rxjs';
-import { map, switchMap, take } from 'rxjs/operators';
+import { map, switchMap, take, timeout } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { ConfigurationProvider } from '../config/config.provider';
@@ -42,7 +42,10 @@ export class RefreshSessionService {
             );
         }
 
-        return forkJoin([this.startRefreshSession(), this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1))]).pipe(
+        return forkJoin([
+            this.startRefreshSession(),
+            this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1), timeout(15000)),
+        ]).pipe(
             map(([_, callbackContext]) => {
                 const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
                 if (isAuthenticated) {
@@ -56,6 +59,7 @@ export class RefreshSessionService {
             })
         );
     }
+
     private startRefreshSession() {
         const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
         this.loggerService.logDebug(`Checking: silentRenewRunning: ${isSilentRenewRunning}`);
