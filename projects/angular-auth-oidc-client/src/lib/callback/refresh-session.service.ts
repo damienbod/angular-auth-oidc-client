@@ -44,7 +44,10 @@ export class RefreshSessionService {
 
         return forkJoin([
             this.startRefreshSession(),
-            this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1), timeout(15000)),
+            this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(
+                take(1),
+                timeout(this.configurationProvider.openIDConfiguration.silentRenewTimeoutInSeconds * 1000)
+            ),
         ]).pipe(
             map(([_, callbackContext]) => {
                 const isAuthenticated = this.authStateService.areAuthStorageTokensValid();

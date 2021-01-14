@@ -1,10 +1,15 @@
 import { Injectable } from '@angular/core';
+import { ConfigurationProvider } from '../config/config.provider';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { RandomService } from './random/random.service';
 
 @Injectable()
 export class FlowsDataService {
-    constructor(private storagePersistanceService: StoragePersistanceService, private randomService: RandomService) {}
+    constructor(
+        private storagePersistanceService: StoragePersistanceService,
+        private randomService: RandomService,
+        private configurationProvider: ConfigurationProvider
+    ) {}
 
     createNonce(): string {
         const nonce = this.randomService.createRandom(40);
@@ -62,7 +67,8 @@ export class FlowsDataService {
             const elapsedTimeInMilliseconds = Math.abs(currentDateUtc - dateOfLaunchedProcessUtc);
             console.log('isSilentRenewRunning elapsedTimeInMilliseconds =>>', elapsedTimeInMilliseconds);
 
-            const isProbablyStuck = elapsedTimeInMilliseconds > 15000;
+            const isProbablyStuck =
+                elapsedTimeInMilliseconds > this.configurationProvider.openIDConfiguration.silentRenewTimeoutInSeconds * 1000;
 
             console.log('isSilentRenewRunning isProbablyStuck =>>', isProbablyStuck);
 

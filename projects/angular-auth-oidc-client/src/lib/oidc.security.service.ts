@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, TimeoutError } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
 import { PeriodicallyTokenCheckService } from './callback/periodically-token-check.service';
@@ -20,9 +20,9 @@ import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.servic
 
 @Injectable()
 export class OidcSecurityService {
-    private TOKEN_REFRESH_INTERVALL_IN_SECONDS = 3;
-
+    private readonly TOKEN_REFRESH_INTERVALL_IN_SECONDS = 3;
     private readonly MAX_RETRY_COUNT = 3;
+
     private currentRetryCount = 0;
 
     get configuration(): PublicConfiguration {
@@ -109,7 +109,7 @@ export class OidcSecurityService {
 
                 return this.refreshSessionService.forceRefreshSession().pipe(
                     catchError((error) => {
-                        if (error instanceof TimeoutError && this.currentRetryCount < this.MAX_RETRY_COUNT) {
+                        if (error instanceof TimeoutError && this.currentRetryCount++ < this.MAX_RETRY_COUNT) {
                             console.log('refreshSessionWithIFrameCompleted$ timed out!!!!');
 
                             this.flowsDataService.resetSilentRenewRunning();
@@ -125,7 +125,8 @@ export class OidcSecurityService {
                         }
 
                         return of(isAuth);
-                    })
+                    }),
+                    finalize(() => (this.currentRetryCount = 0))
                 );
             })
         );
