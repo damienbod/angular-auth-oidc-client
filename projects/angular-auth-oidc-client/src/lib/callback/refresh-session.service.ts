@@ -25,9 +25,9 @@ export class RefreshSessionService {
         private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService
     ) {}
 
-    forceRefreshSession() {
+    forceRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
         if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
-            return this.startRefreshSession().pipe(
+            return this.startRefreshSession(customParams).pipe(
                 map(() => {
                     const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
                     if (isAuthenticated) {
@@ -56,7 +56,7 @@ export class RefreshSessionService {
             })
         );
     }
-    private startRefreshSession() {
+    private startRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
         const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
         this.loggerService.logDebug(`Checking: silentRenewRunning: ${isSilentRenewRunning}`);
         const shouldBeExecuted = !isSilentRenewRunning;
@@ -78,10 +78,10 @@ export class RefreshSessionService {
 
                 if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
                     // Refresh Session using Refresh tokens
-                    return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens();
+                    return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(customParams);
                 }
 
-                return this.refreshSessionIframeService.refreshSessionWithIframe();
+                return this.refreshSessionIframeService.refreshSessionWithIframe(customParams);
             })
         );
     }

@@ -9,10 +9,10 @@ import { IntervallService } from './intervall.service';
 export class RefreshSessionRefreshTokenService {
     constructor(private loggerService: LoggerService, private flowsService: FlowsService, private intervallService: IntervallService) {}
 
-    refreshSessionWithRefreshTokens() {
+    refreshSessionWithRefreshTokens(customParams?: { [key: string]: string | number | boolean }) {
         this.loggerService.logDebug('BEGIN refresh session Authorize');
 
-        return this.flowsService.processRefreshToken().pipe(
+        return this.flowsService.processRefreshToken(customParams).pipe(
             catchError((error) => {
                 this.intervallService.stopPeriodicallTokenCheck();
                 this.flowsService.resetAuthorizationData();
