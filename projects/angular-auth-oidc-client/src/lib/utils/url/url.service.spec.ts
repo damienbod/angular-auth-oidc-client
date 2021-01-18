@@ -904,6 +904,7 @@ describe('UrlService Tests', () => {
             const redirectUrl = null;
             const clientId = 'clientId';
             spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
+            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId, redirectUrl });
 
             const result = service.createBodyForCodeFlowCodeRequest(code);
@@ -918,6 +919,7 @@ describe('UrlService Tests', () => {
             const redirectUrl = 'redirectUrl';
             const clientId = 'clientId';
             spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
+            spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId, redirectUrl });
 
             const result = service.createBodyForCodeFlowCodeRequest(code);

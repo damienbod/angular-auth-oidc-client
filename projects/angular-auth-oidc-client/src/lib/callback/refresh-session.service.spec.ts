@@ -1,7 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
-import { async, TestBed } from '@angular/core/testing';
+import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
+import { of, throwError, TimeoutError } from 'rxjs';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
@@ -100,6 +100,7 @@ describe('RefreshSessionService ', () => {
             spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
             spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
             spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenewTimeoutInSeconds: 10 });
 
             refreshSessionService.forceRefreshSession().subscribe((result) => {
                 expect(result.idToken).toBeDefined();
@@ -115,6 +116,7 @@ describe('RefreshSessionService ', () => {
             spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
             spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
             spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenewTimeoutInSeconds: 10 });
 
             refreshSessionService.forceRefreshSession().subscribe((result) => {
                 expect(result).toBeNull();
@@ -125,11 +127,64 @@ describe('RefreshSessionService ', () => {
             });
         }));
 
+        it('occurs timeout error and retry mechanism exhausted max retry count throws error', fakeAsync(() => {
+            const openIDConfiguration = {
+                silentRenewTimeoutInSeconds: 10,
+            };
+
+            spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
+            spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
+            spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue(openIDConfiguration);
+
+            const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
+            const expectedInvokeCount = (refreshSessionService as any).MAX_RETRY_ATTEMPTS;
+
+            refreshSessionService.forceRefreshSession().subscribe(
+                () => {
+                    fail('It should not return any result.');
+                },
+                (error) => {
+                    expect(error).toBeInstanceOf(TimeoutError);
+                    expect(resetSilentRenewRunningSpy).toHaveBeenCalledTimes(expectedInvokeCount);
+                }
+            );
+
+            tick(openIDConfiguration.silentRenewTimeoutInSeconds * 10000);
+        }));
+
+        it('occurs unknown error throws it to subscriber', fakeAsync(() => {
+            const openIDConfiguration = {
+                silentRenewTimeoutInSeconds: 10,
+            };
+
+            const expectedErrorMessage = 'Test error message';
+
+            spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
+            spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(throwError(new Error(expectedErrorMessage)));
+            spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue(openIDConfiguration);
+
+            const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
+
+            refreshSessionService.forceRefreshSession().subscribe(
+                () => {
+                    fail('It should not return any result.');
+                },
+                (error) => {
+                    expect(error).toBeInstanceOf(Error);
+                    expect((error as Error).message === expectedErrorMessage).toBeTruthy();
+                    expect(resetSilentRenewRunningSpy).not.toHaveBeenCalled();
+                }
+            );
+        }));
+
         describe('NOT isCurrentFlowCodeFlowWithRefeshTokens', () => {
             it('does return null when not authenticated', async(() => {
                 spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
                 spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
                 spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
+                spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenewTimeoutInSeconds: 10 });
 
                 refreshSessionService.forceRefreshSession().subscribe((result) => {
                     expect(result).toBeNull();
@@ -143,6 +198,7 @@ describe('RefreshSessionService ', () => {
             it('return value only returns once', async(() => {
                 spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefeshTokens').and.returnValue(false);
                 spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
+                spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenewTimeoutInSeconds: 10 });
                 const spyInsideMap = spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
                 refreshSessionService
