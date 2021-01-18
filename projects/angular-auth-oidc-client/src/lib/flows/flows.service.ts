@@ -173,7 +173,9 @@ export class FlowsService {
     }
 
     // STEP 2 Refresh Token
-    private refreshTokensRequestTokens(callbackContext: CallbackContext, customParams?: { [key: string]: string | number | boolean }): Observable<CallbackContext> {
+    private refreshTokensRequestTokens(
+        callbackContext: CallbackContext, 
+        customParams?: { [key: string]: string | number | boolean }): Observable<CallbackContext> {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 

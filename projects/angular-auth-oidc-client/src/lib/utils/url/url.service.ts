@@ -160,8 +160,8 @@ export class UrlService {
         }
 
         let dataForBody = oneLineTrim`grant_type=refresh_token
-          &client_id=${clientId}
-          &refresh_token=${refreshtoken}`;
+            &client_id=${clientId}
+            &refresh_token=${refreshtoken}`;
 
         if (customParams) {
             const customParamsToAdd = { ...(customParams || {}) };
@@ -170,7 +170,7 @@ export class UrlService {
                 dataForBody = dataForBody.concat(`&${key}=${value.toString()}`);
             }
         }
-        
+
         return dataForBody;
     }
 
