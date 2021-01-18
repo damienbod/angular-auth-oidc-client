@@ -136,9 +136,9 @@ This makes it possible to manage your own tokens.
 
 Creates the ens session URL which can be used to implement youe own custom server logout.
 
-## forceRefreshSession(): Observable
+## forceRefreshSession(customParams?: { [key: string]: string | number | boolean }): Observable
 
-Makes it possible to refresh the tokens at any time you require.
+Makes it possible to refresh the tokens at any time you require. You can pass custom parameters which can maybe change everytime you want to refresh session. See also [Custom parameters](features.md/#custom-parameters)
 
 ```typescript
 refreshSession() {
