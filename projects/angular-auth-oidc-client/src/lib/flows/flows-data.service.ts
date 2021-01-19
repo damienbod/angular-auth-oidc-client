@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ConfigurationProvider } from '../config/config.provider';
+import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { RandomService } from './random/random.service';
 
@@ -8,7 +9,8 @@ export class FlowsDataService {
     constructor(
         private storagePersistanceService: StoragePersistanceService,
         private randomService: RandomService,
-        private configurationProvider: ConfigurationProvider
+        private configurationProvider: ConfigurationProvider,
+        private loggerService: LoggerService
     ) {}
 
     createNonce(): string {
@@ -58,32 +60,22 @@ export class FlowsDataService {
 
     isSilentRenewRunning() {
         const storageObject = JSON.parse(this.storagePersistanceService.read('storageSilentRenewRunning'));
-        console.log('isSilentRenewRunning storageObject =>>', storageObject);
+
         if (storageObject) {
             const dateOfLaunchedProcessUtc = Date.parse(storageObject.dateOfLaunchedProcessUtc);
-            console.log('isSilentRenewRunning dateOfLaunchedProcessUtc =>>', dateOfLaunchedProcessUtc);
             const currentDateUtc = Date.parse(new Date().toISOString());
-            console.log('isSilentRenewRunning currentDateUtc =>>', currentDateUtc);
             const elapsedTimeInMilliseconds = Math.abs(currentDateUtc - dateOfLaunchedProcessUtc);
-            console.log('isSilentRenewRunning elapsedTimeInMilliseconds =>>', elapsedTimeInMilliseconds);
-
             const isProbablyStuck =
                 elapsedTimeInMilliseconds > this.configurationProvider.openIDConfiguration.silentRenewTimeoutInSeconds * 1000;
 
-            console.log('isSilentRenewRunning isProbablyStuck =>>', isProbablyStuck);
-
             if (isProbablyStuck) {
-                console.log('isSilentRenewRunning INSIDE isProbablyStuck');
+                this.loggerService.logDebug('silent renew process is probably stuck, state will be reset.');
                 this.resetSilentRenewRunning();
                 return false;
             }
 
-            console.log('isSilentRenewRunning AFTER isProbablyStuck CHECK, storageObject.state =>>', storageObject.state);
-            console.log('isSilentRenewRunning AFTER isProbablyStuck CHECK, return  =>>', storageObject.state === 'running');
             return storageObject.state === 'running';
         }
-
-        console.log('isSilentRenewRunning return FALSE');
 
         return false;
     }
