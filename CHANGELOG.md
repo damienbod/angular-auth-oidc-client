@@ -1,6 +1,6 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
-### 2021-01-10 Version 11.4.3
+### 2021-01-19 Version 11.4.3
 
 -   Added ability to use Custom Parameters when calling ForceRefreshSession
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/941)
