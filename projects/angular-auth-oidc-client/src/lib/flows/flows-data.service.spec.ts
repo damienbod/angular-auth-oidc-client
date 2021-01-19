@@ -141,7 +141,7 @@ describe('Flows Data Service', () => {
             spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue(openIDConfiguration);
 
             jasmine.clock().install();
-            var baseTime = new Date();
+            const baseTime = new Date();
             jasmine.clock().mockDate(baseTime);
 
             const storageObject = {
@@ -168,7 +168,7 @@ describe('Flows Data Service', () => {
             spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue(openIDConfiguration);
 
             jasmine.clock().install();
-            var baseTime = new Date();
+            const baseTime = new Date();
             jasmine.clock().mockDate(baseTime);
 
             const storageObject = {
@@ -197,7 +197,7 @@ describe('Flows Data Service', () => {
     describe('setSilentRenewRunning', () => {
         it('set setSilentRenewRunning to `running` with lauched time when called', () => {
             jasmine.clock().install();
-            var baseTime = new Date();
+            const baseTime = new Date();
             jasmine.clock().mockDate(baseTime);
 
             const storageObject = {
