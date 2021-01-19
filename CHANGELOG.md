@@ -1,5 +1,61 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-01-19 Version 11.4.3
+
+-   Added ability to use Custom Parameters when calling ForceRefreshSession
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/941)
+-   Missing RefreshToken causes erroneous token request
+    -   [issue](https://github.com/damienbod/angular-auth-oidc-client/pull/909)
+
+### 2021-01-10 Version 11.4.2
+
+-   Added checksession null checks
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/937)
+
+### 2021-01-10 Version 11.4.1
+
+-   Added event to throw when config could not be loaded
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/929)
+-   Check session fails if sts server has a different origin than the check_session_iframe
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/933)
+-   Fix http config example and templates for HTTP config load
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/935)
+
+### 2021-01-03 Version 11.4.0
+
+-   Adding schematics
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/876)
+-   Provided interceptor out of the lib
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/924)
+
+### 2020-12-18 Version 11.3.0
+
+-   Update to Angular 11, fix tslib warnings
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/915)
+-   Use window object safely by injecting document
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/917)
+
+### 2020-11-20 Version 11.2.4
+
+-   Do not clear session state when refreshing session with refresh tokens
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/905)
+
+### 2020-11-20 Version 11.2.3
+
+-   Added config tokenRefreshInSeconds which controls the time interval to run the startTokenValidationPeriodically
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/900)
+
+### 2020-11-13 Version 11.2.2
+
+-   Multiple tabs don't receive any event when session state becomes blank
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/896)
+-   Fixed issue with browser history on silent renew redirect to IS
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/895)
+-   UTC time fix
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/888)
+-   Small fixes of docs and naming
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/887)
+
 ### 2020-10-23 Version 11.2.1
 
 -   renewUserInfoAfterTokenRenew to OpenIdConfiguration

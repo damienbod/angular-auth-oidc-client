@@ -143,7 +143,7 @@ import { RouterModule } from '@angular/router';
 
 export function configureAuth(oidcConfigService: OidcConfigService) {
     const action$ = oidcConfigService.withConfig({
-        stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+        stsServer: '<your sts address here>',
         redirectUrl: window.location.origin,
         postLogoutRedirectUri: window.location.origin,
         clientId: 'angularClient',

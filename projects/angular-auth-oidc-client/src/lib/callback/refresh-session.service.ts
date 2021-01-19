@@ -27,9 +27,9 @@ export class RefreshSessionService {
         private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService
     ) {}
 
-    forceRefreshSession() {
-        if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
-            return this.startRefreshSession().pipe(
+    forceRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
+        if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
+            return this.startRefreshSession(customParams).pipe(
                 map(() => {
                     const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
                     if (isAuthenticated) {
@@ -44,12 +44,7 @@ export class RefreshSessionService {
             );
         }
 
-        return forkJoin([
-            this.startRefreshSession(),
-            this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(
-                take(1)
-            ),
-        ]).pipe(
+        return forkJoin([this.startRefreshSession(), this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1))]).pipe(
             timeout(this.configurationProvider.openIDConfiguration.silentRenewTimeoutInSeconds * 1000),
             retryWhen(this.TimeoutRetryStrategy.bind(this)),
             map(([_, callbackContext]) => {
@@ -65,8 +60,7 @@ export class RefreshSessionService {
             })
         );
     }
-
-    private startRefreshSession() {
+    private startRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
         const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
         this.loggerService.logDebug(`Checking: silentRenewRunning: ${isSilentRenewRunning}`);
         const shouldBeExecuted = !isSilentRenewRunning;
@@ -86,12 +80,12 @@ export class RefreshSessionService {
             switchMap(() => {
                 this.flowsDataService.setSilentRenewRunning();
 
-                if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
+                if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
                     // Refresh Session using Refresh tokens
-                    return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens();
+                    return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(customParams);
                 }
 
-                return this.refreshSessionIframeService.refreshSessionWithIframe();
+                return this.refreshSessionIframeService.refreshSessionWithIframe(customParams);
             })
         );
     }

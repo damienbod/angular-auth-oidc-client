@@ -1,4 +1,4 @@
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
@@ -11,6 +11,7 @@ import { SilentRenewServiceMock } from './silent-renew.service-mock';
 describe('RefreshSessionIframeService ', () => {
     let refreshSessionIframeService: RefreshSessionIframeService;
     let urlService: UrlService;
+    let silentRenewService: SilentRenewService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -25,6 +26,7 @@ describe('RefreshSessionIframeService ', () => {
 
     beforeEach(() => {
         refreshSessionIframeService = TestBed.inject(RefreshSessionIframeService);
+        silentRenewService = TestBed.inject(SilentRenewService);
         urlService = TestBed.inject(UrlService);
     });
 
@@ -33,44 +35,60 @@ describe('RefreshSessionIframeService ', () => {
     });
 
     describe('refreshSessionWithIframe', () => {
-        it('calls sendAuthorizeReqestUsingSilentRenew with created url', async(() => {
-            spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
-            const sendAuthorizeReqestUsingSilentRenewSpy = spyOn(
-                refreshSessionIframeService as any,
-                'sendAuthorizeReqestUsingSilentRenew'
-            ).and.returnValue(of(null));
+        it(
+            'calls sendAuthorizeReqestUsingSilentRenew with created url',
+            waitForAsync(() => {
+                spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
+                const sendAuthorizeReqestUsingSilentRenewSpy = spyOn(
+                    refreshSessionIframeService as any,
+                    'sendAuthorizeReqestUsingSilentRenew'
+                ).and.returnValue(of(null));
 
-            refreshSessionIframeService.refreshSessionWithIframe().subscribe(() => {
-                expect(sendAuthorizeReqestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url');
-            });
-        }));
-    });
+                refreshSessionIframeService.refreshSessionWithIframe().subscribe(() => {
+                    expect(sendAuthorizeReqestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url');
+                });
+            })
+        );
 
-    describe('sendAuthorizeReqestUsingSilentRenew', () => {
-        it('calls sendAuthorizeReqestUsingSilentRenew with created url', async(() => {
-            spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
-            const sendAuthorizeReqestUsingSilentRenewSpy = spyOn(
-                refreshSessionIframeService as any,
-                'sendAuthorizeReqestUsingSilentRenew'
-            ).and.returnValue(of(null));
+        it(
+            'returns correct observable',
+            waitForAsync(() => {
+                spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
+                const sessionIFrame = document.createElement('iframe');
+                sessionIFrame.onload = () => {
+                    // contentWindow is set!
+                };
+                sessionIFrame.src = 'about:blank';
+                document.body.appendChild(sessionIFrame);
 
-            refreshSessionIframeService.refreshSessionWithIframe().subscribe(() => {
-                expect(sendAuthorizeReqestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url');
-            });
-        }));
+                const addEventListenerSpy = spyOn(sessionIFrame, 'addEventListener');
+
+                spyOn(silentRenewService, 'getOrCreateIframe').and.returnValue(sessionIFrame);
+
+                spyOn(refreshSessionIframeService as any, 'sendAuthorizeReqestUsingSilentRenew').and.callThrough();
+
+                refreshSessionIframeService.refreshSessionWithIframe().subscribe((result) => {
+                    expect(result).toBeTrue();
+                    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+                });
+            })
+        );
     });
 
     describe('initSilentRenewRequest', () => {
-        it('dispatches customevent to window object', async(() => {
-            const dispatchEventSpy = spyOn(window, 'dispatchEvent');
+        it(
+            'dispatches customevent to window object',
+            waitForAsync(() => {
+                const dispatchEventSpy = spyOn(window, 'dispatchEvent');
 
-            (refreshSessionIframeService as any).initSilentRenewRequest();
+                (refreshSessionIframeService as any).initSilentRenewRequest();
 
-            expect(dispatchEventSpy).toHaveBeenCalledWith(
-                new CustomEvent('oidc-silent-renew-init', {
-                    detail: jasmine.any(Number),
-                })
-            );
-        }));
+                expect(dispatchEventSpy).toHaveBeenCalledWith(
+                    new CustomEvent('oidc-silent-renew-init', {
+                        detail: jasmine.any(Number),
+                    })
+                );
+            })
+        );
     });
 });

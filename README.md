@@ -1,6 +1,6 @@
 # Angular Lib for OpenID Connect & OAuth2
 
-[![Build Status](https://travis-ci.org/damienbod/angular-auth-oidc-client.svg?branch=master)](https://travis-ci.org/damienbod/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/v/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/dm/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/l/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier) [![Coverage Status](https://coveralls.io/repos/github/damienbod/angular-auth-oidc-client/badge.svg?branch=master)](https://coveralls.io/github/damienbod/angular-auth-oidc-client?branch=master)
+![Build Status](https://github.com/damienbod/angular-auth-oidc-client/workflows/angular-auth-oidc-client-build/badge.svg?branch=main) [![npm](https://img.shields.io/npm/v/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/dm/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/l/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier) [![Coverage Status](https://coveralls.io/repos/github/damienbod/angular-auth-oidc-client/badge.svg?branch=master)](https://coveralls.io/github/damienbod/angular-auth-oidc-client?branch=master)
 
 > OpenID Code Flow with PKCE, Code Flow with refresh tokens, OpenID Connect Implicit Flow
 
@@ -23,6 +23,20 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 
 ## Installation
 
+### Ng Add
+
+You can use the schematics and `ng add` the library.
+
+```
+ng add angular-auth-oidc-client
+```
+
+And answer the questions. A module will be created which encapsulates your configuration.
+
+![angular-auth-oidc-client schematics](./.github/angular-auth-oidc-client-schematics-720.gif)
+
+### Npm / Yarn
+
 Navigate to the level of your `package.json` and type
 
 ```typescript
@@ -39,9 +53,31 @@ or with yarn
 
 -   [Quickstart](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/quickstart.md)
 -   [Samples](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md)
+
+    -   [Code Flow with PKCE Using a configuration from an http source and silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#code-flow-with-pkce-using-a-configuration-from-an-http-source-and-silent-renew)
+    -   [Code Flow PKCE with Refresh tokens](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#code-flow-pkce-with-refresh-tokens)
+    -   [Code Flow PKCE Auto login](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#code-flow-pkce-auto-login)
+    -   [Code Flow with PKCE basic with silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#code-flow-with-pkce-basic-with-silent-renew)
+    -   [Azure B2C Code Flow PKCE with silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#azure-b2c-code-flow-pkce-with-silent-renew)
+    -   [Azure AD Code Flow PKCE with silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#azure-ad-oidc-code-flow-with-pkce)
+    -   [Implicit Flow with silent renew (Not recommended)](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#implicit-flow-with-silent-renew-not-recommended)
+    -   [Implicit Flow google (Not recommended)](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#implicit-flow-google-not-recommended)
+    -   [Code flow with a lazy loaded module](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#code-flow-with-a-lazy-loaded-module)
+
 -   [Silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/silent-renew.md)
+
+    -   [Silent Renew Code Flow with PKCE](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/silent-renew.md#silent-renew-code-flow-with-pkce)
+    -   [Silent Renew Code Flow with PKCE with refresh tokens](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/silent-renew.md#silent-renew-code-flow-with-pkce-with-refresh-tokens)
+    -   [Silent Renew Implicit Flow](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/silent-renew.md#silent-renew-implicit-flow)
+    -   [Secure Token Server CSP and CORS](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/silent-renew.md#secure-token-server-csp-and-cors)
+
 -   [Guards](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/guards.md)
 -   [Features](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md)
+    -   [Public Events](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md#public-events)
+    -   [Custom Storage](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md#custom-storage)
+    -   [Custom parameters](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md#custom-parameters)
+    -   [Using the OIDC package in a module or a Angular lib](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md#using-the-oidc-package-in-a-module-or-a-angular-lib)
+    -   [Delay the loading or pass an existing AuthWellKnownEndpoints config](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md#delay-the-loading-or-pass-an-existing-well-knownopenid-configuration-configuration)
 -   [Logout](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/logout.md)
 -   [Using and revoking the access token](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/using-access-tokens.md)
 -   [CSP & CORS](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/csp-cors-config.md)
@@ -54,7 +90,9 @@ or with yarn
 
 > For the example of the Code Flow. For further examples please check the [Samples](docs/samples.md) Section
 
-Import the module and services in your module.
+> NOTE If you have done the installation with the schematics, these modules and files should be available already!!!
+
+If the schematics did not do this already: Import the module and services in your module.
 
 ```typescript
 import { HttpClientModule } from '@angular/common/http';
@@ -65,7 +103,7 @@ import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-clien
 export function configureAuth(oidcConfigService: OidcConfigService) {
     return () =>
         oidcConfigService.withConfig({
-            stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+            stsServer: '<your sts address here>',
             redirectUrl: window.location.origin,
             postLogoutRedirectUri: window.location.origin,
             clientId: 'angularClient',

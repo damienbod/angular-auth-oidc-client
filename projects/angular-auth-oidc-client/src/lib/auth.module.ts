@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './authState/auth-state.service';
+import { ConfigValidationService } from './config-validation/config-validation.service';
 import { AuthWellKnownDataService } from './config/auth-well-known-data.service';
 import { AuthWellKnownService } from './config/auth-well-known.service';
 import { ConfigurationProvider } from './config/config.provider';
@@ -29,7 +30,6 @@ import { FlowHelper } from './utils/flowHelper/flow-helper.service';
 import { PlatformProvider } from './utils/platform-provider/platform.provider';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
 import { UrlService } from './utils/url/url.service';
-import { WINDOW, _window } from './utils/window/window.reference';
 import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';
 
@@ -71,11 +71,11 @@ export class AuthModule {
                 AuthWellKnownService,
                 DataService,
                 StateValidationService,
+                ConfigValidationService,
                 {
                     provide: AbstractSecurityStorage,
                     useClass: token.storage || BrowserStorageService,
                 },
-                { provide: WINDOW, useFactory: _window, deps: [] },
             ],
         };
     }

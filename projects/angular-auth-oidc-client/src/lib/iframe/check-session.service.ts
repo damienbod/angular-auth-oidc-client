@@ -101,14 +101,16 @@ export class CheckSessionService {
                     if (existingIframe && clientId) {
                         this.loggerService.logDebug(existingIframe);
                         const sessionState = this.storagePersistanceService.read('session_state');
-                        if (sessionState) {
+                        const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+
+                        if (sessionState && authWellKnownEndPoints?.checkSessionIframe) {
+                            const iframeOrigin = new URL(authWellKnownEndPoints.checkSessionIframe)?.origin;
                             this.outstandingMessages++;
-                            existingIframe.contentWindow.postMessage(
-                                clientId + ' ' + sessionState,
-                                this.configurationProvider.openIDConfiguration.stsServer
-                            );
+                            existingIframe.contentWindow.postMessage(clientId + ' ' + sessionState, iframeOrigin);
                         } else {
-                            this.loggerService.logDebug('OidcSecurityCheckSession pollServerSession session_state is blank');
+                            this.loggerService.logDebug(`OidcSecurityCheckSession pollServerSession session_state is '${sessionState}'`);
+                            this.loggerService.logDebug(`AuthWellKnownEndPoints is '${JSON.stringify(authWellKnownEndPoints)}'`);
+                            this.checkSessionChangedInternal$.next(true);
                         }
                     } else {
                         this.loggerService.logWarning('OidcSecurityCheckSession pollServerSession checkSession IFrame does not exist');
@@ -137,12 +139,10 @@ export class CheckSessionService {
 
     private messageHandler(e: any) {
         const existingIFrame = this.getExistingIframe();
+        const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+        const startsWith = !!authWellKnownEndPoints?.checkSessionIframe?.startsWith(e.origin);
         this.outstandingMessages = 0;
-        if (
-            existingIFrame &&
-            this.configurationProvider.openIDConfiguration.stsServer.startsWith(e.origin) &&
-            e.source === existingIFrame.contentWindow
-        ) {
+        if (existingIFrame && startsWith && e.source === existingIFrame.contentWindow) {
             if (e.data === 'error') {
                 this.loggerService.logWarning('error from checksession messageHandler');
             } else if (e.data === 'changed') {

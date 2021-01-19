@@ -69,9 +69,9 @@ export class FlowsService {
         );
     }
 
-    processRefreshToken() {
+    processRefreshToken(customParams?: { [key: string]: string | number | boolean }) {
         return this.refreshSessionWithRefreshTokens().pipe(
-            switchMap((callbackContext) => this.refreshTokensRequestTokens(callbackContext)),
+            switchMap((callbackContext) => this.refreshTokensRequestTokens(callbackContext, customParams)),
             switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
             switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
             switchMap((callbackContext) => this.callbackUser(callbackContext))
@@ -173,7 +173,9 @@ export class FlowsService {
     }
 
     // STEP 2 Refresh Token
-    private refreshTokensRequestTokens(callbackContext: CallbackContext): Observable<CallbackContext> {
+    private refreshTokensRequestTokens(
+            callbackContext: CallbackContext,
+            customParams?: { [key: string]: string | number | boolean }): Observable<CallbackContext> {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -183,7 +185,7 @@ export class FlowsService {
             return throwError('Token Endpoint not defined');
         }
 
-        const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken);
+        const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken, customParams);
 
         return this.dataService.post(tokenEndpoint, data, headers).pipe(
             switchMap((response: any) => {
@@ -324,7 +326,9 @@ export class FlowsService {
             .pipe(
                 switchMap((userData) => {
                     if (!!userData) {
-                        this.flowsDataService.setSessionState(callbackContext.authResult.session_state);
+                        if (!callbackContext.refreshToken) {
+                            this.flowsDataService.setSessionState(callbackContext.authResult.session_state);
+                        }
                         this.publishAuthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
                         return of(callbackContext);
                     } else {

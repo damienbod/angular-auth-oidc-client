@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
@@ -20,7 +21,6 @@ import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.servic
 
 @Injectable()
 export class OidcSecurityService {
-    private TOKEN_REFRESH_INTERVALL_IN_SECONDS = 3;
 
     get configuration(): PublicConfiguration {
         return {
@@ -46,6 +46,7 @@ export class OidcSecurityService {
     }
 
     constructor(
+        @Inject(DOCUMENT) private readonly doc: any,
         private checkSessionService: CheckSessionService,
         private silentRenewService: SilentRenewService,
         private userService: UserService,
@@ -70,7 +71,7 @@ export class OidcSecurityService {
 
         this.loggerService.logDebug('STS server: ' + this.configurationProvider.openIDConfiguration.stsServer);
 
-        const currentUrl = url || window.location.toString();
+        const currentUrl = url || this.doc.defaultView.location.toString();
         const isCallback = this.callbackService.isCallback(currentUrl);
 
         this.loggerService.logDebug('currentUrl to check auth with: ', currentUrl);
@@ -123,7 +124,7 @@ export class OidcSecurityService {
             this.checkSessionService.start();
         }
 
-        this.periodicallyTokenCheckService.startTokenValidationPeriodically(this.TOKEN_REFRESH_INTERVALL_IN_SECONDS);
+        this.periodicallyTokenCheckService.startTokenValidationPeriodically(this.configuration.configuration.tokenRefreshInSeconds);
 
         if (this.silentRenewService.isSilentRenewConfigured()) {
             this.silentRenewService.getOrCreateIframe();
@@ -163,7 +164,7 @@ export class OidcSecurityService {
     authorizeWithPopUp(authOptions?: AuthOptions) {
         const internalUrlHandler = (authUrl) => {
             // handle the authorization URL
-            window.open(authUrl, '_blank', 'toolbar=0,location=0,menubar=0');
+            this.doc.defaultView.open(authUrl, '_blank', 'toolbar=0,location=0,menubar=0');
         };
 
         const urlHandler = authOptions?.urlHandler || internalUrlHandler;
@@ -176,8 +177,8 @@ export class OidcSecurityService {
         this.authorize(options);
     }
 
-    forceRefreshSession() {
-        return this.refreshSessionService.forceRefreshSession();
+    forceRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
+        return this.refreshSessionService.forceRefreshSession(customParams);
     }
 
     // The refresh token and and the access token are revoked on the server. If the refresh token does not exist

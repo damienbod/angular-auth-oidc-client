@@ -1,5 +1,5 @@
 import { HttpParams } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { oneLineTrim } from 'common-tags';
 import { ConfigurationProvider } from '../../config/config.provider';
 import { FlowsDataService } from '../../flows/flows-data.service';
@@ -7,7 +7,6 @@ import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistanceService } from '../../storage/storage-persistance.service';
 import { TokenValidationService } from '../../validation/token-validation.service';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
-import { WINDOW } from '../window/window.reference';
 import { UriEncoder } from './uri-encoder';
 
 @Injectable()
@@ -21,7 +20,6 @@ export class UrlService {
         private readonly flowHelper: FlowHelper,
         private tokenValidationService: TokenValidationService,
         private storagePersistanceService: StoragePersistanceService,
-        @Inject(WINDOW) private window: any
     ) {}
 
     getUrlParameter(urlToCheck: any, name: any): string {
@@ -44,12 +42,12 @@ export class UrlService {
         return anyParameterIsGiven;
     }
 
-    getRefreshSessionSilentRenewUrl(): string {
+    getRefreshSessionSilentRenewUrl(customParams?: { [key: string]: string | number | boolean }): string {
         if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            return this.createUrlCodeFlowWithSilentRenew();
+            return this.createUrlCodeFlowWithSilentRenew(customParams);
         }
 
-        return this.createUrlImplicitFlowWithSilentRenew() || '';
+        return this.createUrlImplicitFlowWithSilentRenew(customParams) || '';
     }
 
     getAuthorizeUrl(customParams?: { [key: string]: string | number | boolean }): string {
@@ -154,16 +152,26 @@ export class UrlService {
         return oneLineTrim`${dataForBody}&redirect_uri=${redirectUrl}`;
     }
 
-    createBodyForCodeFlowRefreshTokensRequest(refreshtoken: string): string {
+    createBodyForCodeFlowRefreshTokensRequest(refreshtoken: string, customParams?: { [key: string]: string | number | boolean }): string {
         const clientId = this.getClientId();
 
         if (!clientId) {
             return null;
         }
 
-        return oneLineTrim`grant_type=refresh_token
-          &client_id=${clientId}
-          &refresh_token=${refreshtoken}`;
+        let dataForBody = oneLineTrim`grant_type=refresh_token
+            &client_id=${clientId}
+            &refresh_token=${refreshtoken}`;
+
+        if (customParams) {
+            const customParamsToAdd = { ...(customParams || {}) };
+
+            for (const [key, value] of Object.entries(customParamsToAdd)) {
+                dataForBody = dataForBody.concat(`&${key}=${value.toString()}`);
+            }
+        }
+
+        return dataForBody;
     }
 
     private createAuthorizeUrl(
@@ -238,7 +246,7 @@ export class UrlService {
         return `${authorizationUrl}?${params}`;
     }
 
-    private createUrlImplicitFlowWithSilentRenew(): string {
+    private createUrlImplicitFlowWithSilentRenew(customParams?: { [key: string]: string | number | boolean }): string {
         const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
         const nonce = this.flowsDataService.createNonce();
 
@@ -252,14 +260,14 @@ export class UrlService {
 
         const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
         if (authWellKnownEndPoints) {
-            return this.createAuthorizeUrl('', silentRenewUrl, nonce, state, 'none');
+            return this.createAuthorizeUrl('', silentRenewUrl, nonce, state, 'none', customParams);
         }
 
         this.loggerService.logError('authWellKnownEndpoints is undefined');
         return null;
     }
 
-    private createUrlCodeFlowWithSilentRenew(): string {
+    private createUrlCodeFlowWithSilentRenew(customParams?: { [key: string]: string | number | boolean }): string {
         const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
         const nonce = this.flowsDataService.createNonce();
 
@@ -277,7 +285,7 @@ export class UrlService {
 
         const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
         if (authWellKnownEndPoints) {
-            return this.createAuthorizeUrl(codeChallenge, silentRenewUrl, nonce, state, 'none');
+            return this.createAuthorizeUrl(codeChallenge, silentRenewUrl, nonce, state, 'none', customParams);
         }
 
         this.loggerService.logWarning('authWellKnownEndpoints is undefined');

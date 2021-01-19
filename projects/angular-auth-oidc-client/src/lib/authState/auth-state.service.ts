@@ -56,7 +56,7 @@ export class AuthStateService {
         }
 
         const token = this.storagePersistanceService.getAccessToken();
-        return decodeURIComponent(token);
+        return this.decodeURIComponentSafely(token);
     }
 
     getIdToken(): string {
@@ -65,7 +65,7 @@ export class AuthStateService {
         }
 
         const token = this.storagePersistanceService.getIdToken();
-        return decodeURIComponent(token);
+        return this.decodeURIComponentSafely(token);
     }
 
     getRefreshToken(): string {
@@ -74,7 +74,7 @@ export class AuthStateService {
         }
 
         const token = this.storagePersistanceService.getRefreshToken();
-        return decodeURIComponent(token);
+        return this.decodeURIComponentSafely(token);
     }
 
     areAuthStorageTokensValid() {
@@ -124,6 +124,15 @@ export class AuthStateService {
         }
 
         return hasExpired;
+    }
+
+    private decodeURIComponentSafely(token: string){
+        if (token){
+            return decodeURIComponent(token);
+        }
+        else {
+            return '';
+        }
     }
 
     private persistAccessTokenExpirationTime(authResult: any) {

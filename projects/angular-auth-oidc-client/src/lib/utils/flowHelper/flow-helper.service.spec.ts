@@ -107,29 +107,29 @@ describe('Flow Helper Service', () => {
         expect(result).toBeFalse();
     });
 
-    it('isCurrentFlowCodeFlowWithRefeshTokens return false if flow is not code flow', () => {
+    it('isCurrentFlowCodeFlowWithRefreshTokens return false if flow is not code flow', () => {
         const config = { responseType: 'not code' };
 
         configProvider.setConfig(config);
-        const result = flowHelper.isCurrentFlowCodeFlowWithRefeshTokens();
+        const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens();
 
         expect(result).toBeFalse();
     });
 
-    it('isCurrentFlowCodeFlowWithRefeshTokens return false if useRefreshToken is set to false', () => {
+    it('isCurrentFlowCodeFlowWithRefreshTokens return false if useRefreshToken is set to false', () => {
         const config = { responseType: 'not code', useRefreshToken: false };
 
         configProvider.setConfig(config);
-        const result = flowHelper.isCurrentFlowCodeFlowWithRefeshTokens();
+        const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens();
 
         expect(result).toBeFalse();
     });
 
-    it('isCurrentFlowCodeFlowWithRefeshTokens return true if useRefreshToken is set to true and code flow', () => {
+    it('isCurrentFlowCodeFlowWithRefreshTokens return true if useRefreshToken is set to true and code flow', () => {
         const config = { responseType: 'code', useRefreshToken: true };
 
         configProvider.setConfig(config);
-        const result = flowHelper.isCurrentFlowCodeFlowWithRefeshTokens();
+        const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens();
 
         expect(result).toBeTrue();
     });

@@ -21,6 +21,7 @@ describe('SilentRenewService  ', () => {
     let silentRenewService: SilentRenewService;
     let flowHelper: FlowHelper;
     let implicitFlowCallbackService: ImplicitFlowCallbackService;
+    let iFrameService: IFrameService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -41,12 +42,35 @@ describe('SilentRenewService  ', () => {
 
     beforeEach(() => {
         silentRenewService = TestBed.inject(SilentRenewService);
+        iFrameService = TestBed.inject(IFrameService);
         flowHelper = TestBed.inject(FlowHelper);
         implicitFlowCallbackService = TestBed.inject(ImplicitFlowCallbackService);
     });
 
     it('should create', () => {
         expect(silentRenewService).toBeTruthy();
+    });
+
+    describe('getOrCreateIframe', () => {
+        it('returns iframe if iframe is truthy', () => {
+            spyOn(silentRenewService as any, 'getExistingIframe').and.returnValue({ name: 'anything' });
+
+            const result = silentRenewService.getOrCreateIframe();
+
+            expect(result).toEqual({ name: 'anything' } as HTMLIFrameElement);
+        });
+
+        it('adds iframe to body if existing iframe is falsy', () => {
+            spyOn(silentRenewService as any, 'getExistingIframe').and.returnValue(null);
+
+            const spy = spyOn(iFrameService, 'addIFrameToWindowBody').and.returnValue({ name: 'anything' } as HTMLIFrameElement);
+
+            const result = silentRenewService.getOrCreateIframe();
+
+            expect(result).toEqual({ name: 'anything' } as HTMLIFrameElement);
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(spy).toHaveBeenCalledWith('myiFrameForSilentRenew');
+        });
     });
 
     describe('silentRenewEventHandler', () => {

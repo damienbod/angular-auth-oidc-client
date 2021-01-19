@@ -27,7 +27,7 @@ export class LoginService {
         const authWellknownEndpoint = this.configurationProvider.openIDConfiguration?.authWellknownEndpoint;
 
         if (!authWellknownEndpoint) {
-            this.loggerService.logError('no authwellknownendpoint given!');
+            this.loggerService.logError('no authWellknownEndpoint given!');
             return;
         }
 

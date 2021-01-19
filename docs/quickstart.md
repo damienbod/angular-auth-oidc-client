@@ -1,5 +1,31 @@
 # Quickstart
 
+You can either use the schematics with `ng add` or install the lib and adding the needed files manually.
+
+## Ng Add
+
+You can use the schematics and `ng add` the library.
+
+```
+ng add angular-auth-oidc-client
+```
+
+And answer the questions. A module will be created which encapsulates your configuration.
+
+## Npm / Yarn
+
+Navigate to the level of your `package.json` and type
+
+```typescript
+ npm install angular-auth-oidc-client
+```
+
+or with yarn
+
+```typescript
+ yarn add angular-auth-oidc-client
+```
+
 After installing the library you can get started with the lib like below.
 
 ## Using a local configuration
@@ -15,7 +41,7 @@ import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-clien
 export function configureAuth(oidcConfigService: OidcConfigService) {
     return () =>
         oidcConfigService.withConfig({
-            stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+            stsServer: '<your sts address here>',
             redirectUrl: window.location.origin,
             postLogoutRedirectUri: window.location.origin,
             clientId: 'angularClient',

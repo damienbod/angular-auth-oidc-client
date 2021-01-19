@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 @Injectable()
 export class DataServiceMock {
     get(url: string, token?: string) {
-        return of();
+        return of(null);
     }
 
     post(url: string, body: any, headersParams?: HttpHeaders) {

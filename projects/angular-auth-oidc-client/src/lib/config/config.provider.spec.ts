@@ -73,6 +73,7 @@ describe('ConfigurationProviderTests', () => {
             customParams: {},
             eagerLoadAuthWellKnownEndpoints: true,
             disableRefreshIdTokenAuthTimeValidation: false,
+            tokenRefreshInSeconds: 3,
         };
 
         configurationProvider.setConfig({ stsServer: 'https://please_set' });
@@ -116,6 +117,7 @@ describe('ConfigurationProviderTests', () => {
             customParams: {},
             eagerLoadAuthWellKnownEndpoints: true,
             disableRefreshIdTokenAuthTimeValidation: false,
+            tokenRefreshInSeconds: 3,
         };
 
         configurationProvider.setConfig(config);
@@ -161,6 +163,7 @@ describe('ConfigurationProviderTests', () => {
             customParams: {},
             eagerLoadAuthWellKnownEndpoints: true,
             disableRefreshIdTokenAuthTimeValidation: false,
+            tokenRefreshInSeconds: 3,
         };
 
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
