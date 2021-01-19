@@ -177,8 +177,8 @@ export class OidcSecurityService {
         this.authorize(options);
     }
 
-    forceRefreshSession() {
-        return this.refreshSessionService.forceRefreshSession();
+    forceRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
+        return this.refreshSessionService.forceRefreshSession(customParams);
     }
 
     // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
