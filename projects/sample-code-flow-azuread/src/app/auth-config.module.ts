@@ -16,10 +16,9 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
             autoUserinfo: false,
             silentRenewUrl: window.location.origin + '/silent-renew.html',
             logLevel: LogLevel.Debug,
-            // customParams: {
-            //     response_mode: 'fragment',
-            //     prompt: 'consent',
-            // },
+            customParams: {
+                prompt: 'consent', // login, consent
+            },
         });
 }
 
