@@ -186,7 +186,7 @@ describe('Flows Data Service', () => {
             expect(isSilentRenewRunningResult).toBeTrue();
         });
 
-        it('state object does not exist returns false result', async () => {
+        it('state object does not exist returns false result', () => {
             spyOn(storagePersistanceService, 'read').withArgs('storageSilentRenewRunning').and.returnValue(null);
 
             const isSilentRenewRunningResult = service.isSilentRenewRunning();
