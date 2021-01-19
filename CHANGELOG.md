@@ -1,5 +1,12 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-01-10 Version 11.4.3
+
+-   Added ability to use Custom Parameters when calling ForceRefreshSession
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/941)
+-   Missing RefreshToken causes erroneous token request
+    -   [issue](https://github.com/damienbod/angular-auth-oidc-client/pull/909)
+
 ### 2021-01-10 Version 11.4.2
 
 -   Added checksession null checks
