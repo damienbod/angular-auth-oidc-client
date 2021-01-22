@@ -6,6 +6,8 @@
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/941)
 -   Missing RefreshToken causes erroneous token request
     -   [issue](https://github.com/damienbod/angular-auth-oidc-client/pull/909)
+-   Bug. App fully hang during silent renew
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/942)
 
 ### 2021-01-10 Version 11.4.2
 
