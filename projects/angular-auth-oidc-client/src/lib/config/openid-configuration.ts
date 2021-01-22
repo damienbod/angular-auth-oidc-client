@@ -12,6 +12,7 @@ export interface OpenIdConfiguration {
     startCheckSession?: boolean;
     silentRenew?: boolean;
     silentRenewUrl?: string;
+    silentRenewTimeoutInSeconds?: number;
     renewTimeBeforeTokenExpiresInSeconds?: number;
     useRefreshToken?: boolean;
     ignoreNonceAfterRefresh?: boolean;

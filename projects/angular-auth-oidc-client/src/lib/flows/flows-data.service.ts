@@ -1,10 +1,17 @@
 import { Injectable } from '@angular/core';
+import { ConfigurationProvider } from '../config/config.provider';
+import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { RandomService } from './random/random.service';
 
 @Injectable()
 export class FlowsDataService {
-    constructor(private storagePersistanceService: StoragePersistanceService, private randomService: RandomService) {}
+    constructor(
+        private storagePersistanceService: StoragePersistanceService,
+        private randomService: RandomService,
+        private configurationProvider: ConfigurationProvider,
+        private loggerService: LoggerService
+    ) {}
 
     createNonce(): string {
         const nonce = this.randomService.createRandom(40);
@@ -52,11 +59,34 @@ export class FlowsDataService {
     }
 
     isSilentRenewRunning() {
-        return this.storagePersistanceService.read('storageSilentRenewRunning') === 'running';
+        const storageObject = JSON.parse(this.storagePersistanceService.read('storageSilentRenewRunning'));
+
+        if (storageObject) {
+            const dateOfLaunchedProcessUtc = Date.parse(storageObject.dateOfLaunchedProcessUtc);
+            const currentDateUtc = Date.parse(new Date().toISOString());
+            const elapsedTimeInMilliseconds = Math.abs(currentDateUtc - dateOfLaunchedProcessUtc);
+            const isProbablyStuck =
+                elapsedTimeInMilliseconds > this.configurationProvider.openIDConfiguration.silentRenewTimeoutInSeconds * 1000;
+
+            if (isProbablyStuck) {
+                this.loggerService.logDebug('silent renew process is probably stuck, state will be reset.');
+                this.resetSilentRenewRunning();
+                return false;
+            }
+
+            return storageObject.state === 'running';
+        }
+
+        return false;
     }
 
     setSilentRenewRunning() {
-        this.storagePersistanceService.write('storageSilentRenewRunning', 'running');
+        const storageObject = {
+            state: 'running',
+            dateOfLaunchedProcessUtc: new Date().toISOString(),
+        };
+
+        this.storagePersistanceService.write('storageSilentRenewRunning', JSON.stringify(storageObject));
     }
 
     resetSilentRenewRunning() {

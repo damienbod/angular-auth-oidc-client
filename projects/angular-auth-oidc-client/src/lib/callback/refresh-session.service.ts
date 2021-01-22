@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { forkJoin, of } from 'rxjs';
-import { map, switchMap, take } from 'rxjs/operators';
+import { forkJoin, Observable, of, throwError, TimeoutError, timer } from 'rxjs';
+import { map, mergeMap, retryWhen, switchMap, take, timeout } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { ConfigurationProvider } from '../config/config.provider';
@@ -13,6 +13,8 @@ import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-tok
 
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionService {
+    private MAX_RETRY_ATTEMPTS = 3;
+
     constructor(
         private flowHelper: FlowHelper,
         private configurationProvider: ConfigurationProvider,
@@ -43,6 +45,8 @@ export class RefreshSessionService {
         }
 
         return forkJoin([this.startRefreshSession(), this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1))]).pipe(
+            timeout(this.configurationProvider.openIDConfiguration.silentRenewTimeoutInSeconds * 1000),
+            retryWhen(this.TimeoutRetryStrategy.bind(this)),
             map(([_, callbackContext]) => {
                 const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
                 if (isAuthenticated) {
@@ -82,6 +86,24 @@ export class RefreshSessionService {
                 }
 
                 return this.refreshSessionIframeService.refreshSessionWithIframe(customParams);
+            })
+        );
+    }
+
+    private TimeoutRetryStrategy(errorAttempts: Observable<any>) {
+        return errorAttempts.pipe(
+            mergeMap((error, index) => {
+                const scalingDuration = 1000;
+                const currentAttempt = index + 1;
+
+                if (!(error instanceof TimeoutError) || currentAttempt > this.MAX_RETRY_ATTEMPTS) {
+                    return throwError(error);
+                }
+
+                this.loggerService.logDebug(`forceRefreshSession timeout. Attempt #${currentAttempt}`);
+
+                this.flowsDataService.resetSilentRenewRunning();
+                return timer(currentAttempt * scalingDuration);
             })
         );
     }
