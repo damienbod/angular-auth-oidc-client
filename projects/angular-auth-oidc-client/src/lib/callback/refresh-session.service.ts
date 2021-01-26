@@ -44,21 +44,22 @@ export class RefreshSessionService {
             );
         }
 
-        return forkJoin([this.startRefreshSession(), this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1))]).pipe(
-            timeout(this.configurationProvider.openIDConfiguration.silentRenewTimeoutInSeconds * 1000),
-            retryWhen(this.TimeoutRetryStrategy.bind(this)),
-            map(([_, callbackContext]) => {
-                const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
-                if (isAuthenticated) {
-                    return {
-                        idToken: callbackContext?.authResult?.id_token,
-                        accessToken: callbackContext?.authResult?.access_token,
-                    };
-                }
+        return forkJoin([this.startRefreshSession(customParams), this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1))])
+            .pipe(
+                timeout(this.configurationProvider.openIDConfiguration.silentRenewTimeoutInSeconds * 1000),
+                retryWhen(this.TimeoutRetryStrategy.bind(this)),
+                map(([_, callbackContext]) => {
+                    const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
+                    if (isAuthenticated) {
+                        return {
+                            idToken: callbackContext?.authResult?.id_token,
+                            accessToken: callbackContext?.authResult?.access_token,
+                        };
+                    }
 
-                return null;
-            })
-        );
+                    return null;
+                })
+            );
     }
     private startRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
         const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
