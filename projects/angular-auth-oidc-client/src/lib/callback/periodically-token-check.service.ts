@@ -7,6 +7,7 @@ import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { LoggerService } from '../logging/logger.service';
+import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { UserService } from '../userData/user-service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { IntervallService } from './intervall.service';
@@ -24,7 +25,8 @@ export class PeriodicallyTokenCheckService {
         private authStateService: AuthStateService,
         private refreshSessionIframeService: RefreshSessionIframeService,
         private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService,
-        private intervallService: IntervallService
+        private intervallService: IntervallService,
+        private storagePersistanceService: StoragePersistanceService
     ) {}
 
     startTokenValidationPeriodically(repeatAfterSeconds: number) {
@@ -66,12 +68,15 @@ export class PeriodicallyTokenCheckService {
 
                 this.flowsDataService.setSilentRenewRunning();
 
+                // Retrieve Dynamically Set Custom Params
+                const customParams: { [key: string]: string | number | boolean } = this.storagePersistanceService.read('storageCustomRequestParams');
+
                 if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
                     // Refresh Session using Refresh tokens
-                    return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens();
+                    return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(customParams);
                 }
 
-                return this.refreshSessionIframeService.refreshSessionWithIframe();
+                return this.refreshSessionIframeService.refreshSessionWithIframe(customParams);
             })
         );
 
