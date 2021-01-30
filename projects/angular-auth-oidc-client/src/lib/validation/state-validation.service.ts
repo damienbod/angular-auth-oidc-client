@@ -64,8 +64,8 @@ export class StateValidationService {
         }
 
         // its aud Claim Value MUST be the same as in the ID Token issued when the original authentication occurred,
-        if (!this.equalityService.areRefreshEqual(decodedIdToken?.aud, newIdToken?.aud)) {
-            this.loggerService.logDebug(`aud do not match: '${decodedIdToken?.aud}' '${newIdToken.aud}'`);
+        if (!this.equalityService.isStringEqualOrNonOrderedArrayEqual(decodedIdToken?.aud, newIdToken?.aud)) {
+            this.loggerService.logDebug(`aud in new id_token is not valid: '${decodedIdToken?.aud}' '${newIdToken.aud}'`);
             return false;
         }
 

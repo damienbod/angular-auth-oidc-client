@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class EqualityService {
-    areRefreshEqual(value1: string | any[], value2: string | any[]) {
-        if (this.isNullorUndefined(value1)) {
+    isStringEqualOrNonOrderedArrayEqual(value1: string | any[], value2: string | any[]) {
+        if (this.isNullOrUndefined(value1)) {
             return false;
         }
 
-        if (this.isNullorUndefined(value2)) {
+        if (this.isNullOrUndefined(value2)) {
             return false;
         }
 
@@ -102,7 +102,7 @@ export class EqualityService {
         return arr1.some((v) => arr2.includes(v));
     }
 
-    private isNullorUndefined(val: any) {
+    private isNullOrUndefined(val: any) {
         return val === null || val === undefined;
     }
 }
