@@ -116,4 +116,82 @@ describe('EqualityService Tests', () => {
         const result = equalityHelperService.areEqual(array1, string2);
         expect(result).toBe(false);
     });
+
+    describe('areRefreshEqual', () => {
+        const testCases = [
+            {
+                input1: 'value1',
+                input2: 'value1',
+                expected: true,
+            },
+            {
+                input1: null,
+                input2: 'value2',
+                expected: false,
+            },
+            {
+                input1: 'value1',
+                input2: null,
+                expected: false,
+            },
+            {
+                input1: null,
+                input2: null,
+                expected: false,
+            },
+            {
+                input1: 'value1',
+                input2: 'value2',
+                expected: false,
+            },
+            // old "x" (string) , [x] new invalid
+            {
+                input1: 'value1',
+                input2: ['value2'],
+                expected: false,
+            },
+            // old [x], new "x" (string) invalid
+            {
+                input1: ['value2'],
+                input2: 'value1',
+                expected: false,
+            },
+            {
+                input1: ['value1'],
+                input2: ['value2'],
+                expected: false,
+            },
+            // old [x,y,z], new [x,y] invalid
+            // old [x], new [y,x] invalid
+            {
+                input1: ['value1'],
+                input2: ['value1', 'value2'],
+                expected: false,
+            },
+            {
+                input1: ['value1', 'value2'],
+                input2: ['value1', 'value2'],
+                expected: true,
+            },
+            // old [x,y], new [y,x] valid
+            {
+                input1: ['value1', 'value2'],
+                input2: ['value2', 'value1'],
+                expected: true,
+            },
+            // old [x,y,z], new [y,z,x] valid
+            {
+                input1: ['x', 'y', 'z'],
+                input2: ['y', 'z', 'x'],
+                expected: true,
+            },
+        ];
+
+        testCases.forEach(({ input1, input2, expected }) => {
+            it(`returns '${expected}' if '${input1}' and '${input2}' is given`, () => {
+                const result = equalityHelperService.areRefreshEqual(input1, input2);
+                expect(result).toBe(expected);
+            });
+        });
+    });
 });

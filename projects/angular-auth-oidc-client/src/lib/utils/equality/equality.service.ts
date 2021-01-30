@@ -2,13 +2,40 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class EqualityService {
+    areRefreshEqual(value1: string | any[], value2: string | any[]) {
+        if (this.isNullorUndefined(value1)) {
+            return false;
+        }
+
+        if (this.isNullorUndefined(value2)) {
+            return false;
+        }
+
+        if (this.oneValueIsStringAndTheOtherIsArray(value1, value2)) {
+            console.log('oneValueIsStringAndTheOtherIsArray');
+            return false;
+        }
+
+        if (this.bothValuesAreStrings(value1, value2)) {
+            console.log('bothValuesAreStrings');
+            return value1 === value2;
+        }
+
+        if (this.bothValuesAreArrays(value1, value2)) {
+            console.log('bothValuesAreArrays');
+            return this.arraysHaveEqualContent(value1 as any[], value2 as any[]);
+        }
+
+        return false;
+    }
+
     areEqual(value1: string | any[] | object | null | undefined, value2: string | any[] | object | null | undefined) {
         if (!value1 || !value2) {
             return false;
         }
 
         if (this.bothValuesAreArrays(value1, value2)) {
-            return this.arraysEqual(value1 as any[], value2 as any[]);
+            return this.arraysStrictEqual(value1 as any[], value2 as any[]);
         }
 
         if (this.bothValuesAreStrings(value1, value2)) {
@@ -53,7 +80,7 @@ export class EqualityService {
         return typeof value === 'object';
     }
 
-    private arraysEqual(arr1: Array<string>, arr2: Array<string>) {
+    private arraysStrictEqual(arr1: Array<string>, arr2: Array<string>) {
         if (arr1.length !== arr2.length) {
             return false;
         }
@@ -65,5 +92,17 @@ export class EqualityService {
         }
 
         return true;
+    }
+
+    private arraysHaveEqualContent(arr1: Array<string>, arr2: Array<string>) {
+        if (arr1.length !== arr2.length) {
+            return false;
+        }
+
+        return arr1.some((v) => arr2.includes(v));
+    }
+
+    private isNullorUndefined(val: any) {
+        return val === null || val === undefined;
     }
 }

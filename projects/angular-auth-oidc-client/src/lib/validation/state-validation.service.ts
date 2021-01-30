@@ -3,6 +3,7 @@ import { ConfigurationProvider } from '../config/config.provider';
 import { CallbackContext } from '../flows/callback-context';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
+import { EqualityService } from '../utils/equality/equality.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
 import { StateValidationResult } from './state-validation-result';
@@ -16,8 +17,9 @@ export class StateValidationService {
         private tokenValidationService: TokenValidationService,
         private tokenHelperService: TokenHelperService,
         private loggerService: LoggerService,
-        private readonly configurationProvider: ConfigurationProvider,
-        private readonly flowHelper: FlowHelper
+        private configurationProvider: ConfigurationProvider,
+        private equalityService: EqualityService,
+        private flowHelper: FlowHelper
     ) {}
 
     getValidatedStateResult(callbackContext: CallbackContext): StateValidationResult {
@@ -62,8 +64,8 @@ export class StateValidationService {
         }
 
         // its aud Claim Value MUST be the same as in the ID Token issued when the original authentication occurred,
-        if (decodedIdToken.aud !== newIdToken.aud) {
-            this.loggerService.logDebug(`aud do not match: ${decodedIdToken.aud} ${newIdToken.aud}`);
+        if (!this.equalityService.areRefreshEqual(decodedIdToken?.aud, newIdToken?.aud)) {
+            this.loggerService.logDebug(`aud do not match: '${decodedIdToken?.aud}' '${newIdToken.aud}'`);
             return false;
         }
 
