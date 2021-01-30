@@ -12,17 +12,14 @@ export class EqualityService {
         }
 
         if (this.oneValueIsStringAndTheOtherIsArray(value1, value2)) {
-            console.log('oneValueIsStringAndTheOtherIsArray');
             return false;
         }
 
         if (this.bothValuesAreStrings(value1, value2)) {
-            console.log('bothValuesAreStrings');
             return value1 === value2;
         }
 
         if (this.bothValuesAreArrays(value1, value2)) {
-            console.log('bothValuesAreArrays');
             return this.arraysHaveEqualContent(value1 as any[], value2 as any[]);
         }
 
