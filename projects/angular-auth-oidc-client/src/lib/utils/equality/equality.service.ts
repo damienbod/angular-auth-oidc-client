@@ -26,7 +26,7 @@ export class EqualityService {
         return false;
     }
 
-    areEqual(value1: string | any[] | object | null | undefined, value2: string | any[] | object | null | undefined) {
+    areEqual(value1: string | any[] | any | null | undefined, value2: string | any[] | any | null | undefined) {
         if (!value1 || !value2) {
             return false;
         }
@@ -53,19 +53,19 @@ export class EqualityService {
         }
     }
 
-    private oneValueIsStringAndTheOtherIsArray(value1: string | object | any[], value2: string | object | any[]) {
+    private oneValueIsStringAndTheOtherIsArray(value1: string | any | any[], value2: string | any | any[]) {
         return (Array.isArray(value1) && this.valueIsString(value2)) || (Array.isArray(value2) && this.valueIsString(value1));
     }
 
-    private bothValuesAreObjects(value1: string | object | any[], value2: string | object | any[]) {
+    private bothValuesAreObjects(value1: string | any | any[], value2: string | any | any[]) {
         return this.valueIsObject(value1) && this.valueIsObject(value2);
     }
 
-    private bothValuesAreStrings(value1: string | object | any[], value2: string | object | any[]) {
+    private bothValuesAreStrings(value1: string | any | any[], value2: string | any | any[]) {
         return this.valueIsString(value1) && this.valueIsString(value2);
     }
 
-    private bothValuesAreArrays(value1: string | object | any[], value2: string | object | any[]) {
+    private bothValuesAreArrays(value1: string | any | any[], value2: string | any | any[]) {
         return Array.isArray(value1) && Array.isArray(value2);
     }
 

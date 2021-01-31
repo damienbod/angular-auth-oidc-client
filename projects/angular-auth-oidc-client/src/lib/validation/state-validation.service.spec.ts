@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
@@ -71,7 +72,7 @@ describe('State Validation Service', () => {
             postLoginRoute: '/dataeventrecords',
             forbiddenRoute: '/Forbidden',
             unauthorizedRoute: '/Unauthorized',
-            logLevel: LogLevel.Debug,
+            logLevel: LogLevel.debug,
             maxIdTokenIatOffsetAllowedInSeconds: 10,
         };
 
@@ -648,7 +649,7 @@ describe('State Validation Service', () => {
 
         expect(logDebugSpy).toHaveBeenCalledWith('iss validation is turned off, this is not recommended!');
 
-        expect(state.state).toBe(ValidationResult.Ok);
+        expect(state.state).toBe(ValidationResult.ok);
         expect(state.accessToken).toBe('access_tokenTEST');
         expect(state.authResponseIsValid).toBe(true);
         expect(state.decodedIdToken).toBeDefined();
@@ -733,7 +734,7 @@ describe('State Validation Service', () => {
             postLoginRoute: '/dataeventrecords',
             forbiddenRoute: '/Forbidden',
             unauthorizedRoute: '/Unauthorized',
-            logLevel: LogLevel.Debug,
+            logLevel: LogLevel.debug,
             maxIdTokenIatOffsetAllowedInSeconds: 10,
             useRefreshToken: true,
             ignoreNonceAfterRefresh: true,
@@ -799,7 +800,7 @@ describe('State Validation Service', () => {
             postLoginRoute: '/dataeventrecords',
             forbiddenRoute: '/Forbidden',
             unauthorizedRoute: '/Unauthorized',
-            logLevel: LogLevel.Debug,
+            logLevel: LogLevel.debug,
             maxIdTokenIatOffsetAllowedInSeconds: 10,
             useRefreshToken: true,
             ignoreNonceAfterRefresh: true,
@@ -865,7 +866,7 @@ describe('State Validation Service', () => {
             postLoginRoute: '/dataeventrecords',
             forbiddenRoute: '/Forbidden',
             unauthorizedRoute: '/Unauthorized',
-            logLevel: LogLevel.Debug,
+            logLevel: LogLevel.debug,
             maxIdTokenIatOffsetAllowedInSeconds: 10,
             useRefreshToken: true,
             ignoreNonceAfterRefresh: true,
@@ -931,7 +932,7 @@ describe('State Validation Service', () => {
             postLoginRoute: '/dataeventrecords',
             forbiddenRoute: '/Forbidden',
             unauthorizedRoute: '/Unauthorized',
-            logLevel: LogLevel.Debug,
+            logLevel: LogLevel.debug,
             maxIdTokenIatOffsetAllowedInSeconds: 10,
             useRefreshToken: true,
             ignoreNonceAfterRefresh: true,
@@ -997,7 +998,7 @@ describe('State Validation Service', () => {
             postLoginRoute: '/dataeventrecords',
             forbiddenRoute: '/Forbidden',
             unauthorizedRoute: '/Unauthorized',
-            logLevel: LogLevel.Debug,
+            logLevel: LogLevel.debug,
             maxIdTokenIatOffsetAllowedInSeconds: 10,
             useRefreshToken: true,
             ignoreNonceAfterRefresh: true,
@@ -1063,7 +1064,7 @@ describe('State Validation Service', () => {
             postLoginRoute: '/dataeventrecords',
             forbiddenRoute: '/Forbidden',
             unauthorizedRoute: '/Unauthorized',
-            logLevel: LogLevel.Debug,
+            logLevel: LogLevel.debug,
             maxIdTokenIatOffsetAllowedInSeconds: 10,
             useRefreshToken: true,
             ignoreNonceAfterRefresh: true,
@@ -1129,7 +1130,7 @@ describe('State Validation Service', () => {
             postLoginRoute: '/dataeventrecords',
             forbiddenRoute: '/Forbidden',
             unauthorizedRoute: '/Unauthorized',
-            logLevel: LogLevel.Debug,
+            logLevel: LogLevel.debug,
             maxIdTokenIatOffsetAllowedInSeconds: 10,
             useRefreshToken: true,
             ignoreNonceAfterRefresh: true,
@@ -1195,7 +1196,7 @@ describe('State Validation Service', () => {
             postLoginRoute: '/dataeventrecords',
             forbiddenRoute: '/Forbidden',
             unauthorizedRoute: '/Unauthorized',
-            logLevel: LogLevel.Debug,
+            logLevel: LogLevel.debug,
             maxIdTokenIatOffsetAllowedInSeconds: 10,
             useRefreshToken: true,
             ignoreNonceAfterRefresh: true,

@@ -50,15 +50,14 @@ import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.servi
 
 @Injectable()
 export class TokenValidationService {
-    static RefreshTokenNoncePlaceholder = '--RefreshToken--';
+    static refreshTokenNoncePlaceholder = '--RefreshToken--';
     keyAlgorithms: string[] = ['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'PS256', 'PS384', 'PS512'];
     constructor(private tokenHelperService: TokenHelperService, private flowHelper: FlowHelper, private loggerService: LoggerService) {}
 
     // id_token C7: The current time MUST be before the time represented by the exp Claim
     // (possibly allowing for some small leeway to account for clock skew).
     hasIdTokenExpired(token: string, offsetSeconds?: number): boolean {
-        let decoded: any;
-        decoded = this.tokenHelperService.getPayloadFromToken(token, false);
+        const decoded = this.tokenHelperService.getPayloadFromToken(token, false);
 
         return !this.validateIdTokenExpNotExpired(decoded, offsetSeconds);
     }
@@ -203,7 +202,7 @@ export class TokenValidationService {
     validateIdTokenNonce(dataIdToken: any, localNonce: any, ignoreNonceAfterRefresh: boolean): boolean {
         const isFromRefreshToken =
             (dataIdToken.nonce === undefined || ignoreNonceAfterRefresh) &&
-            localNonce === TokenValidationService.RefreshTokenNoncePlaceholder;
+            localNonce === TokenValidationService.refreshTokenNoncePlaceholder;
         if (!isFromRefreshToken && dataIdToken.nonce !== localNonce) {
             this.loggerService.logDebug(
                 'Validate_id_token_nonce failed, dataIdToken.nonce: ' + dataIdToken.nonce + ' local_nonce:' + localNonce
@@ -422,17 +421,17 @@ export class TokenValidationService {
         return false;
     }
 
-    private generateAtHash(accessToken: any, sha: string): string {
-        const hash = KJUR.crypto.Util.hashString(accessToken, sha);
-        const first128bits = hash.substr(0, hash.length / 2);
-        const testdata = hextob64u(first128bits);
+    generateCodeChallenge(codeVerifier: any): string {
+        const hash = KJUR.crypto.Util.hashString(codeVerifier, 'sha256');
+        const testdata = hextob64u(hash);
 
         return testdata;
     }
 
-    generateCodeChallenge(codeVerifier: any): string {
-        const hash = KJUR.crypto.Util.hashString(codeVerifier, 'sha256');
-        const testdata = hextob64u(hash);
+    private generateAtHash(accessToken: any, sha: string): string {
+        const hash = KJUR.crypto.Util.hashString(accessToken, sha);
+        const first128bits = hash.substr(0, hash.length / 2);
+        const testdata = hextob64u(first128bits);
 
         return testdata;
     }

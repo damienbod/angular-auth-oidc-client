@@ -38,7 +38,7 @@ export class AuthStateService {
     }
 
     updateAndPublishAuthState(authorizationResult: AuthorizationResult) {
-        this.publicEventsService.fireEvent<AuthorizationResult>(EventTypes.NewAuthorizationResult, authorizationResult);
+        this.publicEventsService.fireEvent<AuthorizationResult>(EventTypes.newAuthorizationResult, authorizationResult);
     }
 
     setAuthorizationData(accessToken: any, authResult: any) {
@@ -104,7 +104,7 @@ export class AuthStateService {
         );
 
         if (idTokenExpired) {
-            this.publicEventsService.fireEvent<boolean>(EventTypes.IdTokenExpired, idTokenExpired);
+            this.publicEventsService.fireEvent<boolean>(EventTypes.idTokenExpired, idTokenExpired);
         }
 
         return idTokenExpired;
@@ -120,17 +120,16 @@ export class AuthStateService {
         const hasExpired = !accessTokenHasNotExpired;
 
         if (hasExpired) {
-            this.publicEventsService.fireEvent<boolean>(EventTypes.TokenExpired, hasExpired);
+            this.publicEventsService.fireEvent<boolean>(EventTypes.tokenExpired, hasExpired);
         }
 
         return hasExpired;
     }
 
-    private decodeURIComponentSafely(token: string){
-        if (token){
+    private decodeURIComponentSafely(token: string) {
+        if (token) {
             return decodeURIComponent(token);
-        }
-        else {
+        } else {
             return '';
         }
     }

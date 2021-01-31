@@ -13,7 +13,6 @@ describe('RefreshSessionRefreshTokenService', () => {
     let refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService;
     let intervallService: IntervallService;
     let flowsService: FlowsService;
-    let loggerService: LoggerService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -30,7 +29,6 @@ describe('RefreshSessionRefreshTokenService', () => {
     beforeEach(() => {
         refreshSessionRefreshTokenService = TestBed.inject(RefreshSessionRefreshTokenService);
         intervallService = TestBed.inject(IntervallService);
-        loggerService = TestBed.inject(LoggerService);
         flowsService = TestBed.inject(FlowsService);
     });
 

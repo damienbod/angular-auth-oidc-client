@@ -1,7 +1,7 @@
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { POSITIVE_VALIDATION_RESULT, RuleValidationResult } from '../rule';
 
-export function ensureSilentRenewUrlWhenNoRefreshTokenUsed(passedConfig: OpenIdConfiguration): RuleValidationResult {
+export const ensureSilentRenewUrlWhenNoRefreshTokenUsed = (passedConfig: OpenIdConfiguration): RuleValidationResult => {
     const usesSilentRenew = passedConfig.silentRenew;
     const usesRefreshToken = passedConfig.useRefreshToken;
     const hasSilentRenewUrl = passedConfig.silentRenewUrl;
@@ -15,4 +15,4 @@ export function ensureSilentRenewUrlWhenNoRefreshTokenUsed(passedConfig: OpenIdC
     }
 
     return POSITIVE_VALIDATION_RESULT;
-}
+};

@@ -6,6 +6,6 @@ export class StateValidationResult {
         public idToken = '',
         public authResponseIsValid = false,
         public decodedIdToken: any = {},
-        public state: ValidationResult = ValidationResult.NotSet
+        public state: ValidationResult = ValidationResult.notSet
     ) {}
 }

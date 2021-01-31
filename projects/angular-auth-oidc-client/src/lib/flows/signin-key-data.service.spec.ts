@@ -70,9 +70,7 @@ describe('Signin Key Data Service', () => {
             'calls dataservice if jwksurl is given',
             waitForAsync(() => {
                 spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
-                const spy = spyOn(dataService, 'get').and.callFake(() => {
-                    return of();
-                });
+                const spy = spyOn(dataService, 'get').and.callFake(() => of());
 
                 const result = service.getSigningKeys();
 

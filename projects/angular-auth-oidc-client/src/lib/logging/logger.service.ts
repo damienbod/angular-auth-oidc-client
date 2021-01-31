@@ -11,7 +11,11 @@ export class LoggerService {
             return;
         }
 
-        args.length ? console.error(message, args) : console.error(message);
+        if (!!args && args.length) {
+            console.error(message, args);
+        } else {
+            console.error(message);
+        }
     }
 
     logWarning(message: any, ...args: string[]) {
@@ -23,11 +27,15 @@ export class LoggerService {
             return;
         }
 
-        if (!this.currentLogLevelIsEqualOrSmallerThan(LogLevel.Warn)) {
+        if (!this.currentLogLevelIsEqualOrSmallerThan(LogLevel.warn)) {
             return;
         }
 
-        args.length ? console.warn(message, args) : console.warn(message);
+        if (!!args && args.length) {
+            console.warn(message, args);
+        } else {
+            console.warn(message);
+        }
     }
 
     logDebug(message: any, ...args: string[]) {
@@ -39,11 +47,15 @@ export class LoggerService {
             return;
         }
 
-        if (!this.currentLogLevelIsEqualOrSmallerThan(LogLevel.Debug)) {
+        if (!this.currentLogLevelIsEqualOrSmallerThan(LogLevel.debug)) {
             return;
         }
 
-        args.length ? console.log(message, args) : console.log(message);
+        if (!!args && args.length) {
+            console.log(message, args);
+        } else {
+            console.log(message);
+        }
     }
 
     private currentLogLevelIsEqualOrSmallerThan(logLevel: LogLevel) {
@@ -59,6 +71,6 @@ export class LoggerService {
     }
 
     private loggingIsTurnedOff() {
-        return this.configurationProvider.openIDConfiguration?.logLevel === LogLevel.None;
+        return this.configurationProvider.openIDConfiguration?.logLevel === LogLevel.none;
     }
 }

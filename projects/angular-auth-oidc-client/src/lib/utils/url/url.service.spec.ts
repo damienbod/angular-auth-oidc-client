@@ -1,6 +1,5 @@
 import { DOCUMENT } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
-
 import { ConfigurationProvider } from '../../config/config.provider';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { FlowsDataService } from '../../flows/flows-data.service';
@@ -898,7 +897,6 @@ describe('UrlService Tests', () => {
             spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId, redirectUrl });
 
             const result = service.createBodyForCodeFlowCodeRequest(code);
-            const expected = `grant_type=authorization_code&client_id=${clientId}&code_verifier=${codeVerifier}&code=${code}&redirect_uri=${redirectUrl}`;
 
             expect(result).toBeNull();
         });

@@ -73,26 +73,26 @@ export class UserService {
         const userdata = this.getUserDataFromStore();
         if (userdata) {
             this.userDataInternal$.next(userdata);
-            this.eventService.fireEvent(EventTypes.UserDataChanged, userdata);
+            this.eventService.fireEvent(EventTypes.userDataChanged, userdata);
         }
     }
 
     setUserDataToStore(value: any): void {
         this.storagePersistanceService.write('userData', value);
         this.userDataInternal$.next(value);
-        this.eventService.fireEvent(EventTypes.UserDataChanged, value);
+        this.eventService.fireEvent(EventTypes.userDataChanged, value);
     }
 
     resetUserDataInStore(): void {
         this.storagePersistanceService.remove('userData');
-        this.eventService.fireEvent(EventTypes.UserDataChanged, null);
+        this.eventService.fireEvent(EventTypes.userDataChanged, null);
         this.userDataInternal$.next(null);
     }
 
     private getUserDataOidcFlowAndSave(idTokenSub: any): Observable<any> {
         return this.getIdentityUserData().pipe(
             map((data: any) => {
-                if (this.validateUserdataSubIdToken(idTokenSub, data?.sub)) {
+                if (this.validateUserDataSubIdToken(idTokenSub, data?.sub)) {
                     this.setUserDataToStore(data);
                     return data;
                 } else {
@@ -128,7 +128,7 @@ export class UserService {
         return this.oidcDataService.get(userinfoEndpoint, token);
     }
 
-    private validateUserdataSubIdToken(idTokenSub: any, userdataSub: any): boolean {
+    private validateUserDataSubIdToken(idTokenSub: any, userdataSub: any): boolean {
         if (!idTokenSub) {
             return false;
         }
@@ -138,7 +138,7 @@ export class UserService {
         }
 
         if ((idTokenSub as string) !== (userdataSub as string)) {
-            this.loggerService.logDebug('validateUserdataSubIdToken failed', idTokenSub, userdataSub);
+            this.loggerService.logDebug('validateUserDataSubIdToken failed', idTokenSub, userdataSub);
             return false;
         }
 

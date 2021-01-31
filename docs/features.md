@@ -35,7 +35,7 @@ import { PublicEventsService } from 'angular-auth-oidc-client';
 constructor(private eventService: PublicEventsService) {
     this.eventService
             .registerForEvents()
-            .pipe(filter((notification) => notification.type === EventTypes.CheckSessionReceived))
+            .pipe(filter((notification) => notification.type === EventTypes.checkSessionReceived))
             .subscribe((value) => console.log('CheckSessionChanged with value ', value));
 }
 ```

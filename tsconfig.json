@@ -8,6 +8,7 @@
         "noImplicitReturns": false,
         "noFallthroughCasesInSwitch": false,
         "sourceMap": true,
+        "noUnusedLocals": true,
         "declaration": false,
         "downlevelIteration": true,
         "experimentalDecorators": true,

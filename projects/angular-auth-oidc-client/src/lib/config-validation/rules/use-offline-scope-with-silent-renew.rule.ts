@@ -1,7 +1,7 @@
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { POSITIVE_VALIDATION_RESULT, RuleValidationResult } from '../rule';
 
-export function useOfflineScopeWithSilentRenew(passedConfig: OpenIdConfiguration): RuleValidationResult {
+export const useOfflineScopeWithSilentRenew = (passedConfig: OpenIdConfiguration): RuleValidationResult => {
     const hasRefreshToken = passedConfig.useRefreshToken;
     const hasSilentRenew = passedConfig.silentRenew;
     const scope = passedConfig.scope || '';
@@ -16,4 +16,4 @@ export function useOfflineScopeWithSilentRenew(passedConfig: OpenIdConfiguration
     }
 
     return POSITIVE_VALIDATION_RESULT;
-}
+};

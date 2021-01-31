@@ -137,7 +137,7 @@ describe('PeriodicallyTokenCheckService', () => {
         }));
 
         it('returns if tokens are not expired', fakeAsync(() => {
-            const silentRenewSpy = spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: true });
+            spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: true });
             spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens');
             spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
             spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);

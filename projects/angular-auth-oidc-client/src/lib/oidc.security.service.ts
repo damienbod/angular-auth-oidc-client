@@ -21,7 +21,6 @@ import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.servic
 
 @Injectable()
 export class OidcSecurityService {
-
     get configuration(): PublicConfiguration {
         return {
             configuration: this.configurationProvider.openIDConfiguration,
@@ -119,18 +118,6 @@ export class OidcSecurityService {
         );
     }
 
-    private startCheckSessionAndValidation() {
-        if (this.checkSessionService.isCheckSessionConfigured()) {
-            this.checkSessionService.start();
-        }
-
-        this.periodicallyTokenCheckService.startTokenValidationPeriodically(this.configuration.configuration.tokenRefreshInSeconds);
-
-        if (this.silentRenewService.isSilentRenewConfigured()) {
-            this.silentRenewService.getOrCreateIframe();
-        }
-    }
-
     getToken(): string {
         return this.authStateService.getAccessToken();
     }
@@ -215,5 +202,17 @@ export class OidcSecurityService {
 
     getEndSessionUrl(): string | null {
         return this.logoffRevocationService.getEndSessionUrl();
+    }
+
+    private startCheckSessionAndValidation() {
+        if (this.checkSessionService.isCheckSessionConfigured()) {
+            this.checkSessionService.start();
+        }
+
+        this.periodicallyTokenCheckService.startTokenValidationPeriodically(this.configuration.configuration.tokenRefreshInSeconds);
+
+        if (this.silentRenewService.isSilentRenewConfigured()) {
+            this.silentRenewService.getOrCreateIframe();
+        }
     }
 }

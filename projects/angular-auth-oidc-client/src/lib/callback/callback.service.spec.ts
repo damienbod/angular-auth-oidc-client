@@ -18,7 +18,6 @@ import { ImplicitFlowCallbackServiceMock } from './implicit-flow-callback.servic
 describe('Callbackservice ', () => {
     let callbackService: CallbackService;
     let implicitFlowCallbackService: ImplicitFlowCallbackService;
-    let urlService: UrlService;
     let codeFlowCallbackService: CodeFlowCallbackService;
     let flowHelper: FlowHelper;
 
@@ -39,7 +38,6 @@ describe('Callbackservice ', () => {
 
     beforeEach(() => {
         callbackService = TestBed.inject(CallbackService);
-        urlService = TestBed.inject(UrlService);
         flowHelper = TestBed.inject(FlowHelper);
         implicitFlowCallbackService = TestBed.inject(ImplicitFlowCallbackService);
         codeFlowCallbackService = TestBed.inject(CodeFlowCallbackService);

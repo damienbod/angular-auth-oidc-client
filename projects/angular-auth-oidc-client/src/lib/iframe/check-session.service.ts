@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config/config.provider';
@@ -30,7 +30,6 @@ export class CheckSessionService {
         private storagePersistanceService: StoragePersistanceService,
         private loggerService: LoggerService,
         private iFrameService: IFrameService,
-        private zone: NgZone,
         private eventService: PublicEventsService,
         private configurationProvider: ConfigurationProvider
     ) {}
@@ -59,6 +58,10 @@ export class CheckSessionService {
 
     serverStateChanged() {
         return this.configurationProvider.openIDConfiguration.startCheckSession && this.checkSessionReceived;
+    }
+
+    getExistingIframe() {
+        return this.iFrameService.getExistingIFrame(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
     }
 
     private init(): Observable<any> {
@@ -121,7 +124,8 @@ export class CheckSessionService {
                     // after sending three messages with no response, fail.
                     if (this.outstandingMessages > 3) {
                         this.loggerService.logError(
-                            `OidcSecurityCheckSession not receiving check session response messages. Outstanding messages: ${this.outstandingMessages}. Server unreachable?`
+                            `OidcSecurityCheckSession not receiving check session response messages.
+                            Outstanding messages: ${this.outstandingMessages}. Server unreachable?`
                         );
                     }
 
@@ -148,17 +152,13 @@ export class CheckSessionService {
             } else if (e.data === 'changed') {
                 this.loggerService.logDebug(e);
                 this.checkSessionReceived = true;
-                this.eventService.fireEvent(EventTypes.CheckSessionReceived, e.data);
+                this.eventService.fireEvent(EventTypes.checkSessionReceived, e.data);
                 this.checkSessionChangedInternal$.next(true);
             } else {
-                this.eventService.fireEvent(EventTypes.CheckSessionReceived, e.data);
+                this.eventService.fireEvent(EventTypes.checkSessionReceived, e.data);
                 this.loggerService.logDebug(e.data + ' from checksession messageHandler');
             }
         }
-    }
-
-    getExistingIframe() {
-        return this.iFrameService.getExistingIFrame(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
     }
 
     private bindMessageEventToIframe() {

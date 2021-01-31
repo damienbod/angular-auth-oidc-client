@@ -162,7 +162,7 @@ export class FlowsService {
 
             this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
             // Nonce is not used with refresh tokens; but Keycloak may send it anyway
-            this.flowsDataService.setNonce(TokenValidationService.RefreshTokenNoncePlaceholder);
+            this.flowsDataService.setNonce(TokenValidationService.refreshTokenNoncePlaceholder);
 
             return of(callbackContext);
         } else {
@@ -174,8 +174,9 @@ export class FlowsService {
 
     // STEP 2 Refresh Token
     private refreshTokensRequestTokens(
-            callbackContext: CallbackContext,
-            customParams?: { [key: string]: string | number | boolean }): Observable<CallbackContext> {
+        callbackContext: CallbackContext,
+        customParams?: { [key: string]: string | number | boolean }
+    ): Observable<CallbackContext> {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -340,7 +341,7 @@ export class FlowsService {
                     }
                 }),
                 catchError((err) => {
-                    const errorMessage = `Failed to retreive user info with error:  ${err}`;
+                    const errorMessage = `Failed to retrieve user info with error:  ${err}`;
                     this.loggerService.logWarning(errorMessage);
                     return throwError(errorMessage);
                 })
@@ -349,7 +350,7 @@ export class FlowsService {
 
     private publishAuthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
         this.authStateService.updateAndPublishAuthState({
-            authorizationState: AuthorizedState.Authorized,
+            authorizationState: AuthorizedState.authorized,
             validationResult: stateValidationResult.state,
             isRenewProcess,
         });
@@ -357,21 +358,21 @@ export class FlowsService {
 
     private publishUnauthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
         this.authStateService.updateAndPublishAuthState({
-            authorizationState: AuthorizedState.Unauthorized,
+            authorizationState: AuthorizedState.unauthorized,
             validationResult: stateValidationResult.state,
             isRenewProcess,
         });
     }
 
     private handleResultErrorFromCallback(result: any, isRenewProcess: boolean) {
-        let validationResult = ValidationResult.SecureTokenServerError;
+        let validationResult = ValidationResult.secureTokenServerError;
 
         if ((result.error as string) === 'login_required') {
-            validationResult = ValidationResult.LoginRequired;
+            validationResult = ValidationResult.loginRequired;
         }
 
         this.authStateService.updateAndPublishAuthState({
-            authorizationState: AuthorizedState.Unauthorized,
+            authorizationState: AuthorizedState.unauthorized,
             validationResult,
             isRenewProcess,
         });

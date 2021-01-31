@@ -277,7 +277,7 @@ describe('User Service', () => {
         it('eventService.fireEvent is called when userdata is set', () => {
             const spy = spyOn(eventsService, 'fireEvent');
             userService.setUserDataToStore('userDataForTest');
-            expect(spy).toHaveBeenCalledWith(EventTypes.UserDataChanged, 'userDataForTest');
+            expect(spy).toHaveBeenCalledWith(EventTypes.userDataChanged, 'userDataForTest');
         });
     });
 
@@ -297,7 +297,7 @@ describe('User Service', () => {
         it('eventService.fireEvent is called with null when userdata is reset', () => {
             const spy = spyOn(eventsService, 'fireEvent');
             userService.resetUserDataInStore();
-            expect(spy).toHaveBeenCalledWith(EventTypes.UserDataChanged, null);
+            expect(spy).toHaveBeenCalledWith(EventTypes.userDataChanged, null);
         });
     });
 
@@ -322,29 +322,29 @@ describe('User Service', () => {
             spyOn(userService, 'getUserDataFromStore').and.returnValue('something');
             const eventSpy = spyOn(eventsService, 'fireEvent');
             userService.publishUserdataIfExists();
-            expect(eventSpy).toHaveBeenCalledWith(EventTypes.UserDataChanged, 'something');
+            expect(eventSpy).toHaveBeenCalledWith(EventTypes.userDataChanged, 'something');
         });
     });
 
     describe('validateUserdataSubIdToken', () => {
         it('with no idTokenSub returns false', () => {
             const serviceAsAny = userService as any;
-            const result = serviceAsAny.validateUserdataSubIdToken('', 'anything');
+            const result = serviceAsAny.validateUserDataSubIdToken('', 'anything');
             expect(result).toBeFalse();
         });
 
         it('with no userdataSub returns false', () => {
             const serviceAsAny = userService as any;
-            const result = serviceAsAny.validateUserdataSubIdToken('something', '');
+            const result = serviceAsAny.validateUserDataSubIdToken('something', '');
             expect(result).toBeFalse();
         });
 
         it('with idTokenSub and userdataSub not match logs and returns false', () => {
             const serviceAsAny = userService as any;
-            const loggerspy = spyOn(loggerService, 'logDebug');
-            const result = serviceAsAny.validateUserdataSubIdToken('something', 'something2');
+            const loggerSpy = spyOn(loggerService, 'logDebug');
+            const result = serviceAsAny.validateUserDataSubIdToken('something', 'something2');
             expect(result).toBeFalse();
-            expect(loggerspy).toHaveBeenCalledWith('validateUserdataSubIdToken failed', 'something', 'something2');
+            expect(loggerSpy).toHaveBeenCalledWith('validateUserDataSubIdToken failed', 'something', 'something2');
         });
     });
 

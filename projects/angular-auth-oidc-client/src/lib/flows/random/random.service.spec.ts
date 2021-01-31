@@ -5,7 +5,6 @@ import { RandomService } from './random.service';
 
 describe('RandomService Tests', () => {
     let randomService: RandomService;
-    let loggerService: LoggerService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -15,7 +14,6 @@ describe('RandomService Tests', () => {
 
     beforeEach(() => {
         randomService = TestBed.inject(RandomService);
-        loggerService = TestBed.inject(LoggerService);
     });
 
     it('should create', () => {

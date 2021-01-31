@@ -1,6 +1,7 @@
+// eslint-disable-next-line no-shadow
 export enum LogLevel {
-    None,
-    Debug,
-    Warn,
-    Error,
+    none,
+    debug,
+    warn,
+    error,
 }

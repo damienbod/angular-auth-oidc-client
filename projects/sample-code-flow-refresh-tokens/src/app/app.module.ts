@@ -27,7 +27,7 @@ export class AppModule {
     constructor(private readonly eventService: PublicEventsService) {
         this.eventService
             .registerForEvents()
-            .pipe(filter((notification) => notification.type === EventTypes.ConfigLoaded))
+            .pipe(filter((notification) => notification.type === EventTypes.configLoaded))
             .subscribe((config) => {
                 console.log('ConfigLoaded', config);
             });

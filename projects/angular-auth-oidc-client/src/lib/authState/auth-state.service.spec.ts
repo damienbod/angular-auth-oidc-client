@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
 import { EventTypes, PublicEventsService } from '../../public-api';
@@ -78,7 +79,7 @@ describe('Auth State Service', () => {
         it('calls eventsService', () => {
             spyOn(eventsService, 'fireEvent');
             authStateService.updateAndPublishAuthState({ authorizationState: null, isRenewProcess: false, validationResult: null });
-            expect(eventsService.fireEvent).toHaveBeenCalledWith(EventTypes.NewAuthorizationResult, jasmine.any(Object));
+            expect(eventsService.fireEvent).toHaveBeenCalledWith(EventTypes.newAuthorizationResult, jasmine.any(Object));
         });
     });
 
@@ -232,7 +233,7 @@ describe('Auth State Service', () => {
             spyOn(storagePersistanceService, 'read').withArgs('authnResult').and.returnValue('idToken');
             const result = authStateService.hasIdTokenExpired();
             expect(result).toBe(true);
-            expect(spy).toHaveBeenCalledWith(EventTypes.IdTokenExpired, true);
+            expect(spy).toHaveBeenCalledWith(EventTypes.idTokenExpired, true);
         });
 
         it('does NOT fire event if idToken is NOT expired', () => {
@@ -272,7 +273,7 @@ describe('Auth State Service', () => {
             spyOn(storagePersistanceService, 'read').withArgs('access_token_expires_at').and.returnValue(date);
             spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(validateAccessTokenNotExpiredResult);
             authStateService.hasAccessTokenExpiredIfExpiryExists();
-            expect(eventsService.fireEvent).toHaveBeenCalledWith(EventTypes.TokenExpired, expectedResult);
+            expect(eventsService.fireEvent).toHaveBeenCalledWith(EventTypes.tokenExpired, expectedResult);
         });
     });
 });

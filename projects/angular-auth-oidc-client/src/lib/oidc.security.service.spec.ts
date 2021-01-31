@@ -31,20 +31,13 @@ import { TokenValidationService } from './validation/token-validation.service';
 describe('OidcSecurityService', () => {
     let oidcSecurityService: OidcSecurityService;
     let configurationProvider: ConfigurationProvider;
-    let storagePersistanceService: StoragePersistanceService;
-    let urlService: UrlService;
     let authStateService: AuthStateService;
     let userService: UserService;
     let checkSessionService: CheckSessionService;
     let callBackService: CallbackService;
-    let publicEventsService: PublicEventsService;
     let silentRenewService: SilentRenewService;
     let tokenHelperService: TokenHelperService;
     let flowsDataService: FlowsDataService;
-    let loggerService: LoggerService;
-    let tokenValidationService: TokenValidationService;
-    let flowsService: FlowsService;
-    let redirectService: RedirectService;
     let logoffRevocationService: LogoffRevocationService;
     let loginService: LoginService;
     let refreshSessionService: RefreshSessionService;
@@ -85,20 +78,13 @@ describe('OidcSecurityService', () => {
     beforeEach(() => {
         oidcSecurityService = TestBed.inject(OidcSecurityService);
         configurationProvider = TestBed.inject(ConfigurationProvider);
-        storagePersistanceService = TestBed.inject(StoragePersistanceService);
-        urlService = TestBed.inject(UrlService);
         userService = TestBed.inject(UserService);
         authStateService = TestBed.inject(AuthStateService);
         checkSessionService = TestBed.inject(CheckSessionService);
         callBackService = TestBed.inject(CallbackService);
-        publicEventsService = TestBed.inject(PublicEventsService);
         silentRenewService = TestBed.inject(SilentRenewService);
         tokenHelperService = TestBed.inject(TokenHelperService);
         flowsDataService = TestBed.inject(FlowsDataService);
-        loggerService = TestBed.inject(LoggerService);
-        tokenValidationService = TestBed.inject(TokenValidationService);
-        flowsService = TestBed.inject(FlowsService);
-        redirectService = TestBed.inject(RedirectService);
         logoffRevocationService = TestBed.inject(LogoffRevocationService);
         loginService = TestBed.inject(LoginService);
         refreshSessionService = TestBed.inject(RefreshSessionService);
@@ -117,7 +103,7 @@ describe('OidcSecurityService', () => {
 
         it('returns configProvider.configuration', () => {
             const spy = spyOnProperty(configurationProvider, 'openIDConfiguration', 'get');
-            const result = oidcSecurityService.configuration;
+            oidcSecurityService.configuration;
             expect(spy).toHaveBeenCalled();
         });
     });
@@ -129,7 +115,7 @@ describe('OidcSecurityService', () => {
 
         it('returns userService.userData$', () => {
             const spy = spyOnProperty(userService, 'userData$', 'get');
-            const result = oidcSecurityService.userData$;
+            oidcSecurityService.userData$;
             expect(spy).toHaveBeenCalled();
         });
     });
@@ -167,7 +153,7 @@ describe('OidcSecurityService', () => {
 
         it('returns authStateService.authorized$', () => {
             const spy = spyOnProperty(authStateService, 'authorized$', 'get');
-            const result = oidcSecurityService.isAuthenticated$;
+            oidcSecurityService.isAuthenticated$;
             expect(spy).toHaveBeenCalled();
         });
     });
@@ -179,7 +165,7 @@ describe('OidcSecurityService', () => {
 
         it('returns checkSessionService.checkSessionChanged$', () => {
             const spy = spyOnProperty(checkSessionService, 'checkSessionChanged$', 'get');
-            const result = oidcSecurityService.checkSessionChanged$;
+            oidcSecurityService.checkSessionChanged$;
             expect(spy).toHaveBeenCalled();
         });
     });
@@ -191,7 +177,7 @@ describe('OidcSecurityService', () => {
 
         it('returns callbackService.stsCallback$', () => {
             const spy = spyOnProperty(callBackService, 'stsCallback$', 'get');
-            const result = oidcSecurityService.stsCallback$;
+            oidcSecurityService.stsCallback$;
             expect(spy).toHaveBeenCalled();
         });
     });
@@ -204,7 +190,7 @@ describe('OidcSecurityService', () => {
         it(
             'returns callbackService.stsCallback$',
             waitForAsync(() => {
-                const spy = spyOn(configurationProvider, 'hasValidConfig').and.returnValue(false);
+                spyOn(configurationProvider, 'hasValidConfig').and.returnValue(false);
                 oidcSecurityService.checkAuth().subscribe((result) => expect(result).toBeFalse());
             })
         );

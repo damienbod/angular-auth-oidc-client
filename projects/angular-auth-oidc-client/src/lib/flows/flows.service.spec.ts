@@ -400,7 +400,7 @@ describe('Flows Service', () => {
         it(
             'throws error if state is not correct',
             waitForAsync(() => {
-                const spy = spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
+                spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
 
                 (service as any).codeFlowCodeRequest({} as CallbackContext).subscribe({
                     error: (err) => {

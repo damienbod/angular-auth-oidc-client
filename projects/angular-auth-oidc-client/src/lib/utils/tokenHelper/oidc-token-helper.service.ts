@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { LoggerService } from '../../logging/logger.service';
 
+const PARTS_OF_TOKEN = 3;
 @Injectable()
 export class TokenHelperService {
-    private PARTS_OF_TOKEN = 3;
     constructor(private readonly loggerService: LoggerService) {}
 
     getTokenExpirationDate(dataIdToken: any): Date {
@@ -96,8 +96,8 @@ export class TokenHelperService {
 
         const parts = token.split('.');
 
-        if (parts.length !== this.PARTS_OF_TOKEN) {
-            this.loggerService.logError(`token '${token}' is not valid --> token has to have exactly ${this.PARTS_OF_TOKEN} dots`);
+        if (parts.length !== PARTS_OF_TOKEN) {
+            this.loggerService.logError(`token '${token}' is not valid --> token has to have exactly ${PARTS_OF_TOKEN - 1} dots`);
             return false;
         }
 

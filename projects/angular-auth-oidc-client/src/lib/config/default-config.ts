@@ -23,7 +23,7 @@ export const DEFAULT_CONFIG: OpenIdConfiguration = {
     autoUserinfo: true,
     autoCleanStateAfterAuthentication: true,
     triggerAuthorizationResultEvent: false,
-    logLevel: LogLevel.Warn,
+    logLevel: LogLevel.warn,
     issValidationOff: false,
     historyCleanupOff: false,
     maxIdTokenIatOffsetAllowedInSeconds: 120,

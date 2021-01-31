@@ -11,10 +11,9 @@ import { LoggerService } from '../logging/logger.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 
+export const MAX_RETRY_ATTEMPTS = 3;
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionService {
-    private MAX_RETRY_ATTEMPTS = 3;
-
     constructor(
         private flowHelper: FlowHelper,
         private configurationProvider: ConfigurationProvider,
@@ -46,7 +45,7 @@ export class RefreshSessionService {
 
         return forkJoin([this.startRefreshSession(), this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1))]).pipe(
             timeout(this.configurationProvider.openIDConfiguration.silentRenewTimeoutInSeconds * 1000),
-            retryWhen(this.TimeoutRetryStrategy.bind(this)),
+            retryWhen(this.timeoutRetryStrategy.bind(this)),
             map(([_, callbackContext]) => {
                 const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
                 if (isAuthenticated) {
@@ -90,13 +89,13 @@ export class RefreshSessionService {
         );
     }
 
-    private TimeoutRetryStrategy(errorAttempts: Observable<any>) {
+    private timeoutRetryStrategy(errorAttempts: Observable<any>) {
         return errorAttempts.pipe(
             mergeMap((error, index) => {
                 const scalingDuration = 1000;
                 const currentAttempt = index + 1;
 
-                if (!(error instanceof TimeoutError) || currentAttempt > this.MAX_RETRY_ATTEMPTS) {
+                if (!(error instanceof TimeoutError) || currentAttempt > MAX_RETRY_ATTEMPTS) {
                     return throwError(error);
                 }
 

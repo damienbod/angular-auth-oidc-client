@@ -62,8 +62,8 @@ export class SilentRenewService {
 
         if (error) {
             this.authStateService.updateAndPublishAuthState({
-                authorizationState: AuthorizedState.Unauthorized,
-                validationResult: ValidationResult.LoginRequired,
+                authorizationState: AuthorizedState.unauthorized,
+                validationResult: ValidationResult.loginRequired,
                 isRenewProcess: true,
             });
             this.flowsService.resetAuthorizationData();

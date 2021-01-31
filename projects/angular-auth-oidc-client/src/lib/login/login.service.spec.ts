@@ -20,7 +20,6 @@ import { TokenValidationServiceMock } from '../validation/token-validation.servi
 import { LoginService } from './login.service';
 
 describe('LoginService', () => {
-    let storagePersistanceService: StoragePersistanceService;
     let loginService: LoginService;
     let configurationProvider: ConfigurationProvider;
     let urlService: UrlService;
@@ -52,10 +51,8 @@ describe('LoginService', () => {
     });
 
     beforeEach(() => {
-        storagePersistanceService = TestBed.inject(StoragePersistanceService);
         loginService = TestBed.inject(LoginService);
         configurationProvider = TestBed.inject(ConfigurationProvider);
-        storagePersistanceService = TestBed.inject(StoragePersistanceService);
         urlService = TestBed.inject(UrlService);
         loggerService = TestBed.inject(LoggerService);
         tokenValidationService = TestBed.inject(TokenValidationService);

@@ -9,17 +9,16 @@ import { TokenValidationService } from '../../validation/token-validation.servic
 import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { UriEncoder } from './uri-encoder';
 
+const CALLBACK_PARAMS_TO_CHECK = ['code', 'state', 'token', 'id_token'];
 @Injectable()
 export class UrlService {
-    private CALLBACK_PARAMS_TO_CHECK = ['code', 'state', 'token', 'id_token'];
-
     constructor(
         private readonly configurationProvider: ConfigurationProvider,
         private readonly loggerService: LoggerService,
         private readonly flowsDataService: FlowsDataService,
         private readonly flowHelper: FlowHelper,
         private tokenValidationService: TokenValidationService,
-        private storagePersistanceService: StoragePersistanceService,
+        private storagePersistanceService: StoragePersistanceService
     ) {}
 
     getUrlParameter(urlToCheck: any, name: any): string {
@@ -38,7 +37,7 @@ export class UrlService {
     }
 
     isCallbackFromSts(currentUrl: string) {
-        const anyParameterIsGiven = this.CALLBACK_PARAMS_TO_CHECK.some((x) => !!this.getUrlParameter(currentUrl, x));
+        const anyParameterIsGiven = CALLBACK_PARAMS_TO_CHECK.some((x) => !!this.getUrlParameter(currentUrl, x));
         return anyParameterIsGiven;
     }
 

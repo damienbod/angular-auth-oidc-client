@@ -27,7 +27,6 @@ describe('Logout and Revoke Service', () => {
     let checkSessionService: CheckSessionService;
     let flowsService: FlowsService;
     let redirectService: RedirectService;
-    let configurationProvider: ConfigurationProvider;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -54,7 +53,6 @@ describe('Logout and Revoke Service', () => {
         checkSessionService = TestBed.inject(CheckSessionService);
         flowsService = TestBed.inject(FlowsService);
         redirectService = TestBed.inject(RedirectService);
-        configurationProvider = TestBed.inject(ConfigurationProvider);
     });
 
     it('should create', () => {

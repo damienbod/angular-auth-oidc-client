@@ -1,7 +1,7 @@
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { POSITIVE_VALIDATION_RESULT, RuleValidationResult } from '../rule';
 
-export function ensureRedirectRule(passedConfig: OpenIdConfiguration): RuleValidationResult {
+export const ensureRedirectRule = (passedConfig: OpenIdConfiguration): RuleValidationResult => {
     if (!passedConfig.redirectUrl) {
         return {
             result: false,
@@ -11,4 +11,4 @@ export function ensureRedirectRule(passedConfig: OpenIdConfiguration): RuleValid
     }
 
     return POSITIVE_VALIDATION_RESULT;
-}
+};

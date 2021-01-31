@@ -11,18 +11,19 @@ export class ConfigurationProvider {
         return this.openIdConfigurationInternal || null;
     }
 
+    constructor(private platformProvider: PlatformProvider) {}
+
     hasValidConfig() {
         return !!this.openIdConfigurationInternal;
     }
-
-    constructor(private platformProvider: PlatformProvider) {}
 
     setConfig(configuration: OpenIdConfiguration) {
         this.openIdConfigurationInternal = { ...DEFAULT_CONFIG, ...configuration };
 
         if (configuration?.storage) {
             console.warn(
-                'PLEASE NOTE: The storage in the config will be deprecated in future versions: Please pass the custom storage in forRoot() as documented'
+                `PLEASE NOTE: The storage in the config will be deprecated in future versions:
+                Please pass the custom storage in forRoot() as documented`
             );
         }
 

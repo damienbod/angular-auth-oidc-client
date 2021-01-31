@@ -30,6 +30,176 @@ export class StateValidationService {
         return this.validateState(callbackContext);
     }
 
+    validateState(callbackContext): StateValidationResult {
+        const toReturn = new StateValidationResult();
+        const authStateControl = this.storagePersistanceService.read('authStateControl');
+
+        if (!this.tokenValidationService.validateStateFromHashCallback(callbackContext.authResult.state, authStateControl)) {
+            this.loggerService.logWarning('authorizedCallback incorrect state');
+            toReturn.state = ValidationResult.statesDoNotMatch;
+            this.handleUnsuccessfulValidation();
+            return toReturn;
+        }
+
+        const isCurrentFlowImplicitFlowWithAccessToken = this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken();
+        const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow();
+
+        if (isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow) {
+            toReturn.accessToken = callbackContext.authResult.access_token;
+        }
+
+        if (callbackContext.authResult.id_token) {
+            toReturn.idToken = callbackContext.authResult.id_token;
+
+            toReturn.decodedIdToken = this.tokenHelperService.getPayloadFromToken(toReturn.idToken, false);
+
+            if (!this.tokenValidationService.validateSignatureIdToken(toReturn.idToken, callbackContext.jwtKeys)) {
+                this.loggerService.logDebug('authorizedCallback Signature validation failed id_token');
+                toReturn.state = ValidationResult.signatureFailed;
+                this.handleUnsuccessfulValidation();
+                return toReturn;
+            }
+
+            const authNonce = this.storagePersistanceService.read('authNonce');
+
+            if (
+                !this.tokenValidationService.validateIdTokenNonce(
+                    toReturn.decodedIdToken,
+                    authNonce,
+                    this.configurationProvider.openIDConfiguration.ignoreNonceAfterRefresh
+                )
+            ) {
+                this.loggerService.logWarning('authorizedCallback incorrect nonce');
+                toReturn.state = ValidationResult.incorrectNonce;
+                this.handleUnsuccessfulValidation();
+                return toReturn;
+            }
+
+            if (!this.tokenValidationService.validateRequiredIdToken(toReturn.decodedIdToken)) {
+                this.loggerService.logDebug('authorizedCallback Validation, one of the REQUIRED properties missing from id_token');
+                toReturn.state = ValidationResult.requiredPropertyMissing;
+                this.handleUnsuccessfulValidation();
+                return toReturn;
+            }
+
+            if (
+                !this.tokenValidationService.validateIdTokenIatMaxOffset(
+                    toReturn.decodedIdToken,
+                    this.configurationProvider.openIDConfiguration.maxIdTokenIatOffsetAllowedInSeconds,
+                    this.configurationProvider.openIDConfiguration.disableIatOffsetValidation
+                )
+            ) {
+                this.loggerService.logWarning(
+                    'authorizedCallback Validation, iat rejected id_token was issued too far away from the current time'
+                );
+                toReturn.state = ValidationResult.maxOffsetExpired;
+                this.handleUnsuccessfulValidation();
+                return toReturn;
+            }
+
+            const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+
+            if (authWellKnownEndPoints) {
+                if (this.configurationProvider.openIDConfiguration.issValidationOff) {
+                    this.loggerService.logDebug('iss validation is turned off, this is not recommended!');
+                } else if (
+                    !this.configurationProvider.openIDConfiguration.issValidationOff &&
+                    !this.tokenValidationService.validateIdTokenIss(toReturn.decodedIdToken, authWellKnownEndPoints.issuer)
+                ) {
+                    this.loggerService.logWarning('authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer');
+                    toReturn.state = ValidationResult.issDoesNotMatchIssuer;
+                    this.handleUnsuccessfulValidation();
+                    return toReturn;
+                }
+            } else {
+                this.loggerService.logWarning('authWellKnownEndpoints is undefined');
+                toReturn.state = ValidationResult.noAuthWellKnownEndPoints;
+                this.handleUnsuccessfulValidation();
+                return toReturn;
+            }
+
+            if (
+                !this.tokenValidationService.validateIdTokenAud(
+                    toReturn.decodedIdToken,
+                    this.configurationProvider.openIDConfiguration.clientId
+                )
+            ) {
+                this.loggerService.logWarning('authorizedCallback incorrect aud');
+                toReturn.state = ValidationResult.incorrectAud;
+                this.handleUnsuccessfulValidation();
+                return toReturn;
+            }
+
+            if (!this.tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(toReturn.decodedIdToken)) {
+                this.loggerService.logWarning('authorizedCallback missing azp');
+                toReturn.state = ValidationResult.incorrectAzp;
+                this.handleUnsuccessfulValidation();
+                return toReturn;
+            }
+
+            if (
+                !this.tokenValidationService.validateIdTokenAzpValid(
+                    toReturn.decodedIdToken,
+                    this.configurationProvider.openIDConfiguration.clientId
+                )
+            ) {
+                this.loggerService.logWarning('authorizedCallback incorrect azp');
+                toReturn.state = ValidationResult.incorrectAzp;
+                this.handleUnsuccessfulValidation();
+                return toReturn;
+            }
+
+            if (!this.isIdTokenAfterRefreshTokenRequestValid(callbackContext, toReturn.decodedIdToken)) {
+                this.loggerService.logWarning('authorizedCallback pre, post id_token claims do not match in refresh');
+                toReturn.state = ValidationResult.incorrectIdTokenClaimsAfterRefresh;
+                this.handleUnsuccessfulValidation();
+                return toReturn;
+            }
+
+            if (!this.tokenValidationService.validateIdTokenExpNotExpired(toReturn.decodedIdToken)) {
+                this.loggerService.logWarning('authorizedCallback id token expired');
+                toReturn.state = ValidationResult.tokenExpired;
+                this.handleUnsuccessfulValidation();
+                return toReturn;
+            }
+        } else {
+            this.loggerService.logDebug('No id_token found, skipping id_token validation');
+        }
+
+        // flow id_token
+        if (!isCurrentFlowImplicitFlowWithAccessToken && !isCurrentFlowCodeFlow) {
+            toReturn.authResponseIsValid = true;
+            toReturn.state = ValidationResult.ok;
+            this.handleSuccessfulValidation();
+            this.handleUnsuccessfulValidation();
+            return toReturn;
+        }
+
+        const idTokenHeader = this.tokenHelperService.getHeaderFromToken(toReturn.idToken, false);
+
+        // The at_hash is optional for the code flow
+        if (isCurrentFlowCodeFlow && !(toReturn.decodedIdToken.at_hash as string)) {
+            this.loggerService.logDebug('Code Flow active, and no at_hash in the id_token, skipping check!');
+        } else if (
+            !this.tokenValidationService.validateIdTokenAtHash(
+                toReturn.accessToken,
+                toReturn.decodedIdToken.at_hash,
+                idTokenHeader.alg // 'RSA256'
+            ) ||
+            !toReturn.accessToken
+        ) {
+            this.loggerService.logWarning('authorizedCallback incorrect at_hash');
+            toReturn.state = ValidationResult.incorrectAtHash;
+            this.handleUnsuccessfulValidation();
+            return toReturn;
+        }
+
+        toReturn.authResponseIsValid = true;
+        toReturn.state = ValidationResult.ok;
+        this.handleSuccessfulValidation();
+        return toReturn;
+    }
+
     private isIdTokenAfterRefreshTokenRequestValid(callbackContext: CallbackContext, newIdToken: any): boolean {
         if (!this.configurationProvider.openIDConfiguration.useRefreshToken) {
             return true;
@@ -82,176 +252,6 @@ export class StateValidationService {
         }
 
         return true;
-    }
-
-    validateState(callbackContext): StateValidationResult {
-        const toReturn = new StateValidationResult();
-        const authStateControl = this.storagePersistanceService.read('authStateControl');
-
-        if (!this.tokenValidationService.validateStateFromHashCallback(callbackContext.authResult.state, authStateControl)) {
-            this.loggerService.logWarning('authorizedCallback incorrect state');
-            toReturn.state = ValidationResult.StatesDoNotMatch;
-            this.handleUnsuccessfulValidation();
-            return toReturn;
-        }
-
-        const isCurrentFlowImplicitFlowWithAccessToken = this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken();
-        const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow();
-
-        if (isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow) {
-            toReturn.accessToken = callbackContext.authResult.access_token;
-        }
-
-        if (callbackContext.authResult.id_token) {
-            toReturn.idToken = callbackContext.authResult.id_token;
-
-            toReturn.decodedIdToken = this.tokenHelperService.getPayloadFromToken(toReturn.idToken, false);
-
-            if (!this.tokenValidationService.validateSignatureIdToken(toReturn.idToken, callbackContext.jwtKeys)) {
-                this.loggerService.logDebug('authorizedCallback Signature validation failed id_token');
-                toReturn.state = ValidationResult.SignatureFailed;
-                this.handleUnsuccessfulValidation();
-                return toReturn;
-            }
-
-            const authNonce = this.storagePersistanceService.read('authNonce');
-
-            if (
-                !this.tokenValidationService.validateIdTokenNonce(
-                    toReturn.decodedIdToken,
-                    authNonce,
-                    this.configurationProvider.openIDConfiguration.ignoreNonceAfterRefresh
-                )
-            ) {
-                this.loggerService.logWarning('authorizedCallback incorrect nonce');
-                toReturn.state = ValidationResult.IncorrectNonce;
-                this.handleUnsuccessfulValidation();
-                return toReturn;
-            }
-
-            if (!this.tokenValidationService.validateRequiredIdToken(toReturn.decodedIdToken)) {
-                this.loggerService.logDebug('authorizedCallback Validation, one of the REQUIRED properties missing from id_token');
-                toReturn.state = ValidationResult.RequiredPropertyMissing;
-                this.handleUnsuccessfulValidation();
-                return toReturn;
-            }
-
-            if (
-                !this.tokenValidationService.validateIdTokenIatMaxOffset(
-                    toReturn.decodedIdToken,
-                    this.configurationProvider.openIDConfiguration.maxIdTokenIatOffsetAllowedInSeconds,
-                    this.configurationProvider.openIDConfiguration.disableIatOffsetValidation
-                )
-            ) {
-                this.loggerService.logWarning(
-                    'authorizedCallback Validation, iat rejected id_token was issued too far away from the current time'
-                );
-                toReturn.state = ValidationResult.MaxOffsetExpired;
-                this.handleUnsuccessfulValidation();
-                return toReturn;
-            }
-
-            const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
-
-            if (authWellKnownEndPoints) {
-                if (this.configurationProvider.openIDConfiguration.issValidationOff) {
-                    this.loggerService.logDebug('iss validation is turned off, this is not recommended!');
-                } else if (
-                    !this.configurationProvider.openIDConfiguration.issValidationOff &&
-                    !this.tokenValidationService.validateIdTokenIss(toReturn.decodedIdToken, authWellKnownEndPoints.issuer)
-                ) {
-                    this.loggerService.logWarning('authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer');
-                    toReturn.state = ValidationResult.IssDoesNotMatchIssuer;
-                    this.handleUnsuccessfulValidation();
-                    return toReturn;
-                }
-            } else {
-                this.loggerService.logWarning('authWellKnownEndpoints is undefined');
-                toReturn.state = ValidationResult.NoAuthWellKnownEndPoints;
-                this.handleUnsuccessfulValidation();
-                return toReturn;
-            }
-
-            if (
-                !this.tokenValidationService.validateIdTokenAud(
-                    toReturn.decodedIdToken,
-                    this.configurationProvider.openIDConfiguration.clientId
-                )
-            ) {
-                this.loggerService.logWarning('authorizedCallback incorrect aud');
-                toReturn.state = ValidationResult.IncorrectAud;
-                this.handleUnsuccessfulValidation();
-                return toReturn;
-            }
-
-            if (!this.tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(toReturn.decodedIdToken)) {
-                this.loggerService.logWarning('authorizedCallback missing azp');
-                toReturn.state = ValidationResult.IncorrectAzp;
-                this.handleUnsuccessfulValidation();
-                return toReturn;
-            }
-
-            if (
-                !this.tokenValidationService.validateIdTokenAzpValid(
-                    toReturn.decodedIdToken,
-                    this.configurationProvider.openIDConfiguration.clientId
-                )
-            ) {
-                this.loggerService.logWarning('authorizedCallback incorrect azp');
-                toReturn.state = ValidationResult.IncorrectAzp;
-                this.handleUnsuccessfulValidation();
-                return toReturn;
-            }
-
-            if (!this.isIdTokenAfterRefreshTokenRequestValid(callbackContext, toReturn.decodedIdToken)) {
-                this.loggerService.logWarning('authorizedCallback pre, post id_token claims do not match in refresh');
-                toReturn.state = ValidationResult.IncorrectIdTokenClaimsAfterRefresh;
-                this.handleUnsuccessfulValidation();
-                return toReturn;
-            }
-
-            if (!this.tokenValidationService.validateIdTokenExpNotExpired(toReturn.decodedIdToken)) {
-                this.loggerService.logWarning('authorizedCallback id token expired');
-                toReturn.state = ValidationResult.TokenExpired;
-                this.handleUnsuccessfulValidation();
-                return toReturn;
-            }
-        } else {
-            this.loggerService.logDebug('No id_token found, skipping id_token validation');
-        }
-
-        // flow id_token
-        if (!isCurrentFlowImplicitFlowWithAccessToken && !isCurrentFlowCodeFlow) {
-            toReturn.authResponseIsValid = true;
-            toReturn.state = ValidationResult.Ok;
-            this.handleSuccessfulValidation();
-            this.handleUnsuccessfulValidation();
-            return toReturn;
-        }
-
-        const idTokenHeader = this.tokenHelperService.getHeaderFromToken(toReturn.idToken, false);
-
-        // The at_hash is optional for the code flow
-        if (isCurrentFlowCodeFlow && !(toReturn.decodedIdToken.at_hash as string)) {
-            this.loggerService.logDebug('Code Flow active, and no at_hash in the id_token, skipping check!');
-        } else if (
-            !this.tokenValidationService.validateIdTokenAtHash(
-                toReturn.accessToken,
-                toReturn.decodedIdToken.at_hash,
-                idTokenHeader.alg // 'RSA256'
-            ) ||
-            !toReturn.accessToken
-        ) {
-            this.loggerService.logWarning('authorizedCallback incorrect at_hash');
-            toReturn.state = ValidationResult.IncorrectAtHash;
-            this.handleUnsuccessfulValidation();
-            return toReturn;
-        }
-
-        toReturn.authResponseIsValid = true;
-        toReturn.state = ValidationResult.Ok;
-        this.handleSuccessfulValidation();
-        return toReturn;
     }
 
     private handleSuccessfulValidation() {

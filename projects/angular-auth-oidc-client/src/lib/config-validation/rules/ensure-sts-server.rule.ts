@@ -1,7 +1,7 @@
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { POSITIVE_VALIDATION_RESULT, RuleValidationResult } from '../rule';
 
-export function ensureStsServer(passedConfig: OpenIdConfiguration): RuleValidationResult {
+export const ensureStsServer = (passedConfig: OpenIdConfiguration): RuleValidationResult => {
     if (!passedConfig.stsServer) {
         return {
             result: false,
@@ -11,4 +11,4 @@ export function ensureStsServer(passedConfig: OpenIdConfiguration): RuleValidati
     }
 
     return POSITIVE_VALIDATION_RESULT;
-}
+};

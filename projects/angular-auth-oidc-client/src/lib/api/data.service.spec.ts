@@ -6,7 +6,6 @@ import { HttpBaseService } from './http-base.service';
 
 describe('Data Service', () => {
     let dataService: DataService;
-    let httpBaseService: HttpBaseService;
     let httpMock: HttpTestingController;
 
     beforeEach(() => {
@@ -18,7 +17,6 @@ describe('Data Service', () => {
 
     beforeEach(() => {
         dataService = TestBed.inject(DataService);
-        httpBaseService = TestBed.inject(HttpBaseService);
         httpMock = TestBed.inject(HttpTestingController);
     });
 
@@ -31,7 +29,7 @@ describe('Data Service', () => {
             'get call sets the accept header',
             waitForAsync(() => {
                 const url = 'anyurl';
-                dataService.get(url).subscribe((data: any) => {
+                dataService.get(url).subscribe((data: unknown) => {
                     expect(data).toBe('bodyData');
                 });
                 const req = httpMock.expectOne(url);
@@ -50,7 +48,7 @@ describe('Data Service', () => {
             waitForAsync(() => {
                 const url = 'anyurl';
                 const token = 'token';
-                dataService.get(url, token).subscribe((data: any) => {
+                dataService.get(url, token).subscribe((data: unknown) => {
                     expect(data).toBe('bodyData');
                 });
                 const req = httpMock.expectOne(url);
@@ -71,7 +69,7 @@ describe('Data Service', () => {
             'call sets the accept header when no other params given',
             waitForAsync(() => {
                 const url = 'anyurl';
-                dataService.post(url, { any: 'thing' }).subscribe();
+                dataService.post(url, { some: 'thing' }).subscribe();
                 const req = httpMock.expectOne(url);
 
                 expect(req.request.method).toBe('POST');
@@ -90,7 +88,7 @@ describe('Data Service', () => {
                 let headers = new HttpHeaders();
                 headers = headers.set('X-MyHeader', 'Genesis');
 
-                dataService.post(url, { any: 'thing' }, headers).subscribe();
+                dataService.post(url, { some: 'thing' }, headers).subscribe();
                 const req = httpMock.expectOne(url);
 
                 expect(req.request.method).toBe('POST');

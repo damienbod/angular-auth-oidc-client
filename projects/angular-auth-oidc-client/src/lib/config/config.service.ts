@@ -38,7 +38,7 @@ export class OidcConfigService {
 
             const alreadyExistingAuthWellKnownEndpoints = this.storagePersistanceService.read('authWellKnownEndPoints');
             if (!!alreadyExistingAuthWellKnownEndpoints) {
-                this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
+                this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.configLoaded, {
                     configuration: passedConfig,
                     wellknown: alreadyExistingAuthWellKnownEndpoints,
                 });
@@ -48,7 +48,7 @@ export class OidcConfigService {
 
             if (!!passedAuthWellKnownEndpoints) {
                 this.authWellKnownService.storeWellKnownEndpoints(passedAuthWellKnownEndpoints);
-                this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
+                this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.configLoaded, {
                     configuration: passedConfig,
                     wellknown: passedAuthWellKnownEndpoints,
                 });
@@ -64,7 +64,7 @@ export class OidcConfigService {
                             return throwError(error);
                         }),
                         tap((wellknownEndPoints) =>
-                            this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
+                            this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.configLoaded, {
                                 configuration: passedConfig,
                                 wellknown: wellknownEndPoints,
                             })
@@ -75,7 +75,7 @@ export class OidcConfigService {
                         () => reject()
                     );
             } else {
-                this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
+                this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.configLoaded, {
                     configuration: passedConfig,
                     wellknown: null,
                 });

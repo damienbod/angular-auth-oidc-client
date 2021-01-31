@@ -20,7 +20,6 @@ describe('Configuration Service', () => {
     let loggerService: LoggerService;
     let eventsService: PublicEventsService;
     let configurationProvider: ConfigurationProvider;
-    let dataService: DataService;
     let authWellKnownService: AuthWellKnownService;
     let storagePersistanceService: StoragePersistanceService;
     let configValidationService: ConfigValidationService;
@@ -60,7 +59,6 @@ describe('Configuration Service', () => {
         loggerService = TestBed.inject(LoggerService);
         eventsService = TestBed.inject(PublicEventsService);
         configurationProvider = TestBed.inject(ConfigurationProvider);
-        dataService = TestBed.inject(DataService);
         authWellKnownService = TestBed.inject(AuthWellKnownService);
         storagePersistanceService = TestBed.inject(StoragePersistanceService);
         configValidationService = TestBed.inject(ConfigValidationService);
@@ -99,7 +97,7 @@ describe('Configuration Service', () => {
                 spyOn(configValidationService, 'validateConfig').and.returnValue(true);
                 const promise = oidcConfigService.withConfig(config);
                 promise.then(() => {
-                    expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
+                    expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.configLoaded, {
                         configuration: {
                             stsServer: 'stsServerForTesting',
                             authWellknownEndpoint: 'stsServerForTesting',
@@ -122,7 +120,7 @@ describe('Configuration Service', () => {
                 const promise = oidcConfigService.withConfig(config, authWellKnown);
                 promise.then(() => {
                     expect(storeWellKnownEndpointsSpy).toHaveBeenCalledWith(authWellKnown);
-                    expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
+                    expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.configLoaded, {
                         configuration: {
                             stsServer: 'stsServerForTesting',
                             authWellknownEndpoint: 'stsServerForTesting',
@@ -174,7 +172,7 @@ describe('Configuration Service', () => {
                 const eventServiceSpy = spyOn(eventsService, 'fireEvent');
                 const promise = oidcConfigService.withConfig(config);
                 promise.then(() => {
-                    expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
+                    expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.configLoaded, {
                         configuration: { ...config, authWellknownEndpoint: 'stsServerForTesting' },
                         wellknown: { issuer: 'issuerForTesting' },
                     });

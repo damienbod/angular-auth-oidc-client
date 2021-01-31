@@ -14,7 +14,7 @@ export class AppComponent implements OnInit {
 
         this.eventService
             .registerForEvents()
-            .pipe(filter((notification) => notification.type === EventTypes.CheckSessionReceived))
+            .pipe(filter((notification) => notification.type === EventTypes.checkSessionReceived))
             .subscribe((value) => console.log('CheckSessionReceived with value from app', value));
     }
 }
