@@ -14,6 +14,7 @@
                 "OIDC Code Flow PKCE using iframe silent renew",
                 "OIDC Code Flow PKCE using iframe silent renew getting config from http",
                 "OIDC Code Flow PKCE (no renew)",
+                "Auth0",
                 "Default config"
             ]
         },
