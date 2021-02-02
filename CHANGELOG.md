@@ -2,7 +2,7 @@
 
 ### 2021-02-02 Version 11.4.4
 
--   Support aud arrays which are not ordered in id_token validation of refresh token process #904
+-   Support aud arrays which are not ordered in id_token validation of refresh token process
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/950)
 -   Fixed Bug were Dynamic Custom Request Parameters are forgotten after first login or forceRefreshSession when doing a silent renew/refresh
     -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/947)
