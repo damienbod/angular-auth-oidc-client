@@ -23,7 +23,6 @@ describe('Redirect Service Tests', () => {
                 },
             ],
         });
-
     });
 
     beforeEach(() => {

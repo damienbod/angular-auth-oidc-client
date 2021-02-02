@@ -54,7 +54,7 @@ describe('PeriodicallyTokenCheckService', () => {
                 },
                 IntervallService,
                 StoragePersistanceService,
-                AbstractSecurityStorage
+                AbstractSecurityStorage,
             ],
         });
     });

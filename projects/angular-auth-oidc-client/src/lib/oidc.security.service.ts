@@ -21,7 +21,6 @@ import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.servic
 
 @Injectable()
 export class OidcSecurityService {
-
     get configuration(): PublicConfiguration {
         return {
             configuration: this.configurationProvider.openIDConfiguration,

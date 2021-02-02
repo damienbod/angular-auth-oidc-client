@@ -126,11 +126,10 @@ export class AuthStateService {
         return hasExpired;
     }
 
-    private decodeURIComponentSafely(token: string){
-        if (token){
+    private decodeURIComponentSafely(token: string) {
+        if (token) {
             return decodeURIComponent(token);
-        }
-        else {
+        } else {
             return '';
         }
     }

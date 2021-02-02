@@ -69,7 +69,9 @@ export class PeriodicallyTokenCheckService {
                 this.flowsDataService.setSilentRenewRunning();
 
                 // Retrieve Dynamically Set Custom Params
-                const customParams: { [key: string]: string | number | boolean } = this.storagePersistanceService.read('storageCustomRequestParams');
+                const customParams: { [key: string]: string | number | boolean } = this.storagePersistanceService.read(
+                    'storageCustomRequestParams'
+                );
 
                 if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
                     // Refresh Session using Refresh tokens
