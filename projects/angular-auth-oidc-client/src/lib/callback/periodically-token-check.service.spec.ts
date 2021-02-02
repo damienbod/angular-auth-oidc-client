@@ -171,6 +171,7 @@ describe('PeriodicallyTokenCheckService', () => {
       const resetAuthorizationdataSpy = spyOn(flowsService, 'resetAuthorizationData');
 
       spyOn(authStateService, 'hasIdTokenExpired').and.returnValue(true);
+      spyOn(storagePersistanceService, 'read').withArgs('storageCustomRequestParams').and.returnValue(undefined);
       spyOn(authStateService, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(true);
 
       spyOn(refreshSessionIframeService, 'refreshSessionWithIframe').and.returnValue(of(true));

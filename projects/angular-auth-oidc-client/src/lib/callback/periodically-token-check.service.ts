@@ -25,18 +25,18 @@ export class PeriodicallyTokenCheckService {
     private authStateService: AuthStateService,
     private refreshSessionIframeService: RefreshSessionIframeService,
     private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService,
-    private intervallService: IntervallService,
+    private intervalService: IntervallService,
     private storagePersistanceService: StoragePersistanceService
   ) {}
 
   startTokenValidationPeriodically(repeatAfterSeconds: number) {
-    if (!!this.intervallService.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
+    if (!!this.intervalService.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
       return;
     }
 
     this.loggerService.logDebug(`starting token validation check every ${repeatAfterSeconds}s`);
 
-    const periodicallyCheck$ = this.intervallService.startPeriodicTokenCheck(repeatAfterSeconds).pipe(
+    const periodicallyCheck$ = this.intervalService.startPeriodicTokenCheck(repeatAfterSeconds).pipe(
       switchMap(() => {
         const idToken = this.authStateService.getIdToken();
         const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
@@ -82,7 +82,7 @@ export class PeriodicallyTokenCheckService {
       })
     );
 
-    this.intervallService.runTokenValidationRunning = periodicallyCheck$
+    this.intervalService.runTokenValidationRunning = periodicallyCheck$
       .pipe(
         catchError(() => {
           this.flowsDataService.resetSilentRenewRunning();

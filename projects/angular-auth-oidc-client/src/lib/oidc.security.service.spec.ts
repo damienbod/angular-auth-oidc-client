@@ -42,6 +42,7 @@ describe('OidcSecurityService', () => {
   let loginService: LoginService;
   let refreshSessionService: RefreshSessionService;
   let periodicallyTokenCheckService: PeriodicallyTokenCheckService;
+  let storagePersistanceService: StoragePersistanceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -88,6 +89,7 @@ describe('OidcSecurityService', () => {
     logoffRevocationService = TestBed.inject(LogoffRevocationService);
     loginService = TestBed.inject(LoginService);
     refreshSessionService = TestBed.inject(RefreshSessionService);
+    storagePersistanceService = TestBed.inject(StoragePersistanceService);
 
     periodicallyTokenCheckService = TestBed.inject(PeriodicallyTokenCheckService);
   });
