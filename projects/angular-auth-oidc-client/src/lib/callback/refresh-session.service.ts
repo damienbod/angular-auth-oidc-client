@@ -44,7 +44,10 @@ export class RefreshSessionService {
             );
         }
 
-        return forkJoin([this.startRefreshSession(), this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1))]).pipe(
+        return forkJoin([
+            this.startRefreshSession(customParams),
+            this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1)),
+        ]).pipe(
             timeout(this.configurationProvider.openIDConfiguration.silentRenewTimeoutInSeconds * 1000),
             retryWhen(this.TimeoutRetryStrategy.bind(this)),
             map(([_, callbackContext]) => {

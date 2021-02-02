@@ -19,7 +19,7 @@ export class UrlService {
         private readonly flowsDataService: FlowsDataService,
         private readonly flowHelper: FlowHelper,
         private tokenValidationService: TokenValidationService,
-        private storagePersistanceService: StoragePersistanceService,
+        private storagePersistanceService: StoragePersistanceService
     ) {}
 
     getUrlParameter(urlToCheck: any, name: any): string {

@@ -12,7 +12,8 @@ export type StorageKeys =
     | 'codeVerifier'
     | 'authStateControl'
     | 'session_state'
-    | 'storageSilentRenewRunning';
+    | 'storageSilentRenewRunning'
+    | 'storageCustomRequestParams';
 
 @Injectable()
 export class StoragePersistanceService {
@@ -41,6 +42,7 @@ export class StoragePersistanceService {
         this.remove('storageSilentRenewRunning');
         this.remove('codeVerifier');
         this.remove('userData');
+        this.remove('storageCustomRequestParams');
     }
 
     resetAuthStateInStorage() {

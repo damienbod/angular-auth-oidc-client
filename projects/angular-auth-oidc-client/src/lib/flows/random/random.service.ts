@@ -4,10 +4,7 @@ import { LoggerService } from '../../logging/logger.service';
 
 @Injectable()
 export class RandomService {
-    constructor(
-      @Inject(DOCUMENT) private readonly doc: any,
-      private loggerService: LoggerService,
-    ) {}
+    constructor(@Inject(DOCUMENT) private readonly doc: any, private loggerService: LoggerService) {}
 
     createRandom(requiredLength: number): string {
         if (requiredLength <= 0) {
@@ -22,7 +19,7 @@ export class RandomService {
         const length = requiredLength - 6;
         const arr = new Uint8Array((length || length) / 2);
         if (this.getCrypto()) {
-          this.getCrypto().getRandomValues(arr);
+            this.getCrypto().getRandomValues(arr);
         }
         return Array.from(arr, this.toHex).join('') + this.randomString(7);
     }
@@ -37,10 +34,10 @@ export class RandomService {
 
         const values = new Uint32Array(length);
         if (this.getCrypto()) {
-          this.getCrypto().getRandomValues(values);
-          for (let i = 0; i < length; i++) {
-              result += characters[values[i] % characters.length];
-          }
+            this.getCrypto().getRandomValues(values);
+            for (let i = 0; i < length; i++) {
+                result += characters[values[i] % characters.length];
+            }
         }
 
         return result;

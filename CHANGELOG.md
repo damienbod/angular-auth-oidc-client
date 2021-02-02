@@ -1,5 +1,12 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-02-01 Version 11.4.4
+
+-   Support aud arrays which are not ordered in id_token validation of refresh token process #904
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/950)
+-   Fixed Bug were Dynamic Custom Request Parameters are forgotten after first login or forceRefreshSession when doing a silent renew/refresh
+    -   [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/947)
+
 ### 2021-01-19 Version 11.4.3
 
 -   Added ability to use Custom Parameters when calling ForceRefreshSession
