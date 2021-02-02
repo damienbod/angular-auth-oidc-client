@@ -4,107 +4,107 @@ import { LoggerService } from '../../logging/logger.service';
 const PARTS_OF_TOKEN = 3;
 @Injectable()
 export class TokenHelperService {
-    constructor(private readonly loggerService: LoggerService) {}
+  constructor(private readonly loggerService: LoggerService) {}
 
-    getTokenExpirationDate(dataIdToken: any): Date {
-        if (!dataIdToken.hasOwnProperty('exp')) {
-            return new Date(new Date().toUTCString());
-        }
-
-        const date = new Date(0); // The 0 here is the key, which sets the date to the epoch
-        date.setUTCSeconds(dataIdToken.exp);
-
-        return date;
+  getTokenExpirationDate(dataIdToken: any): Date {
+    if (!dataIdToken.hasOwnProperty('exp')) {
+      return new Date(new Date().toUTCString());
     }
 
-    getHeaderFromToken(token: any, encoded: boolean) {
-        if (!this.tokenIsValid(token)) {
-            return {};
-        }
+    const date = new Date(0); // The 0 here is the key, which sets the date to the epoch
+    date.setUTCSeconds(dataIdToken.exp);
 
-        return this.getPartOfToken(token, 0, encoded);
+    return date;
+  }
+
+  getHeaderFromToken(token: any, encoded: boolean) {
+    if (!this.tokenIsValid(token)) {
+      return {};
     }
 
-    getPayloadFromToken(token: any, encoded: boolean) {
-        if (!this.tokenIsValid(token)) {
-            return {};
-        }
+    return this.getPartOfToken(token, 0, encoded);
+  }
 
-        return this.getPartOfToken(token, 1, encoded);
+  getPayloadFromToken(token: any, encoded: boolean) {
+    if (!this.tokenIsValid(token)) {
+      return {};
     }
 
-    getSignatureFromToken(token: any, encoded: boolean) {
-        if (!this.tokenIsValid(token)) {
-            return {};
-        }
+    return this.getPartOfToken(token, 1, encoded);
+  }
 
-        return this.getPartOfToken(token, 2, encoded);
+  getSignatureFromToken(token: any, encoded: boolean) {
+    if (!this.tokenIsValid(token)) {
+      return {};
     }
 
-    private getPartOfToken(token: string, index: number, encoded: boolean) {
-        const partOfToken = this.extractPartOfToken(token, index);
+    return this.getPartOfToken(token, 2, encoded);
+  }
 
-        if (encoded) {
-            return partOfToken;
-        }
+  private getPartOfToken(token: string, index: number, encoded: boolean) {
+    const partOfToken = this.extractPartOfToken(token, index);
 
-        const result = this.urlBase64Decode(partOfToken);
-        return JSON.parse(result);
+    if (encoded) {
+      return partOfToken;
     }
 
-    private urlBase64Decode(str: string) {
-        let output = str.replace(/-/g, '+').replace(/_/g, '/');
+    const result = this.urlBase64Decode(partOfToken);
+    return JSON.parse(result);
+  }
 
-        switch (output.length % 4) {
-            case 0:
-                break;
-            case 2:
-                output += '==';
-                break;
-            case 3:
-                output += '=';
-                break;
-            default:
-                throw Error('Illegal base64url string!');
-        }
+  private urlBase64Decode(str: string) {
+    let output = str.replace(/-/g, '+').replace(/_/g, '/');
 
-        const decoded = typeof window !== 'undefined' ? window.atob(output) : Buffer.from(output, 'base64').toString('binary');
-
-        try {
-            // Going backwards: from bytestream, to percent-encoding, to original string.
-            return decodeURIComponent(
-                decoded
-                    .split('')
-                    .map((c: string) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                    .join('')
-            );
-        } catch (err) {
-            return decoded;
-        }
+    switch (output.length % 4) {
+      case 0:
+        break;
+      case 2:
+        output += '==';
+        break;
+      case 3:
+        output += '=';
+        break;
+      default:
+        throw Error('Illegal base64url string!');
     }
 
-    private tokenIsValid(token: string) {
-        if (!token) {
-            this.loggerService.logError(`token '${token}' is not valid --> token falsy`);
-            return false;
-        }
+    const decoded = typeof window !== 'undefined' ? window.atob(output) : Buffer.from(output, 'base64').toString('binary');
 
-        if (!(token as string).includes('.')) {
-            this.loggerService.logError(`token '${token}' is not valid --> no dots included`);
-            return false;
-        }
+    try {
+      // Going backwards: from bytestream, to percent-encoding, to original string.
+      return decodeURIComponent(
+        decoded
+          .split('')
+          .map((c: string) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+    } catch (err) {
+      return decoded;
+    }
+  }
 
-        const parts = token.split('.');
-
-        if (parts.length !== PARTS_OF_TOKEN) {
-            this.loggerService.logError(`token '${token}' is not valid --> token has to have exactly ${PARTS_OF_TOKEN - 1} dots`);
-            return false;
-        }
-
-        return true;
+  private tokenIsValid(token: string) {
+    if (!token) {
+      this.loggerService.logError(`token '${token}' is not valid --> token falsy`);
+      return false;
     }
 
-    private extractPartOfToken(token: string, index: number) {
-        return token.split('.')[index];
+    if (!(token as string).includes('.')) {
+      this.loggerService.logError(`token '${token}' is not valid --> no dots included`);
+      return false;
     }
+
+    const parts = token.split('.');
+
+    if (parts.length !== PARTS_OF_TOKEN) {
+      this.loggerService.logError(`token '${token}' is not valid --> token has to have exactly ${PARTS_OF_TOKEN - 1} dots`);
+      return false;
+    }
+
+    return true;
+  }
+
+  private extractPartOfToken(token: string, index: number) {
+    return token.split('.')[index];
+  }
 }

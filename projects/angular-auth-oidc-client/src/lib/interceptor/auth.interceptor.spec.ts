@@ -10,178 +10,178 @@ import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { AuthInterceptor } from './auth.interceptor';
 
 describe(`AuthHttpInterceptor`, () => {
-    let httpTestingController: HttpTestingController;
-    let configurationProvider: ConfigurationProvider;
-    let httpClient: HttpClient;
-    let authStateService: AuthStateService;
+  let httpTestingController: HttpTestingController;
+  let configurationProvider: ConfigurationProvider;
+  let httpClient: HttpClient;
+  let authStateService: AuthStateService;
 
-    beforeEach(() => {
-        TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
-            providers: [
-                {
-                    provide: HTTP_INTERCEPTORS,
-                    useClass: AuthInterceptor,
-                    multi: true,
-                },
-                { provide: AuthStateService, useClass: AuthStateServiceMock },
-                {
-                    provide: LoggerService,
-                    useClass: LoggerServiceMock,
-                },
-                {
-                    provide: ConfigurationProvider,
-                    useClass: ConfigurationProviderMock,
-                },
-            ],
-        });
-
-        httpClient = TestBed.inject(HttpClient);
-        httpTestingController = TestBed.inject(HttpTestingController);
-        configurationProvider = TestBed.inject(ConfigurationProvider);
-        authStateService = TestBed.inject(AuthStateService);
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [
+        {
+          provide: HTTP_INTERCEPTORS,
+          useClass: AuthInterceptor,
+          multi: true,
+        },
+        { provide: AuthStateService, useClass: AuthStateServiceMock },
+        {
+          provide: LoggerService,
+          useClass: LoggerServiceMock,
+        },
+        {
+          provide: ConfigurationProvider,
+          useClass: ConfigurationProviderMock,
+        },
+      ],
     });
 
-    afterEach(() => {
-        httpTestingController.verify();
-    });
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    configurationProvider = TestBed.inject(ConfigurationProvider);
+    authStateService = TestBed.inject(AuthStateService);
+  });
 
-    it(
-        'should add an Authorization header when route matches and token is present',
-        waitForAsync(() => {
-            const actionUrl = `https://jsonplaceholder.typicode.com/`;
-            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
-                secureRoutes: [actionUrl],
-            });
+  afterEach(() => {
+    httpTestingController.verify();
+  });
 
-            spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
+  it(
+    'should add an Authorization header when route matches and token is present',
+    waitForAsync(() => {
+      const actionUrl = `https://jsonplaceholder.typicode.com/`;
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+        secureRoutes: [actionUrl],
+      });
 
-            httpClient.get(actionUrl).subscribe((response) => {
-                expect(response).toBeTruthy();
-            });
+      spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
 
-            const httpRequest = httpTestingController.expectOne(actionUrl);
-            expect(httpRequest.request.headers.has('Authorization')).toEqual(true);
+      httpClient.get(actionUrl).subscribe((response) => {
+        expect(response).toBeTruthy();
+      });
 
-            httpRequest.flush('something');
-            httpTestingController.verify();
-        })
-    );
+      const httpRequest = httpTestingController.expectOne(actionUrl);
+      expect(httpRequest.request.headers.has('Authorization')).toEqual(true);
 
-    it(
-        'should not add an Authorization header when `secureRoutes` is not given',
-        waitForAsync(() => {
-            const actionUrl = `https://jsonplaceholder.typicode.com/`;
-            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({});
+      httpRequest.flush('something');
+      httpTestingController.verify();
+    })
+  );
 
-            spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
+  it(
+    'should not add an Authorization header when `secureRoutes` is not given',
+    waitForAsync(() => {
+      const actionUrl = `https://jsonplaceholder.typicode.com/`;
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({});
 
-            httpClient.get(actionUrl).subscribe((response) => {
-                expect(response).toBeTruthy();
-            });
+      spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
 
-            const httpRequest = httpTestingController.expectOne(actionUrl);
-            expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
+      httpClient.get(actionUrl).subscribe((response) => {
+        expect(response).toBeTruthy();
+      });
 
-            httpRequest.flush('something');
-            httpTestingController.verify();
-        })
-    );
+      const httpRequest = httpTestingController.expectOne(actionUrl);
+      expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
 
-    it(
-        'should not add an Authorization header when no routes configured',
-        waitForAsync(() => {
-            const actionUrl = `https://jsonplaceholder.typicode.com/`;
-            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
-                secureRoutes: [],
-            });
+      httpRequest.flush('something');
+      httpTestingController.verify();
+    })
+  );
 
-            spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
+  it(
+    'should not add an Authorization header when no routes configured',
+    waitForAsync(() => {
+      const actionUrl = `https://jsonplaceholder.typicode.com/`;
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+        secureRoutes: [],
+      });
 
-            httpClient.get(actionUrl).subscribe((response) => {
-                expect(response).toBeTruthy();
-            });
+      spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
 
-            const httpRequest = httpTestingController.expectOne(actionUrl);
-            expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
+      httpClient.get(actionUrl).subscribe((response) => {
+        expect(response).toBeTruthy();
+      });
 
-            httpRequest.flush('something');
-            httpTestingController.verify();
-        })
-    );
+      const httpRequest = httpTestingController.expectOne(actionUrl);
+      expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
 
-    it(
-        'should not add an Authorization header when no routes configured and no token is present',
-        waitForAsync(() => {
-            const actionUrl = `https://jsonplaceholder.typicode.com/`;
-            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
-                secureRoutes: [],
-            });
+      httpRequest.flush('something');
+      httpTestingController.verify();
+    })
+  );
 
-            spyOn(authStateService, 'getAccessToken').and.returnValue('');
+  it(
+    'should not add an Authorization header when no routes configured and no token is present',
+    waitForAsync(() => {
+      const actionUrl = `https://jsonplaceholder.typicode.com/`;
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+        secureRoutes: [],
+      });
 
-            httpClient.get(actionUrl).subscribe((response) => {
-                expect(response).toBeTruthy();
-            });
+      spyOn(authStateService, 'getAccessToken').and.returnValue('');
 
-            const httpRequest = httpTestingController.expectOne(actionUrl);
-            expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
+      httpClient.get(actionUrl).subscribe((response) => {
+        expect(response).toBeTruthy();
+      });
 
-            httpRequest.flush('something');
-            httpTestingController.verify();
-        })
-    );
+      const httpRequest = httpTestingController.expectOne(actionUrl);
+      expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
 
-    it(
-        'should not add an Authorization header when route is configured and no token is present',
-        waitForAsync(() => {
-            const actionUrl = `https://jsonplaceholder.typicode.com/`;
-            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
-                secureRoutes: [actionUrl],
-            });
+      httpRequest.flush('something');
+      httpTestingController.verify();
+    })
+  );
 
-            spyOn(authStateService, 'getAccessToken').and.returnValue('');
+  it(
+    'should not add an Authorization header when route is configured and no token is present',
+    waitForAsync(() => {
+      const actionUrl = `https://jsonplaceholder.typicode.com/`;
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+        secureRoutes: [actionUrl],
+      });
 
-            httpClient.get(actionUrl).subscribe((response) => {
-                expect(response).toBeTruthy();
-            });
+      spyOn(authStateService, 'getAccessToken').and.returnValue('');
 
-            const httpRequest = httpTestingController.expectOne(actionUrl);
-            expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
+      httpClient.get(actionUrl).subscribe((response) => {
+        expect(response).toBeTruthy();
+      });
 
-            httpRequest.flush('something');
-            httpTestingController.verify();
-        })
-    );
+      const httpRequest = httpTestingController.expectOne(actionUrl);
+      expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
 
-    it(
-        'should add an Authorization header when multiple routes are configured and token is present',
-        waitForAsync(() => {
-            const actionUrl = `https://jsonplaceholder.typicode.com/`;
-            const actionUrl2 = `https://some-other-url.com/`;
-            spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
-                secureRoutes: [actionUrl, actionUrl2],
-            });
+      httpRequest.flush('something');
+      httpTestingController.verify();
+    })
+  );
 
-            spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
+  it(
+    'should add an Authorization header when multiple routes are configured and token is present',
+    waitForAsync(() => {
+      const actionUrl = `https://jsonplaceholder.typicode.com/`;
+      const actionUrl2 = `https://some-other-url.com/`;
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+        secureRoutes: [actionUrl, actionUrl2],
+      });
 
-            httpClient.get(actionUrl).subscribe((response) => {
-                expect(response).toBeTruthy();
-            });
+      spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
 
-            httpClient.get(actionUrl2).subscribe((response) => {
-                expect(response).toBeTruthy();
-            });
+      httpClient.get(actionUrl).subscribe((response) => {
+        expect(response).toBeTruthy();
+      });
 
-            const httpRequest = httpTestingController.expectOne(actionUrl);
-            expect(httpRequest.request.headers.has('Authorization')).toEqual(true);
+      httpClient.get(actionUrl2).subscribe((response) => {
+        expect(response).toBeTruthy();
+      });
 
-            const httpRequest2 = httpTestingController.expectOne(actionUrl2);
-            expect(httpRequest2.request.headers.has('Authorization')).toEqual(true);
+      const httpRequest = httpTestingController.expectOne(actionUrl);
+      expect(httpRequest.request.headers.has('Authorization')).toEqual(true);
 
-            httpRequest.flush('something');
-            httpRequest2.flush('something');
-            httpTestingController.verify();
-        })
-    );
+      const httpRequest2 = httpTestingController.expectOne(actionUrl2);
+      expect(httpRequest2.request.headers.has('Authorization')).toEqual(true);
+
+      httpRequest.flush('something');
+      httpRequest2.flush('something');
+      httpTestingController.verify();
+    })
+  );
 });

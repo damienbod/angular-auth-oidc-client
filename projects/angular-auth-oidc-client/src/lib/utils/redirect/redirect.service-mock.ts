@@ -1,3 +1,3 @@
 export class RedirectServiceMock {
-    redirectTo(url) {}
+  redirectTo(url) {}
 }

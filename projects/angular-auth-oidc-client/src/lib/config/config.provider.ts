@@ -5,38 +5,38 @@ import { OpenIdConfiguration } from './openid-configuration';
 
 @Injectable()
 export class ConfigurationProvider {
-    private openIdConfigurationInternal: OpenIdConfiguration;
+  private openIdConfigurationInternal: OpenIdConfiguration;
 
-    get openIDConfiguration(): OpenIdConfiguration {
-        return this.openIdConfigurationInternal || null;
-    }
+  get openIDConfiguration(): OpenIdConfiguration {
+    return this.openIdConfigurationInternal || null;
+  }
 
-    constructor(private platformProvider: PlatformProvider) {}
+  constructor(private platformProvider: PlatformProvider) {}
 
-    hasValidConfig() {
-        return !!this.openIdConfigurationInternal;
-    }
+  hasValidConfig() {
+    return !!this.openIdConfigurationInternal;
+  }
 
-    setConfig(configuration: OpenIdConfiguration) {
-        this.openIdConfigurationInternal = { ...DEFAULT_CONFIG, ...configuration };
+  setConfig(configuration: OpenIdConfiguration) {
+    this.openIdConfigurationInternal = { ...DEFAULT_CONFIG, ...configuration };
 
-        if (configuration?.storage) {
-            console.warn(
-                `PLEASE NOTE: The storage in the config will be deprecated in future versions:
+    if (configuration?.storage) {
+      console.warn(
+        `PLEASE NOTE: The storage in the config will be deprecated in future versions:
                 Please pass the custom storage in forRoot() as documented`
-            );
-        }
-
-        this.setSpecialCases(this.openIdConfigurationInternal);
-
-        return this.openIdConfigurationInternal;
+      );
     }
 
-    private setSpecialCases(currentConfig: OpenIdConfiguration) {
-        if (!this.platformProvider.isBrowser) {
-            currentConfig.startCheckSession = false;
-            currentConfig.silentRenew = false;
-            currentConfig.useRefreshToken = false;
-        }
+    this.setSpecialCases(this.openIdConfigurationInternal);
+
+    return this.openIdConfigurationInternal;
+  }
+
+  private setSpecialCases(currentConfig: OpenIdConfiguration) {
+    if (!this.platformProvider.isBrowser) {
+      currentConfig.startCheckSession = false;
+      currentConfig.silentRenew = false;
+      currentConfig.useRefreshToken = false;
     }
+  }
 }

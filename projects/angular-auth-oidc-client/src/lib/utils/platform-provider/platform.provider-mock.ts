@@ -1,5 +1,5 @@
 export class PlatformProviderMock {
-    get isBrowser() {
-        return true;
-    }
+  get isBrowser() {
+    return true;
+  }
 }

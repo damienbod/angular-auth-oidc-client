@@ -14,73 +14,73 @@ import { PublicConfiguration } from './public-configuration';
 
 @Injectable()
 export class OidcConfigService {
-    constructor(
-        private loggerService: LoggerService,
-        private publicEventsService: PublicEventsService,
-        private configurationProvider: ConfigurationProvider,
-        private authWellKnownService: AuthWellKnownService,
-        private storagePersistanceService: StoragePersistanceService,
-        private configValidationService: ConfigValidationService
-    ) {}
+  constructor(
+    private loggerService: LoggerService,
+    private publicEventsService: PublicEventsService,
+    private configurationProvider: ConfigurationProvider,
+    private authWellKnownService: AuthWellKnownService,
+    private storagePersistanceService: StoragePersistanceService,
+    private configValidationService: ConfigValidationService
+  ) {}
 
-    withConfig(passedConfig: OpenIdConfiguration, passedAuthWellKnownEndpoints?: AuthWellKnownEndpoints): Promise<void> {
-        return new Promise((resolve, reject) => {
-            if (!this.configValidationService.validateConfig(passedConfig)) {
-                this.loggerService.logError('Validation of config rejected with errors. Config is NOT set.');
-                resolve();
-            }
+  withConfig(passedConfig: OpenIdConfiguration, passedAuthWellKnownEndpoints?: AuthWellKnownEndpoints): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.configValidationService.validateConfig(passedConfig)) {
+        this.loggerService.logError('Validation of config rejected with errors. Config is NOT set.');
+        resolve();
+      }
 
-            if (!passedConfig.authWellknownEndpoint) {
-                passedConfig.authWellknownEndpoint = passedConfig.stsServer;
-            }
+      if (!passedConfig.authWellknownEndpoint) {
+        passedConfig.authWellknownEndpoint = passedConfig.stsServer;
+      }
 
-            const usedConfig = this.configurationProvider.setConfig(passedConfig);
+      const usedConfig = this.configurationProvider.setConfig(passedConfig);
 
-            const alreadyExistingAuthWellKnownEndpoints = this.storagePersistanceService.read('authWellKnownEndPoints');
-            if (!!alreadyExistingAuthWellKnownEndpoints) {
-                this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.configLoaded, {
-                    configuration: passedConfig,
-                    wellknown: alreadyExistingAuthWellKnownEndpoints,
-                });
-
-                resolve();
-            }
-
-            if (!!passedAuthWellKnownEndpoints) {
-                this.authWellKnownService.storeWellKnownEndpoints(passedAuthWellKnownEndpoints);
-                this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.configLoaded, {
-                    configuration: passedConfig,
-                    wellknown: passedAuthWellKnownEndpoints,
-                });
-
-                resolve();
-            }
-            if (usedConfig.eagerLoadAuthWellKnownEndpoints) {
-                this.authWellKnownService
-                    .getAuthWellKnownEndPoints(usedConfig.authWellknownEndpoint)
-                    .pipe(
-                        catchError((error) => {
-                            this.loggerService.logError('Getting auth well known endpoints failed on start', error);
-                            return throwError(error);
-                        }),
-                        tap((wellknownEndPoints) =>
-                            this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.configLoaded, {
-                                configuration: passedConfig,
-                                wellknown: wellknownEndPoints,
-                            })
-                        )
-                    )
-                    .subscribe(
-                        () => resolve(),
-                        () => reject()
-                    );
-            } else {
-                this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.configLoaded, {
-                    configuration: passedConfig,
-                    wellknown: null,
-                });
-                resolve();
-            }
+      const alreadyExistingAuthWellKnownEndpoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+      if (!!alreadyExistingAuthWellKnownEndpoints) {
+        this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.configLoaded, {
+          configuration: passedConfig,
+          wellknown: alreadyExistingAuthWellKnownEndpoints,
         });
-    }
+
+        resolve();
+      }
+
+      if (!!passedAuthWellKnownEndpoints) {
+        this.authWellKnownService.storeWellKnownEndpoints(passedAuthWellKnownEndpoints);
+        this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.configLoaded, {
+          configuration: passedConfig,
+          wellknown: passedAuthWellKnownEndpoints,
+        });
+
+        resolve();
+      }
+      if (usedConfig.eagerLoadAuthWellKnownEndpoints) {
+        this.authWellKnownService
+          .getAuthWellKnownEndPoints(usedConfig.authWellknownEndpoint)
+          .pipe(
+            catchError((error) => {
+              this.loggerService.logError('Getting auth well known endpoints failed on start', error);
+              return throwError(error);
+            }),
+            tap((wellknownEndPoints) =>
+              this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.configLoaded, {
+                configuration: passedConfig,
+                wellknown: wellknownEndPoints,
+              })
+            )
+          )
+          .subscribe(
+            () => resolve(),
+            () => reject()
+          );
+      } else {
+        this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.configLoaded, {
+          configuration: passedConfig,
+          wellknown: null,
+        });
+        resolve();
+      }
+    });
+  }
 }

@@ -9,31 +9,31 @@ import { IntervallService } from './intervall.service';
 
 @Injectable({ providedIn: 'root' })
 export class CodeFlowCallbackService {
-    constructor(
-        private flowsService: FlowsService,
-        private flowsDataService: FlowsDataService,
-        private intervallService: IntervallService,
-        private configurationProvider: ConfigurationProvider,
-        private router: Router
-    ) {}
+  constructor(
+    private flowsService: FlowsService,
+    private flowsDataService: FlowsDataService,
+    private intervallService: IntervallService,
+    private configurationProvider: ConfigurationProvider,
+    private router: Router
+  ) {}
 
-    authorizedCallbackWithCode(urlToCheck: string) {
-        const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
+  authorizedCallbackWithCode(urlToCheck: string) {
+    const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
 
-        return this.flowsService.processCodeFlowCallback(urlToCheck).pipe(
-            tap((callbackContext) => {
-                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
-                    this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
-                }
-            }),
-            catchError((error) => {
-                this.flowsDataService.resetSilentRenewRunning();
-                this.intervallService.stopPeriodicallTokenCheck();
-                if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
-                    this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
-                }
-                return throwError(error);
-            })
-        );
-    }
+    return this.flowsService.processCodeFlowCallback(urlToCheck).pipe(
+      tap((callbackContext) => {
+        if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
+          this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
+        }
+      }),
+      catchError((error) => {
+        this.flowsDataService.resetSilentRenewRunning();
+        this.intervallService.stopPeriodicallTokenCheck();
+        if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
+          this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
+        }
+        return throwError(error);
+      })
+    );
+  }
 }

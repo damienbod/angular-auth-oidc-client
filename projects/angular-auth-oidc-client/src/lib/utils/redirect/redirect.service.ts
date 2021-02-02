@@ -3,9 +3,9 @@ import { Inject, Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class RedirectService {
-    constructor(@Inject(DOCUMENT) private readonly doc: any) {}
+  constructor(@Inject(DOCUMENT) private readonly doc: any) {}
 
-    redirectTo(url) {
-        this.doc.location.href = url;
-    }
+  redirectTo(url) {
+    this.doc.location.href = url;
+  }
 }

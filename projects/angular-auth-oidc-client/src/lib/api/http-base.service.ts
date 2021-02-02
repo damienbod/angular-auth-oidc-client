@@ -4,13 +4,13 @@ import { Observable } from 'rxjs';
 
 @Injectable()
 export class HttpBaseService {
-    constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {}
 
-    get<T>(url: string, params?: { [key: string]: any }): Observable<T> {
-        return this.http.get<T>(url, params);
-    }
+  get<T>(url: string, params?: { [key: string]: any }): Observable<T> {
+    return this.http.get<T>(url, params);
+  }
 
-    post<T>(url: string, body: any, params?: { [key: string]: any }): Observable<T> {
-        return this.http.post<T>(url, body, params);
-    }
+  post<T>(url: string, body: any, params?: { [key: string]: any }): Observable<T> {
+    return this.http.post<T>(url, body, params);
+  }
 }

@@ -2,33 +2,33 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class FlowsDataServiceMock {
-    createNonce(): string {
-        return '';
-    }
+  createNonce(): string {
+    return '';
+  }
 
-    setNonce(nonce: string) {}
+  setNonce(nonce: string) {}
 
-    getAuthStateControl(): any {}
-    setAuthStateControl(authStateControl: string) {}
+  getAuthStateControl(): any {}
+  setAuthStateControl(authStateControl: string) {}
 
-    getExistingOrCreateAuthStateControl(): any {
-        return null;
-    }
+  getExistingOrCreateAuthStateControl(): any {
+    return null;
+  }
 
-    setSessionState(sessionState: any) {}
+  setSessionState(sessionState: any) {}
 
-    resetStorageFlowData() {}
+  resetStorageFlowData() {}
 
-    getCodeVerifier() {}
+  getCodeVerifier() {}
 
-    createCodeVerifier() {
-        return '';
-    }
+  createCodeVerifier() {
+    return '';
+  }
 
-    isSilentRenewRunning() {
-        return true;
-    }
+  isSilentRenewRunning() {
+    return true;
+  }
 
-    setSilentRenewRunning() {}
-    resetSilentRenewRunning() {}
+  setSilentRenewRunning() {}
+  resetSilentRenewRunning() {}
 }

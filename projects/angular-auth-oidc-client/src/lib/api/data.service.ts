@@ -5,30 +5,30 @@ import { HttpBaseService } from './http-base.service';
 
 @Injectable()
 export class DataService {
-    constructor(private httpClient: HttpBaseService) {}
+  constructor(private httpClient: HttpBaseService) {}
 
-    get<T>(url: string, token?: string): Observable<T> {
-        const headers = this.prepareHeaders(token);
+  get<T>(url: string, token?: string): Observable<T> {
+    const headers = this.prepareHeaders(token);
 
-        return this.httpClient.get<T>(url, {
-            headers,
-        });
+    return this.httpClient.get<T>(url, {
+      headers,
+    });
+  }
+
+  post<T>(url: string, body: any, headersParams?: HttpHeaders) {
+    const headers = headersParams || this.prepareHeaders();
+
+    return this.httpClient.post<T>(url, body, { headers });
+  }
+
+  private prepareHeaders(token?: string) {
+    let headers = new HttpHeaders();
+    headers = headers.set('Accept', 'application/json');
+
+    if (!!token) {
+      headers = headers.set('Authorization', 'Bearer ' + decodeURIComponent(token));
     }
 
-    post<T>(url: string, body: any, headersParams?: HttpHeaders) {
-        const headers = headersParams || this.prepareHeaders();
-
-        return this.httpClient.post<T>(url, body, { headers });
-    }
-
-    private prepareHeaders(token?: string) {
-        let headers = new HttpHeaders();
-        headers = headers.set('Accept', 'application/json');
-
-        if (!!token) {
-            headers = headers.set('Authorization', 'Bearer ' + decodeURIComponent(token));
-        }
-
-        return headers;
-    }
+    return headers;
+  }
 }

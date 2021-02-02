@@ -16,72 +16,70 @@ import { ImplicitFlowCallbackService } from './implicit-flow-callback.service';
 import { ImplicitFlowCallbackServiceMock } from './implicit-flow-callback.service-mock';
 
 describe('Callbackservice ', () => {
-    let callbackService: CallbackService;
-    let implicitFlowCallbackService: ImplicitFlowCallbackService;
-    let codeFlowCallbackService: CodeFlowCallbackService;
-    let flowHelper: FlowHelper;
+  let callbackService: CallbackService;
+  let implicitFlowCallbackService: ImplicitFlowCallbackService;
+  let codeFlowCallbackService: CodeFlowCallbackService;
+  let flowHelper: FlowHelper;
 
-    beforeEach(() => {
-        TestBed.configureTestingModule({
-            imports: [HttpClientModule, RouterTestingModule],
-            providers: [
-                CallbackService,
-                { provide: UrlService, useClass: UrlServiceMock },
-                { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
-                { provide: FlowsService, useClass: FlowsServiceMock },
-                { provide: ImplicitFlowCallbackService, useClass: ImplicitFlowCallbackServiceMock },
-                { provide: CodeFlowCallbackService, useClass: CodeFlowCallbackServiceMock },
-                FlowHelper,
-            ],
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientModule, RouterTestingModule],
+      providers: [
+        CallbackService,
+        { provide: UrlService, useClass: UrlServiceMock },
+        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
+        { provide: FlowsService, useClass: FlowsServiceMock },
+        { provide: ImplicitFlowCallbackService, useClass: ImplicitFlowCallbackServiceMock },
+        { provide: CodeFlowCallbackService, useClass: CodeFlowCallbackServiceMock },
+        FlowHelper,
+      ],
+    });
+  });
+
+  beforeEach(() => {
+    callbackService = TestBed.inject(CallbackService);
+    flowHelper = TestBed.inject(FlowHelper);
+    implicitFlowCallbackService = TestBed.inject(ImplicitFlowCallbackService);
+    codeFlowCallbackService = TestBed.inject(CodeFlowCallbackService);
+  });
+
+  describe('handleCallbackAndFireEvents', () => {
+    it(
+      'calls authorizedCallbackWithCode if current flow is code flow',
+      waitForAsync(() => {
+        spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
+        const authorizedCallbackWithCodeSpy = spyOn(codeFlowCallbackService, 'authorizedCallbackWithCode').and.returnValue(of(null));
+
+        callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
+          expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl');
         });
-    });
+      })
+    );
 
-    beforeEach(() => {
-        callbackService = TestBed.inject(CallbackService);
-        flowHelper = TestBed.inject(FlowHelper);
-        implicitFlowCallbackService = TestBed.inject(ImplicitFlowCallbackService);
-        codeFlowCallbackService = TestBed.inject(CodeFlowCallbackService);
-    });
-
-    describe('handleCallbackAndFireEvents', () => {
-        it(
-            'calls authorizedCallbackWithCode if current flow is code flow',
-            waitForAsync(() => {
-                spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-                const authorizedCallbackWithCodeSpy = spyOn(codeFlowCallbackService, 'authorizedCallbackWithCode').and.returnValue(
-                    of(null)
-                );
-
-                callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
-                    expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl');
-                });
-            })
+    it(
+      'calls authorizedImplicitFlowCallback if current flow is implicit flow',
+      waitForAsync(() => {
+        spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
+        spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(true);
+        const authorizedCallbackWithCodeSpy = spyOn(implicitFlowCallbackService, 'authorizedImplicitFlowCallback').and.returnValue(
+          of(null)
         );
 
-        it(
-            'calls authorizedImplicitFlowCallback if current flow is implicit flow',
-            waitForAsync(() => {
-                spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
-                spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(true);
-                const authorizedCallbackWithCodeSpy = spyOn(implicitFlowCallbackService, 'authorizedImplicitFlowCallback').and.returnValue(
-                    of(null)
-                );
-
-                callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
-                    expect(authorizedCallbackWithCodeSpy).toHaveBeenCalled();
-                });
-            })
-        );
-
-        it('emits callbackinternal no matter which flow it is', () => {
-            const callbackSpy = spyOn((callbackService as any).stsCallbackInternal$, 'next');
-            spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-            const authorizedCallbackWithCodeSpy = spyOn(codeFlowCallbackService, 'authorizedCallbackWithCode').and.returnValue(of(null));
-
-            callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
-                expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl');
-                expect(callbackSpy).toHaveBeenCalled();
-            });
+        callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
+          expect(authorizedCallbackWithCodeSpy).toHaveBeenCalled();
         });
+      })
+    );
+
+    it('emits callbackinternal no matter which flow it is', () => {
+      const callbackSpy = spyOn((callbackService as any).stsCallbackInternal$, 'next');
+      spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
+      const authorizedCallbackWithCodeSpy = spyOn(codeFlowCallbackService, 'authorizedCallbackWithCode').and.returnValue(of(null));
+
+      callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
+        expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl');
+        expect(callbackSpy).toHaveBeenCalled();
+      });
     });
+  });
 });

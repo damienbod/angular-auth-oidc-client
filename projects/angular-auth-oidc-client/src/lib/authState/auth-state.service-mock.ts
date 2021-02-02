@@ -4,46 +4,46 @@ import { AuthorizationResult } from './authorization-result';
 
 @Injectable()
 export class AuthStateServiceMock {
-    // event which contains the state
-    private authorizedInternal$ = new BehaviorSubject<boolean>(false);
+  // event which contains the state
+  private authorizedInternal$ = new BehaviorSubject<boolean>(false);
 
-    get authorized$() {
-        return this.authorizedInternal$.asObservable();
-    }
+  get authorized$() {
+    return this.authorizedInternal$.asObservable();
+  }
 
-    setAuthorizedAndFireEvent(): void {}
+  setAuthorizedAndFireEvent(): void {}
 
-    setUnauthorizedAndFireEvent(): void {}
+  setUnauthorizedAndFireEvent(): void {}
 
-    initStateFromStorage(): void {}
+  initStateFromStorage(): void {}
 
-    updateAndPublishAuthState(authorizationResult: AuthorizationResult) {}
+  updateAndPublishAuthState(authorizationResult: AuthorizationResult) {}
 
-    setAuthorizationData(accessToken: any, idToken: any) {}
+  setAuthorizationData(accessToken: any, idToken: any) {}
 
-    getAccessToken(): string {
-        return '';
-    }
+  getAccessToken(): string {
+    return '';
+  }
 
-    getIdToken(): string {
-        return '';
-    }
+  getIdToken(): string {
+    return '';
+  }
 
-    getRefreshToken(): string {
-        return '';
-    }
+  getRefreshToken(): string {
+    return '';
+  }
 
-    areAuthStorageTokensValid() {
-        return true;
-    }
+  areAuthStorageTokensValid() {
+    return true;
+  }
 
-    setAuthResultInStorage(authResult: any) {}
+  setAuthResultInStorage(authResult: any) {}
 
-    hasIdTokenExpired() {
-        return true;
-    }
+  hasIdTokenExpired() {
+    return true;
+  }
 
-    hasAccessTokenExpiredIfExpiryExists() {
-        return true;
-    }
+  hasAccessTokenExpiredIfExpiryExists() {
+    return true;
+  }
 }

@@ -9,32 +9,32 @@ import { ImplicitFlowCallbackService } from './implicit-flow-callback.service';
 
 @Injectable({ providedIn: 'root' })
 export class CallbackService {
-    private stsCallbackInternal$ = new Subject();
+  private stsCallbackInternal$ = new Subject();
 
-    get stsCallback$() {
-        return this.stsCallbackInternal$.asObservable();
+  get stsCallback$() {
+    return this.stsCallbackInternal$.asObservable();
+  }
+
+  constructor(
+    private urlService: UrlService,
+    private flowHelper: FlowHelper,
+    private implicitFlowCallbackService: ImplicitFlowCallbackService,
+    private codeFlowCallbackService: CodeFlowCallbackService
+  ) {}
+
+  isCallback(currentUrl: string): boolean {
+    return this.urlService.isCallbackFromSts(currentUrl);
+  }
+
+  handleCallbackAndFireEvents(currentCallbackUrl: string): Observable<CallbackContext> {
+    let callback$: Observable<any>;
+
+    if (this.flowHelper.isCurrentFlowCodeFlow()) {
+      callback$ = this.codeFlowCallbackService.authorizedCallbackWithCode(currentCallbackUrl);
+    } else if (this.flowHelper.isCurrentFlowAnyImplicitFlow()) {
+      callback$ = this.implicitFlowCallbackService.authorizedImplicitFlowCallback();
     }
 
-    constructor(
-        private urlService: UrlService,
-        private flowHelper: FlowHelper,
-        private implicitFlowCallbackService: ImplicitFlowCallbackService,
-        private codeFlowCallbackService: CodeFlowCallbackService
-    ) {}
-
-    isCallback(currentUrl: string): boolean {
-        return this.urlService.isCallbackFromSts(currentUrl);
-    }
-
-    handleCallbackAndFireEvents(currentCallbackUrl: string): Observable<CallbackContext> {
-        let callback$: Observable<any>;
-
-        if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            callback$ = this.codeFlowCallbackService.authorizedCallbackWithCode(currentCallbackUrl);
-        } else if (this.flowHelper.isCurrentFlowAnyImplicitFlow()) {
-            callback$ = this.implicitFlowCallbackService.authorizedImplicitFlowCallback();
-        }
-
-        return callback$.pipe(tap(() => this.stsCallbackInternal$.next()));
-    }
+    return callback$.pipe(tap(() => this.stsCallbackInternal$.next()));
+  }
 }

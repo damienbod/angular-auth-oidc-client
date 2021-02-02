@@ -4,23 +4,23 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class CheckSessionServiceMock {
-    get checkSessionChanged$() {
-        return null;
-    }
+  get checkSessionChanged$() {
+    return null;
+  }
 
-    isCheckSessionConfigured() {
-        return false;
-    }
+  isCheckSessionConfigured() {
+    return false;
+  }
 
-    start(): void {}
+  start(): void {}
 
-    stop(): void {}
+  stop(): void {}
 
-    serverStateChanged() {
-        return false;
-    }
+  serverStateChanged() {
+    return false;
+  }
 
-    getExistingIframe() {
-        return null;
-    }
+  getExistingIframe() {
+    return null;
+  }
 }
