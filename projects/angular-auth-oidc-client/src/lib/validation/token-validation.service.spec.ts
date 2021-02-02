@@ -11,11 +11,13 @@ import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { AbstractSecurityStorage } from '../storage/abstract-security-storage';
 import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
 import { EqualityService } from '../utils/equality/equality.service';
+import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
 import { FlowHelper } from './../utils/flowHelper/flow-helper.service';
 import { TokenValidationService } from './token-validation.service';
 
 describe('TokenValidationService', () => {
-    let tokenvalidationService: TokenValidationService;
+    let tokenValidationService: TokenValidationService;
+    let tokenHelperService: TokenHelperService;
     let configProvider: ConfigurationProvider;
 
     beforeEach(() => {
@@ -39,7 +41,8 @@ describe('TokenValidationService', () => {
     });
 
     beforeEach(() => {
-        tokenvalidationService = TestBed.inject(TokenValidationService);
+        tokenHelperService = TestBed.inject(TokenHelperService);
+        tokenValidationService = TestBed.inject(TokenValidationService);
         configProvider = TestBed.inject(ConfigurationProvider);
     });
 
@@ -62,10 +65,10 @@ describe('TokenValidationService', () => {
         configProvider.setConfig(config);
 
         const dataIdToken = { aud: 'banana' };
-        const valueTrue = tokenvalidationService.validateIdTokenAud(dataIdToken, 'banana');
+        const valueTrue = tokenValidationService.validateIdTokenAud(dataIdToken, 'banana');
         expect(valueTrue).toEqual(true);
 
-        const valueFalse = tokenvalidationService.validateIdTokenAud(dataIdToken, 'bananammmm');
+        const valueFalse = tokenValidationService.validateIdTokenAud(dataIdToken, 'bananammmm');
         expect(valueFalse).toEqual(false);
     });
 
@@ -91,43 +94,65 @@ describe('TokenValidationService', () => {
             aud: ['banana', 'apple', 'https://nice.dom'],
             azp: 'apple',
         };
-        const audValidTrue = tokenvalidationService.validateIdTokenAud(dataIdToken, 'apple');
+        const audValidTrue = tokenValidationService.validateIdTokenAud(dataIdToken, 'apple');
         expect(audValidTrue).toEqual(true);
 
-        const audValidFalse = tokenvalidationService.validateIdTokenAud(dataIdToken, 'https://nice.domunnnnnnkoem');
+        const audValidFalse = tokenValidationService.validateIdTokenAud(dataIdToken, 'https://nice.domunnnnnnkoem');
         expect(audValidFalse).toEqual(false);
     });
 
     it('should validate id token nonce after code grant when match', () => {
-        expect(tokenvalidationService.validateIdTokenNonce({ nonce: 'test1' }, 'test1', false)).toBe(true);
+        expect(tokenValidationService.validateIdTokenNonce({ nonce: 'test1' }, 'test1', false)).toBe(true);
     });
 
     it('should not validate id token nonce after code grant when no match', () => {
-        expect(tokenvalidationService.validateIdTokenNonce({ nonce: 'test1' }, 'test2', false)).toBe(false);
+        expect(tokenValidationService.validateIdTokenNonce({ nonce: 'test1' }, 'test2', false)).toBe(false);
     });
 
     it('should validate id token nonce after refresh token grant when undefined and no ignore', () => {
         expect(
-            tokenvalidationService.validateIdTokenNonce({ nonce: undefined }, TokenValidationService.RefreshTokenNoncePlaceholder, false)
+            tokenValidationService.validateIdTokenNonce({ nonce: undefined }, TokenValidationService.RefreshTokenNoncePlaceholder, false)
         ).toBe(true);
     });
 
     it('should validate id token nonce after refresh token grant when undefined and ignore', () => {
         expect(
-            tokenvalidationService.validateIdTokenNonce({ nonce: undefined }, TokenValidationService.RefreshTokenNoncePlaceholder, true)
+            tokenValidationService.validateIdTokenNonce({ nonce: undefined }, TokenValidationService.RefreshTokenNoncePlaceholder, true)
         ).toBe(true);
     });
 
     it('should validate id token nonce after refresh token grant when defined and ignore', () => {
         expect(
-            tokenvalidationService.validateIdTokenNonce({ nonce: 'test1' }, TokenValidationService.RefreshTokenNoncePlaceholder, true)
+            tokenValidationService.validateIdTokenNonce({ nonce: 'test1' }, TokenValidationService.RefreshTokenNoncePlaceholder, true)
         ).toBe(true);
     });
 
     it('should not validate id token nonce after refresh token grant when defined and no ignore', () => {
         expect(
-            tokenvalidationService.validateIdTokenNonce({ nonce: 'test1' }, TokenValidationService.RefreshTokenNoncePlaceholder, false)
+            tokenValidationService.validateIdTokenNonce({ nonce: 'test1' }, TokenValidationService.RefreshTokenNoncePlaceholder, false)
         ).toBe(false);
+    });
+
+    describe('validateIdTokenAzpExistsIfMoreThanOneAud', () => {
+        it('returns false if aud is array, öength is bigger than 1 and has no azp property', () => {
+            const dataIdToken = {
+                aud: ['one', 'two'],
+            };
+            const result = tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken);
+            expect(result).toBe(false);
+        });
+
+        it('returns false if aud is array, ength is bigger than 1 and has no azp property', () => {
+            const result = tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(null);
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('validateIdTokenAzpValid', () => {
+        it('returns true dataIdToken param is null', () => {
+            const result = tokenValidationService.validateIdTokenAzpValid(null, '');
+            expect(result).toBe(true);
+        });
     });
 
     it('validate aud array and azp', () => {
@@ -152,13 +177,13 @@ describe('TokenValidationService', () => {
             aud: ['banana', 'apple', '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com'],
             azp: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         };
-        const valueTrue = tokenvalidationService.validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken);
+        const valueTrue = tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken);
         expect(valueTrue).toEqual(true);
 
-        const azpInvalid = tokenvalidationService.validateIdTokenAzpValid(dataIdToken, 'bananammmm');
+        const azpInvalid = tokenValidationService.validateIdTokenAzpValid(dataIdToken, 'bananammmm');
         expect(azpInvalid).toEqual(false);
 
-        const azpValid = tokenvalidationService.validateIdTokenAzpValid(
+        const azpValid = tokenValidationService.validateIdTokenAzpValid(
             dataIdToken,
             '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com'
         );
@@ -186,16 +211,16 @@ describe('TokenValidationService', () => {
         const dataIdToken = {
             aud: 'banana',
         };
-        const valueTrue = tokenvalidationService.validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken);
+        const valueTrue = tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken);
         expect(valueTrue).toEqual(true);
 
-        const azpValid = tokenvalidationService.validateIdTokenAzpValid(dataIdToken, 'bananammmm');
+        const azpValid = tokenValidationService.validateIdTokenAzpValid(dataIdToken, 'bananammmm');
         expect(azpValid).toEqual(true);
 
-        const azpValid2 = tokenvalidationService.validateIdTokenAzpValid(dataIdToken, 'banana');
+        const azpValid2 = tokenValidationService.validateIdTokenAzpValid(dataIdToken, 'banana');
         expect(azpValid2).toEqual(true);
 
-        const azpValid3 = tokenvalidationService.validateIdTokenAzpValid(dataIdToken, 'fdfddlfkdlfkds');
+        const azpValid3 = tokenValidationService.validateIdTokenAzpValid(dataIdToken, 'fdfddlfkdlfkds');
         expect(azpValid3).toEqual(true);
     });
 
@@ -220,19 +245,19 @@ describe('TokenValidationService', () => {
         const dataIdToken = {
             aud: ['banana'],
         };
-        const valueTrue = tokenvalidationService.validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken);
+        const valueTrue = tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken);
         expect(valueTrue).toEqual(true);
 
-        const azpValid = tokenvalidationService.validateIdTokenAzpValid(dataIdToken, 'bananammmm');
+        const azpValid = tokenValidationService.validateIdTokenAzpValid(dataIdToken, 'bananammmm');
         expect(azpValid).toEqual(true);
 
-        const azpValid2 = tokenvalidationService.validateIdTokenAzpValid(dataIdToken, 'banana');
+        const azpValid2 = tokenValidationService.validateIdTokenAzpValid(dataIdToken, 'banana');
         expect(azpValid2).toEqual(true);
 
-        const azpValid3 = tokenvalidationService.validateIdTokenAzpValid(dataIdToken, 'fdfddlfkdlfkds');
+        const azpValid3 = tokenValidationService.validateIdTokenAzpValid(dataIdToken, 'fdfddlfkdlfkds');
         expect(azpValid3).toEqual(true);
 
-        const valueAud = tokenvalidationService.validateIdTokenAud(dataIdToken, 'banana');
+        const valueAud = tokenValidationService.validateIdTokenAud(dataIdToken, 'banana');
         expect(valueAud).toEqual(true);
     });
 
@@ -257,16 +282,16 @@ describe('TokenValidationService', () => {
         const dataIdToken = {
             aud: 'banana',
         };
-        const valueTrue = tokenvalidationService.validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken);
+        const valueTrue = tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken);
         expect(valueTrue).toEqual(true);
 
-        const azpValid = tokenvalidationService.validateIdTokenAzpValid(dataIdToken, 'bananammmm');
+        const azpValid = tokenValidationService.validateIdTokenAzpValid(dataIdToken, 'bananammmm');
         expect(azpValid).toEqual(true);
 
-        const azpValid2 = tokenvalidationService.validateIdTokenAzpValid(dataIdToken, 'banana');
+        const azpValid2 = tokenValidationService.validateIdTokenAzpValid(dataIdToken, 'banana');
         expect(azpValid2).toEqual(true);
 
-        const azpValid3 = tokenvalidationService.validateIdTokenAzpValid(dataIdToken, 'fdfddlfkdlfkds');
+        const azpValid3 = tokenValidationService.validateIdTokenAzpValid(dataIdToken, 'fdfddlfkdlfkds');
         expect(azpValid3).toEqual(true);
     });
 
@@ -304,7 +329,7 @@ describe('TokenValidationService', () => {
             at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
         };
 
-        const valueTrue = tokenvalidationService.validateRequiredIdToken(decodedIdToken);
+        const valueTrue = tokenValidationService.validateRequiredIdToken(decodedIdToken);
         expect(valueTrue).toEqual(true);
     });
 
@@ -341,7 +366,7 @@ describe('TokenValidationService', () => {
             at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
         };
 
-        const valueFalse = tokenvalidationService.validateRequiredIdToken(decodedIdToken);
+        const valueFalse = tokenValidationService.validateRequiredIdToken(decodedIdToken);
         expect(valueFalse).toEqual(false);
     });
 
@@ -378,7 +403,7 @@ describe('TokenValidationService', () => {
             at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
         };
 
-        const valueFalse = tokenvalidationService.validateRequiredIdToken(decodedIdToken);
+        const valueFalse = tokenValidationService.validateRequiredIdToken(decodedIdToken);
         expect(valueFalse).toEqual(false);
     });
 
@@ -415,7 +440,7 @@ describe('TokenValidationService', () => {
             at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
         };
 
-        const valueFalse = tokenvalidationService.validateRequiredIdToken(decodedIdToken);
+        const valueFalse = tokenValidationService.validateRequiredIdToken(decodedIdToken);
         expect(valueFalse).toEqual(false);
     });
 
@@ -452,7 +477,7 @@ describe('TokenValidationService', () => {
             at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
         };
 
-        const valueFalse = tokenvalidationService.validateRequiredIdToken(decodedIdToken);
+        const valueFalse = tokenValidationService.validateRequiredIdToken(decodedIdToken);
         expect(valueFalse).toEqual(false);
     });
 
@@ -489,7 +514,7 @@ describe('TokenValidationService', () => {
             at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
         };
 
-        const valueFalse = tokenvalidationService.validateRequiredIdToken(decodedIdToken);
+        const valueFalse = tokenValidationService.validateRequiredIdToken(decodedIdToken);
         expect(valueFalse).toEqual(false);
     });
 
@@ -526,7 +551,7 @@ describe('TokenValidationService', () => {
             at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
         };
 
-        const valueTrue = tokenvalidationService.validateIdTokenIss(decodedIdToken, 'xc');
+        const valueTrue = tokenValidationService.validateIdTokenIss(decodedIdToken, 'xc');
         expect(valueTrue).toEqual(true);
     });
 
@@ -563,7 +588,7 @@ describe('TokenValidationService', () => {
             at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
         };
 
-        const valueFalse = tokenvalidationService.validateIdTokenIss(decodedIdToken, 'xcjjjj');
+        const valueFalse = tokenValidationService.validateIdTokenIss(decodedIdToken, 'xcjjjj');
         expect(valueFalse).toEqual(false);
     });
 
@@ -601,10 +626,10 @@ describe('TokenValidationService', () => {
             at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
         };
 
-        const valueTrueDis = tokenvalidationService.validateIdTokenIatMaxOffset(decodedIdToken, 5, true);
+        const valueTrueDis = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdToken, 5, true);
         expect(valueTrueDis).toEqual(true);
 
-        const valueTrue = tokenvalidationService.validateIdTokenIatMaxOffset(decodedIdToken, 500000000000, false);
+        const valueTrue = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdToken, 500000000000, false);
         expect(valueTrue).toEqual(true);
 
         const decodedIdTokenNegIat = {
@@ -622,10 +647,10 @@ describe('TokenValidationService', () => {
             tfp: 'B2C_1_b2cpolicydamien',
             at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
         };
-        const valueFalseNeg = tokenvalidationService.validateIdTokenIatMaxOffset(decodedIdTokenNegIat, 0, false);
+        const valueFalseNeg = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdTokenNegIat, 0, false);
         expect(valueFalseNeg).toEqual(false);
 
-        const valueFalse = tokenvalidationService.validateIdTokenIatMaxOffset(decodedIdToken, 5, false);
+        const valueFalse = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdToken, 5, false);
         expect(valueFalse).toEqual(false);
 
         const decodedIdTokenMissingIat = {
@@ -643,7 +668,7 @@ describe('TokenValidationService', () => {
             at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
         };
 
-        const valueFalseMissingIatToken = tokenvalidationService.validateIdTokenIatMaxOffset(decodedIdTokenMissingIat, 5, false);
+        const valueFalseMissingIatToken = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdTokenMissingIat, 5, false);
         expect(valueFalseMissingIatToken).toEqual(false);
     });
 
@@ -665,10 +690,10 @@ describe('TokenValidationService', () => {
 
         configProvider.setConfig(config);
 
-        const valueFalse = tokenvalidationService.validateSignatureIdToken(null, null);
+        const valueFalse = tokenValidationService.validateSignatureIdToken(null, null);
         expect(valueFalse).toEqual(false);
 
-        const valueFalse2 = tokenvalidationService.validateSignatureIdToken(null, { te: '' });
+        const valueFalse2 = tokenValidationService.validateSignatureIdToken(null, { te: '' });
         expect(valueFalse2).toEqual(false);
 
         const idToken =
@@ -695,10 +720,10 @@ describe('TokenValidationService', () => {
             ],
         };
 
-        const valueFalse3 = tokenvalidationService.validateSignatureIdToken(idToken, jwtKeys);
+        const valueFalse3 = tokenValidationService.validateSignatureIdToken(idToken, jwtKeys);
         expect(valueFalse3).toEqual(false);
 
-        const valueTrue = tokenvalidationService.validateSignatureIdToken(idTokenGood, jwtKeys);
+        const valueTrue = tokenValidationService.validateSignatureIdToken(idTokenGood, jwtKeys);
         expect(valueTrue).toEqual(true);
     });
 
@@ -726,28 +751,28 @@ describe('TokenValidationService', () => {
         const accessToken = 'iGU3DhbPoDljiYtr0oepxi7zpT8BsjdU7aaXcdq-DPk';
         const atHash = '-ODC_7Go_UIUTC8nP4k2cA';
 
-        const good = tokenvalidationService.validateIdTokenAtHash(accessToken, atHash, '256');
+        const good = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '256');
         expect(good).toEqual(true);
 
-        const valueFalse1 = tokenvalidationService.validateIdTokenAtHash(token, 'bad', '256');
+        const valueFalse1 = tokenValidationService.validateIdTokenAtHash(token, 'bad', '256');
         expect(valueFalse1).toEqual(false);
 
-        const valueFalse2 = tokenvalidationService.validateIdTokenAtHash(token, 'bad', '384');
+        const valueFalse2 = tokenValidationService.validateIdTokenAtHash(token, 'bad', '384');
         expect(valueFalse2).toEqual(false);
 
-        const valueFalse3 = tokenvalidationService.validateIdTokenAtHash(token, 'bad', '512');
+        const valueFalse3 = tokenValidationService.validateIdTokenAtHash(token, 'bad', '512');
         expect(valueFalse3).toEqual(false);
     });
 
     it('validateStateFromHashCallback', () => {
-        const good = tokenvalidationService.validateStateFromHashCallback('sssd', 'sssd');
+        const good = tokenValidationService.validateStateFromHashCallback('sssd', 'sssd');
         expect(good).toEqual(true);
 
         const test: any = 'sssd';
-        const good1 = tokenvalidationService.validateStateFromHashCallback('sssd', test);
+        const good1 = tokenValidationService.validateStateFromHashCallback('sssd', test);
         expect(good1).toEqual(true);
 
-        const bad = tokenvalidationService.validateStateFromHashCallback('sssd', 'bad');
+        const bad = tokenValidationService.validateStateFromHashCallback('sssd', 'bad');
         expect(bad).toEqual(false);
     });
 
@@ -769,7 +794,7 @@ describe('TokenValidationService', () => {
 
         configProvider.setConfig(config);
 
-        const good1 = tokenvalidationService.configValidateResponseType('id_token token');
+        const good1 = tokenValidationService.configValidateResponseType('id_token token');
         expect(good1).toEqual(true);
     });
 
@@ -791,7 +816,7 @@ describe('TokenValidationService', () => {
 
         configProvider.setConfig(config);
 
-        const good1 = tokenvalidationService.configValidateResponseType('code');
+        const good1 = tokenValidationService.configValidateResponseType('code');
         expect(good1).toEqual(true);
     });
 
@@ -813,34 +838,42 @@ describe('TokenValidationService', () => {
 
         configProvider.setConfig(config);
 
-        const bad = tokenvalidationService.configValidateResponseType('code id_token');
+        const bad = tokenValidationService.configValidateResponseType('code id_token');
         expect(bad).toEqual(false);
     });
 
     it('generateCodeChallenge', () => {
-        const good = tokenvalidationService.generateCodeChallenge('44445543344242132145455aaabbdc3b4');
+        const good = tokenValidationService.generateCodeChallenge('44445543344242132145455aaabbdc3b4');
         expect(good).toEqual('R2TWD45Vtcf_kfAqjuE3LMSRF3JDE5fsFndnn6-a0nQ');
 
-        const bad = tokenvalidationService.generateCodeChallenge('44445543344242132145455aaabbdc3b4');
+        const bad = tokenValidationService.generateCodeChallenge('44445543344242132145455aaabbdc3b4');
         expect(bad === 'bad').toBeFalse();
     });
 
-    it('validateIdTokenExpNotExpired', () => {
-        const idToken =
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
+    describe('validateIdTokenExpNotExpired', () => {
+        it('returns false when tokenExpirationDate is falsy', () => {
+            spyOn(tokenHelperService, 'getTokenExpirationDate').and.returnValue(null);
+            const notExpired = tokenValidationService.validateIdTokenExpNotExpired('idToken', 0);
+            expect(notExpired).toEqual(false);
+        });
 
-        const notExpired = tokenvalidationService.validateIdTokenExpNotExpired(idToken, 0);
-        expect(notExpired).toEqual(false);
+        it('validateIdTokenExpNotExpired', () => {
+            const idToken =
+                'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
+
+            const notExpired = tokenValidationService.validateIdTokenExpNotExpired(idToken, 0);
+            expect(notExpired).toEqual(false);
+        });
     });
 
     it('validateAccessTokenNotExpired', () => {
-        const notExpired = tokenvalidationService.validateAccessTokenNotExpired(new Date(1589210086), 0);
+        const notExpired = tokenValidationService.validateAccessTokenNotExpired(new Date(1589210086), 0);
         expect(notExpired).toEqual(false);
 
-        const notExpired3 = tokenvalidationService.validateAccessTokenNotExpired(new Date(2550, 10), 0);
+        const notExpired3 = tokenValidationService.validateAccessTokenNotExpired(new Date(2550, 10), 0);
         expect(notExpired3).toEqual(true);
 
-        const notExpired2 = tokenvalidationService.validateAccessTokenNotExpired(null, 300);
+        const notExpired2 = tokenValidationService.validateAccessTokenNotExpired(null, 300);
         expect(notExpired2).toEqual(true);
     });
 });
