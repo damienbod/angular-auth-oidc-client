@@ -149,9 +149,9 @@ describe('TokenValidationService', () => {
     });
 
     describe('validateIdTokenAzpValid', () => {
-        it('returns false dataIdToken param is null', () => {
+        it('returns true dataIdToken param is null', () => {
             const result = tokenValidationService.validateIdTokenAzpValid(null, '');
-            expect(result).toBe(false);
+            expect(result).toBe(true);
         });
     });
 
