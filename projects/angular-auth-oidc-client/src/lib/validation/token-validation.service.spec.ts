@@ -133,6 +133,28 @@ describe('TokenValidationService', () => {
         ).toBe(false);
     });
 
+    describe('validateIdTokenAzpExistsIfMoreThanOneAud', () => {
+        it('returns false if aud is array, öength is bigger than 1 and has no azp property', () => {
+            const dataIdToken = {
+                aud: ['one', 'two'],
+            };
+            const result = tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken);
+            expect(result).toBe(false);
+        });
+
+        it('returns false if aud is array, ength is bigger than 1 and has no azp property', () => {
+            const result = tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(null);
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('validateIdTokenAzpValid', () => {
+        it('returns false dataIdToken param is null', () => {
+            const result = tokenValidationService.validateIdTokenAzpValid(null, '');
+            expect(result).toBe(false);
+        });
+    });
+
     it('validate aud array and azp', () => {
         const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
         config.redirectUrl = 'https://localhost:44386';
