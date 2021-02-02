@@ -145,6 +145,10 @@ export class OidcSecurityService {
 
     // Code Flow with PCKE or Implicit Flow
     authorize(authOptions?: AuthOptions) {
+        if (authOptions?.customParams) {
+            this.storagePersistanceService.write('storageCustomRequestParams', authOptions?.customParams);
+        }
+
         this.loginService.login(authOptions);
     }
 
@@ -165,6 +169,10 @@ export class OidcSecurityService {
     }
 
     forceRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
+        if (customParams) {
+            this.storagePersistanceService.write('storageCustomRequestParams', customParams);
+        }
+
         return this.refreshSessionService.forceRefreshSession(customParams);
     }
 

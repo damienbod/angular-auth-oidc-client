@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { PublicEventsService } from '../public-api';
 import { AuthModule } from './auth.module';
 import { AuthStateService } from './authState/auth-state.service';
@@ -130,6 +130,18 @@ describe('OidcSecurityService', () => {
                 });
             })
         );
+
+        it(
+            'calls storagePersistanceService.write when customParams are given',
+            waitForAsync(() => {
+                const spy = spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(of(null));
+                const writeSpy = spyOn(storagePersistanceService, 'write');
+                oidcSecurityService.forceRefreshSession({ my: 'custom', params: 1 }).subscribe(() => {
+                    expect(spy).toHaveBeenCalled();
+                    expect(writeSpy).toHaveBeenCalledWith('storageCustomRequestParams', { my: 'custom', params: 1 });
+                });
+            })
+        );
     });
 
     describe('authorize', () => {
@@ -174,24 +186,29 @@ describe('OidcSecurityService', () => {
         it('is of type observable', () => {
             expect(oidcSecurityService.stsCallback$).toEqual(jasmine.any(Observable));
         });
-
-        it('returns callbackService.stsCallback$', () => {
-            const spy = spyOnProperty(callBackService, 'stsCallback$', 'get');
-            oidcSecurityService.stsCallback$;
-            expect(spy).toHaveBeenCalled();
-        });
     });
 
     describe('checkAuth', () => {
-        it('if not has valid config -> return false', () => {
-            expect(oidcSecurityService.stsCallback$).toEqual(jasmine.any(Observable));
-        });
-
         it(
-            'returns callbackService.stsCallback$',
+            'returns false when config is not valid',
             waitForAsync(() => {
                 spyOn(configurationProvider, 'hasValidConfig').and.returnValue(false);
                 oidcSecurityService.checkAuth().subscribe((result) => expect(result).toBeFalse());
+            })
+        );
+
+        it(
+            'returns false in case handleCallbackAndFireEvents throws an error',
+            waitForAsync(() => {
+                spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+                spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+                spyOn(callBackService, 'isCallback').and.returnValue(true);
+                spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+                const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(throwError('ERROR'));
+                oidcSecurityService.checkAuth().subscribe((result) => {
+                    expect(result).toBeFalse();
+                    expect(spy).toHaveBeenCalled();
+                });
             })
         );
 
@@ -225,7 +242,7 @@ describe('OidcSecurityService', () => {
         );
 
         it(
-            'does fire the auth and userdata events when it is not a callback from the sts and is authenticated',
+            'does fire the auth and user data events when it is not a callback from the sts and is authenticated',
             waitForAsync(() => {
                 spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
                 spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
@@ -244,7 +261,7 @@ describe('OidcSecurityService', () => {
         );
 
         it(
-            'does NOT fire the auth and userdata events when it is not a callback from the sts and is NOT authenticated',
+            'does NOT fire the auth and user data events when it is not a callback from the sts and is NOT authenticated',
             waitForAsync(() => {
                 spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
                 spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');

@@ -10,5 +10,6 @@ export enum FlowType {
     OidcCodeFlowPkceUsingIframeSilentRenew = 'OIDC Code Flow PKCE using iframe silent renew',
     OidcCodeFlowPkceUsingIframeSilentRenewGettingConfigFromHttp = 'OIDC Code Flow PKCE using iframe silent renew getting config from http',
     OIDCCodeFlowPkce = 'OIDC Code Flow PKCE (no renew)',
+    Auth0 = 'Auth0',
     DefaultConfig = 'Default config',
 }
