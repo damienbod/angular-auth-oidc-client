@@ -19,13 +19,11 @@ import { SilentRenewServiceMock } from '../iframe/silent-renew.service-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
-import { IntervallService } from './intervall.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 import { RefreshSessionService } from './refresh-session.service';
 
 describe('RefreshSessionService ', () => {
     let refreshSessionService: RefreshSessionService;
-    let intervallService: IntervallService;
     let configurationProvider: ConfigurationProvider;
     let flowsDataService: FlowsDataService;
     let flowHelper: FlowHelper;
@@ -59,7 +57,6 @@ describe('RefreshSessionService ', () => {
 
     beforeEach(() => {
         refreshSessionService = TestBed.inject(RefreshSessionService);
-        intervallService = TestBed.inject(IntervallService);
         configurationProvider = TestBed.inject(ConfigurationProvider);
         flowsDataService = TestBed.inject(FlowsDataService);
         flowHelper = TestBed.inject(FlowHelper);

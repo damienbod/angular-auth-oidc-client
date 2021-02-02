@@ -144,6 +144,18 @@ describe('OidcSecurityService', () => {
                 });
             })
         );
+
+        it(
+            'calls storagePersistanceService.write when customParams are given',
+            waitForAsync(() => {
+                const spy = spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(of(null));
+                const writeSpy = spyOn(storagePersistanceService, 'write');
+                oidcSecurityService.forceRefreshSession({ my: 'custom', params: 1 }).subscribe(() => {
+                    expect(spy).toHaveBeenCalled();
+                    expect(writeSpy).toHaveBeenCalledWith('storageCustomRequestParams', { my: 'custom', params: 1 });
+                });
+            })
+        );
     });
 
     describe('authorize', () => {
