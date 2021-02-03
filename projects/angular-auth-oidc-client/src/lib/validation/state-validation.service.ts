@@ -36,7 +36,7 @@ export class StateValidationService {
 
     if (!this.tokenValidationService.validateStateFromHashCallback(callbackContext.authResult.state, authStateControl)) {
       this.loggerService.logWarning('authorizedCallback incorrect state');
-      toReturn.state = ValidationResult.statesDoNotMatch;
+      toReturn.state = ValidationResult.StatesDoNotMatch;
       this.handleUnsuccessfulValidation();
       return toReturn;
     }
@@ -55,7 +55,7 @@ export class StateValidationService {
 
       if (!this.tokenValidationService.validateSignatureIdToken(toReturn.idToken, callbackContext.jwtKeys)) {
         this.loggerService.logDebug('authorizedCallback Signature validation failed id_token');
-        toReturn.state = ValidationResult.signatureFailed;
+        toReturn.state = ValidationResult.SignatureFailed;
         this.handleUnsuccessfulValidation();
         return toReturn;
       }
@@ -70,14 +70,14 @@ export class StateValidationService {
         )
       ) {
         this.loggerService.logWarning('authorizedCallback incorrect nonce');
-        toReturn.state = ValidationResult.incorrectNonce;
+        toReturn.state = ValidationResult.IncorrectNonce;
         this.handleUnsuccessfulValidation();
         return toReturn;
       }
 
       if (!this.tokenValidationService.validateRequiredIdToken(toReturn.decodedIdToken)) {
         this.loggerService.logDebug('authorizedCallback Validation, one of the REQUIRED properties missing from id_token');
-        toReturn.state = ValidationResult.requiredPropertyMissing;
+        toReturn.state = ValidationResult.RequiredPropertyMissing;
         this.handleUnsuccessfulValidation();
         return toReturn;
       }
@@ -90,7 +90,7 @@ export class StateValidationService {
         )
       ) {
         this.loggerService.logWarning('authorizedCallback Validation, iat rejected id_token was issued too far away from the current time');
-        toReturn.state = ValidationResult.maxOffsetExpired;
+        toReturn.state = ValidationResult.MaxOffsetExpired;
         this.handleUnsuccessfulValidation();
         return toReturn;
       }
@@ -105,13 +105,13 @@ export class StateValidationService {
           !this.tokenValidationService.validateIdTokenIss(toReturn.decodedIdToken, authWellKnownEndPoints.issuer)
         ) {
           this.loggerService.logWarning('authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer');
-          toReturn.state = ValidationResult.issDoesNotMatchIssuer;
+          toReturn.state = ValidationResult.IssDoesNotMatchIssuer;
           this.handleUnsuccessfulValidation();
           return toReturn;
         }
       } else {
         this.loggerService.logWarning('authWellKnownEndpoints is undefined');
-        toReturn.state = ValidationResult.noAuthWellKnownEndPoints;
+        toReturn.state = ValidationResult.NoAuthWellKnownEndPoints;
         this.handleUnsuccessfulValidation();
         return toReturn;
       }
@@ -120,14 +120,14 @@ export class StateValidationService {
         !this.tokenValidationService.validateIdTokenAud(toReturn.decodedIdToken, this.configurationProvider.openIDConfiguration.clientId)
       ) {
         this.loggerService.logWarning('authorizedCallback incorrect aud');
-        toReturn.state = ValidationResult.incorrectAud;
+        toReturn.state = ValidationResult.IncorrectAud;
         this.handleUnsuccessfulValidation();
         return toReturn;
       }
 
       if (!this.tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(toReturn.decodedIdToken)) {
         this.loggerService.logWarning('authorizedCallback missing azp');
-        toReturn.state = ValidationResult.incorrectAzp;
+        toReturn.state = ValidationResult.IncorrectAzp;
         this.handleUnsuccessfulValidation();
         return toReturn;
       }
@@ -139,21 +139,21 @@ export class StateValidationService {
         )
       ) {
         this.loggerService.logWarning('authorizedCallback incorrect azp');
-        toReturn.state = ValidationResult.incorrectAzp;
+        toReturn.state = ValidationResult.IncorrectAzp;
         this.handleUnsuccessfulValidation();
         return toReturn;
       }
 
       if (!this.isIdTokenAfterRefreshTokenRequestValid(callbackContext, toReturn.decodedIdToken)) {
         this.loggerService.logWarning('authorizedCallback pre, post id_token claims do not match in refresh');
-        toReturn.state = ValidationResult.incorrectIdTokenClaimsAfterRefresh;
+        toReturn.state = ValidationResult.IncorrectIdTokenClaimsAfterRefresh;
         this.handleUnsuccessfulValidation();
         return toReturn;
       }
 
       if (!this.tokenValidationService.validateIdTokenExpNotExpired(toReturn.decodedIdToken)) {
         this.loggerService.logWarning('authorizedCallback id token expired');
-        toReturn.state = ValidationResult.tokenExpired;
+        toReturn.state = ValidationResult.TokenExpired;
         this.handleUnsuccessfulValidation();
         return toReturn;
       }
@@ -164,7 +164,7 @@ export class StateValidationService {
     // flow id_token
     if (!isCurrentFlowImplicitFlowWithAccessToken && !isCurrentFlowCodeFlow) {
       toReturn.authResponseIsValid = true;
-      toReturn.state = ValidationResult.ok;
+      toReturn.state = ValidationResult.Ok;
       this.handleSuccessfulValidation();
       this.handleUnsuccessfulValidation();
       return toReturn;
@@ -184,13 +184,13 @@ export class StateValidationService {
       !toReturn.accessToken
     ) {
       this.loggerService.logWarning('authorizedCallback incorrect at_hash');
-      toReturn.state = ValidationResult.incorrectAtHash;
+      toReturn.state = ValidationResult.IncorrectAtHash;
       this.handleUnsuccessfulValidation();
       return toReturn;
     }
 
     toReturn.authResponseIsValid = true;
-    toReturn.state = ValidationResult.ok;
+    toReturn.state = ValidationResult.Ok;
     this.handleSuccessfulValidation();
     return toReturn;
   }

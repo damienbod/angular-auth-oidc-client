@@ -73,19 +73,19 @@ export class UserService {
     const userdata = this.getUserDataFromStore();
     if (userdata) {
       this.userDataInternal$.next(userdata);
-      this.eventService.fireEvent(EventTypes.userDataChanged, userdata);
+      this.eventService.fireEvent(EventTypes.UserDataChanged, userdata);
     }
   }
 
   setUserDataToStore(value: any): void {
     this.storagePersistanceService.write('userData', value);
     this.userDataInternal$.next(value);
-    this.eventService.fireEvent(EventTypes.userDataChanged, value);
+    this.eventService.fireEvent(EventTypes.UserDataChanged, value);
   }
 
   resetUserDataInStore(): void {
     this.storagePersistanceService.remove('userData');
-    this.eventService.fireEvent(EventTypes.userDataChanged, null);
+    this.eventService.fireEvent(EventTypes.UserDataChanged, null);
     this.userDataInternal$.next(null);
   }
 

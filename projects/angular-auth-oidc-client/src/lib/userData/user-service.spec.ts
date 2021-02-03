@@ -277,7 +277,7 @@ describe('User Service', () => {
     it('eventService.fireEvent is called when userdata is set', () => {
       const spy = spyOn(eventsService, 'fireEvent');
       userService.setUserDataToStore('userDataForTest');
-      expect(spy).toHaveBeenCalledWith(EventTypes.userDataChanged, 'userDataForTest');
+      expect(spy).toHaveBeenCalledWith(EventTypes.UserDataChanged, 'userDataForTest');
     });
   });
 
@@ -297,7 +297,7 @@ describe('User Service', () => {
     it('eventService.fireEvent is called with null when userdata is reset', () => {
       const spy = spyOn(eventsService, 'fireEvent');
       userService.resetUserDataInStore();
-      expect(spy).toHaveBeenCalledWith(EventTypes.userDataChanged, null);
+      expect(spy).toHaveBeenCalledWith(EventTypes.UserDataChanged, null);
     });
   });
 
@@ -322,7 +322,7 @@ describe('User Service', () => {
       spyOn(userService, 'getUserDataFromStore').and.returnValue('something');
       const eventSpy = spyOn(eventsService, 'fireEvent');
       userService.publishUserdataIfExists();
-      expect(eventSpy).toHaveBeenCalledWith(EventTypes.userDataChanged, 'something');
+      expect(eventSpy).toHaveBeenCalledWith(EventTypes.UserDataChanged, 'something');
     });
   });
 

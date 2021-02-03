@@ -152,10 +152,10 @@ export class CheckSessionService {
       } else if (e.data === 'changed') {
         this.loggerService.logDebug(e);
         this.checkSessionReceived = true;
-        this.eventService.fireEvent(EventTypes.checkSessionReceived, e.data);
+        this.eventService.fireEvent(EventTypes.CheckSessionReceived, e.data);
         this.checkSessionChangedInternal$.next(true);
       } else {
-        this.eventService.fireEvent(EventTypes.checkSessionReceived, e.data);
+        this.eventService.fireEvent(EventTypes.CheckSessionReceived, e.data);
         this.loggerService.logDebug(e.data + ' from checksession messageHandler');
       }
     }

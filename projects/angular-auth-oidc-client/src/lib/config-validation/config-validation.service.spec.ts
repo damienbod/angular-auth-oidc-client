@@ -24,7 +24,7 @@ describe('Config Validation Service', () => {
     silentRenew: true,
     silentRenewUrl: `${window.location.origin}/silent-renew.html`,
     renewTimeBeforeTokenExpiresInSeconds: 10,
-    logLevel: LogLevel.debug,
+    logLevel: LogLevel.Debug,
   };
 
   beforeEach(() => {

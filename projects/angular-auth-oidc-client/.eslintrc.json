@@ -24,6 +24,13 @@
             "prefix": "lib",
             "style": "camelCase"
           }
+        ],
+        "@typescript-eslint/naming-convention": [
+          "error",
+          {
+            "selector": "enumMember",
+            "format": ["PascalCase"]
+          }
         ]
       }
     },

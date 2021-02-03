@@ -97,7 +97,7 @@ describe('Configuration Service', () => {
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         const promise = oidcConfigService.withConfig(config);
         promise.then(() => {
-          expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.configLoaded, {
+          expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
             configuration: {
               stsServer: 'stsServerForTesting',
               authWellknownEndpoint: 'stsServerForTesting',
@@ -120,7 +120,7 @@ describe('Configuration Service', () => {
         const promise = oidcConfigService.withConfig(config, authWellKnown);
         promise.then(() => {
           expect(storeWellKnownEndpointsSpy).toHaveBeenCalledWith(authWellKnown);
-          expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.configLoaded, {
+          expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
             configuration: {
               stsServer: 'stsServerForTesting',
               authWellknownEndpoint: 'stsServerForTesting',
@@ -172,7 +172,7 @@ describe('Configuration Service', () => {
         const eventServiceSpy = spyOn(eventsService, 'fireEvent');
         const promise = oidcConfigService.withConfig(config);
         promise.then(() => {
-          expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.configLoaded, {
+          expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
             configuration: { ...config, authWellknownEndpoint: 'stsServerForTesting' },
             wellknown: { issuer: 'issuerForTesting' },
           });

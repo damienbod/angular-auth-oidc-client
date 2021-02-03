@@ -79,7 +79,7 @@ describe('Auth State Service', () => {
     it('calls eventsService', () => {
       spyOn(eventsService, 'fireEvent');
       authStateService.updateAndPublishAuthState({ authorizationState: null, isRenewProcess: false, validationResult: null });
-      expect(eventsService.fireEvent).toHaveBeenCalledWith(EventTypes.newAuthorizationResult, jasmine.any(Object));
+      expect(eventsService.fireEvent).toHaveBeenCalledWith(EventTypes.NewAuthorizationResult, jasmine.any(Object));
     });
   });
 
@@ -233,7 +233,7 @@ describe('Auth State Service', () => {
       spyOn(storagePersistanceService, 'read').withArgs('authnResult').and.returnValue('idToken');
       const result = authStateService.hasIdTokenExpired();
       expect(result).toBe(true);
-      expect(spy).toHaveBeenCalledWith(EventTypes.idTokenExpired, true);
+      expect(spy).toHaveBeenCalledWith(EventTypes.IdTokenExpired, true);
     });
 
     it('does NOT fire event if idToken is NOT expired', () => {
@@ -273,7 +273,7 @@ describe('Auth State Service', () => {
       spyOn(storagePersistanceService, 'read').withArgs('access_token_expires_at').and.returnValue(date);
       spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(validateAccessTokenNotExpiredResult);
       authStateService.hasAccessTokenExpiredIfExpiryExists();
-      expect(eventsService.fireEvent).toHaveBeenCalledWith(EventTypes.tokenExpired, expectedResult);
+      expect(eventsService.fireEvent).toHaveBeenCalledWith(EventTypes.TokenExpired, expectedResult);
     });
   });
 });

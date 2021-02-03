@@ -61,7 +61,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -87,7 +87,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -170,7 +170,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -205,7 +205,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -239,7 +239,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -276,7 +276,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -310,7 +310,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -348,7 +348,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -385,7 +385,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -422,7 +422,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -459,7 +459,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -496,7 +496,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -533,7 +533,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -570,7 +570,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -607,7 +607,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -687,7 +687,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -742,7 +742,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -791,7 +791,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -813,7 +813,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);
@@ -835,7 +835,7 @@ describe('TokenValidationService', () => {
     config.startCheckSession = false;
     config.silentRenew = false;
     config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.debug;
+    config.logLevel = LogLevel.Debug;
     config.maxIdTokenIatOffsetAllowedInSeconds = 10;
 
     configProvider.setConfig(config);

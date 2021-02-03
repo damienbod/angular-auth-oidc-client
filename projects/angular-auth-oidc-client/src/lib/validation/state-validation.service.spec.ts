@@ -72,7 +72,7 @@ describe('State Validation Service', () => {
       postLoginRoute: '/dataeventrecords',
       forbiddenRoute: '/Forbidden',
       unauthorizedRoute: '/Unauthorized',
-      logLevel: LogLevel.debug,
+      logLevel: LogLevel.Debug,
       maxIdTokenIatOffsetAllowedInSeconds: 10,
     };
 
@@ -649,7 +649,7 @@ describe('State Validation Service', () => {
 
     expect(logDebugSpy).toHaveBeenCalledWith('iss validation is turned off, this is not recommended!');
 
-    expect(state.state).toBe(ValidationResult.ok);
+    expect(state.state).toBe(ValidationResult.Ok);
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.authResponseIsValid).toBe(true);
     expect(state.decodedIdToken).toBeDefined();
@@ -734,7 +734,7 @@ describe('State Validation Service', () => {
       postLoginRoute: '/dataeventrecords',
       forbiddenRoute: '/Forbidden',
       unauthorizedRoute: '/Unauthorized',
-      logLevel: LogLevel.debug,
+      logLevel: LogLevel.Debug,
       maxIdTokenIatOffsetAllowedInSeconds: 10,
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
@@ -800,7 +800,7 @@ describe('State Validation Service', () => {
       postLoginRoute: '/dataeventrecords',
       forbiddenRoute: '/Forbidden',
       unauthorizedRoute: '/Unauthorized',
-      logLevel: LogLevel.debug,
+      logLevel: LogLevel.Debug,
       maxIdTokenIatOffsetAllowedInSeconds: 10,
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
@@ -866,7 +866,7 @@ describe('State Validation Service', () => {
       postLoginRoute: '/dataeventrecords',
       forbiddenRoute: '/Forbidden',
       unauthorizedRoute: '/Unauthorized',
-      logLevel: LogLevel.debug,
+      logLevel: LogLevel.Debug,
       maxIdTokenIatOffsetAllowedInSeconds: 10,
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
@@ -932,7 +932,7 @@ describe('State Validation Service', () => {
       postLoginRoute: '/dataeventrecords',
       forbiddenRoute: '/Forbidden',
       unauthorizedRoute: '/Unauthorized',
-      logLevel: LogLevel.debug,
+      logLevel: LogLevel.Debug,
       maxIdTokenIatOffsetAllowedInSeconds: 10,
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
@@ -998,7 +998,7 @@ describe('State Validation Service', () => {
       postLoginRoute: '/dataeventrecords',
       forbiddenRoute: '/Forbidden',
       unauthorizedRoute: '/Unauthorized',
-      logLevel: LogLevel.debug,
+      logLevel: LogLevel.Debug,
       maxIdTokenIatOffsetAllowedInSeconds: 10,
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
@@ -1064,7 +1064,7 @@ describe('State Validation Service', () => {
       postLoginRoute: '/dataeventrecords',
       forbiddenRoute: '/Forbidden',
       unauthorizedRoute: '/Unauthorized',
-      logLevel: LogLevel.debug,
+      logLevel: LogLevel.Debug,
       maxIdTokenIatOffsetAllowedInSeconds: 10,
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
@@ -1130,7 +1130,7 @@ describe('State Validation Service', () => {
       postLoginRoute: '/dataeventrecords',
       forbiddenRoute: '/Forbidden',
       unauthorizedRoute: '/Unauthorized',
-      logLevel: LogLevel.debug,
+      logLevel: LogLevel.Debug,
       maxIdTokenIatOffsetAllowedInSeconds: 10,
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
@@ -1196,7 +1196,7 @@ describe('State Validation Service', () => {
       postLoginRoute: '/dataeventrecords',
       forbiddenRoute: '/Forbidden',
       unauthorizedRoute: '/Unauthorized',
-      logLevel: LogLevel.debug,
+      logLevel: LogLevel.Debug,
       maxIdTokenIatOffsetAllowedInSeconds: 10,
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,

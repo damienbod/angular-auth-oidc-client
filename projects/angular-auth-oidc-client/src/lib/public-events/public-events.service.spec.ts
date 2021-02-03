@@ -25,9 +25,9 @@ describe('Events Service', () => {
     waitForAsync(() => {
       eventsService.registerForEvents().subscribe((firedEvent) => {
         expect(firedEvent).toBeTruthy();
-        expect(firedEvent).toEqual({ type: EventTypes.configLoaded, value: { myKey: 'myValue' } });
+        expect(firedEvent).toEqual({ type: EventTypes.ConfigLoaded, value: { myKey: 'myValue' } });
       });
-      eventsService.fireEvent(EventTypes.configLoaded, { myKey: 'myValue' });
+      eventsService.fireEvent(EventTypes.ConfigLoaded, { myKey: 'myValue' });
     })
   );
 
@@ -39,12 +39,12 @@ describe('Events Service', () => {
         spy(firedEvent);
         expect(firedEvent).toBeTruthy();
       });
-      eventsService.fireEvent(EventTypes.configLoaded, { myKey: 'myValue' });
-      eventsService.fireEvent(EventTypes.configLoaded, { myKey: 'myValue2' });
+      eventsService.fireEvent(EventTypes.ConfigLoaded, { myKey: 'myValue' });
+      eventsService.fireEvent(EventTypes.ConfigLoaded, { myKey: 'myValue2' });
 
       expect(spy.calls.count()).toBe(2);
-      expect(spy.calls.first().args[0]).toEqual({ type: EventTypes.configLoaded, value: { myKey: 'myValue' } });
-      expect(spy.calls.mostRecent().args[0]).toEqual({ type: EventTypes.configLoaded, value: { myKey: 'myValue2' } });
+      expect(spy.calls.first().args[0]).toEqual({ type: EventTypes.ConfigLoaded, value: { myKey: 'myValue' } });
+      expect(spy.calls.mostRecent().args[0]).toEqual({ type: EventTypes.ConfigLoaded, value: { myKey: 'myValue2' } });
     })
   );
 
@@ -53,13 +53,13 @@ describe('Events Service', () => {
     waitForAsync(() => {
       eventsService
         .registerForEvents()
-        .pipe(filter((x) => x.type === EventTypes.configLoaded))
+        .pipe(filter((x) => x.type === EventTypes.ConfigLoaded))
         .subscribe((firedEvent) => {
           expect(firedEvent).toBeTruthy();
-          expect(firedEvent).toEqual({ type: EventTypes.configLoaded, value: { myKey: 'myValue' } });
+          expect(firedEvent).toEqual({ type: EventTypes.ConfigLoaded, value: { myKey: 'myValue' } });
         });
-      eventsService.fireEvent(EventTypes.configLoaded, { myKey: 'myValue' });
-      eventsService.fireEvent(EventTypes.newAuthorizationResult, true);
+      eventsService.fireEvent(EventTypes.ConfigLoaded, { myKey: 'myValue' });
+      eventsService.fireEvent(EventTypes.NewAuthorizationResult, true);
     })
   );
 });

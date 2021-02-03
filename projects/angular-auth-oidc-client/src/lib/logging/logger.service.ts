@@ -27,7 +27,7 @@ export class LoggerService {
       return;
     }
 
-    if (!this.currentLogLevelIsEqualOrSmallerThan(LogLevel.warn)) {
+    if (!this.currentLogLevelIsEqualOrSmallerThan(LogLevel.Warn)) {
       return;
     }
 
@@ -47,7 +47,7 @@ export class LoggerService {
       return;
     }
 
-    if (!this.currentLogLevelIsEqualOrSmallerThan(LogLevel.debug)) {
+    if (!this.currentLogLevelIsEqualOrSmallerThan(LogLevel.Debug)) {
       return;
     }
 
@@ -71,6 +71,6 @@ export class LoggerService {
   }
 
   private loggingIsTurnedOff() {
-    return this.configurationProvider.openIDConfiguration?.logLevel === LogLevel.none;
+    return this.configurationProvider.openIDConfiguration?.logLevel === LogLevel.None;
   }
 }

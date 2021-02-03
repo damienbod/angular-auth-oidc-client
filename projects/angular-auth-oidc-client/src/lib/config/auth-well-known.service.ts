@@ -25,7 +25,7 @@ export class AuthWellKnownService {
     return this.getWellKnownEndPointsFromUrl(authWellknownEndpoint).pipe(
       tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(mappedWellKnownEndpoints)),
       catchError((error) => {
-        this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.configLoadingFailed, null);
+        this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoadingFailed, null);
         return throwError(error);
       })
     );

@@ -350,7 +350,7 @@ export class FlowsService {
 
   private publishAuthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
     this.authStateService.updateAndPublishAuthState({
-      authorizationState: AuthorizedState.authorized,
+      authorizationState: AuthorizedState.Authorized,
       validationResult: stateValidationResult.state,
       isRenewProcess,
     });
@@ -358,21 +358,21 @@ export class FlowsService {
 
   private publishUnauthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
     this.authStateService.updateAndPublishAuthState({
-      authorizationState: AuthorizedState.unauthorized,
+      authorizationState: AuthorizedState.Unauthorized,
       validationResult: stateValidationResult.state,
       isRenewProcess,
     });
   }
 
   private handleResultErrorFromCallback(result: any, isRenewProcess: boolean) {
-    let validationResult = ValidationResult.secureTokenServerError;
+    let validationResult = ValidationResult.SecureTokenServerError;
 
     if ((result.error as string) === 'login_required') {
-      validationResult = ValidationResult.loginRequired;
+      validationResult = ValidationResult.LoginRequired;
     }
 
     this.authStateService.updateAndPublishAuthState({
-      authorizationState: AuthorizedState.unauthorized,
+      authorizationState: AuthorizedState.Unauthorized,
       validationResult,
       isRenewProcess,
     });

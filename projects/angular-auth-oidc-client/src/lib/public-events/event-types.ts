@@ -3,11 +3,11 @@ export enum EventTypes {
   /**
    *  This only works in the AppModule Constructor
    */
-  configLoaded,
-  configLoadingFailed,
-  checkSessionReceived,
-  userDataChanged,
-  newAuthorizationResult,
-  tokenExpired,
-  idTokenExpired,
+  ConfigLoaded,
+  ConfigLoadingFailed,
+  CheckSessionReceived,
+  UserDataChanged,
+  NewAuthorizationResult,
+  TokenExpired,
+  IdTokenExpired,
 }
