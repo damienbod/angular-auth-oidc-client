@@ -3,18 +3,18 @@ import { EventTypes, OidcSecurityService, PublicEventsService } from 'angular-au
 import { filter } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: 'app.component.html',
+  selector: 'app-root',
+  templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit {
-    constructor(public oidcSecurityService: OidcSecurityService, private eventService: PublicEventsService) {}
+  constructor(public oidcSecurityService: OidcSecurityService, private eventService: PublicEventsService) {}
 
-    ngOnInit() {
-        this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
+  ngOnInit() {
+    this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
 
-        this.eventService
-            .registerForEvents()
-            .pipe(filter((notification) => notification.type === EventTypes.checkSessionReceived))
-            .subscribe((value) => console.log('CheckSessionReceived with value from app', value));
-    }
+    this.eventService
+      .registerForEvents()
+      .pipe(filter((notification) => notification.type === EventTypes.CheckSessionReceived))
+      .subscribe((value) => console.log('CheckSessionReceived with value from app', value));
+  }
 }

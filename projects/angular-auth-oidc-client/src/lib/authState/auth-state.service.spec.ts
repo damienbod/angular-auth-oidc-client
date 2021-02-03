@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
 import { EventTypes, PublicEventsService } from '../../public-api';
