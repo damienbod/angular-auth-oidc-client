@@ -11,103 +11,102 @@ import { LoggerService } from '../logging/logger.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 
+export const MAX_RETRY_ATTEMPTS = 3;
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionService {
-    private MAX_RETRY_ATTEMPTS = 3;
+  constructor(
+    private flowHelper: FlowHelper,
+    private configurationProvider: ConfigurationProvider,
+    private flowsDataService: FlowsDataService,
+    private loggerService: LoggerService,
+    private silentRenewService: SilentRenewService,
+    private authStateService: AuthStateService,
+    private authWellKnownService: AuthWellKnownService,
+    private refreshSessionIframeService: RefreshSessionIframeService,
+    private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService
+  ) {}
 
-    constructor(
-        private flowHelper: FlowHelper,
-        private configurationProvider: ConfigurationProvider,
-        private flowsDataService: FlowsDataService,
-        private loggerService: LoggerService,
-        private silentRenewService: SilentRenewService,
-        private authStateService: AuthStateService,
-        private authWellKnownService: AuthWellKnownService,
-        private refreshSessionIframeService: RefreshSessionIframeService,
-        private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService
-    ) {}
+  forceRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
+    if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
+      return this.startRefreshSession(customParams).pipe(
+        map(() => {
+          const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
+          if (isAuthenticated) {
+            return {
+              idToken: this.authStateService.getIdToken(),
+              accessToken: this.authStateService.getAccessToken(),
+            };
+          }
 
-    forceRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
+          return null;
+        })
+      );
+    }
+
+    return forkJoin([
+      this.startRefreshSession(customParams),
+      this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1)),
+    ]).pipe(
+      timeout(this.configurationProvider.openIDConfiguration.silentRenewTimeoutInSeconds * 1000),
+      retryWhen(this.timeoutRetryStrategy.bind(this)),
+      map(([_, callbackContext]) => {
+        const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
+        if (isAuthenticated) {
+          return {
+            idToken: callbackContext?.authResult?.id_token,
+            accessToken: callbackContext?.authResult?.access_token,
+          };
+        }
+
+        return null;
+      })
+    );
+  }
+  private startRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
+    const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
+    this.loggerService.logDebug(`Checking: silentRenewRunning: ${isSilentRenewRunning}`);
+    const shouldBeExecuted = !isSilentRenewRunning;
+
+    if (!shouldBeExecuted) {
+      return of(null);
+    }
+
+    const authWellknownEndpointAdress = this.configurationProvider.openIDConfiguration?.authWellknownEndpoint;
+
+    if (!authWellknownEndpointAdress) {
+      this.loggerService.logError('no authwellknownendpoint given!');
+      return of(null);
+    }
+
+    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointAdress).pipe(
+      switchMap(() => {
+        this.flowsDataService.setSilentRenewRunning();
+
         if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
-            return this.startRefreshSession(customParams).pipe(
-                map(() => {
-                    const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
-                    if (isAuthenticated) {
-                        return {
-                            idToken: this.authStateService.getIdToken(),
-                            accessToken: this.authStateService.getAccessToken(),
-                        };
-                    }
-
-                    return null;
-                })
-            );
+          // Refresh Session using Refresh tokens
+          return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(customParams);
         }
 
-        return forkJoin([
-            this.startRefreshSession(customParams),
-            this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1)),
-        ]).pipe(
-            timeout(this.configurationProvider.openIDConfiguration.silentRenewTimeoutInSeconds * 1000),
-            retryWhen(this.TimeoutRetryStrategy.bind(this)),
-            map(([_, callbackContext]) => {
-                const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
-                if (isAuthenticated) {
-                    return {
-                        idToken: callbackContext?.authResult?.id_token,
-                        accessToken: callbackContext?.authResult?.access_token,
-                    };
-                }
+        return this.refreshSessionIframeService.refreshSessionWithIframe(customParams);
+      })
+    );
+  }
 
-                return null;
-            })
-        );
-    }
-    private startRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
-        const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
-        this.loggerService.logDebug(`Checking: silentRenewRunning: ${isSilentRenewRunning}`);
-        const shouldBeExecuted = !isSilentRenewRunning;
+  private timeoutRetryStrategy(errorAttempts: Observable<any>) {
+    return errorAttempts.pipe(
+      mergeMap((error, index) => {
+        const scalingDuration = 1000;
+        const currentAttempt = index + 1;
 
-        if (!shouldBeExecuted) {
-            return of(null);
+        if (!(error instanceof TimeoutError) || currentAttempt > MAX_RETRY_ATTEMPTS) {
+          return throwError(error);
         }
 
-        const authWellknownEndpointAdress = this.configurationProvider.openIDConfiguration?.authWellknownEndpoint;
+        this.loggerService.logDebug(`forceRefreshSession timeout. Attempt #${currentAttempt}`);
 
-        if (!authWellknownEndpointAdress) {
-            this.loggerService.logError('no authwellknownendpoint given!');
-            return of(null);
-        }
-
-        return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointAdress).pipe(
-            switchMap(() => {
-                this.flowsDataService.setSilentRenewRunning();
-
-                if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
-                    // Refresh Session using Refresh tokens
-                    return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(customParams);
-                }
-
-                return this.refreshSessionIframeService.refreshSessionWithIframe(customParams);
-            })
-        );
-    }
-
-    private TimeoutRetryStrategy(errorAttempts: Observable<any>) {
-        return errorAttempts.pipe(
-            mergeMap((error, index) => {
-                const scalingDuration = 1000;
-                const currentAttempt = index + 1;
-
-                if (!(error instanceof TimeoutError) || currentAttempt > this.MAX_RETRY_ATTEMPTS) {
-                    return throwError(error);
-                }
-
-                this.loggerService.logDebug(`forceRefreshSession timeout. Attempt #${currentAttempt}`);
-
-                this.flowsDataService.resetSilentRenewRunning();
-                return timer(currentAttempt * scalingDuration);
-            })
-        );
-    }
+        this.flowsDataService.resetSilentRenewRunning();
+        return timer(currentAttempt * scalingDuration);
+      })
+    );
+  }
 }

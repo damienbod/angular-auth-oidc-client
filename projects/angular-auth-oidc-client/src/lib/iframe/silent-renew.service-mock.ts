@@ -4,27 +4,27 @@ import { CallbackContext } from '../flows/callback-context';
 
 @Injectable()
 export class SilentRenewServiceMock {
-    private refreshSessionWithIFrameCompletedInternal$ = new Subject<CallbackContext>();
-    get refreshSessionWithIFrameCompleted$() {
-        return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
-    }
+  private refreshSessionWithIFrameCompletedInternal$ = new Subject<CallbackContext>();
+  get refreshSessionWithIFrameCompleted$() {
+    return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
+  }
 
-    getOrCreateIframe(): HTMLIFrameElement {
-        return null;
-    }
+  getOrCreateIframe(): HTMLIFrameElement {
+    return null;
+  }
 
-    isSilentRenewConfigured() {
-        return true;
-    }
+  isSilentRenewConfigured() {
+    return true;
+  }
 
-    codeFlowCallbackSilentRenewIframe(urlParts) {}
+  codeFlowCallbackSilentRenewIframe(urlParts) {}
 
-    silentRenewEventHandler(e: CustomEvent) {}
+  silentRenewEventHandler(e: CustomEvent) {}
 
-    fireRefreshWithIframeCompleted(callbackContext: CallbackContext) {
-        this.refreshSessionWithIFrameCompletedInternal$.next(callbackContext);
-        this.refreshSessionWithIFrameCompletedInternal$.complete();
-    }
+  fireRefreshWithIframeCompleted(callbackContext: CallbackContext) {
+    this.refreshSessionWithIFrameCompletedInternal$.next(callbackContext);
+    this.refreshSessionWithIFrameCompletedInternal$.complete();
+  }
 
-    getExistingIframe() {}
+  getExistingIframe() {}
 }

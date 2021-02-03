@@ -10,32 +10,32 @@ import { PublicConfiguration } from './public-configuration';
 
 @Injectable()
 export class AuthWellKnownService {
-    constructor(
-        private publicEventsService: PublicEventsService,
-        private dataService: AuthWellKnownDataService,
-        private storagePersistanceService: StoragePersistanceService
-    ) {}
+  constructor(
+    private publicEventsService: PublicEventsService,
+    private dataService: AuthWellKnownDataService,
+    private storagePersistanceService: StoragePersistanceService
+  ) {}
 
-    getAuthWellKnownEndPoints(authWellknownEndpoint: string) {
-        const alreadySavedWellKnownEndpoints = this.storagePersistanceService.read('authWellKnownEndPoints');
-        if (!!alreadySavedWellKnownEndpoints) {
-            return of(alreadySavedWellKnownEndpoints);
-        }
-
-        return this.getWellKnownEndPointsFromUrl(authWellknownEndpoint).pipe(
-            tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(mappedWellKnownEndpoints)),
-            catchError((error) => {
-                this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoadingFailed, null);
-                return throwError(error);
-            })
-        );
+  getAuthWellKnownEndPoints(authWellknownEndpoint: string) {
+    const alreadySavedWellKnownEndpoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+    if (!!alreadySavedWellKnownEndpoints) {
+      return of(alreadySavedWellKnownEndpoints);
     }
 
-    storeWellKnownEndpoints(mappedWellKnownEndpoints: AuthWellKnownEndpoints) {
-        this.storagePersistanceService.write('authWellKnownEndPoints', mappedWellKnownEndpoints);
-    }
+    return this.getWellKnownEndPointsFromUrl(authWellknownEndpoint).pipe(
+      tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(mappedWellKnownEndpoints)),
+      catchError((error) => {
+        this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoadingFailed, null);
+        return throwError(error);
+      })
+    );
+  }
 
-    private getWellKnownEndPointsFromUrl(authWellknownEndpoint: string) {
-        return this.dataService.getWellKnownEndPointsFromUrl(authWellknownEndpoint);
-    }
+  storeWellKnownEndpoints(mappedWellKnownEndpoints: AuthWellKnownEndpoints) {
+    this.storagePersistanceService.write('authWellKnownEndPoints', mappedWellKnownEndpoints);
+  }
+
+  private getWellKnownEndPointsFromUrl(authWellknownEndpoint: string) {
+    return this.dataService.getWellKnownEndPointsFromUrl(authWellknownEndpoint);
+  }
 }

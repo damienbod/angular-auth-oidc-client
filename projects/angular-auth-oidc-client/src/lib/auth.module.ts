@@ -34,55 +34,55 @@ import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';
 
 @NgModule({
-    imports: [CommonModule, HttpClientModule],
-    declarations: [],
-    exports: [],
+  imports: [CommonModule, HttpClientModule],
+  declarations: [],
+  exports: [],
 })
 export class AuthModule {
-    static forRoot(token: Token = {}) {
-        return {
-            ngModule: AuthModule,
-            providers: [
-                OidcConfigService,
-                PublicEventsService,
-                FlowHelper,
-                OidcSecurityService,
-                TokenValidationService,
-                PlatformProvider,
-                CheckSessionService,
-                FlowsDataService,
-                FlowsService,
-                SilentRenewService,
-                ConfigurationProvider,
-                LogoffRevocationService,
-                UserService,
-                RandomService,
-                HttpBaseService,
-                UrlService,
-                AuthStateService,
-                SigninKeyDataService,
-                StoragePersistanceService,
-                TokenHelperService,
-                LoggerService,
-                IFrameService,
-                EqualityService,
-                LoginService,
-                AuthWellKnownDataService,
-                AuthWellKnownService,
-                DataService,
-                StateValidationService,
-                ConfigValidationService,
-                {
-                    provide: AbstractSecurityStorage,
-                    useClass: token.storage || BrowserStorageService,
-                },
-            ],
-        };
-    }
+  static forRoot(token: Token = {}) {
+    return {
+      ngModule: AuthModule,
+      providers: [
+        OidcConfigService,
+        PublicEventsService,
+        FlowHelper,
+        OidcSecurityService,
+        TokenValidationService,
+        PlatformProvider,
+        CheckSessionService,
+        FlowsDataService,
+        FlowsService,
+        SilentRenewService,
+        ConfigurationProvider,
+        LogoffRevocationService,
+        UserService,
+        RandomService,
+        HttpBaseService,
+        UrlService,
+        AuthStateService,
+        SigninKeyDataService,
+        StoragePersistanceService,
+        TokenHelperService,
+        LoggerService,
+        IFrameService,
+        EqualityService,
+        LoginService,
+        AuthWellKnownDataService,
+        AuthWellKnownService,
+        DataService,
+        StateValidationService,
+        ConfigValidationService,
+        {
+          provide: AbstractSecurityStorage,
+          useClass: token.storage || BrowserStorageService,
+        },
+      ],
+    };
+  }
 }
 
 export type Type<T> = new (...args: any[]) => T;
 
 export interface Token {
-    storage?: Type<any>;
+  storage?: Type<any>;
 }

@@ -10,134 +10,134 @@ import { AuthorizationResult } from './authorization-result';
 
 @Injectable()
 export class AuthStateService {
-    private authorizedInternal$ = new BehaviorSubject<boolean>(false);
+  private authorizedInternal$ = new BehaviorSubject<boolean>(false);
 
-    get authorized$() {
-        return this.authorizedInternal$.asObservable();
+  get authorized$() {
+    return this.authorizedInternal$.asObservable();
+  }
+
+  private get isAuthorized() {
+    return !!this.storagePersistanceService.getAccessToken() && !!this.storagePersistanceService.getIdToken();
+  }
+
+  constructor(
+    private storagePersistanceService: StoragePersistanceService,
+    private loggerService: LoggerService,
+    private publicEventsService: PublicEventsService,
+    private configurationProvider: ConfigurationProvider,
+    private tokenValidationService: TokenValidationService
+  ) {}
+
+  setAuthorizedAndFireEvent(): void {
+    this.authorizedInternal$.next(true);
+  }
+
+  setUnauthorizedAndFireEvent(): void {
+    this.storagePersistanceService.resetAuthStateInStorage();
+    this.authorizedInternal$.next(false);
+  }
+
+  updateAndPublishAuthState(authorizationResult: AuthorizationResult) {
+    this.publicEventsService.fireEvent<AuthorizationResult>(EventTypes.NewAuthorizationResult, authorizationResult);
+  }
+
+  setAuthorizationData(accessToken: any, authResult: any) {
+    this.loggerService.logDebug(accessToken);
+    this.loggerService.logDebug('storing the accessToken');
+
+    this.storagePersistanceService.write('authzData', accessToken);
+    this.persistAccessTokenExpirationTime(authResult);
+    this.setAuthorizedAndFireEvent();
+  }
+
+  getAccessToken(): string {
+    if (!this.isAuthorized) {
+      return '';
     }
 
-    private get isAuthorized() {
-        return !!this.storagePersistanceService.getAccessToken() && !!this.storagePersistanceService.getIdToken();
+    const token = this.storagePersistanceService.getAccessToken();
+    return this.decodeURIComponentSafely(token);
+  }
+
+  getIdToken(): string {
+    if (!this.isAuthorized) {
+      return '';
     }
 
-    constructor(
-        private storagePersistanceService: StoragePersistanceService,
-        private loggerService: LoggerService,
-        private publicEventsService: PublicEventsService,
-        private configurationProvider: ConfigurationProvider,
-        private tokenValidationService: TokenValidationService
-    ) {}
+    const token = this.storagePersistanceService.getIdToken();
+    return this.decodeURIComponentSafely(token);
+  }
 
-    setAuthorizedAndFireEvent(): void {
-        this.authorizedInternal$.next(true);
+  getRefreshToken(): string {
+    if (!this.isAuthorized) {
+      return '';
     }
 
-    setUnauthorizedAndFireEvent(): void {
-        this.storagePersistanceService.resetAuthStateInStorage();
-        this.authorizedInternal$.next(false);
+    const token = this.storagePersistanceService.getRefreshToken();
+    return this.decodeURIComponentSafely(token);
+  }
+
+  areAuthStorageTokensValid() {
+    if (!this.isAuthorized) {
+      return false;
     }
 
-    updateAndPublishAuthState(authorizationResult: AuthorizationResult) {
-        this.publicEventsService.fireEvent<AuthorizationResult>(EventTypes.NewAuthorizationResult, authorizationResult);
+    if (this.hasIdTokenExpired()) {
+      this.loggerService.logDebug('persisted id_token is expired');
+      return false;
     }
 
-    setAuthorizationData(accessToken: any, authResult: any) {
-        this.loggerService.logDebug(accessToken);
-        this.loggerService.logDebug('storing the accessToken');
-
-        this.storagePersistanceService.write('authzData', accessToken);
-        this.persistAccessTokenExpirationTime(authResult);
-        this.setAuthorizedAndFireEvent();
+    if (this.hasAccessTokenExpiredIfExpiryExists()) {
+      this.loggerService.logDebug('persisted access_token is expired');
+      return false;
     }
 
-    getAccessToken(): string {
-        if (!this.isAuthorized) {
-            return '';
-        }
+    this.loggerService.logDebug('persisted id_token and access token are valid');
+    return true;
+  }
 
-        const token = this.storagePersistanceService.getAccessToken();
-        return this.decodeURIComponentSafely(token);
+  hasIdTokenExpired() {
+    const tokenToCheck = this.storagePersistanceService.getIdToken();
+    const idTokenExpired = this.tokenValidationService.hasIdTokenExpired(
+      tokenToCheck,
+      this.configurationProvider.openIDConfiguration.renewTimeBeforeTokenExpiresInSeconds
+    );
+
+    if (idTokenExpired) {
+      this.publicEventsService.fireEvent<boolean>(EventTypes.IdTokenExpired, idTokenExpired);
     }
 
-    getIdToken(): string {
-        if (!this.isAuthorized) {
-            return '';
-        }
+    return idTokenExpired;
+  }
 
-        const token = this.storagePersistanceService.getIdToken();
-        return this.decodeURIComponentSafely(token);
+  hasAccessTokenExpiredIfExpiryExists() {
+    const accessTokenExpiresIn = this.storagePersistanceService.read('access_token_expires_at');
+    const accessTokenHasNotExpired = this.tokenValidationService.validateAccessTokenNotExpired(
+      accessTokenExpiresIn,
+      this.configurationProvider.openIDConfiguration.renewTimeBeforeTokenExpiresInSeconds
+    );
+
+    const hasExpired = !accessTokenHasNotExpired;
+
+    if (hasExpired) {
+      this.publicEventsService.fireEvent<boolean>(EventTypes.TokenExpired, hasExpired);
     }
 
-    getRefreshToken(): string {
-        if (!this.isAuthorized) {
-            return '';
-        }
+    return hasExpired;
+  }
 
-        const token = this.storagePersistanceService.getRefreshToken();
-        return this.decodeURIComponentSafely(token);
+  private decodeURIComponentSafely(token: string) {
+    if (token) {
+      return decodeURIComponent(token);
+    } else {
+      return '';
     }
+  }
 
-    areAuthStorageTokensValid() {
-        if (!this.isAuthorized) {
-            return false;
-        }
-
-        if (this.hasIdTokenExpired()) {
-            this.loggerService.logDebug('persisted id_token is expired');
-            return false;
-        }
-
-        if (this.hasAccessTokenExpiredIfExpiryExists()) {
-            this.loggerService.logDebug('persisted access_token is expired');
-            return false;
-        }
-
-        this.loggerService.logDebug('persisted id_token and access token are valid');
-        return true;
+  private persistAccessTokenExpirationTime(authResult: any) {
+    if (authResult?.expires_in) {
+      const accessTokenExpiryTime = new Date(new Date().toUTCString()).valueOf() + authResult.expires_in * 1000;
+      this.storagePersistanceService.write('access_token_expires_at', accessTokenExpiryTime);
     }
-
-    hasIdTokenExpired() {
-        const tokenToCheck = this.storagePersistanceService.getIdToken();
-        const idTokenExpired = this.tokenValidationService.hasIdTokenExpired(
-            tokenToCheck,
-            this.configurationProvider.openIDConfiguration.renewTimeBeforeTokenExpiresInSeconds
-        );
-
-        if (idTokenExpired) {
-            this.publicEventsService.fireEvent<boolean>(EventTypes.IdTokenExpired, idTokenExpired);
-        }
-
-        return idTokenExpired;
-    }
-
-    hasAccessTokenExpiredIfExpiryExists() {
-        const accessTokenExpiresIn = this.storagePersistanceService.read('access_token_expires_at');
-        const accessTokenHasNotExpired = this.tokenValidationService.validateAccessTokenNotExpired(
-            accessTokenExpiresIn,
-            this.configurationProvider.openIDConfiguration.renewTimeBeforeTokenExpiresInSeconds
-        );
-
-        const hasExpired = !accessTokenHasNotExpired;
-
-        if (hasExpired) {
-            this.publicEventsService.fireEvent<boolean>(EventTypes.TokenExpired, hasExpired);
-        }
-
-        return hasExpired;
-    }
-
-    private decodeURIComponentSafely(token: string) {
-        if (token) {
-            return decodeURIComponent(token);
-        } else {
-            return '';
-        }
-    }
-
-    private persistAccessTokenExpirationTime(authResult: any) {
-        if (authResult?.expires_in) {
-            const accessTokenExpiryTime = new Date(new Date().toUTCString()).valueOf() + authResult.expires_in * 1000;
-            this.storagePersistanceService.write('access_token_expires_at', accessTokenExpiryTime);
-        }
-    }
+  }
 }

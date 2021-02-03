@@ -1,10 +1,10 @@
 # Useful Features of this library
 
--   [Public Events](#public-events)
--   [Custom Storage](#custom-storage)
--   [Custom parameters](#custom-parameters)
--   [Using the OIDC package in a module or a Angular lib](#using-the-oidc-package-in-a-module-or-a-angular-lib)
--   [Delay the loading or pass an existing AuthWellKnownEndpoints config](#delay-the-loading-or-pass-an-existing-well-knownopenid-configuration-configuration)
+- [Public Events](#public-events)
+- [Custom Storage](#custom-storage)
+- [Custom parameters](#custom-parameters)
+- [Using the OIDC package in a module or a Angular lib](#using-the-oidc-package-in-a-module-or-a-angular-lib)
+- [Delay the loading or pass an existing AuthWellKnownEndpoints config](#delay-the-loading-or-pass-an-existing-well-knownopenid-configuration-configuration)
 
 ## Public Events
 
@@ -44,8 +44,8 @@ The `Notification` being sent out comes with a `type` and a `value`.
 
 ```ts
 export interface OidcClientNotification<T> {
-    type: EventTypes;
-    value?: T;
+  type: EventTypes;
+  value?: T;
 }
 ```
 
@@ -102,14 +102,14 @@ so you can pass them as an object like this:
 
 ```typescript
 export function loadConfig(oidcConfigService: OidcConfigService) {
-    return () =>
-        oidcConfigService.withConfig({
-            // ...
-            customParams: {
-                response_mode: 'fragment',
-                prompt: 'consent',
-            },
-        });
+  return () =>
+    oidcConfigService.withConfig({
+      // ...
+      customParams: {
+        response_mode: 'fragment',
+        prompt: 'consent',
+      },
+    });
 }
 ```
 
@@ -142,37 +142,37 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 export function configureAuth(oidcConfigService: OidcConfigService) {
-    const action$ = oidcConfigService.withConfig({
-        stsServer: '<your sts address here>',
-        redirectUrl: window.location.origin,
-        postLogoutRedirectUri: window.location.origin,
-        clientId: 'angularClient',
-        scope: 'openid profile email',
-        responseType: 'code',
-        silentRenew: true,
-        silentRenewUrl: `${window.location.origin}/silent-renew.html`,
-        renewTimeBeforeTokenExpiresInSeconds: 10,
-        logLevel: LogLevel.Debug,
-    });
-    return () => action$;
+  const action$ = oidcConfigService.withConfig({
+    stsServer: '<your sts address here>',
+    redirectUrl: window.location.origin,
+    postLogoutRedirectUri: window.location.origin,
+    clientId: 'angularClient',
+    scope: 'openid profile email',
+    responseType: 'code',
+    silentRenew: true,
+    silentRenewUrl: `${window.location.origin}/silent-renew.html`,
+    renewTimeBeforeTokenExpiresInSeconds: 10,
+    logLevel: LogLevel.Debug,
+  });
+  return () => action$;
 }
 
 @NgModule({
-    declarations: [
-        /* */
-    ],
-    imports: [AuthModule.forRoot(), HttpClientModule, CommonModule, RouterModule],
-    exports: [
-        /* */
-    ],
-    providers: [
-        {
-            provide: APP_INITIALIZER,
-            useFactory: configureAuth,
-            deps: [OidcConfigService],
-            multi: true,
-        },
-    ],
+  declarations: [
+    /* */
+  ],
+  imports: [AuthModule.forRoot(), HttpClientModule, CommonModule, RouterModule],
+  exports: [
+    /* */
+  ],
+  providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: configureAuth,
+      deps: [OidcConfigService],
+      multi: true,
+    },
+  ],
 })
 export class ChildModule {}
 ```
@@ -189,9 +189,9 @@ You also have the option to pass the already existing `.well-known/openid-config
 
 ```typescript
 oidcConfigService.withConfig(
-    {
-        /* config */
-    },
-    { issuer: 'myIssuer' /* more .well-known/openid-configuration Properties */ }
+  {
+    /* config */
+  },
+  { issuer: 'myIssuer' /* more .well-known/openid-configuration Properties */ }
 );
 ```

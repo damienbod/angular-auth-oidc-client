@@ -3,9 +3,9 @@ import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 
 @Injectable()
 export class AuthWellKnownServiceMock {
-    getAuthWellKnownEndPoints(authWellknownEndpoint: string) {
-        return null;
-    }
+  getAuthWellKnownEndPoints(authWellknownEndpoint: string) {
+    return null;
+  }
 
-    storeWellKnownEndpoints(mappedWellKnownEndpoints: AuthWellKnownEndpoints) {}
+  storeWellKnownEndpoints(mappedWellKnownEndpoints: AuthWellKnownEndpoints) {}
 }

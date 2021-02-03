@@ -9,25 +9,25 @@ import { HomeComponent } from './home/home.component';
 import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 
 @NgModule({
-    declarations: [AppComponent, HomeComponent, UnauthorizedComponent],
-    imports: [
-        BrowserModule,
-        RouterModule.forRoot([
-            { path: '', redirectTo: 'home', pathMatch: 'full' },
-            { path: 'home', component: HomeComponent },
-            { path: 'forbidden', component: UnauthorizedComponent },
-            { path: 'unauthorized', component: UnauthorizedComponent },
-        ]),
-        AuthConfigModule,
-    ],
-    providers: [],
-    bootstrap: [AppComponent],
+  declarations: [AppComponent, HomeComponent, UnauthorizedComponent],
+  imports: [
+    BrowserModule,
+    RouterModule.forRoot([
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      { path: 'home', component: HomeComponent },
+      { path: 'forbidden', component: UnauthorizedComponent },
+      { path: 'unauthorized', component: UnauthorizedComponent },
+    ]),
+    AuthConfigModule,
+  ],
+  providers: [],
+  bootstrap: [AppComponent],
 })
 export class AppModule {
-    constructor(private readonly eventService: PublicEventsService) {
-        this.eventService
-            .registerForEvents()
-            .pipe(filter((notification) => notification.type === EventTypes.ConfigLoaded))
-            .subscribe((config) => console.log('ConfigLoaded', config));
-    }
+  constructor(private readonly eventService: PublicEventsService) {
+    this.eventService
+      .registerForEvents()
+      .pipe(filter((notification) => notification.type === EventTypes.ConfigLoaded))
+      .subscribe((config) => console.log('ConfigLoaded', config));
+  }
 }

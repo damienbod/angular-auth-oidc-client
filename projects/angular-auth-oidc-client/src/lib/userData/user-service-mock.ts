@@ -3,23 +3,23 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 
 @Injectable()
 export class UserServiceMock {
-    private userDataInternal$ = new BehaviorSubject<any>(null);
+  private userDataInternal$ = new BehaviorSubject<any>(null);
 
-    get userData$() {
-        return this.userDataInternal$.asObservable();
-    }
+  get userData$() {
+    return this.userDataInternal$.asObservable();
+  }
 
-    getAndPersistUserDataInStore(isRenewProcess = false, idToken?: any, decodedIdToken?: any): Observable<any> {
-        return of(null);
-    }
+  getAndPersistUserDataInStore(isRenewProcess = false, idToken?: any, decodedIdToken?: any): Observable<any> {
+    return of(null);
+  }
 
-    getUserDataFromStore(): any {
-        return null;
-    }
+  getUserDataFromStore(): any {
+    return null;
+  }
 
-    publishUserdataIfExists() {}
+  publishUserdataIfExists() {}
 
-    setUserDataToStore(value: any): void {}
+  setUserDataToStore(value: any): void {}
 
-    resetUserDataInStore(): void {}
+  resetUserDataInStore(): void {}
 }

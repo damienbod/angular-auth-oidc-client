@@ -1,43 +1,43 @@
 {
-    "name": "angular-auth-oidc-client",
-    "author": "Damien Bowden & Fabian Gosebrink",
-    "peerDependencies": {
-        "rxjs": ">= 6.0.0",
-        "@angular/core": "^11.0.5",
-        "@angular/common": "^11.0.5",
-        "@angular/router": "^11.0.5"
-    },
-    "dependencies": {
-        "tslib": "^2.0.0",
-        "common-tags": "^1.8.0",
-        "jsrsasign-reduced": "^8.0.15"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/damienbod/angular-auth-oidc-client.git"
-    },
-    "bugs": {
-        "url": "https://github.com/damienbod/angular-auth-oidc-client/issues"
-    },
-    "homepage": "https://github.com/damienbod/angular-auth-oidc-client",
-    "keywords": [
-        "angular",
-        "oidc",
-        "oauth2",
-        "openid",
-        "security",
-        "typescript",
-        "openidconnect",
-        "auth",
-        "authn",
-        "authentication",
-        "identity",
-        "certified",
-        "oauth",
-        "authorization"
-    ],
-    "license": "MIT",
-    "version": "11.4.5",
-    "description": "Angular Lib for OpenID Connect & OAuth2",
-    "schematics": "./schematics/collection.json"
+  "name": "angular-auth-oidc-client",
+  "author": "Damien Bowden & Fabian Gosebrink",
+  "peerDependencies": {
+    "rxjs": ">= 6.0.0",
+    "@angular/core": "^11.0.5",
+    "@angular/common": "^11.0.5",
+    "@angular/router": "^11.0.5"
+  },
+  "dependencies": {
+    "tslib": "^2.0.0",
+    "common-tags": "^1.8.0",
+    "jsrsasign-reduced": "^8.0.15"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/damienbod/angular-auth-oidc-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/damienbod/angular-auth-oidc-client/issues"
+  },
+  "homepage": "https://github.com/damienbod/angular-auth-oidc-client",
+  "keywords": [
+    "angular",
+    "oidc",
+    "oauth2",
+    "openid",
+    "security",
+    "typescript",
+    "openidconnect",
+    "auth",
+    "authn",
+    "authentication",
+    "identity",
+    "certified",
+    "oauth",
+    "authorization"
+  ],
+  "license": "MIT",
+  "version": "11.4.5",
+  "description": "Angular Lib for OpenID Connect & OAuth2",
+  "schematics": "./schematics/collection.json"
 }

@@ -3,18 +3,18 @@ import { interval, Subscription } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class IntervallService {
-    runTokenValidationRunning: Subscription = null;
+  runTokenValidationRunning: Subscription = null;
 
-    stopPeriodicallTokenCheck(): void {
-        if (this.runTokenValidationRunning) {
-            this.runTokenValidationRunning.unsubscribe();
-            this.runTokenValidationRunning = null;
-        }
+  stopPeriodicallTokenCheck(): void {
+    if (this.runTokenValidationRunning) {
+      this.runTokenValidationRunning.unsubscribe();
+      this.runTokenValidationRunning = null;
     }
+  }
 
-    startPeriodicTokenCheck(repeatAfterSeconds: number) {
-        const millisecondsDelayBetweenTokenCheck = repeatAfterSeconds * 1000;
+  startPeriodicTokenCheck(repeatAfterSeconds: number) {
+    const millisecondsDelayBetweenTokenCheck = repeatAfterSeconds * 1000;
 
-        return interval(millisecondsDelayBetweenTokenCheck);
-    }
+    return interval(millisecondsDelayBetweenTokenCheck);
+  }
 }

@@ -21,206 +21,206 @@ import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.servic
 
 @Injectable()
 export class OidcSecurityService {
-    get configuration(): PublicConfiguration {
-        return {
-            configuration: this.configurationProvider.openIDConfiguration,
-            wellknown: this.storagePersistanceService.read('authWellKnownEndPoints'),
-        };
+  get configuration(): PublicConfiguration {
+    return {
+      configuration: this.configurationProvider.openIDConfiguration,
+      wellknown: this.storagePersistanceService.read('authWellKnownEndPoints'),
+    };
+  }
+
+  get userData$() {
+    return this.userService.userData$;
+  }
+
+  get isAuthenticated$() {
+    return this.authStateService.authorized$;
+  }
+
+  get checkSessionChanged$() {
+    return this.checkSessionService.checkSessionChanged$;
+  }
+
+  get stsCallback$() {
+    return this.callbackService.stsCallback$;
+  }
+
+  constructor(
+    @Inject(DOCUMENT) private readonly doc: any,
+    private checkSessionService: CheckSessionService,
+    private silentRenewService: SilentRenewService,
+    private userService: UserService,
+    private tokenHelperService: TokenHelperService,
+    private loggerService: LoggerService,
+    private configurationProvider: ConfigurationProvider,
+    private authStateService: AuthStateService,
+    private flowsDataService: FlowsDataService,
+    private callbackService: CallbackService,
+    private logoffRevocationService: LogoffRevocationService,
+    private loginService: LoginService,
+    private storagePersistanceService: StoragePersistanceService,
+    private refreshSessionService: RefreshSessionService,
+    private periodicallyTokenCheckService: PeriodicallyTokenCheckService
+  ) {}
+
+  checkAuth(url?: string): Observable<boolean> {
+    if (!this.configurationProvider.hasValidConfig()) {
+      this.loggerService.logError('Please provide a configuration before setting up the module');
+      return of(false);
     }
 
-    get userData$() {
-        return this.userService.userData$;
-    }
+    this.loggerService.logDebug('STS server: ' + this.configurationProvider.openIDConfiguration.stsServer);
 
-    get isAuthenticated$() {
-        return this.authStateService.authorized$;
-    }
+    const currentUrl = url || this.doc.defaultView.location.toString();
+    const isCallback = this.callbackService.isCallback(currentUrl);
 
-    get checkSessionChanged$() {
-        return this.checkSessionService.checkSessionChanged$;
-    }
+    this.loggerService.logDebug('currentUrl to check auth with: ', currentUrl);
 
-    get stsCallback$() {
-        return this.callbackService.stsCallback$;
-    }
+    const callback$ = isCallback ? this.callbackService.handleCallbackAndFireEvents(currentUrl) : of(null);
 
-    constructor(
-        @Inject(DOCUMENT) private readonly doc: any,
-        private checkSessionService: CheckSessionService,
-        private silentRenewService: SilentRenewService,
-        private userService: UserService,
-        private tokenHelperService: TokenHelperService,
-        private loggerService: LoggerService,
-        private configurationProvider: ConfigurationProvider,
-        private authStateService: AuthStateService,
-        private flowsDataService: FlowsDataService,
-        private callbackService: CallbackService,
-        private logoffRevocationService: LogoffRevocationService,
-        private loginService: LoginService,
-        private storagePersistanceService: StoragePersistanceService,
-        private refreshSessionService: RefreshSessionService,
-        private periodicallyTokenCheckService: PeriodicallyTokenCheckService
-    ) {}
+    return callback$.pipe(
+      map(() => {
+        const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
+        if (isAuthenticated) {
+          this.startCheckSessionAndValidation();
 
-    checkAuth(url?: string): Observable<boolean> {
-        if (!this.configurationProvider.hasValidConfig()) {
-            this.loggerService.logError('Please provide a configuration before setting up the module');
-            return of(false);
+          if (!isCallback) {
+            this.authStateService.setAuthorizedAndFireEvent();
+            this.userService.publishUserdataIfExists();
+          }
         }
 
-        this.loggerService.logDebug('STS server: ' + this.configurationProvider.openIDConfiguration.stsServer);
+        this.loggerService.logDebug('checkAuth completed fire events, auth: ' + isAuthenticated);
 
-        const currentUrl = url || this.doc.defaultView.location.toString();
-        const isCallback = this.callbackService.isCallback(currentUrl);
+        return isAuthenticated;
+      }),
+      catchError(() => of(false))
+    );
+  }
 
-        this.loggerService.logDebug('currentUrl to check auth with: ', currentUrl);
+  checkAuthIncludingServer(): Observable<boolean> {
+    return this.checkAuth().pipe(
+      switchMap((isAuthenticated) => {
+        if (isAuthenticated) {
+          return of(isAuthenticated);
+        }
 
-        const callback$ = isCallback ? this.callbackService.handleCallbackAndFireEvents(currentUrl) : of(null);
+        return this.refreshSessionService.forceRefreshSession().pipe(
+          map((result) => !!result?.idToken && !!result?.accessToken),
+          switchMap((isAuth) => {
+            if (isAuth) {
+              this.startCheckSessionAndValidation();
+            }
 
-        return callback$.pipe(
-            map(() => {
-                const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
-                if (isAuthenticated) {
-                    this.startCheckSessionAndValidation();
-
-                    if (!isCallback) {
-                        this.authStateService.setAuthorizedAndFireEvent();
-                        this.userService.publishUserdataIfExists();
-                    }
-                }
-
-                this.loggerService.logDebug('checkAuth completed fire events, auth: ' + isAuthenticated);
-
-                return isAuthenticated;
-            }),
-            catchError(() => of(false))
+            return of(isAuth);
+          })
         );
+      })
+    );
+  }
+
+  getToken(): string {
+    return this.authStateService.getAccessToken();
+  }
+
+  getIdToken(): string {
+    return this.authStateService.getIdToken();
+  }
+
+  getRefreshToken(): string {
+    return this.authStateService.getRefreshToken();
+  }
+
+  getPayloadFromIdToken(encode = false): any {
+    const token = this.getIdToken();
+    return this.tokenHelperService.getPayloadFromToken(token, encode);
+  }
+
+  setState(state: string): void {
+    this.flowsDataService.setAuthStateControl(state);
+  }
+
+  getState(): string {
+    return this.flowsDataService.getAuthStateControl();
+  }
+
+  // Code Flow with PCKE or Implicit Flow
+  authorize(authOptions?: AuthOptions) {
+    if (authOptions?.customParams) {
+      this.storagePersistanceService.write('storageCustomRequestParams', authOptions?.customParams);
     }
 
-    checkAuthIncludingServer(): Observable<boolean> {
-        return this.checkAuth().pipe(
-            switchMap((isAuthenticated) => {
-                if (isAuthenticated) {
-                    return of(isAuthenticated);
-                }
+    this.loginService.login(authOptions);
+  }
 
-                return this.refreshSessionService.forceRefreshSession().pipe(
-                    map((result) => !!result?.idToken && !!result?.accessToken),
-                    switchMap((isAuth) => {
-                        if (isAuth) {
-                            this.startCheckSessionAndValidation();
-                        }
+  authorizeWithPopUp(authOptions?: AuthOptions) {
+    const internalUrlHandler = (authUrl) => {
+      // handle the authorization URL
+      this.doc.defaultView.open(authUrl, '_blank', 'toolbar=0,location=0,menubar=0');
+    };
 
-                        return of(isAuth);
-                    })
-                );
-            })
-        );
+    const urlHandler = authOptions?.urlHandler || internalUrlHandler;
+
+    const options = {
+      urlHandler,
+      customParams: authOptions?.customParams,
+    };
+
+    this.authorize(options);
+  }
+
+  forceRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
+    if (customParams) {
+      this.storagePersistanceService.write('storageCustomRequestParams', customParams);
     }
 
-    private startCheckSessionAndValidation() {
-        if (this.checkSessionService.isCheckSessionConfigured()) {
-            this.checkSessionService.start();
-        }
+    return this.refreshSessionService.forceRefreshSession(customParams);
+  }
 
-        this.periodicallyTokenCheckService.startTokenValidationPeriodically(this.configuration.configuration.tokenRefreshInSeconds);
+  // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
+  // only the access token is revoked. Then the logout run.
+  logoffAndRevokeTokens(urlHandler?: (url: string) => any) {
+    return this.logoffRevocationService.logoffAndRevokeTokens(urlHandler);
+  }
 
-        if (this.silentRenewService.isSilentRenewConfigured()) {
-            this.silentRenewService.getOrCreateIframe();
-        }
+  // Logs out on the server and the local client.
+  // If the server state has changed, checksession, then only a local logout.
+  logoff(urlHandler?: (url: string) => any) {
+    return this.logoffRevocationService.logoff(urlHandler);
+  }
+
+  logoffLocal() {
+    return this.logoffRevocationService.logoffLocal();
+  }
+
+  // https://tools.ietf.org/html/rfc7009
+  // revokes an access token on the STS. This is only required in the code flow with refresh tokens.
+  // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
+  // This makes it possible to manage your own tokens.
+  revokeAccessToken(accessToken?: any) {
+    return this.logoffRevocationService.revokeAccessToken(accessToken);
+  }
+
+  // https://tools.ietf.org/html/rfc7009
+  // revokes a refresh token on the STS. This is only required in the code flow with refresh tokens.
+  // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
+  // This makes it possible to manage your own tokens.
+  revokeRefreshToken(refreshToken?: any) {
+    return this.logoffRevocationService.revokeRefreshToken(refreshToken);
+  }
+
+  getEndSessionUrl(): string | null {
+    return this.logoffRevocationService.getEndSessionUrl();
+  }
+
+  private startCheckSessionAndValidation() {
+    if (this.checkSessionService.isCheckSessionConfigured()) {
+      this.checkSessionService.start();
     }
 
-    getToken(): string {
-        return this.authStateService.getAccessToken();
+    this.periodicallyTokenCheckService.startTokenValidationPeriodically(this.configuration.configuration.tokenRefreshInSeconds);
+
+    if (this.silentRenewService.isSilentRenewConfigured()) {
+      this.silentRenewService.getOrCreateIframe();
     }
-
-    getIdToken(): string {
-        return this.authStateService.getIdToken();
-    }
-
-    getRefreshToken(): string {
-        return this.authStateService.getRefreshToken();
-    }
-
-    getPayloadFromIdToken(encode = false): any {
-        const token = this.getIdToken();
-        return this.tokenHelperService.getPayloadFromToken(token, encode);
-    }
-
-    setState(state: string): void {
-        this.flowsDataService.setAuthStateControl(state);
-    }
-
-    getState(): string {
-        return this.flowsDataService.getAuthStateControl();
-    }
-
-    // Code Flow with PCKE or Implicit Flow
-    authorize(authOptions?: AuthOptions) {
-        if (authOptions?.customParams) {
-            this.storagePersistanceService.write('storageCustomRequestParams', authOptions?.customParams);
-        }
-
-        this.loginService.login(authOptions);
-    }
-
-    authorizeWithPopUp(authOptions?: AuthOptions) {
-        const internalUrlHandler = (authUrl) => {
-            // handle the authorization URL
-            this.doc.defaultView.open(authUrl, '_blank', 'toolbar=0,location=0,menubar=0');
-        };
-
-        const urlHandler = authOptions?.urlHandler || internalUrlHandler;
-
-        const options = {
-            urlHandler,
-            customParams: authOptions?.customParams,
-        };
-
-        this.authorize(options);
-    }
-
-    forceRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
-        if (customParams) {
-            this.storagePersistanceService.write('storageCustomRequestParams', customParams);
-        }
-
-        return this.refreshSessionService.forceRefreshSession(customParams);
-    }
-
-    // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
-    // only the access token is revoked. Then the logout run.
-    logoffAndRevokeTokens(urlHandler?: (url: string) => any) {
-        return this.logoffRevocationService.logoffAndRevokeTokens(urlHandler);
-    }
-
-    // Logs out on the server and the local client.
-    // If the server state has changed, checksession, then only a local logout.
-    logoff(urlHandler?: (url: string) => any) {
-        return this.logoffRevocationService.logoff(urlHandler);
-    }
-
-    logoffLocal() {
-        return this.logoffRevocationService.logoffLocal();
-    }
-
-    // https://tools.ietf.org/html/rfc7009
-    // revokes an access token on the STS. This is only required in the code flow with refresh tokens.
-    // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
-    // This makes it possible to manage your own tokens.
-    revokeAccessToken(accessToken?: any) {
-        return this.logoffRevocationService.revokeAccessToken(accessToken);
-    }
-
-    // https://tools.ietf.org/html/rfc7009
-    // revokes a refresh token on the STS. This is only required in the code flow with refresh tokens.
-    // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
-    // This makes it possible to manage your own tokens.
-    revokeRefreshToken(refreshToken?: any) {
-        return this.logoffRevocationService.revokeRefreshToken(refreshToken);
-    }
-
-    getEndSessionUrl(): string | null {
-        return this.logoffRevocationService.getEndSessionUrl();
-    }
+  }
 }

@@ -3,13 +3,13 @@ import { CallbackContext } from './callback-context';
 
 @Injectable()
 export class FlowsServiceMock {
-    resetAuthorizationData(): void {}
+  resetAuthorizationData(): void {}
 
-    processCodeFlowCallback(urlToCheck: string) {}
+  processCodeFlowCallback(urlToCheck: string) {}
 
-    processSilentRenewCodeFlowCallback(firstContext: CallbackContext) {}
+  processSilentRenewCodeFlowCallback(firstContext: CallbackContext) {}
 
-    processImplicitFlowCallback(hash?: string) {}
+  processImplicitFlowCallback(hash?: string) {}
 
-    processRefreshToken() {}
+  processRefreshToken() {}
 }

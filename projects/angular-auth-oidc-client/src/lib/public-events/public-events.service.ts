@@ -5,13 +5,13 @@ import { OidcClientNotification } from './notification';
 
 @Injectable()
 export class PublicEventsService {
-    private notify = new ReplaySubject<OidcClientNotification<any>>(1);
+  private notify = new ReplaySubject<OidcClientNotification<any>>(1);
 
-    fireEvent<T>(type: EventTypes, value?: T) {
-        this.notify.next({ type, value });
-    }
+  fireEvent<T>(type: EventTypes, value?: T) {
+    this.notify.next({ type, value });
+  }
 
-    registerForEvents() {
-        return this.notify.asObservable();
-    }
+  registerForEvents() {
+    return this.notify.asObservable();
+  }
 }

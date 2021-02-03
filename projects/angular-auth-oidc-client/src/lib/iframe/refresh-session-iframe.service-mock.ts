@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionIframeServiceMock {
-    refreshSessionWithIframe(): Observable<boolean> {
-        return null;
-    }
+  refreshSessionWithIframe(): Observable<boolean> {
+    return null;
+  }
 }
