@@ -1083,6 +1083,122 @@
           }
         }
       }
+    },
+    "sample-code-flow-popup": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "projects/sample-code-flow-popup",
+      "sourceRoot": "projects/sample-code-flow-popup/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/sample-code-flow-popup",
+            "index": "projects/sample-code-flow-popup/src/index.html",
+            "main": "projects/sample-code-flow-popup/src/main.ts",
+            "polyfills": "projects/sample-code-flow-popup/src/polyfills.ts",
+            "tsConfig": "projects/sample-code-flow-popup/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "projects/sample-code-flow-popup/src/favicon.ico",
+              "projects/sample-code-flow-popup/src/assets"
+            ],
+            "styles": [
+              "projects/sample-code-flow-popup/src/styles.css"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-popup/src/environments/environment.ts",
+                  "with": "projects/sample-code-flow-popup/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "sample-code-flow-popup:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "sample-code-flow-popup:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "sample-code-flow-popup:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sample-code-flow-popup/src/test.ts",
+            "polyfills": "projects/sample-code-flow-popup/src/polyfills.ts",
+            "tsConfig": "projects/sample-code-flow-popup/tsconfig.spec.json",
+            "karmaConfig": "projects/sample-code-flow-popup/karma.conf.js",
+            "assets": [
+              "projects/sample-code-flow-popup/src/favicon.ico",
+              "projects/sample-code-flow-popup/src/assets"
+            ],
+            "styles": [
+              "projects/sample-code-flow-popup/src/styles.css"
+            ],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sample-code-flow-popup/tsconfig.app.json",
+              "projects/sample-code-flow-popup/tsconfig.spec.json",
+              "projects/sample-code-flow-popup/e2e/tsconfig.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "projects/sample-code-flow-popup/e2e/protractor.conf.js",
+            "devServerTarget": "sample-code-flow-popup:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-popup:serve:production"
+            }
+          }
+        }
+      }
     }
   },
   "cli": {
