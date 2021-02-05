@@ -27,18 +27,13 @@
             "main": "projects/angular-auth-oidc-client/src/test.ts",
             "tsConfig": "projects/angular-auth-oidc-client/tsconfig.spec.json",
             "karmaConfig": "projects/angular-auth-oidc-client/karma.conf.js",
-            "codeCoverageExclude": [
-              "/**/*mock*.ts"
-            ]
+            "codeCoverageExclude": ["/**/*mock*.ts"]
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "projects/angular-auth-oidc-client/**/*.ts",
-              "projects/angular-auth-oidc-client/**/*.html"
-            ]
+            "lintFilePatterns": ["projects/angular-auth-oidc-client/**/*.ts", "projects/angular-auth-oidc-client/**/*.html"]
           }
         }
       }
@@ -64,9 +59,7 @@
               "projects/sample-code-flow/src/silent-renew.html",
               "projects/sample-code-flow/src/assets"
             ],
-            "styles": [
-              "projects/sample-code-flow/src/styles.css"
-            ],
+            "styles": ["projects/sample-code-flow/src/styles.css"],
             "scripts": []
           },
           "configurations": {
@@ -126,23 +119,15 @@
             "polyfills": "projects/sample-code-flow/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow/karma.conf.js",
-            "assets": [
-              "projects/sample-code-flow/src/favicon.ico",
-              "projects/sample-code-flow/src/assets"
-            ],
-            "styles": [
-              "projects/sample-code-flow/src/styles.css"
-            ],
+            "assets": ["projects/sample-code-flow/src/favicon.ico", "projects/sample-code-flow/src/assets"],
+            "styles": ["projects/sample-code-flow/src/styles.css"],
             "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "projects/sample-code-flow/**/*.ts",
-              "projects/sample-code-flow/**/*.html"
-            ]
+            "lintFilePatterns": ["projects/sample-code-flow/**/*.ts", "projects/sample-code-flow/**/*.html"]
           }
         },
         "e2e": {
@@ -180,9 +165,7 @@
               "projects/sample-code-flow-auto-login/src/silent-renew.html",
               "projects/sample-code-flow-auto-login/src/assets"
             ],
-            "styles": [
-              "projects/sample-code-flow-auto-login/src/styles.css"
-            ],
+            "styles": ["projects/sample-code-flow-auto-login/src/styles.css"],
             "scripts": []
           },
           "configurations": {
@@ -242,23 +225,15 @@
             "polyfills": "projects/sample-code-flow-auto-login/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-auto-login/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-auto-login/karma.conf.js",
-            "assets": [
-              "projects/sample-code-flow-auto-login/src/favicon.ico",
-              "projects/sample-code-flow-auto-login/src/assets"
-            ],
-            "styles": [
-              "projects/sample-code-flow-auto-login/src/styles.css"
-            ],
+            "assets": ["projects/sample-code-flow-auto-login/src/favicon.ico", "projects/sample-code-flow-auto-login/src/assets"],
+            "styles": ["projects/sample-code-flow-auto-login/src/styles.css"],
             "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "projects/sample-code-flow-auto-login/**/*.ts",
-              "projects/sample-code-flow-auto-login/**/*.html"
-            ]
+            "lintFilePatterns": ["projects/sample-code-flow-auto-login/**/*.ts", "projects/sample-code-flow-auto-login/**/*.html"]
           }
         },
         "e2e": {
@@ -296,9 +271,7 @@
               "projects/sample-code-flow-http-config/src/assets",
               "projects/sample-code-flow-http-config/src/silent-renew.html"
             ],
-            "styles": [
-              "projects/sample-code-flow-http-config/src/styles.css"
-            ],
+            "styles": ["projects/sample-code-flow-http-config/src/styles.css"],
             "scripts": []
           },
           "configurations": {
@@ -358,23 +331,15 @@
             "polyfills": "projects/sample-code-flow-http-config/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-http-config/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-http-config/karma.conf.js",
-            "assets": [
-              "projects/sample-code-flow-http-config/src/favicon.ico",
-              "projects/sample-code-flow-http-config/src/assets"
-            ],
-            "styles": [
-              "projects/sample-code-flow-http-config/src/styles.css"
-            ],
+            "assets": ["projects/sample-code-flow-http-config/src/favicon.ico", "projects/sample-code-flow-http-config/src/assets"],
+            "styles": ["projects/sample-code-flow-http-config/src/styles.css"],
             "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "projects/sample-code-flow-http-config/**/*.ts",
-              "projects/sample-code-flow-http-config/**/*.html"
-            ]
+            "lintFilePatterns": ["projects/sample-code-flow-http-config/**/*.ts", "projects/sample-code-flow-http-config/**/*.html"]
           }
         },
         "e2e": {
@@ -407,13 +372,8 @@
             "polyfills": "projects/sample-implicit-flow-google/src/polyfills.ts",
             "tsConfig": "projects/sample-implicit-flow-google/tsconfig.app.json",
             "aot": true,
-            "assets": [
-              "projects/sample-implicit-flow-google/src/favicon.ico",
-              "projects/sample-implicit-flow-google/src/assets"
-            ],
-            "styles": [
-              "projects/sample-implicit-flow-google/src/styles.css"
-            ],
+            "assets": ["projects/sample-implicit-flow-google/src/favicon.ico", "projects/sample-implicit-flow-google/src/assets"],
+            "styles": ["projects/sample-implicit-flow-google/src/styles.css"],
             "scripts": []
           },
           "configurations": {
@@ -473,23 +433,15 @@
             "polyfills": "projects/sample-implicit-flow-google/src/polyfills.ts",
             "tsConfig": "projects/sample-implicit-flow-google/tsconfig.spec.json",
             "karmaConfig": "projects/sample-implicit-flow-google/karma.conf.js",
-            "assets": [
-              "projects/sample-implicit-flow-google/src/favicon.ico",
-              "projects/sample-implicit-flow-google/src/assets"
-            ],
-            "styles": [
-              "projects/sample-implicit-flow-google/src/styles.css"
-            ],
+            "assets": ["projects/sample-implicit-flow-google/src/favicon.ico", "projects/sample-implicit-flow-google/src/assets"],
+            "styles": ["projects/sample-implicit-flow-google/src/styles.css"],
             "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "projects/sample-implicit-flow-google/**/*.ts",
-              "projects/sample-implicit-flow-google/**/*.html"
-            ]
+            "lintFilePatterns": ["projects/sample-implicit-flow-google/**/*.ts", "projects/sample-implicit-flow-google/**/*.html"]
           }
         },
         "e2e": {
@@ -527,9 +479,7 @@
               "projects/sample-code-flow-azuread/src/assets",
               "projects/sample-code-flow-azuread/src/silent-renew.html"
             ],
-            "styles": [
-              "projects/sample-code-flow-azuread/src/styles.css"
-            ],
+            "styles": ["projects/sample-code-flow-azuread/src/styles.css"],
             "scripts": []
           },
           "configurations": {
@@ -594,19 +544,14 @@
               "projects/sample-code-flow-azuread/src/assets",
               "projects/sample-code-flow-azuread/src/silent-renew.html"
             ],
-            "styles": [
-              "projects/sample-code-flow-azuread/src/styles.css"
-            ],
+            "styles": ["projects/sample-code-flow-azuread/src/styles.css"],
             "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "projects/sample-code-flow-azuread/**/*.ts",
-              "projects/sample-code-flow-azuread/**/*.html"
-            ]
+            "lintFilePatterns": ["projects/sample-code-flow-azuread/**/*.ts", "projects/sample-code-flow-azuread/**/*.html"]
           }
         },
         "e2e": {
@@ -644,9 +589,7 @@
               "projects/sample-code-flow-azure-b2c/src/assets",
               "projects/sample-code-flow-azure-b2c/src/silent-renew.html"
             ],
-            "styles": [
-              "projects/sample-code-flow-azure-b2c/src/styles.css"
-            ],
+            "styles": ["projects/sample-code-flow-azure-b2c/src/styles.css"],
             "scripts": []
           },
           "configurations": {
@@ -706,23 +649,15 @@
             "polyfills": "projects/sample-code-flow-azure-b2c/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-azure-b2c/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-azure-b2c/karma.conf.js",
-            "assets": [
-              "projects/sample-code-flow-azure-b2c/src/favicon.ico",
-              "projects/sample-code-flow-azure-b2c/src/assets"
-            ],
-            "styles": [
-              "projects/sample-code-flow-azure-b2c/src/styles.css"
-            ],
+            "assets": ["projects/sample-code-flow-azure-b2c/src/favicon.ico", "projects/sample-code-flow-azure-b2c/src/assets"],
+            "styles": ["projects/sample-code-flow-azure-b2c/src/styles.css"],
             "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "projects/sample-code-flow-azure-b2c/**/*.ts",
-              "projects/sample-code-flow-azure-b2c/**/*.html"
-            ]
+            "lintFilePatterns": ["projects/sample-code-flow-azure-b2c/**/*.ts", "projects/sample-code-flow-azure-b2c/**/*.html"]
           }
         },
         "e2e": {
@@ -760,9 +695,7 @@
               "projects/sample-implicit-flow-silent-renew/src/assets",
               "projects/sample-implicit-flow-silent-renew/src/silent-renew.html"
             ],
-            "styles": [
-              "projects/sample-implicit-flow-silent-renew/src/styles.css"
-            ],
+            "styles": ["projects/sample-implicit-flow-silent-renew/src/styles.css"],
             "scripts": []
           },
           "configurations": {
@@ -826,9 +759,7 @@
               "projects/sample-implicit-flow-silent-renew/src/favicon.ico",
               "projects/sample-implicit-flow-silent-renew/src/assets"
             ],
-            "styles": [
-              "projects/sample-implicit-flow-silent-renew/src/styles.css"
-            ],
+            "styles": ["projects/sample-implicit-flow-silent-renew/src/styles.css"],
             "scripts": []
           }
         },
@@ -871,13 +802,8 @@
             "polyfills": "projects/sample-code-flow-refresh-tokens/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-refresh-tokens/tsconfig.app.json",
             "aot": true,
-            "assets": [
-              "projects/sample-code-flow-refresh-tokens/src/favicon.ico",
-              "projects/sample-code-flow-refresh-tokens/src/assets"
-            ],
-            "styles": [
-              "projects/sample-code-flow-refresh-tokens/src/styles.css"
-            ],
+            "assets": ["projects/sample-code-flow-refresh-tokens/src/favicon.ico", "projects/sample-code-flow-refresh-tokens/src/assets"],
+            "styles": ["projects/sample-code-flow-refresh-tokens/src/styles.css"],
             "scripts": []
           },
           "configurations": {
@@ -937,23 +863,15 @@
             "polyfills": "projects/sample-code-flow-refresh-tokens/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-refresh-tokens/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-refresh-tokens/karma.conf.js",
-            "assets": [
-              "projects/sample-code-flow-refresh-tokens/src/favicon.ico",
-              "projects/sample-code-flow-refresh-tokens/src/assets"
-            ],
-            "styles": [
-              "projects/sample-code-flow-refresh-tokens/src/styles.css"
-            ],
+            "assets": ["projects/sample-code-flow-refresh-tokens/src/favicon.ico", "projects/sample-code-flow-refresh-tokens/src/assets"],
+            "styles": ["projects/sample-code-flow-refresh-tokens/src/styles.css"],
             "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "projects/sample-code-flow-refresh-tokens/**/*.ts",
-              "projects/sample-code-flow-refresh-tokens/**/*.html"
-            ]
+            "lintFilePatterns": ["projects/sample-code-flow-refresh-tokens/**/*.ts", "projects/sample-code-flow-refresh-tokens/**/*.html"]
           }
         },
         "e2e": {
@@ -986,13 +904,8 @@
             "polyfills": "projects/sample-code-flow-lazy-loaded/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-lazy-loaded/tsconfig.app.json",
             "aot": true,
-            "assets": [
-              "projects/sample-code-flow-lazy-loaded/src/favicon.ico",
-              "projects/sample-code-flow-lazy-loaded/src/assets"
-            ],
-            "styles": [
-              "projects/sample-code-flow-lazy-loaded/src/styles.css"
-            ],
+            "assets": ["projects/sample-code-flow-lazy-loaded/src/favicon.ico", "projects/sample-code-flow-lazy-loaded/src/assets"],
+            "styles": ["projects/sample-code-flow-lazy-loaded/src/styles.css"],
             "scripts": []
           },
           "configurations": {
@@ -1051,23 +964,15 @@
             "polyfills": "projects/sample-code-flow-lazy-loaded/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-lazy-loaded/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-lazy-loaded/karma.conf.js",
-            "assets": [
-              "projects/sample-code-flow-lazy-loaded/src/favicon.ico",
-              "projects/sample-code-flow-lazy-loaded/src/assets"
-            ],
-            "styles": [
-              "projects/sample-code-flow-lazy-loaded/src/styles.css"
-            ],
+            "assets": ["projects/sample-code-flow-lazy-loaded/src/favicon.ico", "projects/sample-code-flow-lazy-loaded/src/assets"],
+            "styles": ["projects/sample-code-flow-lazy-loaded/src/styles.css"],
             "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "projects/sample-code-flow-lazy-loaded/**/*.ts",
-              "projects/sample-code-flow-lazy-loaded/**/*.html"
-            ]
+            "lintFilePatterns": ["projects/sample-code-flow-lazy-loaded/**/*.ts", "projects/sample-code-flow-lazy-loaded/**/*.html"]
           }
         },
         "e2e": {
@@ -1102,11 +1007,10 @@
             "aot": true,
             "assets": [
               "projects/sample-code-flow-popup/src/favicon.ico",
+              "projects/sample-code-flow-popup/src/silent-renew.html",
               "projects/sample-code-flow-popup/src/assets"
             ],
-            "styles": [
-              "projects/sample-code-flow-popup/src/styles.css"
-            ],
+            "styles": ["projects/sample-code-flow-popup/src/styles.css"],
             "scripts": []
           },
           "configurations": {
@@ -1163,13 +1067,8 @@
             "polyfills": "projects/sample-code-flow-popup/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-popup/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-popup/karma.conf.js",
-            "assets": [
-              "projects/sample-code-flow-popup/src/favicon.ico",
-              "projects/sample-code-flow-popup/src/assets"
-            ],
-            "styles": [
-              "projects/sample-code-flow-popup/src/styles.css"
-            ],
+            "assets": ["projects/sample-code-flow-popup/src/favicon.ico", "projects/sample-code-flow-popup/src/assets"],
+            "styles": ["projects/sample-code-flow-popup/src/styles.css"],
             "scripts": []
           }
         },
@@ -1181,9 +1080,7 @@
               "projects/sample-code-flow-popup/tsconfig.spec.json",
               "projects/sample-code-flow-popup/e2e/tsconfig.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         },
         "e2e": {

@@ -12,7 +12,7 @@ export class LoggerService {
     }
 
     if (!!args && args.length) {
-      console.error(message, args);
+      console.error(message, ...args);
     } else {
       console.error(message);
     }
@@ -32,7 +32,7 @@ export class LoggerService {
     }
 
     if (!!args && args.length) {
-      console.warn(message, args);
+      console.warn(message, ...args);
     } else {
       console.warn(message);
     }
@@ -52,7 +52,7 @@ export class LoggerService {
     }
 
     if (!!args && args.length) {
-      console.log(message, args);
+      console.log(message, ...args);
     } else {
       console.log(message);
     }

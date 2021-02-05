@@ -92,7 +92,7 @@ export class FlowsService {
       this.loggerService.logDebug('no code in url');
       return throwError('no code in url');
     }
-    this.loggerService.logDebug('running validation for callback' + urlToCheck);
+    this.loggerService.logDebug('running validation for callback', urlToCheck);
 
     const initialCallbackContext = {
       code,
@@ -105,6 +105,7 @@ export class FlowsService {
       validationResult: null,
       existingIdToken: null,
     };
+
     return of(initialCallbackContext);
   }
 

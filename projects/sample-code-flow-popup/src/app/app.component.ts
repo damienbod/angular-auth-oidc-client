@@ -7,6 +7,8 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
+  modal: Window;
+
   title = 'sample-code-flow-popup';
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
@@ -20,6 +22,8 @@ export class AppComponent {
   }
 
   loginWithPopup() {
-    this.oidcSecurityService.authorizeWithPopUp();
+    this.oidcSecurityService.authorizeWithPopUp().subscribe((isAuthenticated) => {
+      console.log('app authorizeWithPopUp', isAuthenticated);
+    });
   }
 }
