@@ -4,13 +4,14 @@ import { AuthStateService } from '../authState/auth-state.service';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
-import { PopUpService } from '../popup.service';
 import { RedirectService } from '../utils/redirect/redirect.service';
 import { UrlService } from '../utils/url/url.service';
 import { TokenValidationService } from '../validation/token-validation.service';
 import { CheckAuthService } from './../check-auth.service';
 import { UserService } from './../userData/user-service';
 import { AuthOptions } from './auth-options';
+import { PopupOptions } from './popup-options';
+import { PopUpService } from './popup.service';
 
 @Injectable()
 export class LoginService {
@@ -60,7 +61,7 @@ export class LoginService {
     });
   }
 
-  loginWithPopUp(authOptions?: AuthOptions) {
+  loginWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions) {
     if (!this.tokenValidationService.configValidateResponseType(this.configurationProvider.openIDConfiguration.responseType)) {
       this.loggerService.logError('Invalid response type!');
       return;
@@ -73,7 +74,7 @@ export class LoginService {
       return;
     }
 
-    this.loggerService.logDebug('BEGIN Authorize OIDC Flow, no auth data');
+    this.loggerService.logDebug('BEGIN Authorize OIDC Flow with popup, no auth data');
 
     return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint).pipe(
       switchMap(() => {

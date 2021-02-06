@@ -69,7 +69,7 @@ export class UserService {
     return this.storagePersistanceService.read('userData') || null;
   }
 
-  publishUserdataIfExists() {
+  publishUserDataIfExists() {
     const userData = this.getUserDataFromStore();
     if (userData) {
       this.userDataInternal$.next(userData);

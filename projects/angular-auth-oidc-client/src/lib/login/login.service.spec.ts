@@ -1,23 +1,25 @@
 import { CommonModule } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { AuthStateService } from '../authState/auth-state.service';
+import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
+import { CheckAuthServiceMock } from '../check-auth.service-mock';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { AuthWellKnownServiceMock } from '../config/auth-well-known.service-mock';
 import { ConfigurationProvider } from '../config/config.provider';
 import { ConfigurationProviderMock } from '../config/config.provider-mock';
-import { FlowsService } from '../flows/flows.service';
-import { FlowsServiceMock } from '../flows/flows.service-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
-import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
 import { RedirectService } from '../utils/redirect/redirect.service';
-import { RedirectServiceMock } from '../utils/redirect/redirect.service-mock';
 import { UrlService } from '../utils/url/url.service';
 import { UrlServiceMock } from '../utils/url/url.service-mock';
 import { TokenValidationService } from '../validation/token-validation.service';
 import { TokenValidationServiceMock } from '../validation/token-validation.service-mock';
+import { CheckAuthService } from './../check-auth.service';
+import { UserService } from './../userData/user-service';
+import { UserServiceMock } from './../userData/user-service-mock';
 import { LoginService } from './login.service';
+import { PopUpService } from './popup.service';
 
 describe('LoginService', () => {
   let loginService: LoginService;
@@ -25,7 +27,6 @@ describe('LoginService', () => {
   let urlService: UrlService;
   let loggerService: LoggerService;
   let tokenValidationService: TokenValidationService;
-  let flowsService: FlowsService;
   let redirectService: RedirectService;
   let authWellKnownService: AuthWellKnownService;
 
@@ -33,19 +34,17 @@ describe('LoginService', () => {
     TestBed.configureTestingModule({
       imports: [CommonModule],
       providers: [
-        LoginService,
-        {
-          provide: StoragePersistanceService,
-          useClass: StoragePersistanceServiceMock,
-        },
         { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
-        { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
         { provide: TokenValidationService, useClass: TokenValidationServiceMock },
         { provide: UrlService, useClass: UrlServiceMock },
-        { provide: FlowsService, useClass: FlowsServiceMock },
-        { provide: RedirectService, useClass: RedirectServiceMock },
+        RedirectService,
+        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
         { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
+        PopUpService,
+        { provide: CheckAuthService, useClass: CheckAuthServiceMock },
+        { provide: UserService, useClass: UserServiceMock },
+        { provide: AuthStateService, useClass: AuthStateServiceMock },
+        LoginService,
       ],
     });
   });
@@ -56,7 +55,6 @@ describe('LoginService', () => {
     urlService = TestBed.inject(UrlService);
     loggerService = TestBed.inject(LoggerService);
     tokenValidationService = TestBed.inject(TokenValidationService);
-    flowsService = TestBed.inject(FlowsService);
     redirectService = TestBed.inject(RedirectService);
     authWellKnownService = TestBed.inject(AuthWellKnownService);
   });
@@ -113,7 +111,6 @@ describe('LoginService', () => {
         });
         spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-        spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
         const spy = spyOn(urlService, 'getAuthorizeUrl');
         spyOn(redirectService, 'redirectTo').and.callFake(() => {});
         const result = loginService.login();
@@ -131,7 +128,6 @@ describe('LoginService', () => {
         });
         spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-        spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
         const redirectspy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
         const result = loginService.login();
@@ -149,7 +145,6 @@ describe('LoginService', () => {
         });
         spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-        spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
         const redirectspy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
         const spy = jasmine.createSpy();
@@ -172,7 +167,6 @@ describe('LoginService', () => {
         });
         spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-        spyOn(flowsService, 'resetAuthorizationData').and.callFake(() => {});
         const getAuthorizeUrlSpy = spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
         const redirectspy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
 

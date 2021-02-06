@@ -253,7 +253,7 @@ describe('OidcSecurityService', () => {
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
 
         const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
-        const userServiceSpy = spyOn(userService, 'publishUserdataIfExists');
+        const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
         oidcSecurityService.checkAuth().subscribe((result) => {
           expect(result).toBeTrue();
           expect(setAuthorizedAndFireEventSpy).toHaveBeenCalled();
@@ -272,7 +272,7 @@ describe('OidcSecurityService', () => {
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
 
         const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
-        const userServiceSpy = spyOn(userService, 'publishUserdataIfExists');
+        const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
         oidcSecurityService.checkAuth().subscribe((result) => {
           expect(result).toBeFalse();
           expect(setAuthorizedAndFireEventSpy).not.toHaveBeenCalled();
@@ -312,14 +312,14 @@ describe('OidcSecurityService', () => {
     );
 
     it(
-      'if authenticated publishUserdataIfExists ',
+      'if authenticated publishUserDataIfExists',
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
         spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
-        const spy = spyOn(userService, 'publishUserdataIfExists');
+        const spy = spyOn(userService, 'publishUserDataIfExists');
 
         oidcSecurityService.checkAuth().subscribe((result) => {
           expect(spy).toHaveBeenCalled();

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/internal/Subject';
+import { PopupOptions } from './popup-options';
 
 @Injectable({ providedIn: 'root' })
 export class PopUpService {
@@ -11,20 +12,30 @@ export class PopUpService {
     return this.receivedUrlInternal$.asObservable();
   }
 
-  constructor() {}
-
   hasPopup() {
     return window.opener && window.opener !== window;
   }
 
-  openPopUp(url: string) {
-    const options = `width=500,height=500,left=50,top=50`;
-    this.popUp = window.open(url, '_blank', options);
+  openPopUp(url: string, popupOptions?: PopupOptions) {
+    const popupDefaultOptions = {
+      width: 500,
+      height: 500,
+      left: 50,
+      top: 50,
+    };
+
+    const options = { ...popupDefaultOptions, ...(popupOptions || {}) };
+
+    const optionsToPass = Object.entries(options)
+      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+      .join(',');
+
+    this.popUp = window.open(url, '_blank', optionsToPass);
 
     const listener = (event: MessageEvent) => {
-      // console.log('event', event);
-      // console.log('event.origin', event.origin);
-      // console.log('current href', window.location.href);
+      if (!event?.data || typeof event.data !== 'string') {
+        return;
+      }
 
       this.receivedUrlInternal$.next(event.data);
 
@@ -35,10 +46,8 @@ export class PopUpService {
   }
 
   sendMessageToMainWindow(url: string) {
-    try {
-      this.trySendMessage(window?.opener, url, window.location.href);
-    } catch (error) {
-      console.error(error);
+    if (window?.opener) {
+      window?.opener.postMessage(url, window.location.href);
     }
   }
 
@@ -48,12 +57,6 @@ export class PopUpService {
     if (this.popUp) {
       this.popUp.close();
       this.popUp = null;
-    }
-  }
-
-  private trySendMessage(targetWindow: any, url: string, origin: string) {
-    if (targetWindow) {
-      targetWindow.postMessage(url, origin);
     }
   }
 }
