@@ -34,7 +34,7 @@ export class LoginService {
       return;
     }
 
-    const authWellknownEndpoint = this.configurationProvider.openIDConfiguration?.authWellknownEndpoint;
+    const authWellknownEndpoint = this.configurationProvider.openIDConfiguration.authWellknownEndpoint;
 
     if (!authWellknownEndpoint) {
       this.loggerService.logError('no authWellknownEndpoint given!');
@@ -67,7 +67,7 @@ export class LoginService {
       return;
     }
 
-    const authWellknownEndpoint = this.configurationProvider.openIDConfiguration?.authWellknownEndpoint;
+    const authWellknownEndpoint = this.configurationProvider.openIDConfiguration.authWellknownEndpoint;
 
     if (!authWellknownEndpoint) {
       this.loggerService.logError('no authWellknownEndpoint given!');
@@ -82,7 +82,7 @@ export class LoginService {
 
         const authUrl = this.urlService.getAuthorizeUrl(customParams);
 
-        this.popupService.openPopUp(authUrl);
+        this.popupService.openPopUp(authUrl, popupOptions);
 
         return this.popupService.receivedUrl$.pipe(
           switchMap((url: string) => this.checkAuthService.checkAuth(url)),

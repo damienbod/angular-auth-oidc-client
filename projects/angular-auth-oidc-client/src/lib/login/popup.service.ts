@@ -5,7 +5,6 @@ import { PopupOptions } from './popup-options';
 @Injectable({ providedIn: 'root' })
 export class PopUpService {
   private popUp: Window;
-
   private receivedUrlInternal$ = new Subject();
 
   get receivedUrl$() {
