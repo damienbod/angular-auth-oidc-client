@@ -38,6 +38,12 @@ export class CheckAuthService {
     this.loggerService.logDebug('STS server: ' + this.configurationProvider.openIDConfiguration.stsServer);
 
     const currentUrl = url || this.doc.defaultView.location.toString();
+
+    if (this.popupService.hasPopup()) {
+      this.popupService.sendMessageToMainWindow(currentUrl);
+      return of(null);
+    }
+
     const isCallback = this.callbackService.isCallback(currentUrl);
 
     this.loggerService.logDebug('currentUrl to check auth with: ', currentUrl);
@@ -55,8 +61,6 @@ export class CheckAuthService {
             this.userService.publishUserdataIfExists();
           }
         }
-
-        this.sendEventFromPopupToMainWindow(isAuthenticated);
 
         this.loggerService.logDebug('checkAuth completed fired events, auth: ' + isAuthenticated);
 
@@ -99,11 +103,5 @@ export class CheckAuthService {
     if (this.silentRenewService.isSilentRenewConfigured()) {
       this.silentRenewService.getOrCreateIframe();
     }
-  }
-
-  private sendEventFromPopupToMainWindow(isAuthenticated: boolean) {
-    const userData = this.userService.getUserDataFromStore();
-    const accessToken = this.authStateService.getAccessToken();
-    this.popupService.sendMessageToMainWindow({ isAuthenticated, userData, accessToken });
   }
 }

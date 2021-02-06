@@ -24,8 +24,8 @@ export class UserService {
     private eventService: PublicEventsService,
     private loggerService: LoggerService,
     private tokenHelperService: TokenHelperService,
-    private readonly flowHelper: FlowHelper,
-    private readonly configurationProvider: ConfigurationProvider
+    private flowHelper: FlowHelper,
+    private configurationProvider: ConfigurationProvider
   ) {}
 
   // TODO CHECK PARAMETERS

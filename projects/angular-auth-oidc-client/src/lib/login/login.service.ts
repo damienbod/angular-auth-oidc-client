@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
+import { AuthStateService } from '../authState/auth-state.service';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
@@ -7,6 +8,8 @@ import { PopUpService } from '../popup.service';
 import { RedirectService } from '../utils/redirect/redirect.service';
 import { UrlService } from '../utils/url/url.service';
 import { TokenValidationService } from '../validation/token-validation.service';
+import { CheckAuthService } from './../check-auth.service';
+import { UserService } from './../userData/user-service';
 import { AuthOptions } from './auth-options';
 
 @Injectable()
@@ -18,7 +21,10 @@ export class LoginService {
     private redirectService: RedirectService,
     private configurationProvider: ConfigurationProvider,
     private authWellKnownService: AuthWellKnownService,
-    private popupService: PopUpService
+    private popupService: PopUpService,
+    private checkAuthService: CheckAuthService,
+    private userService: UserService,
+    private authStateService: AuthStateService
   ) {}
 
   login(authOptions?: AuthOptions) {
@@ -77,7 +83,14 @@ export class LoginService {
 
         this.popupService.openPopUp(authUrl);
 
-        return this.popupService.hasResult$;
+        return this.popupService.receivedUrl$.pipe(
+          switchMap((url: string) => this.checkAuthService.checkAuth(url)),
+          map((isAuthenticated) => ({
+            isAuthenticated,
+            userData: this.userService.getUserDataFromStore(),
+            accessToken: this.authStateService.getAccessToken(),
+          }))
+        );
       })
     );
   }

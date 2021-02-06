@@ -3,26 +3,30 @@ import { Subject } from 'rxjs/internal/Subject';
 
 @Injectable({ providedIn: 'root' })
 export class PopUpService {
-  private modal: Window;
+  private popUp: Window;
 
-  private hasResultInternal$ = new Subject();
+  private receivedUrlInternal$ = new Subject();
 
-  get hasResult$() {
-    return this.hasResultInternal$.asObservable();
+  get receivedUrl$() {
+    return this.receivedUrlInternal$.asObservable();
   }
 
   constructor() {}
 
+  hasPopup() {
+    return window.opener && window.opener !== window;
+  }
+
   openPopUp(url: string) {
     const options = `width=500,height=500,left=50,top=50`;
-    this.modal = window.open(url, '_blank', options);
+    this.popUp = window.open(url, '_blank', options);
 
     const listener = (event: MessageEvent) => {
       // console.log('event', event);
       // console.log('event.origin', event.origin);
       // console.log('current href', window.location.href);
 
-      this.hasResultInternal$.next(event.data);
+      this.receivedUrlInternal$.next(event.data);
 
       this.cleanUp(listener);
     };
@@ -30,9 +34,9 @@ export class PopUpService {
     window.addEventListener('message', listener, false);
   }
 
-  sendMessageToMainWindow(messageObj: any) {
+  sendMessageToMainWindow(url: string) {
     try {
-      this.trySendMessage(window?.opener, messageObj, window.location.href);
+      this.trySendMessage(window?.opener, url, window.location.href);
     } catch (error) {
       console.error(error);
     }
@@ -41,15 +45,15 @@ export class PopUpService {
   private cleanUp(listener: any) {
     window.removeEventListener('message', listener, false);
 
-    if (this.modal) {
-      this.modal.close();
-      this.modal = null;
+    if (this.popUp) {
+      this.popUp.close();
+      this.popUp = null;
     }
   }
 
-  private trySendMessage(targetWindow: any, messageObj: boolean, origin: string) {
+  private trySendMessage(targetWindow: any, url: string, origin: string) {
     if (targetWindow) {
-      targetWindow.postMessage(messageObj, origin);
+      targetWindow.postMessage(url, origin);
     }
   }
 }
