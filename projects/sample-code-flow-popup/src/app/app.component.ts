@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -7,9 +8,11 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  modal: Window;
-
   title = 'sample-code-flow-popup';
+
+  userData$: Observable<any>;
+
+  isAuthenticated: boolean;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
@@ -22,8 +25,8 @@ export class AppComponent {
   }
 
   loginWithPopup() {
-    this.oidcSecurityService.authorizeWithPopUp().subscribe((isAuthenticated) => {
-      console.log('app authorizeWithPopUp', isAuthenticated);
+    this.oidcSecurityService.authorizeWithPopUp().subscribe((result) => {
+      console.log(result);
     });
   }
 }

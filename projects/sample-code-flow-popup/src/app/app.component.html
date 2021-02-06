@@ -1,1 +1,5 @@
 <button (click)="loginWithPopup()">Open PopUp</button>
+
+<div *ngIf="isAuthenticated">
+  {{ isAuthenticated | json }}
+</div>

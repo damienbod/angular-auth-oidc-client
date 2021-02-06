@@ -70,10 +70,10 @@ export class UserService {
   }
 
   publishUserdataIfExists() {
-    const userdata = this.getUserDataFromStore();
-    if (userdata) {
-      this.userDataInternal$.next(userdata);
-      this.eventService.fireEvent(EventTypes.UserDataChanged, userdata);
+    const userData = this.getUserDataFromStore();
+    if (userData) {
+      this.userDataInternal$.next(userData);
+      this.eventService.fireEvent(EventTypes.UserDataChanged, userData);
     }
   }
 

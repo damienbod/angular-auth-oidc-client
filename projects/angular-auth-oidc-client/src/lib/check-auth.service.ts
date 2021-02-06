@@ -10,6 +10,7 @@ import { ConfigurationProvider } from './config/config.provider';
 import { CheckSessionService } from './iframe/check-session.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
 import { LoggerService } from './logging/logger.service';
+import { PopUpService } from './popup.service';
 import { UserService } from './userData/user-service';
 
 @Injectable()
@@ -24,7 +25,8 @@ export class CheckAuthService {
     private authStateService: AuthStateService,
     private callbackService: CallbackService,
     private refreshSessionService: RefreshSessionService,
-    private periodicallyTokenCheckService: PeriodicallyTokenCheckService
+    private periodicallyTokenCheckService: PeriodicallyTokenCheckService,
+    private popupService: PopUpService
   ) {}
 
   checkAuth(url?: string): Observable<boolean> {
@@ -54,7 +56,9 @@ export class CheckAuthService {
           }
         }
 
-        this.loggerService.logDebug('checkAuth completed fire events, auth: ' + isAuthenticated);
+        this.sendEventFromPopupToMainWindow(isAuthenticated);
+
+        this.loggerService.logDebug('checkAuth completed fired events, auth: ' + isAuthenticated);
 
         return isAuthenticated;
       }),
@@ -95,5 +99,11 @@ export class CheckAuthService {
     if (this.silentRenewService.isSilentRenewConfigured()) {
       this.silentRenewService.getOrCreateIframe();
     }
+  }
+
+  private sendEventFromPopupToMainWindow(isAuthenticated: boolean) {
+    const userData = this.userService.getUserDataFromStore();
+    const accessToken = this.authStateService.getAccessToken();
+    this.popupService.sendMessageToMainWindow({ isAuthenticated, userData, accessToken });
   }
 }
