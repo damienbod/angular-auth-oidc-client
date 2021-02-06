@@ -25,8 +25,10 @@ export class AppComponent {
   }
 
   loginWithPopup() {
-    this.oidcSecurityService.authorizeWithPopUp().subscribe((result) => {
-      console.log(result);
+    this.oidcSecurityService.authorizeWithPopUp().subscribe(({ isAuthenticated, userData, accessToken }) => {
+      console.log(isAuthenticated);
+      console.log(userData);
+      console.log(accessToken);
     });
   }
 }
