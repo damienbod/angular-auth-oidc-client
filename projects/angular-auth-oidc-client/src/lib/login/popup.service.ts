@@ -11,8 +11,8 @@ export class PopUpService {
     return this.receivedUrlInternal$.asObservable();
   }
 
-  hasPopup() {
-    return window.opener && window.opener !== window;
+  isCurrentlyInPopup() {
+    return !!window.opener && window.opener !== window;
   }
 
   openPopUp(url: string, popupOptions?: PopupOptions) {
@@ -45,8 +45,8 @@ export class PopUpService {
   }
 
   sendMessageToMainWindow(url: string) {
-    if (window?.opener) {
-      window?.opener.postMessage(url, window.location.href);
+    if (window.opener) {
+      this.sendMessage(url, window.location.href);
     }
   }
 
@@ -57,5 +57,9 @@ export class PopUpService {
       this.popUp.close();
       this.popUp = null;
     }
+  }
+
+  private sendMessage(url: string, href: string) {
+    window.opener.postMessage(url, href);
   }
 }

@@ -39,7 +39,7 @@ export class CheckAuthService {
 
     const currentUrl = url || this.doc.defaultView.location.toString();
 
-    if (this.popupService.hasPopup()) {
+    if (this.popupService.isCurrentlyInPopup()) {
       this.popupService.sendMessageToMainWindow(currentUrl);
       return of(null);
     }
