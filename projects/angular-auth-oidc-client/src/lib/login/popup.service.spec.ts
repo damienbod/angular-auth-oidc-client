@@ -49,6 +49,28 @@ describe('PopUpService', () => {
     );
   });
 
+  describe('openPopup', () => {
+    it(
+      'popup opens with parameters and defaultoptions',
+      waitForAsync(() => {
+        const popupSpy = spyOn(window, 'open').and.callFake(() => null);
+        popUpService.openPopUp('url');
+
+        expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', 'width=500,height=500,left=50,top=50');
+      })
+    );
+
+    it(
+      'popup opens with parameters and passed options',
+      waitForAsync(() => {
+        const popupSpy = spyOn(window, 'open').and.callFake(() => null);
+        popUpService.openPopUp('url', { width: 100 });
+
+        expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', 'width=100,height=500,left=50,top=50');
+      })
+    );
+  });
+
   describe('sendMessageToMainWindow', () => {
     it(
       'does nothing if window.opener is null',

@@ -16,19 +16,7 @@ export class PopUpService {
   }
 
   openPopUp(url: string, popupOptions?: PopupOptions) {
-    const popupDefaultOptions = {
-      width: 500,
-      height: 500,
-      left: 50,
-      top: 50,
-    };
-
-    const options = { ...popupDefaultOptions, ...(popupOptions || {}) };
-
-    const optionsToPass = Object.entries(options)
-      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-      .join(',');
-
+    const optionsToPass = this.getOptions(popupOptions);
     this.popUp = window.open(url, '_blank', optionsToPass);
 
     const listener = (event: MessageEvent) => {
@@ -61,5 +49,15 @@ export class PopUpService {
 
   private sendMessage(url: string, href: string) {
     window.opener.postMessage(url, href);
+  }
+
+  private getOptions(popupOptions?: PopupOptions) {
+    const popupDefaultOptions = { width: 500, height: 500, left: 50, top: 50 };
+
+    const options = { ...popupDefaultOptions, ...(popupOptions || {}) };
+
+    return Object.entries(options)
+      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+      .join(',');
   }
 }
