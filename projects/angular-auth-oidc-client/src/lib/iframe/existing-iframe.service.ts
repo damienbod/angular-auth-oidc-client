@@ -22,6 +22,7 @@ export class IFrameService {
   addIFrameToWindowBody(identifier: string): HTMLIFrameElement {
     const sessionIframe = this.doc.createElement('iframe');
     sessionIframe.id = identifier;
+    sessionIframe.title = identifier;
     this.loggerService.logDebug(sessionIframe);
     sessionIframe.style.display = 'none';
     this.doc.body.appendChild(sessionIframe);
