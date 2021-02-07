@@ -1049,7 +1049,7 @@
             "browserTarget": "sample-code-flow-popup:build",
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
-            "port": 4200
+            "port": 4205
           },
           "configurations": {
             "production": {
