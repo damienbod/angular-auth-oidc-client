@@ -11,9 +11,9 @@ import { NavigationComponent } from './navigation/navigation.component';
 import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 
 @NgModule({
-    imports: [BrowserModule, routing, HttpClientModule, AuthConfigModule],
-    declarations: [AppComponent, ForbiddenComponent, HomeComponent, AutoLoginComponent, NavigationComponent, UnauthorizedComponent],
-    providers: [],
-    bootstrap: [AppComponent],
+  imports: [BrowserModule, routing, HttpClientModule, AuthConfigModule],
+  declarations: [AppComponent, ForbiddenComponent, HomeComponent, AutoLoginComponent, NavigationComponent, UnauthorizedComponent],
+  providers: [],
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

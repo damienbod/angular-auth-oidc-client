@@ -8,13 +8,13 @@ import { installPackageJsonDependencies } from './install-dependencies';
 import { parseSchema } from './schema-parser';
 
 export function getAllActions(options: Schema) {
-    const ngAddOptions = parseSchema(options);
-    return [
-        addPackageJsonDependencies(),
-        installPackageJsonDependencies(),
-        copyModuleFile(ngAddOptions),
-        addModuleToImports(ngAddOptions),
-        addSilentRenewHtmlToAssetsArrayInAngularJson(ngAddOptions),
-        copySilentRenewHtmlToRoot(ngAddOptions),
-    ];
+  const ngAddOptions = parseSchema(options);
+  return [
+    addPackageJsonDependencies(),
+    installPackageJsonDependencies(),
+    copyModuleFile(ngAddOptions),
+    addModuleToImports(ngAddOptions),
+    addSilentRenewHtmlToAssetsArrayInAngularJson(ngAddOptions),
+    copySilentRenewHtmlToRoot(ngAddOptions),
+  ];
 }

@@ -1,12 +1,12 @@
 body {
-padding-top: 0;
+  padding-top: 0;
 }
 
 .starter-template {
-padding: 40px 15px;
-text-align: center;
+  padding: 40px 15px;
+  text-align: center;
 }
 
 .navigationLinkButton:hover {
-cursor: pointer;
+  cursor: pointer;
 }

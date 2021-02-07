@@ -3,35 +3,35 @@ import { OidcClientNotification, OidcSecurityService, PublicConfiguration } from
 import { Observable } from 'rxjs';
 
 @Component({
-    selector: 'app-home',
-    templateUrl: 'home.component.html',
+  selector: 'app-home',
+  templateUrl: 'home.component.html',
 })
 export class HomeComponent implements OnInit {
-    configuration: PublicConfiguration;
-    userDataChanged$: Observable<OidcClientNotification<any>>;
-    userData$: Observable<any>;
-    isAuthenticated$: Observable<boolean>;
-    checkSessionChanged$: Observable<boolean>;
-    checkSessionChanged: any;
+  configuration: PublicConfiguration;
+  userDataChanged$: Observable<OidcClientNotification<any>>;
+  userData$: Observable<any>;
+  isAuthenticated$: Observable<boolean>;
+  checkSessionChanged$: Observable<boolean>;
+  checkSessionChanged: any;
 
-    constructor(public oidcSecurityService: OidcSecurityService) {}
+  constructor(public oidcSecurityService: OidcSecurityService) {}
 
-    ngOnInit() {
-        this.configuration = this.oidcSecurityService.configuration;
-        this.userData$ = this.oidcSecurityService.userData$;
-        this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
-        this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
-    }
+  ngOnInit() {
+    this.configuration = this.oidcSecurityService.configuration;
+    this.userData$ = this.oidcSecurityService.userData$;
+    this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
+    this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
+  }
 
-    login() {
-        this.oidcSecurityService.authorize();
-    }
+  login() {
+    this.oidcSecurityService.authorize();
+  }
 
-    refreshSession() {
-        this.oidcSecurityService.forceRefreshSession().subscribe((result) => console.log(result));
-    }
+  refreshSession() {
+    this.oidcSecurityService.forceRefreshSession().subscribe((result) => console.log(result));
+  }
 
-    logout() {
-        this.oidcSecurityService.logoff();
-    }
+  logout() {
+    this.oidcSecurityService.logoff();
+  }
 }
