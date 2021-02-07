@@ -164,9 +164,9 @@ describe('OidcSecurityService', () => {
     it(
       'calls login service loginWithPopUp',
       waitForAsync(() => {
-        const spy = spyOn(loginService, 'login');
+        const spy = spyOn(loginService, 'loginWithPopUp').and.callFake(() => of(null));
         oidcSecurityService.authorizeWithPopUp().subscribe(() => {
-          expect(spy).toHaveBeenCalled();
+          expect(spy).toHaveBeenCalledTimes(1);
         });
       })
     );
@@ -174,7 +174,7 @@ describe('OidcSecurityService', () => {
     it(
       'calls login service loginWithPopUp with params if given',
       waitForAsync(() => {
-        const spy = spyOn(loginService, 'loginWithPopUp');
+        const spy = spyOn(loginService, 'loginWithPopUp').and.callFake(() => of(null));
         oidcSecurityService.authorizeWithPopUp({ customParams: { any: 'thing' } }).subscribe(() => {
           expect(spy).toHaveBeenCalledWith({ customParams: { any: 'thing' } });
         });
@@ -204,12 +204,26 @@ describe('OidcSecurityService', () => {
     });
 
     it(
-      'returns checkSessionService.checkSessionChanged$',
+      'checkSessionChanged emits false initially',
       waitForAsync(() => {
-        const spy = spyOnProperty(checkSessionService, 'checkSessionChanged$', 'get');
-        oidcSecurityService.isAuthenticated$.subscribe(() => {
-          expect(spy).toHaveBeenCalled();
+        spyOnProperty(oidcSecurityService, 'checkSessionChanged$', 'get').and.callThrough();
+        oidcSecurityService.checkSessionChanged$.subscribe((result) => {
+          expect(result).toBe(false);
         });
+      })
+    );
+
+    it(
+      'checkSessionChanged emits false then true when emitted',
+      waitForAsync(() => {
+        const expectedResultsInOrder = [false, true];
+        let counter = 0;
+        oidcSecurityService.checkSessionChanged$.subscribe((result) => {
+          expect(result).toBe(expectedResultsInOrder[counter]);
+          counter++;
+        });
+
+        (checkSessionService as any).checkSessionChangedInternal$.next(true);
       })
     );
   });

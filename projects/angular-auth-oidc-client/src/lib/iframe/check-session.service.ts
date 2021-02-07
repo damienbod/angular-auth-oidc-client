@@ -20,12 +20,12 @@ export class CheckSessionService {
   private outstandingMessages = 0;
   private heartBeatInterval = 3000;
   private iframeRefreshInterval = 60000;
-
   private checkSessionChangedInternal$ = new BehaviorSubject<boolean>(false);
 
   get checkSessionChanged$() {
     return this.checkSessionChangedInternal$.asObservable();
   }
+
   constructor(
     private storagePersistanceService: StoragePersistanceService,
     private loggerService: LoggerService,
