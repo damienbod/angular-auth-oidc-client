@@ -1,9 +1,10 @@
-# Authorizing in a popup
+# Authentication using a Popup
 
-You can call the Provider's authorization endpoint in a popup instead of navigating to it in the app's parent window.
+You can authenticate with any Open ID Connect identity provider using a popup.
+
 This allows you to have the provider's consent prompt display in a popup window to avoid unloading and reloading the app.
 
-Sample:
+## Sample
 
 ```typescript
   userData$: Observable<any>;
@@ -28,3 +29,7 @@ Sample:
     });
   }
 ```
+
+## Sample Application
+
+[app.component.ts](../projects/sample-code-flow-popup/src/app/app.component.ts)
