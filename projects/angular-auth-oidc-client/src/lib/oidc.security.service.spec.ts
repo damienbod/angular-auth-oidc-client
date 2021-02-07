@@ -147,17 +147,39 @@ describe('OidcSecurityService', () => {
   });
 
   describe('authorize', () => {
-    it('calls loginservice login', () => {
+    it('calls login service login', () => {
       const spy = spyOn(loginService, 'login');
       oidcSecurityService.authorize();
       expect(spy).toHaveBeenCalled();
     });
 
-    it('calls loginservice login with params if given', () => {
+    it('calls login service login with params if given', () => {
       const spy = spyOn(loginService, 'login');
       oidcSecurityService.authorize({ customParams: { any: 'thing' } });
       expect(spy).toHaveBeenCalledWith({ customParams: { any: 'thing' } });
     });
+  });
+
+  describe('authorizeWithPopUp', () => {
+    it(
+      'calls login service loginWithPopUp',
+      waitForAsync(() => {
+        const spy = spyOn(loginService, 'login');
+        oidcSecurityService.authorizeWithPopUp().subscribe(() => {
+          expect(spy).toHaveBeenCalled();
+        });
+      })
+    );
+
+    it(
+      'calls login service loginWithPopUp with params if given',
+      waitForAsync(() => {
+        const spy = spyOn(loginService, 'loginWithPopUp');
+        oidcSecurityService.authorizeWithPopUp({ customParams: { any: 'thing' } }).subscribe(() => {
+          expect(spy).toHaveBeenCalledWith({ customParams: { any: 'thing' } });
+        });
+      })
+    );
   });
 
   describe('isAuthenticated', () => {
@@ -165,11 +187,15 @@ describe('OidcSecurityService', () => {
       expect(oidcSecurityService.isAuthenticated$).toEqual(jasmine.any(Observable));
     });
 
-    it('returns authStateService.authorized$', () => {
-      const spy = spyOnProperty(authStateService, 'authorized$', 'get');
-      oidcSecurityService.isAuthenticated$;
-      expect(spy).toHaveBeenCalled();
-    });
+    it(
+      'returns authStateService.authorized$',
+      waitForAsync(() => {
+        const spy = spyOnProperty(authStateService, 'authorized$', 'get').and.returnValue(of(null));
+        oidcSecurityService.isAuthenticated$.subscribe(() => {
+          expect(spy).toHaveBeenCalled();
+        });
+      })
+    );
   });
 
   describe('checkSessionChanged', () => {
@@ -177,11 +203,15 @@ describe('OidcSecurityService', () => {
       expect(oidcSecurityService.checkSessionChanged$).toEqual(jasmine.any(Observable));
     });
 
-    it('returns checkSessionService.checkSessionChanged$', () => {
-      const spy = spyOnProperty(checkSessionService, 'checkSessionChanged$', 'get');
-      oidcSecurityService.checkSessionChanged$;
-      expect(spy).toHaveBeenCalled();
-    });
+    it(
+      'returns checkSessionService.checkSessionChanged$',
+      waitForAsync(() => {
+        const spy = spyOnProperty(checkSessionService, 'checkSessionChanged$', 'get');
+        oidcSecurityService.isAuthenticated$.subscribe(() => {
+          expect(spy).toHaveBeenCalled();
+        });
+      })
+    );
   });
 
   describe('stsCallback', () => {
@@ -516,8 +546,6 @@ describe('OidcSecurityService', () => {
       })
     );
   });
-
-  describe('authorize', () => {});
 
   describe('logoffAndRevokeTokens', () => {
     it(
