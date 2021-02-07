@@ -306,7 +306,7 @@ describe('User Service', () => {
       spyOn(userService, 'getUserDataFromStore').and.returnValue('');
       const observableSpy = spyOn((userService as any).userDataInternal$, 'next');
       const eventSpy = spyOn(eventsService, 'fireEvent');
-      userService.publishUserdataIfExists();
+      userService.publishUserDataIfExists();
       expect(observableSpy).not.toHaveBeenCalled();
       expect(eventSpy).not.toHaveBeenCalled();
     });
@@ -314,14 +314,14 @@ describe('User Service', () => {
     it('userDataInternal is fired if userdata exists', () => {
       spyOn(userService, 'getUserDataFromStore').and.returnValue('something');
       const observableSpy = spyOn((userService as any).userDataInternal$, 'next');
-      userService.publishUserdataIfExists();
+      userService.publishUserDataIfExists();
       expect(observableSpy).toHaveBeenCalledWith('something');
     });
 
     it('eventservice UserDataChanged is fired if userdata exists', () => {
       spyOn(userService, 'getUserDataFromStore').and.returnValue('something');
       const eventSpy = spyOn(eventsService, 'fireEvent');
-      userService.publishUserdataIfExists();
+      userService.publishUserDataIfExists();
       expect(eventSpy).toHaveBeenCalledWith(EventTypes.UserDataChanged, 'something');
     });
   });

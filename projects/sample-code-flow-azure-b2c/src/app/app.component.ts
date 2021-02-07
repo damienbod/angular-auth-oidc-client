@@ -3,55 +3,55 @@ import { Router } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: 'app.component.html',
+  selector: 'app-root',
+  templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit, OnDestroy {
-    constructor(public oidcSecurityService: OidcSecurityService, private router: Router) {}
+  constructor(public oidcSecurityService: OidcSecurityService, private router: Router) {}
 
-    ngOnInit() {
-        this.oidcSecurityService
-            .checkAuth()
+  ngOnInit() {
+    this.oidcSecurityService
+      .checkAuth()
 
-            .subscribe((isAuthenticated) => {
-                if (!isAuthenticated) {
-                    if ('/autologin' !== window.location.pathname) {
-                        this.write('redirect', window.location.pathname);
-                        this.router.navigate(['/autologin']);
-                    }
-                }
-                if (isAuthenticated) {
-                    this.navigateToStoredEndpoint();
-                }
-            });
-    }
-
-    ngOnDestroy(): void {}
-
-    private navigateToStoredEndpoint() {
-        const path = this.read('redirect');
-
-        if (this.router.url === path) {
-            return;
+      .subscribe((isAuthenticated) => {
+        if (!isAuthenticated) {
+          if ('/autologin' !== window.location.pathname) {
+            this.write('redirect', window.location.pathname);
+            this.router.navigate(['/autologin']);
+          }
         }
-
-        if (path.toString().includes('/unauthorized')) {
-            this.router.navigate(['/']);
-        } else {
-            this.router.navigate([path]);
+        if (isAuthenticated) {
+          this.navigateToStoredEndpoint();
         }
+      });
+  }
+
+  ngOnDestroy(): void {}
+
+  private navigateToStoredEndpoint() {
+    const path = this.read('redirect');
+
+    if (this.router.url === path) {
+      return;
     }
 
-    private read(key: string): any {
-        const data = localStorage.getItem(key);
-        if (data != null) {
-            return JSON.parse(data);
-        }
+    if (path.toString().includes('/unauthorized')) {
+      this.router.navigate(['/']);
+    } else {
+      this.router.navigate([path]);
+    }
+  }
 
-        return;
+  private read(key: string): any {
+    const data = localStorage.getItem(key);
+    if (data != null) {
+      return JSON.parse(data);
     }
 
-    private write(key: string, value: any): void {
-        localStorage.setItem(key, JSON.stringify(value));
-    }
+    return;
+  }
+
+  private write(key: string, value: any): void {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
 }

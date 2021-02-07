@@ -12,14 +12,14 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 
 ## Features
 
--   Supports OpenID Connect Code Flow with PKCE
--   Supports Code Flow PKCE with Refresh tokens
--   Supports Revocation Endpoint
--   Support for current best practice
--   Implements OIDC validation as specified, complete client side validation for REQUIRED features
--   [Supports OpenID Connect Implicit Flow](http://openid.net/specs/openid-connect-implicit-1_0.html)
--   [OpenID Connect Session Management 1.0](http://openid.net/specs/openid-connect-session-1_0.html)
--   Samples for most of the common use cases
+- Supports OpenID Connect Code Flow with PKCE
+- Supports Code Flow PKCE with Refresh tokens
+- Supports Revocation Endpoint
+- Support for current best practice
+- Implements OIDC validation as specified, complete client side validation for REQUIRED features
+- [Supports OpenID Connect Implicit Flow](http://openid.net/specs/openid-connect-implicit-1_0.html)
+- [OpenID Connect Session Management 1.0](http://openid.net/specs/openid-connect-session-1_0.html)
+- Samples for most of the common use cases
 
 ## Installation
 
@@ -51,40 +51,42 @@ or with yarn
 
 ## Documentation
 
--   [Quickstart](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/quickstart.md)
--   [Samples](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md)
+- [Quickstart](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/quickstart.md)
+- [Samples](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md)
 
-    -   [Code Flow with PKCE Using a configuration from an http source and silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#code-flow-with-pkce-using-a-configuration-from-an-http-source-and-silent-renew)
-    -   [Code Flow PKCE with Refresh tokens](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#code-flow-pkce-with-refresh-tokens)
-    -   [Code Flow PKCE Auto login](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#code-flow-pkce-auto-login)
-    -   [Code Flow with PKCE basic with silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#code-flow-with-pkce-basic-with-silent-renew)
-    -   [Azure B2C Code Flow PKCE with silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#azure-b2c-code-flow-pkce-with-silent-renew)
-    -   [Azure AD Code Flow PKCE with silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#azure-ad-oidc-code-flow-with-pkce)
-    -   [Implicit Flow with silent renew (Not recommended)](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#implicit-flow-with-silent-renew-not-recommended)
-    -   [Implicit Flow google (Not recommended)](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#implicit-flow-google-not-recommended)
-    -   [Code flow with a lazy loaded module](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/samples.md#code-flow-with-a-lazy-loaded-module)
+  - [Code Flow with PKCE Using a configuration from an http source and silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#code-flow-with-pkce-using-a-configuration-from-an-http-source-and-silent-renew)
+  - [Code Flow PKCE with Refresh tokens](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#code-flow-pkce-with-refresh-tokens)
+  - [Code Flow PKCE Auto login](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#code-flow-pkce-auto-login)
+  - [Code Flow with PKCE basic with silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#code-flow-with-pkce-basic-with-silent-renew)
+  - [Azure B2C Code Flow PKCE with silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#azure-b2c-code-flow-pkce-with-silent-renew)
+  - [Azure AD Code Flow PKCE with silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#azure-ad-oidc-code-flow-with-pkce)
+  - [Implicit Flow with silent renew (Not recommended)](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#implicit-flow-with-silent-renew-not-recommended)
+  - [Implicit Flow google (Not recommended)](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#implicit-flow-google-not-recommended)
+  - [Code flow with a lazy loaded module](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#code-flow-with-a-lazy-loaded-module)
+  - [Code flow with popup](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#sample-code-flow-popup)
 
--   [Silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/silent-renew.md)
+- [Silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/silent-renew.md)
 
-    -   [Silent Renew Code Flow with PKCE](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/silent-renew.md#silent-renew-code-flow-with-pkce)
-    -   [Silent Renew Code Flow with PKCE with refresh tokens](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/silent-renew.md#silent-renew-code-flow-with-pkce-with-refresh-tokens)
-    -   [Silent Renew Implicit Flow](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/silent-renew.md#silent-renew-implicit-flow)
-    -   [Secure Token Server CSP and CORS](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/silent-renew.md#secure-token-server-csp-and-cors)
+  - [Silent Renew Code Flow with PKCE](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/silent-renew.md#silent-renew-code-flow-with-pkce)
+  - [Silent Renew Code Flow with PKCE with refresh tokens](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/silent-renew.md#silent-renew-code-flow-with-pkce-with-refresh-tokens)
+  - [Silent Renew Implicit Flow](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/silent-renew.md#silent-renew-implicit-flow)
+  - [Secure Token Server CSP and CORS](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/silent-renew.md#secure-token-server-csp-and-cors)
 
--   [Guards](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/guards.md)
--   [Features](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md)
-    -   [Public Events](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md#public-events)
-    -   [Custom Storage](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md#custom-storage)
-    -   [Custom parameters](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md#custom-parameters)
-    -   [Using the OIDC package in a module or a Angular lib](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md#using-the-oidc-package-in-a-module-or-a-angular-lib)
-    -   [Delay the loading or pass an existing AuthWellKnownEndpoints config](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/features.md#delay-the-loading-or-pass-an-existing-well-knownopenid-configuration-configuration)
--   [Logout](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/logout.md)
--   [Using and revoking the access token](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/using-access-tokens.md)
--   [CSP & CORS](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/csp-cors-config.md)
--   [Public API](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/public-api.md)
--   [Configuration](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/configuration.md)
--   [Migration](https://github.com/damienbod/angular-auth-oidc-client/tree/master/docs/migration.md)
--   [Changelog](https://github.com/damienbod/angular-auth-oidc-client/tree/master/CHANGELOG.md)
+- [Guards](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/guards.md)
+- [Features](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/features.md)
+  - [Public Events](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/features.md#public-events)
+  - [Auth with a popup](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/authorizing-popup.md)
+  - [Custom Storage](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/features.md#custom-storage)
+  - [Custom parameters](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/features.md#custom-parameters)
+  - [Using the OIDC package in a module or a Angular lib](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/features.md#using-the-oidc-package-in-a-module-or-a-angular-lib)
+  - [Delay the loading or pass an existing AuthWellKnownEndpoints config](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/features.md#delay-the-loading-or-pass-an-existing-well-knownopenid-configuration-configuration)
+- [Logout](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/logout.md)
+- [Using and revoking the access token](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/using-access-tokens.md)
+- [CSP & CORS](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/csp-cors-config.md)
+- [Public API](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/public-api.md)
+- [Configuration](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/configuration.md)
+- [Migration](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/migration.md)
+- [Changelog](https://github.com/damienbod/angular-auth-oidc-client/tree/master/CHANGELOG.md)
 
 ## Quickstart
 
@@ -101,36 +103,36 @@ import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-clien
 // ...
 
 export function configureAuth(oidcConfigService: OidcConfigService) {
-    return () =>
-        oidcConfigService.withConfig({
-            stsServer: '<your sts address here>',
-            redirectUrl: window.location.origin,
-            postLogoutRedirectUri: window.location.origin,
-            clientId: 'angularClient',
-            scope: 'openid profile email',
-            responseType: 'code',
-            silentRenew: true,
-            silentRenewUrl: `${window.location.origin}/silent-renew.html`,
-            logLevel: LogLevel.Debug,
-        });
+  return () =>
+    oidcConfigService.withConfig({
+      stsServer: '<your sts address here>',
+      redirectUrl: window.location.origin,
+      postLogoutRedirectUri: window.location.origin,
+      clientId: 'angularClient',
+      scope: 'openid profile email',
+      responseType: 'code',
+      silentRenew: true,
+      silentRenewUrl: `${window.location.origin}/silent-renew.html`,
+      logLevel: LogLevel.Debug,
+    });
 }
 
 @NgModule({
+  // ...
+  imports: [
     // ...
-    imports: [
-        // ...
-        AuthModule.forRoot(),
-    ],
-    providers: [
-        OidcConfigService,
-        {
-            provide: APP_INITIALIZER,
-            useFactory: configureAuth,
-            deps: [OidcConfigService],
-            multi: true,
-        },
-    ],
-    // ...
+    AuthModule.forRoot(),
+  ],
+  providers: [
+    OidcConfigService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: configureAuth,
+      deps: [OidcConfigService],
+      multi: true,
+    },
+  ],
+  // ...
 })
 export class AppModule {}
 ```
@@ -143,22 +145,22 @@ import { OidcClientNotification, OidcSecurityService, PublicConfiguration } from
 import { Observable } from 'rxjs';
 
 @Component({
-    /**/
+  /**/
 })
 export class AppComponent implements OnInit {
-    constructor(public oidcSecurityService: OidcSecurityService) {}
+  constructor(public oidcSecurityService: OidcSecurityService) {}
 
-    ngOnInit() {
-        this.oidcSecurityService.checkAuth().subscribe((auth) => console.log('is authenticated', auth));
-    }
+  ngOnInit() {
+    this.oidcSecurityService.checkAuth().subscribe((auth) => console.log('is authenticated', auth));
+  }
 
-    login() {
-        this.oidcSecurityService.authorize();
-    }
+  login() {
+    this.oidcSecurityService.authorize();
+  }
 
-    logout() {
-        this.oidcSecurityService.logoff();
-    }
+  logout() {
+    this.oidcSecurityService.logoff();
+  }
 }
 ```
 
@@ -178,9 +180,9 @@ import { HttpHeaders } from '@angular/common/http';
 const token = this.oidcSecurityServices.getToken();
 
 const httpOptions = {
-    headers: new HttpHeaders({
-        Authorization: 'Bearer ' + token,
-    }),
+  headers: new HttpHeaders({
+    Authorization: 'Bearer ' + token,
+  }),
 };
 ```
 

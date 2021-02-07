@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './authState/auth-state.service';
+import { CheckAuthService } from './check-auth.service';
 import { ConfigValidationService } from './config-validation/config-validation.service';
 import { AuthWellKnownDataService } from './config/auth-well-known-data.service';
 import { AuthWellKnownService } from './config/auth-well-known.service';
@@ -72,6 +73,7 @@ export class AuthModule {
         DataService,
         StateValidationService,
         ConfigValidationService,
+        CheckAuthService,
         {
           provide: AbstractSecurityStorage,
           useClass: token.storage || BrowserStorageService,

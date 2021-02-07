@@ -1,28 +1,28 @@
 {
-    "$schema": "http://json-schema.org/schema",
-    "id": "SchematicsMyService",
-    "title": "My Service Schema",
-    "type": "object",
-    "properties": {
-        "flowType": {
-            "description": "The flow the user wants to configure",
-            "x-prompt": "What flow to use?",
-            "enum": [
-                "OIDC Code Flow PKCE Azure AD using refresh tokens",
-                "OIDC Code Flow PKCE Azure AD using iframe silent renew",
-                "OIDC Code Flow PKCE using refresh tokens",
-                "OIDC Code Flow PKCE using iframe silent renew",
-                "OIDC Code Flow PKCE using iframe silent renew getting config from http",
-                "OIDC Code Flow PKCE (no renew)",
-                "Auth0",
-                "Default config"
-            ]
-        },
-        "stsUrlOrTenantId": {
-            "description": "Please enter your STS URL or Azure tenant id or Http config URL",
-            "type": "string",
-            "x-prompt": "Please enter your STS URL or Azure tenant id or Http config URL"
-        }
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicsMyService",
+  "title": "My Service Schema",
+  "type": "object",
+  "properties": {
+    "flowType": {
+      "description": "The flow the user wants to configure",
+      "x-prompt": "What flow to use?",
+      "enum": [
+        "OIDC Code Flow PKCE Azure AD using refresh tokens",
+        "OIDC Code Flow PKCE Azure AD using iframe silent renew",
+        "OIDC Code Flow PKCE using refresh tokens",
+        "OIDC Code Flow PKCE using iframe silent renew",
+        "OIDC Code Flow PKCE using iframe silent renew getting config from http",
+        "OIDC Code Flow PKCE (no renew)",
+        "Auth0",
+        "Default config"
+      ]
     },
-    "required": ["stsUrlOrTenantId", "flowType"]
+    "stsUrlOrTenantId": {
+      "description": "Please enter your STS URL or Azure tenant id or Http config URL",
+      "type": "string",
+      "x-prompt": "Please enter your STS URL or Azure tenant id or Http config URL"
+    }
+  },
+  "required": ["stsUrlOrTenantId", "flowType"]
 }

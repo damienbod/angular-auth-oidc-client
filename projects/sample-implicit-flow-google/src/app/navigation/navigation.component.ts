@@ -3,27 +3,27 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 
 @Component({
-    selector: 'app-navigation',
-    templateUrl: 'navigation.component.html',
+  selector: 'app-navigation',
+  templateUrl: 'navigation.component.html',
 })
 export class NavigationComponent implements OnInit {
-    isAuthenticated$: Observable<boolean>;
+  isAuthenticated$: Observable<boolean>;
 
-    constructor(public oidcSecurityService: OidcSecurityService) {}
+  constructor(public oidcSecurityService: OidcSecurityService) {}
 
-    ngOnInit() {
-        this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
-    }
+  ngOnInit() {
+    this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
+  }
 
-    login() {
-        this.oidcSecurityService.authorize();
-    }
+  login() {
+    this.oidcSecurityService.authorize();
+  }
 
-    refreshSession() {
-        this.oidcSecurityService.authorize();
-    }
+  refreshSession() {
+    this.oidcSecurityService.authorize();
+  }
 
-    logout() {
-        this.oidcSecurityService.logoff();
-    }
+  logout() {
+    this.oidcSecurityService.logoff();
+  }
 }

@@ -24,8 +24,8 @@ export class UserService {
     private eventService: PublicEventsService,
     private loggerService: LoggerService,
     private tokenHelperService: TokenHelperService,
-    private readonly flowHelper: FlowHelper,
-    private readonly configurationProvider: ConfigurationProvider
+    private flowHelper: FlowHelper,
+    private configurationProvider: ConfigurationProvider
   ) {}
 
   // TODO CHECK PARAMETERS
@@ -69,11 +69,11 @@ export class UserService {
     return this.storagePersistanceService.read('userData') || null;
   }
 
-  publishUserdataIfExists() {
-    const userdata = this.getUserDataFromStore();
-    if (userdata) {
-      this.userDataInternal$.next(userdata);
-      this.eventService.fireEvent(EventTypes.UserDataChanged, userdata);
+  publishUserDataIfExists() {
+    const userData = this.getUserDataFromStore();
+    if (userData) {
+      this.userDataInternal$.next(userData);
+      this.eventService.fireEvent(EventTypes.UserDataChanged, userData);
     }
   }
 

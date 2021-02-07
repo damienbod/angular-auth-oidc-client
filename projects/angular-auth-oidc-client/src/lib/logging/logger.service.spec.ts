@@ -44,7 +44,7 @@ describe('Logger Service', () => {
       const spy = spyOn(console, 'error');
 
       loggerService.logError('some message', 'arg1', 'arg2');
-      expect(spy).toHaveBeenCalledWith('some message', ['arg1', 'arg2']);
+      expect(spy).toHaveBeenCalledWith('some message', 'arg1', 'arg2');
     });
   });
 
@@ -77,7 +77,7 @@ describe('Logger Service', () => {
 
       configProvider.setConfig({ logLevel: LogLevel.Warn });
       loggerService.logWarning('some message', 'arg1', 'arg2');
-      expect(spy).toHaveBeenCalledWith('some message', ['arg1', 'arg2']);
+      expect(spy).toHaveBeenCalledWith('some message', 'arg1', 'arg2');
     });
 
     it('should log warning when loglevel is Debug', () => {
@@ -126,7 +126,7 @@ describe('Logger Service', () => {
 
       configProvider.setConfig({ logLevel: LogLevel.Debug });
       loggerService.logDebug('some message', 'arg1', 'arg2');
-      expect(spy).toHaveBeenCalledWith('some message', ['arg1', 'arg2']);
+      expect(spy).toHaveBeenCalledWith('some message', 'arg1', 'arg2');
     });
 
     it('should not log when loglevel is Warn', () => {

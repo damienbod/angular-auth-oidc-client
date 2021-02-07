@@ -147,17 +147,39 @@ describe('OidcSecurityService', () => {
   });
 
   describe('authorize', () => {
-    it('calls loginservice login', () => {
+    it('calls login service login', () => {
       const spy = spyOn(loginService, 'login');
       oidcSecurityService.authorize();
       expect(spy).toHaveBeenCalled();
     });
 
-    it('calls loginservice login with params if given', () => {
+    it('calls login service login with params if given', () => {
       const spy = spyOn(loginService, 'login');
       oidcSecurityService.authorize({ customParams: { any: 'thing' } });
       expect(spy).toHaveBeenCalledWith({ customParams: { any: 'thing' } });
     });
+  });
+
+  describe('authorizeWithPopUp', () => {
+    it(
+      'calls login service loginWithPopUp',
+      waitForAsync(() => {
+        const spy = spyOn(loginService, 'loginWithPopUp').and.callFake(() => of(null));
+        oidcSecurityService.authorizeWithPopUp().subscribe(() => {
+          expect(spy).toHaveBeenCalledTimes(1);
+        });
+      })
+    );
+
+    it(
+      'calls login service loginWithPopUp with params if given',
+      waitForAsync(() => {
+        const spy = spyOn(loginService, 'loginWithPopUp').and.callFake(() => of(null));
+        oidcSecurityService.authorizeWithPopUp({ customParams: { any: 'thing' } }).subscribe(() => {
+          expect(spy).toHaveBeenCalledWith({ customParams: { any: 'thing' } });
+        });
+      })
+    );
   });
 
   describe('isAuthenticated', () => {
@@ -165,11 +187,15 @@ describe('OidcSecurityService', () => {
       expect(oidcSecurityService.isAuthenticated$).toEqual(jasmine.any(Observable));
     });
 
-    it('returns authStateService.authorized$', () => {
-      const spy = spyOnProperty(authStateService, 'authorized$', 'get');
-      oidcSecurityService.isAuthenticated$;
-      expect(spy).toHaveBeenCalled();
-    });
+    it(
+      'returns authStateService.authorized$',
+      waitForAsync(() => {
+        const spy = spyOnProperty(authStateService, 'authorized$', 'get').and.returnValue(of(null));
+        oidcSecurityService.isAuthenticated$.subscribe(() => {
+          expect(spy).toHaveBeenCalled();
+        });
+      })
+    );
   });
 
   describe('checkSessionChanged', () => {
@@ -177,11 +203,29 @@ describe('OidcSecurityService', () => {
       expect(oidcSecurityService.checkSessionChanged$).toEqual(jasmine.any(Observable));
     });
 
-    it('returns checkSessionService.checkSessionChanged$', () => {
-      const spy = spyOnProperty(checkSessionService, 'checkSessionChanged$', 'get');
-      oidcSecurityService.checkSessionChanged$;
-      expect(spy).toHaveBeenCalled();
-    });
+    it(
+      'checkSessionChanged emits false initially',
+      waitForAsync(() => {
+        spyOnProperty(oidcSecurityService, 'checkSessionChanged$', 'get').and.callThrough();
+        oidcSecurityService.checkSessionChanged$.subscribe((result) => {
+          expect(result).toBe(false);
+        });
+      })
+    );
+
+    it(
+      'checkSessionChanged emits false then true when emitted',
+      waitForAsync(() => {
+        const expectedResultsInOrder = [false, true];
+        let counter = 0;
+        oidcSecurityService.checkSessionChanged$.subscribe((result) => {
+          expect(result).toBe(expectedResultsInOrder[counter]);
+          counter++;
+        });
+
+        (checkSessionService as any).checkSessionChangedInternal$.next(true);
+      })
+    );
   });
 
   describe('stsCallback', () => {
@@ -253,7 +297,7 @@ describe('OidcSecurityService', () => {
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
 
         const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
-        const userServiceSpy = spyOn(userService, 'publishUserdataIfExists');
+        const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
         oidcSecurityService.checkAuth().subscribe((result) => {
           expect(result).toBeTrue();
           expect(setAuthorizedAndFireEventSpy).toHaveBeenCalled();
@@ -272,7 +316,7 @@ describe('OidcSecurityService', () => {
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
 
         const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
-        const userServiceSpy = spyOn(userService, 'publishUserdataIfExists');
+        const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
         oidcSecurityService.checkAuth().subscribe((result) => {
           expect(result).toBeFalse();
           expect(setAuthorizedAndFireEventSpy).not.toHaveBeenCalled();
@@ -312,14 +356,14 @@ describe('OidcSecurityService', () => {
     );
 
     it(
-      'if authenticated publishUserdataIfExists ',
+      'if authenticated publishUserDataIfExists',
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
         spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
-        const spy = spyOn(userService, 'publishUserdataIfExists');
+        const spy = spyOn(userService, 'publishUserDataIfExists');
 
         oidcSecurityService.checkAuth().subscribe((result) => {
           expect(spy).toHaveBeenCalled();
@@ -516,8 +560,6 @@ describe('OidcSecurityService', () => {
       })
     );
   });
-
-  describe('authorize', () => {});
 
   describe('logoffAndRevokeTokens', () => {
     it(

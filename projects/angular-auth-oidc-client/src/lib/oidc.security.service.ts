@@ -1,17 +1,13 @@
-import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
-import { PeriodicallyTokenCheckService } from './callback/periodically-token-check.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
+import { CheckAuthService } from './check-auth.service';
 import { ConfigurationProvider } from './config/config.provider';
 import { PublicConfiguration } from './config/public-configuration';
 import { FlowsDataService } from './flows/flows-data.service';
 import { CheckSessionService } from './iframe/check-session.service';
-import { SilentRenewService } from './iframe/silent-renew.service';
-import { LoggerService } from './logging/logger.service';
 import { AuthOptions } from './login/auth-options';
 import { LoginService } from './login/login.service';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
@@ -45,12 +41,10 @@ export class OidcSecurityService {
   }
 
   constructor(
-    @Inject(DOCUMENT) private readonly doc: any,
     private checkSessionService: CheckSessionService,
-    private silentRenewService: SilentRenewService,
+    private checkAuthService: CheckAuthService,
     private userService: UserService,
     private tokenHelperService: TokenHelperService,
-    private loggerService: LoggerService,
     private configurationProvider: ConfigurationProvider,
     private authStateService: AuthStateService,
     private flowsDataService: FlowsDataService,
@@ -58,64 +52,15 @@ export class OidcSecurityService {
     private logoffRevocationService: LogoffRevocationService,
     private loginService: LoginService,
     private storagePersistanceService: StoragePersistanceService,
-    private refreshSessionService: RefreshSessionService,
-    private periodicallyTokenCheckService: PeriodicallyTokenCheckService
+    private refreshSessionService: RefreshSessionService
   ) {}
 
   checkAuth(url?: string): Observable<boolean> {
-    if (!this.configurationProvider.hasValidConfig()) {
-      this.loggerService.logError('Please provide a configuration before setting up the module');
-      return of(false);
-    }
-
-    this.loggerService.logDebug('STS server: ' + this.configurationProvider.openIDConfiguration.stsServer);
-
-    const currentUrl = url || this.doc.defaultView.location.toString();
-    const isCallback = this.callbackService.isCallback(currentUrl);
-
-    this.loggerService.logDebug('currentUrl to check auth with: ', currentUrl);
-
-    const callback$ = isCallback ? this.callbackService.handleCallbackAndFireEvents(currentUrl) : of(null);
-
-    return callback$.pipe(
-      map(() => {
-        const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
-        if (isAuthenticated) {
-          this.startCheckSessionAndValidation();
-
-          if (!isCallback) {
-            this.authStateService.setAuthorizedAndFireEvent();
-            this.userService.publishUserdataIfExists();
-          }
-        }
-
-        this.loggerService.logDebug('checkAuth completed fire events, auth: ' + isAuthenticated);
-
-        return isAuthenticated;
-      }),
-      catchError(() => of(false))
-    );
+    return this.checkAuthService.checkAuth(url);
   }
 
   checkAuthIncludingServer(): Observable<boolean> {
-    return this.checkAuth().pipe(
-      switchMap((isAuthenticated) => {
-        if (isAuthenticated) {
-          return of(isAuthenticated);
-        }
-
-        return this.refreshSessionService.forceRefreshSession().pipe(
-          map((result) => !!result?.idToken && !!result?.accessToken),
-          switchMap((isAuth) => {
-            if (isAuth) {
-              this.startCheckSessionAndValidation();
-            }
-
-            return of(isAuth);
-          })
-        );
-      })
-    );
+    return this.checkAuthService.checkAuthIncludingServer();
   }
 
   getToken(): string {
@@ -146,26 +91,18 @@ export class OidcSecurityService {
   // Code Flow with PCKE or Implicit Flow
   authorize(authOptions?: AuthOptions) {
     if (authOptions?.customParams) {
-      this.storagePersistanceService.write('storageCustomRequestParams', authOptions?.customParams);
+      this.storagePersistanceService.write('storageCustomRequestParams', authOptions.customParams);
     }
 
     this.loginService.login(authOptions);
   }
 
   authorizeWithPopUp(authOptions?: AuthOptions) {
-    const internalUrlHandler = (authUrl) => {
-      // handle the authorization URL
-      this.doc.defaultView.open(authUrl, '_blank', 'toolbar=0,location=0,menubar=0');
-    };
+    if (authOptions?.customParams) {
+      this.storagePersistanceService.write('storageCustomRequestParams', authOptions.customParams);
+    }
 
-    const urlHandler = authOptions?.urlHandler || internalUrlHandler;
-
-    const options = {
-      urlHandler,
-      customParams: authOptions?.customParams,
-    };
-
-    this.authorize(options);
+    return this.loginService.loginWithPopUp(authOptions);
   }
 
   forceRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
@@ -210,17 +147,5 @@ export class OidcSecurityService {
 
   getEndSessionUrl(): string | null {
     return this.logoffRevocationService.getEndSessionUrl();
-  }
-
-  private startCheckSessionAndValidation() {
-    if (this.checkSessionService.isCheckSessionConfigured()) {
-      this.checkSessionService.start();
-    }
-
-    this.periodicallyTokenCheckService.startTokenValidationPeriodically(this.configuration.configuration.tokenRefreshInSeconds);
-
-    if (this.silentRenewService.isSilentRenewConfigured()) {
-      this.silentRenewService.getOrCreateIframe();
-    }
   }
 }

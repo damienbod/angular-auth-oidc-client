@@ -3,15 +3,15 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 
 @Component({
-    selector: 'app-forbidden',
-    templateUrl: 'forbidden.component.html',
+  selector: 'app-forbidden',
+  templateUrl: 'forbidden.component.html',
 })
 export class ForbiddenComponent implements OnInit {
-    public authenticated$: Observable<boolean>;
+  public authenticated$: Observable<boolean>;
 
-    constructor(private oidcSecurityService: OidcSecurityService) {}
+  constructor(private oidcSecurityService: OidcSecurityService) {}
 
-    ngOnInit() {
-        this.authenticated$ = this.oidcSecurityService.isAuthenticated$;
-    }
+  ngOnInit() {
+    this.authenticated$ = this.oidcSecurityService.isAuthenticated$;
+  }
 }
