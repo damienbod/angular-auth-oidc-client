@@ -1,14 +1,30 @@
-# Authorizing in a popup or iframe
+# Authorizing in a popup
 
-You can call the Provider's authorization endpoint in a popup or iframe instead of navigating to it in the app's parent window.
-This allows you to have the Provider's consent prompt display in a popup window to avoid unloading and reloading the app,
-or to authorize the user silently by loading the endpoint in a hidden iframe if that supported by the Provider.
+You can call the Provider's authorization endpoint in a popup instead of navigating to it in the app's parent window.
+This allows you to have the provider's consent prompt display in a popup window to avoid unloading and reloading the app.
 
-To get the fully-formed authorization URL, pass a handler function to `OidcSecurityService.authorize`
-(this will also prevent the default behavior of loading the authorization endpoint in the current window):
+Sample:
 
 ```typescript
-login() {
-    this.oidcSecurityService.authorizeWithPopUp();
-}
+  userData$: Observable<any>;
+
+  isAuthenticated: boolean;
+
+  constructor(public oidcSecurityService: OidcSecurityService) {}
+
+  ngOnInit() {
+    this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => {
+      console.log('app authenticated', isAuthenticated);
+      const at = this.oidcSecurityService.getToken();
+      console.log(`Current access token is '${at}'`);
+    });
+  }
+
+  loginWithPopup() {
+    this.oidcSecurityService.authorizeWithPopUp().subscribe(({ isAuthenticated, userData, accessToken }) => {
+      console.log(isAuthenticated);
+      console.log(userData);
+      console.log(accessToken);
+    });
+  }
 ```

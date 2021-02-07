@@ -69,6 +69,16 @@ describe('PopUpService', () => {
         expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', 'width=100,height=500,left=50,top=50');
       })
     );
+
+    it(
+      'xxx',
+      waitForAsync(() => {
+        const popupSpy = spyOn(window, 'open').and.callFake(() => ({ close: () => {} } as Window));
+        popUpService.openPopUp('url', { width: 100 });
+
+        expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', 'width=100,height=500,left=50,top=50');
+      })
+    );
   });
 
   describe('sendMessageToMainWindow', () => {
