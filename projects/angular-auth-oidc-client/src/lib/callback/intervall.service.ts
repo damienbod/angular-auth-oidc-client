@@ -1,9 +1,11 @@
-import { Injectable } from '@angular/core';
-import { interval, Subscription } from 'rxjs';
+import { Injectable, NgZone } from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class IntervallService {
   runTokenValidationRunning: Subscription = null;
+
+  constructor(private zone: NgZone) {}
 
   stopPeriodicallTokenCheck(): void {
     if (this.runTokenValidationRunning) {
@@ -14,7 +16,10 @@ export class IntervallService {
 
   startPeriodicTokenCheck(repeatAfterSeconds: number) {
     const millisecondsDelayBetweenTokenCheck = repeatAfterSeconds * 1000;
+    const update$ = new Subject();
 
-    return interval(millisecondsDelayBetweenTokenCheck);
+    this.zone.runOutsideAngular(() => setInterval(() => this.zone.run(() => update$.next({})), millisecondsDelayBetweenTokenCheck))
+
+    return update$;
   }
 }
