@@ -20,7 +20,7 @@ export class IntervallService {
     return new Observable((subscriber) => {
       let intervalId;
       this.zone.runOutsideAngular(() => {
-        intervalId = setInterval(() => this.zone.run(() => subscriber.next({})), millisecondsDelayBetweenTokenCheck);
+        intervalId = setInterval(() => subscriber.next(), millisecondsDelayBetweenTokenCheck);
       });
 
       return () => {
