@@ -119,11 +119,11 @@ describe('Flows Service', () => {
 
         service.processCodeFlowCallback('some-url').subscribe((value) => {
           expect(value).toBeTruthy();
-          expect(codeFlowCallbackSpy).toHaveBeenCalledWith('some-url');
-          expect(codeFlowCodeRequestSpy).toHaveBeenCalled();
-          expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
-          expect(callbackStateValidationSpy).toHaveBeenCalled();
-          expect(callbackUserSpy).toHaveBeenCalled();
+          expect(codeFlowCallbackSpy).toHaveBeenCalledOnceWith('some-url');
+          expect(codeFlowCodeRequestSpy).toHaveBeenCalledTimes(1);
+          expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalledTimes(1);
+          expect(callbackStateValidationSpy).toHaveBeenCalledTimes(1);
+          expect(callbackUserSpy).toHaveBeenCalledTimes(1);
         });
       })
     );
@@ -476,5 +476,22 @@ describe('Flows Service', () => {
       const value = (service as any).historyCleanUpTurnedOn();
       expect(value).toEqual(true);
     });
+  });
+
+  describe('callbackHistoryAndResetJwtKeys', () => {
+    it(
+      'writes authResult into the storage',
+      waitForAsync(() => {
+        const spy = spyOn(storagePersistanceService, 'write');
+
+        const callbackContext = ({ authResult: 'authResult' } as unknown) as CallbackContext;
+
+        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ historyCleanupOff: true });
+
+        (service as any).callbackHistoryAndResetJwtKeys(callbackContext).subscribe(() => {
+          expect(spy).toHaveBeenCalledOnceWith('authResult');
+        });
+      })
+    );
   });
 });
