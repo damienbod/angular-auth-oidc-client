@@ -522,78 +522,24 @@ describe('TokenValidationService', () => {
     });
   });
 
-  it('validateIdTokenIss invalid id_token matching iss', () => {
-    const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-    config.redirectUrl = 'https://localhost:44386';
-    config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-    config.responseType = 'id_token token';
-    config.scope = 'openid email profile';
-    config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
-    config.postLoginRoute = '/home';
-    config.forbiddenRoute = '/Forbidden';
-    config.unauthorizedRoute = '/Unauthorized';
-    config.startCheckSession = false;
-    config.silentRenew = false;
-    config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.Debug;
-    config.maxIdTokenIatOffsetAllowedInSeconds = 10;
+  describe('validateIdTokenIss', () => {
+    it('returns true if issuer matches iss in idToken', () => {
+      const decodedIdToken = {
+        iss: 'xc',
+      };
 
-    configProvider.setConfig(config);
+      const valueTrue = tokenValidationService.validateIdTokenIss(decodedIdToken, 'xc');
+      expect(valueTrue).toEqual(true);
+    });
 
-    const decodedIdToken = {
-      exp: 1589210086,
-      nbf: 1589206486,
-      ver: '1.0',
-      iss: 'xc',
-      sub: 'f836f380-3c64-4802-8dbc-011981c068f5',
-      aud: 'bad',
-      nonce: '007c4153b6a0517c0e497476fb249948ec5clOvQQ',
-      auth_time: 1589206488,
-      name: 'damienbod',
-      emails: ['damien@damienbod.onmicrosoft.com'],
-      tfp: 'B2C_1_b2cpolicydamien',
-      at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
-    };
+    it('returns false if issuer does not match iss in idToken', () => {
+      const decodedIdToken = {
+        iss: 'xc',
+      };
 
-    const valueTrue = tokenValidationService.validateIdTokenIss(decodedIdToken, 'xc');
-    expect(valueTrue).toEqual(true);
-  });
-
-  it('validateIdTokenIss invalid id_token not matching iss', () => {
-    const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-    config.redirectUrl = 'https://localhost:44386';
-    config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-    config.responseType = 'id_token token';
-    config.scope = 'openid email profile';
-    config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
-    config.postLoginRoute = '/home';
-    config.forbiddenRoute = '/Forbidden';
-    config.unauthorizedRoute = '/Unauthorized';
-    config.startCheckSession = false;
-    config.silentRenew = false;
-    config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.Debug;
-    config.maxIdTokenIatOffsetAllowedInSeconds = 10;
-
-    configProvider.setConfig(config);
-
-    const decodedIdToken = {
-      exp: 1589210086,
-      nbf: 1589206486,
-      ver: '1.0',
-      iss: 'xc',
-      sub: 'f836f380-3c64-4802-8dbc-011981c068f5',
-      aud: 'bad',
-      nonce: '007c4153b6a0517c0e497476fb249948ec5clOvQQ',
-      auth_time: 1589206488,
-      name: 'damienbod',
-      emails: ['damien@damienbod.onmicrosoft.com'],
-      tfp: 'B2C_1_b2cpolicydamien',
-      at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
-    };
-
-    const valueFalse = tokenValidationService.validateIdTokenIss(decodedIdToken, 'xcjjjj');
-    expect(valueFalse).toEqual(false);
+      const valueFalse = tokenValidationService.validateIdTokenIss(decodedIdToken, 'xcjjjj');
+      expect(valueFalse).toEqual(false);
+    });
   });
 
   describe('validateIdTokenIatMaxOffset', () => {
