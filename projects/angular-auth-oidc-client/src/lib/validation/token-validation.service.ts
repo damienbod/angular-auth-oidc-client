@@ -75,7 +75,7 @@ export class TokenValidationService {
     const tokenExpirationValue = tokenExpirationDate.valueOf();
     const nowWithOffset = new Date(new Date().toUTCString()).valueOf() + offsetSeconds * 1000;
     const tokenNotExpired = tokenExpirationValue > nowWithOffset;
-
+    console.log(!tokenNotExpired);
     this.loggerService.logDebug(`Has id_token expired: ${!tokenNotExpired}, ${tokenExpirationValue} > ${nowWithOffset}`);
 
     // Token not expired?
@@ -170,33 +170,26 @@ export class TokenValidationService {
 
     const dateTimeIatIdToken = new Date(0); // The 0 here is the key, which sets the date to the epoch
     dateTimeIatIdToken.setUTCSeconds(dataIdToken.iat);
-
     maxOffsetAllowedInSeconds = maxOffsetAllowedInSeconds || 0;
 
-    if (dateTimeIatIdToken == null) {
-      return false;
-    }
+    const nowInUtc = new Date(new Date().toUTCString());
+    const diff = nowInUtc.valueOf() - dateTimeIatIdToken.valueOf();
+    const maxOffsetAllowedInMilliseconds = maxOffsetAllowedInSeconds * 1000;
 
-    this.loggerService.logDebug(
-      'validate_id_token_iat_max_offset: ' +
-        (new Date(new Date().toUTCString()).valueOf() - dateTimeIatIdToken.valueOf()) +
-        ' < ' +
-        maxOffsetAllowedInSeconds * 1000
-    );
-
-    const diff = new Date(new Date().toUTCString()).valueOf() - dateTimeIatIdToken.valueOf();
+    this.loggerService.logDebug(`validate id token iat max offset ${diff} < ${maxOffsetAllowedInMilliseconds}`);
+    console.log(diff);
     if (diff > 0) {
-      return diff < maxOffsetAllowedInSeconds * 1000;
+      return diff < maxOffsetAllowedInMilliseconds;
     }
 
-    return -diff < maxOffsetAllowedInSeconds * 1000;
+    return -diff < maxOffsetAllowedInMilliseconds;
   }
 
   // id_token C9: The value of the nonce Claim MUST be checked to verify that it is the same value as the one
   // that was sent in the Authentication Request.The Client SHOULD check the nonce value for replay attacks.
   // The precise method for detecting replay attacks is Client specific.
 
-  // However the nonce claim SHOULD not be present for the refesh_token grant type
+  // However the nonce claim SHOULD not be present for the refresh_token grant type
   // https://bitbucket.org/openid/connect/issues/1025/ambiguity-with-how-nonce-is-handled-on
   // The current spec is ambiguous and Keycloak does send it.
   validateIdTokenNonce(dataIdToken: any, localNonce: any, ignoreNonceAfterRefresh: boolean): boolean {

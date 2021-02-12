@@ -594,84 +594,46 @@ describe('TokenValidationService', () => {
     expect(valueFalse).toEqual(false);
   });
 
-  it('validateIdTokenIatMaxOffset', () => {
-    const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-    config.redirectUrl = 'https://localhost:44386';
-    config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-    config.responseType = 'id_token token';
-    config.scope = 'openid email profile';
-    config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
-    config.postLoginRoute = '/home';
-    config.forbiddenRoute = '/Forbidden';
-    config.unauthorizedRoute = '/Unauthorized';
-    config.startCheckSession = false;
-    config.silentRenew = false;
-    config.renewTimeBeforeTokenExpiresInSeconds = 0;
-    config.logLevel = LogLevel.Debug;
-    config.maxIdTokenIatOffsetAllowedInSeconds = 10;
+  describe('validateIdTokenIatMaxOffset', () => {
+    it('returns true if validationIsDisabled', () => {
+      const result = tokenValidationService.validateIdTokenIatMaxOffset(null, 0, true);
 
-    configProvider.setConfig(config);
+      expect(result).toBe(true);
+    });
 
-    const decodedIdToken = {
-      exp: 1589210086,
-      nbf: 1589206486,
-      iat: 1589206486,
-      ver: '1.0',
-      iss: 'xc',
-      sub: 'f836f380-3c64-4802-8dbc-011981c068f5',
-      aud: 'bad',
-      nonce: '007c4153b6a0517c0e497476fb249948ec5clOvQQ',
-      auth_time: 1589206488,
-      name: 'damienbod',
-      emails: ['damien@damienbod.onmicrosoft.com'],
-      tfp: 'B2C_1_b2cpolicydamien',
-      at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
-    };
+    it('returns false if dataIdToken has no property "iat"', () => {
+      const dataIdToken = {
+        notIat: 'test',
+      };
+      const result = tokenValidationService.validateIdTokenIatMaxOffset(dataIdToken, 0, false);
 
-    const valueTrueDis = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdToken, 5, true);
-    expect(valueTrueDis).toEqual(true);
+      expect(result).toBe(false);
+    });
 
-    const valueTrue = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdToken, 500000000000, false);
-    expect(valueTrue).toEqual(true);
+    it('returns true if time is Mon Jan 19 1970 10:26:46 GMT+0100, and the offset is big like 500000000000 seconds', () => {
+      const decodedIdToken = {
+        iat: 1589206486, // Mon Jan 19 1970 10:26:46 GMT+0100 (Central European Standard Time)
+      };
 
-    const decodedIdTokenNegIat = {
-      exp: 1589210086,
-      nbf: 1589206486,
-      iat: 500348877430,
-      ver: '1.0',
-      iss: 'xc',
-      sub: 'f836f380-3c64-4802-8dbc-011981c068f5',
-      aud: 'bad',
-      nonce: '007c4153b6a0517c0e497476fb249948ec5clOvQQ',
-      auth_time: 1589206488,
-      name: 'damienbod',
-      emails: ['damien@damienbod.onmicrosoft.com'],
-      tfp: 'B2C_1_b2cpolicydamien',
-      at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
-    };
-    const valueFalseNeg = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdTokenNegIat, 0, false);
-    expect(valueFalseNeg).toEqual(false);
+      const valueTrue = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdToken, 500000000000, false);
+      expect(valueTrue).toEqual(true);
+    });
 
-    const valueFalse = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdToken, 5, false);
-    expect(valueFalse).toEqual(false);
+    it('returns false if time is Sat Nov 09 1985 02:47:57 GMT+0100, and the offset is 0 seconds', () => {
+      const decodedIdTokenNegIat = {
+        iat: 500348877430, // Sat Nov 09 1985 02:47:57 GMT+0100 (Central European Standard Time)
+      };
+      const valueFalseNeg = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdTokenNegIat, 0, false);
+      expect(valueFalseNeg).toEqual(false);
+    });
 
-    const decodedIdTokenMissingIat = {
-      exp: 1589210086,
-      nbf: 1589206486,
-      ver: '1.0',
-      iss: 'xc',
-      sub: 'f836f380-3c64-4802-8dbc-011981c068f5',
-      aud: 'bad',
-      nonce: '007c4153b6a0517c0e497476fb249948ec5clOvQQ',
-      auth_time: 1589206488,
-      name: 'damienbod',
-      emails: ['damien@damienbod.onmicrosoft.com'],
-      tfp: 'B2C_1_b2cpolicydamien',
-      at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
-    };
-
-    const valueFalseMissingIatToken = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdTokenMissingIat, 5, false);
-    expect(valueFalseMissingIatToken).toEqual(false);
+    it('returns true if time is Mon Jan 19 1970 10:26:46 GMT+0100, and the offset is small like 5 seconds', () => {
+      const decodedIdToken = {
+        iat: 1589206486, // Mon Jan 19 1970 10:26:46 GMT+0100 (Central European Standard Time)
+      };
+      const valueFalse = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdToken, 5, false);
+      expect(valueFalse).toEqual(false);
+    });
   });
 
   it('validateSignatureIdToken', () => {
