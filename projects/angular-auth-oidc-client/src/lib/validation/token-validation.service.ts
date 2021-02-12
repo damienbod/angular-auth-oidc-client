@@ -75,7 +75,7 @@ export class TokenValidationService {
     const tokenExpirationValue = tokenExpirationDate.valueOf();
     const nowWithOffset = new Date(new Date().toUTCString()).valueOf() + offsetSeconds * 1000;
     const tokenNotExpired = tokenExpirationValue > nowWithOffset;
-    console.log(!tokenNotExpired);
+
     this.loggerService.logDebug(`Has id_token expired: ${!tokenNotExpired}, ${tokenExpirationValue} > ${nowWithOffset}`);
 
     // Token not expired?
@@ -177,7 +177,7 @@ export class TokenValidationService {
     const maxOffsetAllowedInMilliseconds = maxOffsetAllowedInSeconds * 1000;
 
     this.loggerService.logDebug(`validate id token iat max offset ${diff} < ${maxOffsetAllowedInMilliseconds}`);
-    console.log(diff);
+
     if (diff > 0) {
       return diff < maxOffsetAllowedInMilliseconds;
     }
