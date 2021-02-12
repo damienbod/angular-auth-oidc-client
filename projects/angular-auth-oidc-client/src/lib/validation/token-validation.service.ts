@@ -343,7 +343,6 @@ export class TokenValidationService {
       for (const key of jwtkeys.keys) {
         if ((key.kid as string) === (kid as string)) {
           const publicKey = KEYUTIL.getKey(key);
-
           isValid = KJUR.jws.JWS.verify(idToken, publicKey, [alg]);
           if (!isValid) {
             this.loggerService.logWarning('incorrect Signature, validation failed for id_token');
