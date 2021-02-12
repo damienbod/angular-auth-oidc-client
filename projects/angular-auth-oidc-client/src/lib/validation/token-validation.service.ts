@@ -355,7 +355,7 @@ export class TokenValidationService {
     return isValid;
   }
 
-  configValidateResponseType(): boolean {
+  hasConfigValidResponseType(): boolean {
     if (this.flowHelper.isCurrentFlowAnyImplicitFlow()) {
       return true;
     }

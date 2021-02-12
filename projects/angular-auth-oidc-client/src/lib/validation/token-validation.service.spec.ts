@@ -497,13 +497,13 @@ describe('TokenValidationService', () => {
     });
   });
 
-  describe('configValidateResponseType', () => {
+  describe('hasConfigValidResponseType', () => {
     it('returns true if current configured flow is any implicit flow', () => {
       const config = { responseType: 'id_token token' } as OpenIdConfiguration;
 
       configProvider.setConfig(config);
 
-      const implicitFlow = tokenValidationService.configValidateResponseType();
+      const implicitFlow = tokenValidationService.hasConfigValidResponseType();
       expect(implicitFlow).toEqual(true);
     });
 
@@ -512,7 +512,7 @@ describe('TokenValidationService', () => {
 
       configProvider.setConfig(config);
 
-      const implicitFlow = tokenValidationService.configValidateResponseType();
+      const implicitFlow = tokenValidationService.hasConfigValidResponseType();
       expect(implicitFlow).toEqual(true);
     });
 
@@ -521,7 +521,7 @@ describe('TokenValidationService', () => {
 
       configProvider.setConfig(config);
 
-      const implicitFlow = tokenValidationService.configValidateResponseType();
+      const implicitFlow = tokenValidationService.hasConfigValidResponseType();
       expect(implicitFlow).toEqual(false);
     });
   });

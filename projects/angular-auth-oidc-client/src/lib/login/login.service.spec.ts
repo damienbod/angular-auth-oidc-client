@@ -77,7 +77,7 @@ describe('LoginService', () => {
       'does nothing if it has an invalid response type',
       waitForAsync(() => {
         spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
-        spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(false);
+        spyOn(tokenValidationService, 'hasConfigValidResponseType').and.returnValue(false);
         const loggerSpy = spyOn(loggerService, 'logError');
         const result = loginService.login();
         expect(result).toBeUndefined();
@@ -89,7 +89,7 @@ describe('LoginService', () => {
       'does nothing if no well known endpoint is given',
       waitForAsync(() => {
         spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
-        const spy = spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
+        const spy = spyOn(tokenValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         const result = loginService.login();
         expect(result).toBeUndefined();
         expect(spy).toHaveBeenCalled();
@@ -103,7 +103,7 @@ describe('LoginService', () => {
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
-        spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
+        spyOn(tokenValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
         const spy = spyOn(urlService, 'getAuthorizeUrl');
         spyOn(redirectService, 'redirectTo').and.callFake(() => {});
@@ -120,7 +120,7 @@ describe('LoginService', () => {
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
-        spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
+        spyOn(tokenValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
         const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
@@ -137,7 +137,7 @@ describe('LoginService', () => {
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
-        spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
+        spyOn(tokenValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
         const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
@@ -159,7 +159,7 @@ describe('LoginService', () => {
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
-        spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
+        spyOn(tokenValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
         const getAuthorizeUrlSpy = spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
         const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
@@ -177,7 +177,7 @@ describe('LoginService', () => {
       'does nothing if it has an invalid response type',
       waitForAsync(() => {
         spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
-        spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(false);
+        spyOn(tokenValidationService, 'hasConfigValidResponseType').and.returnValue(false);
         const loggerSpy = spyOn(loggerService, 'logError');
 
         const result = loginService.loginWithPopUp();
@@ -191,7 +191,7 @@ describe('LoginService', () => {
       'does nothing if no well known endpoint is given',
       waitForAsync(() => {
         spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
-        const spy = spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
+        const spy = spyOn(tokenValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         const loggerSpy = spyOn(loggerService, 'logError');
 
         const result = loginService.loginWithPopUp();
@@ -209,7 +209,7 @@ describe('LoginService', () => {
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
-        spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
+        spyOn(tokenValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
         const spy = spyOn(urlService, 'getAuthorizeUrl');
 
@@ -226,7 +226,7 @@ describe('LoginService', () => {
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
-        spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
+        spyOn(tokenValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl');
         const popupSpy = spyOn(popupService, 'openPopUp');
@@ -244,7 +244,7 @@ describe('LoginService', () => {
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
-        spyOn(tokenValidationService, 'configValidateResponseType').and.returnValue(true);
+        spyOn(tokenValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl');
         spyOn(popupService, 'openPopUp');
