@@ -52,6 +52,7 @@ import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.servi
 export class TokenValidationService {
   static refreshTokenNoncePlaceholder = '--RefreshToken--';
   keyAlgorithms: string[] = ['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'PS256', 'PS384', 'PS512'];
+
   constructor(private tokenHelperService: TokenHelperService, private flowHelper: FlowHelper, private loggerService: LoggerService) {}
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
@@ -225,7 +226,6 @@ export class TokenValidationService {
   // not trusted by the Client.
   validateIdTokenAud(dataIdToken: any, aud: any): boolean {
     if (Array.isArray(dataIdToken.aud)) {
-      // const result = this.arrayHelperService.areEqual(dataIdToken.aud, aud);
       const result = dataIdToken.aud.includes(aud);
 
       if (!result) {
@@ -254,6 +254,7 @@ export class TokenValidationService {
 
     return true;
   }
+
   // If an azp (authorized party) Claim is present, the Client SHOULD verify that its client_id is the Claim Value.
   validateIdTokenAzpValid(dataIdToken: any, clientId: string): boolean {
     if (!dataIdToken?.azp) {
@@ -341,8 +342,9 @@ export class TokenValidationService {
       // kid in the Jose header of id_token
       for (const key of jwtkeys.keys) {
         if ((key.kid as string) === (kid as string)) {
-          const publickey = KEYUTIL.getKey(key);
-          isValid = KJUR.jws.JWS.verify(idToken, publickey, [alg]);
+          const publicKey = KEYUTIL.getKey(key);
+
+          isValid = KJUR.jws.JWS.verify(idToken, publicKey, [alg]);
           if (!isValid) {
             this.loggerService.logWarning('incorrect Signature, validation failed for id_token');
           }
@@ -354,7 +356,7 @@ export class TokenValidationService {
     return isValid;
   }
 
-  configValidateResponseType(responseType: string): boolean {
+  configValidateResponseType(): boolean {
     if (this.flowHelper.isCurrentFlowAnyImplicitFlow()) {
       return true;
     }
@@ -363,7 +365,7 @@ export class TokenValidationService {
       return true;
     }
 
-    this.loggerService.logWarning('module configure incorrect, invalid response_type:' + responseType);
+    this.loggerService.logWarning('module configure incorrect, invalid response_type. Check responsetype in config');
     return false;
   }
 
@@ -398,9 +400,10 @@ export class TokenValidationService {
       sha = 'sha512';
     }
 
-    const testdata = this.generateAtHash('' + accessToken, sha);
-    this.loggerService.logDebug('at_hash client validation not decoded:' + testdata);
-    if (testdata === (atHash as string)) {
+    const testData = this.generateAtHash('' + accessToken, sha);
+    console.log(sha, testData);
+    this.loggerService.logDebug('at_hash client validation not decoded:' + testData);
+    if (testData === (atHash as string)) {
       return true; // isValid;
     } else {
       const testValue = this.generateAtHash('' + decodeURIComponent(accessToken), sha);
@@ -415,16 +418,16 @@ export class TokenValidationService {
 
   generateCodeChallenge(codeVerifier: any): string {
     const hash = KJUR.crypto.Util.hashString(codeVerifier, 'sha256');
-    const testdata = hextob64u(hash);
+    const testData = hextob64u(hash);
 
-    return testdata;
+    return testData;
   }
 
   private generateAtHash(accessToken: any, sha: string): string {
     const hash = KJUR.crypto.Util.hashString(accessToken, sha);
     const first128bits = hash.substr(0, hash.length / 2);
-    const testdata = hextob64u(first128bits);
+    const testData = hextob64u(first128bits);
 
-    return testdata;
+    return testData;
   }
 }

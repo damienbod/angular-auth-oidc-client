@@ -29,7 +29,7 @@ export class LoginService {
   ) {}
 
   login(authOptions?: AuthOptions) {
-    if (!this.tokenValidationService.configValidateResponseType(this.configurationProvider.openIDConfiguration.responseType)) {
+    if (!this.tokenValidationService.configValidateResponseType()) {
       this.loggerService.logError('Invalid response type!');
       return;
     }
@@ -62,7 +62,7 @@ export class LoginService {
   }
 
   loginWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions) {
-    if (!this.tokenValidationService.configValidateResponseType(this.configurationProvider.openIDConfiguration.responseType)) {
+    if (!this.tokenValidationService.configValidateResponseType()) {
       this.loggerService.logError('Invalid response type!');
       return;
     }
