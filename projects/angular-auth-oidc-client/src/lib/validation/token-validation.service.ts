@@ -400,7 +400,6 @@ export class TokenValidationService {
     }
 
     const testData = this.generateAtHash('' + accessToken, sha);
-    console.log(sha, testData);
     this.loggerService.logDebug('at_hash client validation not decoded:' + testData);
     if (testData === (atHash as string)) {
       return true; // isValid;
