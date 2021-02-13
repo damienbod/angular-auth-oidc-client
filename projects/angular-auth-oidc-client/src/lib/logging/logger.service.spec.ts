@@ -46,7 +46,16 @@ describe('Logger Service', () => {
   });
 
   describe('logWarn', () => {
-    it('should not log if no log level is set', () => {
+    it('should not log if no log level is set (null)', () => {
+      const spy = spyOn(console, 'warn');
+
+      configProvider.setConfig({ logLevel: null });
+
+      loggerService.logWarning('some message');
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should not log if no log level is set (undefined)', () => {
       const spy = spyOn(console, 'warn');
 
       loggerService.logWarning('some message');
@@ -96,7 +105,16 @@ describe('Logger Service', () => {
   });
 
   describe('logDebug', () => {
-    it('should not log if no log level is set', () => {
+    it('should not log if no log level is set (null)', () => {
+      const spy = spyOn(console, 'log');
+
+      configProvider.setConfig({ logLevel: null });
+
+      loggerService.logDebug('some message');
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should not log if no log level is set (undefined)', () => {
       const spy = spyOn(console, 'log');
 
       loggerService.logDebug('some message');
