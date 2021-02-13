@@ -58,12 +58,12 @@ or with yarn
   - [Code Flow PKCE with Refresh tokens](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#code-flow-pkce-with-refresh-tokens)
   - [Code Flow PKCE Auto login](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#code-flow-pkce-auto-login)
   - [Code Flow with PKCE basic with silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#code-flow-with-pkce-basic-with-silent-renew)
+  - [Code flow with popup](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#popup-code-flow-with-pkce)
   - [Azure B2C Code Flow PKCE with silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#azure-b2c-code-flow-pkce-with-silent-renew)
   - [Azure AD Code Flow PKCE with silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#azure-ad-oidc-code-flow-with-pkce)
   - [Implicit Flow with silent renew (Not recommended)](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#implicit-flow-with-silent-renew-not-recommended)
   - [Implicit Flow google (Not recommended)](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#implicit-flow-google-not-recommended)
   - [Code flow with a lazy loaded module](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#code-flow-with-a-lazy-loaded-module)
-  - [Code flow with popup](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md#sample-code-flow-popup)
 
 - [Silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/silent-renew.md)
 
