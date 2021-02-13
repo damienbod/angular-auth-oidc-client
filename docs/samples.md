@@ -19,6 +19,8 @@ The properties used in this example are just for demo purposes, you can used any
 
 ### [src code](../projects/sample-code-flow-http-config)
 
+[auth-config.module.ts](../projects/sample-code-flow-http-config/src/app/auth-config.module.ts)
+
 [app.module.ts](../projects/sample-code-flow-http-config/src/app/app.module.ts)
 
 [app.component.ts](../projects/sample-code-flow-http-config/src/app/app.component.ts)
@@ -31,6 +33,8 @@ The Code flow with PKCE uses refresh tokens to refresh the session and a the end
 
 ### [src code](../projects/sample-code-flow-refresh-tokens)
 
+[auth-config.module.ts](../projects/sample-code-flow-refresh-tokens/src/app/auth-config.module.ts)
+
 [app.module.ts](../projects/sample-code-flow-refresh-tokens/src/app/app.module.ts)
 
 [app.component.ts](../projects/sample-code-flow-refresh-tokens/src/app/app.component.ts)
@@ -42,6 +46,8 @@ The Code flow with PKCE uses refresh tokens to refresh the session and a the end
 The example logins the user in directly without a login click using the Code Flow with PKCE and an Auth Guard.
 
 ### [src code](../projects/sample-code-flow-auto-login)
+
+[auth-config.module.ts](../projects/sample-code-flow-auto-login/src/app/auth-config.module.ts)
 
 [app.module.ts](../projects/sample-code-flow-auto-login/src/app/app.module.ts)
 
@@ -59,6 +65,8 @@ The is the basic example of the Code Flow with PKCE.
 
 ### [src code](../projects/sample-code-flow)
 
+[auth-config.module.ts](../projects/sample-code-flow/src/app/auth-config.module.ts)
+
 [app.module.ts](../projects/sample-code-flow/src/app/app.module.ts)
 
 [app.component.ts](../projects/sample-code-flow/src/app/app.component.ts)
@@ -70,6 +78,8 @@ The is the basic example of the Code Flow with PKCE.
 Popup Code Flow with PKCE.
 
 ### [src code](../projects/sample-code-flow-popup)
+
+[auth-config.module.ts](../projects/sample-code-flow-popup/src/app/auth-config.module.ts)
 
 [app.module.ts](../projects/sample-code-flow-popup/src/app/app.module.ts)
 
@@ -83,6 +93,8 @@ The example uses the Code Flow PKCE with Silent renew with Azure B2C as the STS.
 
 ### [src code](../projects/sample-code-flow-azure-b2c)
 
+[auth-config.module.ts](../projects/sample-code-flow-azure-b2c/src/app/auth-config.module.ts)
+
 [app.module.ts](../projects/sample-code-flow-azure-b2c/src/app/app.module.ts)
 
 [app.component.ts](../projects/sample-code-flow-azure-b2c/src/app/app.component.ts)
@@ -95,6 +107,8 @@ Azure AD sample using OpenID Connect Code Flow with PKCE and a iframe silent ren
 
 ### [src code](../projects/sample-code-flow-azuread)
 
+[auth-config.module.ts](../projects/sample-code-flow-azuread/src/app/auth-config.module.ts)
+
 [app.module.ts](../projects/sample-code-flow-azuread/src/app/app.module.ts)
 
 [app.component.ts](../projects/sample-code-flow-azuread/src/app/app.component.ts)
@@ -106,6 +120,8 @@ Azure AD sample using OpenID Connect Code Flow with PKCE and a iframe silent ren
 The example uses the Implicit Flow with silent renew. This flow is no longer recommended, but some servers support this flow only, and not the Code flow with PKCE.
 
 ### [src code](../projects/sample-implicit-flow-silent-renew)
+
+[auth-config.module.ts](../projects/sample-implicit-flow-silent-renew/src/app/auth-config.module.ts)
 
 [app.module.ts](../projects/sample-implicit-flow-silent-renew/src/app/app.module.ts)
 
