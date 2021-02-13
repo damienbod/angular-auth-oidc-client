@@ -35,7 +35,7 @@
     return true;
   }
 
-  configValidateResponseType(responseType: string): boolean {
+  hasConfigValidResponseType(responseType: string): boolean {
     return true;
   }
 

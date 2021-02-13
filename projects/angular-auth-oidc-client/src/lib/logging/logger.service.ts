@@ -59,15 +59,21 @@ export class LoggerService {
   }
 
   private currentLogLevelIsEqualOrSmallerThan(logLevel: LogLevel) {
-    if (this.logLevelIsSet()) {
-      return this.configurationProvider.openIDConfiguration.logLevel <= logLevel;
-    }
-
-    return true;
+    return this.configurationProvider.openIDConfiguration.logLevel <= logLevel;
   }
 
   private logLevelIsSet() {
-    return !!this.configurationProvider.openIDConfiguration?.logLevel;
+    const { logLevel } = this.configurationProvider.openIDConfiguration || {};
+
+    if (logLevel === null) {
+      return false;
+    }
+
+    if (logLevel === undefined) {
+      return false;
+    }
+
+    return true;
   }
 
   private loggingIsTurnedOff() {

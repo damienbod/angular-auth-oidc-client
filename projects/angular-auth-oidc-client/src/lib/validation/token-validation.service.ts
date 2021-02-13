@@ -52,6 +52,7 @@ import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.servi
 export class TokenValidationService {
   static refreshTokenNoncePlaceholder = '--RefreshToken--';
   keyAlgorithms: string[] = ['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'PS256', 'PS384', 'PS512'];
+
   constructor(private tokenHelperService: TokenHelperService, private flowHelper: FlowHelper, private loggerService: LoggerService) {}
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
@@ -170,33 +171,26 @@ export class TokenValidationService {
 
     const dateTimeIatIdToken = new Date(0); // The 0 here is the key, which sets the date to the epoch
     dateTimeIatIdToken.setUTCSeconds(dataIdToken.iat);
-
     maxOffsetAllowedInSeconds = maxOffsetAllowedInSeconds || 0;
 
-    if (dateTimeIatIdToken == null) {
-      return false;
-    }
+    const nowInUtc = new Date(new Date().toUTCString());
+    const diff = nowInUtc.valueOf() - dateTimeIatIdToken.valueOf();
+    const maxOffsetAllowedInMilliseconds = maxOffsetAllowedInSeconds * 1000;
 
-    this.loggerService.logDebug(
-      'validate_id_token_iat_max_offset: ' +
-        (new Date(new Date().toUTCString()).valueOf() - dateTimeIatIdToken.valueOf()) +
-        ' < ' +
-        maxOffsetAllowedInSeconds * 1000
-    );
+    this.loggerService.logDebug(`validate id token iat max offset ${diff} < ${maxOffsetAllowedInMilliseconds}`);
 
-    const diff = new Date(new Date().toUTCString()).valueOf() - dateTimeIatIdToken.valueOf();
     if (diff > 0) {
-      return diff < maxOffsetAllowedInSeconds * 1000;
+      return diff < maxOffsetAllowedInMilliseconds;
     }
 
-    return -diff < maxOffsetAllowedInSeconds * 1000;
+    return -diff < maxOffsetAllowedInMilliseconds;
   }
 
   // id_token C9: The value of the nonce Claim MUST be checked to verify that it is the same value as the one
   // that was sent in the Authentication Request.The Client SHOULD check the nonce value for replay attacks.
   // The precise method for detecting replay attacks is Client specific.
 
-  // However the nonce claim SHOULD not be present for the refesh_token grant type
+  // However the nonce claim SHOULD not be present for the refresh_token grant type
   // https://bitbucket.org/openid/connect/issues/1025/ambiguity-with-how-nonce-is-handled-on
   // The current spec is ambiguous and Keycloak does send it.
   validateIdTokenNonce(dataIdToken: any, localNonce: any, ignoreNonceAfterRefresh: boolean): boolean {
@@ -232,7 +226,6 @@ export class TokenValidationService {
   // not trusted by the Client.
   validateIdTokenAud(dataIdToken: any, aud: any): boolean {
     if (Array.isArray(dataIdToken.aud)) {
-      // const result = this.arrayHelperService.areEqual(dataIdToken.aud, aud);
       const result = dataIdToken.aud.includes(aud);
 
       if (!result) {
@@ -261,6 +254,7 @@ export class TokenValidationService {
 
     return true;
   }
+
   // If an azp (authorized party) Claim is present, the Client SHOULD verify that its client_id is the Claim Value.
   validateIdTokenAzpValid(dataIdToken: any, clientId: string): boolean {
     if (!dataIdToken?.azp) {
@@ -348,8 +342,8 @@ export class TokenValidationService {
       // kid in the Jose header of id_token
       for (const key of jwtkeys.keys) {
         if ((key.kid as string) === (kid as string)) {
-          const publickey = KEYUTIL.getKey(key);
-          isValid = KJUR.jws.JWS.verify(idToken, publickey, [alg]);
+          const publicKey = KEYUTIL.getKey(key);
+          isValid = KJUR.jws.JWS.verify(idToken, publicKey, [alg]);
           if (!isValid) {
             this.loggerService.logWarning('incorrect Signature, validation failed for id_token');
           }
@@ -361,7 +355,7 @@ export class TokenValidationService {
     return isValid;
   }
 
-  configValidateResponseType(responseType: string): boolean {
+  hasConfigValidResponseType(): boolean {
     if (this.flowHelper.isCurrentFlowAnyImplicitFlow()) {
       return true;
     }
@@ -370,7 +364,7 @@ export class TokenValidationService {
       return true;
     }
 
-    this.loggerService.logWarning('module configure incorrect, invalid response_type:' + responseType);
+    this.loggerService.logWarning('module configured incorrectly, invalid response_type. Check the responseType in the config');
     return false;
   }
 
@@ -405,9 +399,9 @@ export class TokenValidationService {
       sha = 'sha512';
     }
 
-    const testdata = this.generateAtHash('' + accessToken, sha);
-    this.loggerService.logDebug('at_hash client validation not decoded:' + testdata);
-    if (testdata === (atHash as string)) {
+    const testData = this.generateAtHash('' + accessToken, sha);
+    this.loggerService.logDebug('at_hash client validation not decoded:' + testData);
+    if (testData === (atHash as string)) {
       return true; // isValid;
     } else {
       const testValue = this.generateAtHash('' + decodeURIComponent(accessToken), sha);
@@ -422,16 +416,16 @@ export class TokenValidationService {
 
   generateCodeChallenge(codeVerifier: any): string {
     const hash = KJUR.crypto.Util.hashString(codeVerifier, 'sha256');
-    const testdata = hextob64u(hash);
+    const testData = hextob64u(hash);
 
-    return testdata;
+    return testData;
   }
 
   private generateAtHash(accessToken: any, sha: string): string {
     const hash = KJUR.crypto.Util.hashString(accessToken, sha);
     const first128bits = hash.substr(0, hash.length / 2);
-    const testdata = hextob64u(first128bits);
+    const testData = hextob64u(first128bits);
 
-    return testdata;
+    return testData;
   }
 }
