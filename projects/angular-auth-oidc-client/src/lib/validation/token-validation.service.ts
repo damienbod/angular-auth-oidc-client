@@ -364,7 +364,7 @@ export class TokenValidationService {
       return true;
     }
 
-    this.loggerService.logWarning('module configure incorrect, invalid response_type. Check responsetype in config');
+    this.loggerService.logWarning('module configured incorrectly, invalid response_type. Check the responseType in the config');
     return false;
   }
 
