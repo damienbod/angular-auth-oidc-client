@@ -27,7 +27,6 @@ describe('Logger Service', () => {
   describe('logError', () => {
     it('should not log error if loglevel is None', () => {
       const spy = spyOn(console, 'error');
-
       configProvider.setConfig({ logLevel: LogLevel.None });
       loggerService.logError('some message');
       expect(spy).not.toHaveBeenCalled();
@@ -35,14 +34,12 @@ describe('Logger Service', () => {
 
     it('should log error as default', () => {
       const spy = spyOn(console, 'error');
-
       loggerService.logError('some message');
       expect(spy).toHaveBeenCalledWith('some message');
     });
 
     it('should always log error with args', () => {
       const spy = spyOn(console, 'error');
-
       loggerService.logError('some message', 'arg1', 'arg2');
       expect(spy).toHaveBeenCalledWith('some message', 'arg1', 'arg2');
     });
@@ -60,6 +57,7 @@ describe('Logger Service', () => {
       const spy = spyOn(console, 'warn');
 
       configProvider.setConfig({ logLevel: LogLevel.None });
+
       loggerService.logWarning('some message');
       expect(spy).not.toHaveBeenCalled();
     });
