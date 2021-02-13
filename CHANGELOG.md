@@ -1,5 +1,10 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-02-13 Version 11.5.1
+
+- ApplicationRef.isStable is always false when using this package
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/965)
+
 ### 2021-02-02 Version 11.5.0
 
 - Added support for authentication using a popup

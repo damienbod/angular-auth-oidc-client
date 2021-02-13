@@ -137,7 +137,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
 export class AppModule {}
 ```
 
-And call the method `checkAuth()` from your `app.component.ts`
+And call the method `checkAuth()` from your `app.component.ts`. The method `checkAuth()` is needed to process the redirect from your sts and set the correct states. This method must be used to ensure the correct functioning of the library.
 
 ```typescript
 import { Component, OnDestroy, OnInit } from '@angular/core';

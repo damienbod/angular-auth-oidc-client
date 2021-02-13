@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config/config.provider';
@@ -31,7 +31,8 @@ export class CheckSessionService {
     private loggerService: LoggerService,
     private iFrameService: IFrameService,
     private eventService: PublicEventsService,
-    private configurationProvider: ConfigurationProvider
+    private configurationProvider: ConfigurationProvider,
+    private zone: NgZone
   ) {}
 
   isCheckSessionConfigured() {
@@ -129,7 +130,9 @@ export class CheckSessionService {
             );
           }
 
-          this.scheduledHeartBeatRunning = setTimeout(pollServerSessionRecur, this.heartBeatInterval);
+          this.zone.runOutsideAngular(() => {
+            this.scheduledHeartBeatRunning = setTimeout(() => this.zone.run(pollServerSessionRecur), this.heartBeatInterval);
+          });
         });
     };
 
