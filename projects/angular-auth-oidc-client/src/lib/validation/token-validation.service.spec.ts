@@ -6,20 +6,17 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthModule } from '../auth.module';
 import { ConfigurationProvider } from '../config/config.provider';
-import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { AbstractSecurityStorage } from '../storage/abstract-security-storage';
 import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
 import { EqualityService } from '../utils/equality/equality.service';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
-import { FlowHelper } from './../utils/flowHelper/flow-helper.service';
 import { TokenValidationService } from './token-validation.service';
 
 describe('TokenValidationService', () => {
   let tokenValidationService: TokenValidationService;
   let tokenHelperService: TokenHelperService;
-  let configProvider: ConfigurationProvider;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -36,7 +33,6 @@ describe('TokenValidationService', () => {
           provide: LoggerService,
           useClass: LoggerServiceMock,
         },
-        FlowHelper,
       ],
     });
   });
@@ -44,7 +40,6 @@ describe('TokenValidationService', () => {
   beforeEach(() => {
     tokenHelperService = TestBed.inject(TokenHelperService);
     tokenValidationService = TestBed.inject(TokenValidationService);
-    configProvider = TestBed.inject(ConfigurationProvider);
   });
 
   it('should create', () => {
@@ -494,35 +489,6 @@ describe('TokenValidationService', () => {
     it('returns false when state and local state do not match', () => {
       const result = tokenValidationService.validateStateFromHashCallback('sssd', 'bad');
       expect(result).toEqual(false);
-    });
-  });
-
-  describe('hasConfigValidResponseType', () => {
-    it('returns true if current configured flow is any implicit flow', () => {
-      const config = { responseType: 'id_token token' } as OpenIdConfiguration;
-
-      configProvider.setConfig(config);
-
-      const implicitFlow = tokenValidationService.hasConfigValidResponseType();
-      expect(implicitFlow).toEqual(true);
-    });
-
-    it('returns true if current configured flow is code flow', () => {
-      const config = { responseType: 'code' } as OpenIdConfiguration;
-
-      configProvider.setConfig(config);
-
-      const implicitFlow = tokenValidationService.hasConfigValidResponseType();
-      expect(implicitFlow).toEqual(true);
-    });
-
-    it('returns false if current configured flow is neither code nor implicit flow', () => {
-      const config = { responseType: 'code id_token' } as OpenIdConfiguration;
-
-      configProvider.setConfig(config);
-
-      const implicitFlow = tokenValidationService.hasConfigValidResponseType();
-      expect(implicitFlow).toEqual(false);
     });
   });
 

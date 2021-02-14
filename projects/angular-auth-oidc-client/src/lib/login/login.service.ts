@@ -6,18 +6,18 @@ import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { RedirectService } from '../utils/redirect/redirect.service';
 import { UrlService } from '../utils/url/url.service';
-import { TokenValidationService } from '../validation/token-validation.service';
 import { CheckAuthService } from './../check-auth.service';
 import { UserService } from './../userData/user-service';
 import { AuthOptions } from './auth-options';
 import { PopupOptions } from './popup-options';
 import { PopUpService } from './popup.service';
+import { ResponseTypeValidationService } from './response-type-validation.service';
 
 @Injectable()
 export class LoginService {
   constructor(
     private loggerService: LoggerService,
-    private tokenValidationService: TokenValidationService,
+    private responseTypeValidationService: ResponseTypeValidationService,
     private urlService: UrlService,
     private redirectService: RedirectService,
     private configurationProvider: ConfigurationProvider,
@@ -29,7 +29,7 @@ export class LoginService {
   ) {}
 
   login(authOptions?: AuthOptions) {
-    if (!this.tokenValidationService.hasConfigValidResponseType()) {
+    if (!this.responseTypeValidationService.hasConfigValidResponseType()) {
       this.loggerService.logError('Invalid response type!');
       return;
     }
@@ -62,7 +62,7 @@ export class LoginService {
   }
 
   loginWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions) {
-    if (!this.tokenValidationService.hasConfigValidResponseType()) {
+    if (!this.responseTypeValidationService.hasConfigValidResponseType()) {
       this.loggerService.logError('Invalid response type!');
       return;
     }
