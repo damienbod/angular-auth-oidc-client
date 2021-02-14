@@ -24,7 +24,6 @@ export class FlowsService {
   constructor(
     private readonly urlService: UrlService,
     private readonly loggerService: LoggerService,
-    private readonly tokenValidationService: TokenValidationService,
     private readonly configurationProvider: ConfigurationProvider,
     private readonly authStateService: AuthStateService,
     private readonly flowsDataService: FlowsDataService,
@@ -48,7 +47,7 @@ export class FlowsService {
 
   processCodeFlowCallback(urlToCheck: string) {
     return this.codeFlowCallbackHandlerService.codeFlowCallback(urlToCheck).pipe(
-      switchMap((callbackContext) => this.codeFlowCodeRequest(callbackContext)),
+      switchMap((callbackContext) => this.codeFlowCallbackHandlerService.codeFlowCodeRequest(callbackContext)),
       switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
       switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
       switchMap((callbackContext) => this.callbackUser(callbackContext))
@@ -56,7 +55,7 @@ export class FlowsService {
   }
 
   processSilentRenewCodeFlowCallback(firstContext: CallbackContext) {
-    return this.codeFlowCodeRequest(firstContext).pipe(
+    return this.codeFlowCallbackHandlerService.codeFlowCodeRequest(firstContext).pipe(
       switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
       switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
       switchMap((callbackContext) => this.callbackUser(callbackContext))
@@ -166,47 +165,6 @@ export class FlowsService {
         let authResult: any = new Object();
         authResult = response;
         authResult.state = callbackContext.state;
-
-        callbackContext.authResult = authResult;
-        return of(callbackContext);
-      }),
-      catchError((error) => {
-        const errorMessage = `OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}`;
-        this.loggerService.logError(errorMessage, error);
-        return throwError(errorMessage);
-      })
-    );
-  }
-
-  // STEP 2 Code Flow //  Code Flow Silent Renew starts here
-  private codeFlowCodeRequest(callbackContext: CallbackContext): Observable<CallbackContext> {
-    const isStateCorrect = this.tokenValidationService.validateStateFromHashCallback(
-      callbackContext.state,
-      this.flowsDataService.getAuthStateControl()
-    );
-
-    if (!isStateCorrect) {
-      this.loggerService.logWarning('codeFlowCodeRequest incorrect state');
-      return throwError('codeFlowCodeRequest incorrect state');
-    }
-
-    const authWellKnown = this.storagePersistanceService.read('authWellKnownEndPoints');
-    const tokenEndpoint = authWellKnown?.tokenEndpoint;
-    if (!tokenEndpoint) {
-      return throwError('Token Endpoint not defined');
-    }
-
-    let headers: HttpHeaders = new HttpHeaders();
-    headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
-
-    const bodyForCodeFlow = this.urlService.createBodyForCodeFlowCodeRequest(callbackContext.code);
-
-    return this.dataService.post(tokenEndpoint, bodyForCodeFlow, headers).pipe(
-      switchMap((response) => {
-        let authResult: any = new Object();
-        authResult = response;
-        authResult.state = callbackContext.state;
-        authResult.session_state = callbackContext.sessionState;
 
         callbackContext.authResult = authResult;
         return of(callbackContext);

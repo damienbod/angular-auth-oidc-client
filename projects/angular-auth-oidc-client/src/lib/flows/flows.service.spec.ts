@@ -36,7 +36,6 @@ describe('Flows Service', () => {
   let dataService: DataService;
   let storagePersistanceService: StoragePersistanceService;
   let configurationProvider: ConfigurationProvider;
-  let tokenValidationService: TokenValidationService;
   let codeFlowCallbackHandlerService: CodeFlowCallbackHandlerService;
 
   beforeEach(() => {
@@ -67,7 +66,6 @@ describe('Flows Service', () => {
     authStateService = TestBed.inject(AuthStateService);
     dataService = TestBed.inject(DataService);
     storagePersistanceService = TestBed.inject(StoragePersistanceService);
-    tokenValidationService = TestBed.inject(TokenValidationService);
     codeFlowCallbackHandlerService = TestBed.inject(CodeFlowCallbackHandlerService);
   });
 
@@ -115,7 +113,7 @@ describe('Flows Service', () => {
       'calls all methods correctly',
       waitForAsync(() => {
         const codeFlowCallbackSpy = spyOn(codeFlowCallbackHandlerService, 'codeFlowCallback').and.returnValue(of(null));
-        const codeFlowCodeRequestSpy = spyOn(service as any, 'codeFlowCodeRequest').and.returnValue(of({}));
+        const codeFlowCodeRequestSpy = spyOn(codeFlowCallbackHandlerService, 'codeFlowCodeRequest').and.returnValue(of(null));
         const callbackHistoryAndResetJwtKeysSpy = spyOn(service as any, 'callbackHistoryAndResetJwtKeys').and.returnValue(of({}));
         const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
         const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
@@ -136,7 +134,7 @@ describe('Flows Service', () => {
     it(
       'calls all methods correctly',
       waitForAsync(() => {
-        const codeFlowCodeRequestSpy = spyOn(service as any, 'codeFlowCodeRequest').and.returnValue(of({}));
+        const codeFlowCodeRequestSpy = spyOn(codeFlowCallbackHandlerService, 'codeFlowCodeRequest').and.returnValue(of(null));
         const callbackHistoryAndResetJwtKeysSpy = spyOn(service as any, 'callbackHistoryAndResetJwtKeys').and.returnValue(of({}));
         const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
         const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
@@ -331,74 +329,6 @@ describe('Flows Service', () => {
         spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ stsServer: 'stsServer' });
 
         (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
-          error: (err) => {
-            console.log(err);
-            expect(err).toBeTruthy();
-          },
-        });
-      })
-    );
-  });
-
-  describe('codeFlowCodeRequest ', () => {
-    it(
-      'throws error if state is not correct',
-      waitForAsync(() => {
-        spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
-
-        (service as any).codeFlowCodeRequest({} as CallbackContext).subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-          },
-        });
-      })
-    );
-
-    it(
-      'throws error if no tokenEndpoint is given',
-      waitForAsync(() => {
-        (service as any).codeFlowCodeRequest({} as CallbackContext).subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-          },
-        });
-      })
-    );
-
-    it(
-      'calls dataservice if all params are good',
-      waitForAsync(() => {
-        const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
-
-        (service as any).codeFlowCodeRequest({} as CallbackContext).subscribe((callbackContext) => {
-          expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
-        });
-      })
-    );
-
-    it(
-      'calls dataservice with correct headers if all params are good',
-      waitForAsync(() => {
-        const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
-
-        (service as any).codeFlowCodeRequest({} as CallbackContext).subscribe((callbackContext) => {
-          const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
-          expect(httpHeaders.has('Content-Type')).toBeTrue();
-          expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
-        });
-      })
-    );
-
-    it(
-      'returns error in case of http error',
-      waitForAsync(() => {
-        spyOn(dataService, 'post').and.returnValue(throwError({}));
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ stsServer: 'stsServer' });
-
-        (service as any).codeFlowCodeRequest({} as CallbackContext).subscribe({
           error: (err) => {
             console.log(err);
             expect(err).toBeTruthy();

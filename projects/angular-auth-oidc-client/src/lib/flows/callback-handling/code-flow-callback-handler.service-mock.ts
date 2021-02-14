@@ -5,4 +5,8 @@ export class CodeFlowCallbackHandlerServiceMock {
   codeFlowCallback(urlToCheck: string): Observable<CallbackContext> {
     return of(null);
   }
+
+  codeFlowCodeRequest(callbackContext: CallbackContext): Observable<CallbackContext> {
+    return of(null);
+  }
 }
