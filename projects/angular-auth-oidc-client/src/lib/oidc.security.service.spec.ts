@@ -10,6 +10,7 @@ import { CallbackService } from './callback/callback.service';
 import { PeriodicallyTokenCheckService } from './callback/periodically-token-check.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
 import { ConfigurationProvider } from './config/config.provider';
+import { CodeFlowCallbackHandlerService } from './flows/callback-handling/code-flow-callback-handler.service';
 import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsService } from './flows/flows.service';
 import { CheckSessionService } from './iframe/check-session.service';
@@ -54,6 +55,7 @@ describe('OidcSecurityService', () => {
           useClass: StoragePersistanceServiceMock,
         },
         { provide: LoggerService, useClass: LoggerServiceMock },
+        CodeFlowCallbackHandlerService,
         UrlService,
         ConfigurationProvider,
         IFrameService,

@@ -6,19 +6,23 @@ import { of, throwError } from 'rxjs';
 import { AuthModule } from './auth.module';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
+import { CallbackServiceMock } from './callback/callback.service-mock';
 import { PeriodicallyTokenCheckService } from './callback/periodically-token-check.service';
+import { PeriodicallyTokenCheckServiceMock } from './callback/periodically-token-check.service-mock';
 import { RefreshSessionService } from './callback/refresh-session.service';
+import { RefreshSessionServiceMock } from './callback/refresh-session.service.mock';
+import { CheckAuthService } from './check-auth.service';
 import { ConfigurationProvider } from './config/config.provider';
 import { CheckSessionService } from './iframe/check-session.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
+import { SilentRenewServiceMock } from './iframe/silent-renew.service-mock';
 import { LoggerService } from './logging/logger.service';
 import { LoggerServiceMock } from './logging/logger.service-mock';
 import { PopUpService } from './login/popup.service';
-import { OidcSecurityService } from './oidc.security.service';
 import { UserService } from './userData/user-service';
 
 describe('CheckAuthService', () => {
-  let oidcSecurityService: OidcSecurityService;
+  let checkAuthService: CheckAuthService;
   let configurationProvider: ConfigurationProvider;
   let authStateService: AuthStateService;
   let userService: UserService;
@@ -32,33 +36,32 @@ describe('CheckAuthService', () => {
       imports: [BrowserModule, HttpClientModule, RouterTestingModule, AuthModule.forRoot()],
       providers: [
         CheckSessionService,
-        SilentRenewService,
+        { provide: SilentRenewService, useClass: SilentRenewServiceMock },
         UserService,
         { provide: LoggerService, useClass: LoggerServiceMock },
         ConfigurationProvider,
         AuthStateService,
-        CallbackService,
-        RefreshSessionService,
-        PeriodicallyTokenCheckService,
+        { provide: CallbackService, useClass: CallbackServiceMock },
+        { provide: RefreshSessionService, useClass: RefreshSessionServiceMock },
+        { provide: PeriodicallyTokenCheckService, useClass: PeriodicallyTokenCheckServiceMock },
         PopUpService,
       ],
     });
   });
 
   beforeEach(() => {
-    oidcSecurityService = TestBed.inject(OidcSecurityService);
+    checkAuthService = TestBed.inject(CheckAuthService);
     configurationProvider = TestBed.inject(ConfigurationProvider);
     userService = TestBed.inject(UserService);
     authStateService = TestBed.inject(AuthStateService);
     checkSessionService = TestBed.inject(CheckSessionService);
     callBackService = TestBed.inject(CallbackService);
     silentRenewService = TestBed.inject(SilentRenewService);
-
     periodicallyTokenCheckService = TestBed.inject(PeriodicallyTokenCheckService);
   });
 
   it('should create', () => {
-    expect(oidcSecurityService).toBeTruthy();
+    expect(checkAuthService).toBeTruthy();
   });
 
   describe('checkAuth', () => {
@@ -66,7 +69,7 @@ describe('CheckAuthService', () => {
       'returns false when config is not valid',
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasValidConfig').and.returnValue(false);
-        oidcSecurityService.checkAuth().subscribe((result) => expect(result).toBeFalse());
+        checkAuthService.checkAuth().subscribe((result) => expect(result).toBeFalse());
       })
     );
 
@@ -78,7 +81,7 @@ describe('CheckAuthService', () => {
         spyOn(callBackService, 'isCallback').and.returnValue(true);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(throwError('ERROR'));
-        oidcSecurityService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth().subscribe((result) => {
           expect(result).toBeFalse();
           expect(spy).toHaveBeenCalled();
         });
@@ -93,7 +96,7 @@ describe('CheckAuthService', () => {
         spyOn(callBackService, 'isCallback').and.returnValue(true);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-        oidcSecurityService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth().subscribe((result) => {
           expect(result).toBeTrue();
           expect(spy).toHaveBeenCalled();
         });
@@ -107,7 +110,7 @@ describe('CheckAuthService', () => {
         spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-        oidcSecurityService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth().subscribe((result) => {
           expect(result).toBeFalse();
           expect(spy).not.toHaveBeenCalled();
         });
@@ -125,7 +128,7 @@ describe('CheckAuthService', () => {
 
         const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
         const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
-        oidcSecurityService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth().subscribe((result) => {
           expect(result).toBeTrue();
           expect(setAuthorizedAndFireEventSpy).toHaveBeenCalled();
           expect(userServiceSpy).toHaveBeenCalled();
@@ -144,7 +147,7 @@ describe('CheckAuthService', () => {
 
         const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
         const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
-        oidcSecurityService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth().subscribe((result) => {
           expect(result).toBeFalse();
           expect(setAuthorizedAndFireEventSpy).not.toHaveBeenCalled();
           expect(userServiceSpy).not.toHaveBeenCalled();
@@ -160,7 +163,7 @@ describe('CheckAuthService', () => {
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
-        oidcSecurityService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth().subscribe((result) => {
           expect(result).toBeTrue();
         });
       })
@@ -176,7 +179,7 @@ describe('CheckAuthService', () => {
 
         const spy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
 
-        oidcSecurityService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth().subscribe((result) => {
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -192,7 +195,7 @@ describe('CheckAuthService', () => {
 
         const spy = spyOn(userService, 'publishUserDataIfExists');
 
-        oidcSecurityService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth().subscribe((result) => {
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -212,7 +215,7 @@ describe('CheckAuthService', () => {
 
         const spy = spyOn(periodicallyTokenCheckService, 'startTokenValidationPeriodically');
 
-        oidcSecurityService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth().subscribe((result) => {
           expect(spy).toHaveBeenCalledWith(7);
         });
       })
@@ -229,7 +232,7 @@ describe('CheckAuthService', () => {
         spyOn(checkSessionService, 'isCheckSessionConfigured').and.returnValue(true);
         const spy = spyOn(checkSessionService, 'start');
 
-        oidcSecurityService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth().subscribe((result) => {
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -246,7 +249,7 @@ describe('CheckAuthService', () => {
         spyOn(silentRenewService, 'isSilentRenewConfigured').and.returnValue(true);
         const spy = spyOn(silentRenewService, 'getOrCreateIframe');
 
-        oidcSecurityService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth().subscribe((result) => {
           expect(spy).toHaveBeenCalled();
         });
       })

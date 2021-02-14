@@ -20,6 +20,8 @@ import { StateValidationServiceMock } from '../validation/state-validation.servi
 import { TokenValidationService } from '../validation/token-validation.service';
 import { TokenValidationServiceMock } from '../validation/token-validation.service-mock';
 import { CallbackContext } from './callback-context';
+import { CodeFlowCallbackHandlerService } from './callback-handling/code-flow-callback-handler.service';
+import { CodeFlowCallbackHandlerServiceMock } from './callback-handling/code-flow-callback-handler.service-mock';
 import { FlowsDataService } from './flows-data.service';
 import { FlowsDataServiceMock } from './flows-data.service-mock';
 import { FlowsService } from './flows.service';
@@ -31,11 +33,11 @@ describe('Flows Service', () => {
   let userService: UserService;
   let flowsDataService: FlowsDataService;
   let authStateService: AuthStateService;
-  let urlService: UrlService;
   let dataService: DataService;
   let storagePersistanceService: StoragePersistanceService;
   let configurationProvider: ConfigurationProvider;
   let tokenValidationService: TokenValidationService;
+  let codeFlowCallbackHandlerService: CodeFlowCallbackHandlerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -52,6 +54,7 @@ describe('Flows Service', () => {
         { provide: UserService, useClass: UserServiceMock },
         { provide: DataService, useClass: DataServiceMock },
         { provide: SigninKeyDataService, useClass: SigninKeyDataServiceMock },
+        { provide: CodeFlowCallbackHandlerService, useClass: CodeFlowCallbackHandlerServiceMock },
       ],
     });
   });
@@ -62,10 +65,10 @@ describe('Flows Service', () => {
     userService = TestBed.inject(UserService);
     flowsDataService = TestBed.inject(FlowsDataService);
     authStateService = TestBed.inject(AuthStateService);
-    urlService = TestBed.inject(UrlService);
     dataService = TestBed.inject(DataService);
     storagePersistanceService = TestBed.inject(StoragePersistanceService);
     tokenValidationService = TestBed.inject(TokenValidationService);
+    codeFlowCallbackHandlerService = TestBed.inject(CodeFlowCallbackHandlerService);
   });
 
   it('should create', () => {
@@ -111,7 +114,7 @@ describe('Flows Service', () => {
     it(
       'calls all methods correctly',
       waitForAsync(() => {
-        const codeFlowCallbackSpy = spyOn(service as any, 'codeFlowCallback').and.returnValue(of({}));
+        const codeFlowCallbackSpy = spyOn(codeFlowCallbackHandlerService, 'codeFlowCallback').and.returnValue(of(null));
         const codeFlowCodeRequestSpy = spyOn(service as any, 'codeFlowCodeRequest').and.returnValue(of({}));
         const callbackHistoryAndResetJwtKeysSpy = spyOn(service as any, 'callbackHistoryAndResetJwtKeys').and.returnValue(of({}));
         const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
@@ -186,59 +189,6 @@ describe('Flows Service', () => {
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
           expect(callbackStateValidationSpy).toHaveBeenCalled();
           expect(callbackUserSpy).toHaveBeenCalled();
-        });
-      })
-    );
-  });
-
-  describe('codeFlowCallback', () => {
-    it(
-      'throws error if no state is given',
-      waitForAsync(() => {
-        const getUrlParameterSpy = spyOn(urlService, 'getUrlParameter').and.returnValue('params');
-        getUrlParameterSpy.withArgs('any-url', 'state').and.returnValue(null);
-
-        (service as any).codeFlowCallback('any-url').subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-          },
-        });
-      })
-    );
-
-    it(
-      'throws error if no code is given',
-      waitForAsync(() => {
-        const getUrlParameterSpy = spyOn(urlService, 'getUrlParameter').and.returnValue('params');
-        getUrlParameterSpy.withArgs('any-url', 'code').and.returnValue(null);
-
-        (service as any).codeFlowCallback('any-url').subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-          },
-        });
-      })
-    );
-
-    it(
-      'returns callbackContext if all params are good',
-      waitForAsync(() => {
-        spyOn(urlService, 'getUrlParameter').and.returnValue('params');
-
-        const expectedCallbackContext = {
-          code: 'params',
-          refreshToken: null,
-          state: 'params',
-          sessionState: 'params',
-          authResult: null,
-          isRenewProcess: false,
-          jwtKeys: null,
-          validationResult: null,
-          existingIdToken: null,
-        };
-
-        (service as any).codeFlowCallback('any-url').subscribe((callbackContext) => {
-          expect(callbackContext).toEqual(expectedCallbackContext);
         });
       })
     );

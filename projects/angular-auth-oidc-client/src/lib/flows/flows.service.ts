@@ -15,6 +15,7 @@ import { StateValidationService } from '../validation/state-validation.service';
 import { TokenValidationService } from '../validation/token-validation.service';
 import { ValidationResult } from '../validation/validation-result';
 import { CallbackContext } from './callback-context';
+import { CodeFlowCallbackHandlerService } from './callback-handling/code-flow-callback-handler.service';
 import { FlowsDataService } from './flows-data.service';
 import { SigninKeyDataService } from './signin-key-data.service';
 
@@ -31,7 +32,8 @@ export class FlowsService {
     private readonly dataService: DataService,
     private readonly userService: UserService,
     private readonly stateValidationService: StateValidationService,
-    private readonly storagePersistanceService: StoragePersistanceService
+    private readonly storagePersistanceService: StoragePersistanceService,
+    private readonly codeFlowCallbackHandlerService: CodeFlowCallbackHandlerService
   ) {}
 
   resetAuthorizationData(): void {
@@ -45,7 +47,7 @@ export class FlowsService {
   }
 
   processCodeFlowCallback(urlToCheck: string) {
-    return this.codeFlowCallback(urlToCheck).pipe(
+    return this.codeFlowCallbackHandlerService.codeFlowCallback(urlToCheck).pipe(
       switchMap((callbackContext) => this.codeFlowCodeRequest(callbackContext)),
       switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
       switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
@@ -76,37 +78,6 @@ export class FlowsService {
       switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
       switchMap((callbackContext) => this.callbackUser(callbackContext))
     );
-  }
-
-  // STEP 1 Code Flow
-  private codeFlowCallback(urlToCheck: string): Observable<CallbackContext> {
-    const code = this.urlService.getUrlParameter(urlToCheck, 'code');
-    const state = this.urlService.getUrlParameter(urlToCheck, 'state');
-    const sessionState = this.urlService.getUrlParameter(urlToCheck, 'session_state') || null;
-
-    if (!state) {
-      this.loggerService.logDebug('no state in url');
-      return throwError('no state in url');
-    }
-    if (!code) {
-      this.loggerService.logDebug('no code in url');
-      return throwError('no code in url');
-    }
-    this.loggerService.logDebug('running validation for callback', urlToCheck);
-
-    const initialCallbackContext = {
-      code,
-      refreshToken: null,
-      state,
-      sessionState,
-      authResult: null,
-      isRenewProcess: false,
-      jwtKeys: null,
-      validationResult: null,
-      existingIdToken: null,
-    };
-
-    return of(initialCallbackContext);
   }
 
   // STEP 1 Implicit Flow
