@@ -1,14 +1,19 @@
-import { HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of, throwError } from 'rxjs';
 import { PublicEventsService } from '../public-api';
 import { AuthModule } from './auth.module';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
+import { CallbackServiceMock } from './callback/callback.service-mock';
 import { PeriodicallyTokenCheckService } from './callback/periodically-token-check.service';
+import { PeriodicallyTokenCheckServiceMock } from './callback/periodically-token-check.service-mock';
 import { RefreshSessionService } from './callback/refresh-session.service';
+import { RefreshSessionServiceMock } from './callback/refresh-session.service.mock';
+import { CheckAuthService } from './check-auth.service';
+import { CheckAuthServiceMock } from './check-auth.service-mock';
 import { ConfigurationProvider } from './config/config.provider';
 import { CodeFlowCallbackHandlerService } from './flows/callback-handling/code-flow-callback-handler.service';
 import { FlowsDataService } from './flows/flows-data.service';
@@ -16,6 +21,7 @@ import { FlowsService } from './flows/flows.service';
 import { CheckSessionService } from './iframe/check-session.service';
 import { IFrameService } from './iframe/existing-iframe.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
+import { SilentRenewServiceMock } from './iframe/silent-renew.service-mock';
 import { LoggerService } from './logging/logger.service';
 import { LoggerServiceMock } from './logging/logger.service-mock';
 import { LoginService } from './login/login.service';
@@ -47,9 +53,14 @@ describe('OidcSecurityService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [BrowserModule, HttpClientModule, RouterTestingModule, AuthModule.forRoot()],
+      imports: [CommonModule, HttpClientTestingModule, RouterTestingModule, AuthModule.forRoot()],
       providers: [
         OidcSecurityService,
+        CheckSessionService,
+        {
+          provide: CheckAuthService,
+          useClass: CheckAuthServiceMock,
+        },
         {
           provide: StoragePersistanceService,
           useClass: StoragePersistanceServiceMock,
@@ -62,18 +73,17 @@ describe('OidcSecurityService', () => {
         LogoffRevocationService,
         AuthStateService,
         UserService,
-        CheckSessionService,
-        CallbackService,
+        { provide: CallbackService, useClass: CallbackServiceMock },
         PublicEventsService,
-        SilentRenewService,
+        { provide: SilentRenewService, useClass: SilentRenewServiceMock },
         TokenHelperService,
         FlowsDataService,
         TokenValidationService,
         FlowsService,
         RedirectService,
         LoginService,
-        RefreshSessionService,
-        PeriodicallyTokenCheckService,
+        { provide: RefreshSessionService, useClass: RefreshSessionServiceMock },
+        { provide: PeriodicallyTokenCheckService, useClass: PeriodicallyTokenCheckServiceMock },
       ],
     });
   });
@@ -285,25 +295,6 @@ describe('OidcSecurityService', () => {
         oidcSecurityService.checkAuth().subscribe((result) => {
           expect(result).toBeFalse();
           expect(spy).not.toHaveBeenCalled();
-        });
-      })
-    );
-
-    it(
-      'does fire the auth and user data events when it is not a callback from the sts and is authenticated',
-      waitForAsync(() => {
-        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-        spyOn(callBackService, 'isCallback').and.returnValue(false);
-        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
-        spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-
-        const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
-        const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
-        oidcSecurityService.checkAuth().subscribe((result) => {
-          expect(result).toBeTrue();
-          expect(setAuthorizedAndFireEventSpy).toHaveBeenCalled();
-          expect(userServiceSpy).toHaveBeenCalled();
         });
       })
     );

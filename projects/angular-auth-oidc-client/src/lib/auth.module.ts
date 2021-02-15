@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './authState/auth-state.service';
+import { ImplicitFlowCallbackService } from './callback/implicit-flow-callback.service';
 import { CheckAuthService } from './check-auth.service';
 import { ConfigValidationService } from './config-validation/config-validation.service';
 import { AuthWellKnownDataService } from './config/auth-well-known-data.service';
@@ -76,6 +77,7 @@ export class AuthModule {
         ConfigValidationService,
         CheckAuthService,
         ResetAuthDataService,
+        ImplicitFlowCallbackService,
         {
           provide: AbstractSecurityStorage,
           useClass: token.storage || BrowserStorageService,

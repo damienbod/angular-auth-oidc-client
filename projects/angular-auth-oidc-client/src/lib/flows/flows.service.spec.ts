@@ -22,6 +22,8 @@ import { TokenValidationServiceMock } from '../validation/token-validation.servi
 import { CallbackContext } from './callback-context';
 import { CodeFlowCallbackHandlerService } from './callback-handling/code-flow-callback-handler.service';
 import { CodeFlowCallbackHandlerServiceMock } from './callback-handling/code-flow-callback-handler.service-mock';
+import { ImplicitFlowCallbackHandlerService } from './callback-handling/implicit-flow-callback-handler.service';
+import { ImplicitFlowCallbackHandlerServiceMock } from './callback-handling/implicit-flow-callback-handler.service.mock';
 import { FlowsDataService } from './flows-data.service';
 import { FlowsDataServiceMock } from './flows-data.service-mock';
 import { FlowsService } from './flows.service';
@@ -38,7 +40,7 @@ describe('Flows Service', () => {
   let storagePersistanceService: StoragePersistanceService;
   let configurationProvider: ConfigurationProvider;
   let codeFlowCallbackHandlerService: CodeFlowCallbackHandlerService;
-  let resetAuthDataService: ResetAuthDataService;
+  let implicitFlowCallbackHandlerService: ImplicitFlowCallbackHandlerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -57,6 +59,7 @@ describe('Flows Service', () => {
         { provide: SigninKeyDataService, useClass: SigninKeyDataServiceMock },
         { provide: CodeFlowCallbackHandlerService, useClass: CodeFlowCallbackHandlerServiceMock },
         { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
+        { provide: ImplicitFlowCallbackHandlerService, useClass: ImplicitFlowCallbackHandlerServiceMock },
       ],
     });
   });
@@ -69,7 +72,7 @@ describe('Flows Service', () => {
     dataService = TestBed.inject(DataService);
     storagePersistanceService = TestBed.inject(StoragePersistanceService);
     codeFlowCallbackHandlerService = TestBed.inject(CodeFlowCallbackHandlerService);
-    resetAuthDataService = TestBed.inject(ResetAuthDataService);
+    implicitFlowCallbackHandlerService = TestBed.inject(ImplicitFlowCallbackHandlerService);
   });
 
   it('should create', () => {
@@ -122,7 +125,7 @@ describe('Flows Service', () => {
     it(
       'calls all methods correctly',
       waitForAsync(() => {
-        const implicitFlowCallbackSpy = spyOn(service as any, 'implicitFlowCallback').and.returnValue(of({}));
+        const implicitFlowCallbackSpy = spyOn(implicitFlowCallbackHandlerService, 'implicitFlowCallback').and.returnValue(of(null));
         const callbackHistoryAndResetJwtKeysSpy = spyOn(service as any, 'callbackHistoryAndResetJwtKeys').and.returnValue(of({}));
         const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
         const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
@@ -155,53 +158,6 @@ describe('Flows Service', () => {
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
           expect(callbackStateValidationSpy).toHaveBeenCalled();
           expect(callbackUserSpy).toHaveBeenCalled();
-        });
-      })
-    );
-  });
-
-  describe('implicitFlowCallback', () => {
-    it(
-      'calls "resetAuthorizationData" if silent renew is not running',
-      waitForAsync(() => {
-        spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-        const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
-
-        (service as any).implicitFlowCallback('any-hash').subscribe(() => {
-          expect(resetAuthorizationDataSpy).toHaveBeenCalled();
-        });
-      })
-    );
-
-    it(
-      'does NOT calls "resetAuthorizationData" if silent renew is running',
-      waitForAsync(() => {
-        spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-        const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
-
-        (service as any).implicitFlowCallback('any-hash').subscribe(() => {
-          expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
-        });
-      })
-    );
-
-    it(
-      'returns callbackContext if all params are good',
-      waitForAsync(() => {
-        spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-        const expectedCallbackContext = {
-          code: null,
-          refreshToken: null,
-          state: null,
-          sessionState: null,
-          authResult: { anyHash: '' },
-          isRenewProcess: true,
-          jwtKeys: null,
-          validationResult: null,
-          existingIdToken: null,
-        };
-        (service as any).implicitFlowCallback('anyHash').subscribe((callbackContext) => {
-          expect(callbackContext).toEqual(expectedCallbackContext);
         });
       })
     );

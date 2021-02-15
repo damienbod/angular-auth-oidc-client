@@ -16,6 +16,7 @@ import { TokenValidationService } from '../validation/token-validation.service';
 import { ValidationResult } from '../validation/validation-result';
 import { CallbackContext } from './callback-context';
 import { CodeFlowCallbackHandlerService } from './callback-handling/code-flow-callback-handler.service';
+import { ImplicitFlowCallbackHandlerService } from './callback-handling/implicit-flow-callback-handler.service';
 import { FlowsDataService } from './flows-data.service';
 import { ResetAuthDataService } from './reset-auth-data.service';
 import { SigninKeyDataService } from './signin-key-data.service';
@@ -28,13 +29,14 @@ export class FlowsService {
     private readonly configurationProvider: ConfigurationProvider,
     private readonly authStateService: AuthStateService,
     private readonly flowsDataService: FlowsDataService,
-    private readonly signinKeyDataService: SigninKeyDataService,
+    private readonly signInKeyDataService: SigninKeyDataService,
     private readonly dataService: DataService,
     private readonly userService: UserService,
     private readonly stateValidationService: StateValidationService,
     private readonly storagePersistanceService: StoragePersistanceService,
     private readonly codeFlowCallbackHandlerService: CodeFlowCallbackHandlerService,
-    private readonly resetAuthDataService: ResetAuthDataService
+    private readonly resetAuthDataService: ResetAuthDataService,
+    private readonly implicitFlowCallbackHandlerService: ImplicitFlowCallbackHandlerService
   ) {}
 
   processCodeFlowCallback(urlToCheck: string) {
@@ -55,7 +57,7 @@ export class FlowsService {
   }
 
   processImplicitFlowCallback(hash?: string) {
-    return this.implicitFlowCallback(hash).pipe(
+    return this.implicitFlowCallbackHandlerService.implicitFlowCallback(hash).pipe(
       switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
       switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
       switchMap((callbackContext) => this.callbackUser(callbackContext))
@@ -69,38 +71,6 @@ export class FlowsService {
       switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
       switchMap((callbackContext) => this.callbackUser(callbackContext))
     );
-  }
-
-  // STEP 1 Implicit Flow
-  private implicitFlowCallback(hash?: string): Observable<CallbackContext> {
-    const isRenewProcessData = this.flowsDataService.isSilentRenewRunning();
-
-    this.loggerService.logDebug('BEGIN authorizedCallback, no auth data');
-    if (!isRenewProcessData) {
-      this.resetAuthDataService.resetAuthorizationData();
-    }
-
-    hash = hash || window.location.hash.substr(1);
-
-    const authResult: any = hash.split('&').reduce((resultData: any, item: string) => {
-      const parts = item.split('=');
-      resultData[parts.shift() as string] = parts.join('=');
-      return resultData;
-    }, {});
-
-    const callbackContext = {
-      code: null,
-      refreshToken: null,
-      state: null,
-      sessionState: null,
-      authResult,
-      isRenewProcess: isRenewProcessData,
-      jwtKeys: null,
-      validationResult: null,
-      existingIdToken: null,
-    };
-
-    return of(callbackContext);
   }
 
   // STEP 1 Refresh session
@@ -191,7 +161,7 @@ export class FlowsService {
     this.loggerService.logDebug(callbackContext.authResult);
     this.loggerService.logDebug('authorizedCallback created, begin token validation');
 
-    return this.signinKeyDataService.getSigningKeys().pipe(
+    return this.signInKeyDataService.getSigningKeys().pipe(
       switchMap((jwtKeys) => {
         if (jwtKeys) {
           callbackContext.jwtKeys = jwtKeys;
