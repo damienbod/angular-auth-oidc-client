@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { of, throwError } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
-import { FlowsService } from '../flows/flows.service';
+import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
@@ -18,7 +18,7 @@ export class LogoffRevocationService {
     private loggerService: LoggerService,
     private urlService: UrlService,
     private checkSessionService: CheckSessionService,
-    private flowsService: FlowsService,
+    private resetAuthDataService: ResetAuthDataService,
     private redirectService: RedirectService
   ) {}
 
@@ -27,7 +27,7 @@ export class LogoffRevocationService {
   logoff(urlHandler?: (url: string) => any) {
     this.loggerService.logDebug('logoff, remove auth ');
     const endSessionUrl = this.getEndSessionUrl();
-    this.flowsService.resetAuthorizationData();
+    this.resetAuthDataService.resetAuthorizationData();
 
     if (!endSessionUrl) {
       this.loggerService.logDebug('only local login cleaned up, no end_session_endpoint');
@@ -44,7 +44,7 @@ export class LogoffRevocationService {
   }
 
   logoffLocal() {
-    this.flowsService.resetAuthorizationData();
+    this.resetAuthDataService.resetAuthorizationData();
   }
 
   // The refresh token and and the access token are revoked on the server. If the refresh token does not exist

@@ -25,18 +25,20 @@ import { CodeFlowCallbackHandlerServiceMock } from './callback-handling/code-flo
 import { FlowsDataService } from './flows-data.service';
 import { FlowsDataServiceMock } from './flows-data.service-mock';
 import { FlowsService } from './flows.service';
+import { ResetAuthDataService } from './reset-auth-data.service';
+import { ResetAuthDataServiceMock } from './reset-auth-data.service-mock';
 import { SigninKeyDataService } from './signin-key-data.service';
 import { SigninKeyDataServiceMock } from './signin-key-data.service-mock';
 
 describe('Flows Service', () => {
   let service: FlowsService;
-  let userService: UserService;
   let flowsDataService: FlowsDataService;
   let authStateService: AuthStateService;
   let dataService: DataService;
   let storagePersistanceService: StoragePersistanceService;
   let configurationProvider: ConfigurationProvider;
   let codeFlowCallbackHandlerService: CodeFlowCallbackHandlerService;
+  let resetAuthDataService: ResetAuthDataService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -54,6 +56,7 @@ describe('Flows Service', () => {
         { provide: DataService, useClass: DataServiceMock },
         { provide: SigninKeyDataService, useClass: SigninKeyDataServiceMock },
         { provide: CodeFlowCallbackHandlerService, useClass: CodeFlowCallbackHandlerServiceMock },
+        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
       ],
     });
   });
@@ -61,51 +64,16 @@ describe('Flows Service', () => {
   beforeEach(() => {
     service = TestBed.inject(FlowsService);
     configurationProvider = TestBed.inject(ConfigurationProvider);
-    userService = TestBed.inject(UserService);
     flowsDataService = TestBed.inject(FlowsDataService);
     authStateService = TestBed.inject(AuthStateService);
     dataService = TestBed.inject(DataService);
     storagePersistanceService = TestBed.inject(StoragePersistanceService);
     codeFlowCallbackHandlerService = TestBed.inject(CodeFlowCallbackHandlerService);
+    resetAuthDataService = TestBed.inject(ResetAuthDataService);
   });
 
   it('should create', () => {
     expect(service).toBeTruthy();
-  });
-
-  describe('resetAuthorizationData', () => {
-    it('calls resetUserDataInStore when autoUserInfo is true', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ autoUserinfo: true });
-      const resetUserDataInStoreSpy = spyOn(userService, 'resetUserDataInStore');
-      spyOn(flowsDataService, 'resetStorageFlowData');
-      spyOn(authStateService, 'setUnauthorizedAndFireEvent');
-
-      service.resetAuthorizationData();
-
-      expect(resetUserDataInStoreSpy).toHaveBeenCalled();
-    });
-
-    it('does not call resetUserDataInStore when autoUserInfo is false', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ autoUserinfo: false });
-      const resetUserDataInStoreSpy = spyOn(userService, 'resetUserDataInStore');
-      spyOn(flowsDataService, 'resetStorageFlowData');
-      spyOn(authStateService, 'setUnauthorizedAndFireEvent');
-
-      service.resetAuthorizationData();
-
-      expect(resetUserDataInStoreSpy).not.toHaveBeenCalled();
-    });
-
-    it('calls correct methods', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ autoUserinfo: false });
-      const resetStorageFlowDataSpy = spyOn(flowsDataService, 'resetStorageFlowData');
-      const setUnauthorizedAndFireEventSpy = spyOn(authStateService, 'setUnauthorizedAndFireEvent');
-
-      service.resetAuthorizationData();
-
-      expect(resetStorageFlowDataSpy).toHaveBeenCalled();
-      expect(setUnauthorizedAndFireEventSpy).toHaveBeenCalled();
-    });
   });
 
   describe('processCodeFlowCallback', () => {
@@ -197,7 +165,7 @@ describe('Flows Service', () => {
       'calls "resetAuthorizationData" if silent renew is not running',
       waitForAsync(() => {
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-        const resetAuthorizationDataSpy = spyOn(service as any, 'resetAuthorizationData');
+        const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
 
         (service as any).implicitFlowCallback('any-hash').subscribe(() => {
           expect(resetAuthorizationDataSpy).toHaveBeenCalled();
@@ -209,7 +177,7 @@ describe('Flows Service', () => {
       'does NOT calls "resetAuthorizationData" if silent renew is running',
       waitForAsync(() => {
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-        const resetAuthorizationDataSpy = spyOn(service as any, 'resetAuthorizationData');
+        const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
 
         (service as any).implicitFlowCallback('any-hash').subscribe(() => {
           expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();

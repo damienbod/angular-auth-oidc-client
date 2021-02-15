@@ -4,7 +4,8 @@ import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { ConfigurationProvider } from '../config/config.provider';
 import { ConfigurationProviderMock } from '../config/config.provider-mock';
-import { FlowsServiceMock } from '../flows/flows.service-mock';
+import { ResetAuthDataService } from '../flows/reset-auth-data.service';
+import { ResetAuthDataServiceMock } from '../flows/reset-auth-data.service-mock';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { CheckSessionServiceMock } from '../iframe/check-session.service-mock';
 import { LoggerService } from '../logging/logger.service';
@@ -12,7 +13,6 @@ import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { RedirectServiceMock } from '../utils/redirect/redirect.service-mock';
 import { UrlService } from '../utils/url/url.service';
-import { FlowsService } from './../flows/flows.service';
 import { StoragePersistanceServiceMock } from './../storage/storage-persistance.service-mock';
 import { RedirectService } from './../utils/redirect/redirect.service';
 import { UrlServiceMock } from './../utils/url/url.service-mock';
@@ -25,7 +25,7 @@ describe('Logout and Revoke Service', () => {
   let storagePersistanceService: StoragePersistanceService;
   let urlService: UrlService;
   let checkSessionService: CheckSessionService;
-  let flowsService: FlowsService;
+  let resetAuthDataService: ResetAuthDataService;
   let redirectService: RedirectService;
 
   beforeEach(() => {
@@ -37,7 +37,7 @@ describe('Logout and Revoke Service', () => {
         { provide: StoragePersistanceService, useClass: StoragePersistanceServiceMock },
         { provide: UrlService, useClass: UrlServiceMock },
         { provide: CheckSessionService, useClass: CheckSessionServiceMock },
-        { provide: FlowsService, useClass: FlowsServiceMock },
+        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
         { provide: RedirectService, useClass: RedirectServiceMock },
         { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
       ],
@@ -51,7 +51,7 @@ describe('Logout and Revoke Service', () => {
     storagePersistanceService = TestBed.inject(StoragePersistanceService);
     urlService = TestBed.inject(UrlService);
     checkSessionService = TestBed.inject(CheckSessionService);
-    flowsService = TestBed.inject(FlowsService);
+    resetAuthDataService = TestBed.inject(ResetAuthDataService);
     redirectService = TestBed.inject(RedirectService);
   });
 
@@ -277,7 +277,7 @@ describe('Logout and Revoke Service', () => {
   describe('logoffLocal', () => {
     it('calls flowsService.resetAuthorizationData', () => {
       // Arrange
-      const resetAuthorizationDataSpy = spyOn(flowsService, 'resetAuthorizationData');
+      const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
       // Act
       service.logoffLocal();
       // Assert

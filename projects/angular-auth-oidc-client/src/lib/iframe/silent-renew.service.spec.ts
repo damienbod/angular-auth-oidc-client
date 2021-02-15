@@ -11,6 +11,8 @@ import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsDataServiceMock } from '../flows/flows-data.service-mock';
 import { FlowsService } from '../flows/flows.service';
 import { FlowsServiceMock } from '../flows/flows.service-mock';
+import { ResetAuthDataService } from '../flows/reset-auth-data.service';
+import { ResetAuthDataServiceMock } from '../flows/reset-auth-data.service-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
@@ -32,6 +34,7 @@ describe('SilentRenewService  ', () => {
         { provide: FlowsService, useClass: FlowsServiceMock },
         { provide: AuthStateService, useClass: AuthStateServiceMock },
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
+        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
         FlowHelper,
         IFrameService,
         IntervallService,

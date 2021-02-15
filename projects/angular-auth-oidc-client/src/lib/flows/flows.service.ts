@@ -17,6 +17,7 @@ import { ValidationResult } from '../validation/validation-result';
 import { CallbackContext } from './callback-context';
 import { CodeFlowCallbackHandlerService } from './callback-handling/code-flow-callback-handler.service';
 import { FlowsDataService } from './flows-data.service';
+import { ResetAuthDataService } from './reset-auth-data.service';
 import { SigninKeyDataService } from './signin-key-data.service';
 
 @Injectable()
@@ -32,18 +33,9 @@ export class FlowsService {
     private readonly userService: UserService,
     private readonly stateValidationService: StateValidationService,
     private readonly storagePersistanceService: StoragePersistanceService,
-    private readonly codeFlowCallbackHandlerService: CodeFlowCallbackHandlerService
+    private readonly codeFlowCallbackHandlerService: CodeFlowCallbackHandlerService,
+    private readonly resetAuthDataService: ResetAuthDataService
   ) {}
-
-  resetAuthorizationData(): void {
-    if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
-      // Clear user data. Fixes #97.
-      this.userService.resetUserDataInStore();
-    }
-
-    this.flowsDataService.resetStorageFlowData();
-    this.authStateService.setUnauthorizedAndFireEvent();
-  }
 
   processCodeFlowCallback(urlToCheck: string) {
     return this.codeFlowCallbackHandlerService.codeFlowCallback(urlToCheck).pipe(
@@ -85,7 +77,7 @@ export class FlowsService {
 
     this.loggerService.logDebug('BEGIN authorizedCallback, no auth data');
     if (!isRenewProcessData) {
-      this.resetAuthorizationData();
+      this.resetAuthDataService.resetAuthorizationData();
     }
 
     hash = hash || window.location.hash.substr(1);
@@ -190,7 +182,7 @@ export class FlowsService {
     if (callbackContext.authResult.error) {
       const errorMessage = `authorizedCallbackProcedure came with error: ${callbackContext.authResult.error}`;
       this.loggerService.logDebug(errorMessage);
-      this.resetAuthorizationData();
+      this.resetAuthDataService.resetAuthorizationData();
       this.flowsDataService.setNonce('');
       this.handleResultErrorFromCallback(callbackContext.authResult, callbackContext.isRenewProcess);
       return throwError(errorMessage);
@@ -230,7 +222,7 @@ export class FlowsService {
     } else {
       const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${window.location.hash}`;
       this.loggerService.logWarning(errorMessage);
-      this.resetAuthorizationData();
+      this.resetAuthDataService.resetAuthorizationData();
       this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
       return throwError(errorMessage);
     }
@@ -263,7 +255,7 @@ export class FlowsService {
             this.publishAuthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
             return of(callbackContext);
           } else {
-            this.resetAuthorizationData();
+            this.resetAuthDataService.resetAuthorizationData();
             this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
             const errorMessage = `Called for userData but they were ${userData}`;
             this.loggerService.logWarning(errorMessage);

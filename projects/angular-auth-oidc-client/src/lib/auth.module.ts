@@ -13,6 +13,7 @@ import { OidcConfigService } from './config/config.service';
 import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsService } from './flows/flows.service';
 import { RandomService } from './flows/random/random.service';
+import { ResetAuthDataService } from './flows/reset-auth-data.service';
 import { SigninKeyDataService } from './flows/signin-key-data.service';
 import { CheckSessionService } from './iframe/check-session.service';
 import { IFrameService } from './iframe/existing-iframe.service';
@@ -74,6 +75,7 @@ export class AuthModule {
         StateValidationService,
         ConfigValidationService,
         CheckAuthService,
+        ResetAuthDataService,
         {
           provide: AbstractSecurityStorage,
           useClass: token.storage || BrowserStorageService,

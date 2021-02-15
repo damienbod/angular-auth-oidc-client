@@ -62,6 +62,7 @@ export class RefreshSessionService {
       })
     );
   }
+
   private startRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
     const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
     this.loggerService.logDebug(`Checking: silentRenewRunning: ${isSilentRenewRunning}`);

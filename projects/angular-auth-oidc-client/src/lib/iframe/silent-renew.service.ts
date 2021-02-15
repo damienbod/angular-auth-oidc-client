@@ -10,6 +10,7 @@ import { ConfigurationProvider } from '../config/config.provider';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
+import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { LoggerService } from '../logging/logger.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { ValidationResult } from '../validation/validation-result';
@@ -29,12 +30,13 @@ export class SilentRenewService {
     private configurationProvider: ConfigurationProvider,
     private iFrameService: IFrameService,
     private flowsService: FlowsService,
+    private resetAuthDataService: ResetAuthDataService,
     private flowsDataService: FlowsDataService,
     private authStateService: AuthStateService,
     private loggerService: LoggerService,
     private flowHelper: FlowHelper,
     private implicitFlowCallbackService: ImplicitFlowCallbackService,
-    private intervallService: IntervallService
+    private intervalService: IntervallService
   ) {}
 
   getOrCreateIframe(): HTMLIFrameElement {
@@ -64,9 +66,9 @@ export class SilentRenewService {
         validationResult: ValidationResult.LoginRequired,
         isRenewProcess: true,
       });
-      this.flowsService.resetAuthorizationData();
+      this.resetAuthDataService.resetAuthorizationData();
       this.flowsDataService.setNonce('');
-      this.intervallService.stopPeriodicallTokenCheck();
+      this.intervalService.stopPeriodicallTokenCheck();
       return throwError(error);
     }
 
@@ -88,8 +90,8 @@ export class SilentRenewService {
 
     return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext).pipe(
       catchError((errorFromFlow) => {
-        this.intervallService.stopPeriodicallTokenCheck();
-        this.flowsService.resetAuthorizationData();
+        this.intervalService.stopPeriodicallTokenCheck();
+        this.resetAuthDataService.resetAuthorizationData();
         return throwError(errorFromFlow);
       })
     );
