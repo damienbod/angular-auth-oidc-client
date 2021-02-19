@@ -2,38 +2,32 @@ import { CommonModule } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Observable, of, throwError } from 'rxjs';
-import { PublicEventsService } from '../public-api';
+import { Observable, of } from 'rxjs';
 import { AuthModule } from './auth.module';
 import { AuthStateService } from './authState/auth-state.service';
+import { AuthStateServiceMock } from './authState/auth-state.service-mock';
 import { CallbackService } from './callback/callback.service';
 import { CallbackServiceMock } from './callback/callback.service-mock';
-import { PeriodicallyTokenCheckService } from './callback/periodically-token-check.service';
-import { PeriodicallyTokenCheckServiceMock } from './callback/periodically-token-check.service-mock';
 import { RefreshSessionService } from './callback/refresh-session.service';
 import { RefreshSessionServiceMock } from './callback/refresh-session.service.mock';
 import { CheckAuthService } from './check-auth.service';
 import { CheckAuthServiceMock } from './check-auth.service-mock';
 import { ConfigurationProvider } from './config/config.provider';
-import { CodeFlowCallbackHandlerService } from './flows/callback-handling/code-flow-callback-handler.service';
 import { FlowsDataService } from './flows/flows-data.service';
-import { FlowsService } from './flows/flows.service';
+import { FlowsDataServiceMock } from './flows/flows-data.service-mock';
 import { CheckSessionService } from './iframe/check-session.service';
-import { IFrameService } from './iframe/existing-iframe.service';
-import { SilentRenewService } from './iframe/silent-renew.service';
-import { SilentRenewServiceMock } from './iframe/silent-renew.service-mock';
-import { LoggerService } from './logging/logger.service';
-import { LoggerServiceMock } from './logging/logger.service-mock';
+import { CheckSessionServiceMock } from './iframe/check-session.service-mock';
 import { LoginService } from './login/login.service';
+import { LoginServiceMock } from './login/login.service-mock';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
+import { LogoffRevocationServiceMock } from './logoffRevoke/logoff-revocation.service-mock';
 import { OidcSecurityService } from './oidc.security.service';
 import { StoragePersistanceService } from './storage/storage-persistance.service';
 import { StoragePersistanceServiceMock } from './storage/storage-persistance.service-mock';
 import { UserService } from './userData/user-service';
-import { RedirectService } from './utils/redirect/redirect.service';
+import { UserServiceMock } from './userData/user-service-mock';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
-import { UrlService } from './utils/url/url.service';
-import { TokenValidationService } from './validation/token-validation.service';
+import { TokenHelperServiceMock } from './utils/tokenHelper/oidc-token-helper.service-mock';
 
 describe('OidcSecurityService', () => {
   let oidcSecurityService: OidcSecurityService;
@@ -41,14 +35,11 @@ describe('OidcSecurityService', () => {
   let authStateService: AuthStateService;
   let userService: UserService;
   let checkSessionService: CheckSessionService;
-  let callBackService: CallbackService;
-  let silentRenewService: SilentRenewService;
   let tokenHelperService: TokenHelperService;
   let flowsDataService: FlowsDataService;
   let logoffRevocationService: LogoffRevocationService;
   let loginService: LoginService;
   let refreshSessionService: RefreshSessionService;
-  let periodicallyTokenCheckService: PeriodicallyTokenCheckService;
   let storagePersistanceService: StoragePersistanceService;
 
   beforeEach(() => {
@@ -56,54 +47,52 @@ describe('OidcSecurityService', () => {
       imports: [CommonModule, HttpClientTestingModule, RouterTestingModule, AuthModule.forRoot()],
       providers: [
         OidcSecurityService,
-        CheckSessionService,
+        {
+          provide: CheckSessionService,
+          useClass: CheckSessionServiceMock,
+        },
         {
           provide: CheckAuthService,
           useClass: CheckAuthServiceMock,
         },
         {
+          provide: UserService,
+          useClass: UserServiceMock,
+        },
+        {
+          provide: TokenHelperService,
+          useClass: TokenHelperServiceMock,
+        },
+        ConfigurationProvider,
+        {
+          provide: AuthStateService,
+          useClass: AuthStateServiceMock,
+        },
+        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
+        { provide: CallbackService, useClass: CallbackServiceMock },
+        { provide: LogoffRevocationService, useClass: LogoffRevocationServiceMock },
+        { provide: LoginService, useClass: LoginServiceMock },
+        {
           provide: StoragePersistanceService,
           useClass: StoragePersistanceServiceMock,
         },
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        CodeFlowCallbackHandlerService,
-        UrlService,
-        ConfigurationProvider,
-        IFrameService,
-        LogoffRevocationService,
-        AuthStateService,
-        UserService,
-        { provide: CallbackService, useClass: CallbackServiceMock },
-        PublicEventsService,
-        { provide: SilentRenewService, useClass: SilentRenewServiceMock },
-        TokenHelperService,
-        FlowsDataService,
-        TokenValidationService,
-        FlowsService,
-        RedirectService,
-        LoginService,
         { provide: RefreshSessionService, useClass: RefreshSessionServiceMock },
-        { provide: PeriodicallyTokenCheckService, useClass: PeriodicallyTokenCheckServiceMock },
       ],
     });
   });
 
   beforeEach(() => {
     oidcSecurityService = TestBed.inject(OidcSecurityService);
-    configurationProvider = TestBed.inject(ConfigurationProvider);
-    userService = TestBed.inject(UserService);
-    authStateService = TestBed.inject(AuthStateService);
     checkSessionService = TestBed.inject(CheckSessionService);
-    callBackService = TestBed.inject(CallbackService);
-    silentRenewService = TestBed.inject(SilentRenewService);
+    userService = TestBed.inject(UserService);
     tokenHelperService = TestBed.inject(TokenHelperService);
+    configurationProvider = TestBed.inject(ConfigurationProvider);
+    authStateService = TestBed.inject(AuthStateService);
     flowsDataService = TestBed.inject(FlowsDataService);
     logoffRevocationService = TestBed.inject(LogoffRevocationService);
     loginService = TestBed.inject(LoginService);
-    refreshSessionService = TestBed.inject(RefreshSessionService);
     storagePersistanceService = TestBed.inject(StoragePersistanceService);
-
-    periodicallyTokenCheckService = TestBed.inject(PeriodicallyTokenCheckService);
+    refreshSessionService = TestBed.inject(RefreshSessionService);
   });
 
   it('should create', () => {
@@ -216,7 +205,7 @@ describe('OidcSecurityService', () => {
     });
 
     it(
-      'checkSessionChanged emits false initially',
+      'emits false initially',
       waitForAsync(() => {
         spyOnProperty(oidcSecurityService, 'checkSessionChanged$', 'get').and.callThrough();
         oidcSecurityService.checkSessionChanged$.subscribe((result) => {
@@ -226,7 +215,7 @@ describe('OidcSecurityService', () => {
     );
 
     it(
-      'checkSessionChanged emits false then true when emitted',
+      'emits false then true when emitted',
       waitForAsync(() => {
         const expectedResultsInOrder = [false, true];
         let counter = 0;
@@ -244,220 +233,6 @@ describe('OidcSecurityService', () => {
     it('is of type observable', () => {
       expect(oidcSecurityService.stsCallback$).toEqual(jasmine.any(Observable));
     });
-  });
-
-  describe('checkAuth', () => {
-    it(
-      'returns false when config is not valid',
-      waitForAsync(() => {
-        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(false);
-        oidcSecurityService.checkAuth().subscribe((result) => expect(result).toBeFalse());
-      })
-    );
-
-    it(
-      'returns false in case handleCallbackAndFireEvents throws an error',
-      waitForAsync(() => {
-        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-        spyOn(callBackService, 'isCallback').and.returnValue(true);
-        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
-        const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(throwError('ERROR'));
-        oidcSecurityService.checkAuth().subscribe((result) => {
-          expect(result).toBeFalse();
-          expect(spy).toHaveBeenCalled();
-        });
-      })
-    );
-
-    it(
-      'calls callbackService.handlePossibleStsCallback with current url when callback is true',
-      waitForAsync(() => {
-        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-        spyOn(callBackService, 'isCallback').and.returnValue(true);
-        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
-        const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-        oidcSecurityService.checkAuth().subscribe((result) => {
-          expect(result).toBeTrue();
-          expect(spy).toHaveBeenCalled();
-        });
-      })
-    );
-
-    it(
-      'does NOT call handleCallbackAndFireEvents with current url when callback is false',
-      waitForAsync(() => {
-        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-        spyOn(callBackService, 'isCallback').and.returnValue(false);
-        const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-        oidcSecurityService.checkAuth().subscribe((result) => {
-          expect(result).toBeFalse();
-          expect(spy).not.toHaveBeenCalled();
-        });
-      })
-    );
-
-    it(
-      'does NOT fire the auth and user data events when it is not a callback from the sts and is NOT authenticated',
-      waitForAsync(() => {
-        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-        spyOn(callBackService, 'isCallback').and.returnValue(false);
-        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
-        spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-
-        const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
-        const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
-        oidcSecurityService.checkAuth().subscribe((result) => {
-          expect(result).toBeFalse();
-          expect(setAuthorizedAndFireEventSpy).not.toHaveBeenCalled();
-          expect(userServiceSpy).not.toHaveBeenCalled();
-        });
-      })
-    );
-
-    it(
-      'if authenticated return true',
-      waitForAsync(() => {
-        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-        spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
-
-        oidcSecurityService.checkAuth().subscribe((result) => {
-          expect(result).toBeTrue();
-        });
-      })
-    );
-
-    it(
-      'if authenticated set auth and fires event ',
-      waitForAsync(() => {
-        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-        spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
-
-        const spy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
-
-        oidcSecurityService.checkAuth().subscribe((result) => {
-          expect(spy).toHaveBeenCalled();
-        });
-      })
-    );
-
-    it(
-      'if authenticated publishUserDataIfExists',
-      waitForAsync(() => {
-        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-        spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
-
-        const spy = spyOn(userService, 'publishUserDataIfExists');
-
-        oidcSecurityService.checkAuth().subscribe((result) => {
-          expect(spy).toHaveBeenCalled();
-        });
-      })
-    );
-
-    it(
-      'if authenticated callbackService startTokenValidationPeriodically',
-      waitForAsync(() => {
-        const config = {
-          stsServer: 'stsServer',
-          tokenRefreshInSeconds: 7,
-        };
-        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue(config);
-        spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
-
-        const spy = spyOn(periodicallyTokenCheckService, 'startTokenValidationPeriodically');
-
-        oidcSecurityService.checkAuth().subscribe((result) => {
-          expect(spy).toHaveBeenCalledWith(7);
-        });
-      })
-    );
-
-    it(
-      'if isCheckSessionConfigured call checkSessionService.start()',
-      waitForAsync(() => {
-        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-        spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
-
-        spyOn(checkSessionService, 'isCheckSessionConfigured').and.returnValue(true);
-        const spy = spyOn(checkSessionService, 'start');
-
-        oidcSecurityService.checkAuth().subscribe((result) => {
-          expect(spy).toHaveBeenCalled();
-        });
-      })
-    );
-
-    it(
-      'if isSilentRenewConfigured call getOrCreateIframe()',
-      waitForAsync(() => {
-        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-        spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
-
-        spyOn(silentRenewService, 'isSilentRenewConfigured').and.returnValue(true);
-        const spy = spyOn(silentRenewService, 'getOrCreateIframe');
-
-        oidcSecurityService.checkAuth().subscribe((result) => {
-          expect(spy).toHaveBeenCalled();
-        });
-      })
-    );
-  });
-
-  describe('checkAuthIncludingServer', () => {
-    it(
-      'if isSilentRenewConfigured call getOrCreateIframe()',
-      waitForAsync(() => {
-        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-        spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
-
-        spyOn(silentRenewService, 'isSilentRenewConfigured').and.returnValue(true);
-        const spy = spyOn(silentRenewService, 'getOrCreateIframe');
-
-        oidcSecurityService.checkAuthIncludingServer().subscribe((result) => {
-          expect(spy).toHaveBeenCalled();
-        });
-      })
-    );
-
-    it(
-      'does forceRefreshSession get called and is NOT authenticated',
-      waitForAsync(() => {
-        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
-        spyOn(callBackService, 'isCallback').and.returnValue(false);
-        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
-        spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-
-        spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(
-          of({
-            idToken: 'idToken',
-            accessToken: 'access_token',
-          })
-        );
-
-        oidcSecurityService.checkAuthIncludingServer().subscribe((result) => {
-          expect(result).toBeTruthy();
-        });
-      })
-    );
   });
 
   describe('getToken', () => {
