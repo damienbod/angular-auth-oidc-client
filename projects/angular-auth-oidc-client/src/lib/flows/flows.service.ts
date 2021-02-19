@@ -13,13 +13,12 @@ import { UrlService } from '../utils/url/url.service';
 import { StateValidationResult } from '../validation/state-validation-result';
 import { StateValidationService } from '../validation/state-validation.service';
 import { TokenValidationService } from '../validation/token-validation.service';
-import { ValidationResult } from '../validation/validation-result';
 import { CallbackContext } from './callback-context';
 import { CodeFlowCallbackHandlerService } from './callback-handling/code-flow-callback-handler.service';
+import { HistoryJwtKeysCallbackHandlerService } from './callback-handling/history-jwt-keys-callback-handler.service';
 import { ImplicitFlowCallbackHandlerService } from './callback-handling/implicit-flow-callback-handler.service';
 import { FlowsDataService } from './flows-data.service';
 import { ResetAuthDataService } from './reset-auth-data.service';
-import { SigninKeyDataService } from './signin-key-data.service';
 
 @Injectable()
 export class FlowsService {
@@ -29,20 +28,20 @@ export class FlowsService {
     private readonly configurationProvider: ConfigurationProvider,
     private readonly authStateService: AuthStateService,
     private readonly flowsDataService: FlowsDataService,
-    private readonly signInKeyDataService: SigninKeyDataService,
     private readonly dataService: DataService,
     private readonly userService: UserService,
     private readonly stateValidationService: StateValidationService,
     private readonly storagePersistanceService: StoragePersistanceService,
     private readonly codeFlowCallbackHandlerService: CodeFlowCallbackHandlerService,
     private readonly resetAuthDataService: ResetAuthDataService,
-    private readonly implicitFlowCallbackHandlerService: ImplicitFlowCallbackHandlerService
+    private readonly implicitFlowCallbackHandlerService: ImplicitFlowCallbackHandlerService,
+    private readonly historyJwtKeysCallbackHandlerService: HistoryJwtKeysCallbackHandlerService
   ) {}
 
   processCodeFlowCallback(urlToCheck: string) {
     return this.codeFlowCallbackHandlerService.codeFlowCallback(urlToCheck).pipe(
       switchMap((callbackContext) => this.codeFlowCallbackHandlerService.codeFlowCodeRequest(callbackContext)),
-      switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
+      switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
       switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
       switchMap((callbackContext) => this.callbackUser(callbackContext))
     );
@@ -50,7 +49,7 @@ export class FlowsService {
 
   processSilentRenewCodeFlowCallback(firstContext: CallbackContext) {
     return this.codeFlowCallbackHandlerService.codeFlowCodeRequest(firstContext).pipe(
-      switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
+      switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
       switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
       switchMap((callbackContext) => this.callbackUser(callbackContext))
     );
@@ -58,7 +57,7 @@ export class FlowsService {
 
   processImplicitFlowCallback(hash?: string) {
     return this.implicitFlowCallbackHandlerService.implicitFlowCallback(hash).pipe(
-      switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
+      switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
       switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
       switchMap((callbackContext) => this.callbackUser(callbackContext))
     );
@@ -67,7 +66,7 @@ export class FlowsService {
   processRefreshToken(customParams?: { [key: string]: string | number | boolean }) {
     return this.refreshSessionWithRefreshTokens().pipe(
       switchMap((callbackContext) => this.refreshTokensRequestTokens(callbackContext, customParams)),
-      switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
+      switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
       switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
       switchMap((callbackContext) => this.callbackUser(callbackContext))
     );
@@ -134,48 +133,6 @@ export class FlowsService {
       catchError((error) => {
         const errorMessage = `OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}`;
         this.loggerService.logError(errorMessage, error);
-        return throwError(errorMessage);
-      })
-    );
-  }
-
-  // STEP 3 Code Flow, STEP 2 Implicit Flow, STEP 3 Refresh Token
-  private callbackHistoryAndResetJwtKeys(callbackContext: CallbackContext): Observable<CallbackContext> {
-    this.storagePersistanceService.write('authnResult', callbackContext.authResult);
-
-    if (this.historyCleanUpTurnedOn() && !callbackContext.isRenewProcess) {
-      this.resetBrowserHistory();
-    } else {
-      this.loggerService.logDebug('history clean up inactive');
-    }
-
-    if (callbackContext.authResult.error) {
-      const errorMessage = `authorizedCallbackProcedure came with error: ${callbackContext.authResult.error}`;
-      this.loggerService.logDebug(errorMessage);
-      this.resetAuthDataService.resetAuthorizationData();
-      this.flowsDataService.setNonce('');
-      this.handleResultErrorFromCallback(callbackContext.authResult, callbackContext.isRenewProcess);
-      return throwError(errorMessage);
-    }
-
-    this.loggerService.logDebug(callbackContext.authResult);
-    this.loggerService.logDebug('authorizedCallback created, begin token validation');
-
-    return this.signInKeyDataService.getSigningKeys().pipe(
-      switchMap((jwtKeys) => {
-        if (jwtKeys) {
-          callbackContext.jwtKeys = jwtKeys;
-
-          return of(callbackContext);
-        }
-
-        const errorMessage = `Failed to retrieve signing key`;
-        this.loggerService.logWarning(errorMessage);
-        return throwError(errorMessage);
-      }),
-      catchError((err) => {
-        const errorMessage = `Failed to retrieve signing key with error: ${err}`;
-        this.loggerService.logWarning(errorMessage);
         return throwError(errorMessage);
       })
     );
@@ -254,27 +211,5 @@ export class FlowsService {
       validationResult: stateValidationResult.state,
       isRenewProcess,
     });
-  }
-
-  private handleResultErrorFromCallback(result: any, isRenewProcess: boolean) {
-    let validationResult = ValidationResult.SecureTokenServerError;
-
-    if ((result.error as string) === 'login_required') {
-      validationResult = ValidationResult.LoginRequired;
-    }
-
-    this.authStateService.updateAndPublishAuthState({
-      authorizationState: AuthorizedState.Unauthorized,
-      validationResult,
-      isRenewProcess,
-    });
-  }
-
-  private historyCleanUpTurnedOn() {
-    return !this.configurationProvider.openIDConfiguration.historyCleanupOff;
-  }
-
-  private resetBrowserHistory() {
-    window.history.replaceState({}, window.document.title, window.location.origin + window.location.pathname);
   }
 }

@@ -22,6 +22,8 @@ import { TokenValidationServiceMock } from '../validation/token-validation.servi
 import { CallbackContext } from './callback-context';
 import { CodeFlowCallbackHandlerService } from './callback-handling/code-flow-callback-handler.service';
 import { CodeFlowCallbackHandlerServiceMock } from './callback-handling/code-flow-callback-handler.service-mock';
+import { HistoryJwtKeysCallbackHandlerService } from './callback-handling/history-jwt-keys-callback-handler.service';
+import { HistoryJwtKeysCallbackHandlerServiceMock } from './callback-handling/history-jwt-keys-callback-handler.service-mock';
 import { ImplicitFlowCallbackHandlerService } from './callback-handling/implicit-flow-callback-handler.service';
 import { ImplicitFlowCallbackHandlerServiceMock } from './callback-handling/implicit-flow-callback-handler.service.mock';
 import { FlowsDataService } from './flows-data.service';
@@ -41,6 +43,7 @@ describe('Flows Service', () => {
   let configurationProvider: ConfigurationProvider;
   let codeFlowCallbackHandlerService: CodeFlowCallbackHandlerService;
   let implicitFlowCallbackHandlerService: ImplicitFlowCallbackHandlerService;
+  let historyJwtKeysCallbackHandlerService: HistoryJwtKeysCallbackHandlerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -60,6 +63,7 @@ describe('Flows Service', () => {
         { provide: CodeFlowCallbackHandlerService, useClass: CodeFlowCallbackHandlerServiceMock },
         { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
         { provide: ImplicitFlowCallbackHandlerService, useClass: ImplicitFlowCallbackHandlerServiceMock },
+        { provide: HistoryJwtKeysCallbackHandlerService, useClass: HistoryJwtKeysCallbackHandlerServiceMock },
       ],
     });
   });
@@ -73,6 +77,7 @@ describe('Flows Service', () => {
     storagePersistanceService = TestBed.inject(StoragePersistanceService);
     codeFlowCallbackHandlerService = TestBed.inject(CodeFlowCallbackHandlerService);
     implicitFlowCallbackHandlerService = TestBed.inject(ImplicitFlowCallbackHandlerService);
+    historyJwtKeysCallbackHandlerService = TestBed.inject(HistoryJwtKeysCallbackHandlerService);
   });
 
   it('should create', () => {
@@ -85,7 +90,10 @@ describe('Flows Service', () => {
       waitForAsync(() => {
         const codeFlowCallbackSpy = spyOn(codeFlowCallbackHandlerService, 'codeFlowCallback').and.returnValue(of(null));
         const codeFlowCodeRequestSpy = spyOn(codeFlowCallbackHandlerService, 'codeFlowCodeRequest').and.returnValue(of(null));
-        const callbackHistoryAndResetJwtKeysSpy = spyOn(service as any, 'callbackHistoryAndResetJwtKeys').and.returnValue(of({}));
+        const callbackHistoryAndResetJwtKeysSpy = spyOn(
+          historyJwtKeysCallbackHandlerService,
+          'callbackHistoryAndResetJwtKeys'
+        ).and.returnValue(of(null));
         const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
         const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
 
@@ -106,7 +114,10 @@ describe('Flows Service', () => {
       'calls all methods correctly',
       waitForAsync(() => {
         const codeFlowCodeRequestSpy = spyOn(codeFlowCallbackHandlerService, 'codeFlowCodeRequest').and.returnValue(of(null));
-        const callbackHistoryAndResetJwtKeysSpy = spyOn(service as any, 'callbackHistoryAndResetJwtKeys').and.returnValue(of({}));
+        const callbackHistoryAndResetJwtKeysSpy = spyOn(
+          historyJwtKeysCallbackHandlerService,
+          'callbackHistoryAndResetJwtKeys'
+        ).and.returnValue(of(null));
         const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
         const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
 
@@ -126,7 +137,10 @@ describe('Flows Service', () => {
       'calls all methods correctly',
       waitForAsync(() => {
         const implicitFlowCallbackSpy = spyOn(implicitFlowCallbackHandlerService, 'implicitFlowCallback').and.returnValue(of(null));
-        const callbackHistoryAndResetJwtKeysSpy = spyOn(service as any, 'callbackHistoryAndResetJwtKeys').and.returnValue(of({}));
+        const callbackHistoryAndResetJwtKeysSpy = spyOn(
+          historyJwtKeysCallbackHandlerService,
+          'callbackHistoryAndResetJwtKeys'
+        ).and.returnValue(of(null));
         const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
         const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
 
@@ -147,7 +161,10 @@ describe('Flows Service', () => {
       waitForAsync(() => {
         const refreshSessionWithRefreshTokensSpy = spyOn(service as any, 'refreshSessionWithRefreshTokens').and.returnValue(of({}));
         const refreshTokensRequestTokensSpy = spyOn(service as any, 'refreshTokensRequestTokens').and.returnValue(of({}));
-        const callbackHistoryAndResetJwtKeysSpy = spyOn(service as any, 'callbackHistoryAndResetJwtKeys').and.returnValue(of({}));
+        const callbackHistoryAndResetJwtKeysSpy = spyOn(
+          historyJwtKeysCallbackHandlerService,
+          'callbackHistoryAndResetJwtKeys'
+        ).and.returnValue(of(null));
         const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
         const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
 
@@ -257,43 +274,6 @@ describe('Flows Service', () => {
             console.log(err);
             expect(err).toBeTruthy();
           },
-        });
-      })
-    );
-  });
-
-  describe('historyCleanUpTurnedOn ', () => {
-    it('check for false if historyCleanUpTurnedOn is on', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
-        historyCleanupOff: true,
-      });
-
-      const value = (service as any).historyCleanUpTurnedOn();
-      expect(value).toEqual(false);
-    });
-
-    it('check for true if historyCleanUpTurnedOn is off', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
-        historyCleanupOff: false,
-      });
-
-      const value = (service as any).historyCleanUpTurnedOn();
-      expect(value).toEqual(true);
-    });
-  });
-
-  describe('callbackHistoryAndResetJwtKeys', () => {
-    it(
-      'writes authResult into the storage',
-      waitForAsync(() => {
-        const spy = spyOn(storagePersistanceService, 'write');
-
-        const callbackContext = ({ authResult: 'authResult' } as unknown) as CallbackContext;
-
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ historyCleanupOff: true });
-
-        (service as any).callbackHistoryAndResetJwtKeys(callbackContext).subscribe(() => {
-          expect(spy).toHaveBeenCalledOnceWith('authResult');
         });
       })
     );

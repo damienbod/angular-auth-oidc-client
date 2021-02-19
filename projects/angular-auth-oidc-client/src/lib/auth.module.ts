@@ -11,6 +11,7 @@ import { AuthWellKnownDataService } from './config/auth-well-known-data.service'
 import { AuthWellKnownService } from './config/auth-well-known.service';
 import { ConfigurationProvider } from './config/config.provider';
 import { OidcConfigService } from './config/config.service';
+import { HistoryJwtKeysCallbackHandlerService } from './flows/callback-handling/history-jwt-keys-callback-handler.service';
 import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsService } from './flows/flows.service';
 import { RandomService } from './flows/random/random.service';
@@ -78,6 +79,7 @@ export class AuthModule {
         CheckAuthService,
         ResetAuthDataService,
         ImplicitFlowCallbackService,
+        HistoryJwtKeysCallbackHandlerService,
         {
           provide: AbstractSecurityStorage,
           useClass: token.storage || BrowserStorageService,
