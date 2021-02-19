@@ -1,7 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { hextob64u, KEYUTIL, KJUR } from 'jsrsasign-reduced';
 import { LoggerService } from '../logging/logger.service';
-import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
@@ -53,7 +52,7 @@ export class TokenValidationService {
   static refreshTokenNoncePlaceholder = '--RefreshToken--';
   keyAlgorithms: string[] = ['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'PS256', 'PS384', 'PS512'];
 
-  constructor(private tokenHelperService: TokenHelperService, private flowHelper: FlowHelper, private loggerService: LoggerService) {}
+  constructor(private tokenHelperService: TokenHelperService, private loggerService: LoggerService) {}
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
   // (possibly allowing for some small leeway to account for clock skew).
@@ -353,19 +352,6 @@ export class TokenValidationService {
     }
 
     return isValid;
-  }
-
-  hasConfigValidResponseType(): boolean {
-    if (this.flowHelper.isCurrentFlowAnyImplicitFlow()) {
-      return true;
-    }
-
-    if (this.flowHelper.isCurrentFlowCodeFlow()) {
-      return true;
-    }
-
-    this.loggerService.logWarning('module configured incorrectly, invalid response_type. Check the responseType in the config');
-    return false;
   }
 
   // Accepts ID Token without 'kid' claim in JOSE header if only one JWK supplied in 'jwks_url'
