@@ -1,5 +1,5 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { AuthStateService } from '../../authState/auth-state.service';
 import { AuthStateServiceMock } from '../../authState/auth-state.service-mock';
 import { ConfigurationProvider } from '../../config/config.provider';
@@ -114,6 +114,21 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         service.callbackHistoryAndResetJwtKeys(callbackContext).subscribe({
           error: (err) => {
             expect(err).toEqual(`Failed to retrieve signing key with error: Failed to retrieve signing key`);
+          },
+        });
+      })
+    );
+
+    it(
+      'returns error if no jwtKeys have been in the call',
+      waitForAsync(() => {
+        const callbackContext = ({ isRenewProcess: false, authResult: 'authResult' } as unknown) as CallbackContext;
+        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ historyCleanupOff: false });
+
+        spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(throwError('WOAH SOMETHING BAD HAPPENED'));
+        service.callbackHistoryAndResetJwtKeys(callbackContext).subscribe({
+          error: (err) => {
+            expect(err).toEqual(`Failed to retrieve signing key with error: WOAH SOMETHING BAD HAPPENED`);
           },
         });
       })
