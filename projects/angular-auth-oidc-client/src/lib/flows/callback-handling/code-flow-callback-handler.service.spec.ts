@@ -61,7 +61,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         const getUrlParameterSpy = spyOn(urlService, 'getUrlParameter').and.returnValue('params');
         getUrlParameterSpy.withArgs('any-url', 'state').and.returnValue(null);
 
-        (service as any).codeFlowCallback('any-url').subscribe({
+        service.codeFlowCallback('any-url').subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },
@@ -75,7 +75,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         const getUrlParameterSpy = spyOn(urlService, 'getUrlParameter').and.returnValue('params');
         getUrlParameterSpy.withArgs('any-url', 'code').and.returnValue(null);
 
-        (service as any).codeFlowCallback('any-url').subscribe({
+        service.codeFlowCallback('any-url').subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },
@@ -100,7 +100,7 @@ describe('CodeFlowCallbackHandlerService', () => {
           existingIdToken: null,
         };
 
-        (service as any).codeFlowCallback('any-url').subscribe((callbackContext) => {
+        service.codeFlowCallback('any-url').subscribe((callbackContext) => {
           expect(callbackContext).toEqual(expectedCallbackContext);
         });
       })
@@ -167,7 +167,6 @@ describe('CodeFlowCallbackHandlerService', () => {
 
         service.codeFlowCodeRequest({} as CallbackContext).subscribe({
           error: (err) => {
-            console.log(err);
             expect(err).toBeTruthy();
           },
         });
