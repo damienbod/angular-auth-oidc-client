@@ -26,6 +26,8 @@ import { HistoryJwtKeysCallbackHandlerService } from './callback-handling/histor
 import { HistoryJwtKeysCallbackHandlerServiceMock } from './callback-handling/history-jwt-keys-callback-handler.service-mock';
 import { ImplicitFlowCallbackHandlerService } from './callback-handling/implicit-flow-callback-handler.service';
 import { ImplicitFlowCallbackHandlerServiceMock } from './callback-handling/implicit-flow-callback-handler.service.mock';
+import { RefreshSessionCallbackHandlerService } from './callback-handling/refresh-session-callback-handler.service';
+import { RefreshSessionCallbackHandlerServiceMock } from './callback-handling/refresh-session-callback-handler.service-mock';
 import { StateValidationCallbackHandlerService } from './callback-handling/state-validation-callback-handler.service';
 import { StateValidationCallbackHandlerServiceMock } from './callback-handling/state-validation-callback-handler.service-mock';
 import { UserCallbackHandlerService } from './callback-handling/user-callback-handler.service';
@@ -40,8 +42,6 @@ import { SigninKeyDataServiceMock } from './signin-key-data.service-mock';
 
 describe('Flows Service', () => {
   let service: FlowsService;
-  let flowsDataService: FlowsDataService;
-  let authStateService: AuthStateService;
   let dataService: DataService;
   let storagePersistanceService: StoragePersistanceService;
   let configurationProvider: ConfigurationProvider;
@@ -50,6 +50,7 @@ describe('Flows Service', () => {
   let historyJwtKeysCallbackHandlerService: HistoryJwtKeysCallbackHandlerService;
   let userCallbackHandlerService: UserCallbackHandlerService;
   let stateValidationCallbackHandlerService: StateValidationCallbackHandlerService;
+  let refreshSessionCallbackHandlerService: RefreshSessionCallbackHandlerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -72,6 +73,7 @@ describe('Flows Service', () => {
         { provide: HistoryJwtKeysCallbackHandlerService, useClass: HistoryJwtKeysCallbackHandlerServiceMock },
         { provide: UserCallbackHandlerService, useClass: UserCallbackHandlerServiceMock },
         { provide: StateValidationCallbackHandlerService, useClass: StateValidationCallbackHandlerServiceMock },
+        { provide: RefreshSessionCallbackHandlerService, useClass: RefreshSessionCallbackHandlerServiceMock },
       ],
     });
   });
@@ -79,8 +81,6 @@ describe('Flows Service', () => {
   beforeEach(() => {
     service = TestBed.inject(FlowsService);
     configurationProvider = TestBed.inject(ConfigurationProvider);
-    flowsDataService = TestBed.inject(FlowsDataService);
-    authStateService = TestBed.inject(AuthStateService);
     dataService = TestBed.inject(DataService);
     storagePersistanceService = TestBed.inject(StoragePersistanceService);
     codeFlowCallbackHandlerService = TestBed.inject(CodeFlowCallbackHandlerService);
@@ -88,6 +88,7 @@ describe('Flows Service', () => {
     historyJwtKeysCallbackHandlerService = TestBed.inject(HistoryJwtKeysCallbackHandlerService);
     userCallbackHandlerService = TestBed.inject(UserCallbackHandlerService);
     stateValidationCallbackHandlerService = TestBed.inject(StateValidationCallbackHandlerService);
+    refreshSessionCallbackHandlerService = TestBed.inject(RefreshSessionCallbackHandlerService);
   });
 
   it('should create', () => {
@@ -175,7 +176,10 @@ describe('Flows Service', () => {
     it(
       'calls all methods correctly',
       waitForAsync(() => {
-        const refreshSessionWithRefreshTokensSpy = spyOn(service as any, 'refreshSessionWithRefreshTokens').and.returnValue(of({}));
+        const refreshSessionWithRefreshTokensSpy = spyOn(
+          refreshSessionCallbackHandlerService,
+          'refreshSessionWithRefreshTokens'
+        ).and.returnValue(of(null));
         const refreshTokensRequestTokensSpy = spyOn(service as any, 'refreshTokensRequestTokens').and.returnValue(of({}));
         const callbackHistoryAndResetJwtKeysSpy = spyOn(
           historyJwtKeysCallbackHandlerService,
@@ -193,47 +197,6 @@ describe('Flows Service', () => {
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
           expect(callbackStateValidationSpy).toHaveBeenCalled();
           expect(callbackUserSpy).toHaveBeenCalled();
-        });
-      })
-    );
-  });
-
-  describe('refreshSessionWithRefreshTokens', () => {
-    it(
-      'returns callbackContext if all params are good',
-      waitForAsync(() => {
-        spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('state-data');
-        spyOn(authStateService, 'getRefreshToken').and.returnValue('henlo-furiend');
-        spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
-
-        const expectedCallbackContext = {
-          code: null,
-          refreshToken: 'henlo-furiend',
-          state: 'state-data',
-          sessionState: null,
-          authResult: null,
-          isRenewProcess: true,
-          jwtKeys: null,
-          validationResult: null,
-          existingIdToken: 'henlo-legger',
-        };
-        (service as any).refreshSessionWithRefreshTokens().subscribe((callbackContext) => {
-          expect(callbackContext).toEqual(expectedCallbackContext);
-        });
-      })
-    );
-
-    it(
-      'throws error if no refresh token is given',
-      waitForAsync(() => {
-        spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('state-data');
-        spyOn(authStateService, 'getRefreshToken').and.returnValue(null);
-        spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
-
-        (service as any).refreshSessionWithRefreshTokens().subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-          },
         });
       })
     );
