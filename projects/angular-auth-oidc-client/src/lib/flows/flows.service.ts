@@ -8,7 +8,6 @@ import { AuthorizedState } from '../authState/authorized-state';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
-import { UserService } from '../userData/user-service';
 import { UrlService } from '../utils/url/url.service';
 import { StateValidationResult } from '../validation/state-validation-result';
 import { StateValidationService } from '../validation/state-validation.service';
@@ -17,6 +16,7 @@ import { CallbackContext } from './callback-context';
 import { CodeFlowCallbackHandlerService } from './callback-handling/code-flow-callback-handler.service';
 import { HistoryJwtKeysCallbackHandlerService } from './callback-handling/history-jwt-keys-callback-handler.service';
 import { ImplicitFlowCallbackHandlerService } from './callback-handling/implicit-flow-callback-handler.service';
+import { UserCallbackHandlerService } from './callback-handling/user-callback-handler.service';
 import { FlowsDataService } from './flows-data.service';
 import { ResetAuthDataService } from './reset-auth-data.service';
 
@@ -29,13 +29,13 @@ export class FlowsService {
     private readonly authStateService: AuthStateService,
     private readonly flowsDataService: FlowsDataService,
     private readonly dataService: DataService,
-    private readonly userService: UserService,
     private readonly stateValidationService: StateValidationService,
     private readonly storagePersistanceService: StoragePersistanceService,
     private readonly codeFlowCallbackHandlerService: CodeFlowCallbackHandlerService,
     private readonly resetAuthDataService: ResetAuthDataService,
     private readonly implicitFlowCallbackHandlerService: ImplicitFlowCallbackHandlerService,
-    private readonly historyJwtKeysCallbackHandlerService: HistoryJwtKeysCallbackHandlerService
+    private readonly historyJwtKeysCallbackHandlerService: HistoryJwtKeysCallbackHandlerService,
+    private readonly userHandlerService: UserCallbackHandlerService
   ) {}
 
   processCodeFlowCallback(urlToCheck: string) {
@@ -43,7 +43,7 @@ export class FlowsService {
       switchMap((callbackContext) => this.codeFlowCallbackHandlerService.codeFlowCodeRequest(callbackContext)),
       switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
       switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
-      switchMap((callbackContext) => this.callbackUser(callbackContext))
+      switchMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext))
     );
   }
 
@@ -51,7 +51,7 @@ export class FlowsService {
     return this.codeFlowCallbackHandlerService.codeFlowCodeRequest(firstContext).pipe(
       switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
       switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
-      switchMap((callbackContext) => this.callbackUser(callbackContext))
+      switchMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext))
     );
   }
 
@@ -59,7 +59,7 @@ export class FlowsService {
     return this.implicitFlowCallbackHandlerService.implicitFlowCallback(hash).pipe(
       switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
       switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
-      switchMap((callbackContext) => this.callbackUser(callbackContext))
+      switchMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext))
     );
   }
 
@@ -68,7 +68,7 @@ export class FlowsService {
       switchMap((callbackContext) => this.refreshTokensRequestTokens(callbackContext, customParams)),
       switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
       switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
-      switchMap((callbackContext) => this.callbackUser(callbackContext))
+      switchMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext))
     );
   }
 
@@ -153,56 +153,6 @@ export class FlowsService {
       this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
       return throwError(errorMessage);
     }
-  }
-
-  // STEP 5 userData
-  private callbackUser(callbackContext: CallbackContext): Observable<CallbackContext> {
-    if (!this.configurationProvider.openIDConfiguration.autoUserinfo) {
-      if (!callbackContext.isRenewProcess) {
-        // userData is set to the id_token decoded, auto get user data set to false
-        this.userService.setUserDataToStore(callbackContext.validationResult.decodedIdToken);
-      }
-
-      this.publishAuthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
-      return of(callbackContext);
-    }
-
-    return this.userService
-      .getAndPersistUserDataInStore(
-        callbackContext.isRenewProcess,
-        callbackContext.validationResult.idToken,
-        callbackContext.validationResult.decodedIdToken
-      )
-      .pipe(
-        switchMap((userData) => {
-          if (!!userData) {
-            if (!callbackContext.refreshToken) {
-              this.flowsDataService.setSessionState(callbackContext.authResult.session_state);
-            }
-            this.publishAuthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
-            return of(callbackContext);
-          } else {
-            this.resetAuthDataService.resetAuthorizationData();
-            this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
-            const errorMessage = `Called for userData but they were ${userData}`;
-            this.loggerService.logWarning(errorMessage);
-            return throwError(errorMessage);
-          }
-        }),
-        catchError((err) => {
-          const errorMessage = `Failed to retrieve user info with error:  ${err}`;
-          this.loggerService.logWarning(errorMessage);
-          return throwError(errorMessage);
-        })
-      );
-  }
-
-  private publishAuthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
-    this.authStateService.updateAndPublishAuthState({
-      authorizationState: AuthorizedState.Authorized,
-      validationResult: stateValidationResult.state,
-      isRenewProcess,
-    });
   }
 
   private publishUnauthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {

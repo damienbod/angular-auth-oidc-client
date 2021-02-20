@@ -26,6 +26,8 @@ import { HistoryJwtKeysCallbackHandlerService } from './callback-handling/histor
 import { HistoryJwtKeysCallbackHandlerServiceMock } from './callback-handling/history-jwt-keys-callback-handler.service-mock';
 import { ImplicitFlowCallbackHandlerService } from './callback-handling/implicit-flow-callback-handler.service';
 import { ImplicitFlowCallbackHandlerServiceMock } from './callback-handling/implicit-flow-callback-handler.service.mock';
+import { UserCallbackHandlerService } from './callback-handling/user-callback-handler.service';
+import { UserCallbackHandlerServiceMock } from './callback-handling/user-callback-handler.service-mock';
 import { FlowsDataService } from './flows-data.service';
 import { FlowsDataServiceMock } from './flows-data.service-mock';
 import { FlowsService } from './flows.service';
@@ -44,6 +46,7 @@ describe('Flows Service', () => {
   let codeFlowCallbackHandlerService: CodeFlowCallbackHandlerService;
   let implicitFlowCallbackHandlerService: ImplicitFlowCallbackHandlerService;
   let historyJwtKeysCallbackHandlerService: HistoryJwtKeysCallbackHandlerService;
+  let userCallbackHandlerService: UserCallbackHandlerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -64,6 +67,7 @@ describe('Flows Service', () => {
         { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
         { provide: ImplicitFlowCallbackHandlerService, useClass: ImplicitFlowCallbackHandlerServiceMock },
         { provide: HistoryJwtKeysCallbackHandlerService, useClass: HistoryJwtKeysCallbackHandlerServiceMock },
+        { provide: UserCallbackHandlerService, useClass: UserCallbackHandlerServiceMock },
       ],
     });
   });
@@ -78,6 +82,7 @@ describe('Flows Service', () => {
     codeFlowCallbackHandlerService = TestBed.inject(CodeFlowCallbackHandlerService);
     implicitFlowCallbackHandlerService = TestBed.inject(ImplicitFlowCallbackHandlerService);
     historyJwtKeysCallbackHandlerService = TestBed.inject(HistoryJwtKeysCallbackHandlerService);
+    userCallbackHandlerService = TestBed.inject(UserCallbackHandlerService);
   });
 
   it('should create', () => {
@@ -95,10 +100,10 @@ describe('Flows Service', () => {
           'callbackHistoryAndResetJwtKeys'
         ).and.returnValue(of(null));
         const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
-        const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
+        const callbackUserSpy = spyOn(userCallbackHandlerService, 'callbackUser').and.returnValue(of(null));
 
         service.processCodeFlowCallback('some-url').subscribe((value) => {
-          expect(value).toBeTruthy();
+          expect(value).toBeNull();
           expect(codeFlowCallbackSpy).toHaveBeenCalledOnceWith('some-url');
           expect(codeFlowCodeRequestSpy).toHaveBeenCalledTimes(1);
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalledTimes(1);
@@ -119,10 +124,10 @@ describe('Flows Service', () => {
           'callbackHistoryAndResetJwtKeys'
         ).and.returnValue(of(null));
         const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
-        const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
+        const callbackUserSpy = spyOn(userCallbackHandlerService, 'callbackUser').and.returnValue(of(null));
 
         service.processSilentRenewCodeFlowCallback({} as CallbackContext).subscribe((value) => {
-          expect(value).toBeTruthy();
+          expect(value).toBeNull();
           expect(codeFlowCodeRequestSpy).toHaveBeenCalled();
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
           expect(callbackStateValidationSpy).toHaveBeenCalled();
@@ -142,10 +147,10 @@ describe('Flows Service', () => {
           'callbackHistoryAndResetJwtKeys'
         ).and.returnValue(of(null));
         const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
-        const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
+        const callbackUserSpy = spyOn(userCallbackHandlerService, 'callbackUser').and.returnValue(of(null));
 
         (service as any).processImplicitFlowCallback('any-hash').subscribe((value) => {
-          expect(value).toBeTruthy();
+          expect(value).toBeNull();
           expect(implicitFlowCallbackSpy).toHaveBeenCalled();
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
           expect(callbackStateValidationSpy).toHaveBeenCalled();
@@ -166,10 +171,10 @@ describe('Flows Service', () => {
           'callbackHistoryAndResetJwtKeys'
         ).and.returnValue(of(null));
         const callbackStateValidationSpy = spyOn(service as any, 'callbackStateValidation').and.returnValue(of({}));
-        const callbackUserSpy = spyOn(service as any, 'callbackUser').and.returnValue(of({}));
+        const callbackUserSpy = spyOn(userCallbackHandlerService, 'callbackUser').and.returnValue(of(null));
 
         (service as any).processRefreshToken().subscribe((value) => {
-          expect(value).toBeTruthy();
+          expect(value).toBeNull();
           expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalled();
           expect(refreshTokensRequestTokensSpy).toHaveBeenCalled();
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
