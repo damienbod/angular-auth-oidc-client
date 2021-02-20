@@ -1,24 +1,5 @@
-import { HttpHeaders } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
-import { DataService } from '../api/data.service';
-import { DataServiceMock } from '../api/data.service-mock';
-import { AuthStateService } from '../authState/auth-state.service';
-import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
-import { ConfigurationProvider } from '../config/config.provider';
-import { ConfigurationProviderMock } from '../config/config.provider-mock';
-import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
-import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
-import { UserService } from '../userData/user-service';
-import { UserServiceMock } from '../userData/user-service-mock';
-import { UrlService } from '../utils/url/url.service';
-import { UrlServiceMock } from '../utils/url/url.service-mock';
-import { StateValidationService } from '../validation/state-validation.service';
-import { StateValidationServiceMock } from '../validation/state-validation.service-mock';
-import { TokenValidationService } from '../validation/token-validation.service';
-import { TokenValidationServiceMock } from '../validation/token-validation.service-mock';
+import { of } from 'rxjs';
 import { CallbackContext } from './callback-context';
 import { CodeFlowCallbackHandlerService } from './callback-handling/code-flow-callback-handler.service';
 import { CodeFlowCallbackHandlerServiceMock } from './callback-handling/code-flow-callback-handler.service-mock';
@@ -28,67 +9,48 @@ import { ImplicitFlowCallbackHandlerService } from './callback-handling/implicit
 import { ImplicitFlowCallbackHandlerServiceMock } from './callback-handling/implicit-flow-callback-handler.service.mock';
 import { RefreshSessionCallbackHandlerService } from './callback-handling/refresh-session-callback-handler.service';
 import { RefreshSessionCallbackHandlerServiceMock } from './callback-handling/refresh-session-callback-handler.service-mock';
+import { RefreshTokenCallbackHandlerService } from './callback-handling/refresh-token-callback-handler.service';
+import { RefreshTokenCallbackHandlerServiceMock } from './callback-handling/refresh-token-callback-handler.service-mock';
 import { StateValidationCallbackHandlerService } from './callback-handling/state-validation-callback-handler.service';
 import { StateValidationCallbackHandlerServiceMock } from './callback-handling/state-validation-callback-handler.service-mock';
 import { UserCallbackHandlerService } from './callback-handling/user-callback-handler.service';
 import { UserCallbackHandlerServiceMock } from './callback-handling/user-callback-handler.service-mock';
-import { FlowsDataService } from './flows-data.service';
-import { FlowsDataServiceMock } from './flows-data.service-mock';
 import { FlowsService } from './flows.service';
-import { ResetAuthDataService } from './reset-auth-data.service';
-import { ResetAuthDataServiceMock } from './reset-auth-data.service-mock';
-import { SigninKeyDataService } from './signin-key-data.service';
-import { SigninKeyDataServiceMock } from './signin-key-data.service-mock';
 
 describe('Flows Service', () => {
   let service: FlowsService;
-  let dataService: DataService;
-  let storagePersistanceService: StoragePersistanceService;
-  let configurationProvider: ConfigurationProvider;
   let codeFlowCallbackHandlerService: CodeFlowCallbackHandlerService;
   let implicitFlowCallbackHandlerService: ImplicitFlowCallbackHandlerService;
   let historyJwtKeysCallbackHandlerService: HistoryJwtKeysCallbackHandlerService;
   let userCallbackHandlerService: UserCallbackHandlerService;
   let stateValidationCallbackHandlerService: StateValidationCallbackHandlerService;
   let refreshSessionCallbackHandlerService: RefreshSessionCallbackHandlerService;
+  let refreshTokenCallbackHandlerService: RefreshTokenCallbackHandlerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         FlowsService,
-        { provide: UrlService, useClass: UrlServiceMock },
-        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: TokenValidationService, useClass: TokenValidationServiceMock },
-        { provide: StoragePersistanceService, useClass: StoragePersistanceServiceMock },
-        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
-        { provide: AuthStateService, useClass: AuthStateServiceMock },
-        { provide: StateValidationService, useClass: StateValidationServiceMock },
-        { provide: UserService, useClass: UserServiceMock },
-        { provide: DataService, useClass: DataServiceMock },
-        { provide: SigninKeyDataService, useClass: SigninKeyDataServiceMock },
         { provide: CodeFlowCallbackHandlerService, useClass: CodeFlowCallbackHandlerServiceMock },
-        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
         { provide: ImplicitFlowCallbackHandlerService, useClass: ImplicitFlowCallbackHandlerServiceMock },
         { provide: HistoryJwtKeysCallbackHandlerService, useClass: HistoryJwtKeysCallbackHandlerServiceMock },
         { provide: UserCallbackHandlerService, useClass: UserCallbackHandlerServiceMock },
         { provide: StateValidationCallbackHandlerService, useClass: StateValidationCallbackHandlerServiceMock },
         { provide: RefreshSessionCallbackHandlerService, useClass: RefreshSessionCallbackHandlerServiceMock },
+        { provide: RefreshTokenCallbackHandlerService, useClass: RefreshTokenCallbackHandlerServiceMock },
       ],
     });
   });
 
   beforeEach(() => {
     service = TestBed.inject(FlowsService);
-    configurationProvider = TestBed.inject(ConfigurationProvider);
-    dataService = TestBed.inject(DataService);
-    storagePersistanceService = TestBed.inject(StoragePersistanceService);
     codeFlowCallbackHandlerService = TestBed.inject(CodeFlowCallbackHandlerService);
     implicitFlowCallbackHandlerService = TestBed.inject(ImplicitFlowCallbackHandlerService);
     historyJwtKeysCallbackHandlerService = TestBed.inject(HistoryJwtKeysCallbackHandlerService);
     userCallbackHandlerService = TestBed.inject(UserCallbackHandlerService);
     stateValidationCallbackHandlerService = TestBed.inject(StateValidationCallbackHandlerService);
     refreshSessionCallbackHandlerService = TestBed.inject(RefreshSessionCallbackHandlerService);
+    refreshTokenCallbackHandlerService = TestBed.inject(RefreshTokenCallbackHandlerService);
   });
 
   it('should create', () => {
@@ -180,7 +142,9 @@ describe('Flows Service', () => {
           refreshSessionCallbackHandlerService,
           'refreshSessionWithRefreshTokens'
         ).and.returnValue(of(null));
-        const refreshTokensRequestTokensSpy = spyOn(service as any, 'refreshTokensRequestTokens').and.returnValue(of({}));
+        const refreshTokensRequestTokensSpy = spyOn(refreshTokenCallbackHandlerService, 'refreshTokensRequestTokens').and.returnValue(
+          of(null)
+        );
         const callbackHistoryAndResetJwtKeysSpy = spyOn(
           historyJwtKeysCallbackHandlerService,
           'callbackHistoryAndResetJwtKeys'
@@ -197,64 +161,6 @@ describe('Flows Service', () => {
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
           expect(callbackStateValidationSpy).toHaveBeenCalled();
           expect(callbackUserSpy).toHaveBeenCalled();
-        });
-      })
-    );
-  });
-
-  describe('refreshTokensRequestTokens', () => {
-    it(
-      'throws error if no tokenEndpoint is given',
-      waitForAsync(() => {
-        (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-          },
-        });
-      })
-    );
-
-    it(
-      'calls dataservice if all params are good',
-      waitForAsync(() => {
-        const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
-
-        (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
-          expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
-          const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
-          expect(httpHeaders.has('Content-Type')).toBeTrue();
-          expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
-        });
-      })
-    );
-
-    it(
-      'calls dataservice with correct headers if all params are good',
-      waitForAsync(() => {
-        const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
-
-        (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
-          const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
-          expect(httpHeaders.has('Content-Type')).toBeTrue();
-          expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
-        });
-      })
-    );
-
-    it(
-      'returns error in case of http error',
-      waitForAsync(() => {
-        spyOn(dataService, 'post').and.returnValue(throwError({}));
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ stsServer: 'stsServer' });
-
-        (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
-          error: (err) => {
-            console.log(err);
-            expect(err).toBeTruthy();
-          },
         });
       })
     );
