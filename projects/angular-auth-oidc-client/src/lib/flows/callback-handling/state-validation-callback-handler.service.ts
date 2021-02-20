@@ -1,0 +1,45 @@
+import { Injectable } from '@angular/core';
+import { Observable, of, throwError } from 'rxjs';
+import { AuthStateService } from '../../authState/auth-state.service';
+import { AuthorizedState } from '../../authState/authorized-state';
+import { LoggerService } from '../../logging/logger.service';
+import { StateValidationResult } from '../../validation/state-validation-result';
+import { StateValidationService } from '../../validation/state-validation.service';
+import { CallbackContext } from '../callback-context';
+import { ResetAuthDataService } from '../reset-auth-data.service';
+
+@Injectable()
+export class StateValidationCallbackHandlerService {
+  constructor(
+    private readonly loggerService: LoggerService,
+    private readonly stateValidationService: StateValidationService,
+    private readonly authStateService: AuthStateService,
+    private readonly resetAuthDataService: ResetAuthDataService
+  ) {}
+
+  // STEP 4 All flows
+
+  callbackStateValidation(callbackContext: CallbackContext): Observable<CallbackContext> {
+    const validationResult = this.stateValidationService.getValidatedStateResult(callbackContext);
+    callbackContext.validationResult = validationResult;
+
+    if (validationResult.authResponseIsValid) {
+      this.authStateService.setAuthorizationData(validationResult.accessToken, callbackContext.authResult);
+      return of(callbackContext);
+    } else {
+      const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${window.location.hash}`;
+      this.loggerService.logWarning(errorMessage);
+      this.resetAuthDataService.resetAuthorizationData();
+      this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
+      return throwError(errorMessage);
+    }
+  }
+
+  private publishUnauthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
+    this.authStateService.updateAndPublishAuthState({
+      authorizationState: AuthorizedState.Unauthorized,
+      validationResult: stateValidationResult.state,
+      isRenewProcess,
+    });
+  }
+}
