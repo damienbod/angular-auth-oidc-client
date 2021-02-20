@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError, TimeoutError } from 'rxjs';
@@ -20,6 +20,7 @@ import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
+import { RefreshSessionRefreshTokenServiceMock } from './refresh-session-refresh-token.service-mock';
 import { MAX_RETRY_ATTEMPTS, RefreshSessionService } from './refresh-session.service';
 
 describe('RefreshSessionService ', () => {
@@ -35,7 +36,7 @@ describe('RefreshSessionService ', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientModule, RouterTestingModule],
+      imports: [HttpClientTestingModule, RouterTestingModule],
       providers: [
         RefreshSessionService,
         FlowHelper,
@@ -50,7 +51,10 @@ describe('RefreshSessionService ', () => {
           provide: RefreshSessionIframeService,
           useClass: RefreshSessionIframeServiceMock,
         },
-        RefreshSessionRefreshTokenService,
+        {
+          provide: RefreshSessionRefreshTokenService,
+          useClass: RefreshSessionRefreshTokenServiceMock,
+        },
       ],
     });
   });
@@ -73,7 +77,7 @@ describe('RefreshSessionService ', () => {
 
   describe('forceRefreshSession', () => {
     it(
-      'only calls start refresh session and returns idtoken and accesstoken if auth is true',
+      'only calls start refresh session and returns idToken and accessToken if auth is true',
       waitForAsync(() => {
         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
         spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));

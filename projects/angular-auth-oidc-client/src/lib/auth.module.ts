@@ -4,15 +4,24 @@ import { NgModule } from '@angular/core';
 import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './authState/auth-state.service';
+import { ImplicitFlowCallbackService } from './callback/implicit-flow-callback.service';
 import { CheckAuthService } from './check-auth.service';
 import { ConfigValidationService } from './config-validation/config-validation.service';
 import { AuthWellKnownDataService } from './config/auth-well-known-data.service';
 import { AuthWellKnownService } from './config/auth-well-known.service';
 import { ConfigurationProvider } from './config/config.provider';
 import { OidcConfigService } from './config/config.service';
+import { CodeFlowCallbackHandlerService } from './flows/callback-handling/code-flow-callback-handler.service';
+import { HistoryJwtKeysCallbackHandlerService } from './flows/callback-handling/history-jwt-keys-callback-handler.service';
+import { ImplicitFlowCallbackHandlerService } from './flows/callback-handling/implicit-flow-callback-handler.service';
+import { RefreshSessionCallbackHandlerService } from './flows/callback-handling/refresh-session-callback-handler.service';
+import { RefreshTokenCallbackHandlerService } from './flows/callback-handling/refresh-token-callback-handler.service';
+import { StateValidationCallbackHandlerService } from './flows/callback-handling/state-validation-callback-handler.service';
+import { UserCallbackHandlerService } from './flows/callback-handling/user-callback-handler.service';
 import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsService } from './flows/flows.service';
 import { RandomService } from './flows/random/random.service';
+import { ResetAuthDataService } from './flows/reset-auth-data.service';
 import { SigninKeyDataService } from './flows/signin-key-data.service';
 import { CheckSessionService } from './iframe/check-session.service';
 import { IFrameService } from './iframe/existing-iframe.service';
@@ -75,7 +84,16 @@ export class AuthModule {
         StateValidationService,
         ConfigValidationService,
         CheckAuthService,
+        ResetAuthDataService,
+        ImplicitFlowCallbackService,
+        HistoryJwtKeysCallbackHandlerService,
         ResponseTypeValidationService,
+        UserCallbackHandlerService,
+        StateValidationCallbackHandlerService,
+        RefreshSessionCallbackHandlerService,
+        RefreshTokenCallbackHandlerService,
+        CodeFlowCallbackHandlerService,
+        ImplicitFlowCallbackHandlerService,
         {
           provide: AbstractSecurityStorage,
           useClass: token.storage || BrowserStorageService,

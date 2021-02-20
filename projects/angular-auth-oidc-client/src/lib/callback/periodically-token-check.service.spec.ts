@@ -8,8 +8,8 @@ import { ConfigurationProvider } from '../config/config.provider';
 import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsDataServiceMock } from '../flows/flows-data.service-mock';
-import { FlowsService } from '../flows/flows.service';
-import { FlowsServiceMock } from '../flows/flows.service-mock';
+import { ResetAuthDataService } from '../flows/reset-auth-data.service';
+import { ResetAuthDataServiceMock } from '../flows/reset-auth-data.service-mock';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { RefreshSessionIframeServiceMock } from '../iframe/refresh-session-iframe.service-mock';
 import { LoggerService } from '../logging/logger.service';
@@ -22,6 +22,7 @@ import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { IntervallService } from './intervall.service';
 import { PeriodicallyTokenCheckService } from './periodically-token-check.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
+import { RefreshSessionRefreshTokenServiceMock } from './refresh-session-refresh-token.service-mock';
 
 describe('PeriodicallyTokenCheckService', () => {
   let periodicallyTokenCheckService: PeriodicallyTokenCheckService;
@@ -33,15 +34,15 @@ describe('PeriodicallyTokenCheckService', () => {
   let refreshSessionIframeService: RefreshSessionIframeService;
   let refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService;
   let userService: UserService;
-  let flowsService: FlowsService;
   let storagePersistanceService: StoragePersistanceService;
+  let resetAuthDataService: ResetAuthDataService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientModule, RouterTestingModule],
       providers: [
-        RefreshSessionRefreshTokenService,
-        { provide: FlowsService, useClass: FlowsServiceMock },
+        { provide: RefreshSessionRefreshTokenService, useClass: RefreshSessionRefreshTokenServiceMock },
+        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
         FlowHelper,
         { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
@@ -69,8 +70,8 @@ describe('PeriodicallyTokenCheckService', () => {
     refreshSessionIframeService = TestBed.inject(RefreshSessionIframeService);
     refreshSessionRefreshTokenService = TestBed.inject(RefreshSessionRefreshTokenService);
     userService = TestBed.inject(UserService);
-    flowsService = TestBed.inject(FlowsService);
     storagePersistanceService = TestBed.inject(StoragePersistanceService);
+    resetAuthDataService = TestBed.inject(ResetAuthDataService);
   });
 
   it('should create', () => {
@@ -146,7 +147,7 @@ describe('PeriodicallyTokenCheckService', () => {
       spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
       spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
-      spyOn(flowsService, 'resetAuthorizationData');
+      spyOn(resetAuthDataService, 'resetAuthorizationData');
 
       const hasIdTokenExpiredSpy = spyOn(authStateService, 'hasIdTokenExpired').and.returnValue(false);
       const hasAccessTokenExpiredIfExpiryExistsSpy = spyOn(authStateService, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(false);
@@ -168,7 +169,7 @@ describe('PeriodicallyTokenCheckService', () => {
       spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
       spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
-      const resetAuthorizationdataSpy = spyOn(flowsService, 'resetAuthorizationData');
+      const resetAuthorizationdataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
 
       spyOn(authStateService, 'hasIdTokenExpired').and.returnValue(true);
       spyOn(storagePersistanceService, 'read').withArgs('storageCustomRequestParams').and.returnValue(undefined);
@@ -193,7 +194,7 @@ describe('PeriodicallyTokenCheckService', () => {
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
       spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
       spyOn(storagePersistanceService, 'read').withArgs('storageCustomRequestParams').and.returnValue(undefined);
-      spyOn(flowsService, 'resetAuthorizationData');
+      spyOn(resetAuthDataService, 'resetAuthorizationData');
 
       spyOn(authStateService, 'hasIdTokenExpired').and.returnValue(true);
       spyOn(authStateService, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(true);

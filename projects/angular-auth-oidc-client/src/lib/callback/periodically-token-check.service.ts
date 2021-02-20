@@ -4,7 +4,7 @@ import { catchError, switchMap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { FlowsDataService } from '../flows/flows-data.service';
-import { FlowsService } from '../flows/flows.service';
+import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
@@ -16,7 +16,7 @@ import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-tok
 @Injectable({ providedIn: 'root' })
 export class PeriodicallyTokenCheckService {
   constructor(
-    private flowsService: FlowsService,
+    private resetAuthDataService: ResetAuthDataService,
     private flowHelper: FlowHelper,
     private configurationProvider: ConfigurationProvider,
     private flowsDataService: FlowsDataService,
@@ -60,7 +60,7 @@ export class PeriodicallyTokenCheckService {
         }
 
         if (!this.configurationProvider.openIDConfiguration.silentRenew) {
-          this.flowsService.resetAuthorizationData();
+          this.resetAuthDataService.resetAuthorizationData();
           return of(null);
         }
 

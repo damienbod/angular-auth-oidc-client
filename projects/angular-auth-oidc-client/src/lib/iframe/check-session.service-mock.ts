@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-
-// http://openid.net/specs/openid-connect-session-1_0-ID4.html
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class CheckSessionServiceMock {
+  private checkSessionChangedInternal$ = new BehaviorSubject<boolean>(false);
   get checkSessionChanged$() {
-    return null;
+    return this.checkSessionChangedInternal$.asObservable();
   }
 
   isCheckSessionConfigured() {
