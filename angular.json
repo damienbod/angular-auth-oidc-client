@@ -1111,21 +1111,25 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/",
-            "index": "projects//src/index.html",
-            "main": "projects//src/main.ts",
-            "polyfills": "projects//src/polyfills.ts",
-            "tsConfig": "projects//tsconfig.app.json",
+            "index": "projects/sample-code-flow-par/src/index.html",
+            "main": "projects/sample-code-flow-par/src/main.ts",
+            "polyfills": "projects/sample-code-flow-par/src/polyfills.ts",
+            "tsConfig": "projects/sample-code-flow-par/tsconfig.app.json",
             "aot": true,
-            "assets": ["projects//src/favicon.ico", "projects//src/silent-renew.html", "projects//src/assets"],
-            "styles": ["projects//src/styles.css"],
+            "assets": [
+              "projects/sample-code-flow-par/src/favicon.ico",
+              "projects/sample-code-flow-par/src/silent-renew.html",
+              "projects/sample-code-flow-par/src/assets"
+            ],
+            "styles": ["projects/sample-code-flow-par/src/styles.css"],
             "scripts": []
           },
           "configurations": {
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "projects//src/environments/environment.ts",
-                  "with": "projects//src/environments/environment.prod.ts"
+                  "replace": "projects/sample-code-flow-par/src/environments/environment.ts",
+                  "with": "projects/sample-code-flow-par/src/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,
@@ -1173,26 +1177,30 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects//src/test.ts",
-            "polyfills": "projects//src/polyfills.ts",
-            "tsConfig": "projects//tsconfig.spec.json",
-            "karmaConfig": "projects//karma.conf.js",
-            "assets": ["projects//src/favicon.ico", "projects//src/assets"],
-            "styles": ["projects//src/styles.css"],
+            "main": "projects/sample-code-flow-par/src/test.ts",
+            "polyfills": "projects/sample-code-flow-par/src/polyfills.ts",
+            "tsConfig": "projects/sample-code-flow-par/tsconfig.spec.json",
+            "karmaConfig": "projects/sample-code-flow-par/karma.conf.js",
+            "assets": ["projects/sample-code-flow-par/src/favicon.ico", "projects/sample-code-flow-par/src/assets"],
+            "styles": ["projects/sample-code-flow-par/src/styles.css"],
             "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": ["projects//tsconfig.app.json", "projects//tsconfig.spec.json", "projects//e2e/tsconfig.json"],
+            "tsConfig": [
+              "projects/sample-code-flow-par/tsconfig.app.json",
+              "projects/sample-code-flow-par/tsconfig.spec.json",
+              "projects/sample-code-flow-par/e2e/tsconfig.json"
+            ],
             "exclude": ["**/node_modules/**"]
           }
         },
         "e2e": {
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
-            "protractorConfig": "projects//e2e/protractor.conf.js",
+            "protractorConfig": "projects/sample-code-flow-par/e2e/protractor.conf.js",
             "devServerTarget": ":serve"
           },
           "configurations": {
