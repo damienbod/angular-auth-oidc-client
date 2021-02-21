@@ -23,6 +23,7 @@ export class AuthWellKnownDataService {
             checkSessionIframe: wellKnownEndpoints.check_session_iframe,
             revocationEndpoint: wellKnownEndpoints.revocation_endpoint,
             introspectionEndpoint: wellKnownEndpoints.introspection_endpoint,
+            parEndpoint: wellKnownEndpoints.pushed_authorization_request_endpoint,
           } as AuthWellKnownEndpoints)
       )
     );

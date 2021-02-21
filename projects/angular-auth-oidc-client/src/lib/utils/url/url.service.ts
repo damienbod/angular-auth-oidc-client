@@ -173,6 +173,27 @@ export class UrlService {
     return dataForBody;
   }
 
+  createBodyForParCodeFlowRequest(customParams?: { [key: string]: string | number | boolean }): string {
+    const clientId = this.getClientId();
+
+    if (!clientId) {
+      return null;
+    }
+
+    let dataForBody = oneLineTrim`grant_type=refresh_token
+            &client_id=${clientId}`;
+
+    if (customParams) {
+      const customParamsToAdd = { ...(customParams || {}) };
+
+      for (const [key, value] of Object.entries(customParamsToAdd)) {
+        dataForBody = dataForBody.concat(`&${key}=${value.toString()}`);
+      }
+    }
+
+    return dataForBody;
+  }
+
   private createAuthorizeUrl(
     codeChallenge: string,
     redirectUrl: string,
