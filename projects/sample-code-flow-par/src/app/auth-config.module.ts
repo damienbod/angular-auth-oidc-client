@@ -13,6 +13,10 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
       silentRenew: true,
       useRefreshToken: true,
       logLevel: LogLevel.Debug,
+      ignoreNonceAfterRefresh: true,
+      customParams: {
+        prompt: 'consent', // login, consent
+      },
     });
 }
 
