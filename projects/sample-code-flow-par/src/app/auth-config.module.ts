@@ -7,7 +7,9 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
       stsServer: 'http://localhost:3000',
       redirectUrl: window.location.origin,
       postLogoutRedirectUri: window.location.origin,
-      clientId: 'angularPar',
+      // clientId: 'angularPar', // code flow
+      clientId: 'client-par-required', // code flow par
+      usePushedAuthorisationRequests: true,
       scope: 'openid profile offline_access',
       responseType: 'code',
       silentRenew: true,

@@ -200,10 +200,6 @@ export class UrlService {
             &code_challenge=${codeChallenge}
             &code_challenge_method=S256`;
 
-    if (prompt) {
-      dataForBody = `${dataForBody}&prompt=${prompt}`;
-    }
-
     if (hdParam) {
       dataForBody = `${dataForBody}&hd=${hdParam}`;
     }
