@@ -1100,6 +1100,117 @@
         }
       }
     }
+    "sample-code-flow-par": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "projects/sample-code-flow-par",
+      "sourceRoot": "projects/sample-code-flow-par/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/",
+            "index": "projects//src/index.html",
+            "main": "projects//src/main.ts",
+            "polyfills": "projects//src/polyfills.ts",
+            "tsConfig": "projects//tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "projects//src/favicon.ico",
+              "projects//src/silent-renew.html",
+              "projects//src/assets"
+            ],
+            "styles": ["projects//src/styles.css"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects//src/environments/environment.ts",
+                  "with": "projects//src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": ":build",
+            "sslKey": "certs/dev_localhost.key",
+            "sslCert": "certs/dev_localhost.pem",
+            "port": 4207
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": ":build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": ":build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects//src/test.ts",
+            "polyfills": "projects//src/polyfills.ts",
+            "tsConfig": "projects//tsconfig.spec.json",
+            "karmaConfig": "projects//karma.conf.js",
+            "assets": ["projects//src/favicon.ico", "projects//src/assets"],
+            "styles": ["projects//src/styles.css"],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects//tsconfig.app.json",
+              "projects//tsconfig.spec.json",
+              "projects//e2e/tsconfig.json"
+            ],
+            "exclude": ["**/node_modules/**"]
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "projects//e2e/protractor.conf.js",
+            "devServerTarget": ":serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": ":serve:production"
+            }
+          }
+        }
+      }
+    }
   },
   "cli": {
     "analytics": "b91d4847-f3d9-4b77-91da-efc9e14ed237"
