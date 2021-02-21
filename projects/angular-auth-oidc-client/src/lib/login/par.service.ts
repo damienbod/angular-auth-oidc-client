@@ -1,6 +1,6 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { ConfigurationProvider } from '../config/config.provider';
@@ -38,12 +38,13 @@ export class ParService {
     return this.dataService.post(parEndpoint, data, headers).pipe(
       switchMap((response: any) => {
         this.loggerService.logDebug('par response: ', response);
-        let authResult: ParResponse = {
+
+        let parResult: ParResponse = {
+          expires_in: response.expires_in,
           request_uri: response.request_uri,
-          expires_in: request_uri.expires_in,
         };
 
-        return of(authResult);
+        return of(parResult);
       }),
       catchError((error) => {
         const errorMessage = `OidcService par request ${this.configurationProvider.openIDConfiguration.stsServer}`;
@@ -52,6 +53,5 @@ export class ParService {
       })
     );
   }
-  createParBody() {}
   getParAuthorizeUrl() {}
 }
