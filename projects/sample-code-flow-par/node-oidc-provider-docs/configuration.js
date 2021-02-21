@@ -17,7 +17,7 @@ interactions.add(selectAccount, 0);
 module.exports = {
   clients: [
     {
-      client_id: 'angularPar',
+      client_id: 'angular-code-flow',
       token_endpoint_auth_method: 'none',
       grant_types: ['refresh_token', 'authorization_code'],
       response_types: ['code'],
