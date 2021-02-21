@@ -173,15 +173,43 @@ export class UrlService {
     return dataForBody;
   }
 
-  createBodyForParCodeFlowRequest(customParams?: { [key: string]: string | number | boolean }): string {
-    const clientId = this.getClientId();
+  createBodyForParCodeFlowRequest(customParamsRequest?: { [key: string]: string | number | boolean }): string {
+    const redirectUrl = this.getRedirectUrl();
 
-    if (!clientId) {
+    if (!redirectUrl) {
       return null;
     }
 
+    const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
+    const nonce = this.flowsDataService.createNonce();
+    this.loggerService.logDebug('Authorize created. adding myautostate: ' + state);
+
+    // code_challenge with "S256"
+    const codeVerifier = this.flowsDataService.createCodeVerifier();
+    const codeChallenge = this.tokenValidationService.generateCodeChallenge(codeVerifier);
+
+    const { clientId, responseType, scope, hdParam, customParams } = this.configurationProvider.openIDConfiguration;
+
     let dataForBody = oneLineTrim`grant_type=refresh_token
-            &client_id=${clientId}`;
+            &client_id=${clientId}
+            &redirect_uri=${redirectUrl}
+            &response_type=${responseType}
+            &scope=${scope}
+            &nonce=${nonce}
+            &state=${state}`;
+
+    if (this.flowHelper.isCurrentFlowCodeFlow()) {
+      params = params.append('code_challenge', codeChallenge);
+      params = params.append('code_challenge_method', 'S256');
+    }
+
+    if (prompt) {
+      params = params.append('prompt', prompt);
+    }
+
+    if (hdParam) {
+      params = params.append('hd', hdParam);
+    }
 
     if (customParams) {
       const customParamsToAdd = { ...(customParams || {}) };
