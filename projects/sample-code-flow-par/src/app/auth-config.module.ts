@@ -8,7 +8,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
       redirectUrl: window.location.origin,
       postLogoutRedirectUri: window.location.origin,
       clientId: 'angularPar',
-      scope: 'openid profile email offline_access',
+      scope: 'openid profile offline_access',
       responseType: 'code',
       silentRenew: true,
       useRefreshToken: true,
