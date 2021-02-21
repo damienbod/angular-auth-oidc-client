@@ -224,8 +224,7 @@ export class UrlService {
 
     const { clientId, responseType, scope, hdParam, customParams } = this.configurationProvider.openIDConfiguration;
 
-    let dataForBody = oneLineTrim`grant_type=refresh_token
-            &client_id=${clientId}
+    let dataForBody = oneLineTrim`client_id=${clientId}
             &redirect_uri=${redirectUrl}
             &response_type=${responseType}
             &scope=${scope}
