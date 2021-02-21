@@ -57,6 +57,7 @@ describe('ConfigurationProviderTests', () => {
       silentRenewTimeoutInSeconds: 20,
       renewTimeBeforeTokenExpiresInSeconds: 0,
       useRefreshToken: false,
+      usePushedAuthorisationRequests: false,
       ignoreNonceAfterRefresh: false,
       postLoginRoute: '/',
       forbiddenRoute: '/forbidden',
@@ -101,6 +102,7 @@ describe('ConfigurationProviderTests', () => {
       silentRenewTimeoutInSeconds: 20,
       renewTimeBeforeTokenExpiresInSeconds: 0,
       useRefreshToken: false,
+      usePushedAuthorisationRequests: false,
       ignoreNonceAfterRefresh: false,
       postLoginRoute: '/',
       forbiddenRoute: '/forbidden',
@@ -147,6 +149,7 @@ describe('ConfigurationProviderTests', () => {
       silentRenewTimeoutInSeconds: 20,
       renewTimeBeforeTokenExpiresInSeconds: 0,
       useRefreshToken: false,
+      usePushedAuthorisationRequests: false,
       ignoreNonceAfterRefresh: false,
       postLoginRoute: '/',
       forbiddenRoute: '/forbidden',
@@ -179,6 +182,7 @@ describe('ConfigurationProviderTests', () => {
       startCheckSession: true,
       silentRenew: true,
       useRefreshToken: false,
+      usePushedAuthorisationRequests: false,
     };
 
     const spy = spyOn(configurationProvider as any, 'setSpecialCases');
@@ -194,6 +198,7 @@ describe('ConfigurationProviderTests', () => {
       stsServer: '',
       startCheckSession: true,
       useRefreshToken: false,
+      usePushedAuthorisationRequests: false,
     };
 
     spyOnProperty(platformProvider, 'isBrowser').and.returnValue(true);
@@ -210,6 +215,7 @@ describe('ConfigurationProviderTests', () => {
       stsServer: '',
       startCheckSession: true,
       useRefreshToken: false,
+      usePushedAuthorisationRequests: false,
     };
 
     spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);

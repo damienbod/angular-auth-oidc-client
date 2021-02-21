@@ -15,6 +15,7 @@ export interface OpenIdConfiguration {
   silentRenewTimeoutInSeconds?: number;
   renewTimeBeforeTokenExpiresInSeconds?: number;
   useRefreshToken?: boolean;
+  usePushedAuthorisationRequests?: boolean;
   ignoreNonceAfterRefresh?: boolean;
   postLoginRoute?: string;
   forbiddenRoute?: string;

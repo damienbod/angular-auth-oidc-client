@@ -28,6 +28,7 @@ import { IFrameService } from './iframe/existing-iframe.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
 import { LoggerService } from './logging/logger.service';
 import { LoginService } from './login/login.service';
+import { ParService } from './login/par.service';
 import { ResponseTypeValidationService } from './login/response-type-validation.service';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { OidcSecurityService } from './oidc.security.service';
@@ -78,6 +79,7 @@ export class AuthModule {
         IFrameService,
         EqualityService,
         LoginService,
+        ParService,
         AuthWellKnownDataService,
         AuthWellKnownService,
         DataService,

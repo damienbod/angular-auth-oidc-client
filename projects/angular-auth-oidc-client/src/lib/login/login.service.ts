@@ -9,6 +9,7 @@ import { UrlService } from '../utils/url/url.service';
 import { CheckAuthService } from './../check-auth.service';
 import { UserService } from './../userData/user-service';
 import { AuthOptions } from './auth-options';
+import { ParResponse, ParService } from './par.service';
 import { PopupOptions } from './popup-options';
 import { PopUpService } from './popup.service';
 import { ResponseTypeValidationService } from './response-type-validation.service';
@@ -25,7 +26,8 @@ export class LoginService {
     private popupService: PopUpService,
     private checkAuthService: CheckAuthService,
     private userService: UserService,
-    private authStateService: AuthStateService
+    private authStateService: AuthStateService,
+    private parService: ParService
   ) {}
 
   login(authOptions?: AuthOptions) {
@@ -35,6 +37,8 @@ export class LoginService {
     }
 
     const authWellknownEndpoint = this.configurationProvider.openIDConfiguration.authWellknownEndpoint;
+
+    const usePushedAuthorisationRequests = this.configurationProvider.openIDConfiguration.usePushedAuthorisationRequests;
 
     if (!authWellknownEndpoint) {
       this.loggerService.logError('no authWellknownEndpoint given!');
@@ -46,7 +50,23 @@ export class LoginService {
     this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint).subscribe(() => {
       const { urlHandler, customParams } = authOptions || {};
 
-      const url = this.urlService.getAuthorizeUrl(customParams);
+      let url = '';
+      if (usePushedAuthorisationRequests) {
+        this.parService
+          .postParRequest(customParams)
+          .pipe(
+            map((response: ParResponse) => {
+              this.loggerService.logDebug('par response: ', response.request_uri);
+
+              return response;
+            })
+          )
+          .subscribe(() => {
+            // get to url from the service and redirect.
+          }); // just for test to remove
+      } else {
+        url = this.urlService.getAuthorizeUrl(customParams);
+      }
 
       if (!url) {
         this.loggerService.logError('Could not create url', url);

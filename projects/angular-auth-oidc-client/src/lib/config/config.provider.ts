@@ -37,6 +37,7 @@ export class ConfigurationProvider {
       currentConfig.startCheckSession = false;
       currentConfig.silentRenew = false;
       currentConfig.useRefreshToken = false;
+      currentConfig.usePushedAuthorisationRequests = false;
     }
   }
 }
