@@ -58,6 +58,8 @@ export class LoginService {
             map((response: ParResponse) => {
               this.loggerService.logDebug('par response: ', response.request_uri);
 
+              url = this.urlService.getAuthorizeParUrl(response.request_uri);
+              this.loggerService.logDebug('par request url: ', url);
               return response;
             })
           )

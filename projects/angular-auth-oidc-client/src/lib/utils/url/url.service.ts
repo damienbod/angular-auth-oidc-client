@@ -49,6 +49,40 @@ export class UrlService {
     return this.createUrlImplicitFlowWithSilentRenew(customParams) || '';
   }
 
+  getAuthorizeParUrl(request_uri: string): string {
+    const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+    if (authWellKnownEndPoints) {
+      const authorizationEndpoint = authWellKnownEndPoints?.authorizationEndpoint;
+
+      if (!authorizationEndpoint) {
+        this.loggerService.logError(`Can not create an authorize url when authorizationEndpoint is '${authorizationEndpoint}'`);
+        return null;
+      }
+
+      const { clientId } = this.configurationProvider.openIDConfiguration;
+
+      if (!clientId) {
+        this.loggerService.logError(`createAuthorizeUrl could not add clientId because it was: `, clientId);
+        return null;
+      }
+
+      const urlParts = authorizationEndpoint.split('?');
+      const authorizationUrl = urlParts[0];
+
+      let params = new HttpParams({
+        fromString: urlParts[1],
+        encoder: new UriEncoder(),
+      });
+
+      params = params.set('request_uri', request_uri);
+      params = params.append('client_id', clientId);
+
+      return `${authorizationUrl}?${params}`;
+    }
+
+    this.loggerService.logError('authWellKnownEndpoints is undefined');
+    return null;
+  }
   getAuthorizeUrl(customParams?: { [key: string]: string | number | boolean }): string {
     if (this.flowHelper.isCurrentFlowCodeFlow()) {
       return this.createUrlCodeFlowAuthorize(customParams);
