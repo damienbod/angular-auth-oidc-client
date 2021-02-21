@@ -4,11 +4,11 @@ import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-clien
 export function configureAuth(oidcConfigService: OidcConfigService) {
   return () =>
     oidcConfigService.withConfig({
-      stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+      stsServer: 'http://localhost:3000',
       redirectUrl: window.location.origin,
       postLogoutRedirectUri: window.location.origin,
-      clientId: 'angularCodeRefreshTokens',
-      scope: 'openid profile email taler_api offline_access',
+      clientId: 'angularPar',
+      scope: 'openid profile email offline_access',
       responseType: 'code',
       silentRenew: true,
       useRefreshToken: true,

@@ -1099,7 +1099,7 @@
           }
         }
       }
-    }
+    },
     "sample-code-flow-par": {
       "projectType": "application",
       "schematics": {},
@@ -1116,11 +1116,7 @@
             "polyfills": "projects//src/polyfills.ts",
             "tsConfig": "projects//tsconfig.app.json",
             "aot": true,
-            "assets": [
-              "projects//src/favicon.ico",
-              "projects//src/silent-renew.html",
-              "projects//src/assets"
-            ],
+            "assets": ["projects//src/favicon.ico", "projects//src/silent-renew.html", "projects//src/assets"],
             "styles": ["projects//src/styles.css"],
             "scripts": []
           },
@@ -1157,21 +1153,21 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": ":build",
+            "browserTarget": "sample-code-flow-par:build",
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4207
           },
           "configurations": {
             "production": {
-              "browserTarget": ":build:production"
+              "browserTarget": "sample-code-flow-par:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": ":build"
+            "browserTarget": "sample-code-flow-par:build"
           }
         },
         "test": {
@@ -1189,11 +1185,7 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "projects//tsconfig.app.json",
-              "projects//tsconfig.spec.json",
-              "projects//e2e/tsconfig.json"
-            ],
+            "tsConfig": ["projects//tsconfig.app.json", "projects//tsconfig.spec.json", "projects//e2e/tsconfig.json"],
             "exclude": ["**/node_modules/**"]
           }
         },
