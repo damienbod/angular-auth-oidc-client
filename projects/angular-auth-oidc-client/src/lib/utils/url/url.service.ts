@@ -196,25 +196,30 @@ export class UrlService {
             &response_type=${responseType}
             &scope=${scope}
             &nonce=${nonce}
-            &state=${state}`;
-
-    if (this.flowHelper.isCurrentFlowCodeFlow()) {
-      params = params.append('code_challenge', codeChallenge);
-      params = params.append('code_challenge_method', 'S256');
-    }
+            &state=${state}
+            &code_challenge=${codeChallenge}
+            &code_challenge_method=S256`;
 
     if (prompt) {
-      params = params.append('prompt', prompt);
+      dataForBody = `${dataForBody}&prompt=${prompt}`;
     }
 
     if (hdParam) {
-      params = params.append('hd', hdParam);
+      dataForBody = `${dataForBody}&hd=${hdParam}`;
     }
 
     if (customParams) {
       const customParamsToAdd = { ...(customParams || {}) };
 
       for (const [key, value] of Object.entries(customParamsToAdd)) {
+        dataForBody = dataForBody.concat(`&${key}=${value.toString()}`);
+      }
+    }
+
+    if (customParamsRequest) {
+      const customParamsRequestToAdd = { ...(customParamsRequest || {}) };
+
+      for (const [key, value] of Object.entries(customParamsRequestToAdd)) {
         dataForBody = dataForBody.concat(`&${key}=${value.toString()}`);
       }
     }
