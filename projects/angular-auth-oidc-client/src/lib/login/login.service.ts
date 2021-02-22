@@ -31,14 +31,22 @@ export class LoginService {
   ) {}
 
   login(authOptions?: AuthOptions) {
+    const usePushedAuthorisationRequests = this.configurationProvider.openIDConfiguration.usePushedAuthorisationRequests;
+
+    if (usePushedAuthorisationRequests) {
+      return this.loginPar(authOptions);
+    } else {
+      return this.loginStandard(authOptions);
+    }
+  }
+
+  loginStandard(authOptions?: AuthOptions) {
     if (!this.responseTypeValidationService.hasConfigValidResponseType()) {
       this.loggerService.logError('Invalid response type!');
       return;
     }
 
     const authWellknownEndpoint = this.configurationProvider.openIDConfiguration.authWellknownEndpoint;
-
-    const usePushedAuthorisationRequests = this.configurationProvider.openIDConfiguration.usePushedAuthorisationRequests;
 
     if (!authWellknownEndpoint) {
       this.loggerService.logError('no authWellknownEndpoint given!');
@@ -50,25 +58,7 @@ export class LoginService {
     this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint).subscribe(() => {
       const { urlHandler, customParams } = authOptions || {};
 
-      let url = '';
-      if (usePushedAuthorisationRequests) {
-        this.parService
-          .postParRequest(customParams)
-          .pipe(
-            map((response: ParResponse) => {
-              this.loggerService.logDebug('par response: ', response.request_uri);
-
-              url = this.urlService.getAuthorizeParUrl(response.request_uri);
-              this.loggerService.logDebug('par request url: ', url);
-              return response;
-            })
-          )
-          .subscribe(() => {
-            // get to url from the service and redirect.
-          }); // just for test to remove
-      } else {
-        url = this.urlService.getAuthorizeUrl(customParams);
-      }
+      const url = this.urlService.getAuthorizeUrl(customParams);
 
       if (!url) {
         this.loggerService.logError('Could not create url', url);
@@ -80,6 +70,51 @@ export class LoginService {
       } else {
         this.redirectService.redirectTo(url);
       }
+    });
+  }
+
+  loginPar(authOptions?: AuthOptions) {
+    if (!this.responseTypeValidationService.hasConfigValidResponseType()) {
+      this.loggerService.logError('Invalid response type!');
+      return;
+    }
+
+    const authWellknownEndpoint = this.configurationProvider.openIDConfiguration.authWellknownEndpoint;
+
+    if (!authWellknownEndpoint) {
+      this.loggerService.logError('no authWellknownEndpoint given!');
+      return;
+    }
+
+    this.loggerService.logDebug('BEGIN Authorize OIDC Flow, no auth data');
+
+    this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint).subscribe(() => {
+      const { urlHandler, customParams } = authOptions || {};
+
+      this.parService
+        .postParRequest(customParams)
+        .pipe(
+          map((response: ParResponse) => {
+            this.loggerService.logDebug('par response: ', response.request_uri);
+
+            const url = this.urlService.getAuthorizeParUrl(response.request_uri);
+            this.loggerService.logDebug('par request url: ', url);
+            if (!url) {
+              this.loggerService.logError('Could not create url', url);
+              return;
+            }
+
+            if (urlHandler) {
+              urlHandler(url);
+            } else {
+              this.redirectService.redirectTo(url);
+            }
+            return response;
+          })
+        )
+        .subscribe(() => {
+          // get to url from the service and redirect.
+        }); // just for test to remove
     });
   }
 
