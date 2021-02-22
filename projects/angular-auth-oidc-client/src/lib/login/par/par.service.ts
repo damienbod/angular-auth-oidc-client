@@ -1,17 +1,13 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
-import { DataService } from '../api/data.service';
-import { ConfigurationProvider } from '../config/config.provider';
-import { LoggerService } from '../logging/logger.service';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
-import { UrlService } from '../utils/url/url.service';
-
-export interface ParResponse {
-  request_uri: string;
-  expires_in: number;
-}
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { DataService } from '../../api/data.service';
+import { ConfigurationProvider } from '../../config/config.provider';
+import { LoggerService } from '../../logging/logger.service';
+import { StoragePersistanceService } from '../../storage/storage-persistance.service';
+import { UrlService } from '../../utils/url/url.service';
+import { ParResponse } from './par-response';
 
 @Injectable()
 export class ParService {
@@ -36,15 +32,15 @@ export class ParService {
     const data = this.urlService.createBodyForParCodeFlowRequest(customParams);
 
     return this.dataService.post(parEndpoint, data, headers).pipe(
-      switchMap((response: any) => {
+      map((response: any) => {
         this.loggerService.logDebug('par response: ', response);
 
-        let parResult: ParResponse = {
+        const parResult: ParResponse = {
           expires_in: response.expires_in,
           request_uri: response.request_uri,
         };
 
-        return of(parResult);
+        return parResult;
       }),
       catchError((error) => {
         const errorMessage = `OidcService par request ${this.configurationProvider.openIDConfiguration.stsServer}`;

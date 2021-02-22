@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthOptions } from './auth-options';
-import { PopupOptions } from './popup-options';
+import { PopupOptions } from './popup/popup-options';
 
 @Injectable()
 export class LoginServiceMock {

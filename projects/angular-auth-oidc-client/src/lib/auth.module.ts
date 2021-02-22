@@ -28,8 +28,11 @@ import { IFrameService } from './iframe/existing-iframe.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
 import { LoggerService } from './logging/logger.service';
 import { LoginService } from './login/login.service';
-import { ParService } from './login/par.service';
-import { ResponseTypeValidationService } from './login/response-type-validation.service';
+import { ParLoginService } from './login/par/par-login.service';
+import { ParService } from './login/par/par.service';
+import { PopUpLoginService } from './login/popup/popup-login.service';
+import { ResponseTypeValidationService } from './login/response-type-validation/response-type-validation.service';
+import { StandardLoginService } from './login/standard/standard-login.service';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { OidcSecurityService } from './oidc.security.service';
 import { PublicEventsService } from './public-events/public-events.service';
@@ -96,6 +99,9 @@ export class AuthModule {
         RefreshTokenCallbackHandlerService,
         CodeFlowCallbackHandlerService,
         ImplicitFlowCallbackHandlerService,
+        ParLoginService,
+        PopUpLoginService,
+        StandardLoginService,
         {
           provide: AbstractSecurityStorage,
           useClass: token.storage || BrowserStorageService,

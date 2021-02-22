@@ -2,25 +2,23 @@ import { CommonModule } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { AuthStateService } from '../authState/auth-state.service';
-import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
-import { CheckAuthServiceMock } from '../check-auth.service-mock';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
-import { AuthWellKnownServiceMock } from '../config/auth-well-known.service-mock';
 import { ConfigurationProvider } from '../config/config.provider';
 import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { RedirectService } from '../utils/redirect/redirect.service';
 import { UrlService } from '../utils/url/url.service';
-import { UrlServiceMock } from '../utils/url/url.service-mock';
 import { CheckAuthService } from './../check-auth.service';
 import { UserService } from './../userData/user-service';
-import { UserServiceMock } from './../userData/user-service-mock';
 import { LoginService } from './login.service';
-import { PopUpService } from './popup.service';
-import { PopUpServiceMock } from './popup.service-mock';
-import { ResponseTypeValidationService } from './response-type-validation.service';
-import { ResponseTypeValidationServiceMock } from './response-type-validation.service.mock';
+import { ParLoginService } from './par/par-login.service';
+import { ParLoginServiceMock } from './par/par-login.service-mock';
+import { PopUpLoginService } from './popup/popup-login.service';
+import { PopUpLoginServiceMock } from './popup/popup-login.service-mock';
+import { PopUpService } from './popup/popup.service';
+import { ResponseTypeValidationService } from './response-type-validation/response-type-validation.service';
+import { StandardLoginService } from './standard/standard-login.service';
+import { StandardLoginServiceMock } from './standard/standard-login.service-mock';
 
 describe('LoginService', () => {
   let loginService: LoginService;
@@ -39,17 +37,11 @@ describe('LoginService', () => {
     TestBed.configureTestingModule({
       imports: [CommonModule],
       providers: [
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: ResponseTypeValidationService, useClass: ResponseTypeValidationServiceMock },
-        { provide: UrlService, useClass: UrlServiceMock },
-        RedirectService,
-        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
-        { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
-        { provide: PopUpService, useClass: PopUpServiceMock },
-        { provide: CheckAuthService, useClass: CheckAuthServiceMock },
-        { provide: UserService, useClass: UserServiceMock },
-        { provide: AuthStateService, useClass: AuthStateServiceMock },
         LoginService,
+        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
+        { provide: ParLoginService, useClass: ParLoginServiceMock },
+        { provide: PopUpLoginService, useClass: PopUpLoginServiceMock },
+        { provide: StandardLoginService, useClass: StandardLoginServiceMock },
       ],
     });
   });
