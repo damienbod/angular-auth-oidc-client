@@ -119,6 +119,54 @@ export class LoginService {
   }
 
   loginWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions) {
+    const usePushedAuthorisationRequests = this.configurationProvider.openIDConfiguration.usePushedAuthorisationRequests;
+
+    if (usePushedAuthorisationRequests) {
+      return this.loginPar(authOptions);
+    } else {
+      return this.loginWithPopUpStandard(authOptions, popupOptions);
+    }
+  }
+
+  loginWithPopUpPar(authOptions?: AuthOptions, popupOptions?: PopupOptions) {
+    if (!this.responseTypeValidationService.hasConfigValidResponseType()) {
+      this.loggerService.logError('Invalid response type!');
+      return;
+    }
+
+    const authWellknownEndpoint = this.configurationProvider.openIDConfiguration.authWellknownEndpoint;
+
+    if (!authWellknownEndpoint) {
+      this.loggerService.logError('no authWellknownEndpoint given!');
+      return;
+    }
+
+    this.loggerService.logDebug('BEGIN Authorize OIDC Flow with popup, no auth data');
+
+    const { customParams } = authOptions || {};
+    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint).pipe(
+      switchMap(() => this.parService.postParRequest(customParams)),
+      switchMap((response: ParResponse) => {
+        this.loggerService.logDebug('par response: ', response.request_uri);
+
+        const url = this.urlService.getAuthorizeParUrl(response.request_uri);
+        this.loggerService.logDebug('par request url: ', url);
+
+        this.popupService.openPopUp(url, popupOptions);
+
+        return this.popupService.receivedUrl$.pipe(
+          switchMap((url: string) => this.checkAuthService.checkAuth(url)),
+          map((isAuthenticated) => ({
+            isAuthenticated,
+            userData: this.userService.getUserDataFromStore(),
+            accessToken: this.authStateService.getAccessToken(),
+          }))
+        );
+      })
+    );
+  }
+
+  loginWithPopUpStandard(authOptions?: AuthOptions, popupOptions?: PopupOptions) {
     if (!this.responseTypeValidationService.hasConfigValidResponseType()) {
       this.loggerService.logError('Invalid response type!');
       return;
