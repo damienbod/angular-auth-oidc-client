@@ -9,6 +9,7 @@ import { UrlService } from '../../utils/url/url.service';
 import { DataServiceMock } from './../../api/data.service-mock';
 import { ConfigurationProviderMock } from './../../config/config.provider-mock';
 import { StoragePersistanceServiceMock } from './../../storage/storage-persistance.service-mock';
+import { UrlServiceMock } from './../../utils/url/url.service-mock';
 import { ParService } from './par.service';
 
 describe('ParService', () => {
@@ -38,6 +39,10 @@ describe('ParService', () => {
         {
           provide: ConfigurationProvider,
           useClass: ConfigurationProviderMock,
+        },
+        {
+          provide: UrlService,
+          useClass: UrlServiceMock,
         },
       ],
     });
