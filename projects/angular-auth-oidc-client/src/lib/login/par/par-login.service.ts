@@ -46,34 +46,29 @@ export class ParLoginService {
 
     this.loggerService.logDebug('BEGIN Authorize OIDC Flow, no auth data');
 
-    this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint).subscribe(() => {
-      const { urlHandler, customParams } = authOptions || {};
+    const { urlHandler, customParams } = authOptions || {};
 
-      this.parService
-        .postParRequest(customParams)
-        .pipe(
-          map((response: ParResponse) => {
-            this.loggerService.logDebug('par response: ', response.requestUri);
+    this.authWellKnownService
+      .getAuthWellKnownEndPoints(authWellknownEndpoint)
+      .pipe(switchMap(() => this.parService.postParRequest(customParams)))
+      .subscribe((response) => {
+        this.loggerService.logDebug('par response: ', response);
 
-            const url = this.urlService.getAuthorizeParUrl(response.requestUri);
-            this.loggerService.logDebug('par request url: ', url);
-            if (!url) {
-              this.loggerService.logError('Could not create url', url);
-              return;
-            }
+        const url = this.urlService.getAuthorizeParUrl(response.requestUri);
 
-            if (urlHandler) {
-              urlHandler(url);
-            } else {
-              this.redirectService.redirectTo(url);
-            }
-            return response;
-          })
-        )
-        .subscribe(() => {
-          // get to url from the service and redirect.
-        }); // just for test to remove
-    });
+        this.loggerService.logDebug('par request url: ', url);
+
+        if (!url) {
+          this.loggerService.logError(`Could not create url with param ${response.requestUri}: 'url'`);
+          return;
+        }
+
+        if (urlHandler) {
+          urlHandler(url);
+        } else {
+          this.redirectService.redirectTo(url);
+        }
+      });
   }
 
   loginWithPopUpPar(authOptions?: AuthOptions, popupOptions?: PopupOptions) {
@@ -92,13 +87,20 @@ export class ParLoginService {
     this.loggerService.logDebug('BEGIN Authorize OIDC Flow with popup, no auth data');
 
     const { customParams } = authOptions || {};
+
     return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint).pipe(
       switchMap(() => this.parService.postParRequest(customParams)),
       switchMap((response: ParResponse) => {
-        this.loggerService.logDebug('par response: ', response.requestUri);
+        this.loggerService.logDebug('par response: ', response);
 
         const url = this.urlService.getAuthorizeParUrl(response.requestUri);
+
         this.loggerService.logDebug('par request url: ', url);
+
+        if (!url) {
+          this.loggerService.logError(`Could not create url with param ${response.requestUri}: 'url'`);
+          return;
+        }
 
         this.popupService.openPopUp(url, popupOptions);
 

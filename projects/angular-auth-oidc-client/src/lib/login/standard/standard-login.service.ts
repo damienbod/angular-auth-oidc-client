@@ -18,7 +18,7 @@ export class StandardLoginService {
     private authWellKnownService: AuthWellKnownService
   ) {}
 
-  loginStandard(authOptions?: AuthOptions) {
+  loginStandard(authOptions?: AuthOptions): void {
     if (!this.responseTypeValidationService.hasConfigValidResponseType()) {
       this.loggerService.logError('Invalid response type!');
       return;
