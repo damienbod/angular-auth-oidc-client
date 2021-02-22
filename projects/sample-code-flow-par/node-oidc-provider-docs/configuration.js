@@ -17,18 +17,21 @@ interactions.add(selectAccount, 0);
 module.exports = {
   clients: [
     {
-      client_id: 'angular-code-flow',
+      client_id: 'client-par-required',
       token_endpoint_auth_method: 'none',
+      application_type: 'web',
       grant_types: ['refresh_token', 'authorization_code'],
-      response_types: ['code'],
       redirect_uris: ['https://localhost:4207'],
+      require_pushed_authorization_requests: true,
       scope: 'openid offline_access profile email',
     },
     {
-      client_id: 'client-par-required',
+      client_id: 'angularCodeRefreshTokens',
       token_endpoint_auth_method: 'none',
+      application_type: 'web',
+      grant_types: ['refresh_token', 'authorization_code'],
+      response_types: ['code'],
       redirect_uris: ['https://localhost:4207'],
-      require_pushed_authorization_requests: true,
       scope: 'openid offline_access profile email',
     },
   ],
