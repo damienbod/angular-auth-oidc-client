@@ -35,7 +35,6 @@ describe('State Validation Service', () => {
         StateValidationService,
         TokenValidationService,
         ConfigurationProvider,
-        LoggerService,
         TokenHelperService,
         {
           provide: StoragePersistanceService,
@@ -189,7 +188,6 @@ describe('State Validation Service', () => {
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('id_tokenTEST');
     expect(state.decodedIdToken).toBe('decoded_id_token');
-    console.log('state', state);
     expect(state.authResponseIsValid).toBe(true);
   });
 
@@ -709,7 +707,6 @@ describe('State Validation Service', () => {
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('');
     expect(state.decodedIdToken).toBeDefined();
-    console.log('state', state);
     expect(state.authResponseIsValid).toBe(true);
   });
 
