@@ -1,13 +1,12 @@
+import { HttpHeaders } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { DataService } from '../../api/data.service';
-import { ConfigurationProvider } from '../../config/config.provider';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StoragePersistanceService } from '../../storage/storage-persistance.service';
 import { UrlService } from '../../utils/url/url.service';
 import { DataServiceMock } from './../../api/data.service-mock';
-import { ConfigurationProviderMock } from './../../config/config.provider-mock';
 import { StoragePersistanceServiceMock } from './../../storage/storage-persistance.service-mock';
 import { UrlServiceMock } from './../../utils/url/url.service-mock';
 import { ParService } from './par.service';
@@ -16,7 +15,6 @@ describe('ParService', () => {
   let service: ParService;
   let loggerService: LoggerService;
   let urlService: UrlService;
-  let configurationProvider: ConfigurationProvider;
   let dataService: DataService;
   let storagePersistanceService: StoragePersistanceService;
 
@@ -29,20 +27,16 @@ describe('ParService', () => {
           useClass: LoggerServiceMock,
         },
         {
+          provide: UrlService,
+          useClass: UrlServiceMock,
+        },
+        {
           provide: DataService,
           useClass: DataServiceMock,
         },
         {
           provide: StoragePersistanceService,
           useClass: StoragePersistanceServiceMock,
-        },
-        {
-          provide: ConfigurationProvider,
-          useClass: ConfigurationProviderMock,
-        },
-        {
-          provide: UrlService,
-          useClass: UrlServiceMock,
         },
       ],
     });
@@ -52,7 +46,6 @@ describe('ParService', () => {
     service = TestBed.inject(ParService);
     dataService = TestBed.inject(DataService);
     loggerService = TestBed.inject(LoggerService);
-    configurationProvider = TestBed.inject(ConfigurationProvider);
     storagePersistanceService = TestBed.inject(StoragePersistanceService);
     urlService = TestBed.inject(UrlService);
   });
@@ -63,37 +56,67 @@ describe('ParService', () => {
 
   describe('postParRequest', () => {
     it(
-      'returns ParResponse if all params are good',
+      'throws error if authWellKnownEndPoints does not exist in storage',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('ddd=ww&ee=3');
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'https://par' });
-
-        const expectedParResponse = {
-          code: null,
-          refreshToken: 'henlo-furiend',
-        };
-
-        spyOn(dataService, 'post').and.returnValue(of({ expectedParResponse }));
-
-        (service as any).postParRequest().subscribe((parResult) => {
-          expect(parResult).toEqual(expectedParResponse);
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(null);
+        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+        service.postParRequest().subscribe({
+          error: (err) => {
+            expect(err).toBe('Could not read PAR endpoint because authWellKnownEndPoints are not given');
+          },
         });
       })
     );
 
     it(
-      'throws error if par endpoint does not exist',
+      'throws error if par endpoint does not exist in storage',
       waitForAsync(() => {
         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(null);
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ notSupported: 'thing' });
-        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ some: 'thing' });
+        service.postParRequest().subscribe({
+          error: (err) => {
+            expect(err).toBe('Could not read PAR endpoint from authWellKnownEndpoints');
+          },
+        });
+      })
+    );
+
+    it(
+      'calls data service with correct params',
+      waitForAsync(() => {
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url');
+        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+        const dataServiceSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+        service.postParRequest().subscribe(() => {
+          expect(dataServiceSpy).toHaveBeenCalledOnceWith('parEndpoint', 'some-url', jasmine.any(HttpHeaders));
+        });
+      })
+    );
+
+    it(
+      'Gives back correct object properties',
+      waitForAsync(() => {
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url');
+        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+        spyOn(dataService, 'post').and.returnValue(of({ expires_in: 123, request_uri: 'request_uri' }));
+        service.postParRequest().subscribe((result) => {
+          expect(result).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
+        });
+      })
+    );
+
+    it(
+      'throws error if data service has got an error',
+      waitForAsync(() => {
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url');
+        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+        spyOn(dataService, 'post').and.returnValue(throwError('AN ERROR'));
         const loggerSpy = spyOn(loggerService, 'logError');
 
-        (service as any).postParRequest().subscribe({
+        service.postParRequest().subscribe({
           error: (err) => {
-            expect(err).toBeTruthy();
-            expect(loggerSpy).toHaveBeenCalled();
+            expect(err).toBe('There was an error on ParService postParRequest');
+            expect(loggerSpy).toHaveBeenCalledOnceWith('There was an error on ParService postParRequest', 'AN ERROR');
           },
         });
       })

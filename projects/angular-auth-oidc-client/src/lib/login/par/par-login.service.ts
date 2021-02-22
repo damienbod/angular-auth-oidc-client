@@ -53,9 +53,9 @@ export class ParLoginService {
         .postParRequest(customParams)
         .pipe(
           map((response: ParResponse) => {
-            this.loggerService.logDebug('par response: ', response.request_uri);
+            this.loggerService.logDebug('par response: ', response.requestUri);
 
-            const url = this.urlService.getAuthorizeParUrl(response.request_uri);
+            const url = this.urlService.getAuthorizeParUrl(response.requestUri);
             this.loggerService.logDebug('par request url: ', url);
             if (!url) {
               this.loggerService.logError('Could not create url', url);
@@ -95,9 +95,9 @@ export class ParLoginService {
     return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint).pipe(
       switchMap(() => this.parService.postParRequest(customParams)),
       switchMap((response: ParResponse) => {
-        this.loggerService.logDebug('par response: ', response.request_uri);
+        this.loggerService.logDebug('par response: ', response.requestUri);
 
-        const url = this.urlService.getAuthorizeParUrl(response.request_uri);
+        const url = this.urlService.getAuthorizeParUrl(response.requestUri);
         this.loggerService.logDebug('par request url: ', url);
 
         this.popupService.openPopUp(url, popupOptions);
