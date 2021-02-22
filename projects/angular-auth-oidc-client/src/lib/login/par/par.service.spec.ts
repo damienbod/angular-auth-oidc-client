@@ -77,7 +77,7 @@ describe('ParService', () => {
     );
 
     it(
-      'throws error if no refresh token is given',
+      'throws error if par endpoint does not exist',
       waitForAsync(() => {
         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(null);
         spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ notSupported: 'thing' });
