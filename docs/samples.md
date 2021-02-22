@@ -164,6 +164,8 @@ example using OAuth pushed authorization requests
 
 ### [src code](../projects/sample-code-flow-par)
 
+[auth-config.module.ts](../projects/sample-code-flow-par/src/app/auth-config.module.ts)
+
 [app.module.ts](../projects/sample-code-flow-par/src/app/app.module.ts)
 
 [app.component.ts](../projects/sample-code-flow-par/src/app/app.component.ts)
