@@ -122,7 +122,7 @@ export class LoginService {
     const usePushedAuthorisationRequests = this.configurationProvider.openIDConfiguration.usePushedAuthorisationRequests;
 
     if (usePushedAuthorisationRequests) {
-      return this.loginPar(authOptions);
+      return this.loginWithPopUpPar(authOptions, popupOptions);
     } else {
       return this.loginWithPopUpStandard(authOptions, popupOptions);
     }

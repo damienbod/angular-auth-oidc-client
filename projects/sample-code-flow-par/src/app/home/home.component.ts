@@ -28,6 +28,14 @@ export class HomeComponent implements OnInit {
     this.oidcSecurityService.authorize();
   }
 
+  loginWithPopup() {
+    this.oidcSecurityService.authorizeWithPopUp().subscribe(({ isAuthenticated, userData, accessToken }) => {
+      console.log(isAuthenticated);
+      console.log(userData);
+      console.log(accessToken);
+    });
+  }
+
   refreshSession() {
     this.oidcSecurityService.forceRefreshSession().subscribe((result) => console.log(result));
   }
