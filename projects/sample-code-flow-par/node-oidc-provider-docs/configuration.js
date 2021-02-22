@@ -24,6 +24,7 @@ module.exports = {
       redirect_uris: ['https://localhost:4207'],
       require_pushed_authorization_requests: true,
       scope: 'openid offline_access profile email',
+      post_logout_redirect_uris: ['https://localhost:4207'],
     },
     {
       client_id: 'angularCodeRefreshTokens',
@@ -33,6 +34,7 @@ module.exports = {
       response_types: ['code'],
       redirect_uris: ['https://localhost:4207'],
       scope: 'openid offline_access profile email',
+      post_logout_redirect_uris: ['https://localhost:4207'],
     },
   ],
   interactions: {
