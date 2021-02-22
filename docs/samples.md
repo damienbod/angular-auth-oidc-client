@@ -5,6 +5,7 @@
 - [Code Flow PKCE Auto login](#code-flow-pkce-auto-login)
 - [Code Flow with PKCE basic with silent renew](#code-flow-with-pkce-basic-with-silent-renew)
 - [Popup Code Flow with PKCE](#popup-code-flow-with-pkce)
+- [Code flow with pushed authorization request](#code-flow-with-pushed-authorization-request)
 - [Azure B2C Code Flow PKCE with silent renew](#azure-b2c-code-flow-pkce-with-silent-renew)
 - [Azure AD Code Flow PKCE with silent renew](#azure-ad-oidc-code-flow-with-pkce)
 - [Implicit Flow with silent renew (Not recommended)](#implicit-flow-with-silent-renew-not-recommended)
@@ -157,14 +158,14 @@ The example uses the Code flow with silent renew but you authenticate in a lazy 
 
 [lazy.component.html](../projects/sample-code-flow-lazy-loaded/src/app/lazy/lazy.component.html)
 
-### [src code](../projects/sample-code-flow-popup)
+## Code flow with pushed authorization request
 
-[app.module.ts](../projects/sample-code-flow-popup/src/app/app.module.ts)
+example using OAuth pushed authorization requests
 
-[app.component.ts](../projects/sample-code-flow-popup/src/app/app.component.ts)
+### [src code](../projects/sample-code-flow-par)
 
-[app.component.html](../projects/sample-code-flow-popup/src/app/app.component.html)
+[app.module.ts](../projects/sample-code-flow-par/src/app/app.module.ts)
 
-[lazy.component.ts](../projects/sample-code-flow-popup/src/app/lazy/lazy.component.ts)
+[app.component.ts](../projects/sample-code-flow-par/src/app/app.component.ts)
 
-[lazy.component.html](../projects/sample-code-flow-popup/src/app/lazy/lazy.component.html)
+[app.component.html](../projects/sample-code-flow-par/src/app/app.component.html)
