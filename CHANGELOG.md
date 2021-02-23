@@ -2,9 +2,9 @@
 
 ### 2021-02-23 Version 11.6.0
 
-- Add support for OAuth Pushed authorisation requests (PAR)
+- Added support for OAuth Pushed authorisation requests (PAR)
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/978)
-- Add Pushed authorisation requests (PAR) example
+- Added Pushed authorisation requests (PAR) example
 - Added OAuth Pushed authorisation requests (PAR) template using schematics
 
 ### 2021-02-13 Version 11.5.1
