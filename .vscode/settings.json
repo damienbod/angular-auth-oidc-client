@@ -24,6 +24,7 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "cSpell.words": [
+        "Authorisation",
         "autologin",
         "azuread",
         "jwtkeys",

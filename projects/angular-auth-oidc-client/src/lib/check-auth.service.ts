@@ -10,7 +10,7 @@ import { ConfigurationProvider } from './config/config.provider';
 import { CheckSessionService } from './iframe/check-session.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
 import { LoggerService } from './logging/logger.service';
-import { PopUpService } from './login/popup.service';
+import { PopUpService } from './login/popup/popup.service';
 import { UserService } from './userData/user-service';
 
 @Injectable()

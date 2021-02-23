@@ -16,6 +16,7 @@ export const DEFAULT_CONFIG: OpenIdConfiguration = {
   silentRenewTimeoutInSeconds: 20,
   renewTimeBeforeTokenExpiresInSeconds: 0,
   useRefreshToken: false,
+  usePushedAuthorisationRequests: false,
   ignoreNonceAfterRefresh: false,
   postLoginRoute: '/',
   forbiddenRoute: '/forbidden',

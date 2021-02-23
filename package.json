@@ -35,6 +35,7 @@
     "start-sample-code-flow-popup": "ng serve sample-code-flow-popup --ssl -o",
     "start-sample-code-flow-http-config": "ng serve sample-code-flow-http-config --ssl -o",
     "start-sample-code-flow-refresh-tokens": "ng serve sample-code-flow-refresh-tokens --ssl -o",
+    "start-sample-code-flow-par": "ng serve sample-code-flow-par --ssl -o",
     "start-sample-code-flow-azure-b2c": "ng serve sample-code-flow-azure-b2c --ssl -o",
     "start-sample-code-flow-azuread": "ng serve  sample-code-flow-azuread --ssl -o",
     "start-sample-implicit-flow-google": "ng serve sample-implicit-flow-google --ssl -o",

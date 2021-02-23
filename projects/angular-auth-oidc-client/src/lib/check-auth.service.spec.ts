@@ -18,7 +18,7 @@ import { SilentRenewService } from './iframe/silent-renew.service';
 import { SilentRenewServiceMock } from './iframe/silent-renew.service-mock';
 import { LoggerService } from './logging/logger.service';
 import { LoggerServiceMock } from './logging/logger.service-mock';
-import { PopUpService } from './login/popup.service';
+import { PopUpService } from './login/popup/popup.service';
 import { UserService } from './userData/user-service';
 
 describe('CheckAuthService', () => {

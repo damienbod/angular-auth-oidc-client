@@ -18,7 +18,7 @@ export class LoggerService {
     }
   }
 
-  logWarning(message: any, ...args: string[]) {
+  logWarning(message: any, ...args: any[]) {
     if (!this.logLevelIsSet()) {
       return;
     }
@@ -38,7 +38,7 @@ export class LoggerService {
     }
   }
 
-  logDebug(message: any, ...args: string[]) {
+  logDebug(message: any, ...args: any[]) {
     if (!this.logLevelIsSet()) {
       return;
     }

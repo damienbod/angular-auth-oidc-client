@@ -8,4 +8,5 @@ export interface AuthWellKnownEndpoints {
   checkSessionIframe?: string;
   revocationEndpoint?: string;
   introspectionEndpoint?: string;
+  parEndpoint?: string;
 }

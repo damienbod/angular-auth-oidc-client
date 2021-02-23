@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { LoggerService } from '../logging/logger.service';
-import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
+import { LoggerService } from '../../logging/logger.service';
+import { FlowHelper } from '../../utils/flowHelper/flow-helper.service';
 
 @Injectable()
 export class ResponseTypeValidationService {

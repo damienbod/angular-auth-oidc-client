@@ -94,7 +94,6 @@ describe('RefreshTokenCallbackHandlerService', () => {
 
         (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
           error: (err) => {
-            console.log(err);
             expect(err).toBeTruthy();
           },
         });

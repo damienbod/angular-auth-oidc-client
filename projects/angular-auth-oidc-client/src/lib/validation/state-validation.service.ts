@@ -249,7 +249,7 @@ export class StateValidationService {
     return true;
   }
 
-  private handleSuccessfulValidation() {
+  private handleSuccessfulValidation(): void {
     this.storagePersistanceService.write('authNonce', '');
 
     if (this.configurationProvider.openIDConfiguration.autoCleanStateAfterAuthentication) {
@@ -258,7 +258,7 @@ export class StateValidationService {
     this.loggerService.logDebug('AuthorizedCallback token(s) validated, continue');
   }
 
-  private handleUnsuccessfulValidation() {
+  private handleUnsuccessfulValidation(): void {
     this.storagePersistanceService.write('authNonce', '');
 
     if (this.configurationProvider.openIDConfiguration.autoCleanStateAfterAuthentication) {

@@ -43,4 +43,12 @@ export class UrlServiceMock {
   createBodyForCodeFlowRefreshTokensRequest(refreshtoken: string): string {
     return '';
   }
+
+  createBodyForParCodeFlowRequest(customParamsRequest?: { [key: string]: string | number | boolean }): string {
+    return '';
+  }
+
+  getAuthorizeParUrl(request_uri: string): string {
+    return '';
+  }
 }

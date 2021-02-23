@@ -542,103 +542,6 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createEndSessionUrl create url when all parameters given', () => {
-      const config = {
-        stsServer: 'https://localhost:5001',
-        redirectUrl: 'https://localhost:44386',
-        clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
-        responseType: 'id_token token',
-        scope: 'openid email profile',
-        postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
-      };
-
-      configurationProvider.setConfig(config);
-      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
-        endSessionEndpoint: 'http://example',
-      });
-
-      const value = service.createEndSessionUrl('mytoken');
-
-      const expectValue = 'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
-
-      expect(value).toEqual(expectValue);
-    });
-
-    it('createEndSessionUrl create url without postLogoutRedirectUri when not given', () => {
-      const config = {
-        stsServer: 'https://localhost:5001',
-        redirectUrl: 'https://localhost:44386',
-        clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
-        responseType: 'id_token token',
-        scope: 'openid email profile',
-        postLogoutRedirectUri: null,
-      };
-
-      configurationProvider.setConfig(config);
-      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
-        endSessionEndpoint: 'http://example',
-      });
-
-      const value = service.createEndSessionUrl('mytoken');
-
-      const expectValue = 'http://example?id_token_hint=mytoken';
-
-      expect(value).toEqual(expectValue);
-    });
-
-    it('createEndSessionUrl returns null if no wellknownEndpoints given', () => {
-      configurationProvider.setConfig({});
-
-      const value = service.createEndSessionUrl('mytoken');
-
-      const expectValue = null;
-
-      expect(value).toEqual(expectValue);
-    });
-
-    it('createEndSessionUrl returns null if no wellknownEndpoints.endSessionEndpoint given', () => {
-      configurationProvider.setConfig({});
-      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
-        endSessionEndpoint: null,
-      });
-
-      const value = service.createEndSessionUrl('mytoken');
-
-      const expectValue = null;
-
-      expect(value).toEqual(expectValue);
-    });
-
-    it('createAuthorizeUrl default', () => {
-      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-      config.redirectUrl = 'https://localhost:44386';
-      config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-      config.responseType = 'id_token token';
-      config.scope = 'openid email profile';
-
-      configurationProvider.setConfig(config);
-      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
-        authorizationEndpoint: 'http://example',
-      });
-
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        config.redirectUrl,
-        'nonce',
-        'state'
-      );
-
-      const expectValue =
-        'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
-        '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
-        '&response_type=id_token%20token' +
-        '&scope=openid%20email%20profile' +
-        '&nonce=nonce' +
-        '&state=state';
-
-      expect(value).toEqual(expectValue);
-    });
-
     // https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-reference-oidc
     it('createAuthorizeUrl with custom url like active-directory-b2c', () => {
       const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
@@ -939,12 +842,108 @@ describe('UrlService Tests', () => {
       expect(result).toBe(`grant_type=refresh_token&client_id=${clientId}&refresh_token=${refreshToken}`);
     });
 
-    it('returns null id clientId is falsy', () => {
+    it('returns correct url with custom params if custom params are passed', () => {
+      const clientId = 'clientId';
+      const refreshToken = 'refreshToken';
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId });
+      const result = service.createBodyForCodeFlowRefreshTokensRequest(refreshToken, { any: 'thing' });
+      expect(result).toBe(`grant_type=refresh_token&client_id=${clientId}&refresh_token=${refreshToken}&any=thing`);
+    });
+
+    it('returns null if clientId is falsy', () => {
       const clientId = '';
       const refreshToken = 'refreshToken';
       spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId });
       const result = service.createBodyForCodeFlowRefreshTokensRequest(refreshToken);
       expect(result).toBe(null);
+    });
+  });
+
+  describe('createBodyForParCodeFlowRequest', () => {
+    it('returns null redirectUrl is falsy', () => {
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ redirectUrl: '' });
+      const result = service.createBodyForParCodeFlowRequest();
+      expect(result).toBe(null);
+    });
+
+    it('returns basic url with no extras if properties are given', () => {
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+        clientId: 'testClientId',
+        responseType: 'testResponseType',
+        scope: 'testScope',
+        hdParam: null,
+        customParams: null,
+        redirectUrl: 'testRedirectUrl',
+      });
+      spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('testState');
+      spyOn(flowsDataService, 'createNonce').and.returnValue('testNonce');
+      spyOn(flowsDataService, 'createCodeVerifier').and.returnValue('testCodeVerifier');
+      spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue('testCodeChallenge');
+
+      const result = service.createBodyForParCodeFlowRequest();
+      expect(result).toBe(
+        `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256`
+      );
+    });
+
+    it('returns basic url with hdParam if properties are given', () => {
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+        clientId: 'testClientId',
+        responseType: 'testResponseType',
+        scope: 'testScope',
+        hdParam: 'testHdParam',
+        customParams: null,
+        redirectUrl: 'testRedirectUrl',
+      });
+      spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('testState');
+      spyOn(flowsDataService, 'createNonce').and.returnValue('testNonce');
+      spyOn(flowsDataService, 'createCodeVerifier').and.returnValue('testCodeVerifier');
+      spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue('testCodeChallenge');
+
+      const result = service.createBodyForParCodeFlowRequest();
+      expect(result).toBe(
+        `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam`
+      );
+    });
+
+    it('returns basic url with hdParam and custom params if properties are given', () => {
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+        clientId: 'testClientId',
+        responseType: 'testResponseType',
+        scope: 'testScope',
+        hdParam: 'testHdParam',
+        customParams: { any: 'thing' },
+        redirectUrl: 'testRedirectUrl',
+      });
+      spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('testState');
+      spyOn(flowsDataService, 'createNonce').and.returnValue('testNonce');
+      spyOn(flowsDataService, 'createCodeVerifier').and.returnValue('testCodeVerifier');
+      spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue('testCodeChallenge');
+
+      const result = service.createBodyForParCodeFlowRequest();
+      expect(result).toBe(
+        `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam&any=thing`
+      );
+    });
+
+    it('returns basic url with hdParam and custom params and passed cutom params if properties are given', () => {
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+        clientId: 'testClientId',
+        responseType: 'testResponseType',
+        scope: 'testScope',
+        hdParam: 'testHdParam',
+        customParams: { any: 'thing' },
+        redirectUrl: 'testRedirectUrl',
+      });
+      spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('testState');
+      spyOn(flowsDataService, 'createNonce').and.returnValue('testNonce');
+      spyOn(flowsDataService, 'createCodeVerifier').and.returnValue('testCodeVerifier');
+      spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue('testCodeChallenge');
+
+      const result = service.createBodyForParCodeFlowRequest({ any: 'otherThing' });
+      expect(result).toBe(
+        `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam&any=thing&any=otherThing`
+      );
     });
   });
 
@@ -1273,6 +1272,147 @@ describe('UrlService Tests', () => {
 
       const result = serviceAsAny.createUrlCodeFlowAuthorize();
       expect(result).toBe(null);
+    });
+  });
+
+  describe('createEndSessionUrl', () => {
+    it('createEndSessionUrl create url when all parameters given', () => {
+      const config = {
+        stsServer: 'https://localhost:5001',
+        redirectUrl: 'https://localhost:44386',
+        clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
+        responseType: 'id_token token',
+        scope: 'openid email profile',
+        postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
+      };
+
+      configurationProvider.setConfig(config);
+      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
+        endSessionEndpoint: 'http://example',
+      });
+
+      const value = service.createEndSessionUrl('mytoken');
+
+      const expectValue = 'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
+
+      expect(value).toEqual(expectValue);
+    });
+
+    it('createEndSessionUrl create url without postLogoutRedirectUri when not given', () => {
+      const config = {
+        stsServer: 'https://localhost:5001',
+        redirectUrl: 'https://localhost:44386',
+        clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
+        responseType: 'id_token token',
+        scope: 'openid email profile',
+        postLogoutRedirectUri: null,
+      };
+
+      configurationProvider.setConfig(config);
+      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
+        endSessionEndpoint: 'http://example',
+      });
+
+      const value = service.createEndSessionUrl('mytoken');
+
+      const expectValue = 'http://example?id_token_hint=mytoken';
+
+      expect(value).toEqual(expectValue);
+    });
+
+    it('createEndSessionUrl returns null if no wellknownEndpoints given', () => {
+      configurationProvider.setConfig({});
+
+      const value = service.createEndSessionUrl('mytoken');
+
+      const expectValue = null;
+
+      expect(value).toEqual(expectValue);
+    });
+
+    it('createEndSessionUrl returns null if no wellknownEndpoints.endSessionEndpoint given', () => {
+      configurationProvider.setConfig({});
+      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
+        endSessionEndpoint: null,
+      });
+
+      const value = service.createEndSessionUrl('mytoken');
+
+      const expectValue = null;
+
+      expect(value).toEqual(expectValue);
+    });
+
+    it('createAuthorizeUrl default', () => {
+      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      config.redirectUrl = 'https://localhost:44386';
+      config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+      config.responseType = 'id_token token';
+      config.scope = 'openid email profile';
+
+      configurationProvider.setConfig(config);
+      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
+        authorizationEndpoint: 'http://example',
+      });
+
+      const value = (service as any).createAuthorizeUrl(
+        '', // Implicit Flow
+        config.redirectUrl,
+        'nonce',
+        'state'
+      );
+
+      const expectValue =
+        'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
+        '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
+        '&response_type=id_token%20token' +
+        '&scope=openid%20email%20profile' +
+        '&nonce=nonce' +
+        '&state=state';
+
+      expect(value).toEqual(expectValue);
+    });
+  });
+
+  describe('getAuthorizeParUrl', () => {
+    it('returns null if authWellKnownEndPoints is undefined', () => {
+      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+
+      const result = service.getAuthorizeParUrl('');
+
+      expect(result).toBe(null);
+    });
+
+    it('returns null if authWellKnownEndPoints-authorizationEndpoint is undefined', () => {
+      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
+        notAuthorizationEndpoint: 'anything',
+      });
+
+      const result = service.getAuthorizeParUrl('');
+
+      expect(result).toBe(null);
+    });
+
+    it('returns null if configurationProvider.openIDConfiguration has no clientId', () => {
+      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
+        authorizationEndpoint: 'anything',
+      });
+
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId: null });
+      const result = service.getAuthorizeParUrl('');
+
+      expect(result).toBe(null);
+    });
+
+    it('returns correct url when everything is given', () => {
+      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
+        authorizationEndpoint: 'anything',
+      });
+
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId: 'clientId' });
+      const result = service.getAuthorizeParUrl('passedRequestUri');
+
+      expect(result).toBe('anything?request_uri=passedRequestUri&client_id=clientId');
     });
   });
 });
