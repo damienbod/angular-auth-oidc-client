@@ -11,7 +11,11 @@ import { StandardLoginService } from './standard/standard-login.service';
 import { StandardLoginServiceMock } from './standard/standard-login.service-mock';
 
 describe('LoginService', () => {
-  let loginService: LoginService;
+  let service: LoginService;
+  let configurationProvider: ConfigurationProvider;
+  let parLoginService: ParLoginService;
+  let popUpLoginService: PopUpLoginService;
+  let standardLoginService: StandardLoginService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -27,10 +31,62 @@ describe('LoginService', () => {
   });
 
   beforeEach(() => {
-    loginService = TestBed.inject(LoginService);
+    service = TestBed.inject(LoginService);
+    configurationProvider = TestBed.inject(ConfigurationProvider);
+    parLoginService = TestBed.inject(ParLoginService);
+    popUpLoginService = TestBed.inject(PopUpLoginService);
+    standardLoginService = TestBed.inject(StandardLoginService);
   });
 
   it('should create', () => {
-    expect(loginService).toBeTruthy();
+    expect(service).toBeTruthy();
+  });
+
+  describe('login', () => {
+    it('calls parLoginService loginpar if usePushedAuthorisationRequests is true', () => {
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ usePushedAuthorisationRequests: true });
+      const loginParSpy = spyOn(parLoginService, 'loginPar');
+      const standardLoginSpy = spyOn(standardLoginService, 'loginStandard');
+
+      service.login();
+
+      expect(loginParSpy).toHaveBeenCalledTimes(1);
+      expect(standardLoginSpy).not.toHaveBeenCalled();
+    });
+
+    it('calls standardLoginService loginstandard if usePushedAuthorisationRequests is false', () => {
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ usePushedAuthorisationRequests: false });
+      const loginParSpy = spyOn(parLoginService, 'loginPar');
+      const standardLoginSpy = spyOn(standardLoginService, 'loginStandard');
+
+      service.login();
+
+      expect(loginParSpy).not.toHaveBeenCalled();
+      expect(standardLoginSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('loginWithPopUp', () => {
+    it('calls parLoginService loginWithPopUpPar if usePushedAuthorisationRequests is true', () => {
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ usePushedAuthorisationRequests: true });
+      const loginParSpy = spyOn(parLoginService, 'loginWithPopUpPar');
+      const loginWithPopUpStandardSpy = spyOn(popUpLoginService, 'loginWithPopUpStandard');
+
+      service.loginWithPopUp();
+
+      expect(loginParSpy).toHaveBeenCalledTimes(1);
+      expect(loginWithPopUpStandardSpy).not.toHaveBeenCalled();
+    });
+
+    it('calls standardLoginService loginstandard if usePushedAuthorisationRequests is false', () => {
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ usePushedAuthorisationRequests: false });
+      const loginParSpy = spyOn(parLoginService, 'loginPar');
+      const loginWithPopUpStandardSpy = spyOn(popUpLoginService, 'loginWithPopUpStandard');
+
+      service.loginWithPopUp();
+
+      expect(loginParSpy).not.toHaveBeenCalled();
+      expect(loginWithPopUpStandardSpy).toHaveBeenCalledTimes(1);
+    });
   });
 });

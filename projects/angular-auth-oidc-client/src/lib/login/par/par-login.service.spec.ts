@@ -363,7 +363,6 @@ describe('ParLoginService', () => {
         const spy = spyOn(popupService, 'openPopUp');
 
         service.loginWithPopUpPar().subscribe((result) => {
-          console.log('@@@@@', result);
           expect(spy).toHaveBeenCalledOnceWith('some-par-url', undefined);
         });
       })
