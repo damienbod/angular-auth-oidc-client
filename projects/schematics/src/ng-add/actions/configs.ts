@@ -60,7 +60,6 @@ const AZURE_AD_REFRESH_TOKENS = `{
             responseType: 'code',
             silentRenew: true,
             useRefreshToken: true,
-            logLevel: LogLevel.Debug,
             ignoreNonceAfterRefresh: true,
             // customParams: {
             //  prompt: 'consent', // login, consent
