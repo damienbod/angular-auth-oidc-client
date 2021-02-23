@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, take } from 'rxjs/operators';
 import { AuthStateService } from '../../authState/auth-state.service';
 import { CheckAuthService } from '../../check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known.service';
@@ -109,7 +109,7 @@ export class ParLoginService {
 
         this.popupService.openPopUp(url, popupOptions);
 
-        return this.popupService.receivedUrl$.pipe(
+        return this.popupService.receivedUrl$.pipe(take(1),
           switchMap((receivedUrl: string) => this.checkAuthService.checkAuth(receivedUrl)),
           map((isAuthenticated) => ({
             isAuthenticated,
