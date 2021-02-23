@@ -186,7 +186,7 @@ export class UrlService {
     return oneLineTrim`${dataForBody}&redirect_uri=${redirectUrl}`;
   }
 
-  createBodyForCodeFlowRefreshTokensRequest(refreshtoken: string, customParams?: { [key: string]: string | number | boolean }): string {
+  createBodyForCodeFlowRefreshTokensRequest(refreshToken: string, customParams?: { [key: string]: string | number | boolean }): string {
     const clientId = this.getClientId();
 
     if (!clientId) {
@@ -195,14 +195,11 @@ export class UrlService {
 
     let dataForBody = oneLineTrim`grant_type=refresh_token
             &client_id=${clientId}
-            &refresh_token=${refreshtoken}`;
+            &refresh_token=${refreshToken}`;
 
     if (customParams) {
-      const customParamsToAdd = { ...(customParams || {}) };
-
-      for (const [key, value] of Object.entries(customParamsToAdd)) {
-        dataForBody = dataForBody.concat(`&${key}=${value.toString()}`);
-      }
+      const customParamText = this.composeCustomParams({ ...customParams });
+      dataForBody = `${dataForBody}${customParamText}`;
     }
 
     return dataForBody;
@@ -239,19 +236,13 @@ export class UrlService {
     }
 
     if (customParams) {
-      const customParamsToAdd = { ...(customParams || {}) };
-
-      for (const [key, value] of Object.entries(customParamsToAdd)) {
-        dataForBody = dataForBody.concat(`&${key}=${value.toString()}`);
-      }
+      const customParamText = this.composeCustomParams({ ...customParams });
+      dataForBody = `${dataForBody}${customParamText}`;
     }
 
     if (customParamsRequest) {
-      const customParamsRequestToAdd = { ...(customParamsRequest || {}) };
-
-      for (const [key, value] of Object.entries(customParamsRequestToAdd)) {
-        dataForBody = dataForBody.concat(`&${key}=${value.toString()}`);
-      }
+      const customParamText = this.composeCustomParams({ ...customParamsRequest });
+      dataForBody = `${dataForBody}${customParamText}`;
     }
 
     return dataForBody;
@@ -318,10 +309,14 @@ export class UrlService {
       params = params.append('hd', hdParam);
     }
 
-    if (customParams || customRequestParams) {
-      const customParamsToAdd = { ...(customParams || {}), ...(customRequestParams || {}) };
+    if (customParams) {
+      for (const [key, value] of Object.entries({ ...customParams })) {
+        params = params.append(key, value.toString());
+      }
+    }
 
-      for (const [key, value] of Object.entries(customParamsToAdd)) {
+    if (customRequestParams) {
+      for (const [key, value] of Object.entries({ ...customRequestParams })) {
         params = params.append(key, value.toString());
       }
     }
@@ -459,5 +454,15 @@ export class UrlService {
     }
 
     return clientId;
+  }
+
+  private composeCustomParams(customParams: { [key: string]: string | number | boolean }) {
+    let customParamText = '';
+
+    for (const [key, value] of Object.entries(customParams)) {
+      customParamText = customParamText.concat(`&${key}=${value.toString()}`);
+    }
+
+    return customParamText;
   }
 }
