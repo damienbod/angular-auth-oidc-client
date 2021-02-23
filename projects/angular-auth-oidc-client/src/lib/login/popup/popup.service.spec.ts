@@ -41,10 +41,10 @@ describe('PopUpService', () => {
       'emits when internal subject is called',
       waitForAsync(() => {
         popUpService.receivedUrl$.subscribe((result) => {
-          expect(result).toBe(true);
+          expect(result).toBe('some-url');
         });
 
-        (popUpService as any).receivedUrlInternal$.next(true);
+        (popUpService as any).receivedUrlInternal$.next('some-url');
       })
     );
   });

@@ -1,25 +1,25 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { PopupOptions } from './popup-options';
 
 @Injectable({ providedIn: 'root' })
 export class PopUpService {
   private popUp: Window;
-  private receivedUrlInternal$ = new Subject();
+  private receivedUrlInternal$ = new Subject<string>();
 
-  get receivedUrl$() {
+  get receivedUrl$(): Observable<string> {
     return this.receivedUrlInternal$.asObservable();
   }
 
-  isCurrentlyInPopup() {
+  isCurrentlyInPopup(): boolean {
     return !!window.opener && window.opener !== window;
   }
 
-  openPopUp(url: string, popupOptions?: PopupOptions) {
+  openPopUp(url: string, popupOptions?: PopupOptions): void {
     const optionsToPass = this.getOptions(popupOptions);
     this.popUp = window.open(url, '_blank', optionsToPass);
 
-    const listener = (event: MessageEvent) => {
+    const listener = (event: MessageEvent): void => {
       if (!event?.data || typeof event.data !== 'string') {
         return;
       }
@@ -32,13 +32,13 @@ export class PopUpService {
     window.addEventListener('message', listener, false);
   }
 
-  sendMessageToMainWindow(url: string) {
+  sendMessageToMainWindow(url: string): void {
     if (window.opener) {
       this.sendMessage(url, window.location.href);
     }
   }
 
-  private cleanUp(listener: any) {
+  private cleanUp(listener: any): void {
     window.removeEventListener('message', listener, false);
 
     if (this.popUp) {
@@ -47,11 +47,11 @@ export class PopUpService {
     }
   }
 
-  private sendMessage(url: string, href: string) {
+  private sendMessage(url: string, href: string): void {
     window.opener.postMessage(url, href);
   }
 
-  private getOptions(popupOptions?: PopupOptions) {
+  private getOptions(popupOptions?: PopupOptions): string {
     const popupDefaultOptions = { width: 500, height: 500, left: 50, top: 50 };
 
     const options = { ...popupDefaultOptions, ...(popupOptions || {}) };

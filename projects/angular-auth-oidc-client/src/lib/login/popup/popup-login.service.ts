@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { AuthStateService } from '../../authState/auth-state.service';
 import { CheckAuthService } from '../../check-auth.service';
@@ -8,6 +9,7 @@ import { LoggerService } from '../../logging/logger.service';
 import { UserService } from '../../userData/user-service';
 import { UrlService } from '../../utils/url/url.service';
 import { AuthOptions } from '../auth-options';
+import { LoginResponse } from '../login-response';
 import { PopupOptions } from '../popup/popup-options';
 import { PopUpService } from '../popup/popup.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
@@ -26,17 +28,19 @@ export class PopUpLoginService {
     private authStateService: AuthStateService
   ) {}
 
-  loginWithPopUpStandard(authOptions?: AuthOptions, popupOptions?: PopupOptions) {
+  loginWithPopUpStandard(authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
     if (!this.responseTypeValidationService.hasConfigValidResponseType()) {
-      this.loggerService.logError('Invalid response type!');
-      return;
+      const errorMessage = 'Invalid response type!';
+      this.loggerService.logError(errorMessage);
+      return throwError(errorMessage);
     }
 
     const authWellknownEndpoint = this.configurationProvider.openIDConfiguration.authWellknownEndpoint;
 
     if (!authWellknownEndpoint) {
-      this.loggerService.logError('no authWellknownEndpoint given!');
-      return;
+      const errorMessage = 'no authWellknownEndpoint given!';
+      this.loggerService.logError(errorMessage);
+      return throwError(errorMessage);
     }
 
     this.loggerService.logDebug('BEGIN Authorize OIDC Flow with popup, no auth data');

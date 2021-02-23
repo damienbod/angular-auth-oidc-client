@@ -47,4 +47,8 @@ export class UrlServiceMock {
   createBodyForParCodeFlowRequest(customParamsRequest?: { [key: string]: string | number | boolean }): string {
     return '';
   }
+
+  getAuthorizeParUrl(request_uri: string): string {
+    return '';
+  }
 }

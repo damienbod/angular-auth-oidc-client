@@ -36,9 +36,8 @@ export class UrlService {
     return results === null ? '' : decodeURIComponent(results[1]);
   }
 
-  isCallbackFromSts(currentUrl: string) {
-    const anyParameterIsGiven = CALLBACK_PARAMS_TO_CHECK.some((x) => !!this.getUrlParameter(currentUrl, x));
-    return anyParameterIsGiven;
+  isCallbackFromSts(currentUrl: string): boolean {
+    return CALLBACK_PARAMS_TO_CHECK.some((x) => !!this.getUrlParameter(currentUrl, x));
   }
 
   getRefreshSessionSilentRenewUrl(customParams?: { [key: string]: string | number | boolean }): string {
@@ -83,6 +82,7 @@ export class UrlService {
     this.loggerService.logError('authWellKnownEndpoints is undefined');
     return null;
   }
+
   getAuthorizeUrl(customParams?: { [key: string]: string | number | boolean }): string {
     if (this.flowHelper.isCurrentFlowCodeFlow()) {
       return this.createUrlCodeFlowAuthorize(customParams);
@@ -91,7 +91,7 @@ export class UrlService {
     return this.createUrlImplicitFlowAuthorize(customParams) || '';
   }
 
-  createEndSessionUrl(idTokenHint: string) {
+  createEndSessionUrl(idTokenHint: string): string {
     const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
     const endSessionEndpoint = authWellKnownEndPoints?.endSessionEndpoint;
 
@@ -118,7 +118,7 @@ export class UrlService {
     return `${authorizationEndsessionUrl}?${params}`;
   }
 
-  createRevocationEndpointBodyAccessToken(token: any) {
+  createRevocationEndpointBodyAccessToken(token: any): string {
     const clientId = this.getClientId();
 
     if (!clientId) {
@@ -128,7 +128,7 @@ export class UrlService {
     return `client_id=${clientId}&token=${token}&token_type_hint=access_token`;
   }
 
-  createRevocationEndpointBodyRefreshToken(token: any) {
+  createRevocationEndpointBodyRefreshToken(token: any): string {
     const clientId = this.getClientId();
 
     if (!clientId) {
@@ -138,7 +138,7 @@ export class UrlService {
     return `client_id=${clientId}&token=${token}&token_type_hint=refresh_token`;
   }
 
-  getRevocationEndpointUrl() {
+  getRevocationEndpointUrl(): string {
     const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
     const revocationEndpoint = authWellKnownEndPoints?.revocationEndpoint;
 
@@ -418,7 +418,7 @@ export class UrlService {
     return null;
   }
 
-  private getRedirectUrl() {
+  private getRedirectUrl(): string {
     const redirectUrl = this.configurationProvider.openIDConfiguration?.redirectUrl;
 
     if (!redirectUrl) {
@@ -429,7 +429,7 @@ export class UrlService {
     return redirectUrl;
   }
 
-  private getSilentRenewUrl() {
+  private getSilentRenewUrl(): string {
     const silentRenewUrl = this.configurationProvider.openIDConfiguration?.silentRenewUrl;
 
     if (!silentRenewUrl) {
@@ -440,7 +440,7 @@ export class UrlService {
     return silentRenewUrl;
   }
 
-  private getPostLogoutRedirectUrl() {
+  private getPostLogoutRedirectUrl(): string {
     const postLogoutRedirectUri = this.configurationProvider.openIDConfiguration?.postLogoutRedirectUri;
     if (!postLogoutRedirectUri) {
       this.loggerService.logError(`could not get postLogoutRedirectUri, was: `, postLogoutRedirectUri);
@@ -450,7 +450,7 @@ export class UrlService {
     return postLogoutRedirectUri;
   }
 
-  private getClientId() {
+  private getClientId(): string {
     const clientId = this.configurationProvider.openIDConfiguration?.clientId;
     if (!clientId) {
       this.loggerService.logError(`could not get clientId, was: `, clientId);

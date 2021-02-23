@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { ConfigurationProvider } from '../config/config.provider';
 import { AuthOptions } from './auth-options';
+import { LoginResponse } from './login-response';
 import { ParLoginService } from './par/par-login.service';
 import { PopUpLoginService } from './popup/popup-login.service';
 import { PopupOptions } from './popup/popup-options';
@@ -15,7 +17,7 @@ export class LoginService {
     private standardLoginService: StandardLoginService
   ) {}
 
-  login(authOptions?: AuthOptions) {
+  login(authOptions?: AuthOptions): void {
     const usePushedAuthorisationRequests = this.configurationProvider.openIDConfiguration.usePushedAuthorisationRequests;
 
     if (usePushedAuthorisationRequests) {
@@ -25,7 +27,7 @@ export class LoginService {
     }
   }
 
-  loginWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions) {
+  loginWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
     const usePushedAuthorisationRequests = this.configurationProvider.openIDConfiguration.usePushedAuthorisationRequests;
 
     if (usePushedAuthorisationRequests) {

@@ -76,10 +76,12 @@ describe('PopUpLoginService', () => {
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(false);
         const loggerSpy = spyOn(loggerService, 'logError');
 
-        const result = popUpLoginService.loginWithPopUpStandard();
-
-        expect(result).toBeUndefined();
-        expect(loggerSpy).toHaveBeenCalled();
+        popUpLoginService.loginWithPopUpStandard().subscribe({
+          error: (err) => {
+            expect(loggerSpy).toHaveBeenCalled();
+            expect(err).toBe('Invalid response type!');
+          },
+        });
       })
     );
 
@@ -90,11 +92,13 @@ describe('PopUpLoginService', () => {
         const spy = spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         const loggerSpy = spyOn(loggerService, 'logError');
 
-        const result = popUpLoginService.loginWithPopUpStandard();
-
-        expect(result).toBeUndefined();
-        expect(spy).toHaveBeenCalled();
-        expect(loggerSpy).toHaveBeenCalled();
+        popUpLoginService.loginWithPopUpStandard().subscribe({
+          error: (err) => {
+            expect(spy).toHaveBeenCalled();
+            expect(loggerSpy).toHaveBeenCalled();
+            expect(err).toBe('no authWellknownEndpoint given!');
+          },
+        });
       })
     );
 

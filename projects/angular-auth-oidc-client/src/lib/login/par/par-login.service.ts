@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { AuthStateService } from '../../authState/auth-state.service';
 import { CheckAuthService } from '../../check-auth.service';
@@ -9,6 +10,7 @@ import { UserService } from '../../userData/user-service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
 import { AuthOptions } from '../auth-options';
+import { LoginResponse } from '../login-response';
 import { PopupOptions } from '../popup/popup-options';
 import { PopUpService } from '../popup/popup.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
@@ -31,7 +33,7 @@ export class ParLoginService {
     private parService: ParService
   ) {}
 
-  loginPar(authOptions?: AuthOptions) {
+  loginPar(authOptions?: AuthOptions): void {
     if (!this.responseTypeValidationService.hasConfigValidResponseType()) {
       this.loggerService.logError('Invalid response type!');
       return;
@@ -59,7 +61,7 @@ export class ParLoginService {
         this.loggerService.logDebug('par request url: ', url);
 
         if (!url) {
-          this.loggerService.logError(`Could not create url with param ${response.requestUri}: 'url'`);
+          this.loggerService.logError(`Could not create url with param ${response.requestUri}: '${url}'`);
           return;
         }
 
@@ -71,17 +73,19 @@ export class ParLoginService {
       });
   }
 
-  loginWithPopUpPar(authOptions?: AuthOptions, popupOptions?: PopupOptions) {
+  loginWithPopUpPar(authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
     if (!this.responseTypeValidationService.hasConfigValidResponseType()) {
-      this.loggerService.logError('Invalid response type!');
-      return;
+      const errorMessage = 'Invalid response type!';
+      this.loggerService.logError(errorMessage);
+      return throwError(errorMessage);
     }
 
     const authWellknownEndpoint = this.configurationProvider.openIDConfiguration.authWellknownEndpoint;
 
     if (!authWellknownEndpoint) {
-      this.loggerService.logError('no authWellknownEndpoint given!');
-      return;
+      const errorMessage = 'no authWellknownEndpoint given!';
+      this.loggerService.logError(errorMessage);
+      return throwError(errorMessage);
     }
 
     this.loggerService.logDebug('BEGIN Authorize OIDC Flow with popup, no auth data');
@@ -98,8 +102,9 @@ export class ParLoginService {
         this.loggerService.logDebug('par request url: ', url);
 
         if (!url) {
-          this.loggerService.logError(`Could not create url with param ${response.requestUri}: 'url'`);
-          return;
+          const errorMessage = `Could not create url with param ${response.requestUri}: 'url'`;
+          this.loggerService.logError(errorMessage);
+          return throwError(errorMessage);
         }
 
         this.popupService.openPopUp(url, popupOptions);
