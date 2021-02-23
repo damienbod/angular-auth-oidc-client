@@ -67,7 +67,7 @@ function getConfig(flowType: FlowType, stsUrlOrTenantId: string) {
       break;
     }
 
-     case FlowType.OAuthPushauthorizationrequestsusingrefreshtokens: {
+     case FlowType.OAuthPushAuthorizationRequestsUsingRefreshTokens: {
       config = OAUTH_PAR;
       break;
     }
