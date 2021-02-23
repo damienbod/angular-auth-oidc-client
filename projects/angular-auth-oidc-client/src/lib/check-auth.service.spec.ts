@@ -19,6 +19,7 @@ import { SilentRenewServiceMock } from './iframe/silent-renew.service-mock';
 import { LoggerService } from './logging/logger.service';
 import { LoggerServiceMock } from './logging/logger.service-mock';
 import { PopUpService } from './login/popup/popup.service';
+import { PopUpServiceMock } from './login/popup/popup.service-mock';
 import { UserService } from './userData/user-service';
 
 describe('CheckAuthService', () => {
@@ -31,6 +32,7 @@ describe('CheckAuthService', () => {
   let silentRenewService: SilentRenewService;
   let periodicallyTokenCheckService: PeriodicallyTokenCheckService;
   let refreshSessionService: RefreshSessionService;
+  let popUpService: PopUpService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -45,7 +47,7 @@ describe('CheckAuthService', () => {
         { provide: CallbackService, useClass: CallbackServiceMock },
         { provide: RefreshSessionService, useClass: RefreshSessionServiceMock },
         { provide: PeriodicallyTokenCheckService, useClass: PeriodicallyTokenCheckServiceMock },
-        PopUpService,
+        { provide: PopUpService, useClass: PopUpServiceMock },
       ],
     });
   });
@@ -60,6 +62,7 @@ describe('CheckAuthService', () => {
     callBackService = TestBed.inject(CallbackService);
     silentRenewService = TestBed.inject(SilentRenewService);
     periodicallyTokenCheckService = TestBed.inject(PeriodicallyTokenCheckService);
+    popUpService = TestBed.inject(PopUpService);
   });
 
   it('should create', () => {
@@ -72,6 +75,20 @@ describe('CheckAuthService', () => {
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasValidConfig').and.returnValue(false);
         checkAuthService.checkAuth().subscribe((result) => expect(result).toBeFalse());
+      })
+    );
+
+    it(
+      'returns null and sendMessageToMainWindow if currently in a popup',
+      waitForAsync(() => {
+        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+        spyOn(popUpService, 'isCurrentlyInPopup').and.returnValue(true);
+        const popupSpy = spyOn(popUpService, 'sendMessageToMainWindow');
+        checkAuthService.checkAuth().subscribe((result) => {
+          expect(result).toBeNull();
+          expect(popupSpy).toHaveBeenCalled();
+        });
       })
     );
 

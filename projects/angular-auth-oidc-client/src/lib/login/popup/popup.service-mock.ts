@@ -12,6 +12,10 @@ export class PopUpServiceMock {
     return true;
   }
 
+  isCurrentlyInPopup(): boolean {
+    return false;
+  }
+
   openPopUp(url: string, popupOptions?: PopupOptions) {}
 
   sendMessageToMainWindow(url: string) {}
