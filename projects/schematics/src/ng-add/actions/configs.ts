@@ -61,9 +61,9 @@ const AZURE_AD_REFRESH_TOKENS = `{
             silentRenew: true,
             useRefreshToken: true,
             ignoreNonceAfterRefresh: true,
-            // customParams: {
-            //  prompt: 'consent', // login, consent
-            // },
+            customParams: {
+              prompt: 'consent', // login, consent
+            },
     }`;
 
 const AUTH_0 = `{
