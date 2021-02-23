@@ -50,6 +50,22 @@ const AZURE_AD_REFRESH_TOKENS = `{
             autoUserinfo: false,
     }`;
 
+    const OAUTH_PAR = `{
+            stsServer: '<stsUrlOrTenantId>',
+            redirectUrl: window.location.origin,
+            postLogoutRedirectUri: window.location.origin,
+            clientId: 'please-enter-clientId',
+            usePushedAuthorisationRequests: true,
+            scope: 'please-enter-scopes', // 'openid profile offline_access ' + your scopes
+            responseType: 'code',
+            silentRenew: true,
+            useRefreshToken: true,
+            ignoreNonceAfterRefresh: true,
+            customParams: {
+              prompt: 'consent', // login, consent
+            },
+    }`;
+
 const AUTH_0 = `{
             stsServer: '<stsUrlOrTenantId>',
             redirectUrl: window.location.origin,
@@ -71,4 +87,4 @@ const OIDC_PLAIN = `{
             renewTimeBeforeTokenExpiresInSeconds: 10,
         }`;
 
-export { DEFAULT_CONFIG, AZURE_AD_SILENT_RENEW, IFRAME_SILENT_RENEW, AZURE_AD_REFRESH_TOKENS, OIDC_PLAIN, AUTH_0 };
+export { DEFAULT_CONFIG, AZURE_AD_SILENT_RENEW, IFRAME_SILENT_RENEW, AZURE_AD_REFRESH_TOKENS, OIDC_PLAIN, AUTH_0, OAUTH_PAR };
