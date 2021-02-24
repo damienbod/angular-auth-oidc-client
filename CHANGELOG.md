@@ -1,11 +1,14 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
-### 2021-02-23 Version 11.6.0
+### 2021-02-24 Version 11.6.0
 
 - Added support for OAuth Pushed authorisation requests (PAR)
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/978)
 - Added Pushed authorisation requests (PAR) example
 - Added OAuth Pushed authorisation requests (PAR) template using schematics
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/979)
+- unsubscribe receivedUrl$ prevents multiple "/token" request
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/981)
 
 ### 2021-02-13 Version 11.5.1
 
