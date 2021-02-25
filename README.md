@@ -19,6 +19,8 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 - Implements OIDC validation as specified, complete client side validation for REQUIRED features
 - [Supports OpenID Connect Implicit Flow](http://openid.net/specs/openid-connect-implicit-1_0.html)
 - [OpenID Connect Session Management 1.0](http://openid.net/specs/openid-connect-session-1_0.html)
+- [RFC7009 - OAuth 2.0 Token Revocation](https://tools.ietf.org/html/rfc7009)
+- [RFC7636 - Proof Key for Code Exchange (PKCE)](https://tools.ietf.org/html/rfc7636)
 - [OAuth 2.0 Pushed authorisation requests (PAR) draft](https://tools.ietf.org/html/draft-ietf-oauth-par-06)
 - Samples for most of the common use cases
 
