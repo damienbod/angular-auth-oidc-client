@@ -16,10 +16,8 @@ export class AppComponent implements OnInit {
 
       .subscribe((isAuthenticated) => {
         if (!isAuthenticated) {
-          if ('/autologin' !== window.location.pathname) {
-            this.write('redirect', window.location.pathname);
-            this.router.navigate(['/autologin']);
-          }
+          this.write('redirect', window.location.pathname);
+          this.oidcSecurityService.authorize();
         }
         if (isAuthenticated) {
           this.navigateToStoredEndpoint();
@@ -43,29 +41,11 @@ export class AppComponent implements OnInit {
   }
 
   private navigateToStoredEndpoint() {
-    const path = this.read('redirect');
-
-    if (this.router.url === path) {
-      return;
-    }
-
-    if (path.toString().includes('/unauthorized')) {
-      this.router.navigate(['/']);
-    } else {
-      this.router.navigate([path]);
-    }
-  }
-
-  private read(key: string): any {
-    const data = localStorage.getItem(key);
-    if (data) {
-      return JSON.parse(data);
-    }
-
-    return;
+    const path = localStorage.getItem('redirect');
+    this.router.navigate([path]);
   }
 
   private write(key: string, value: any): void {
-    localStorage.setItem(key, JSON.stringify(value));
+    localStorage.setItem(key, value);
   }
 }
