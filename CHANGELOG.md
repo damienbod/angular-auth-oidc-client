@@ -3,7 +3,7 @@
 ### 2021-02-27 Version 11.6.1
 
 - Added AutoLoginGuard
-  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/978)
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/987)
 - Updated Azure AD, Azure B2C templates to prompt for select_account (problem with multiple accounts)
 
 ### 2021-02-24 Version 11.6.0
