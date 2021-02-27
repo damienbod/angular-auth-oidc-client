@@ -94,7 +94,7 @@ describe('ImplicitFlowCallbackHandlerService', () => {
     );
 
     it(
-      'uses window location hash if no has is passed',
+      'uses window location hash if no hash is passed',
       waitForAsync(() => {
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
         const expectedCallbackContext = {
