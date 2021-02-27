@@ -3,6 +3,7 @@
 - [Public Events](#public-events)
 - [Custom Storage](#custom-storage)
 - [Custom parameters](#custom-parameters)
+- [Auto Login](#auto-login)
 - [Using the OIDC package in a module or a Angular lib](#using-the-oidc-package-in-a-module-or-a-angular-lib)
 - [Delay the loading or pass an existing AuthWellKnownEndpoints config](#delay-the-loading-or-pass-an-existing-well-knownopenid-configuration-configuration)
 
@@ -87,6 +88,28 @@ Then provide the class in the module:
     ...
 })
 ```
+
+## Auto Login
+
+If you want to have your app being redirected to the sts automatically without the user clicking any login button you can use the `AutoLoginGuard` provided by the lib. Use it for all the routes you wnat automatic login to be enabled.
+
+If you are using auto login _make sure_ to _*not*_ call the `checkAuth()` method in your `app.component.ts`. This will be done by the guard automatically for you.
+
+Sample routes could be
+
+```typescript
+import { AutoLoginGuard } from 'angular-auth-oidc-client';
+
+const appRoutes: Routes = [
+  { path: '', pathMatch: 'full', redirectTo: 'home' },
+  { path: 'home', component: HomeComponent, canActivate: [AutoLoginGuard] },
+  { path: 'protected', component: ProtectedComponent, canActivate: [AutoLoginGuard] },
+  { path: 'forbidden', component: ForbiddenComponent, canActivate: [AutoLoginGuard] },
+  { path: 'unauthorized', component: UnauthorizedComponent },
+];
+```
+
+[src code](../projects/sample-code-flow-auto-login)
 
 ## Custom parameters
 
