@@ -1,37 +1,46 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AuthorizationGuard implements CanActivate {
-  // , private router: Router
-  constructor(private oidcSecurityService: OidcSecurityService) {}
+  constructor(private oidcSecurityService: OidcSecurityService, private router: Router) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     return this.oidcSecurityService.checkAuth().pipe(
       map((isAuthorized: boolean) => {
         console.log('AuthorizationGuard, canActivate isAuthorized: ' + isAuthorized);
+        const storedRoute = this.read();
 
-        if (!isAuthorized) {
-          this.write('redirect', state.url);
-          this.oidcSecurityService.authorize();
-          return false;
+        if (isAuthorized) {
+          if (storedRoute) {
+            localStorage.removeItem('redirect');
+            console.log('@@@ navigation to', storedRoute);
+            this.router.navigate([storedRoute]);
+          }
+          return true;
         }
 
-        return true;
+        if (!storedRoute) {
+          console.log('@@@ writing to', storedRoute);
+          this.write(state.url);
+        }
+
+        this.oidcSecurityService.authorize();
+        return false;
       })
     );
   }
 
-  private write(key: string, value: any): void {
-    localStorage.setItem(key, value);
+  private write(value: any): void {
+    localStorage.setItem('redirect', value);
   }
 
-  // private read() {
-  //   localStorage.getItem('redirect');
-  // }
+  private read() {
+    return localStorage.getItem('redirect');
+  }
 
   // private navigateToStoredEndpoint() {
   //   const path = this.read();
