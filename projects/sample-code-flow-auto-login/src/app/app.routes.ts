@@ -7,7 +7,7 @@ import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 
 const appRoutes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
-  { path: 'home', component: HomeComponent },
+  { path: 'home', component: HomeComponent, canActivate: [AuthorizationGuard] },
   { path: 'forbidden', component: ForbiddenComponent, canActivate: [AuthorizationGuard] },
   { path: 'unauthorized', component: UnauthorizedComponent },
   { path: 'protected', component: ProtectedComponent },

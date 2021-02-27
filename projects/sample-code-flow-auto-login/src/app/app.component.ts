@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
@@ -8,16 +7,14 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-  constructor(private oidcSecurityService: OidcSecurityService, private router: Router) {}
+  constructor(private oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
     this.oidcSecurityService
       .checkAuth()
 
       .subscribe((isAuthenticated) => {
-        if (isAuthenticated) {
-          this.navigateToStoredEndpoint();
-        }
+        console.log('@@@@@', isAuthenticated);
       });
   }
 
@@ -34,10 +31,5 @@ export class AppComponent implements OnInit {
   logout() {
     console.log('start logoff');
     this.oidcSecurityService.logoff();
-  }
-
-  private navigateToStoredEndpoint() {
-    const path = localStorage.getItem('redirect');
-    this.router.navigate([path]);
   }
 }
