@@ -39,36 +39,36 @@ import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-clien
 // ...
 
 export function configureAuth(oidcConfigService: OidcConfigService) {
-    return () =>
-        oidcConfigService.withConfig({
-            stsServer: '<your sts address here>',
-            redirectUrl: window.location.origin,
-            postLogoutRedirectUri: window.location.origin,
-            clientId: 'angularClient',
-            scope: 'openid profile email',
-            responseType: 'code',
-            silentRenew: true,
-            silentRenewUrl: `${window.location.origin}/silent-renew.html`,
-            logLevel: LogLevel.Debug,
-        });
+  return () =>
+    oidcConfigService.withConfig({
+      stsServer: '<your sts address here>',
+      redirectUrl: window.location.origin,
+      postLogoutRedirectUri: window.location.origin,
+      clientId: 'angularClient',
+      scope: 'openid profile email',
+      responseType: 'code',
+      silentRenew: true,
+      silentRenewUrl: `${window.location.origin}/silent-renew.html`,
+      logLevel: LogLevel.Debug,
+    });
 }
 
 @NgModule({
+  // ...
+  imports: [
     // ...
-    imports: [
-        // ...
-        AuthModule.forRoot(),
-    ],
-    providers: [
-        OidcConfigService,
-        {
-            provide: APP_INITIALIZER,
-            useFactory: configureAuth,
-            deps: [OidcConfigService],
-            multi: true,
-        },
-    ],
-    // ...
+    AuthModule.forRoot(),
+  ],
+  providers: [
+    OidcConfigService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: configureAuth,
+      deps: [OidcConfigService],
+      multi: true,
+    },
+  ],
+  // ...
 })
 export class AppModule {}
 ```

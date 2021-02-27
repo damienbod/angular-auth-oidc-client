@@ -20,14 +20,14 @@ this.userData$ = this.oidcSecurityService.userData$;
 
 ```json
 {
-    "sub": "...",
-    "preferred_username": "john@doe.org",
-    "name": "john@doe.org",
-    "email": "john@doe.org",
-    "email_verified": false,
-    "given_name": "john@doe.org",
-    "role": "user",
-    "amr": "pwd"
+  "sub": "...",
+  "preferred_username": "john@doe.org",
+  "name": "john@doe.org",
+  "email": "john@doe.org",
+  "email_verified": false,
+  "given_name": "john@doe.org",
+  "role": "user",
+  "amr": "pwd"
 }
 ```
 
@@ -101,8 +101,8 @@ You can pass optional `AuthOptions`
 
 ```ts
 export interface AuthOptions {
-    customParams?: { [key: string]: string | number | boolean };
-    urlHandler?(url: string): any;
+  customParams?: { [key: string]: string | number | boolean };
+  urlHandler?(url: string): any;
 }
 ```
 
@@ -153,12 +153,12 @@ The `checkAuthIncludingServer` can be used to check the server for an authentica
 
 ```typescript
 export class AppComponent implements OnInit {
-    constructor(public oidcSecurityService: OidcSecurityService) {}
+  constructor(public oidcSecurityService: OidcSecurityService) {}
 
-    ngOnInit() {
-        this.oidcSecurityService.checkAuthIncludingServer().subscribe((isAuthenticated) => {
-            console.log('app authenticated', isAuthenticated);
-        });
-    }
+  ngOnInit() {
+    this.oidcSecurityService.checkAuthIncludingServer().subscribe((isAuthenticated) => {
+      console.log('app authenticated', isAuthenticated);
+    });
+  }
 }
 ```
