@@ -91,7 +91,7 @@ Then provide the class in the module:
 
 ## Auto Login
 
-If you want to have your app being redirected to the sts automatically without the user clicking any login button you can use the `AutoLoginGuard` provided by the lib. Use it for all the routes you wnat automatic login to be enabled.
+If you want to have your app being redirected to the sts automatically without the user clicking any login button you can use the `AutoLoginGuard` provided by the lib. Use it for all the routes you want automatic login to be enabled.
 
 If you are using auto login _make sure_ to _*not*_ call the `checkAuth()` method in your `app.component.ts`. This will be done by the guard automatically for you.
 

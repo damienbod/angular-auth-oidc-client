@@ -24,10 +24,7 @@ export class AutoLoginGuard implements CanActivate {
           return true;
         }
 
-        if (!storedRoute) {
-          localStorage.setItem(STORAGE_KEY, state.url);
-        }
-
+        localStorage.setItem(STORAGE_KEY, state.url);
         this.loginService.login();
         return false;
       })
