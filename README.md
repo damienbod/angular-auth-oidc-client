@@ -78,12 +78,15 @@ or with yarn
 
 - [Guards](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/guards.md)
 - [Features](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/features.md)
+
   - [Public Events](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/features.md#public-events)
   - [Auth with a popup](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/authorizing-popup.md)
   - [Custom Storage](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/features.md#custom-storage)
   - [Custom parameters](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/features.md#custom-parameters)
+  - [Auto Login](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/features.md#auto-login)
   - [Using the OIDC package in a module or a Angular lib](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/features.md#using-the-oidc-package-in-a-module-or-a-angular-lib)
   - [Delay the loading or pass an existing AuthWellKnownEndpoints config](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/features.md#delay-the-loading-or-pass-an-existing-well-knownopenid-configuration-configuration)
+
 - [Logout](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/logout.md)
 - [Using and revoking the access token](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/using-access-tokens.md)
 - [CSP & CORS](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/csp-cors-config.md)
