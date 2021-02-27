@@ -58,8 +58,6 @@ The example logins the user in directly without a login click using the Code Flo
 
 [auto-login.component.ts](../projects/sample-code-flow-auto-login/src/app/auto-login/auto-login.component.ts)
 
-[guard.ts](../projects/sample-code-flow-auto-login/src/app/authorization.guard.ts)
-
 ## Code Flow with PKCE basic with silent renew
 
 The is the basic example of the Code Flow with PKCE.

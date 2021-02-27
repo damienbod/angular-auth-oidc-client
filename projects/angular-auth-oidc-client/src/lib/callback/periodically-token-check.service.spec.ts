@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subscription, throwError } from 'rxjs';
@@ -39,7 +39,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientModule, RouterTestingModule],
+      imports: [HttpClientTestingModule, RouterTestingModule],
       providers: [
         { provide: RefreshSessionRefreshTokenService, useClass: RefreshSessionRefreshTokenServiceMock },
         { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },

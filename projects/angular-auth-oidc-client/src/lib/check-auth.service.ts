@@ -66,7 +66,10 @@ export class CheckAuthService {
 
         return isAuthenticated;
       }),
-      catchError(() => of(false))
+      catchError((error) => {
+        this.loggerService.logError(error);
+        return of(false);
+      })
     );
   }
 

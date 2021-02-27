@@ -1,13 +1,13 @@
-﻿export class JwtKeys {
-  keys: JwtKey[] = [];
+﻿export interface JwtKeys {
+  keys: JwtKey[];
 }
 
-export class JwtKey {
-  kty = '';
-  use = '';
-  kid = '';
-  x5t = '';
-  e = '';
-  n = '';
-  x5c: any[] = [];
+export interface JwtKey {
+  kty: string;
+  use: string;
+  kid: string;
+  x5t: string;
+  e: string;
+  n: string;
+  x5c: any[];
 }

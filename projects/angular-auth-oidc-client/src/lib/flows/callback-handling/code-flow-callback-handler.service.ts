@@ -58,10 +58,9 @@ export class CodeFlowCallbackHandlerService {
 
   // STEP 2 Code Flow //  Code Flow Silent Renew starts here
   codeFlowCodeRequest(callbackContext: CallbackContext): Observable<CallbackContext> {
-    const isStateCorrect = this.tokenValidationService.validateStateFromHashCallback(
-      callbackContext.state,
-      this.flowsDataService.getAuthStateControl()
-    );
+    const authStateControl = this.flowsDataService.getAuthStateControl();
+
+    const isStateCorrect = this.tokenValidationService.validateStateFromHashCallback(callbackContext.state, authStateControl);
 
     if (!isStateCorrect) {
       this.loggerService.logWarning('codeFlowCodeRequest incorrect state');
