@@ -17,7 +17,7 @@ export class RandomService {
     }
 
     const length = requiredLength - 6;
-    const arr = new Uint8Array(length / 2);
+    const arr = new Uint8Array((length || length) / 2);
     if (this.getCrypto()) {
       this.getCrypto().getRandomValues(arr);
     }
