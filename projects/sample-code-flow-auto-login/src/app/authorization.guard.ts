@@ -17,14 +17,12 @@ export class AuthorizationGuard implements CanActivate {
         if (isAuthorized) {
           if (storedRoute) {
             localStorage.removeItem('redirect');
-            console.log('@@@ navigation to', storedRoute);
             this.router.navigate([storedRoute]);
           }
           return true;
         }
 
         if (!storedRoute) {
-          console.log('@@@ writing to', storedRoute);
           this.write(state.url);
         }
 
