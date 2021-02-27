@@ -13,7 +13,6 @@ import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
-import { JwtKeys } from './jwtkeys';
 import { StateValidationService } from './state-validation.service';
 import { TokenValidationService } from './token-validation.service';
 import { ValidationResult } from './validation-result';
@@ -118,7 +117,7 @@ describe('State Validation Service', () => {
         id_token: 'id_tokenTEST',
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
       existingIdToken: null,
     };
@@ -179,7 +178,7 @@ describe('State Validation Service', () => {
         id_token: 'id_tokenTEST',
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
       existingIdToken: null,
     };
@@ -212,7 +211,7 @@ describe('State Validation Service', () => {
         id_token: 'id_tokenTEST',
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
       existingIdToken: null,
     };
@@ -251,7 +250,7 @@ describe('State Validation Service', () => {
         id_token: 'id_tokenTEST',
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
       existingIdToken: null,
     };
@@ -294,7 +293,7 @@ describe('State Validation Service', () => {
         id_token: 'id_tokenTEST',
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
       existingIdToken: null,
     };
@@ -341,7 +340,7 @@ describe('State Validation Service', () => {
         id_token: 'id_tokenTEST',
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
       existingIdToken: null,
     };
@@ -391,7 +390,7 @@ describe('State Validation Service', () => {
         id_token: 'id_tokenTEST',
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
       existingIdToken: null,
     };
@@ -443,7 +442,7 @@ describe('State Validation Service', () => {
         id_token: 'id_tokenTEST',
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
       existingIdToken: null,
     };
@@ -497,7 +496,7 @@ describe('State Validation Service', () => {
         id_token: 'id_tokenTEST',
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
       existingIdToken: null,
     };
@@ -543,7 +542,7 @@ describe('State Validation Service', () => {
         id_token: 'id_tokenTEST',
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
       existingIdToken: null,
     };
@@ -592,7 +591,7 @@ describe('State Validation Service', () => {
         id_token: 'id_tokenTEST',
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
       existingIdToken: null,
     };
@@ -639,7 +638,7 @@ describe('State Validation Service', () => {
         id_token: 'id_tokenTEST',
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
       existingIdToken: null,
     };
@@ -698,7 +697,7 @@ describe('State Validation Service', () => {
         id_token: '',
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
       existingIdToken: null,
     };
@@ -752,7 +751,7 @@ describe('State Validation Service', () => {
         id_token: idToken,
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
     };
 
@@ -818,7 +817,7 @@ describe('State Validation Service', () => {
         id_token: idToken,
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
     };
 
@@ -884,7 +883,7 @@ describe('State Validation Service', () => {
         id_token: idToken,
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
     };
 
@@ -950,7 +949,7 @@ describe('State Validation Service', () => {
         id_token: idToken,
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
     };
 
@@ -1016,7 +1015,7 @@ describe('State Validation Service', () => {
         id_token: idToken,
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
     };
 
@@ -1082,7 +1081,7 @@ describe('State Validation Service', () => {
         id_token: idToken,
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
     };
 
@@ -1148,7 +1147,7 @@ describe('State Validation Service', () => {
         id_token: idToken,
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
     };
 
@@ -1214,7 +1213,7 @@ describe('State Validation Service', () => {
         id_token: idToken,
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
     };
 
@@ -1258,7 +1257,7 @@ describe('State Validation Service', () => {
         error: 'access_tokenTEST',
       },
       isRenewProcess: false,
-      jwtKeys: new JwtKeys(),
+      jwtKeys: null,
       validationResult: null,
     };
 

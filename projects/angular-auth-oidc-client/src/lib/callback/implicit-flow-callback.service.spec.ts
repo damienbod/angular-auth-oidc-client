@@ -9,13 +9,12 @@ import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsDataServiceMock } from '../flows/flows-data.service-mock';
 import { FlowsService } from '../flows/flows.service';
 import { FlowsServiceMock } from '../flows/flows.service-mock';
-import { JwtKeys } from '../validation/jwtkeys';
 import { ImplicitFlowCallbackService } from './implicit-flow-callback.service';
 import { IntervallService } from './intervall.service';
 
 describe('ImplicitFlowCallbackService ', () => {
   let implicitFlowCallbackService: ImplicitFlowCallbackService;
-  let intervallService: IntervallService;
+  let intervalService: IntervallService;
   let flowsService: FlowsService;
   let configurationProvider: ConfigurationProvider;
   let flowsDataService: FlowsDataService;
@@ -37,7 +36,7 @@ describe('ImplicitFlowCallbackService ', () => {
   beforeEach(() => {
     implicitFlowCallbackService = TestBed.inject(ImplicitFlowCallbackService);
     configurationProvider = TestBed.inject(ConfigurationProvider);
-    intervallService = TestBed.inject(IntervallService);
+    intervalService = TestBed.inject(IntervallService);
     flowsDataService = TestBed.inject(FlowsDataService);
     flowsService = TestBed.inject(FlowsService);
     router = TestBed.inject(Router);
@@ -64,7 +63,7 @@ describe('ImplicitFlowCallbackService ', () => {
           sessionState: null,
           authResult: null,
           isRenewProcess: true,
-          jwtKeys: new JwtKeys(),
+          jwtKeys: null,
           validationResult: null,
           existingIdToken: '',
         };
@@ -88,7 +87,7 @@ describe('ImplicitFlowCallbackService ', () => {
           sessionState: null,
           authResult: null,
           isRenewProcess: false,
-          jwtKeys: new JwtKeys(),
+          jwtKeys: null,
           validationResult: null,
           existingIdToken: '',
         };
@@ -106,11 +105,11 @@ describe('ImplicitFlowCallbackService ', () => {
     );
 
     it(
-      'resetSilentRenewRunning and stopPeriodicallTokenCheck in case of error',
+      'resetSilentRenewRunning and stopPeriodicallyTokenCheck in case of error',
       waitForAsync(() => {
         spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(throwError('error'));
         const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
-        const stopPeriodicallTokenCheckSpy = spyOn(intervallService, 'stopPeriodicallTokenCheck');
+        const stopPeriodicallyTokenCheckSpy = spyOn(intervalService, 'stopPeriodicallTokenCheck');
 
         spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
           triggerAuthorizationResultEvent: false,
@@ -119,7 +118,7 @@ describe('ImplicitFlowCallbackService ', () => {
         implicitFlowCallbackService.authorizedImplicitFlowCallback('some-hash').subscribe({
           error: (err) => {
             expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-            expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
+            expect(stopPeriodicallyTokenCheckSpy).toHaveBeenCalled();
             expect(err).toBeTruthy();
           },
         });
@@ -133,7 +132,7 @@ describe('ImplicitFlowCallbackService ', () => {
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
         spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(throwError('error'));
         const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
-        const stopPeriodicallTokenCheckSpy = spyOn(intervallService, 'stopPeriodicallTokenCheck');
+        const stopPeriodicallTokenCheckSpy = spyOn(intervalService, 'stopPeriodicallTokenCheck');
         const routerSpy = spyOn(router, 'navigate');
 
         spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
