@@ -1,5 +1,4 @@
 ﻿import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
@@ -7,7 +6,7 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
   templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit, OnDestroy {
-  constructor(public oidcSecurityService: OidcSecurityService, private router: Router) {}
+  constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {}
 
