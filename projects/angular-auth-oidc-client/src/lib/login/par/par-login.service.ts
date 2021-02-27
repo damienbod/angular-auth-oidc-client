@@ -109,7 +109,8 @@ export class ParLoginService {
 
         this.popupService.openPopUp(url, popupOptions);
 
-        return this.popupService.receivedUrl$.pipe(take(1),
+        return this.popupService.receivedUrl$.pipe(
+          take(1),
           switchMap((receivedUrl: string) => this.checkAuthService.checkAuth(receivedUrl)),
           map((isAuthenticated) => ({
             isAuthenticated,
