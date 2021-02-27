@@ -8,13 +8,14 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
       authWellknownEndpoint: 'https://login.microsoftonline.com/common/v2.0',
       redirectUrl: window.location.origin,
       clientId: 'e38ea64a-2962-4cde-bfe7-dd2822fdab32',
-      scope: 'openid profile email api://e38ea64a-2962-4cde-bfe7-dd2822fdab32/access_as_user',
+      scope: 'openid profile offline_access email api://e38ea64a-2962-4cde-bfe7-dd2822fdab32/access_as_user',
       responseType: 'code',
       silentRenew: true,
       maxIdTokenIatOffsetAllowedInSeconds: 600,
       issValidationOff: true,
       autoUserinfo: false,
-      silentRenewUrl: window.location.origin + '/silent-renew.html',
+      // silentRenewUrl: window.location.origin + '/silent-renew.html',
+      useRefreshToken: true,
       logLevel: LogLevel.Debug,
       customParams: {
         prompt: 'select_account', // login, consent
