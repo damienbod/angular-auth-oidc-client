@@ -53,7 +53,8 @@ export class PopUpLoginService {
 
         this.popupService.openPopUp(authUrl, popupOptions);
 
-        return this.popupService.receivedUrl$.pipe(take(1),
+        return this.popupService.receivedUrl$.pipe(
+          take(1),
           switchMap((url: string) => this.checkAuthService.checkAuth(url)),
           map((isAuthenticated) => ({
             isAuthenticated,

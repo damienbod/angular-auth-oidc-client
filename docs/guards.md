@@ -11,22 +11,22 @@ import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AuthorizationGuard implements CanActivate {
-    constructor(private oidcSecurityService: OidcSecurityService, private router: Router) {}
+  constructor(private oidcSecurityService: OidcSecurityService, private router: Router) {}
 
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-        return this.oidcSecurityService.isAuthenticated$.pipe(
-            map((isAuthorized: boolean) => {
-                console.log('AuthorizationGuard, canActivate isAuthorized: ' + isAuthorized);
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+    return this.oidcSecurityService.isAuthenticated$.pipe(
+      map((isAuthorized: boolean) => {
+        console.log('AuthorizationGuard, canActivate isAuthorized: ' + isAuthorized);
 
-                if (!isAuthorized) {
-                    this.router.navigate(['/unauthorized']);
-                    return false;
-                }
+        if (!isAuthorized) {
+          this.router.navigate(['/unauthorized']);
+          return false;
+        }
 
-                return true;
-            })
-        );
-    }
+        return true;
+      })
+    );
+  }
 }
 ```
 

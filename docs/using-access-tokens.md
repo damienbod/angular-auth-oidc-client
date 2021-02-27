@@ -18,9 +18,9 @@ import { HttpHeaders } from '@angular/common/http';
 const token = this.oidcSecurityServices.getToken();
 
 const httpOptions = {
-    headers: new HttpHeaders({
-        Authorization: 'Bearer ' + token,
-    }),
+  headers: new HttpHeaders({
+    Authorization: 'Bearer ' + token,
+  }),
 };
 ```
 
@@ -34,11 +34,11 @@ You can configure the routes you want to send a token with in the configuration
 
 ```typescript
 export function configureAuth(oidcConfigService: OidcConfigService) {
-    return () =>
-        oidcConfigService.withConfig({
-            // ...
-            secureRoutes: ['https://my-secure-url.com/', 'https://my-second-secure-url.com/'],
-        });
+  return () =>
+    oidcConfigService.withConfig({
+      // ...
+      secureRoutes: ['https://my-secure-url.com/', 'https://my-second-secure-url.com/'],
+    });
 }
 ```
 

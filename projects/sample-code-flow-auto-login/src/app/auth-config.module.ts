@@ -1,8 +1,8 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
 
-export function configureAuth(oidcConfigService: OidcConfigService) {
-  return () =>
+export const configureAuth = (oidcConfigService: OidcConfigService) => {
+  return () => {
     oidcConfigService.withConfig({
       stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
       redirectUrl: window.location.origin,
@@ -22,7 +22,8 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
       // iss_validation_off: false
       // disable_iat_offset_validation: true
     });
-}
+  };
+};
 
 @NgModule({
   imports: [AuthModule.forRoot()],

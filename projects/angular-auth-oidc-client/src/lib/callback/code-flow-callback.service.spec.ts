@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -9,7 +9,6 @@ import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsDataServiceMock } from '../flows/flows-data.service-mock';
 import { FlowsService } from '../flows/flows.service';
 import { FlowsServiceMock } from '../flows/flows.service-mock';
-import { JwtKeys } from '../validation/jwtkeys';
 import { CodeFlowCallbackService } from './code-flow-callback.service';
 import { IntervallService } from './intervall.service';
 
@@ -23,7 +22,7 @@ describe('CodeFlowCallbackService ', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientModule, RouterTestingModule],
+      imports: [HttpClientTestingModule, RouterTestingModule],
       providers: [
         CodeFlowCallbackService,
         { provide: FlowsService, useClass: FlowsServiceMock },
@@ -64,7 +63,7 @@ describe('CodeFlowCallbackService ', () => {
           sessionState: null,
           authResult: null,
           isRenewProcess: true,
-          jwtKeys: new JwtKeys(),
+          jwtKeys: null,
           validationResult: null,
           existingIdToken: '',
         };
@@ -88,7 +87,7 @@ describe('CodeFlowCallbackService ', () => {
           sessionState: null,
           authResult: null,
           isRenewProcess: false,
-          jwtKeys: new JwtKeys(),
+          jwtKeys: null,
           validationResult: null,
           existingIdToken: '',
         };

@@ -20,6 +20,9 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
       // useRefreshToken: true, // for refresh renew, but revocation and one time usage is missing from server impl.
       // ignoreNonceAfterRefresh: true,
       // disableRefreshIdTokenAuthTimeValidation: true,
+      customParams: {
+        prompt: 'select_account', // login, consent
+      },
     });
 }
 
