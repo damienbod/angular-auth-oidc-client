@@ -17,10 +17,11 @@ export class RandomService {
     }
 
     const length = requiredLength - 6;
-    const arr = new Uint8Array((length || length) / 2);
+    const arr = new Uint8Array(length / 2);
     if (this.getCrypto()) {
       this.getCrypto().getRandomValues(arr);
     }
+
     return Array.from(arr, this.toHex).join('') + this.randomString(7);
   }
 
@@ -42,6 +43,7 @@ export class RandomService {
 
     return result;
   }
+
   private getCrypto() {
     // support for IE,  (window.crypto || window.msCrypto)
     return this.doc.defaultView.crypto || (this.doc.defaultView as any).msCrypto;
