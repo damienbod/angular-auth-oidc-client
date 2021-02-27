@@ -15,10 +15,6 @@ export class AppComponent implements OnInit {
       .checkAuth()
 
       .subscribe((isAuthenticated) => {
-        if (!isAuthenticated) {
-          this.write('redirect', window.location.pathname);
-          this.oidcSecurityService.authorize();
-        }
         if (isAuthenticated) {
           this.navigateToStoredEndpoint();
         }
@@ -43,9 +39,5 @@ export class AppComponent implements OnInit {
   private navigateToStoredEndpoint() {
     const path = localStorage.getItem('redirect');
     this.router.navigate([path]);
-  }
-
-  private write(key: string, value: any): void {
-    localStorage.setItem(key, value);
   }
 }
