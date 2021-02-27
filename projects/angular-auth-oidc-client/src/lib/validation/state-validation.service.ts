@@ -23,7 +23,11 @@ export class StateValidationService {
   ) {}
 
   getValidatedStateResult(callbackContext: CallbackContext): StateValidationResult {
-    if (callbackContext?.authResult.error) {
+    if (!callbackContext) {
+      return new StateValidationResult('', '', false, {});
+    }
+
+    if (callbackContext.authResult.error) {
       return new StateValidationResult('', '', false, {});
     }
 

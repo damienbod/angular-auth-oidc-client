@@ -1265,4 +1265,10 @@ describe('State Validation Service', () => {
 
     expect(isValid.authResponseIsValid).toBe(false);
   });
+
+  it('should return authResponseIsValid false when null is passed', () => {
+    const isValid = stateValidationService.getValidatedStateResult(null);
+
+    expect(isValid.authResponseIsValid).toBe(false);
+  });
 });
