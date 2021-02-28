@@ -15,7 +15,7 @@ describe('PopUpService', () => {
   });
 
   let store = {};
-  const mockLocalStorage = {
+  const mockStorage = {
     getItem: (key: string): string => {
       return key in store ? store[key] : null;
     },
@@ -75,7 +75,7 @@ describe('PopUpService', () => {
         const popupSpy = spyOn(window, 'open').and.callFake(
           () =>
             ({
-              sessionStorage: mockLocalStorage,
+              sessionStorage: mockStorage,
             } as Window)
         );
         popUpService.openPopUp('url');
@@ -90,7 +90,7 @@ describe('PopUpService', () => {
         const popupSpy = spyOn(window, 'open').and.callFake(
           () =>
             ({
-              sessionStorage: mockLocalStorage,
+              sessionStorage: mockStorage,
             } as Window)
         );
         popUpService.openPopUp('url', { width: 100 });
