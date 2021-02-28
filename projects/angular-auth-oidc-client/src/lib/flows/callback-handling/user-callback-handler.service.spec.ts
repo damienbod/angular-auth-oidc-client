@@ -17,10 +17,10 @@ import { UserCallbackHandlerService } from './user-callback-handler.service';
 describe('UserCallbackHandlerService', () => {
   let service: UserCallbackHandlerService;
   // let loggerService: LoggerService;
-  // let configurationProvider: ConfigurationProvider;
+  let configurationProvider: ConfigurationProvider;
   // let authStateService: AuthStateService;
   // let flowsDataService: FlowsDataService;
-  // let userService: UserService;
+  let userService: UserService;
   // let resetAuthDataService: ResetAuthDataService;
 
   beforeEach(() => {
@@ -39,11 +39,11 @@ describe('UserCallbackHandlerService', () => {
 
   beforeEach(() => {
     service = TestBed.inject(UserCallbackHandlerService);
-    // configurationProvider = TestBed.inject(ConfigurationProvider);
+    configurationProvider = TestBed.inject(ConfigurationProvider);
     // flowsDataService = TestBed.inject(FlowsDataService);
     // authStateService = TestBed.inject(AuthStateService);
     // loggerService = TestBed.inject(LoggerService);
-    // userService = TestBed.inject(UserService);
+    userService = TestBed.inject(UserService);
     // resetAuthDataService = TestBed.inject(ResetAuthDataService);
   });
 
@@ -66,6 +66,7 @@ describe('UserCallbackHandlerService', () => {
         validationResult: svr,
         existingIdToken: null,
       };
+      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ autoUserinfo: false });
       //const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
       //spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
@@ -88,6 +89,7 @@ describe('UserCallbackHandlerService', () => {
         validationResult: svr,
         existingIdToken: null,
       };
+      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ autoUserinfo: false });
       //const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
       //spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
@@ -110,6 +112,7 @@ describe('UserCallbackHandlerService', () => {
         validationResult: svr,
         existingIdToken: null,
       };
+      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ autoUserinfo: false });
       //const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
       //spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
