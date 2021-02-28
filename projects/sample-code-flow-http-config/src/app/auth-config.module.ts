@@ -22,7 +22,7 @@ export function configureAuth(oidcConfigService: OidcConfigService, httpClient: 
         logLevel: customConfig.logLevel, // LogLevel.Debug,
         maxIdTokenIatOffsetAllowedInSeconds: customConfig.max_id_token_iat_offset_allowed_in_seconds,
         historyCleanupOff: true,
-        // autoUserinfo: false,
+        autoUserinfo: false,
       };
     }),
     switchMap((config) => oidcConfigService.withConfig(config))

@@ -12,6 +12,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
       scope: 'openid profile email',
       responseType: 'code',
       silentRenew: true,
+      autoUserinfo: false,
       silentRenewUrl: `${window.location.origin}/silent-renew.html`,
       renewTimeBeforeTokenExpiresInSeconds: 10,
       logLevel: environment.production ? LogLevel.None : LogLevel.Debug,

@@ -1,5 +1,10 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-02-28 Version 11.6.2
+
+- Bugfix Set session state is set when the auto info is false [ISSUE](https://github.com/damienbod/angular-auth-oidc-client/pull/864)
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/990)
+
 ### 2021-02-27 Version 11.6.1
 
 - Added AutoLoginGuard
