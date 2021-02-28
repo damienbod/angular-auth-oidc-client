@@ -4,6 +4,7 @@ import { PopupOptions } from './popup-options';
 
 @Injectable({ providedIn: 'root' })
 export class PopUpService {
+  private STORAGE_IDENTIFIER = 'popupauth';
   private popUp: Window;
   private receivedUrlInternal$ = new Subject<string>();
 
@@ -12,12 +13,14 @@ export class PopUpService {
   }
 
   isCurrentlyInPopup(): boolean {
-    return !!window.opener && window.opener !== window;
+    const popup = sessionStorage.getItem(this.STORAGE_IDENTIFIER);
+    return !!window.opener && window.opener !== window && !!popup;
   }
 
   openPopUp(url: string, popupOptions?: PopupOptions): void {
     const optionsToPass = this.getOptions(popupOptions);
     this.popUp = window.open(url, '_blank', optionsToPass);
+    this.popUp.sessionStorage.setItem(this.STORAGE_IDENTIFIER, 'true');
 
     const listener = (event: MessageEvent): void => {
       if (!event?.data || typeof event.data !== 'string') {
@@ -42,6 +45,7 @@ export class PopUpService {
     window.removeEventListener('message', listener, false);
 
     if (this.popUp) {
+      this.popUp.sessionStorage.removeItem(this.STORAGE_IDENTIFIER);
       this.popUp.close();
       this.popUp = null;
     }
