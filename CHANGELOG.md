@@ -1,5 +1,10 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-02-28 Version 11.6.2
+
+- Bugfix: Check session does not work when autoUserinfo is set to false in code flow with PKCE
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/990), [ISSUE](https://github.com/damienbod/angular-auth-oidc-client/pull/864)
+
 ### 2021-02-27 Version 11.6.1
 
 - Added AutoLoginGuard
