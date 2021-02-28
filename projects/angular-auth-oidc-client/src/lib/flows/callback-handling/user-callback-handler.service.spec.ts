@@ -1,4 +1,5 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
+import { StateValidationResult } from 'angular-auth-oidc-client';
 import { AuthStateService } from '../../authState/auth-state.service';
 import { AuthStateServiceMock } from '../../authState/auth-state.service-mock';
 import { ConfigurationProvider } from '../../config/config.provider';
@@ -49,4 +50,70 @@ describe('UserCallbackHandlerService', () => {
   it('should create', () => {
     expect(service).toBeTruthy();
   });
+
+  it(
+    'UserCallbackHandlerService callbackUser with id_token , autoUserinfo = false, isRenewProcess = false, refreshToken = null',
+    waitForAsync(() => {
+      const svr = new StateValidationResult('accesstoken', 'idtoken', true, 'decoded');
+      const callbackContext = {
+        code: null,
+        refreshToken: null,
+        state: null,
+        sessionState: null,
+        authResult: { session_state: 'mystate' },
+        isRenewProcess: false,
+        jwtKeys: null,
+        validationResult: svr,
+        existingIdToken: null,
+      };
+      //const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+      //spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+
+      (service as any).callbackUser(callbackContext).subscribe((resultCallbackContext) => {});
+    })
+  );
+
+  it(
+    'UserCallbackHandlerService callbackUser with id_token , autoUserinfo = false, isRenewProcess = true, refreshToken = null',
+    waitForAsync(() => {
+      const svr = new StateValidationResult('accesstoken', 'idtoken', true, 'decoded');
+      const callbackContext = {
+        code: null,
+        refreshToken: null,
+        state: null,
+        sessionState: null,
+        authResult: { session_state: 'mystate' },
+        isRenewProcess: true,
+        jwtKeys: null,
+        validationResult: svr,
+        existingIdToken: null,
+      };
+      //const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+      //spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+
+      (service as any).callbackUser(callbackContext).subscribe((resultCallbackContext) => {});
+    })
+  );
+
+  it(
+    'UserCallbackHandlerService callbackUser with id_token , autoUserinfo = false, isRenewProcess = false, refreshToken = value',
+    waitForAsync(() => {
+      const svr = new StateValidationResult('accesstoken', 'idtoken', true, 'decoded');
+      const callbackContext = {
+        code: null,
+        refreshToken: 'somerefreshtoken',
+        state: null,
+        sessionState: null,
+        authResult: { session_state: 'mystate' },
+        isRenewProcess: false,
+        jwtKeys: null,
+        validationResult: svr,
+        existingIdToken: null,
+      };
+      //const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+      //spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+
+      (service as any).callbackUser(callbackContext).subscribe((resultCallbackContext) => {});
+    })
+  );
 });
