@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { LoggerService } from '../../logging/logger.service';
 import { CallbackContext } from '../callback-context';
@@ -10,7 +11,8 @@ export class ImplicitFlowCallbackHandlerService {
   constructor(
     private readonly resetAuthDataService: ResetAuthDataService,
     private readonly loggerService: LoggerService,
-    private readonly flowsDataService: FlowsDataService
+    private readonly flowsDataService: FlowsDataService,
+    @Inject(DOCUMENT) private readonly doc: any
   ) {}
 
   // STEP 1 Code Flow
@@ -23,7 +25,7 @@ export class ImplicitFlowCallbackHandlerService {
       this.resetAuthDataService.resetAuthorizationData();
     }
 
-    hash = hash || window.location.hash.substr(1);
+    hash = hash || this.doc.location.hash.substr(1);
 
     const authResult: any = hash.split('&').reduce((resultData: any, item: string) => {
       const parts = item.split('=');

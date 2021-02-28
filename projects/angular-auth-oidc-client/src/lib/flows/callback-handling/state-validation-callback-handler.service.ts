@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { AuthStateService } from '../../authState/auth-state.service';
 import { AuthorizedState } from '../../authState/authorized-state';
@@ -14,7 +15,8 @@ export class StateValidationCallbackHandlerService {
     private readonly loggerService: LoggerService,
     private readonly stateValidationService: StateValidationService,
     private readonly authStateService: AuthStateService,
-    private readonly resetAuthDataService: ResetAuthDataService
+    private readonly resetAuthDataService: ResetAuthDataService,
+    @Inject(DOCUMENT) private readonly doc: any
   ) {}
 
   // STEP 4 All flows
@@ -27,7 +29,7 @@ export class StateValidationCallbackHandlerService {
       this.authStateService.setAuthorizationData(validationResult.accessToken, callbackContext.authResult);
       return of(callbackContext);
     } else {
-      const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${window.location.hash}`;
+      const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${this.doc.location.hash}`;
       this.loggerService.logWarning(errorMessage);
       this.resetAuthDataService.resetAuthorizationData();
       this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);

@@ -1,6 +1,8 @@
+import { DOCUMENT } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
+import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { FlowsDataServiceMock } from '../flows-data.service-mock';
 import { ResetAuthDataService } from '../reset-auth-data.service';
@@ -19,6 +21,17 @@ describe('ImplicitFlowCallbackHandlerService', () => {
         { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
         { provide: LoggerService, useClass: LoggerServiceMock },
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
+        {
+          provide: DOCUMENT,
+          useValue: {
+            location: {
+              get hash() {
+                return '&anyFakeHash';
+              },
+              set hash(v) {},
+            },
+          },
+        },
       ],
     });
   });
@@ -40,7 +53,7 @@ describe('ImplicitFlowCallbackHandlerService', () => {
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
 
-        (service as any).implicitFlowCallback('any-hash').subscribe(() => {
+        service.implicitFlowCallback('any-hash').subscribe(() => {
           expect(resetAuthorizationDataSpy).toHaveBeenCalled();
         });
       })
@@ -52,7 +65,7 @@ describe('ImplicitFlowCallbackHandlerService', () => {
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
 
-        (service as any).implicitFlowCallback('any-hash').subscribe(() => {
+        service.implicitFlowCallback('any-hash').subscribe(() => {
           expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
         });
       })
@@ -72,8 +85,31 @@ describe('ImplicitFlowCallbackHandlerService', () => {
           jwtKeys: null,
           validationResult: null,
           existingIdToken: null,
-        };
-        (service as any).implicitFlowCallback('anyHash').subscribe((callbackContext) => {
+        } as CallbackContext;
+
+        service.implicitFlowCallback('anyHash').subscribe((callbackContext) => {
+          expect(callbackContext).toEqual(expectedCallbackContext);
+        });
+      })
+    );
+
+    it(
+      'uses window location hash if no hash is passed',
+      waitForAsync(() => {
+        spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
+        const expectedCallbackContext = {
+          code: null,
+          refreshToken: null,
+          state: null,
+          sessionState: null,
+          authResult: { anyFakeHash: '' },
+          isRenewProcess: true,
+          jwtKeys: null,
+          validationResult: null,
+          existingIdToken: null,
+        } as CallbackContext;
+
+        service.implicitFlowCallback().subscribe((callbackContext) => {
           expect(callbackContext).toEqual(expectedCallbackContext);
         });
       })
