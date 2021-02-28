@@ -20,7 +20,7 @@ describe('UserCallbackHandlerService', () => {
   let configurationProvider: ConfigurationProvider;
   // let authStateService: AuthStateService;
   let flowsDataService: FlowsDataService;
-  let userService: UserService;
+  // let userService: UserService;
   // let resetAuthDataService: ResetAuthDataService;
 
   beforeEach(() => {
@@ -43,7 +43,7 @@ describe('UserCallbackHandlerService', () => {
     flowsDataService = TestBed.inject(FlowsDataService);
     // authStateService = TestBed.inject(AuthStateService);
     // loggerService = TestBed.inject(LoggerService);
-    userService = TestBed.inject(UserService);
+    // userService = TestBed.inject(UserService);
     // resetAuthDataService = TestBed.inject(ResetAuthDataService);
   });
 
