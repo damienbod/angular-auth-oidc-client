@@ -3,6 +3,8 @@
   <button (click)="forceRefreshSession()">RefreshSession</button>
   <hr />
 
+  <button (click)="openWindow()">Open normal popup</button>
+  <a href="/" target="_blank">Test link</a>
   <br />
 
   Is Authenticated: {{ isAuthenticated }}
@@ -16,6 +18,8 @@
 
 <ng-template #noAuth>
   <button (click)="loginWithPopup()">Login using popup</button>
+  <button (click)="openWindow()">Open normal popup</button>
+  <a href="/" target="_blank">Test link</a>
   <hr />
   You are NOT authenticated
 </ng-template>

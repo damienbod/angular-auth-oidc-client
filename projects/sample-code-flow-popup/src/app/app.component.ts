@@ -38,6 +38,10 @@ export class AppComponent {
     });
   }
 
+  openWindow() {
+    window.open('/', '_blank');
+  }
+
   forceRefreshSession() {
     this.oidcSecurityService.forceRefreshSession().subscribe((result) => console.warn(result));
   }
