@@ -19,7 +19,7 @@ describe('UserCallbackHandlerService', () => {
   // let loggerService: LoggerService;
   let configurationProvider: ConfigurationProvider;
   // let authStateService: AuthStateService;
-  // let flowsDataService: FlowsDataService;
+  let flowsDataService: FlowsDataService;
   let userService: UserService;
   // let resetAuthDataService: ResetAuthDataService;
 
@@ -40,7 +40,7 @@ describe('UserCallbackHandlerService', () => {
   beforeEach(() => {
     service = TestBed.inject(UserCallbackHandlerService);
     configurationProvider = TestBed.inject(ConfigurationProvider);
-    // flowsDataService = TestBed.inject(FlowsDataService);
+    flowsDataService = TestBed.inject(FlowsDataService);
     // authStateService = TestBed.inject(AuthStateService);
     // loggerService = TestBed.inject(LoggerService);
     userService = TestBed.inject(UserService);
@@ -67,10 +67,12 @@ describe('UserCallbackHandlerService', () => {
         existingIdToken: null,
       };
       spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ autoUserinfo: false });
-      //const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-      //spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ autoUserinfo: false });
+      const spy = spyOn(flowsDataService, 'setSessionState');
 
-      (service as any).callbackUser(callbackContext).subscribe((resultCallbackContext) => {});
+      (service as any).callbackUser(callbackContext).subscribe((resultCallbackContext) => {
+        expect(spy).toHaveBeenCalled();
+      });
     })
   );
 
@@ -90,10 +92,12 @@ describe('UserCallbackHandlerService', () => {
         existingIdToken: null,
       };
       spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ autoUserinfo: false });
-      //const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-      //spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ autoUserinfo: false });
+      const spy = spyOn(flowsDataService, 'setSessionState');
 
-      (service as any).callbackUser(callbackContext).subscribe((resultCallbackContext) => {});
+      (service as any).callbackUser(callbackContext).subscribe((resultCallbackContext) => {
+        expect(spy).not.toHaveBeenCalled();
+      });
     })
   );
 
@@ -113,10 +117,11 @@ describe('UserCallbackHandlerService', () => {
         existingIdToken: null,
       };
       spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ autoUserinfo: false });
-      //const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-      //spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      const spy = spyOn(flowsDataService, 'setSessionState');
 
-      (service as any).callbackUser(callbackContext).subscribe((resultCallbackContext) => {});
+      (service as any).callbackUser(callbackContext).subscribe((resultCallbackContext) => {
+        expect(spy).not.toHaveBeenCalled();
+      });
     })
   );
 });
