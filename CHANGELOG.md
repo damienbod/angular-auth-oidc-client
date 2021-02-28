@@ -3,7 +3,9 @@
 ### 2021-02-28 Version 11.6.2
 
 - Bugfix: Check session does not work when autoUserinfo is set to false in code flow with PKCE
-  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/990), [ISSUE](https://github.com/damienbod/angular-auth-oidc-client/pull/864)
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/990), [ISSUE](https://github.com/damienbod/angular-auth-oidc-client/issues/864)
+- Bugfix: checkAuth returning null when href target="\_blank"
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/991), [ISSUE](https://github.com/damienbod/angular-auth-oidc-client/issues/983)
 
 ### 2021-02-27 Version 11.6.1
 
