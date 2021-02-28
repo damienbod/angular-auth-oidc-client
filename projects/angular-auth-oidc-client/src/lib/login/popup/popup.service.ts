@@ -44,9 +44,8 @@ export class PopUpService {
   private cleanUp(listener: any): void {
     window.removeEventListener('message', listener, false);
 
-    sessionStorage.removeItem(this.STORAGE_IDENTIFIER);
-
     if (this.popUp) {
+      this.popUp.sessionStorage.removeItem(this.STORAGE_IDENTIFIER);
       this.popUp.close();
       this.popUp = null;
     }

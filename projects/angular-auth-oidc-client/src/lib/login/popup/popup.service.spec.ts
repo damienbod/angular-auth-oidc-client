@@ -14,13 +14,32 @@ describe('PopUpService', () => {
     popUpService = TestBed.inject(PopUpService);
   });
 
+  let store = {};
+  const mockLocalStorage = {
+    getItem: (key: string): string => {
+      return key in store ? store[key] : null;
+    },
+    setItem: (key: string, value: string) => {
+      store[key] = `${value}`;
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
+    length: 1,
+    key: (i) => '',
+  };
+
   it('should create', () => {
     expect(popUpService).toBeTruthy();
   });
 
   describe('isCurrentlyInPopup', () => {
-    it('returns true if window has opener and opener does not equal the window', () => {
+    it('returns true if window has opener, opener does not equal the window and session storage has item', () => {
       spyOnProperty(window, 'opener').and.returnValue({ some: 'thing' });
+      spyOn(window.sessionStorage, 'getItem').and.returnValue('thing');
 
       const result = popUpService.isCurrentlyInPopup();
 
@@ -51,9 +70,14 @@ describe('PopUpService', () => {
 
   describe('openPopup', () => {
     it(
-      'popup opens with parameters and defaultoptions',
+      'popup opens with parameters and default options',
       waitForAsync(() => {
-        const popupSpy = spyOn(window, 'open').and.callFake(() => null);
+        const popupSpy = spyOn(window, 'open').and.callFake(
+          () =>
+            ({
+              sessionStorage: mockLocalStorage,
+            } as Window)
+        );
         popUpService.openPopUp('url');
 
         expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', 'width=500,height=500,left=50,top=50');
@@ -63,17 +87,12 @@ describe('PopUpService', () => {
     it(
       'popup opens with parameters and passed options',
       waitForAsync(() => {
-        const popupSpy = spyOn(window, 'open').and.callFake(() => null);
-        popUpService.openPopUp('url', { width: 100 });
-
-        expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', 'width=100,height=500,left=50,top=50');
-      })
-    );
-
-    it(
-      'xxx',
-      waitForAsync(() => {
-        const popupSpy = spyOn(window, 'open').and.callFake(() => ({ close: () => {} } as Window));
+        const popupSpy = spyOn(window, 'open').and.callFake(
+          () =>
+            ({
+              sessionStorage: mockLocalStorage,
+            } as Window)
+        );
         popUpService.openPopUp('url', { width: 100 });
 
         expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', 'width=100,height=500,left=50,top=50');
