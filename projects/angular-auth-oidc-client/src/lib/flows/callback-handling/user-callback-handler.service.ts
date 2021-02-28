@@ -24,44 +24,45 @@ export class UserCallbackHandlerService {
 
   // STEP 5 userData
   callbackUser(callbackContext: CallbackContext): Observable<CallbackContext> {
+    const { isRenewProcess, validationResult, authResult, refreshToken } = callbackContext;
+
     if (!this.configurationProvider.openIDConfiguration.autoUserinfo) {
-      if (!callbackContext.isRenewProcess) {
+      if (!isRenewProcess) {
         // userData is set to the id_token decoded, auto get user data set to false
-        this.userService.setUserDataToStore(callbackContext.validationResult.decodedIdToken);
+        this.userService.setUserDataToStore(validationResult.decodedIdToken);
+        if (!refreshToken) {
+          this.flowsDataService.setSessionState(authResult.session_state);
+        }
       }
 
-      this.publishAuthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
+      this.publishAuthorizedState(validationResult, isRenewProcess);
       return of(callbackContext);
     }
 
-    return this.userService
-      .getAndPersistUserDataInStore(
-        callbackContext.isRenewProcess,
-        callbackContext.validationResult.idToken,
-        callbackContext.validationResult.decodedIdToken
-      )
-      .pipe(
-        switchMap((userData) => {
-          if (!!userData) {
-            if (!callbackContext.refreshToken) {
-              this.flowsDataService.setSessionState(callbackContext.authResult.session_state);
-            }
-            this.publishAuthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
-            return of(callbackContext);
-          } else {
-            this.resetAuthDataService.resetAuthorizationData();
-            this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
-            const errorMessage = `Called for userData but they were ${userData}`;
-            this.loggerService.logWarning(errorMessage);
-            return throwError(errorMessage);
+    return this.userService.getAndPersistUserDataInStore(isRenewProcess, validationResult.idToken, validationResult.decodedIdToken).pipe(
+      switchMap((userData) => {
+        if (!!userData) {
+          if (!refreshToken) {
+            this.flowsDataService.setSessionState(authResult.session_state);
           }
-        }),
-        catchError((err) => {
-          const errorMessage = `Failed to retrieve user info with error:  ${err}`;
+
+          this.publishAuthorizedState(validationResult, isRenewProcess);
+
+          return of(callbackContext);
+        } else {
+          this.resetAuthDataService.resetAuthorizationData();
+          this.publishUnauthorizedState(validationResult, isRenewProcess);
+          const errorMessage = `Called for userData but they were ${userData}`;
           this.loggerService.logWarning(errorMessage);
           return throwError(errorMessage);
-        })
-      );
+        }
+      }),
+      catchError((err) => {
+        const errorMessage = `Failed to retrieve user info with error:  ${err}`;
+        this.loggerService.logWarning(errorMessage);
+        return throwError(errorMessage);
+      })
+    );
   }
 
   private publishAuthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
