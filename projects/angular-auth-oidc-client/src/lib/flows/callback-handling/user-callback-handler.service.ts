@@ -28,6 +28,9 @@ export class UserCallbackHandlerService {
       if (!callbackContext.isRenewProcess) {
         // userData is set to the id_token decoded, auto get user data set to false
         this.userService.setUserDataToStore(callbackContext.validationResult.decodedIdToken);
+        if (!callbackContext.refreshToken) {
+          this.flowsDataService.setSessionState(callbackContext.authResult.session_state);
+        }
       }
 
       this.publishAuthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
