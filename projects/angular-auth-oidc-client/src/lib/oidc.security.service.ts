@@ -18,8 +18,10 @@ import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.servic
 @Injectable()
 export class OidcSecurityService {
   get configuration(): PublicConfiguration {
+    const openIDConfiguration = this.configurationProvider.getOpenIDConfiguration();
+
     return {
-      configuration: this.configurationProvider.openIDConfiguration,
+      configuration: openIDConfiguration,
       wellknown: this.storagePersistanceService.read('authWellKnownEndPoints'),
     };
   }

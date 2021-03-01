@@ -35,7 +35,9 @@ export class CheckAuthService {
       return of(false);
     }
 
-    this.loggerService.logDebug('STS server: ' + this.configurationProvider.openIDConfiguration.stsServer);
+    const { stsServer } = this.configurationProvider.getOpenIDConfiguration();
+
+    this.loggerService.logDebug('STS server: ', stsServer);
 
     const currentUrl = url || this.doc.defaultView.location.toString();
 
@@ -99,9 +101,9 @@ export class CheckAuthService {
       this.checkSessionService.start();
     }
 
-    this.periodicallyTokenCheckService.startTokenValidationPeriodically(
-      this.configurationProvider.openIDConfiguration.tokenRefreshInSeconds
-    );
+    const { tokenRefreshInSeconds } = this.configurationProvider.getOpenIDConfiguration();
+
+    this.periodicallyTokenCheckService.startTokenValidationPeriodically(tokenRefreshInSeconds);
 
     if (this.silentRenewService.isSilentRenewConfigured()) {
       this.silentRenewService.getOrCreateIframe();

@@ -7,14 +7,14 @@ import { OpenIdConfiguration } from './openid-configuration';
 export class ConfigurationProvider {
   private openIdConfigurationInternal: OpenIdConfiguration;
 
-  get openIDConfiguration(): OpenIdConfiguration {
-    return this.openIdConfigurationInternal || null;
-  }
-
   constructor(private platformProvider: PlatformProvider) {}
 
   hasValidConfig() {
     return !!this.openIdConfigurationInternal;
+  }
+
+  getOpenIDConfiguration(): OpenIdConfiguration {
+    return this.openIdConfigurationInternal || null;
   }
 
   setConfig(configuration: OpenIdConfiguration) {

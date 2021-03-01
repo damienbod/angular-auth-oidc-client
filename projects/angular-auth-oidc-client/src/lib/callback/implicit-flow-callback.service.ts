@@ -19,17 +19,19 @@ export class ImplicitFlowCallbackService {
 
   authorizedImplicitFlowCallback(hash?: string) {
     const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
+    const { triggerAuthorizationResultEvent, postLoginRoute, unauthorizedRoute } = this.configurationProvider.getOpenIDConfiguration();
+
     return this.flowsService.processImplicitFlowCallback(hash).pipe(
       tap((callbackContext) => {
-        if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
-          this.router.navigate([this.configurationProvider.openIDConfiguration.postLoginRoute]);
+        if (!triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
+          this.router.navigate([postLoginRoute]);
         }
       }),
       catchError((error) => {
         this.flowsDataService.resetSilentRenewRunning();
         this.intervalService.stopPeriodicallTokenCheck();
-        if (!this.configurationProvider.openIDConfiguration.triggerAuthorizationResultEvent && !isRenewProcess) {
-          this.router.navigate([this.configurationProvider.openIDConfiguration.unauthorizedRoute]);
+        if (!triggerAuthorizationResultEvent && !isRenewProcess) {
+          this.router.navigate([unauthorizedRoute]);
         }
         return throwError(error);
       })
