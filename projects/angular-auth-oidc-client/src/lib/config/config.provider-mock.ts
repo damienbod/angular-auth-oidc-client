@@ -2,7 +2,7 @@ import { OpenIdConfiguration } from './openid-configuration';
 import { PublicConfiguration } from './public-configuration';
 
 export class ConfigurationProviderMock {
-  get openIDConfiguration(): OpenIdConfiguration {
+  getOpenIDConfiguration(): OpenIdConfiguration {
     return null;
   }
 

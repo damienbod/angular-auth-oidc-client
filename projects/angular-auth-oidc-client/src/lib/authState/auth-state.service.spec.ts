@@ -252,7 +252,7 @@ describe('Auth State Service', () => {
     it('negates the result of internal call of `validateAccessTokenNotExpired`', () => {
       const validateAccessTokenNotExpiredResult = true;
       const expectedResult = !validateAccessTokenNotExpiredResult;
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ renewTimeBeforeTokenExpiresInSeconds: 5 });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ renewTimeBeforeTokenExpiresInSeconds: 5 });
       const date = new Date(new Date().toUTCString());
       spyOn(storagePersistanceService, 'read').withArgs('access_token_expires_at').and.returnValue(date);
       const spy = spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(validateAccessTokenNotExpiredResult);
@@ -264,7 +264,7 @@ describe('Auth State Service', () => {
     it('throws event when token is expired', () => {
       const validateAccessTokenNotExpiredResult = false;
       const expectedResult = !validateAccessTokenNotExpiredResult;
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ renewTimeBeforeTokenExpiresInSeconds: 5 });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ renewTimeBeforeTokenExpiresInSeconds: 5 });
       const date = new Date(new Date().toUTCString());
 
       spyOn(eventsService, 'fireEvent');

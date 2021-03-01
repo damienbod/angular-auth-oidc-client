@@ -63,7 +63,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       waitForAsync(() => {
         const storagePersistanceServiceSpy = spyOn(storagePersistanceService, 'write');
         const callbackContext = ({ authResult: 'authResultToStore' } as unknown) as CallbackContext;
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ historyCleanupOff: true });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
 
         spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of({ keys: [] } as JwtKeys));
         service.callbackHistoryAndResetJwtKeys(callbackContext).subscribe(() => {
@@ -76,7 +76,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'resetBrowserHistory if historyCleanup is turned on and is not in a renewProcess',
       waitForAsync(() => {
         const callbackContext = ({ isRenewProcess: false, authResult: 'authResult' } as unknown) as CallbackContext;
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ historyCleanupOff: false });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: false });
 
         const windowSpy = spyOn(window.history, 'replaceState');
 
@@ -91,7 +91,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'returns callbackContext with jwtkeys filled if everything works fine',
       waitForAsync(() => {
         const callbackContext = ({ isRenewProcess: false, authResult: 'authResult' } as unknown) as CallbackContext;
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ historyCleanupOff: false });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: false });
 
         spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of({ keys: [{ kty: 'henlo' } as JwtKey] } as JwtKeys));
         service.callbackHistoryAndResetJwtKeys(callbackContext).subscribe((result) => {
@@ -108,7 +108,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'returns error if no jwtKeys have been in the call',
       waitForAsync(() => {
         const callbackContext = ({ isRenewProcess: false, authResult: 'authResult' } as unknown) as CallbackContext;
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ historyCleanupOff: false });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: false });
 
         spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of(null));
         service.callbackHistoryAndResetJwtKeys(callbackContext).subscribe({
@@ -123,7 +123,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'returns error if no jwtKeys have been in the call',
       waitForAsync(() => {
         const callbackContext = ({ isRenewProcess: false, authResult: 'authResult' } as unknown) as CallbackContext;
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ historyCleanupOff: false });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: false });
 
         spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(throwError('WOAH SOMETHING BAD HAPPENED'));
         service.callbackHistoryAndResetJwtKeys(callbackContext).subscribe({
@@ -138,7 +138,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'returns error if callbackContext.authresult has an error property filled',
       waitForAsync(() => {
         const callbackContext = ({ authResult: { error: 'someError' } } as unknown) as CallbackContext;
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ historyCleanupOff: true });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
 
         service.callbackHistoryAndResetJwtKeys(callbackContext).subscribe({
           error: (err) => {
@@ -152,7 +152,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'calls resetAuthorizationData, resets nonce and authStateService in case of an error',
       waitForAsync(() => {
         const callbackContext = ({ authResult: { error: 'someError' } } as unknown) as CallbackContext;
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ historyCleanupOff: true });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
 
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
         const setNonceSpy = spyOn(flowsDataService, 'setNonce');
@@ -176,7 +176,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'calls authStateService.updateAndPublishAuthState with login required if the error is `login_required`',
       waitForAsync(() => {
         const callbackContext = ({ authResult: { error: 'login_required' } } as unknown) as CallbackContext;
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ historyCleanupOff: true });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
 
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
         const setNonceSpy = spyOn(flowsDataService, 'setNonce');
@@ -199,7 +199,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
 
   describe('historyCleanUpTurnedOn ', () => {
     it('check for false if historyCleanUpTurnedOn is on', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         historyCleanupOff: true,
       });
 
@@ -208,7 +208,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     });
 
     it('check for true if historyCleanUpTurnedOn is off', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         historyCleanupOff: false,
       });
 

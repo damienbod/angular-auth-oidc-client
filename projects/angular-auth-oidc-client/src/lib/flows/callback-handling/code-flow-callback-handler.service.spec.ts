@@ -163,7 +163,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       waitForAsync(() => {
         spyOn(dataService, 'post').and.returnValue(throwError({}));
         spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ stsServer: 'stsServer' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
 
         service.codeFlowCodeRequest({} as CallbackContext).subscribe({
           error: (err) => {

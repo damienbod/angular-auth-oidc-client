@@ -42,7 +42,7 @@ describe('ResetAuthDataService', () => {
 
   describe('resetAuthorizationData', () => {
     it('calls resetUserDataInStore when autoUserInfo is true', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ autoUserinfo: true });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserinfo: true });
       const resetUserDataInStoreSpy = spyOn(userService, 'resetUserDataInStore');
 
       service.resetAuthorizationData();
@@ -51,7 +51,7 @@ describe('ResetAuthDataService', () => {
     });
 
     it('does not call resetUserDataInStore when autoUserInfo is false', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ autoUserinfo: false });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserinfo: false });
       const resetUserDataInStoreSpy = spyOn(userService, 'resetUserDataInStore');
 
       service.resetAuthorizationData();
@@ -60,7 +60,7 @@ describe('ResetAuthDataService', () => {
     });
 
     it('calls correct methods', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ autoUserinfo: false });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserinfo: false });
       const resetStorageFlowDataSpy = spyOn(flowsDataService, 'resetStorageFlowData');
       const setUnauthorizedAndFireEventSpy = spyOn(authStateService, 'setUnauthorizedAndFireEvent');
 

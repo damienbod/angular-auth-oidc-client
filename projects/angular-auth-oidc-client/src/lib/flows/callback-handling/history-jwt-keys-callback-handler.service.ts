@@ -81,7 +81,8 @@ export class HistoryJwtKeysCallbackHandlerService {
   }
 
   private historyCleanUpTurnedOn() {
-    return !this.configurationProvider.openIDConfiguration.historyCleanupOff;
+    const { historyCleanupOff } = this.configurationProvider.getOpenIDConfiguration();
+    return !historyCleanupOff;
   }
 
   private resetBrowserHistory() {

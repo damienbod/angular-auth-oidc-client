@@ -89,7 +89,8 @@ export class CodeFlowCallbackHandlerService {
         return of(callbackContext);
       }),
       catchError((error) => {
-        const errorMessage = `OidcService code request ${this.configurationProvider.openIDConfiguration.stsServer}`;
+        const { stsServer } = this.configurationProvider.getOpenIDConfiguration();
+        const errorMessage = `OidcService code request ${stsServer}`;
         this.loggerService.logError(errorMessage, error);
         return throwError(errorMessage);
       })

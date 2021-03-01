@@ -14,7 +14,9 @@ export class ResetAuthDataService {
   ) {}
 
   resetAuthorizationData(): void {
-    if (this.configurationProvider.openIDConfiguration.autoUserinfo) {
+    const { autoUserinfo } = this.configurationProvider.getOpenIDConfiguration();
+
+    if (autoUserinfo) {
       // Clear user data. Fixes #97.
       this.userService.resetUserDataInStore();
     }

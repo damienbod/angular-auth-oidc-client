@@ -61,7 +61,9 @@ export class PeriodicallyTokenCheckService {
           return of(null);
         }
 
-        if (!silentRenew) {
+        const config = this.configurationProvider.getOpenIDConfiguration();
+
+        if (!config?.silentRenew) {
           this.resetAuthDataService.resetAuthorizationData();
           return of(null);
         }

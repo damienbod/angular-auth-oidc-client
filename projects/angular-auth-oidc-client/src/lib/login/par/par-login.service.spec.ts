@@ -127,7 +127,7 @@ describe('ParLoginService', () => {
     it(
       'does nothing if no well known endpoint is given',
       waitForAsync(() => {
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ responseType: 'stubValue' });
         const spy = spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
 
         const result = service.loginPar();
@@ -141,7 +141,7 @@ describe('ParLoginService', () => {
       'calls parService.postParRequest without custom params when no custom params are passed',
       waitForAsync(() => {
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
@@ -161,7 +161,7 @@ describe('ParLoginService', () => {
       'calls parService.postParRequest with custom params when custom params are passed',
       waitForAsync(() => {
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
@@ -181,7 +181,7 @@ describe('ParLoginService', () => {
       'returns undefined and logs error when no url could be created',
       waitForAsync(() => {
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
@@ -203,7 +203,7 @@ describe('ParLoginService', () => {
       'calls redirect service redirectTo when url could be created',
       waitForAsync(() => {
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
@@ -224,7 +224,7 @@ describe('ParLoginService', () => {
       'calls urlHandler when url is passed',
       waitForAsync(() => {
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
@@ -266,7 +266,7 @@ describe('ParLoginService', () => {
     it(
       'does nothing if no well known endpoint is given',
       waitForAsync(() => {
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ responseType: 'stubValue' });
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         const loggerSpy = spyOn(loggerService, 'logError');
 
@@ -283,7 +283,7 @@ describe('ParLoginService', () => {
       'calls parService.postParRequest without custom params when no custom params are passed',
       waitForAsync(() => {
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
@@ -305,7 +305,7 @@ describe('ParLoginService', () => {
       'calls parService.postParRequest with custom params when custom params are passed',
       waitForAsync(() => {
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
@@ -327,7 +327,7 @@ describe('ParLoginService', () => {
       'returns undefined and logs error when no url could be created',
       waitForAsync(() => {
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
@@ -351,7 +351,7 @@ describe('ParLoginService', () => {
       'calls popupService openPopUp when url could be created',
       waitForAsync(() => {
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
@@ -372,7 +372,7 @@ describe('ParLoginService', () => {
       'returns correct properties if url is received',
       waitForAsync(() => {
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });

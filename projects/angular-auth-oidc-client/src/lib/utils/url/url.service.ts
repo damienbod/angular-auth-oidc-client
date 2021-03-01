@@ -63,7 +63,7 @@ export class UrlService {
       return null;
     }
 
-    const { clientId } = this.configurationProvider.openIDConfiguration;
+    const { clientId } = this.configurationProvider.getOpenIDConfiguration();
 
     if (!clientId) {
       this.loggerService.logError(`createAuthorizeUrl could not add clientId because it was: `, clientId);
@@ -220,7 +220,7 @@ export class UrlService {
     const codeVerifier = this.flowsDataService.createCodeVerifier();
     const codeChallenge = this.tokenValidationService.generateCodeChallenge(codeVerifier);
 
-    const { clientId, responseType, scope, hdParam, customParams } = this.configurationProvider.openIDConfiguration;
+    const { clientId, responseType, scope, hdParam, customParams } = this.configurationProvider.getOpenIDConfiguration();
 
     let dataForBody = oneLineTrim`client_id=${clientId}
             &redirect_uri=${redirectUrl}
@@ -264,7 +264,7 @@ export class UrlService {
       return null;
     }
 
-    const { clientId, responseType, scope, hdParam, customParams } = this.configurationProvider.openIDConfiguration;
+    const { clientId, responseType, scope, hdParam, customParams } = this.configurationProvider.getOpenIDConfiguration();
 
     if (!clientId) {
       this.loggerService.logError(`createAuthorizeUrl could not add clientId because it was: `, clientId);
@@ -415,7 +415,7 @@ export class UrlService {
   }
 
   private getRedirectUrl(): string {
-    const redirectUrl = this.configurationProvider.openIDConfiguration?.redirectUrl;
+    const { redirectUrl } = this.configurationProvider.getOpenIDConfiguration();
 
     if (!redirectUrl) {
       this.loggerService.logError(`could not get redirectUrl, was: `, redirectUrl);
@@ -426,7 +426,7 @@ export class UrlService {
   }
 
   private getSilentRenewUrl(): string {
-    const silentRenewUrl = this.configurationProvider.openIDConfiguration?.silentRenewUrl;
+    const { silentRenewUrl } = this.configurationProvider.getOpenIDConfiguration();
 
     if (!silentRenewUrl) {
       this.loggerService.logError(`could not get silentRenewUrl, was: `, silentRenewUrl);
@@ -437,7 +437,8 @@ export class UrlService {
   }
 
   private getPostLogoutRedirectUrl(): string {
-    const postLogoutRedirectUri = this.configurationProvider.openIDConfiguration?.postLogoutRedirectUri;
+    const { postLogoutRedirectUri } = this.configurationProvider.getOpenIDConfiguration();
+
     if (!postLogoutRedirectUri) {
       this.loggerService.logError(`could not get postLogoutRedirectUri, was: `, postLogoutRedirectUri);
       return null;
@@ -447,7 +448,8 @@ export class UrlService {
   }
 
   private getClientId(): string {
-    const clientId = this.configurationProvider.openIDConfiguration?.clientId;
+    const { clientId } = this.configurationProvider.getOpenIDConfiguration();
+
     if (!clientId) {
       this.loggerService.logError(`could not get clientId, was: `, clientId);
       return null;

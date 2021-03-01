@@ -62,10 +62,12 @@ export class FlowsDataService {
     const storageObject = JSON.parse(this.storagePersistanceService.read('storageSilentRenewRunning'));
 
     if (storageObject) {
+      const { silentRenewTimeoutInSeconds } = this.configurationProvider.getOpenIDConfiguration();
+      const timeOutInMilliseconds = silentRenewTimeoutInSeconds * 1000;
       const dateOfLaunchedProcessUtc = Date.parse(storageObject.dateOfLaunchedProcessUtc);
       const currentDateUtc = Date.parse(new Date().toISOString());
       const elapsedTimeInMilliseconds = Math.abs(currentDateUtc - dateOfLaunchedProcessUtc);
-      const isProbablyStuck = elapsedTimeInMilliseconds > this.configurationProvider.openIDConfiguration.silentRenewTimeoutInSeconds * 1000;
+      const isProbablyStuck = elapsedTimeInMilliseconds > timeOutInMilliseconds;
 
       if (isProbablyStuck) {
         this.loggerService.logDebug('silent renew process is probably stuck, state will be reset.');

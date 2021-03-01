@@ -50,7 +50,8 @@ export class SilentRenewService {
   }
 
   isSilentRenewConfigured() {
-    return !this.configurationProvider.openIDConfiguration.useRefreshToken && this.configurationProvider.openIDConfiguration.silentRenew;
+    const { useRefreshToken, silentRenew } = this.configurationProvider.getOpenIDConfiguration();
+    return !useRefreshToken && silentRenew;
   }
 
   codeFlowCallbackSilentRenewIframe(urlParts) {

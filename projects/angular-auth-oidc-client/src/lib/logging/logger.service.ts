@@ -58,12 +58,13 @@ export class LoggerService {
     }
   }
 
-  private currentLogLevelIsEqualOrSmallerThan(logLevel: LogLevel) {
-    return this.configurationProvider.openIDConfiguration.logLevel <= logLevel;
+  private currentLogLevelIsEqualOrSmallerThan(logLevelToCompare: LogLevel) {
+    const { logLevel } = this.configurationProvider.getOpenIDConfiguration() || {};
+    return logLevel <= logLevelToCompare;
   }
 
   private logLevelIsSet() {
-    const { logLevel } = this.configurationProvider.openIDConfiguration || {};
+    const { logLevel } = this.configurationProvider.getOpenIDConfiguration() || {};
 
     if (logLevel === null) {
       return false;
@@ -77,6 +78,8 @@ export class LoggerService {
   }
 
   private loggingIsTurnedOff() {
-    return this.configurationProvider.openIDConfiguration?.logLevel === LogLevel.None;
+    const { logLevel } = this.configurationProvider.getOpenIDConfiguration() || {};
+
+    return logLevel === LogLevel.None;
   }
 }

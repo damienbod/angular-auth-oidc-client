@@ -36,7 +36,8 @@ export class CheckSessionService {
   ) {}
 
   isCheckSessionConfigured() {
-    return this.configurationProvider.openIDConfiguration.startCheckSession;
+    const { startCheckSession } = this.configurationProvider.getOpenIDConfiguration();
+    return startCheckSession;
   }
 
   start(): void {
@@ -44,7 +45,7 @@ export class CheckSessionService {
       return;
     }
 
-    const clientId = this.configurationProvider.openIDConfiguration.clientId;
+    const { clientId } = this.configurationProvider.getOpenIDConfiguration();
     this.pollServerSession(clientId);
   }
 
@@ -58,7 +59,8 @@ export class CheckSessionService {
   }
 
   serverStateChanged() {
-    return this.configurationProvider.openIDConfiguration.startCheckSession && this.checkSessionReceived;
+    const { startCheckSession } = this.configurationProvider.getOpenIDConfiguration();
+    return startCheckSession && this.checkSessionReceived;
   }
 
   getExistingIframe() {

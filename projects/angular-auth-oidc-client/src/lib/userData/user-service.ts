@@ -29,7 +29,7 @@ export class UserService {
   ) {}
 
   // TODO CHECK PARAMETERS
-  //  validationResult.idToken can be the complete valudationResult
+  //  validationResult.idToken can be the complete validationResult
   getAndPersistUserDataInStore(isRenewProcess = false, idToken?: any, decodedIdToken?: any): Observable<any> {
     idToken = idToken || this.storagePersistanceService.getIdToken();
     decodedIdToken = decodedIdToken || this.tokenHelperService.getPayloadFromToken(idToken, false);
@@ -48,7 +48,9 @@ export class UserService {
       return of(decodedIdToken);
     }
 
-    if (!isRenewProcess || this.configurationProvider.openIDConfiguration.renewUserInfoAfterTokenRenew || !haveUserData) {
+    const { renewUserInfoAfterTokenRenew } = this.configurationProvider.getOpenIDConfiguration();
+
+    if (!isRenewProcess || renewUserInfoAfterTokenRenew || !haveUserData) {
       return this.getUserDataOidcFlowAndSave(decodedIdToken.sub).pipe(
         switchMap((userData) => {
           this.loggerService.logDebug('Received user data', userData);

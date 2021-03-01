@@ -50,7 +50,7 @@ describe(`AuthHttpInterceptor`, () => {
     'should add an Authorization header when route matches and token is present',
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         secureRoutes: [actionUrl],
       });
 
@@ -72,7 +72,7 @@ describe(`AuthHttpInterceptor`, () => {
     'should not add an Authorization header when `secureRoutes` is not given',
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({});
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({});
 
       spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
 
@@ -92,7 +92,7 @@ describe(`AuthHttpInterceptor`, () => {
     'should not add an Authorization header when no routes configured',
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         secureRoutes: [],
       });
 
@@ -114,7 +114,7 @@ describe(`AuthHttpInterceptor`, () => {
     'should not add an Authorization header when no routes configured and no token is present',
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         secureRoutes: [],
       });
 
@@ -136,7 +136,7 @@ describe(`AuthHttpInterceptor`, () => {
     'should not add an Authorization header when route is configured and no token is present',
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         secureRoutes: [actionUrl],
       });
 
@@ -159,7 +159,7 @@ describe(`AuthHttpInterceptor`, () => {
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
       const actionUrl2 = `https://some-other-url.com/`;
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         secureRoutes: [actionUrl, actionUrl2],
       });
 

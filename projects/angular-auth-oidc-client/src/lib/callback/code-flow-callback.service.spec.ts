@@ -49,7 +49,10 @@ describe('CodeFlowCallbackService ', () => {
   describe('authorizedCallbackWithCode', () => {
     it('calls flowsService.processCodeFlowCallback with correct url', () => {
       const spy = spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(of(null));
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
+
       codeFlowCallbackService.authorizedCallbackWithCode('some-url');
+
       expect(spy).toHaveBeenCalledWith('some-url');
     });
 
@@ -69,7 +72,7 @@ describe('CodeFlowCallbackService ', () => {
         };
         const spy = spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(of(callbackContext));
         const routerSpy = spyOn(router, 'navigate');
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
         codeFlowCallbackService.authorizedCallbackWithCode('some-url').subscribe(() => {
           expect(spy).toHaveBeenCalledWith('some-url');
           expect(routerSpy).not.toHaveBeenCalled();
@@ -93,7 +96,7 @@ describe('CodeFlowCallbackService ', () => {
         };
         const spy = spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(of(callbackContext));
         const routerSpy = spyOn(router, 'navigate');
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           triggerAuthorizationResultEvent: false,
           postLoginRoute: 'postLoginRoute',
         });
@@ -111,7 +114,7 @@ describe('CodeFlowCallbackService ', () => {
         const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
         const stopPeriodicallTokenCheckSpy = spyOn(intervallService, 'stopPeriodicallTokenCheck');
 
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           triggerAuthorizationResultEvent: false,
           postLoginRoute: 'postLoginRoute',
         });
@@ -135,7 +138,7 @@ describe('CodeFlowCallbackService ', () => {
         const stopPeriodicallTokenCheckSpy = spyOn(intervallService, 'stopPeriodicallTokenCheck');
         const routerSpy = spyOn(router, 'navigate');
 
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           triggerAuthorizationResultEvent: false,
           unauthorizedRoute: 'unauthorizedRoute',
         });
