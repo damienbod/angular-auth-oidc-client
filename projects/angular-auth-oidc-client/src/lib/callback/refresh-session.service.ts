@@ -75,7 +75,7 @@ export class RefreshSessionService {
       return of(null);
     }
 
-    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration();
+    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration() || {};
 
     if (!authWellknownEndpoint) {
       this.loggerService.logError('no authwellknownendpoint given!');
