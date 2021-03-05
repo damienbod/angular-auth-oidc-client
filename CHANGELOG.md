@@ -1,11 +1,15 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
-### 2021-02-28 Version 11.6.2
+### 2021-03-05 Version 11.6.2
 
 - Bugfix: Check session does not work when autoUserinfo is set to false in code flow with PKCE
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/990), [ISSUE](https://github.com/damienbod/angular-auth-oidc-client/issues/864)
 - Bugfix: checkAuth returning null when href target="\_blank"
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/991), [ISSUE](https://github.com/damienbod/angular-auth-oidc-client/issues/983)
+- Support silent renew with refresh tokens without scope offline access
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/998)
+- Bugfix: Refresh response without an id token breaks mechanism
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1000)
 
 ### 2021-02-27 Version 11.6.1
 

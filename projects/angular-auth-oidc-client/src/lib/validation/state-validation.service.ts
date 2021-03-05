@@ -169,23 +169,26 @@ export class StateValidationService {
       return toReturn;
     }
 
-    const idTokenHeader = this.tokenHelperService.getHeaderFromToken(toReturn.idToken, false);
+    // only do check if id_token returned, no always the case when using refresh tokens
+    if (callbackContext.authResult.id_token) {
+      const idTokenHeader = this.tokenHelperService.getHeaderFromToken(toReturn.idToken, false);
 
-    // The at_hash is optional for the code flow
-    if (isCurrentFlowCodeFlow && !(toReturn.decodedIdToken.at_hash as string)) {
-      this.loggerService.logDebug('Code Flow active, and no at_hash in the id_token, skipping check!');
-    } else if (
-      !this.tokenValidationService.validateIdTokenAtHash(
-        toReturn.accessToken,
-        toReturn.decodedIdToken.at_hash,
-        idTokenHeader.alg // 'RSA256'
-      ) ||
-      !toReturn.accessToken
-    ) {
-      this.loggerService.logWarning('authorizedCallback incorrect at_hash');
-      toReturn.state = ValidationResult.IncorrectAtHash;
-      this.handleUnsuccessfulValidation();
-      return toReturn;
+      // The at_hash is optional for the code flow
+      if (isCurrentFlowCodeFlow && !(toReturn.decodedIdToken.at_hash as string)) {
+        this.loggerService.logDebug('Code Flow active, and no at_hash in the id_token, skipping check!');
+      } else if (
+        !this.tokenValidationService.validateIdTokenAtHash(
+          toReturn.accessToken,
+          toReturn.decodedIdToken.at_hash,
+          idTokenHeader.alg // 'RSA256'
+        ) ||
+        !toReturn.accessToken
+      ) {
+        this.loggerService.logWarning('authorizedCallback incorrect at_hash');
+        toReturn.state = ValidationResult.IncorrectAtHash;
+        this.handleUnsuccessfulValidation();
+        return toReturn;
+      }
     }
 
     toReturn.authResponseIsValid = true;
