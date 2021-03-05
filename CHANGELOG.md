@@ -8,7 +8,7 @@
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/991), [ISSUE](https://github.com/damienbod/angular-auth-oidc-client/issues/983)
 - Support silent renew with refresh tokens without scope offline access
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/998)
-- Refresh response without an id token breaks mechanism
+- Bugfix: Refresh response without an id token breaks mechanism
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1000)
 
 ### 2021-02-27 Version 11.6.1
