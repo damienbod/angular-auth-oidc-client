@@ -1,5 +1,10 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-03-12 Version 11.6.3
+
+- Inconsistent behavior of OidcSecurityService.userData$ Observable, if autoUserinfo is false
+- [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1008),
+
 ### 2021-03-05 Version 11.6.2
 
 - Bugfix: Check session does not work when autoUserinfo is set to false in code flow with PKCE
