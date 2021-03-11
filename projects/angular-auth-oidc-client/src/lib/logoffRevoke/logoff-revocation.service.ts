@@ -45,6 +45,7 @@ export class LogoffRevocationService {
 
   logoffLocal() {
     this.resetAuthDataService.resetAuthorizationData();
+    this.checkSessionService.stop();
   }
 
   // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
