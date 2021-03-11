@@ -27,12 +27,15 @@ export class UserCallbackHandlerService {
     const { isRenewProcess, validationResult, authResult, refreshToken } = callbackContext;
 
     if (!this.configurationProvider.openIDConfiguration.autoUserinfo) {
-      if (!isRenewProcess) {
+      if (!isRenewProcess || this.configurationProvider.openIDConfiguration.renewUserInfoAfterTokenRenew) {
         // userData is set to the id_token decoded, auto get user data set to false
-        this.userService.setUserDataToStore(validationResult.decodedIdToken);
-        if (!refreshToken) {
-          this.flowsDataService.setSessionState(authResult.session_state);
+        if (validationResult.decodedIdToken) {
+          this.userService.setUserDataToStore(validationResult.decodedIdToken);
         }
+      }
+
+      if (!isRenewProcess && !refreshToken) {
+        this.flowsDataService.setSessionState(authResult.session_state);
       }
 
       this.publishAuthorizedState(validationResult, isRenewProcess);
