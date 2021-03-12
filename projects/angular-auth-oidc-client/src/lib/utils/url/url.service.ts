@@ -153,7 +153,7 @@ export class UrlService {
     return revocationEndpointUrl;
   }
 
-  createBodyForCodeFlowCodeRequest(code: string): string {
+  createBodyForCodeFlowCodeRequest(code: string, customTokenParams?: { [p: string]: string | number | boolean }): string {
     const codeVerifier = this.flowsDataService.getCodeVerifier();
     if (!codeVerifier) {
       this.loggerService.logError(`CodeVerifier is not set `, codeVerifier);
@@ -166,10 +166,15 @@ export class UrlService {
       return null;
     }
 
-    const dataForBody = oneLineTrim`grant_type=authorization_code
+    let dataForBody = oneLineTrim`grant_type=authorization_code
             &client_id=${clientId}
             &code_verifier=${codeVerifier}
             &code=${code}`;
+
+    if (customTokenParams) {
+      const customParamText = this.composeCustomParams({ ...customTokenParams });
+      dataForBody = oneLineTrim`${dataForBody}${customParamText}`;
+    }
 
     const silentRenewUrl = this.getSilentRenewUrl();
 
