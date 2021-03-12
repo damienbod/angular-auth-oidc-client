@@ -831,6 +831,22 @@ describe('UrlService Tests', () => {
 
       expect(result).toBe(expected);
     });
+
+    it('returns correctUrl when customTokenParams are provided', () => {
+      const codeVerifier = 'codeverifier';
+      const code = 'code';
+      const silentRenewUrl = 'silentRenewUrl';
+      const clientId = 'clientId';
+      const customTokenParams = { foo: 'bar' };
+      spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
+      spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
+      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId, silentRenewUrl });
+
+      const result = service.createBodyForCodeFlowCodeRequest(code, customTokenParams);
+      const expected = `grant_type=authorization_code&client_id=${clientId}&code_verifier=${codeVerifier}&code=${code}&foo=bar&redirect_uri=${silentRenewUrl}`;
+
+      expect(result).toBe(expected);
+    });
   });
 
   describe('createBodyForCodeFlowRefreshTokensRequest', () => {
