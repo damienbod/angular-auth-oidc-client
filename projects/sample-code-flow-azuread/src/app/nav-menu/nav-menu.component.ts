@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-nav-menu',
@@ -9,12 +8,13 @@ import { Observable } from 'rxjs';
 })
 export class NavMenuComponent implements OnInit {
   isExpanded = false;
-  isAuthenticated$: Observable<boolean>;
+
+  isAuthenticated: boolean;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
+    this.oidcSecurityService.isAuthenticated$.subscribe((value) => (this.isAuthenticated = value));
   }
 
   login() {

@@ -1,10 +1,12 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { AuthModule } from './auth.module';
 import { AuthStateService } from './authState/auth-state.service';
+import { AutoLoginService } from './auto-login/auto-login-service';
 import { CallbackService } from './callback/callback.service';
 import { CallbackServiceMock } from './callback/callback.service-mock';
 import { PeriodicallyTokenCheckService } from './callback/periodically-token-check.service';
@@ -33,10 +35,12 @@ describe('CheckAuthService', () => {
   let periodicallyTokenCheckService: PeriodicallyTokenCheckService;
   let refreshSessionService: RefreshSessionService;
   let popUpService: PopUpService;
+  let autoLoginService: AutoLoginService;
+  let router: Router;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [BrowserModule, HttpClientTestingModule, RouterTestingModule, AuthModule.forRoot()],
+      imports: [BrowserModule, HttpClientTestingModule, RouterTestingModule.withRoutes([]), AuthModule.forRoot()],
       providers: [
         CheckSessionService,
         { provide: SilentRenewService, useClass: SilentRenewServiceMock },
@@ -48,6 +52,7 @@ describe('CheckAuthService', () => {
         { provide: RefreshSessionService, useClass: RefreshSessionServiceMock },
         { provide: PeriodicallyTokenCheckService, useClass: PeriodicallyTokenCheckServiceMock },
         { provide: PopUpService, useClass: PopUpServiceMock },
+        AutoLoginService,
       ],
     });
   });
@@ -63,6 +68,8 @@ describe('CheckAuthService', () => {
     silentRenewService = TestBed.inject(SilentRenewService);
     periodicallyTokenCheckService = TestBed.inject(PeriodicallyTokenCheckService);
     popUpService = TestBed.inject(PopUpService);
+    autoLoginService = TestBed.inject(AutoLoginService);
+    router = TestBed.inject(Router);
   });
 
   it('should create', () => {
@@ -270,6 +277,24 @@ describe('CheckAuthService', () => {
 
         checkAuthService.checkAuth().subscribe((result) => {
           expect(spy).toHaveBeenCalled();
+        });
+      })
+    );
+
+    it(
+      'deletes route and navigates if a route for redirect was saved',
+      waitForAsync(() => {
+        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+        spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+        spyOn(autoLoginService, 'getStoredRedirectRoute').and.returnValue('some-saved-route');
+        const deleteSpy = spyOn(autoLoginService, 'deleteStoredRedirectRoute');
+        const routeSpy = spyOn(router, 'navigate');
+
+        checkAuthService.checkAuth().subscribe((result) => {
+          expect(deleteSpy).toHaveBeenCalledTimes(1);
+          expect(routeSpy).toHaveBeenCalledOnceWith(['some-saved-route']);
         });
       })
     );

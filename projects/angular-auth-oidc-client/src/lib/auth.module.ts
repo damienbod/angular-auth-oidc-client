@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './authState/auth-state.service';
+import { AutoLoginService } from './auto-login/auto-login-service';
 import { ImplicitFlowCallbackService } from './callback/implicit-flow-callback.service';
 import { CheckAuthService } from './check-auth.service';
 import { ConfigValidationService } from './config-validation/config-validation.service';
@@ -102,6 +103,7 @@ export class AuthModule {
         ParLoginService,
         PopUpLoginService,
         StandardLoginService,
+        AutoLoginService,
         {
           provide: AbstractSecurityStorage,
           useClass: token.storage || BrowserStorageService,
