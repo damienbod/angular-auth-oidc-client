@@ -91,22 +91,59 @@ Then provide the class in the module:
 
 ## Auto Login
 
-If you want to have your app being redirected to the sts automatically without the user clicking any login button you can use the `AutoLoginGuard` provided by the lib. Use it for all the routes you want automatic login to be enabled.
+If you want to have your app being redirected to the sts automatically without the user clicking any login button only by accessing a specific you can use the `AutoLoginGuard` provided by the lib. Use it for all the routes you want automatic login to be enabled.
 
-If you are using auto login _make sure_ to _*not*_ call the `checkAuth()` method in your `app.component.ts`. This will be done by the guard automatically for you.
+The guard handles `canActivate` and `canLoad` for you.
 
-Sample routes could be
+Here are two use cases to distinguish:
+
+1. Redirect route from Security Token Server has a guard in `canLoad` or `canActivate`
+2. Redirect route from Token server does _not_ have a guard.
+
+### Redirect route from Token server has a guard
+
+If your redirect route from the Security Token Server to your app has the `AutoLoginGuard` activated already, like this:
 
 ```typescript
 import { AutoLoginGuard } from 'angular-auth-oidc-client';
 
 const appRoutes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
-  { path: 'home', component: HomeComponent, canActivate: [AutoLoginGuard] },
+  { path: 'home', component: HomeComponent, canActivate: [AutoLoginGuard] }, <<<< Redirect Route from STS has the guard
+  {...
+];
+```
+
+Then _make sure_ to _*not*_ call the `checkAuth()` method in your `app.component.ts`. This will be done by the guard automatically for you.
+
+### Redirect route from the Token server is public / Does not have a guard
+
+If the redirect route from the STS is publicly available, you _have to_ call the `checkAuth()` by yourself in the `app.component.ts` to proceed the url when getting redirected. The lib redirects you to the route the user entered before he was sent to the login page on the sts automatically for you.
+
+```typescript
+import { AutoLoginGuard } from 'angular-auth-oidc-client';
+
+const appRoutes: Routes = [
+  { path: '', pathMatch: 'full', redirectTo: 'home' },
+  { path: 'home', component: HomeComponent },
   { path: 'protected', component: ProtectedComponent, canActivate: [AutoLoginGuard] },
   { path: 'forbidden', component: ForbiddenComponent, canActivate: [AutoLoginGuard] },
   { path: 'unauthorized', component: UnauthorizedComponent },
 ];
+```
+
+```ts
+export class AppComponent implements OnInit {
+  constructor(public oidcSecurityService: OidcSecurityService) {}
+
+  ngOnInit() {
+    this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => {
+      console.log('app authenticated', isAuthenticated);
+      const at = this.oidcSecurityService.getToken();
+      console.log(`Current access token is '${at}'`);
+    });
+  }
+}
 ```
 
 [src code](../projects/sample-code-flow-auto-login)

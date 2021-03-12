@@ -1,8 +1,10 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
+import { AutoLoginService } from './auto-login/auto-login-service';
 import { CallbackService } from './callback/callback.service';
 import { PeriodicallyTokenCheckService } from './callback/periodically-token-check.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
@@ -26,7 +28,9 @@ export class CheckAuthService {
     private callbackService: CallbackService,
     private refreshSessionService: RefreshSessionService,
     private periodicallyTokenCheckService: PeriodicallyTokenCheckService,
-    private popupService: PopUpService
+    private popupService: PopUpService,
+    private autoLoginService: AutoLoginService,
+    private router: Router
   ) {}
 
   checkAuth(url?: string): Observable<boolean> {
@@ -65,6 +69,13 @@ export class CheckAuthService {
         this.loggerService.logDebug('checkAuth completed fired events, auth: ' + isAuthenticated);
 
         return isAuthenticated;
+      }),
+      tap(() => {
+        const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute();
+        if (savedRouteForRedirect) {
+          this.autoLoginService.deleteStoredRedirectRoute();
+          this.router.navigate([savedRouteForRedirect]);
+        }
       }),
       catchError((error) => {
         this.loggerService.logError(error);

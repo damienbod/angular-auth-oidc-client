@@ -41,6 +41,7 @@ describe('OidcSecurityService', () => {
   let loginService: LoginService;
   let refreshSessionService: RefreshSessionService;
   let storagePersistanceService: StoragePersistanceService;
+  let checkAuthService: CheckAuthService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -93,10 +94,42 @@ describe('OidcSecurityService', () => {
     loginService = TestBed.inject(LoginService);
     storagePersistanceService = TestBed.inject(StoragePersistanceService);
     refreshSessionService = TestBed.inject(RefreshSessionService);
+    checkAuthService = TestBed.inject(CheckAuthService);
   });
 
   it('should create', () => {
     expect(oidcSecurityService).toBeTruthy();
+  });
+
+  describe('checkAuth', () => {
+    it(
+      'calls checkAuthService.checkAuth() without url if none is passed',
+      waitForAsync(() => {
+        const spy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        oidcSecurityService.checkAuth().subscribe(() => {
+          expect(spy).toHaveBeenCalledOnceWith(undefined);
+        });
+      })
+    );
+
+    it('calls checkAuthService.checkAuth() with url if is passed', () => {
+      const spy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+      oidcSecurityService.checkAuth('any-thing-url-like').subscribe(() => {
+        expect(spy).toHaveBeenCalledOnceWith('any-thing-url-like');
+      });
+    });
+  });
+
+  describe('checkAuthIncludingServer', () => {
+    it(
+      'calls checkAuthService.checkAuthIncludingServer()',
+      waitForAsync(() => {
+        const spy = spyOn(checkAuthService, 'checkAuthIncludingServer').and.returnValue(of(null));
+        oidcSecurityService.checkAuthIncludingServer().subscribe(() => {
+          expect(spy).toHaveBeenCalledTimes(1);
+        });
+      })
+    );
   });
 
   describe('configuration', () => {
