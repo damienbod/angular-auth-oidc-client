@@ -13,7 +13,7 @@
   >
     <span class="navbar-toggler-icon"></span>
   </button>
-  <div class="collapse navbar-collapse" id="topNavbarCollapse" *ngIf="isAuthenticated$ | async as isAuthenticated">
+  <div class="collapse navbar-collapse" id="topNavbarCollapse">
     <ul class="mr-auto navbar-nav">
       <li class="nav-item" *ngIf="isAuthenticated">
         <a [routerLink]="['/protected']" class="nav-link">Protected</a>
