@@ -40,7 +40,7 @@ describe('CheckAuthService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [BrowserModule, HttpClientTestingModule, RouterTestingModule, AuthModule.forRoot()],
+      imports: [BrowserModule, HttpClientTestingModule, RouterTestingModule.withRoutes([]), AuthModule.forRoot()],
       providers: [
         CheckSessionService,
         { provide: SilentRenewService, useClass: SilentRenewServiceMock },

@@ -72,9 +72,9 @@ describe('Flows Service', () => {
         );
         const callbackUserSpy = spyOn(userCallbackHandlerService, 'callbackUser').and.returnValue(of(null));
 
-        service.processCodeFlowCallback('some-url').subscribe((value) => {
+        service.processCodeFlowCallback('some-url1234').subscribe((value) => {
           expect(value).toBeNull();
-          expect(codeFlowCallbackSpy).toHaveBeenCalledOnceWith('some-url');
+          expect(codeFlowCallbackSpy).toHaveBeenCalledOnceWith('some-url1234');
           expect(codeFlowCodeRequestSpy).toHaveBeenCalledTimes(1);
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalledTimes(1);
           expect(callbackStateValidationSpy).toHaveBeenCalledTimes(1);
