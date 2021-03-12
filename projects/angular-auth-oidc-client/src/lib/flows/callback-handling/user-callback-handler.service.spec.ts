@@ -146,7 +146,7 @@ describe('UserCallbackHandlerService', () => {
           existingIdToken: null,
         };
 
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ autoUserinfo: false });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserinfo: false });
         const spy = spyOn(flowsDataService, 'setSessionState');
 
         service.callbackUser(callbackContext).subscribe((resultCallbackContext) => {
