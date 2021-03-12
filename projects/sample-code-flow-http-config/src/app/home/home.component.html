@@ -4,6 +4,7 @@
 
 <div *ngIf="isAuthenticated$ | async as isAuthenticated; else noAuth">
   <button (click)="logout()">Logout</button>
+  <button (click)="logoffLocal()">Logoff Local</button>
   <button (click)="refreshSession()">refreshSession</button>
   <hr />
 
