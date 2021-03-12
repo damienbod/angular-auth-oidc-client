@@ -131,6 +131,32 @@ describe('UserCallbackHandlerService', () => {
     );
 
     it(
+      'does NOT call flowsDataService.setSessionState if autoUserInfo is false isRenewProcess is false, refreshToken has value, id_token is false',
+      waitForAsync(() => {
+        const svr = new StateValidationResult('accesstoken', '', true, '');
+        const callbackContext = {
+          code: null,
+          refreshToken: 'somerefreshtoken',
+          state: null,
+          sessionState: null,
+          authResult: { session_state: 'mystate' },
+          isRenewProcess: false,
+          jwtKeys: null,
+          validationResult: svr,
+          existingIdToken: null,
+        };
+
+        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ autoUserinfo: false });
+        const spy = spyOn(flowsDataService, 'setSessionState');
+
+        service.callbackUser(callbackContext).subscribe((resultCallbackContext) => {
+          expect(spy).not.toHaveBeenCalled();
+          expect(resultCallbackContext).toEqual(callbackContext);
+        });
+      })
+    );
+
+    it(
       'calls authStateService.updateAndPublishAuthState with correct params if autoUserInfo is false',
       waitForAsync(() => {
         const svr = new StateValidationResult('accesstoken', 'idtoken', true, 'decoded');
