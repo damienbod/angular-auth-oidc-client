@@ -51,9 +51,8 @@ describe('CodeFlowCallbackService ', () => {
       const spy = spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(of(null));
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
 
-      codeFlowCallbackService.authorizedCallbackWithCode('some-url');
-
-      expect(spy).toHaveBeenCalledWith('some-url');
+      codeFlowCallbackService.authorizedCallbackWithCode('some-url1');
+      expect(spy).toHaveBeenCalledWith('some-url1');
     });
 
     it(
@@ -73,8 +72,8 @@ describe('CodeFlowCallbackService ', () => {
         const spy = spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(of(callbackContext));
         const routerSpy = spyOn(router, 'navigate');
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
-        codeFlowCallbackService.authorizedCallbackWithCode('some-url').subscribe(() => {
-          expect(spy).toHaveBeenCalledWith('some-url');
+        codeFlowCallbackService.authorizedCallbackWithCode('some-url2').subscribe(() => {
+          expect(spy).toHaveBeenCalledWith('some-url2');
           expect(routerSpy).not.toHaveBeenCalled();
         });
       })
@@ -100,8 +99,8 @@ describe('CodeFlowCallbackService ', () => {
           triggerAuthorizationResultEvent: false,
           postLoginRoute: 'postLoginRoute',
         });
-        codeFlowCallbackService.authorizedCallbackWithCode('some-url').subscribe(() => {
-          expect(spy).toHaveBeenCalledWith('some-url');
+        codeFlowCallbackService.authorizedCallbackWithCode('some-url3').subscribe(() => {
+          expect(spy).toHaveBeenCalledWith('some-url3');
           expect(routerSpy).toHaveBeenCalledWith(['postLoginRoute']);
         });
       })
@@ -118,7 +117,7 @@ describe('CodeFlowCallbackService ', () => {
           triggerAuthorizationResultEvent: false,
           postLoginRoute: 'postLoginRoute',
         });
-        codeFlowCallbackService.authorizedCallbackWithCode('some-url').subscribe({
+        codeFlowCallbackService.authorizedCallbackWithCode('some-url4').subscribe({
           error: (err) => {
             expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
             expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
@@ -142,7 +141,7 @@ describe('CodeFlowCallbackService ', () => {
           triggerAuthorizationResultEvent: false,
           unauthorizedRoute: 'unauthorizedRoute',
         });
-        codeFlowCallbackService.authorizedCallbackWithCode('some-url').subscribe({
+        codeFlowCallbackService.authorizedCallbackWithCode('some-url5').subscribe({
           error: (err) => {
             expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
             expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();

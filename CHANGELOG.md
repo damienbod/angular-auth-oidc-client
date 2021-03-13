@@ -1,11 +1,18 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-03-14 Version 11.6.4
+
+- Improve AutoLoginGuard
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1015)
+- Add support custom params during token exchange
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1010)
+
 ### 2021-03-12 Version 11.6.3
 
 - Inconsistent behavior of OidcSecurityService.userData$ Observable, if autoUserinfo is false
-  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1008),
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1008)
 - CheckSessionService keeps polling after logoffLocal() is invoked
-  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1009),
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1009)
 
 ### 2021-03-05 Version 11.6.2
 

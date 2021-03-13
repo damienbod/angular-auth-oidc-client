@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-navigation',
@@ -8,12 +7,12 @@ import { Observable } from 'rxjs';
   styleUrls: ['navigation.component.css'],
 })
 export class NavigationComponent implements OnInit {
-  isAuthenticated$: Observable<boolean>;
+  isAuthenticated: boolean;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
+    this.oidcSecurityService.isAuthenticated$.subscribe((value) => (this.isAuthenticated = value));
   }
 
   login() {

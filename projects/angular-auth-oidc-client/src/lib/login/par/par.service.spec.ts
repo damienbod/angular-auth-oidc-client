@@ -84,11 +84,11 @@ describe('ParService', () => {
     it(
       'calls data service with correct params',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url');
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url123');
         spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
         const dataServiceSpy = spyOn(dataService, 'post').and.returnValue(of({}));
         service.postParRequest().subscribe(() => {
-          expect(dataServiceSpy).toHaveBeenCalledOnceWith('parEndpoint', 'some-url', jasmine.any(HttpHeaders));
+          expect(dataServiceSpy).toHaveBeenCalledOnceWith('parEndpoint', 'some-url123', jasmine.any(HttpHeaders));
         });
       })
     );
@@ -96,7 +96,7 @@ describe('ParService', () => {
     it(
       'Gives back correct object properties',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url');
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
         spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
         spyOn(dataService, 'post').and.returnValue(of({ expires_in: 123, request_uri: 'request_uri' }));
         service.postParRequest().subscribe((result) => {
@@ -108,7 +108,7 @@ describe('ParService', () => {
     it(
       'throws error if data service has got an error',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url');
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url789');
         spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
         spyOn(dataService, 'post').and.returnValue(throwError('AN ERROR'));
         const loggerSpy = spyOn(loggerService, 'logError');
