@@ -20,7 +20,7 @@ describe(`AutoLoginGuard`, () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([])],
+      imports: [RouterTestingModule],
       providers: [
         AutoLoginService,
         { provide: AuthStateService, useClass: AuthStateServiceMock },
