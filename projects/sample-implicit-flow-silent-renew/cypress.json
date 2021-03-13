@@ -1,0 +1,9 @@
+{
+  "integrationFolder": "projects/sample-implicit-flow-silent-renew/cypress/integration",
+  "supportFile": "projects/sample-implicit-flow-silent-renew/cypress/support/index.ts",
+  "videosFolder": "projects/sample-implicit-flow-silent-renew/cypress/videos",
+  "screenshotsFolder": "projects/sample-implicit-flow-silent-renew/cypress/screenshots",
+  "pluginsFile": "projects/sample-implicit-flow-silent-renew/cypress/plugins/index.js",
+  "fixturesFolder": "projects/sample-implicit-flow-silent-renew/cypress/fixtures",
+  "baseUrl": "http://localhost:4202"
+}

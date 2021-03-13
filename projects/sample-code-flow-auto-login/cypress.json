@@ -1,0 +1,9 @@
+{
+  "integrationFolder": "projects/sample-code-flow-auto-login/cypress/integration",
+  "supportFile": "projects/sample-code-flow-auto-login/cypress/support/index.ts",
+  "videosFolder": "projects/sample-code-flow-auto-login/cypress/videos",
+  "screenshotsFolder": "projects/sample-code-flow-auto-login/cypress/screenshots",
+  "pluginsFile": "projects/sample-code-flow-auto-login/cypress/plugins/index.js",
+  "fixturesFolder": "projects/sample-code-flow-auto-login/cypress/fixtures",
+  "baseUrl": "http://localhost:4203"
+}

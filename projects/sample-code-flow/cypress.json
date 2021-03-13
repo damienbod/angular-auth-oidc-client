@@ -1,0 +1,10 @@
+{
+  "integrationFolder": "projects/sample-code-flow/cypress/integration",
+  "supportFile": "projects/sample-code-flow/cypress/support/index.ts",
+  "videosFolder": "projects/sample-code-flow/cypress/videos",
+  "screenshotsFolder": "projects/sample-code-flow/cypress/screenshots",
+  "pluginsFile": "projects/sample-code-flow/cypress/plugins/index.js",
+  "fixturesFolder": "projects/sample-code-flow/cypress/fixtures",
+  "baseUrl": "https://localhost:4200",
+  "chromeWebSecurity": false
+}

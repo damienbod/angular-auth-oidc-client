@@ -1,0 +1,9 @@
+{
+  "integrationFolder": "projects/sample-code-flow-azure-b2c/cypress/integration",
+  "supportFile": "projects/sample-code-flow-azure-b2c/cypress/support/index.ts",
+  "videosFolder": "projects/sample-code-flow-azure-b2c/cypress/videos",
+  "screenshotsFolder": "projects/sample-code-flow-azure-b2c/cypress/screenshots",
+  "pluginsFile": "projects/sample-code-flow-azure-b2c/cypress/plugins/index.js",
+  "fixturesFolder": "projects/sample-code-flow-azure-b2c/cypress/fixtures",
+  "baseUrl": "http://localhost:65328"
+}

@@ -1,0 +1,9 @@
+{
+  "integrationFolder": "projects/sample-code-flow-http-config/cypress/integration",
+  "supportFile": "projects/sample-code-flow-http-config/cypress/support/index.ts",
+  "videosFolder": "projects/sample-code-flow-http-config/cypress/videos",
+  "screenshotsFolder": "projects/sample-code-flow-http-config/cypress/screenshots",
+  "pluginsFile": "projects/sample-code-flow-http-config/cypress/plugins/index.js",
+  "fixturesFolder": "projects/sample-code-flow-http-config/cypress/fixtures",
+  "baseUrl": "http://localhost:4201"
+}

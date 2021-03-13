@@ -1,0 +1,9 @@
+{
+  "integrationFolder": "projects/sample-code-flow-lazy-loaded/cypress/integration",
+  "supportFile": "projects/sample-code-flow-lazy-loaded/cypress/support/index.ts",
+  "videosFolder": "projects/sample-code-flow-lazy-loaded/cypress/videos",
+  "screenshotsFolder": "projects/sample-code-flow-lazy-loaded/cypress/screenshots",
+  "pluginsFile": "projects/sample-code-flow-lazy-loaded/cypress/plugins/index.js",
+  "fixturesFolder": "projects/sample-code-flow-lazy-loaded/cypress/fixtures",
+  "baseUrl": "http://localhost:4200"
+}

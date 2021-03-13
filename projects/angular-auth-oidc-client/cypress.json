@@ -1,0 +1,9 @@
+{
+  "integrationFolder": "projects/angular-auth-oidc-client/cypress/integration",
+  "supportFile": "projects/angular-auth-oidc-client/cypress/support/index.ts",
+  "videosFolder": "projects/angular-auth-oidc-client/cypress/videos",
+  "screenshotsFolder": "projects/angular-auth-oidc-client/cypress/screenshots",
+  "pluginsFile": "projects/angular-auth-oidc-client/cypress/plugins/index.js",
+  "fixturesFolder": "projects/angular-auth-oidc-client/cypress/fixtures",
+  "baseUrl": "http://localhost:4200"
+}

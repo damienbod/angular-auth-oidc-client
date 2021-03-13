@@ -35,6 +35,46 @@
           "options": {
             "lintFilePatterns": ["projects/angular-auth-oidc-client/**/*.ts", "projects/angular-auth-oidc-client/**/*.html"]
           }
+        },
+        "cypress-run": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "angular-auth-oidc-client:serve",
+            "configFile": "projects/angular-auth-oidc-client/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "angular-auth-oidc-client:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "angular-auth-oidc-client:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/angular-auth-oidc-client/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "angular-auth-oidc-client:serve:production"
+            }
+          }
+        },
+        "e2e": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "angular-auth-oidc-client:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/angular-auth-oidc-client/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "angular-auth-oidc-client:serve:production"
+            }
+          }
         }
       }
     },
@@ -98,7 +138,8 @@
             "browserTarget": "sample-code-flow:build",
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
-            "port": 4200
+            "port": 4200,
+            "ssl": true
           },
           "configurations": {
             "production": {
@@ -131,10 +172,38 @@
           }
         },
         "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+          "builder": "@briebug/cypress-schematic:cypress",
           "options": {
-            "protractorConfig": "projects/sample-code-flow/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow:serve"
+            "devServerTarget": "sample-code-flow:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow:serve:production"
+            }
+          }
+        },
+        "cypress-run": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow:serve",
+            "configFile": "projects/sample-code-flow/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow/cypress.json"
           },
           "configurations": {
             "production": {
@@ -237,10 +306,38 @@
           }
         },
         "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+          "builder": "@briebug/cypress-schematic:cypress",
           "options": {
-            "protractorConfig": "projects/sample-code-flow-auto-login/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-auto-login:serve"
+            "devServerTarget": "sample-code-flow-auto-login:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow-auto-login/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-auto-login:serve:production"
+            }
+          }
+        },
+        "cypress-run": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow-auto-login:serve",
+            "configFile": "projects/sample-code-flow-auto-login/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-auto-login:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow-auto-login:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow-auto-login/cypress.json"
           },
           "configurations": {
             "production": {
@@ -343,10 +440,38 @@
           }
         },
         "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+          "builder": "@briebug/cypress-schematic:cypress",
           "options": {
-            "protractorConfig": "projects/sample-code-flow-http-config/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-http-config:serve"
+            "devServerTarget": "sample-code-flow-http-config:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow-http-config/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-http-config:serve:production"
+            }
+          }
+        },
+        "cypress-run": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow-http-config:serve",
+            "configFile": "projects/sample-code-flow-http-config/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-http-config:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow-http-config:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow-http-config/cypress.json"
           },
           "configurations": {
             "production": {
@@ -445,10 +570,38 @@
           }
         },
         "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+          "builder": "@briebug/cypress-schematic:cypress",
           "options": {
-            "protractorConfig": "projects/sample-implicit-flow-google/e2e/protractor.conf.js",
-            "devServerTarget": "sample-implicit-flow-google:serve"
+            "devServerTarget": "sample-implicit-flow-google:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-implicit-flow-google/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-implicit-flow-google:serve:production"
+            }
+          }
+        },
+        "cypress-run": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-implicit-flow-google:serve",
+            "configFile": "projects/sample-implicit-flow-google/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-implicit-flow-google:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-implicit-flow-google:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-implicit-flow-google/cypress.json"
           },
           "configurations": {
             "production": {
@@ -555,10 +708,38 @@
           }
         },
         "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+          "builder": "@briebug/cypress-schematic:cypress",
           "options": {
-            "protractorConfig": "projects/sample-code-flow-azuread/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-azuread:serve"
+            "devServerTarget": "sample-code-flow-azuread:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow-azuread/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-azuread:serve:production"
+            }
+          }
+        },
+        "cypress-run": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow-azuread:serve",
+            "configFile": "projects/sample-code-flow-azuread/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-azuread:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow-azuread:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow-azuread/cypress.json"
           },
           "configurations": {
             "production": {
@@ -661,10 +842,38 @@
           }
         },
         "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+          "builder": "@briebug/cypress-schematic:cypress",
           "options": {
-            "protractorConfig": "projects/sample-code-flow-azure-b2c/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-azure-b2c:serve"
+            "devServerTarget": "sample-code-flow-azure-b2c:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow-azure-b2c/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-azure-b2c:serve:production"
+            }
+          }
+        },
+        "cypress-run": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow-azure-b2c:serve",
+            "configFile": "projects/sample-code-flow-azure-b2c/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-azure-b2c:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow-azure-b2c:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow-azure-b2c/cypress.json"
           },
           "configurations": {
             "production": {
@@ -773,10 +982,38 @@
           }
         },
         "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+          "builder": "@briebug/cypress-schematic:cypress",
           "options": {
-            "protractorConfig": "projects/sample-implicit-flow-silent-renew/e2e/protractor.conf.js",
-            "devServerTarget": "sample-implicit-flow-silent-renew:serve"
+            "devServerTarget": "sample-implicit-flow-silent-renew:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-implicit-flow-silent-renew/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-implicit-flow-silent-renew:serve:production"
+            }
+          }
+        },
+        "cypress-run": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-implicit-flow-silent-renew:serve",
+            "configFile": "projects/sample-implicit-flow-silent-renew/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-implicit-flow-silent-renew:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-implicit-flow-silent-renew:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-implicit-flow-silent-renew/cypress.json"
           },
           "configurations": {
             "production": {
@@ -875,10 +1112,38 @@
           }
         },
         "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+          "builder": "@briebug/cypress-schematic:cypress",
           "options": {
-            "protractorConfig": "projects/sample-code-flow-refresh-tokens/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-refresh-tokens:serve"
+            "devServerTarget": "sample-code-flow-refresh-tokens:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow-refresh-tokens/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-refresh-tokens:serve:production"
+            }
+          }
+        },
+        "cypress-run": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow-refresh-tokens:serve",
+            "configFile": "projects/sample-code-flow-refresh-tokens/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-refresh-tokens:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow-refresh-tokens:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow-refresh-tokens/cypress.json"
           },
           "configurations": {
             "production": {
@@ -976,10 +1241,38 @@
           }
         },
         "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+          "builder": "@briebug/cypress-schematic:cypress",
           "options": {
-            "protractorConfig": "projects/sample-code-flow-lazy-loaded/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-lazy-loaded:serve"
+            "devServerTarget": "sample-code-flow-lazy-loaded:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow-lazy-loaded/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-lazy-loaded:serve:production"
+            }
+          }
+        },
+        "cypress-run": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow-lazy-loaded:serve",
+            "configFile": "projects/sample-code-flow-lazy-loaded/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-lazy-loaded:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow-lazy-loaded:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow-lazy-loaded/cypress.json"
           },
           "configurations": {
             "production": {
@@ -1081,16 +1374,44 @@
             "tsConfig": [
               "projects/sample-code-flow-popup/tsconfig.app.json",
               "projects/sample-code-flow-popup/tsconfig.spec.json",
-              "projects/sample-code-flow-popup/e2e/tsconfig.json"
+              "projects/sample-code-flow-popup/cypress/tsconfig.json"
             ],
             "exclude": ["**/node_modules/**"]
           }
         },
         "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+          "builder": "@briebug/cypress-schematic:cypress",
           "options": {
-            "protractorConfig": "projects/sample-code-flow-popup/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-popup:serve"
+            "devServerTarget": "sample-code-flow-popup:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow-popup/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-popup:serve:production"
+            }
+          }
+        },
+        "cypress-run": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow-popup:serve",
+            "configFile": "projects/sample-code-flow-popup/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-popup:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow-popup:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow-popup/cypress.json"
           },
           "configurations": {
             "production": {
@@ -1192,20 +1513,48 @@
             "tsConfig": [
               "projects/sample-code-flow-par/tsconfig.app.json",
               "projects/sample-code-flow-par/tsconfig.spec.json",
-              "projects/sample-code-flow-par/e2e/tsconfig.json"
+              "projects/sample-code-flow-par/cypress/tsconfig.json"
             ],
             "exclude": ["**/node_modules/**"]
           }
         },
         "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+          "builder": "@briebug/cypress-schematic:cypress",
           "options": {
-            "protractorConfig": "projects/sample-code-flow-par/e2e/protractor.conf.js",
-            "devServerTarget": ":serve"
+            "devServerTarget": "sample-code-flow-par:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow-par/cypress.json"
           },
           "configurations": {
             "production": {
-              "devServerTarget": ":serve:production"
+              "devServerTarget": "sample-code-flow-par:serve:production"
+            }
+          }
+        },
+        "cypress-run": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow-par:serve",
+            "configFile": "projects/sample-code-flow-par/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-par:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@briebug/cypress-schematic:cypress",
+          "options": {
+            "devServerTarget": "sample-code-flow-par:serve",
+            "watch": true,
+            "headless": false,
+            "configFile": "projects/sample-code-flow-par/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-par:serve:production"
             }
           }
         }

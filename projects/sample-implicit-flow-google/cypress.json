@@ -1,0 +1,9 @@
+{
+  "integrationFolder": "projects/sample-implicit-flow-google/cypress/integration",
+  "supportFile": "projects/sample-implicit-flow-google/cypress/support/index.ts",
+  "videosFolder": "projects/sample-implicit-flow-google/cypress/videos",
+  "screenshotsFolder": "projects/sample-implicit-flow-google/cypress/screenshots",
+  "pluginsFile": "projects/sample-implicit-flow-google/cypress/plugins/index.js",
+  "fixturesFolder": "projects/sample-implicit-flow-google/cypress/fixtures",
+  "baseUrl": "http://localhost:44386"
+}

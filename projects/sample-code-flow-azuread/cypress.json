@@ -1,0 +1,9 @@
+{
+  "integrationFolder": "projects/sample-code-flow-azuread/cypress/integration",
+  "supportFile": "projects/sample-code-flow-azuread/cypress/support/index.ts",
+  "videosFolder": "projects/sample-code-flow-azuread/cypress/videos",
+  "screenshotsFolder": "projects/sample-code-flow-azuread/cypress/screenshots",
+  "pluginsFile": "projects/sample-code-flow-azuread/cypress/plugins/index.js",
+  "fixturesFolder": "projects/sample-code-flow-azuread/cypress/fixtures",
+  "baseUrl": "http://localhost:44347"
+}
