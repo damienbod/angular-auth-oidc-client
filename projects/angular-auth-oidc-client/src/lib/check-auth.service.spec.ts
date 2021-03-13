@@ -72,6 +72,10 @@ describe('CheckAuthService', () => {
     router = TestBed.inject(Router);
   });
 
+  afterEach(() => {
+    localStorage.clear();
+  });
+
   it('should create', () => {
     expect(checkAuthService).toBeTruthy();
   });

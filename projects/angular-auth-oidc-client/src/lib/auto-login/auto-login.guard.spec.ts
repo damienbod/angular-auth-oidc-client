@@ -42,7 +42,9 @@ describe(`AutoLoginGuard`, () => {
     authStateService = TestBed.inject(AuthStateService);
     router = TestBed.inject(Router);
     loginService = TestBed.inject(LoginService);
+  });
 
+  afterEach(() => {
     localStorage.clear();
   });
 
