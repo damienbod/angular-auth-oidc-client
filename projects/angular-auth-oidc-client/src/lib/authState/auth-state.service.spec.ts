@@ -124,6 +124,13 @@ describe('Auth State Service', () => {
       expect(result).toBe('');
     });
 
+    it('returns false if storagePersistanceService returns something falsy but authorized', () => {
+      spyOnProperty(authStateService as any, 'isAuthorized', 'get').and.returnValue(true);
+      spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('');
+      const result = authStateService.getAccessToken();
+      expect(result).toBe('');
+    });
+
     it('isAuthorized is true returns decodeURIComponent(token)', () => {
       spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('HenloLegger');
       spyOn(storagePersistanceService, 'getIdToken').and.returnValue('HenloFuriend');
