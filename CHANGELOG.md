@@ -4,6 +4,8 @@
 
 - Improve AutoLoginGuard
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1015)
+- Add support custom params during token exchange
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1010)
 
 ### 2021-03-12 Version 11.6.3
 
