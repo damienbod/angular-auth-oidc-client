@@ -131,7 +131,7 @@ describe('SecurityCheckSessionTests', () => {
     expect(spy).toHaveBeenCalledWith('clientId');
   });
 
-  it('start() does not call pollserversession() if scheduledHeartBeatRunning is set', () => {
+  it('start() does not call pollServerSession() if scheduledHeartBeatRunning is set', () => {
     const spy = spyOn<any>(checkSessionService, 'pollServerSession');
     (checkSessionService as any).scheduledHeartBeatRunning = () => {};
     checkSessionService.start();
