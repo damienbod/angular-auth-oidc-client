@@ -40,7 +40,7 @@ describe('CheckAuthService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [BrowserModule, HttpClientTestingModule, RouterTestingModule.withRoutes([]), AuthModule.forRoot()],
+      imports: [BrowserModule, HttpClientTestingModule, RouterTestingModule, AuthModule.forRoot()],
       providers: [
         CheckSessionService,
         { provide: SilentRenewService, useClass: SilentRenewServiceMock },
@@ -70,6 +70,10 @@ describe('CheckAuthService', () => {
     popUpService = TestBed.inject(PopUpService);
     autoLoginService = TestBed.inject(AutoLoginService);
     router = TestBed.inject(Router);
+  });
+
+  afterEach(() => {
+    localStorage.clear();
   });
 
   it('should create', () => {

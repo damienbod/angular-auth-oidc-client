@@ -36,16 +36,16 @@ describe('RefreshSessionIframeService ', () => {
 
   describe('refreshSessionWithIframe', () => {
     it(
-      'calls sendAuthorizeReqestUsingSilentRenew with created url',
+      'calls sendAuthorizeRequestUsingSilentRenew with created url',
       waitForAsync(() => {
         spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
-        const sendAuthorizeReqestUsingSilentRenewSpy = spyOn(
+        const sendAuthorizeRequestUsingSilentRenewSpy = spyOn(
           refreshSessionIframeService as any,
-          'sendAuthorizeReqestUsingSilentRenew'
+          'sendAuthorizeRequestUsingSilentRenew'
         ).and.returnValue(of(null));
 
         refreshSessionIframeService.refreshSessionWithIframe().subscribe(() => {
-          expect(sendAuthorizeReqestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url');
+          expect(sendAuthorizeRequestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url');
         });
       })
     );
@@ -65,7 +65,7 @@ describe('RefreshSessionIframeService ', () => {
 
         spyOn(silentRenewService, 'getOrCreateIframe').and.returnValue(sessionIFrame);
 
-        spyOn(refreshSessionIframeService as any, 'sendAuthorizeReqestUsingSilentRenew').and.callThrough();
+        spyOn(refreshSessionIframeService as any, 'sendAuthorizeRequestUsingSilentRenew').and.callThrough();
 
         refreshSessionIframeService.refreshSessionWithIframe().subscribe((result) => {
           expect(result).toBeTrue();

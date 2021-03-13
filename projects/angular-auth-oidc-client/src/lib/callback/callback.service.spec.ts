@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { ConfigurationProvider } from '../config/config.provider';
 import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { FlowsService } from '../flows/flows.service';
@@ -15,11 +15,12 @@ import { CodeFlowCallbackServiceMock } from './code-flow-callback.service-mock';
 import { ImplicitFlowCallbackService } from './implicit-flow-callback.service';
 import { ImplicitFlowCallbackServiceMock } from './implicit-flow-callback.service-mock';
 
-describe('Callbackservice ', () => {
+describe('CallbackService ', () => {
   let callbackService: CallbackService;
   let implicitFlowCallbackService: ImplicitFlowCallbackService;
   let codeFlowCallbackService: CodeFlowCallbackService;
   let flowHelper: FlowHelper;
+  let urlService: UrlService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -41,6 +42,22 @@ describe('Callbackservice ', () => {
     flowHelper = TestBed.inject(FlowHelper);
     implicitFlowCallbackService = TestBed.inject(ImplicitFlowCallbackService);
     codeFlowCallbackService = TestBed.inject(CodeFlowCallbackService);
+    urlService = TestBed.inject(UrlService);
+  });
+
+  describe('isCallback', () => {
+    it('calls urlService.isCallbackFromSts with passed url', () => {
+      const urlServiceSpy = spyOn(urlService, 'isCallbackFromSts');
+
+      callbackService.isCallback('anyUrl');
+      expect(urlServiceSpy).toHaveBeenCalledOnceWith('anyUrl');
+    });
+  });
+
+  describe('stsCallback$', () => {
+    it('is of type Observable', () => {
+      expect(callbackService.stsCallback$).toBeInstanceOf(Observable);
+    });
   });
 
   describe('handleCallbackAndFireEvents', () => {

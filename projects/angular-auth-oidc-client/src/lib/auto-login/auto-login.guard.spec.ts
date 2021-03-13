@@ -20,7 +20,7 @@ describe(`AutoLoginGuard`, () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([])],
+      imports: [RouterTestingModule],
       providers: [
         AutoLoginService,
         { provide: AuthStateService, useClass: AuthStateServiceMock },
@@ -42,7 +42,9 @@ describe(`AutoLoginGuard`, () => {
     authStateService = TestBed.inject(AuthStateService);
     router = TestBed.inject(Router);
     loginService = TestBed.inject(LoginService);
+  });
 
+  afterEach(() => {
     localStorage.clear();
   });
 
