@@ -1,6 +1,6 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
-### 2021-03-14 Version 11.6.4
+### 2021-03-13 Version 11.6.4
 
 - Improve AutoLoginGuard
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1015)
