@@ -138,7 +138,7 @@ describe('OidcSecurityService', () => {
     });
 
     it('returns configProvider.configuration', () => {
-      const spy = spyOnProperty(configurationProvider, 'openIDConfiguration', 'get');
+      const spy = spyOn(configurationProvider, 'getOpenIDConfiguration');
       oidcSecurityService.configuration;
       expect(spy).toHaveBeenCalled();
     });

@@ -18,7 +18,7 @@ export class LoginService {
   ) {}
 
   login(authOptions?: AuthOptions): void {
-    const usePushedAuthorisationRequests = this.configurationProvider.openIDConfiguration.usePushedAuthorisationRequests;
+    const { usePushedAuthorisationRequests } = this.configurationProvider.getOpenIDConfiguration();
 
     if (usePushedAuthorisationRequests) {
       return this.parLoginService.loginPar(authOptions);
@@ -28,7 +28,7 @@ export class LoginService {
   }
 
   loginWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
-    const usePushedAuthorisationRequests = this.configurationProvider.openIDConfiguration.usePushedAuthorisationRequests;
+    const { usePushedAuthorisationRequests } = this.configurationProvider.getOpenIDConfiguration();
 
     if (usePushedAuthorisationRequests) {
       return this.parLoginService.loginWithPopUpPar(authOptions, popupOptions);

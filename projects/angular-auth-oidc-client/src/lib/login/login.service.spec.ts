@@ -44,7 +44,7 @@ describe('LoginService', () => {
 
   describe('login', () => {
     it('calls parLoginService loginpar if usePushedAuthorisationRequests is true', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ usePushedAuthorisationRequests: true });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ usePushedAuthorisationRequests: true });
       const loginParSpy = spyOn(parLoginService, 'loginPar');
       const standardLoginSpy = spyOn(standardLoginService, 'loginStandard');
 
@@ -55,7 +55,7 @@ describe('LoginService', () => {
     });
 
     it('calls standardLoginService loginstandard if usePushedAuthorisationRequests is false', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ usePushedAuthorisationRequests: false });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ usePushedAuthorisationRequests: false });
       const loginParSpy = spyOn(parLoginService, 'loginPar');
       const standardLoginSpy = spyOn(standardLoginService, 'loginStandard');
 
@@ -68,7 +68,7 @@ describe('LoginService', () => {
 
   describe('loginWithPopUp', () => {
     it('calls parLoginService loginWithPopUpPar if usePushedAuthorisationRequests is true', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ usePushedAuthorisationRequests: true });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ usePushedAuthorisationRequests: true });
       const loginParSpy = spyOn(parLoginService, 'loginWithPopUpPar');
       const loginWithPopUpStandardSpy = spyOn(popUpLoginService, 'loginWithPopUpStandard');
 
@@ -79,7 +79,7 @@ describe('LoginService', () => {
     });
 
     it('calls standardLoginService loginstandard if usePushedAuthorisationRequests is false', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ usePushedAuthorisationRequests: false });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ usePushedAuthorisationRequests: false });
       const loginParSpy = spyOn(parLoginService, 'loginPar');
       const loginWithPopUpStandardSpy = spyOn(popUpLoginService, 'loginWithPopUpStandard');
 

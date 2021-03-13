@@ -72,7 +72,7 @@ describe('PopUpLoginService', () => {
     it(
       'does nothing if it has an invalid response type',
       waitForAsync(() => {
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ responseType: 'stubValue' });
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(false);
         const loggerSpy = spyOn(loggerService, 'logError');
 
@@ -88,7 +88,7 @@ describe('PopUpLoginService', () => {
     it(
       'does nothing if no well known endpoint is given',
       waitForAsync(() => {
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ responseType: 'stubValue' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ responseType: 'stubValue' });
         const spy = spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         const loggerSpy = spyOn(loggerService, 'logError');
 
@@ -105,7 +105,7 @@ describe('PopUpLoginService', () => {
     it(
       'calls urlService.getAuthorizeUrl() if everything fits',
       waitForAsync(() => {
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
@@ -122,7 +122,7 @@ describe('PopUpLoginService', () => {
     it(
       'opens popup if everything fits',
       waitForAsync(() => {
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });
@@ -140,7 +140,7 @@ describe('PopUpLoginService', () => {
     it(
       'returns three properties when popupservice received an url',
       waitForAsync(() => {
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpoint: 'authWellknownEndpoint',
           responseType: 'stubValue',
         });

@@ -169,7 +169,7 @@ describe('UrlService Tests', () => {
     it('returns null when clientId is null', () => {
       const clientId = null;
       const authorizationEndpoint = 'authorizationEndpoint';
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId });
       spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ authorizationEndpoint });
 
       const value = (service as any).createAuthorizeUrl(
@@ -188,7 +188,7 @@ describe('UrlService Tests', () => {
       const clientId = 'something';
       const responseType = null;
       const authorizationEndpoint = 'authorizationEndpoint';
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId, responseType });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId, responseType });
       spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ authorizationEndpoint });
 
       const value = (service as any).createAuthorizeUrl(
@@ -208,7 +208,7 @@ describe('UrlService Tests', () => {
       const responseType = 'responsetype';
       const scope = null;
       const authorizationEndpoint = 'authorizationEndpoint';
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId, responseType, scope });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId, responseType, scope });
       spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ authorizationEndpoint });
 
       const value = (service as any).createAuthorizeUrl(
@@ -783,7 +783,7 @@ describe('UrlService Tests', () => {
       const codeVerifier = 'codeverifier';
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       const clientId = null;
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId });
       const result = service.createBodyForCodeFlowCodeRequest('notRelevantParam');
       expect(result).toBeNull();
     });
@@ -795,7 +795,7 @@ describe('UrlService Tests', () => {
       const clientId = 'clientId';
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId, redirectUrl });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId, redirectUrl });
 
       const result = service.createBodyForCodeFlowCodeRequest(code);
 
@@ -809,7 +809,7 @@ describe('UrlService Tests', () => {
       const clientId = 'clientId';
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId, redirectUrl });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId, redirectUrl });
 
       const result = service.createBodyForCodeFlowCodeRequest(code);
       const expected = `grant_type=authorization_code&client_id=${clientId}&code_verifier=${codeVerifier}&code=${code}&redirect_uri=${redirectUrl}`;
@@ -824,7 +824,7 @@ describe('UrlService Tests', () => {
       const clientId = 'clientId';
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId, silentRenewUrl });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId, silentRenewUrl });
 
       const result = service.createBodyForCodeFlowCodeRequest(code);
       const expected = `grant_type=authorization_code&client_id=${clientId}&code_verifier=${codeVerifier}&code=${code}&redirect_uri=${silentRenewUrl}`;
@@ -840,7 +840,7 @@ describe('UrlService Tests', () => {
       const customTokenParams = { foo: 'bar' };
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId, silentRenewUrl });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId, silentRenewUrl });
 
       const result = service.createBodyForCodeFlowCodeRequest(code, customTokenParams);
       const expected = `grant_type=authorization_code&client_id=${clientId}&code_verifier=${codeVerifier}&code=${code}&foo=bar&redirect_uri=${silentRenewUrl}`;
@@ -853,7 +853,7 @@ describe('UrlService Tests', () => {
     it('returns correct url', () => {
       const clientId = 'clientId';
       const refreshToken = 'refreshToken';
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId });
       const result = service.createBodyForCodeFlowRefreshTokensRequest(refreshToken);
       expect(result).toBe(`grant_type=refresh_token&client_id=${clientId}&refresh_token=${refreshToken}`);
     });
@@ -861,7 +861,7 @@ describe('UrlService Tests', () => {
     it('returns correct url with custom params if custom params are passed', () => {
       const clientId = 'clientId';
       const refreshToken = 'refreshToken';
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId });
       const result = service.createBodyForCodeFlowRefreshTokensRequest(refreshToken, { any: 'thing' });
       expect(result).toBe(`grant_type=refresh_token&client_id=${clientId}&refresh_token=${refreshToken}&any=thing`);
     });
@@ -869,7 +869,7 @@ describe('UrlService Tests', () => {
     it('returns null if clientId is falsy', () => {
       const clientId = '';
       const refreshToken = 'refreshToken';
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId });
       const result = service.createBodyForCodeFlowRefreshTokensRequest(refreshToken);
       expect(result).toBe(null);
     });
@@ -877,13 +877,13 @@ describe('UrlService Tests', () => {
 
   describe('createBodyForParCodeFlowRequest', () => {
     it('returns null redirectUrl is falsy', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ redirectUrl: '' });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ redirectUrl: '' });
       const result = service.createBodyForParCodeFlowRequest();
       expect(result).toBe(null);
     });
 
     it('returns basic url with no extras if properties are given', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         clientId: 'testClientId',
         responseType: 'testResponseType',
         scope: 'testScope',
@@ -903,7 +903,7 @@ describe('UrlService Tests', () => {
     });
 
     it('returns basic url with hdParam if properties are given', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         clientId: 'testClientId',
         responseType: 'testResponseType',
         scope: 'testScope',
@@ -923,7 +923,7 @@ describe('UrlService Tests', () => {
     });
 
     it('returns basic url with hdParam and custom params if properties are given', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         clientId: 'testClientId',
         responseType: 'testResponseType',
         scope: 'testScope',
@@ -943,7 +943,7 @@ describe('UrlService Tests', () => {
     });
 
     it('returns basic url with hdParam and custom params and passed cutom params if properties are given', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         clientId: 'testClientId',
         responseType: 'testResponseType',
         scope: 'testScope',
@@ -972,7 +972,7 @@ describe('UrlService Tests', () => {
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
       spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
 
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         silentRenewUrl,
       });
 
@@ -997,7 +997,7 @@ describe('UrlService Tests', () => {
       spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
         authorizationEndpoint,
       });
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         silentRenewUrl,
         clientId,
         responseType,
@@ -1023,7 +1023,7 @@ describe('UrlService Tests', () => {
       spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
 
       spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         silentRenewUrl,
         clientId,
         responseType,
@@ -1049,7 +1049,7 @@ describe('UrlService Tests', () => {
       spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
       spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         silentRenewUrl,
       });
 
@@ -1076,7 +1076,7 @@ describe('UrlService Tests', () => {
       spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
       spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ authorizationEndpoint });
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         silentRenewUrl,
         clientId,
         responseType,
@@ -1106,7 +1106,7 @@ describe('UrlService Tests', () => {
       spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
       spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ silentRenewUrl, clientId, responseType });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenewUrl, clientId, responseType });
 
       const serviceAsAny = service as any;
 
@@ -1129,7 +1129,7 @@ describe('UrlService Tests', () => {
       spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
 
       spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ authorizationEndpoint });
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         redirectUrl,
         clientId,
         responseType,
@@ -1155,7 +1155,7 @@ describe('UrlService Tests', () => {
       spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
 
       spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ redirectUrl, clientId, responseType });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ redirectUrl, clientId, responseType });
 
       const serviceAsAny = service as any;
 
@@ -1174,7 +1174,7 @@ describe('UrlService Tests', () => {
       spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
 
       spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ redirectUrl, clientId, responseType });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ redirectUrl, clientId, responseType });
 
       const serviceAsAny = service as any;
 
@@ -1192,7 +1192,7 @@ describe('UrlService Tests', () => {
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
       spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
 
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         redirectUrl,
       });
 
@@ -1219,7 +1219,7 @@ describe('UrlService Tests', () => {
       spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
       spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ authorizationEndpoint });
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         redirectUrl,
         clientId,
         responseType,
@@ -1251,7 +1251,7 @@ describe('UrlService Tests', () => {
       spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
       spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ authorizationEndpoint });
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         redirectUrl,
         clientId,
         responseType,
@@ -1282,7 +1282,7 @@ describe('UrlService Tests', () => {
       spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
 
       spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ redirectUrl, clientId, responseType });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ redirectUrl, clientId, responseType });
 
       const serviceAsAny = service as any;
 
@@ -1414,7 +1414,7 @@ describe('UrlService Tests', () => {
         authorizationEndpoint: 'anything',
       });
 
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId: null });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId: null });
       const result = service.getAuthorizeParUrl('');
 
       expect(result).toBe(null);
@@ -1425,7 +1425,7 @@ describe('UrlService Tests', () => {
         authorizationEndpoint: 'anything',
       });
 
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId: 'clientId' });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId: 'clientId' });
       const result = service.getAuthorizeParUrl('passedRequestUri');
 
       expect(result).toBe('anything?request_uri=passedRequestUri&client_id=clientId');

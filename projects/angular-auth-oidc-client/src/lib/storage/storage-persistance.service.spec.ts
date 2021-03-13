@@ -29,7 +29,7 @@ describe('Storage Persistance Service', () => {
     service = TestBed.inject(StoragePersistanceService);
     securityStorage = TestBed.inject(AbstractSecurityStorage);
 
-    storageSpy = spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId: storagePrefix });
+    storageSpy = spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId: storagePrefix });
   });
 
   it('should create', () => {
@@ -37,7 +37,7 @@ describe('Storage Persistance Service', () => {
   });
 
   describe('read', () => {
-    it('reads from oidcSecuriyStorage with correct key', () => {
+    it('reads from oidcSecurityStorage with correct key', () => {
       const spy = spyOn(securityStorage, 'read');
       service.read('authNonce');
 
@@ -45,7 +45,7 @@ describe('Storage Persistance Service', () => {
       expect(spy).toHaveBeenCalledWith(keyToRead);
     });
 
-    it('reads from oidcSecuriyStorage with fallback key if no config is set (not throw exception)', () => {
+    it('reads from oidcSecurityStorage with fallback key if no config is set (not throw exception)', () => {
       storageSpy.and.returnValue(null);
       const spy = spyOn(securityStorage, 'read');
       service.read('authzData');
@@ -56,7 +56,7 @@ describe('Storage Persistance Service', () => {
   });
 
   describe('write', () => {
-    it('writes to oidcSecuriyStorage with correct key', () => {
+    it('writes to oidcSecurityStorage with correct key', () => {
       const spy = spyOn(securityStorage, 'write');
       service.write('authNonce', 'anyValue');
 

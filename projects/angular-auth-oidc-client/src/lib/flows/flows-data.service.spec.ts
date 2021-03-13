@@ -138,7 +138,7 @@ describe('Flows Data Service', () => {
       const openIDConfiguration = {
         silentRenewTimeoutInSeconds: 10,
       };
-      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue(openIDConfiguration);
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue(openIDConfiguration);
 
       jasmine.clock().uninstall();
       jasmine.clock().install();
@@ -166,7 +166,7 @@ describe('Flows Data Service', () => {
       const openIDConfiguration = {
         silentRenewTimeoutInSeconds: 10,
       };
-      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue(openIDConfiguration);
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue(openIDConfiguration);
 
       jasmine.clock().uninstall();
       jasmine.clock().install();

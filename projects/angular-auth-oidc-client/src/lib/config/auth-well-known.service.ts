@@ -16,13 +16,13 @@ export class AuthWellKnownService {
     private storagePersistanceService: StoragePersistanceService
   ) {}
 
-  getAuthWellKnownEndPoints(authWellknownEndpoint: string) {
+  getAuthWellKnownEndPoints(authWellknownEndpointUrl: string) {
     const alreadySavedWellKnownEndpoints = this.storagePersistanceService.read('authWellKnownEndPoints');
     if (!!alreadySavedWellKnownEndpoints) {
       return of(alreadySavedWellKnownEndpoints);
     }
 
-    return this.getWellKnownEndPointsFromUrl(authWellknownEndpoint).pipe(
+    return this.getWellKnownEndPointsFromUrl(authWellknownEndpointUrl).pipe(
       tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(mappedWellKnownEndpoints)),
       catchError((error) => {
         this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoadingFailed, null);

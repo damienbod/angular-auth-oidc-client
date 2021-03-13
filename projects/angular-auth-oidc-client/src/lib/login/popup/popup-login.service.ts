@@ -35,7 +35,7 @@ export class PopUpLoginService {
       return throwError(errorMessage);
     }
 
-    const authWellknownEndpoint = this.configurationProvider.openIDConfiguration.authWellknownEndpoint;
+    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration();
 
     if (!authWellknownEndpoint) {
       const errorMessage = 'no authWellknownEndpoint given!';

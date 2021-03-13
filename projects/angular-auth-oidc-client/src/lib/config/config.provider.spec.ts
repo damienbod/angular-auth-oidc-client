@@ -27,7 +27,7 @@ describe('ConfigurationProviderTests', () => {
   it('setup defines openIDConfiguration', () => {
     configurationProvider.setConfig({ stsServer: 'hello' });
 
-    expect(configurationProvider.openIDConfiguration).toBeDefined();
+    expect(configurationProvider.getOpenIDConfiguration()).toBeDefined();
   });
 
   it('hasValidConfig is true if config is set', () => {
@@ -38,7 +38,7 @@ describe('ConfigurationProviderTests', () => {
 
   it('get openIDConfiguration returns null when openIdConfigurationInternal is falsy', () => {
     // do not set anything
-    expect(configurationProvider.openIDConfiguration).toBeNull();
+    expect(configurationProvider.getOpenIDConfiguration()).toBeNull();
   });
 
   it('setup defines default openIDConfiguration', () => {
@@ -79,7 +79,7 @@ describe('ConfigurationProviderTests', () => {
 
     configurationProvider.setConfig({ stsServer: 'https://please_set' });
 
-    expect(configurationProvider.openIDConfiguration).toEqual(defaultConfig);
+    expect(configurationProvider.getOpenIDConfiguration()).toEqual(defaultConfig);
   });
 
   it('setup merges default and passed config', () => {
@@ -124,7 +124,7 @@ describe('ConfigurationProviderTests', () => {
 
     configurationProvider.setConfig(config);
 
-    expect(configurationProvider.openIDConfiguration).toEqual(expected);
+    expect(configurationProvider.getOpenIDConfiguration()).toEqual(expected);
   });
 
   it('setup sets special cases', () => {
@@ -173,7 +173,7 @@ describe('ConfigurationProviderTests', () => {
 
     configurationProvider.setConfig(config);
 
-    expect(configurationProvider.openIDConfiguration).toEqual(expected);
+    expect(configurationProvider.getOpenIDConfiguration()).toEqual(expected);
   });
 
   it('setup calls setSpecialCases', () => {
@@ -205,8 +205,10 @@ describe('ConfigurationProviderTests', () => {
 
     configurationProvider.setConfig(config);
 
-    expect(configurationProvider.openIDConfiguration.silentRenew).toEqual(true);
-    expect(configurationProvider.openIDConfiguration.startCheckSession).toEqual(true);
+    const { silentRenew, startCheckSession } = configurationProvider.getOpenIDConfiguration();
+
+    expect(silentRenew).toEqual(true);
+    expect(startCheckSession).toEqual(true);
   });
 
   it('silent_renew and start_checksession are always false when not using the browser platform', () => {
@@ -222,14 +224,16 @@ describe('ConfigurationProviderTests', () => {
 
     configurationProvider.setConfig(config);
 
-    expect(configurationProvider.openIDConfiguration.silentRenew).toEqual(false);
-    expect(configurationProvider.openIDConfiguration.startCheckSession).toEqual(false);
+    const { silentRenew, startCheckSession } = configurationProvider.getOpenIDConfiguration();
+
+    expect(silentRenew).toEqual(false);
+    expect(startCheckSession).toEqual(false);
   });
 
   it('public config has default config if config is not getting passed', () => {
     configurationProvider.setConfig(null);
 
-    const currentConfig = configurationProvider.openIDConfiguration;
+    const currentConfig = configurationProvider.getOpenIDConfiguration();
 
     expect(currentConfig).not.toBeNull();
     expect(currentConfig).toEqual(DEFAULT_CONFIG);

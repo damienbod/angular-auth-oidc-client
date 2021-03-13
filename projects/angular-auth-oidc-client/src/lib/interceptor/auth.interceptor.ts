@@ -15,7 +15,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Ensure we send the token only to routes which are secured
-    const { secureRoutes } = this.configurationProvider.openIDConfiguration;
+    const { secureRoutes } = this.configurationProvider.getOpenIDConfiguration();
 
     if (!secureRoutes) {
       this.loggerService.logDebug(`No routes to check configured`);

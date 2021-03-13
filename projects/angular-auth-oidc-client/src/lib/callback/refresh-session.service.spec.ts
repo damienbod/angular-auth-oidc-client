@@ -82,7 +82,7 @@ describe('RefreshSessionService ', () => {
         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
         spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenewTimeoutInSeconds: 10 });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenewTimeoutInSeconds: 10 });
 
         refreshSessionService.forceRefreshSession().subscribe((result) => {
           expect(result.idToken).not.toBeUndefined();
@@ -97,7 +97,7 @@ describe('RefreshSessionService ', () => {
         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
         spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenewTimeoutInSeconds: 10 });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenewTimeoutInSeconds: 10 });
 
         refreshSessionService.forceRefreshSession().subscribe((result) => {
           expect(result).toBeNull();
@@ -111,7 +111,7 @@ describe('RefreshSessionService ', () => {
         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
         spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenewTimeoutInSeconds: 10 });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenewTimeoutInSeconds: 10 });
 
         refreshSessionService.forceRefreshSession().subscribe((result) => {
           expect(result.idToken).toBeDefined();
@@ -130,7 +130,7 @@ describe('RefreshSessionService ', () => {
         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
         spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenewTimeoutInSeconds: 10 });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenewTimeoutInSeconds: 10 });
 
         refreshSessionService.forceRefreshSession().subscribe((result) => {
           expect(result).toBeNull();
@@ -150,7 +150,7 @@ describe('RefreshSessionService ', () => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
       spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
-      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue(openIDConfiguration);
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue(openIDConfiguration);
 
       const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
       const expectedInvokeCount = MAX_RETRY_ATTEMPTS;
@@ -178,7 +178,7 @@ describe('RefreshSessionService ', () => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
       spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(throwError(new Error(expectedErrorMessage)));
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
-      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue(openIDConfiguration);
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue(openIDConfiguration);
 
       const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
 
@@ -201,7 +201,7 @@ describe('RefreshSessionService ', () => {
           spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
           spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
           spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
-          spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenewTimeoutInSeconds: 10 });
+          spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenewTimeoutInSeconds: 10 });
 
           refreshSessionService.forceRefreshSession().subscribe((result) => {
             expect(result).toBeNull();
@@ -218,7 +218,7 @@ describe('RefreshSessionService ', () => {
         waitForAsync(() => {
           spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
           spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
-          spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenewTimeoutInSeconds: 10 });
+          spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenewTimeoutInSeconds: 10 });
           const spyInsideMap = spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
           refreshSessionService
@@ -266,7 +266,7 @@ describe('RefreshSessionService ', () => {
       'returns null if no authwellknownendpoints are given',
       waitForAsync(() => {
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: null });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ authWellknownEndpoint: null });
         (refreshSessionService as any).startRefreshSession().subscribe((result) => {
           expect(result).toBe(null);
         });
@@ -279,7 +279,7 @@ describe('RefreshSessionService ', () => {
         const setSilentRenewRunningSpy = spyOn(flowsDataService, 'setSilentRenewRunning');
 
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
 
         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
@@ -297,7 +297,7 @@ describe('RefreshSessionService ', () => {
         spyOn(flowsDataService, 'setSilentRenewRunning');
 
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
 
         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
@@ -318,7 +318,7 @@ describe('RefreshSessionService ', () => {
         spyOn(flowsDataService, 'setSilentRenewRunning');
 
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-        spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ authWellknownEndpoint: 'https://authWell' });
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
 
         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);

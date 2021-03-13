@@ -53,6 +53,14 @@ export class StateValidationService {
     }
 
     if (callbackContext.authResult.id_token) {
+      const {
+        clientId,
+        issValidationOff,
+        maxIdTokenIatOffsetAllowedInSeconds,
+        disableIatOffsetValidation,
+        ignoreNonceAfterRefresh,
+      } = this.configurationProvider.getOpenIDConfiguration();
+
       toReturn.idToken = callbackContext.authResult.id_token;
 
       toReturn.decodedIdToken = this.tokenHelperService.getPayloadFromToken(toReturn.idToken, false);
@@ -66,13 +74,7 @@ export class StateValidationService {
 
       const authNonce = this.storagePersistanceService.read('authNonce');
 
-      if (
-        !this.tokenValidationService.validateIdTokenNonce(
-          toReturn.decodedIdToken,
-          authNonce,
-          this.configurationProvider.openIDConfiguration.ignoreNonceAfterRefresh
-        )
-      ) {
+      if (!this.tokenValidationService.validateIdTokenNonce(toReturn.decodedIdToken, authNonce, ignoreNonceAfterRefresh)) {
         this.loggerService.logWarning('authorizedCallback incorrect nonce');
         toReturn.state = ValidationResult.IncorrectNonce;
         this.handleUnsuccessfulValidation();
@@ -89,8 +91,8 @@ export class StateValidationService {
       if (
         !this.tokenValidationService.validateIdTokenIatMaxOffset(
           toReturn.decodedIdToken,
-          this.configurationProvider.openIDConfiguration.maxIdTokenIatOffsetAllowedInSeconds,
-          this.configurationProvider.openIDConfiguration.disableIatOffsetValidation
+          maxIdTokenIatOffsetAllowedInSeconds,
+          disableIatOffsetValidation
         )
       ) {
         this.loggerService.logWarning('authorizedCallback Validation, iat rejected id_token was issued too far away from the current time');
@@ -102,10 +104,10 @@ export class StateValidationService {
       const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
 
       if (authWellKnownEndPoints) {
-        if (this.configurationProvider.openIDConfiguration.issValidationOff) {
+        if (issValidationOff) {
           this.loggerService.logDebug('iss validation is turned off, this is not recommended!');
         } else if (
-          !this.configurationProvider.openIDConfiguration.issValidationOff &&
+          !issValidationOff &&
           !this.tokenValidationService.validateIdTokenIss(toReturn.decodedIdToken, authWellKnownEndPoints.issuer)
         ) {
           this.loggerService.logWarning('authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer');
@@ -120,9 +122,7 @@ export class StateValidationService {
         return toReturn;
       }
 
-      if (
-        !this.tokenValidationService.validateIdTokenAud(toReturn.decodedIdToken, this.configurationProvider.openIDConfiguration.clientId)
-      ) {
+      if (!this.tokenValidationService.validateIdTokenAud(toReturn.decodedIdToken, clientId)) {
         this.loggerService.logWarning('authorizedCallback incorrect aud');
         toReturn.state = ValidationResult.IncorrectAud;
         this.handleUnsuccessfulValidation();
@@ -136,12 +136,7 @@ export class StateValidationService {
         return toReturn;
       }
 
-      if (
-        !this.tokenValidationService.validateIdTokenAzpValid(
-          toReturn.decodedIdToken,
-          this.configurationProvider.openIDConfiguration.clientId
-        )
-      ) {
+      if (!this.tokenValidationService.validateIdTokenAzpValid(toReturn.decodedIdToken, clientId)) {
         this.loggerService.logWarning('authorizedCallback incorrect azp');
         toReturn.state = ValidationResult.IncorrectAzp;
         this.handleUnsuccessfulValidation();
@@ -203,7 +198,8 @@ export class StateValidationService {
   }
 
   private isIdTokenAfterRefreshTokenRequestValid(callbackContext: CallbackContext, newIdToken: any): boolean {
-    if (!this.configurationProvider.openIDConfiguration.useRefreshToken) {
+    const { useRefreshToken, disableRefreshIdTokenAuthTimeValidation } = this.configurationProvider.getOpenIDConfiguration();
+    if (!useRefreshToken) {
       return true;
     }
 
@@ -241,7 +237,7 @@ export class StateValidationService {
       return false;
     }
 
-    if (this.configurationProvider.openIDConfiguration.disableRefreshIdTokenAuthTimeValidation) {
+    if (disableRefreshIdTokenAuthTimeValidation) {
       return true;
     }
 
@@ -257,18 +253,20 @@ export class StateValidationService {
   }
 
   private handleSuccessfulValidation(): void {
+    const { autoCleanStateAfterAuthentication } = this.configurationProvider.getOpenIDConfiguration();
     this.storagePersistanceService.write('authNonce', '');
 
-    if (this.configurationProvider.openIDConfiguration.autoCleanStateAfterAuthentication) {
+    if (autoCleanStateAfterAuthentication) {
       this.storagePersistanceService.write('authStateControl', '');
     }
     this.loggerService.logDebug('AuthorizedCallback token(s) validated, continue');
   }
 
   private handleUnsuccessfulValidation(): void {
+    const { autoCleanStateAfterAuthentication } = this.configurationProvider.getOpenIDConfiguration();
     this.storagePersistanceService.write('authNonce', '');
 
-    if (this.configurationProvider.openIDConfiguration.autoCleanStateAfterAuthentication) {
+    if (autoCleanStateAfterAuthentication) {
       this.storagePersistanceService.write('authStateControl', '');
     }
     this.loggerService.logDebug('AuthorizedCallback token(s) invalid');

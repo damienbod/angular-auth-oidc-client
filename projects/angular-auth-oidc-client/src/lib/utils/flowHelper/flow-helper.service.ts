@@ -14,7 +14,9 @@ export class FlowHelper {
   }
 
   isCurrentFlowCodeFlowWithRefreshTokens() {
-    if (this.isCurrentFlowCodeFlow() && this.configurationProvider.openIDConfiguration.useRefreshToken) {
+    const { useRefreshToken } = this.configurationProvider.getOpenIDConfiguration();
+
+    if (this.isCurrentFlowCodeFlow() && useRefreshToken) {
       return true;
     }
 
@@ -30,12 +32,12 @@ export class FlowHelper {
   }
 
   currentFlowIs(flowTypes: string[] | string) {
-    const currentFlow = this.configurationProvider.openIDConfiguration.responseType;
+    const { responseType } = this.configurationProvider.getOpenIDConfiguration();
 
     if (Array.isArray(flowTypes)) {
-      return flowTypes.some((x) => currentFlow === x);
+      return flowTypes.some((x) => responseType === x);
     }
 
-    return currentFlow === flowTypes;
+    return responseType === flowTypes;
   }
 }

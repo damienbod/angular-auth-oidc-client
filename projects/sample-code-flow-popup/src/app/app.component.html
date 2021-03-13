@@ -1,11 +1,9 @@
 <div *ngIf="isAuthenticated$ | async as isAuthenticated; else noAuth">
   <button (click)="logout()">Logout</button>
   <button (click)="forceRefreshSession()">RefreshSession</button>
-  <hr />
-
   <button (click)="openWindow()">Open normal popup</button>
   <a href="/" target="_blank">Test link</a>
-  <br />
+  <hr />
 
   Is Authenticated: {{ isAuthenticated }}
 

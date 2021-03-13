@@ -58,7 +58,12 @@ export class BrowserStorageService implements AbstractSecurityStorage {
   }
 
   private getStorage() {
-    return this.configProvider.openIDConfiguration?.storage;
+    const config = this.configProvider.getOpenIDConfiguration();
+    if (!config) {
+      return null;
+    }
+
+    return config.storage;
   }
 
   private hasStorage() {

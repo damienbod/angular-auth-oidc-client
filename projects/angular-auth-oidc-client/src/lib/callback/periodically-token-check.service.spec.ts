@@ -26,7 +26,7 @@ import { RefreshSessionRefreshTokenServiceMock } from './refresh-session-refresh
 
 describe('PeriodicallyTokenCheckService', () => {
   let periodicallyTokenCheckService: PeriodicallyTokenCheckService;
-  let intervallService: IntervallService;
+  let intervalService: IntervallService;
   let configurationProvider: ConfigurationProvider;
   let flowsDataService: FlowsDataService;
   let flowHelper: FlowHelper;
@@ -62,7 +62,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
   beforeEach(() => {
     periodicallyTokenCheckService = TestBed.inject(PeriodicallyTokenCheckService);
-    intervallService = TestBed.inject(IntervallService);
+    intervalService = TestBed.inject(IntervallService);
     configurationProvider = TestBed.inject(ConfigurationProvider);
     flowsDataService = TestBed.inject(FlowsDataService);
     flowHelper = TestBed.inject(FlowHelper);
@@ -80,7 +80,9 @@ describe('PeriodicallyTokenCheckService', () => {
 
   describe('startTokenValidationPeriodically', () => {
     it('returns if runTokenValidationRunning', () => {
-      spyOn(intervallService as any, 'runTokenValidationRunning').and.returnValue(new Subscription());
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenew: true });
+
+      spyOn(intervalService as any, 'runTokenValidationRunning').and.returnValue(new Subscription());
 
       const result = periodicallyTokenCheckService.startTokenValidationPeriodically(99);
 
@@ -88,7 +90,7 @@ describe('PeriodicallyTokenCheckService', () => {
     });
 
     it('returns if openIDConfiguration.silentrenew is false', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: false });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenew: false });
 
       const result = periodicallyTokenCheckService.startTokenValidationPeriodically(99);
 
@@ -96,22 +98,22 @@ describe('PeriodicallyTokenCheckService', () => {
     });
 
     it('interval calls resetSilentRenewRunning when current flow is CodeFlowWithRefeshTokens', fakeAsync(() => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: true });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenew: true });
       const isCurrentFlowCodeFlowWithRefreshTokensSpy = spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
       const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
       periodicallyTokenCheckService.startTokenValidationPeriodically(1);
       tick(1000);
-      intervallService.runTokenValidationRunning.unsubscribe();
-      intervallService.runTokenValidationRunning = null;
+      intervalService.runTokenValidationRunning.unsubscribe();
+      intervalService.runTokenValidationRunning = null;
       expect(isCurrentFlowCodeFlowWithRefreshTokensSpy).toHaveBeenCalled();
       expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
     }));
 
     it('interval calls resetSilentRenewRunning in case of error', fakeAsync(() => {
-      spyOn(intervallService, 'startPeriodicTokenCheck').and.returnValue(throwError('any-error'));
+      spyOn(intervalService, 'startPeriodicTokenCheck').and.returnValue(throwError('any-error'));
       const resetSilentRenewRunning = spyOn(flowsDataService, 'resetSilentRenewRunning');
 
-      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: true });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenew: true });
 
       periodicallyTokenCheckService.startTokenValidationPeriodically(1);
       expect(periodicallyTokenCheckService.startTokenValidationPeriodically).toThrow();
@@ -121,7 +123,7 @@ describe('PeriodicallyTokenCheckService', () => {
     }));
 
     it('calls hasIdTokenExpired and hasAccessTokenExpiredIfExpiryExists only when it should be executed', fakeAsync(() => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: true });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenew: true });
       spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens');
       spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
@@ -134,15 +136,15 @@ describe('PeriodicallyTokenCheckService', () => {
 
       periodicallyTokenCheckService.startTokenValidationPeriodically(1);
       tick(1000);
-      intervallService.runTokenValidationRunning.unsubscribe();
-      intervallService.runTokenValidationRunning = null;
+      intervalService.runTokenValidationRunning.unsubscribe();
+      intervalService.runTokenValidationRunning = null;
 
       expect(hasIdTokenExpiredSpy).toHaveBeenCalled();
       expect(hasAccessTokenExpiredIfExpiryExistsSpy).toHaveBeenCalled();
     }));
 
     it('returns if tokens are not expired', fakeAsync(() => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: true });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenew: true });
       spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens');
       spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
@@ -156,20 +158,20 @@ describe('PeriodicallyTokenCheckService', () => {
 
       periodicallyTokenCheckService.startTokenValidationPeriodically(1);
       tick(1000);
-      intervallService.runTokenValidationRunning.unsubscribe();
-      intervallService.runTokenValidationRunning = null;
+      intervalService.runTokenValidationRunning.unsubscribe();
+      intervalService.runTokenValidationRunning = null;
 
       expect(hasIdTokenExpiredSpy).toHaveBeenCalled();
       expect(hasAccessTokenExpiredIfExpiryExistsSpy).toHaveBeenCalled();
     }));
 
     it('calls resetAuthorizationData and returns if no silent renew is configured', fakeAsync(() => {
-      const silentRenewSpy = spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: true });
+      const silentRenewSpy = spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenew: true });
       spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens');
       spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
       spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
-      const resetAuthorizationdataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
+      const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
 
       spyOn(authStateService, 'hasIdTokenExpired').and.returnValue(true);
       spyOn(storagePersistanceService, 'read').withArgs('storageCustomRequestParams').and.returnValue(undefined);
@@ -181,14 +183,14 @@ describe('PeriodicallyTokenCheckService', () => {
       tick(1000);
       silentRenewSpy.and.returnValue({ silentRenew: false });
       tick(1000);
-      intervallService.runTokenValidationRunning.unsubscribe();
-      intervallService.runTokenValidationRunning = null;
+      intervalService.runTokenValidationRunning.unsubscribe();
+      intervalService.runTokenValidationRunning = null;
 
-      expect(resetAuthorizationdataSpy).toHaveBeenCalled();
+      expect(resetAuthorizationDataSpy).toHaveBeenCalled();
     }));
 
     it('calls refreshSessionWithRefreshTokens if current flow is Code flow wiht refresh tokens', fakeAsync(() => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration').and.returnValue({ silentRenew: true });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenew: true });
       spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
       spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
@@ -206,8 +208,8 @@ describe('PeriodicallyTokenCheckService', () => {
 
       periodicallyTokenCheckService.startTokenValidationPeriodically(1);
       tick(1000);
-      intervallService.runTokenValidationRunning.unsubscribe();
-      intervallService.runTokenValidationRunning = null;
+      intervalService.runTokenValidationRunning.unsubscribe();
+      intervalService.runTokenValidationRunning = null;
 
       expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalled();
     }));

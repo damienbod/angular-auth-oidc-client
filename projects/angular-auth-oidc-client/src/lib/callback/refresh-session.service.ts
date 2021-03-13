@@ -43,11 +43,14 @@ export class RefreshSessionService {
       );
     }
 
+    const { silentRenewTimeoutInSeconds } = this.configurationProvider.getOpenIDConfiguration();
+    const timeOutTime = silentRenewTimeoutInSeconds * 1000;
+
     return forkJoin([
       this.startRefreshSession(customParams),
       this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1)),
     ]).pipe(
-      timeout(this.configurationProvider.openIDConfiguration.silentRenewTimeoutInSeconds * 1000),
+      timeout(timeOutTime),
       retryWhen(this.timeoutRetryStrategy.bind(this)),
       map(([_, callbackContext]) => {
         const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
@@ -72,14 +75,14 @@ export class RefreshSessionService {
       return of(null);
     }
 
-    const authWellknownEndpointAdress = this.configurationProvider.openIDConfiguration?.authWellknownEndpoint;
+    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration() || {};
 
-    if (!authWellknownEndpointAdress) {
+    if (!authWellknownEndpoint) {
       this.loggerService.logError('no authwellknownendpoint given!');
       return of(null);
     }
 
-    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointAdress).pipe(
+    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint).pipe(
       switchMap(() => {
         this.flowsDataService.setSilentRenewRunning();
 

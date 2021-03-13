@@ -30,7 +30,9 @@ export class PeriodicallyTokenCheckService {
   ) {}
 
   startTokenValidationPeriodically(repeatAfterSeconds: number) {
-    if (!!this.intervalService.runTokenValidationRunning || !this.configurationProvider.openIDConfiguration.silentRenew) {
+    const { silentRenew } = this.configurationProvider.getOpenIDConfiguration();
+
+    if (!!this.intervalService.runTokenValidationRunning || !silentRenew) {
       return;
     }
 
@@ -59,7 +61,9 @@ export class PeriodicallyTokenCheckService {
           return of(null);
         }
 
-        if (!this.configurationProvider.openIDConfiguration.silentRenew) {
+        const config = this.configurationProvider.getOpenIDConfiguration();
+
+        if (!config?.silentRenew) {
           this.resetAuthDataService.resetAuthorizationData();
           return of(null);
         }

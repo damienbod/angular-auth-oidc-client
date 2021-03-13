@@ -140,12 +140,12 @@ describe('Browser Service', () => {
 
   describe('getStorage', () => {
     it('returns null if there is no storage', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ storage: null });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ storage: null });
       expect((service as any).getStorage()).toBeNull();
     });
 
     it('returns null if there is no openIDConfiguration', () => {
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue(null);
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue(null);
       expect((service as any).getStorage()).toBeFalsy();
     });
   });

@@ -124,6 +124,13 @@ describe('Auth State Service', () => {
       expect(result).toBe('');
     });
 
+    it('returns false if storagePersistanceService returns something falsy but authorized', () => {
+      spyOnProperty(authStateService as any, 'isAuthorized', 'get').and.returnValue(true);
+      spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('');
+      const result = authStateService.getAccessToken();
+      expect(result).toBe('');
+    });
+
     it('isAuthorized is true returns decodeURIComponent(token)', () => {
       spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('HenloLegger');
       spyOn(storagePersistanceService, 'getIdToken').and.returnValue('HenloFuriend');
@@ -252,7 +259,7 @@ describe('Auth State Service', () => {
     it('negates the result of internal call of `validateAccessTokenNotExpired`', () => {
       const validateAccessTokenNotExpiredResult = true;
       const expectedResult = !validateAccessTokenNotExpiredResult;
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ renewTimeBeforeTokenExpiresInSeconds: 5 });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ renewTimeBeforeTokenExpiresInSeconds: 5 });
       const date = new Date(new Date().toUTCString());
       spyOn(storagePersistanceService, 'read').withArgs('access_token_expires_at').and.returnValue(date);
       const spy = spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(validateAccessTokenNotExpiredResult);
@@ -264,7 +271,7 @@ describe('Auth State Service', () => {
     it('throws event when token is expired', () => {
       const validateAccessTokenNotExpiredResult = false;
       const expectedResult = !validateAccessTokenNotExpiredResult;
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ renewTimeBeforeTokenExpiresInSeconds: 5 });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ renewTimeBeforeTokenExpiresInSeconds: 5 });
       const date = new Date(new Date().toUTCString());
 
       spyOn(eventsService, 'fireEvent');

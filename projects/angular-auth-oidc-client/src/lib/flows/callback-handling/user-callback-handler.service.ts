@@ -25,9 +25,10 @@ export class UserCallbackHandlerService {
   // STEP 5 userData
   callbackUser(callbackContext: CallbackContext): Observable<CallbackContext> {
     const { isRenewProcess, validationResult, authResult, refreshToken } = callbackContext;
+    const { autoUserinfo, renewUserInfoAfterTokenRenew } = this.configurationProvider.getOpenIDConfiguration();
 
-    if (!this.configurationProvider.openIDConfiguration.autoUserinfo) {
-      if (!isRenewProcess || this.configurationProvider.openIDConfiguration.renewUserInfoAfterTokenRenew) {
+    if (!autoUserinfo) {
+      if (!isRenewProcess || renewUserInfoAfterTokenRenew) {
         // userData is set to the id_token decoded, auto get user data set to false
         if (validationResult.decodedIdToken) {
           this.userService.setUserDataToStore(validationResult.decodedIdToken);
