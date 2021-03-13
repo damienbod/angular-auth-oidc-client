@@ -285,7 +285,7 @@ describe('CheckAuthService', () => {
       'deletes route and navigates if a route for redirect was saved',
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue('stsServer');
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         spyOn(autoLoginService, 'getStoredRedirectRoute').and.returnValue('some-saved-route');

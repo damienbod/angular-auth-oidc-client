@@ -150,7 +150,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         const urlServiceSpy = spyOn(urlService, 'createBodyForCodeFlowCodeRequest');
         spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
-        spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ customTokenParams: { foo: 'bar' } });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ customTokenParams: { foo: 'bar' } });
 
         service.codeFlowCodeRequest({ code: 'foo' } as CallbackContext).subscribe((callbackContext) => {
           expect(urlServiceSpy).toHaveBeenCalledWith('foo', { foo: 'bar' });

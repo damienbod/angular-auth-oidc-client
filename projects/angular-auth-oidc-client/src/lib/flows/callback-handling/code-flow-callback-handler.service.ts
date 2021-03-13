@@ -75,10 +75,10 @@ export class CodeFlowCallbackHandlerService {
 
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
-    const bodyForCodeFlow = this.urlService.createBodyForCodeFlowCodeRequest(
-      callbackContext.code,
-      this.configurationProvider.openIDConfiguration?.customTokenParams
-    );
+
+    const config = this.configurationProvider.getOpenIDConfiguration();
+
+    const bodyForCodeFlow = this.urlService.createBodyForCodeFlowCodeRequest(callbackContext.code, config?.customTokenParams);
 
     return this.dataService.post(tokenEndpoint, bodyForCodeFlow, headers).pipe(
       switchMap((response) => {

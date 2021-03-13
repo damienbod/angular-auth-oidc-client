@@ -840,7 +840,7 @@ describe('UrlService Tests', () => {
       const customTokenParams = { foo: 'bar' };
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-      spyOnProperty(configurationProvider, 'openIDConfiguration', 'get').and.returnValue({ clientId, silentRenewUrl });
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId, silentRenewUrl });
 
       const result = service.createBodyForCodeFlowCodeRequest(code, customTokenParams);
       const expected = `grant_type=authorization_code&client_id=${clientId}&code_verifier=${codeVerifier}&code=${code}&foo=bar&redirect_uri=${silentRenewUrl}`;
