@@ -5,6 +5,10 @@
       "description": "Add angular-auth-oidc-client library to the project.",
       "factory": "./ng-add/index#ngAdd",
       "schema": "./ng-add/schema.json"
+    },
+    "ng-update": {
+      "description": "Updating the library to the latest version",
+      "factory": "./ng-update/index#ngUpdate"
     }
   }
 }
