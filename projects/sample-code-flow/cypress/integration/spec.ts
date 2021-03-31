@@ -8,8 +8,8 @@ it('loggs in correctly', () => {
 
   cy.location('href', { timeout: 20000 }).should('include', 'https://offeringsolutions-sts.azurewebsites.net');
 
-  cy.get('#Email').type('fabian.gosebrink@hotmail.com');
-  cy.get('#Password').type('1234Lea0000!');
+  cy.get('#Email').type('dont@ask.me');
+  cy.get('#Password').type('SuperSecretPassword');
 
   cy.get('.col-md-offset-4 > .btn').click();
 
