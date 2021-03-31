@@ -56,7 +56,7 @@ const AZURE_AD_REFRESH_TOKENS = `{
             },
     }`;
 
-    const OAUTH_PAR = `{
+const OAUTH_PAR = `{
             stsServer: '<stsUrlOrTenantId>',
             redirectUrl: window.location.origin,
             postLogoutRedirectUri: window.location.origin,
