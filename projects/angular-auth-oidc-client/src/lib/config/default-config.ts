@@ -34,4 +34,5 @@ export const DEFAULT_CONFIG: OpenIdConfiguration = {
   eagerLoadAuthWellKnownEndpoints: true,
   disableRefreshIdTokenAuthTimeValidation: false,
   tokenRefreshInSeconds: 4,
+  refreshTokenRetryInSeconds: 3,
 };

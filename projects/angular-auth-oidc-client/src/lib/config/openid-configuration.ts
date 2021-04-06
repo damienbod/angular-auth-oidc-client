@@ -38,4 +38,5 @@ export interface OpenIdConfiguration {
   disableRefreshIdTokenAuthTimeValidation?: boolean;
   tokenRefreshInSeconds?: number;
   secureRoutes?: string[];
+  refreshTokenRetryInSeconds?: number;
 }
