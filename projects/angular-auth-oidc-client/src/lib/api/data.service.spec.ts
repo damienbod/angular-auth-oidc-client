@@ -1,6 +1,8 @@
 import { HttpHeaders } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
+import { ConfigurationProvider } from '../config/config.provider';
+import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { DataService } from './data.service';
 import { HttpBaseService } from './http-base.service';
 
@@ -11,7 +13,7 @@ describe('Data Service', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [DataService, HttpBaseService],
+      providers: [DataService, HttpBaseService, { provide: ConfigurationProvider, useClass: ConfigurationProviderMock }],
     });
   });
 

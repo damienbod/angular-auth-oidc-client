@@ -1,24 +1,37 @@
-import { HttpHeaders } from '@angular/common/http';
+import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { ConfigurationProvider } from '../config/config.provider';
 import { HttpBaseService } from './http-base.service';
 
 @Injectable()
 export class DataService {
-  constructor(private httpClient: HttpBaseService) {}
+  constructor(private httpClient: HttpBaseService, private readonly configurationProvider: ConfigurationProvider) {}
 
   get<T>(url: string, token?: string): Observable<T> {
     const headers = this.prepareHeaders(token);
+    let params = new HttpParams();
 
+    const { ngswBypass } = this.configurationProvider.getOpenIDConfiguration();
+    if (ngswBypass) {
+      params = params.set('ngsw-bypass', '');
+    }
     return this.httpClient.get<T>(url, {
       headers,
+      params,
     });
   }
 
   post<T>(url: string, body: any, headersParams?: HttpHeaders) {
     const headers = headersParams || this.prepareHeaders();
+    let params = new HttpParams();
 
-    return this.httpClient.post<T>(url, body, { headers });
+    const { ngswBypass } = this.configurationProvider.getOpenIDConfiguration();
+    if (ngswBypass) {
+      params = params.set('ngsw-bypass', '');
+    }
+
+    return this.httpClient.post<T>(url, body, { headers, params });
   }
 
   private prepareHeaders(token?: string) {
