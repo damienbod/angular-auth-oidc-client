@@ -35,4 +35,5 @@ export const DEFAULT_CONFIG: OpenIdConfiguration = {
   disableRefreshIdTokenAuthTimeValidation: false,
   tokenRefreshInSeconds: 4,
   refreshTokenRetryInSeconds: 3,
+  ngswBypass: false,
 };

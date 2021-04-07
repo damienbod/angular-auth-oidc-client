@@ -76,6 +76,7 @@ describe('ConfigurationProviderTests', () => {
       disableRefreshIdTokenAuthTimeValidation: false,
       tokenRefreshInSeconds: 4,
       refreshTokenRetryInSeconds: 3,
+      ngswBypass: false,
     };
 
     configurationProvider.setConfig({ stsServer: 'https://please_set' });
@@ -122,6 +123,7 @@ describe('ConfigurationProviderTests', () => {
       disableRefreshIdTokenAuthTimeValidation: false,
       tokenRefreshInSeconds: 4,
       refreshTokenRetryInSeconds: 3,
+      ngswBypass: false,
     };
 
     configurationProvider.setConfig(config);
@@ -170,6 +172,7 @@ describe('ConfigurationProviderTests', () => {
       disableRefreshIdTokenAuthTimeValidation: false,
       tokenRefreshInSeconds: 4,
       refreshTokenRetryInSeconds: 3,
+      ngswBypass: false,
     };
 
     spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);

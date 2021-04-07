@@ -39,4 +39,5 @@ export interface OpenIdConfiguration {
   tokenRefreshInSeconds?: number;
   secureRoutes?: string[];
   refreshTokenRetryInSeconds?: number;
+  ngswBypass?: boolean;
 }
