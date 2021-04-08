@@ -1,7 +1,7 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { of, throwError } from 'rxjs';
-import { catchError, switchMap, tap } from 'rxjs/operators';
+import { catchError, retry, switchMap, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
@@ -91,6 +91,7 @@ export class LogoffRevocationService {
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
     return this.dataService.post(url, body, headers).pipe(
+      retry(2),
       switchMap((response: any) => {
         this.loggerService.logDebug('revocation endpoint post response: ', response);
         return of(response);
@@ -116,6 +117,7 @@ export class LogoffRevocationService {
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
     return this.dataService.post(url, body, headers).pipe(
+      retry(2),
       switchMap((response: any) => {
         this.loggerService.logDebug('revocation endpoint post response: ', response);
         return of(response);
