@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { ConfigurationProvider } from '../config/config.provider';
 import { HttpBaseService } from './http-base.service';
 
+const NGSW_CUSTOM_PARAM = 'ngsw-bypass';
 @Injectable()
 export class DataService {
   constructor(private httpClient: HttpBaseService, private readonly configurationProvider: ConfigurationProvider) {}
@@ -14,7 +15,7 @@ export class DataService {
 
     const { ngswBypass } = this.configurationProvider.getOpenIDConfiguration();
     if (ngswBypass) {
-      params = params.set('ngsw-bypass', '');
+      params = params.set(NGSW_CUSTOM_PARAM, '');
     }
     return this.httpClient.get<T>(url, {
       headers,
@@ -28,7 +29,7 @@ export class DataService {
 
     const { ngswBypass } = this.configurationProvider.getOpenIDConfiguration();
     if (ngswBypass) {
-      params = params.set('ngsw-bypass', '');
+      params = params.set(NGSW_CUSTOM_PARAM, '');
     }
 
     return this.httpClient.post<T>(url, body, { headers, params });
