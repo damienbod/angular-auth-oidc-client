@@ -1,6 +1,7 @@
-import { HttpHeaders } from '@angular/common/http';
+import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
 import { DataServiceMock } from '../../api/data.service-mock';
 import { ConfigurationProvider } from '../../config/config.provider';
@@ -108,6 +109,13 @@ describe('CodeFlowCallbackHandlerService', () => {
   });
 
   describe('codeFlowCodeRequest ', () => {
+    const HTTP_ERROR = new HttpErrorResponse({});
+    const CONNECTION_ERROR = new HttpErrorResponse({
+      error: new ProgressEvent('error'),
+      status: 0,
+      statusText: 'Unknown Error',
+      url: 'https://identity-server.test/openid-connect/token',
+    });
     it(
       'throws error if state is not correct',
       waitForAsync(() => {
@@ -177,13 +185,55 @@ describe('CodeFlowCallbackHandlerService', () => {
     it(
       'returns error in case of http error',
       waitForAsync(() => {
-        spyOn(dataService, 'post').and.returnValue(throwError({}));
+        spyOn(dataService, 'post').and.returnValue(throwError(HTTP_ERROR));
         spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
 
         service.codeFlowCodeRequest({} as CallbackContext).subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
+          },
+        });
+      })
+    );
+
+    it(
+      'retries request in case of no connection http error and succeeds',
+      waitForAsync(() => {
+        const postSpy = spyOn(dataService, 'post').and.returnValue(createRetriableStream(throwError(CONNECTION_ERROR), of({})));
+        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
+
+        service.codeFlowCodeRequest({} as CallbackContext).subscribe({
+          next: (res) => {
+            expect(res).toBeTruthy();
+            expect(postSpy).toHaveBeenCalledTimes(1);
+          },
+          error: (err) => {
+            // fails if there should be a result
+            expect(err).toBeFalsy();
+          },
+        });
+      })
+    );
+
+    it(
+      'retries request in case of no connection http error and fails because of http error afterwards',
+      waitForAsync(() => {
+        const postSpy = spyOn(dataService, 'post').and.returnValue(
+          createRetriableStream(throwError(CONNECTION_ERROR), throwError(HTTP_ERROR))
+        );
+        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
+
+        service.codeFlowCodeRequest({} as CallbackContext).subscribe({
+          next: (res) => {
+            // fails if there should be a result
+            expect(res).toBeFalsy();
+          },
+          error: (err) => {
+            expect(err).toBeTruthy();
+            expect(postSpy).toHaveBeenCalledTimes(1);
           },
         });
       })

@@ -1,6 +1,7 @@
 import { HttpHeaders } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
@@ -117,6 +118,59 @@ describe('ParService', () => {
           error: (err) => {
             expect(err).toBe('There was an error on ParService postParRequest');
             expect(loggerSpy).toHaveBeenCalledOnceWith('There was an error on ParService postParRequest', 'AN ERROR');
+          },
+        });
+      })
+    );
+
+    it(
+      'should retry once',
+      waitForAsync(() => {
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
+        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+        spyOn(dataService, 'post').and.returnValue(
+          createRetriableStream(throwError({}), of({ expires_in: 123, request_uri: 'request_uri' }))
+        );
+
+        service.postParRequest().subscribe({
+          next: (res) => {
+            expect(res).toBeTruthy();
+            expect(res).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
+          },
+        });
+      })
+    );
+
+    it(
+      'should retry twice',
+      waitForAsync(() => {
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
+        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+        spyOn(dataService, 'post').and.returnValue(
+          createRetriableStream(throwError({}), throwError({}), of({ expires_in: 123, request_uri: 'request_uri' }))
+        );
+
+        service.postParRequest().subscribe({
+          next: (res) => {
+            expect(res).toBeTruthy();
+            expect(res).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
+          },
+        });
+      })
+    );
+
+    it(
+      'should fail after three tries',
+      waitForAsync(() => {
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
+        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+        spyOn(dataService, 'post').and.returnValue(
+          createRetriableStream(throwError({}), throwError({}), throwError({}), of({ expires_in: 123, request_uri: 'request_uri' }))
+        );
+
+        service.postParRequest().subscribe({
+          error: (err) => {
+            expect(err).toBeTruthy();
           },
         });
       })
