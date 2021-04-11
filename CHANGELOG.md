@@ -1,5 +1,12 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-04-11 Version 11.6.5
+
+- Silent renew with refresh tokens - handle no connection use case
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1040)
+- Added Guard CanLoad interface
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1038)
+
 ### 2021-03-13 Version 11.6.4
 
 - Improve AutoLoginGuard
