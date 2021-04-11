@@ -53,6 +53,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
       statusText: 'Unknown Error',
       url: 'https://identity-server.test/openid-connect/token',
     });
+
     it(
       'throws error if no tokenEndpoint is given',
       waitForAsync(() => {

@@ -116,6 +116,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       statusText: 'Unknown Error',
       url: 'https://identity-server.test/openid-connect/token',
     });
+
     it(
       'throws error if state is not correct',
       waitForAsync(() => {
