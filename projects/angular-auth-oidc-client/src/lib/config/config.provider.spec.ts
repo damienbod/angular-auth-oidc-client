@@ -75,6 +75,8 @@ describe('ConfigurationProviderTests', () => {
       eagerLoadAuthWellKnownEndpoints: true,
       disableRefreshIdTokenAuthTimeValidation: false,
       tokenRefreshInSeconds: 4,
+      refreshTokenRetryInSeconds: 3,
+      ngswBypass: false,
     };
 
     configurationProvider.setConfig({ stsServer: 'https://please_set' });
@@ -120,6 +122,8 @@ describe('ConfigurationProviderTests', () => {
       eagerLoadAuthWellKnownEndpoints: true,
       disableRefreshIdTokenAuthTimeValidation: false,
       tokenRefreshInSeconds: 4,
+      refreshTokenRetryInSeconds: 3,
+      ngswBypass: false,
     };
 
     configurationProvider.setConfig(config);
@@ -167,6 +171,8 @@ describe('ConfigurationProviderTests', () => {
       eagerLoadAuthWellKnownEndpoints: true,
       disableRefreshIdTokenAuthTimeValidation: false,
       tokenRefreshInSeconds: 4,
+      refreshTokenRetryInSeconds: 3,
+      ngswBypass: false,
     };
 
     spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);

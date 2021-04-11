@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { map, retry, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
@@ -127,7 +127,7 @@ export class UserService {
       return throwError('authWellKnownEndpoints.userinfo_endpoint is undefined');
     }
 
-    return this.oidcDataService.get(userinfoEndpoint, token);
+    return this.oidcDataService.get(userinfoEndpoint, token).pipe(retry(2));
   }
 
   private validateUserDataSubIdToken(idTokenSub: any, userdataSub: any): boolean {

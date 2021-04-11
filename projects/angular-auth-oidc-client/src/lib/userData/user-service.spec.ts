@@ -1,5 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
+import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { ConfigurationProvider } from '../config/config.provider';
@@ -14,6 +15,12 @@ import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
 import { UserService } from './user-service';
+
+const DUMMY_USER_DATA = {
+  sub: 'a5461470-33eb-4b2d-82d4-b0484e96ad7f',
+  preferred_username: 'john@test.com',
+  organization: 'testing',
+};
 
 describe('User Service', () => {
   let configProvider: ConfigurationProvider;
@@ -392,4 +399,51 @@ describe('User Service', () => {
       })
     );
   });
+
+  it(
+    'should retry once',
+    waitForAsync(() => {
+      spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
+      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
+      spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), of(DUMMY_USER_DATA)));
+
+      (userService as any).getIdentityUserData().subscribe({
+        next: (res) => {
+          expect(res).toBeTruthy();
+          expect(res).toEqual(DUMMY_USER_DATA);
+        },
+      });
+    })
+  );
+
+  it(
+    'should retry twice',
+    waitForAsync(() => {
+      spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
+      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
+      spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), of(DUMMY_USER_DATA)));
+
+      (userService as any).getIdentityUserData().subscribe({
+        next: (res) => {
+          expect(res).toBeTruthy();
+          expect(res).toEqual(DUMMY_USER_DATA);
+        },
+      });
+    })
+  );
+
+  it(
+    'should fail after three tries',
+    waitForAsync(() => {
+      spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
+      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
+      spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), throwError({}), of(DUMMY_USER_DATA)));
+
+      (userService as any).getIdentityUserData().subscribe({
+        error: (err) => {
+          expect(err).toBeTruthy();
+        },
+      });
+    })
+  );
 });

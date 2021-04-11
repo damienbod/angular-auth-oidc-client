@@ -1,6 +1,7 @@
 import { HttpResponse } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { isObservable, of } from 'rxjs';
+import { isObservable, of, throwError } from 'rxjs';
+import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { LoggerService } from '../logging/logger.service';
@@ -8,6 +9,22 @@ import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
 import { SigninKeyDataService } from './signin-key-data.service';
+
+const DUMMY_JWKS = {
+  keys: [
+    {
+      kid: 'random-id',
+      kty: 'RSA',
+      alg: 'RS256',
+      use: 'sig',
+      n: 'some-value',
+      e: 'AQAB',
+      x5c: ['some-value'],
+      x5t: 'some-value',
+      'x5t#S256': 'some-value',
+    },
+  ],
+};
 
 describe('Signin Key Data Service', () => {
   let service: SigninKeyDataService;
@@ -77,6 +94,50 @@ describe('Signin Key Data Service', () => {
         result.subscribe({
           complete: () => {
             expect(spy).toHaveBeenCalledWith('someUrl');
+          },
+        });
+      })
+    );
+
+    it(
+      'should retry once',
+      waitForAsync(() => {
+        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
+        spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), of(DUMMY_JWKS)));
+
+        service.getSigningKeys().subscribe({
+          next: (res) => {
+            expect(res).toBeTruthy();
+            expect(res).toEqual(DUMMY_JWKS);
+          },
+        });
+      })
+    );
+
+    it(
+      'should retry twice',
+      waitForAsync(() => {
+        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
+        spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), of(DUMMY_JWKS)));
+
+        service.getSigningKeys().subscribe({
+          next: (res) => {
+            expect(res).toBeTruthy();
+            expect(res).toEqual(DUMMY_JWKS);
+          },
+        });
+      })
+    );
+
+    it(
+      'should fail after three tries',
+      waitForAsync(() => {
+        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
+        spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), throwError({}), of(DUMMY_JWKS)));
+
+        service.getSigningKeys().subscribe({
+          error: (err) => {
+            expect(err).toBeTruthy();
           },
         });
       })

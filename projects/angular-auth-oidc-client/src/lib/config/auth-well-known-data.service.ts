@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
+import { map, retry } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 
@@ -36,6 +36,6 @@ export class AuthWellKnownDataService {
       url = `${wellKnownEndpoint}${WELL_KNOWN_SUFFIX}`;
     }
 
-    return this.http.get<any>(url);
+    return this.http.get<any>(url).pipe(retry(2));
   }
 }

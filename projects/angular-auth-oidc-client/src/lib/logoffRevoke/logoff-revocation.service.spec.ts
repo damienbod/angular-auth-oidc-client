@@ -1,5 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
+import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { ConfigurationProvider } from '../config/config.provider';
@@ -132,6 +133,69 @@ describe('Logout and Revoke Service', () => {
         });
       })
     );
+
+    it(
+      'should retry once',
+      waitForAsync(() => {
+        // Arrange
+        const paramToken = 'damien';
+        spyOn(storagePersistanceService, 'getAccessToken').and.returnValue(paramToken);
+        spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+        const loggerSpy = spyOn(loggerService, 'logDebug');
+        spyOn(dataService, 'post').and.returnValue(createRetriableStream(throwError({}), of({ data: 'anything' })));
+
+        service.revokeAccessToken().subscribe({
+          next: (res) => {
+            // Assert
+            expect(res).toBeTruthy();
+            expect(res).toEqual({ data: 'anything' });
+            expect(loggerSpy).toHaveBeenCalled();
+          },
+        });
+      })
+    );
+
+    it(
+      'should retry twice',
+      waitForAsync(() => {
+        // Arrange
+        const paramToken = 'damien';
+        spyOn(storagePersistanceService, 'getAccessToken').and.returnValue(paramToken);
+        spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+        const loggerSpy = spyOn(loggerService, 'logDebug');
+        spyOn(dataService, 'post').and.returnValue(createRetriableStream(throwError({}), throwError({}), of({ data: 'anything' })));
+
+        service.revokeAccessToken().subscribe({
+          next: (res) => {
+            // Assert
+            expect(res).toBeTruthy();
+            expect(res).toEqual({ data: 'anything' });
+            expect(loggerSpy).toHaveBeenCalled();
+          },
+        });
+      })
+    );
+
+    it(
+      'should fail after three tries',
+      waitForAsync(() => {
+        // Arrange
+        const paramToken = 'damien';
+        spyOn(storagePersistanceService, 'getAccessToken').and.returnValue(paramToken);
+        spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+        const loggerSpy = spyOn(loggerService, 'logError');
+        spyOn(dataService, 'post').and.returnValue(
+          createRetriableStream(throwError({}), throwError({}), throwError({}), of({ data: 'anything' }))
+        );
+
+        service.revokeAccessToken().subscribe({
+          error: (err) => {
+            expect(err).toBeTruthy();
+            expect(loggerSpy).toHaveBeenCalled();
+          },
+        });
+      })
+    );
   });
 
   describe('revokeRefreshToken', () => {
@@ -203,6 +267,69 @@ describe('Logout and Revoke Service', () => {
           error: (err) => {
             expect(loggerSpy).toHaveBeenCalled();
             expect(err).toBeTruthy();
+          },
+        });
+      })
+    );
+
+    it(
+      'should retry once',
+      waitForAsync(() => {
+        // Arrange
+        const paramToken = 'damien';
+        spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
+        spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+        const loggerSpy = spyOn(loggerService, 'logDebug');
+        spyOn(dataService, 'post').and.returnValue(createRetriableStream(throwError({}), of({ data: 'anything' })));
+
+        service.revokeRefreshToken().subscribe({
+          next: (res) => {
+            // Assert
+            expect(res).toBeTruthy();
+            expect(res).toEqual({ data: 'anything' });
+            expect(loggerSpy).toHaveBeenCalled();
+          },
+        });
+      })
+    );
+
+    it(
+      'should retry twice',
+      waitForAsync(() => {
+        // Arrange
+        const paramToken = 'damien';
+        spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
+        spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+        const loggerSpy = spyOn(loggerService, 'logDebug');
+        spyOn(dataService, 'post').and.returnValue(createRetriableStream(throwError({}), throwError({}), of({ data: 'anything' })));
+
+        service.revokeRefreshToken().subscribe({
+          next: (res) => {
+            // Assert
+            expect(res).toBeTruthy();
+            expect(res).toEqual({ data: 'anything' });
+            expect(loggerSpy).toHaveBeenCalled();
+          },
+        });
+      })
+    );
+
+    it(
+      'should fail after three tries',
+      waitForAsync(() => {
+        // Arrange
+        const paramToken = 'damien';
+        spyOn(storagePersistanceService, 'getRefreshToken').and.returnValue(paramToken);
+        spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+        const loggerSpy = spyOn(loggerService, 'logError');
+        spyOn(dataService, 'post').and.returnValue(
+          createRetriableStream(throwError({}), throwError({}), throwError({}), of({ data: 'anything' }))
+        );
+
+        service.revokeRefreshToken().subscribe({
+          error: (err) => {
+            expect(err).toBeTruthy();
+            expect(loggerSpy).toHaveBeenCalled();
           },
         });
       })

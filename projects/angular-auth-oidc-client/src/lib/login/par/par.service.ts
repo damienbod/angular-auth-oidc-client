@@ -1,7 +1,7 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, retry } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistanceService } from '../../storage/storage-persistance.service';
@@ -35,6 +35,7 @@ export class ParService {
     const data = this.urlService.createBodyForParCodeFlowRequest(customParams);
 
     return this.dataService.post(parEndpoint, data, headers).pipe(
+      retry(2),
       map((response: any) => {
         this.loggerService.logDebug('par response: ', response);
 

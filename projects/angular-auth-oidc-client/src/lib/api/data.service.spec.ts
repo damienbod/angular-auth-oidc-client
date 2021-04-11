@@ -1,23 +1,27 @@
 import { HttpHeaders } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
+import { ConfigurationProvider } from '../config/config.provider';
+import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { DataService } from './data.service';
 import { HttpBaseService } from './http-base.service';
 
 describe('Data Service', () => {
   let dataService: DataService;
   let httpMock: HttpTestingController;
+  let configurationProvider: ConfigurationProvider;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [DataService, HttpBaseService],
+      providers: [DataService, HttpBaseService, { provide: ConfigurationProvider, useClass: ConfigurationProviderMock }],
     });
   });
 
   beforeEach(() => {
     dataService = TestBed.inject(DataService);
     httpMock = TestBed.inject(HttpTestingController);
+    configurationProvider = TestBed.inject(ConfigurationProvider);
   });
 
   it('should create', () => {
@@ -62,6 +66,46 @@ describe('Data Service', () => {
         httpMock.verify();
       })
     );
+
+    it(
+      'call without ngsw-bypass param by default',
+      waitForAsync(() => {
+        const url = 'anyurl';
+        dataService.get(url).subscribe((data: unknown) => {
+          expect(data).toBe('bodyData');
+        });
+        const req = httpMock.expectOne(url);
+
+        expect(req.request.method).toBe('GET');
+        expect(req.request.headers.get('Accept')).toBe('application/json');
+        expect(req.request.params.get('ngsw-bypass')).toBeNull();
+
+        req.flush('bodyData');
+
+        httpMock.verify();
+      })
+    );
+
+    it(
+      'call with ngsw-bypass param',
+      waitForAsync(() => {
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ ngswBypass: true });
+
+        const url = 'anyurl';
+        dataService.get(url).subscribe((data: unknown) => {
+          expect(data).toBe('bodyData');
+        });
+        const req = httpMock.expectOne(url + '?ngsw-bypass=');
+
+        expect(req.request.method).toBe('GET');
+        expect(req.request.headers.get('Accept')).toBe('application/json');
+        expect(req.request.params.get('ngsw-bypass')).toBe('');
+
+        req.flush('bodyData');
+
+        httpMock.verify();
+      })
+    );
   });
 
   describe('post', () => {
@@ -94,6 +138,42 @@ describe('Data Service', () => {
         expect(req.request.method).toBe('POST');
         expect(req.request.headers.get('X-MyHeader')).toEqual('Genesis');
         expect(req.request.headers.get('X-MyHeader')).not.toEqual('Genesis333');
+
+        req.flush('bodyData');
+
+        httpMock.verify();
+      })
+    );
+
+    it(
+      'call without ngsw-bypass param by default',
+      waitForAsync(() => {
+        const url = 'anyurl';
+        dataService.post(url, { some: 'thing' }).subscribe();
+        const req = httpMock.expectOne(url);
+
+        expect(req.request.method).toBe('POST');
+        expect(req.request.headers.get('Accept')).toBe('application/json');
+        expect(req.request.params.get('ngsw-bypass')).toBeNull();
+
+        req.flush('bodyData');
+
+        httpMock.verify();
+      })
+    );
+
+    it(
+      'call with ngsw-bypass param',
+      waitForAsync(() => {
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ ngswBypass: true });
+
+        const url = 'anyurl';
+        dataService.post(url, { some: 'thing' }).subscribe();
+        const req = httpMock.expectOne(url + '?ngsw-bypass=');
+
+        expect(req.request.method).toBe('POST');
+        expect(req.request.headers.get('Accept')).toBe('application/json');
+        expect(req.request.params.get('ngsw-bypass')).toBe('');
 
         req.flush('bodyData');
 

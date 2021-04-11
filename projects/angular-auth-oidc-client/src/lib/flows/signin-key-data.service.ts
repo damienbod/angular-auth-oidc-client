@@ -1,7 +1,7 @@
 import { HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, retry } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
@@ -26,7 +26,7 @@ export class SigninKeyDataService {
 
     this.loggerService.logDebug('Getting signinkeys from ', jwksUri);
 
-    return this.dataService.get<JwtKeys>(jwksUri).pipe(catchError(this.handleErrorGetSigningKeys));
+    return this.dataService.get<JwtKeys>(jwksUri).pipe(retry(2), catchError(this.handleErrorGetSigningKeys));
   }
 
   private handleErrorGetSigningKeys(errorResponse: HttpResponse<any> | any) {
