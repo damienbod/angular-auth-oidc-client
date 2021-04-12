@@ -14,7 +14,7 @@ export class DataService {
     const headers = this.prepareHeaders(token);
     let params = new HttpParams();
 
-    const { ngswBypass } = this.configurationProvider.getOpenIDConfiguration() || {};
+    const { ngswBypass } = this.configurationProvider.getOpenIDConfiguration();
     if (ngswBypass) {
       params = params.set(NGSW_CUSTOM_PARAM, '');
     }
@@ -28,7 +28,7 @@ export class DataService {
     const headers = headersParams || this.prepareHeaders();
     let params = new HttpParams();
 
-    const { ngswBypass } = this.configurationProvider.getOpenIDConfiguration() || {};
+    const { ngswBypass } = this.configurationProvider.getOpenIDConfiguration();
     if (ngswBypass) {
       params = params.set(NGSW_CUSTOM_PARAM, '');
     }
