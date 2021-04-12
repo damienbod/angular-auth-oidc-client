@@ -14,6 +14,8 @@ import { PeriodicallyTokenCheckServiceMock } from './callback/periodically-token
 import { RefreshSessionService } from './callback/refresh-session.service';
 import { RefreshSessionServiceMock } from './callback/refresh-session.service.mock';
 import { CheckAuthService } from './check-auth.service';
+import { StsConfigLoader } from './config/config-loader';
+import { StsConfigLoaderMock } from './config/config-loader-mock';
 import { ConfigurationProvider } from './config/config.provider';
 import { CheckSessionService } from './iframe/check-session.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
@@ -40,7 +42,7 @@ describe('CheckAuthService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [BrowserModule, HttpClientTestingModule, RouterTestingModule, AuthModule.forRoot()],
+      imports: [BrowserModule, HttpClientTestingModule, RouterTestingModule, AuthModule.forRoot({})],
       providers: [
         CheckSessionService,
         { provide: SilentRenewService, useClass: SilentRenewServiceMock },
@@ -52,6 +54,7 @@ describe('CheckAuthService', () => {
         { provide: RefreshSessionService, useClass: RefreshSessionServiceMock },
         { provide: PeriodicallyTokenCheckService, useClass: PeriodicallyTokenCheckServiceMock },
         { provide: PopUpService, useClass: PopUpServiceMock },
+        { provide: StsConfigLoader, useClass: StsConfigLoaderMock },
         AutoLoginService,
       ],
     });

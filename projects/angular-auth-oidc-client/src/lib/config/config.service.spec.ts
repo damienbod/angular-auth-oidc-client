@@ -9,6 +9,8 @@ import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
+import { PlatformProvider } from '../utils/platform-provider/platform.provider';
+import { PlatformProviderMock } from './../utils/platform-provider/platform.provider-mock';
 import { AuthWellKnownService } from './auth-well-known.service';
 import { AuthWellKnownServiceMock } from './auth-well-known.service-mock';
 import { ConfigurationProvider } from './config.provider';
@@ -47,6 +49,10 @@ describe('Configuration Service', () => {
         {
           provide: StoragePersistanceService,
           useClass: StoragePersistanceServiceMock,
+        },
+        {
+          provide: PlatformProvider,
+          useClass: PlatformProviderMock,
         },
         PublicEventsService,
         ConfigValidationService,

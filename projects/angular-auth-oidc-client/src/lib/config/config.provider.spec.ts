@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { LogLevel } from '../logging/log-level';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { ConfigurationProvider } from './config.provider';
-import { DEFAULT_CONFIG } from './default-config';
 import { OpenIdConfiguration } from './openid-configuration';
 
 describe('ConfigurationProviderTests', () => {
@@ -236,16 +235,7 @@ describe('ConfigurationProviderTests', () => {
     expect(startCheckSession).toEqual(false);
   });
 
-  it('public config has default config if config is not getting passed', () => {
-    configurationProvider.setConfig(null);
-
-    const currentConfig = configurationProvider.getOpenIDConfiguration();
-
-    expect(currentConfig).not.toBeNull();
-    expect(currentConfig).toEqual(DEFAULT_CONFIG);
-  });
-
-  it('wirtes warning if storage is being passed', () => {
+  it('writes warning if storage is being passed', () => {
     const config: OpenIdConfiguration = {
       storage: 'anything',
     };

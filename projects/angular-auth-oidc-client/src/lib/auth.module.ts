@@ -75,7 +75,7 @@ export class AuthModule {
         {
           provide: APP_INITIALIZER,
           multi: true,
-          deps: [OidcConfigService, ConfigurationProvider, StsConfigLoader],
+          deps: [OidcConfigService, StsConfigLoader],
           useFactory: configurationProviderFactory,
         },
         {

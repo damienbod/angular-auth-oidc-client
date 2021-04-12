@@ -38,7 +38,7 @@ export class OidcConfigService {
       }
 
       const usedConfig = this.prepareConfig(passedConfig);
-      this.configurationProvider.setOpenIDConfiguration(usedConfig);
+      this.configurationProvider.setConfig(usedConfig);
 
       const alreadyExistingAuthWellKnownEndpoints = this.storagePersistanceService.read('authWellKnownEndPoints');
       if (!!alreadyExistingAuthWellKnownEndpoints) {

@@ -9,8 +9,10 @@ export class ConfigurationProvider {
     return !!this.openIdConfigurationInternal;
   }
 
-  setOpenIDConfiguration(readyConfig: OpenIdConfiguration) {
+  setConfig(readyConfig: OpenIdConfiguration) {
     this.openIdConfigurationInternal = readyConfig;
+
+    return this.openIdConfigurationInternal;
   }
 
   getOpenIDConfiguration(): OpenIdConfiguration {

@@ -45,7 +45,7 @@ describe('OidcSecurityService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [CommonModule, HttpClientTestingModule, RouterTestingModule, AuthModule.forRoot()],
+      imports: [CommonModule, HttpClientTestingModule, RouterTestingModule, AuthModule.forRoot({})],
       providers: [
         OidcSecurityService,
         {

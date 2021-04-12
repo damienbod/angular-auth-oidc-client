@@ -29,7 +29,7 @@ describe('State Validation Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [BrowserModule, HttpClientTestingModule, RouterTestingModule, AuthModule.forRoot()],
+      imports: [BrowserModule, HttpClientTestingModule, RouterTestingModule, AuthModule.forRoot({})],
       providers: [
         StateValidationService,
         TokenValidationService,
