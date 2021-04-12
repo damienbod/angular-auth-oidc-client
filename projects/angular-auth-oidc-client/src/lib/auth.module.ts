@@ -78,7 +78,10 @@ export class AuthModule {
           deps: [OidcConfigService, ConfigurationProvider, StsConfigLoader],
           useFactory: configurationProviderFactory,
         },
-        { provide: AbstractSecurityStorage, useClass: BrowserStorageService },
+        {
+          provide: AbstractSecurityStorage,
+          useClass: (config as OpenIdConfiguration)?.storage || BrowserStorageService,
+        },
         OidcConfigService,
         PublicEventsService,
         FlowHelper,
