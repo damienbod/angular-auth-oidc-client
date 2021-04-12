@@ -1,7 +1,6 @@
-/* eslint-disable arrow-body-style */
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { APP_INITIALIZER, InjectionToken, NgModule, Provider } from '@angular/core';
+import { APP_INITIALIZER, InjectionToken, NgModule } from '@angular/core';
 import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './authState/auth-state.service';
@@ -11,9 +10,9 @@ import { CheckAuthService } from './check-auth.service';
 import { ConfigValidationService } from './config-validation/config-validation.service';
 import { AuthWellKnownDataService } from './config/auth-well-known-data.service';
 import { AuthWellKnownService } from './config/auth-well-known.service';
+import { OpenIdConfigLoader, StsConfigLoader, StsConfigStaticLoader } from './config/config-loader';
 import { ConfigurationProvider } from './config/config.provider';
 import { OidcConfigService } from './config/config.service';
-import { StsConfigLoader, StsConfigStaticLoader } from './config/http-loader';
 import { OpenIdConfiguration } from './config/openid-configuration';
 import { CodeFlowCallbackHandlerService } from './flows/callback-handling/code-flow-callback-handler.service';
 import { HistoryJwtKeysCallbackHandlerService } from './flows/callback-handling/history-jwt-keys-callback-handler.service';
@@ -52,31 +51,12 @@ import { UrlService } from './utils/url/url.service';
 import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';
 
-export class OpenIdConfigLoader {
-  loader?: Provider;
-}
-
-export const createStaticLoader = (config: OpenIdConfiguration) => {
-  return new StsConfigStaticLoader(config);
-};
+export const createStaticLoader = (config: OpenIdConfiguration) => new StsConfigStaticLoader(config);
 
 export const configurationProviderFactory = (
   oidcConfigService: OidcConfigService,
-  configurationProvider: ConfigurationProvider,
-  stsConfigLoader: StsConfigLoader
-) => {
-  return (): Promise<any> => {
-    return (
-      stsConfigLoader
-        .loadConfig()
-        .then((loadedConfig) => oidcConfigService.withConfig(loadedConfig))
-        // eslint-disable-next-line arrow-body-style
-        .then((readyConfig) => {
-          configurationProvider.setOpenIDConfiguration(readyConfig);
-        })
-    );
-  };
-};
+  customConfigLoader: StsConfigLoader
+) => (): Promise<any> => customConfigLoader.loadConfig().then((loadedConfig) => oidcConfigService.withConfig(loadedConfig));
 
 export const APP_CONFIG = new InjectionToken<OpenIdConfiguration | StsConfigLoader>('APP_CONFIG');
 

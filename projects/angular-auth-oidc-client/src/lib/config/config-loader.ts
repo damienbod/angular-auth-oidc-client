@@ -1,4 +1,9 @@
+import { Provider } from '@angular/core';
 import { OpenIdConfiguration } from './openid-configuration';
+
+export class OpenIdConfigLoader {
+  loader?: Provider;
+}
 
 export abstract class StsConfigLoader {
   abstract loadConfig(): Promise<any>;

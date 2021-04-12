@@ -9,6 +9,7 @@ import { StoragePersistanceService } from '../storage/storage-persistance.servic
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 import { AuthWellKnownService } from './auth-well-known.service';
+import { ConfigurationProvider } from './config.provider';
 import { DEFAULT_CONFIG } from './default-config';
 import { OpenIdConfiguration } from './openid-configuration';
 import { PublicConfiguration } from './public-configuration';
@@ -18,6 +19,7 @@ export class OidcConfigService {
   constructor(
     private loggerService: LoggerService,
     private publicEventsService: PublicEventsService,
+    private configurationProvider: ConfigurationProvider,
     private authWellKnownService: AuthWellKnownService,
     private storagePersistanceService: StoragePersistanceService,
     private configValidationService: ConfigValidationService,
@@ -36,6 +38,7 @@ export class OidcConfigService {
       }
 
       const usedConfig = this.prepareConfig(passedConfig);
+      this.configurationProvider.setOpenIDConfiguration(usedConfig);
 
       const alreadyExistingAuthWellKnownEndpoints = this.storagePersistanceService.read('authWellKnownEndPoints');
       if (!!alreadyExistingAuthWellKnownEndpoints) {
