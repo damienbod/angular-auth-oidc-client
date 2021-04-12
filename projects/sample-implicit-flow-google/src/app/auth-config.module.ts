@@ -1,9 +1,9 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { AuthModule, LogLevel, OidcConfigService, OidcSecurityService } from 'angular-auth-oidc-client';
 
-export function configureAuth(oidcConfigService: OidcConfigService) {
-  return () =>
-    oidcConfigService.withConfig({
+@NgModule({
+  imports: [
+    AuthModule.forRoot({
       stsServer: 'https://accounts.google.com',
       redirectUrl: window.location.origin,
       clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
@@ -21,21 +21,9 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
       historyCleanupOff: true,
       // iss_validation_off: false
       // disable_iat_offset_validation: true
-    });
-}
-
-@NgModule({
-  imports: [AuthModule.forRoot()],
-  providers: [
-    OidcSecurityService,
-    OidcConfigService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: configureAuth,
-      deps: [OidcConfigService],
-      multi: true,
-    },
+    }),
   ],
+  providers: [OidcSecurityService, OidcConfigService],
   exports: [AuthModule],
 })
 export class AuthConfigModule {}

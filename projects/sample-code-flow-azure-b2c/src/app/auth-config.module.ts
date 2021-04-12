@@ -1,9 +1,9 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { AuthModule, LogLevel, OidcConfigService, OidcSecurityService } from 'angular-auth-oidc-client';
 
-export function loadConfig(oidcConfigService: OidcConfigService) {
-  return () =>
-    oidcConfigService.withConfig({
+@NgModule({
+  imports: [
+    AuthModule.forRoot({
       stsServer: 'https://login.microsoftonline.com/damienbod.onmicrosoft.com/v2.0',
       authWellknownEndpoint:
         'https://damienbod.b2clogin.com/damienbod.onmicrosoft.com/B2C_1_b2cpolicydamien/v2.0/.well-known/openid-configuration',
@@ -23,21 +23,9 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
       customParams: {
         prompt: 'select_account', // login, consent
       },
-    });
-}
-
-@NgModule({
-  imports: [AuthModule.forRoot()],
-  providers: [
-    OidcSecurityService,
-    OidcConfigService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: loadConfig,
-      deps: [OidcConfigService],
-      multi: true,
-    },
+    }),
   ],
+  providers: [OidcSecurityService, OidcConfigService],
   exports: [AuthModule],
 })
 export class AuthConfigModule {}

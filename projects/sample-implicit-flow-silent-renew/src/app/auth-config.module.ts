@@ -1,9 +1,9 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
 
-export function configureAuth(oidcConfigService: OidcConfigService) {
-  return () =>
-    oidcConfigService.withConfig({
+@NgModule({
+  imports: [
+    AuthModule.forRoot({
       stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
       redirectUrl: window.location.origin,
       postLogoutRedirectUri: window.location.origin,
@@ -14,20 +14,9 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
       startCheckSession: true,
       silentRenew: true,
       logLevel: LogLevel.Debug,
-    });
-}
-
-@NgModule({
-  imports: [AuthModule.forRoot()],
-  providers: [
-    OidcConfigService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: configureAuth,
-      deps: [OidcConfigService],
-      multi: true,
-    },
+    }),
   ],
+  providers: [OidcConfigService],
   exports: [AuthModule],
 })
 export class AuthConfigModule {}

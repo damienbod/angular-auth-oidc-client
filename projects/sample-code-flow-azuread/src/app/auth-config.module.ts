@@ -1,9 +1,9 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { AuthModule, LogLevel, OidcConfigService, OidcSecurityService } from 'angular-auth-oidc-client';
 
-export function loadConfig(oidcConfigService: OidcConfigService) {
-  return () =>
-    oidcConfigService.withConfig({
+@NgModule({
+  imports: [
+    AuthModule.forRoot({
       stsServer: 'https://login.microsoftonline.com/7ff95b15-dc21-4ba6-bc92-824856578fc1/v2.0',
       authWellknownEndpoint: 'https://login.microsoftonline.com/common/v2.0',
       redirectUrl: window.location.origin,
@@ -20,21 +20,9 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
       customParams: {
         prompt: 'select_account', // login, consent
       },
-    });
-}
-
-@NgModule({
-  imports: [AuthModule.forRoot()],
-  providers: [
-    OidcSecurityService,
-    OidcConfigService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: loadConfig,
-      deps: [OidcConfigService],
-      multi: true,
-    },
+    }),
   ],
+  providers: [OidcSecurityService, OidcConfigService],
   exports: [AuthModule],
 })
 export class AuthConfigModule {}

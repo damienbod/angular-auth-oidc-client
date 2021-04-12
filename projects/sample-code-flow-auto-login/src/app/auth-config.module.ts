@@ -1,9 +1,9 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
 
-export const configureAuth = (oidcConfigService: OidcConfigService) => {
-  return () => {
-    oidcConfigService.withConfig({
+@NgModule({
+  imports: [
+    AuthModule.forRoot({
       stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
       redirectUrl: window.location.origin,
       clientId: 'angularJwtClient',
@@ -21,21 +21,9 @@ export const configureAuth = (oidcConfigService: OidcConfigService) => {
       historyCleanupOff: true,
       // iss_validation_off: false
       // disable_iat_offset_validation: true
-    });
-  };
-};
-
-@NgModule({
-  imports: [AuthModule.forRoot()],
-  providers: [
-    OidcConfigService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: configureAuth,
-      deps: [OidcConfigService],
-      multi: true,
-    },
+    }),
   ],
+  providers: [OidcConfigService],
   exports: [AuthModule],
 })
 export class AuthConfigModule {}
