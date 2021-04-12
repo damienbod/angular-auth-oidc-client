@@ -91,14 +91,6 @@ export class OidcConfigService {
 
   private prepareConfig(configuration: OpenIdConfiguration) {
     const openIdConfigurationInternal = { ...DEFAULT_CONFIG, ...configuration };
-
-    if (configuration?.storage) {
-      console.warn(
-        `PLEASE NOTE: The storage in the config will be deprecated in future versions:
-                Please pass the custom storage in forRoot() as documented`
-      );
-    }
-
     this.setSpecialCases(openIdConfigurationInternal);
 
     return openIdConfigurationInternal;
