@@ -1,9 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of } from 'rxjs';
-import { AuthModule } from './auth.module';
 import { AuthStateService } from './authState/auth-state.service';
 import { AuthStateServiceMock } from './authState/auth-state.service-mock';
 import { CallbackService } from './callback/callback.service';
@@ -13,6 +9,7 @@ import { RefreshSessionServiceMock } from './callback/refresh-session.service.mo
 import { CheckAuthService } from './check-auth.service';
 import { CheckAuthServiceMock } from './check-auth.service-mock';
 import { ConfigurationProvider } from './config/config.provider';
+import { ConfigurationProviderMock } from './config/config.provider-mock';
 import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsDataServiceMock } from './flows/flows-data.service-mock';
 import { CheckSessionService } from './iframe/check-session.service';
@@ -45,7 +42,7 @@ describe('OidcSecurityService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [CommonModule, HttpClientTestingModule, RouterTestingModule, AuthModule.forRoot()],
+      imports: [],
       providers: [
         OidcSecurityService,
         {
@@ -64,7 +61,10 @@ describe('OidcSecurityService', () => {
           provide: TokenHelperService,
           useClass: TokenHelperServiceMock,
         },
-        ConfigurationProvider,
+        {
+          provide: ConfigurationProvider,
+          useClass: ConfigurationProviderMock,
+        },
         {
           provide: AuthStateService,
           useClass: AuthStateServiceMock,
