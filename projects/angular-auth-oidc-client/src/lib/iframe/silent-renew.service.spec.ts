@@ -1,5 +1,5 @@
 ﻿import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
@@ -24,6 +24,7 @@ describe('SilentRenewService  ', () => {
   let flowHelper: FlowHelper;
   let implicitFlowCallbackService: ImplicitFlowCallbackService;
   let iFrameService: IFrameService;
+  let configurationProvider: ConfigurationProvider;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -48,10 +49,43 @@ describe('SilentRenewService  ', () => {
     iFrameService = TestBed.inject(IFrameService);
     flowHelper = TestBed.inject(FlowHelper);
     implicitFlowCallbackService = TestBed.inject(ImplicitFlowCallbackService);
+    configurationProvider = TestBed.inject(ConfigurationProvider);
   });
 
   it('should create', () => {
     expect(silentRenewService).toBeTruthy();
+  });
+
+  describe('refreshSessionWithIFrameCompleted', () => {
+    it('is of type observable', () => {
+      expect(silentRenewService.refreshSessionWithIFrameCompleted$).toEqual(jasmine.any(Observable));
+    });
+  });
+
+  describe('isSilentRenewConfigured', () => {
+    it('returns true if refreshToken is configured false and silentRenew is configured true', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ useRefreshToken: false, silentRenew: true });
+
+      const result = silentRenewService.isSilentRenewConfigured();
+
+      expect(result).toBe(true);
+    });
+
+    it('returns false if refreshToken is configured true and silentRenew is configured true', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ useRefreshToken: true, silentRenew: true });
+
+      const result = silentRenewService.isSilentRenewConfigured();
+
+      expect(result).toBe(false);
+    });
+
+    it('returns false if refreshToken is configured false and silentRenew is configured false', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ useRefreshToken: false, silentRenew: false });
+
+      const result = silentRenewService.isSilentRenewConfigured();
+
+      expect(result).toBe(false);
+    });
   });
 
   describe('getOrCreateIframe', () => {
