@@ -1,4 +1,3 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -18,11 +17,11 @@ describe('ImplicitFlowCallbackService ', () => {
   let flowsService: FlowsService;
   let configurationProvider: ConfigurationProvider;
   let flowsDataService: FlowsDataService;
-  let router;
+  let router: Router;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
+      imports: [RouterTestingModule],
       providers: [
         ImplicitFlowCallbackService,
         { provide: FlowsService, useClass: FlowsServiceMock },

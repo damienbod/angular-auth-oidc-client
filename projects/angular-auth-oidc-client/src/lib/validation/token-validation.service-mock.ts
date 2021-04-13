@@ -50,4 +50,28 @@
   validateAccessTokenNotExpired(accessTokenExpiresAt: Date, offsetSeconds?: number): boolean {
     return true;
   }
+
+  validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken: any): boolean {
+    if (!dataIdToken) {
+      return false;
+    }
+
+    if (Array.isArray(dataIdToken.aud) && dataIdToken.aud.length > 1 && !dataIdToken.azp) {
+      return false;
+    }
+
+    return true;
+  }
+
+  validateIdTokenAzpValid(dataIdToken: any, clientId: string): boolean {
+    if (!dataIdToken?.azp) {
+      return true;
+    }
+
+    if (dataIdToken.azp === clientId) {
+      return true;
+    }
+
+    return false;
+  }
 }

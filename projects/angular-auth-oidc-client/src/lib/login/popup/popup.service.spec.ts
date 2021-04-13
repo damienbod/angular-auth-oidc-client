@@ -126,4 +126,34 @@ describe('PopUpService', () => {
       })
     );
   });
+
+  describe('cleanUp', () => {
+    it(
+      'calls removeEventListener on window with correct params',
+      waitForAsync(() => {
+        const spy = spyOn(window, 'removeEventListener').and.callFake(() => {});
+
+        const listener = null;
+        (popUpService as any).cleanUp(listener);
+
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(spy).toHaveBeenCalledWith('message', listener, false);
+      })
+    );
+
+    it(
+      'removes popup from sessionstorage, closes and nulls when popup is opened',
+      waitForAsync(() => {
+        const popupMock = { anyThing: 'truthy', sessionStorage: mockStorage, close: () => {} };
+        const removeItemSpy = spyOn(mockStorage, 'removeItem');
+        const closeSpy = spyOn(popupMock, 'close');
+        (popUpService as any).popUp = popupMock;
+        (popUpService as any).cleanUp(null);
+
+        expect(removeItemSpy).toHaveBeenCalledOnceWith('popupauth');
+        expect(closeSpy).toHaveBeenCalledTimes(1);
+        expect((popUpService as any).popUp).toBeNull();
+      })
+    );
+  });
 });
