@@ -210,7 +210,18 @@ describe('OidcSecurityService', () => {
       waitForAsync(() => {
         const spy = spyOn(loginService, 'loginWithPopUp').and.callFake(() => of(null));
         oidcSecurityService.authorizeWithPopUp({ customParams: { any: 'thing' } }).subscribe(() => {
-          expect(spy).toHaveBeenCalledWith({ customParams: { any: 'thing' } });
+          expect(spy).toHaveBeenCalledWith({ customParams: { any: 'thing' } }, undefined);
+        });
+      })
+    );
+
+    it(
+      'calls login service loginWithPopUp with params and popupparams if given',
+      waitForAsync(() => {
+        const somePopupOptions = { width: 500, height: 500, left: 50, top: 50 };
+        const spy = spyOn(loginService, 'loginWithPopUp').and.callFake(() => of(null));
+        oidcSecurityService.authorizeWithPopUp({ customParams: { any: 'thing' } }, somePopupOptions).subscribe(() => {
+          expect(spy).toHaveBeenCalledWith({ customParams: { any: 'thing' } }, somePopupOptions);
         });
       })
     );
