@@ -17,7 +17,7 @@ export class UserServiceMock {
     return null;
   }
 
-  publishUserdataIfExists() {}
+  publishUserDataIfExists() {}
 
   setUserDataToStore(value: any): void {}
 
