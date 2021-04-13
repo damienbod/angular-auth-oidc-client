@@ -1,6 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
@@ -43,7 +41,7 @@ describe('CheckAuthService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [BrowserModule, HttpClientTestingModule, RouterTestingModule],
+      imports: [RouterTestingModule],
       providers: [
         { provide: CheckSessionService, useClass: CheckSessionServiceMock },
         { provide: SilentRenewService, useClass: SilentRenewServiceMock },

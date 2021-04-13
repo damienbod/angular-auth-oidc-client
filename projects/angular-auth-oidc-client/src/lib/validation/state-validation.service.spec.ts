@@ -1,20 +1,20 @@
 /* eslint-disable max-len */
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { BrowserModule } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
-import { AuthModule } from '../auth.module';
 import { AuthWellKnownEndpoints } from '../config/auth-well-known-endpoints';
 import { ConfigurationProvider } from '../config/config.provider';
+import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LogLevel } from '../logging/log-level';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { StoragePersistanceService } from '../storage/storage-persistance.service';
 import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
+import { EqualityService } from '../utils/equality/equality.service';
+import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
 import { StateValidationService } from './state-validation.service';
 import { TokenValidationService } from './token-validation.service';
+import { TokenValidationServiceMock } from './token-validation.service-mock';
 import { ValidationResult } from './validation-result';
 
 describe('State Validation Service', () => {
@@ -29,20 +29,28 @@ describe('State Validation Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [BrowserModule, HttpClientTestingModule, RouterTestingModule, AuthModule.forRoot()],
+      imports: [],
       providers: [
-        StateValidationService,
-        TokenValidationService,
-        ConfigurationProvider,
-        TokenHelperService,
         {
           provide: StoragePersistanceService,
           useClass: StoragePersistanceServiceMock,
         },
         {
+          provide: TokenValidationService,
+          useClass: TokenValidationServiceMock,
+        },
+        TokenHelperService,
+        {
           provide: LoggerService,
           useClass: LoggerServiceMock,
         },
+        {
+          provide: ConfigurationProvider,
+          useClass: ConfigurationProviderMock,
+        },
+        EqualityService,
+        StateValidationService,
+        FlowHelper,
       ],
     });
   });
@@ -87,11 +95,6 @@ describe('State Validation Service', () => {
     };
   });
 
-  afterEach(() => {
-    // reset config after each test
-    configProvider.setConfig(null);
-  });
-
   it('should create', () => {
     expect(stateValidationService).toBeTruthy();
     expect(oidcSecurityValidation).toBeTruthy();
@@ -99,7 +102,7 @@ describe('State Validation Service', () => {
   });
 
   it('should return invalid result if validateStateFromHashCallback is false', () => {
-    configProvider.setConfig(config);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistanceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
@@ -161,7 +164,7 @@ describe('State Validation Service', () => {
 
     config.autoCleanStateAfterAuthentication = false;
 
-    configProvider.setConfig(config);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
 
     const readSpy = spyOn(storagePersistanceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
@@ -195,7 +198,7 @@ describe('State Validation Service', () => {
     config.responseType = 'id_token token';
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
     spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(false);
-    configProvider.setConfig(config);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistanceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
@@ -232,7 +235,7 @@ describe('State Validation Service', () => {
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
     spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(false);
-    configProvider.setConfig(config);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistanceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
@@ -276,7 +279,7 @@ describe('State Validation Service', () => {
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
 
     spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(false);
-    configProvider.setConfig(config);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistanceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
@@ -323,7 +326,7 @@ describe('State Validation Service', () => {
     spyOn(oidcSecurityValidation, 'validateIdTokenIatMaxOffset').and.returnValue(false);
 
     config.maxIdTokenIatOffsetAllowedInSeconds = 0;
-    configProvider.setConfig(config);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistanceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
@@ -373,7 +376,7 @@ describe('State Validation Service', () => {
 
     config.maxIdTokenIatOffsetAllowedInSeconds = 0;
     spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(false);
-    configProvider.setConfig(config);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistanceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
@@ -425,7 +428,7 @@ describe('State Validation Service', () => {
     spyOn(oidcSecurityValidation, 'validateIdTokenAud').and.returnValue(false);
 
     config.clientId = '';
-    configProvider.setConfig(config);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistanceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
@@ -478,7 +481,7 @@ describe('State Validation Service', () => {
 
     config.clientId = '';
     spyOn(oidcSecurityValidation, 'validateIdTokenExpNotExpired').and.returnValue(false);
-    configProvider.setConfig(config);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistanceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
@@ -524,7 +527,7 @@ describe('State Validation Service', () => {
     spyOn(oidcSecurityValidation, 'validateIdTokenExpNotExpired').and.returnValue(true);
     config.responseType = 'NOT id_token token';
     config.autoCleanStateAfterAuthentication = false;
-    configProvider.setConfig(config);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistanceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
@@ -558,7 +561,7 @@ describe('State Validation Service', () => {
     expect(state.authResponseIsValid).toBe(true);
   });
 
-  it('Reponse is invalid if validateIdTokenAtHash is false', () => {
+  it('Response is invalid if validateIdTokenAtHash is false', () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
     spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
@@ -573,7 +576,7 @@ describe('State Validation Service', () => {
     config.responseType = 'id_token token';
     config.autoCleanStateAfterAuthentication = false;
     spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(false);
-    configProvider.setConfig(config);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistanceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
@@ -620,7 +623,7 @@ describe('State Validation Service', () => {
     spyOn(oidcSecurityValidation, 'validateIdTokenExpNotExpired').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(true);
     config.responseType = 'id_token token';
-    configProvider.setConfig(config);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistanceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
@@ -681,7 +684,7 @@ describe('State Validation Service', () => {
 
     config.autoCleanStateAfterAuthentication = false;
 
-    configProvider.setConfig(config);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistanceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
@@ -737,7 +740,7 @@ describe('State Validation Service', () => {
       disableRefreshIdTokenAuthTimeValidation: true,
     };
 
-    configProvider.setConfig(configRefresh);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
     const callbackContext = {
@@ -803,7 +806,7 @@ describe('State Validation Service', () => {
       disableRefreshIdTokenAuthTimeValidation: true,
     };
 
-    configProvider.setConfig(configRefresh);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
     const callbackContext = {
@@ -869,7 +872,7 @@ describe('State Validation Service', () => {
       disableRefreshIdTokenAuthTimeValidation: true,
     };
 
-    configProvider.setConfig(configRefresh);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
     const callbackContext = {
@@ -935,7 +938,7 @@ describe('State Validation Service', () => {
       disableRefreshIdTokenAuthTimeValidation: false,
     };
 
-    configProvider.setConfig(configRefresh);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
     const callbackContext = {
@@ -1001,7 +1004,7 @@ describe('State Validation Service', () => {
       disableRefreshIdTokenAuthTimeValidation: false,
     };
 
-    configProvider.setConfig(configRefresh);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
     const callbackContext = {
@@ -1067,7 +1070,7 @@ describe('State Validation Service', () => {
       disableRefreshIdTokenAuthTimeValidation: false,
     };
 
-    configProvider.setConfig(configRefresh);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
     const callbackContext = {
@@ -1133,7 +1136,7 @@ describe('State Validation Service', () => {
       disableRefreshIdTokenAuthTimeValidation: false,
     };
 
-    configProvider.setConfig(configRefresh);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
     const callbackContext = {
@@ -1199,7 +1202,7 @@ describe('State Validation Service', () => {
       disableRefreshIdTokenAuthTimeValidation: false,
     };
 
-    configProvider.setConfig(configRefresh);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
     const callbackContext = {
@@ -1245,7 +1248,7 @@ describe('State Validation Service', () => {
 
     config.maxIdTokenIatOffsetAllowedInSeconds = 0;
     spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(false);
-    configProvider.setConfig(config);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
 
     const callbackContext = {
       code: 'fdffsdfsdf',
