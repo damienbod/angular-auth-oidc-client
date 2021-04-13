@@ -10,6 +10,7 @@ import { FlowsDataService } from './flows/flows-data.service';
 import { CheckSessionService } from './iframe/check-session.service';
 import { AuthOptions } from './login/auth-options';
 import { LoginService } from './login/login.service';
+import { PopupOptions } from './login/popup/popup-options';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { StoragePersistanceService } from './storage/storage-persistance.service';
 import { UserService } from './userData/user-service';
@@ -99,12 +100,12 @@ export class OidcSecurityService {
     this.loginService.login(authOptions);
   }
 
-  authorizeWithPopUp(authOptions?: AuthOptions) {
+  authorizeWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions) {
     if (authOptions?.customParams) {
       this.storagePersistanceService.write('storageCustomRequestParams', authOptions.customParams);
     }
 
-    return this.loginService.loginWithPopUp(authOptions);
+    return this.loginService.loginWithPopUp(authOptions, popupOptions);
   }
 
   forceRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
