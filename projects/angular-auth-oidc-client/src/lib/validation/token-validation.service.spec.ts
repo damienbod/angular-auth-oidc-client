@@ -1,17 +1,9 @@
 /* eslint-disable max-len */
-/* eslint-disable @typescript-eslint/naming-convention */
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { BrowserModule } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
-import { AuthModule } from '../auth.module';
-import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
-import { AbstractSecurityStorage } from '../storage/abstract-security-storage';
-import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
-import { EqualityService } from '../utils/equality/equality.service';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
+import { TokenHelperServiceMock } from '../utils/tokenHelper/oidc-token-helper.service-mock';
 import { TokenValidationService } from './token-validation.service';
 
 describe('TokenValidationService', () => {
@@ -20,19 +12,17 @@ describe('TokenValidationService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [BrowserModule, HttpClientTestingModule, RouterTestingModule, AuthModule.forRoot({})],
+      imports: [],
       providers: [
-        ConfigurationProvider,
-        EqualityService,
-        TokenValidationService,
-        {
-          provide: AbstractSecurityStorage,
-          useClass: BrowserStorageMock,
-        },
         {
           provide: LoggerService,
           useClass: LoggerServiceMock,
         },
+        {
+          provide: TokenHelperService,
+          useClass: TokenHelperServiceMock,
+        },
+        TokenValidationService,
       ],
     });
   });
@@ -557,8 +547,11 @@ describe('TokenValidationService', () => {
 
     it('returns false if token has not expired using offset', () => {
       // expires 2050-02-12T08:02:30.823Z
+      const tokenExpires = new Date('2050-02-12T08:02:30.823Z');
       const idToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2MTMxMTY5NTAsImV4cCI6MjUyODI2NTc1MCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkdpdmVuTmFtZSI6IkpvaG5ueSIsIlN1cm5hbWUiOiJSb2NrZXQiLCJFbWFpbCI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJSb2xlIjpbIk1hbmFnZXIiLCJQcm9qZWN0IEFkbWluaXN0cmF0b3IiXX0.GHxRo23NghUTTeZx6VIzTSf05JEeEn7z9YYyFLxWv6M';
+
+      spyOn(tokenHelperService, 'getTokenExpirationDate').and.returnValue(tokenExpires);
 
       const result = tokenValidationService.hasIdTokenExpired(idToken);
 

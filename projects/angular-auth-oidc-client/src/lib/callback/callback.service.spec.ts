@@ -1,6 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of } from 'rxjs';
 import { ConfigurationProvider } from '../config/config.provider';
 import { ConfigurationProviderMock } from '../config/config.provider-mock';
@@ -24,7 +22,7 @@ describe('CallbackService ', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
+      imports: [],
       providers: [
         CallbackService,
         { provide: UrlService, useClass: UrlServiceMock },

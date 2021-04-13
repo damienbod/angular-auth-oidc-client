@@ -1,19 +1,18 @@
 import { DEFAULT_CONFIG } from './default-config';
 import { OpenIdConfiguration } from './openid-configuration';
-import { PublicConfiguration } from './public-configuration';
 
 export class ConfigurationProviderMock {
-  getOpenIDConfiguration(): OpenIdConfiguration {
-    return DEFAULT_CONFIG;
-  }
+  private configInternal = null;
 
-  get configuration(): PublicConfiguration {
-    return null;
+  getOpenIDConfiguration(): OpenIdConfiguration {
+    return this.configInternal || DEFAULT_CONFIG;
   }
 
   hasValidConfig() {
     return true;
   }
 
-  setConfig(configuration: OpenIdConfiguration) {}
+  setConfig(configuration: OpenIdConfiguration) {
+    this.configInternal = configuration;
+  }
 }

@@ -1,6 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { FlowsService } from '../flows/flows.service';
 import { FlowsServiceMock } from '../flows/flows.service-mock';
@@ -19,7 +17,7 @@ describe('RefreshSessionRefreshTokenService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
+      imports: [],
       providers: [
         RefreshSessionRefreshTokenService,
         { provide: LoggerService, useClass: LoggerServiceMock },

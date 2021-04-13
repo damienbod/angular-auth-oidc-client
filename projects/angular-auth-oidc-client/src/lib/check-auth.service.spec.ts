@@ -1,11 +1,9 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
-import { AuthModule } from './auth.module';
 import { AuthStateService } from './authState/auth-state.service';
+import { AuthStateServiceMock } from './authState/auth-state.service-mock';
 import { AutoLoginService } from './auto-login/auto-login-service';
 import { CallbackService } from './callback/callback.service';
 import { CallbackServiceMock } from './callback/callback.service-mock';
@@ -17,7 +15,9 @@ import { CheckAuthService } from './check-auth.service';
 import { StsConfigLoader } from './config/config-loader';
 import { StsConfigLoaderMock } from './config/config-loader-mock';
 import { ConfigurationProvider } from './config/config.provider';
+import { ConfigurationProviderMock } from './config/config.provider-mock';
 import { CheckSessionService } from './iframe/check-session.service';
+import { CheckSessionServiceMock } from './iframe/check-session.service-mock';
 import { SilentRenewService } from './iframe/silent-renew.service';
 import { SilentRenewServiceMock } from './iframe/silent-renew.service-mock';
 import { LoggerService } from './logging/logger.service';
@@ -25,6 +25,7 @@ import { LoggerServiceMock } from './logging/logger.service-mock';
 import { PopUpService } from './login/popup/popup.service';
 import { PopUpServiceMock } from './login/popup/popup.service-mock';
 import { UserService } from './userData/user-service';
+import { UserServiceMock } from './userData/user-service-mock';
 
 describe('CheckAuthService', () => {
   let checkAuthService: CheckAuthService;
@@ -42,20 +43,21 @@ describe('CheckAuthService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [BrowserModule, HttpClientTestingModule, RouterTestingModule, AuthModule.forRoot({})],
+      imports: [RouterTestingModule],
       providers: [
-        CheckSessionService,
+        { provide: CheckSessionService, useClass: CheckSessionServiceMock },
         { provide: SilentRenewService, useClass: SilentRenewServiceMock },
-        UserService,
+        { provide: UserService, useClass: UserServiceMock },
         { provide: LoggerService, useClass: LoggerServiceMock },
-        ConfigurationProvider,
-        AuthStateService,
+        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
+        { provide: AuthStateService, useClass: AuthStateServiceMock },
         { provide: CallbackService, useClass: CallbackServiceMock },
         { provide: RefreshSessionService, useClass: RefreshSessionServiceMock },
         { provide: PeriodicallyTokenCheckService, useClass: PeriodicallyTokenCheckServiceMock },
         { provide: PopUpService, useClass: PopUpServiceMock },
         { provide: StsConfigLoader, useClass: StsConfigLoaderMock },
         AutoLoginService,
+        CheckAuthService,
       ],
     });
   });
@@ -144,7 +146,7 @@ describe('CheckAuthService', () => {
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         checkAuthService.checkAuth().subscribe((result) => {
-          expect(result).toBeFalse();
+          expect(result).toBeTrue();
           expect(spy).not.toHaveBeenCalled();
         });
       })
