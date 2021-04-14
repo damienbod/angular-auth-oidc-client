@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../../authState/auth-state.service';
 import { AuthorizedState } from '../../authState/authorized-state';
 import { ConfigurationProvider } from '../../config/config.provider';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistanceService } from '../../storage/storage-persistance.service';
+import { JwtKeys } from '../../validation/jwtkeys';
 import { ValidationResult } from '../../validation/validation-result';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
@@ -47,6 +48,17 @@ export class HistoryJwtKeysCallbackHandlerService {
     this.loggerService.logDebug('authorizedCallback created, begin token validation');
 
     return this.signInKeyDataService.getSigningKeys().pipe(
+      tap((jwtKeys: JwtKeys) => this.storeSigningKeys(jwtKeys)),
+      catchError((err) => {
+        // fallback: try to load jwtKeys from storage
+        const storedJwtKeys = this.readSigningKeys();
+        if (!!storedJwtKeys) {
+          this.loggerService.logWarning(`Failed to retrieve signing keys, fallback to stored keys`);
+          return of(storedJwtKeys);
+        }
+
+        return throwError(err);
+      }),
       switchMap((jwtKeys) => {
         if (jwtKeys) {
           callbackContext.jwtKeys = jwtKeys;
@@ -87,5 +99,13 @@ export class HistoryJwtKeysCallbackHandlerService {
 
   private resetBrowserHistory() {
     window.history.replaceState({}, window.document.title, window.location.origin + window.location.pathname);
+  }
+
+  private storeSigningKeys(jwtKeys: JwtKeys) {
+    this.storagePersistanceService.write('jwtKeys', jwtKeys);
+  }
+
+  private readSigningKeys() {
+    return this.storagePersistanceService.read('jwtKeys');
   }
 }
