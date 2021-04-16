@@ -70,8 +70,14 @@ export class AuthModule {
     return {
       ngModule: AuthModule,
       providers: [
+        // Make the APP_CONFIG available through injection
         { provide: APP_CONFIG, useValue: config },
+
+        // Either take the passed loader or create a static one
+        // if a normal config was getting passed & inject the config then
         (config as OpenIdConfigLoader)?.loader || { provide: StsConfigLoader, useFactory: createStaticLoader, deps: [APP_CONFIG] },
+
+        // Load the config when the app starts
         {
           provide: APP_INITIALIZER,
           multi: true,
