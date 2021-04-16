@@ -76,7 +76,7 @@ export class CheckAuthService {
         const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute();
         if (savedRouteForRedirect) {
           this.autoLoginService.deleteStoredRedirectRoute();
-          this.router.navigate([savedRouteForRedirect]);
+          this.router.navigateByUrl(savedRouteForRedirect);
         }
       }),
       catchError((error) => {

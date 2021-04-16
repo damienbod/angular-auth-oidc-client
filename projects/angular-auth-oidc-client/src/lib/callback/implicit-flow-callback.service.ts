@@ -24,14 +24,14 @@ export class ImplicitFlowCallbackService {
     return this.flowsService.processImplicitFlowCallback(hash).pipe(
       tap((callbackContext) => {
         if (!triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
-          this.router.navigate([postLoginRoute]);
+          this.router.navigateByUrl(postLoginRoute);
         }
       }),
       catchError((error) => {
         this.flowsDataService.resetSilentRenewRunning();
         this.intervalService.stopPeriodicallTokenCheck();
         if (!triggerAuthorizationResultEvent && !isRenewProcess) {
-          this.router.navigate([unauthorizedRoute]);
+          this.router.navigateByUrl(unauthorizedRoute);
         }
         return throwError(error);
       })
