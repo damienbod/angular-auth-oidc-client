@@ -13,6 +13,8 @@ import { FlowsDataService } from '../flows-data.service';
 import { ResetAuthDataService } from '../reset-auth-data.service';
 import { SigninKeyDataService } from '../signin-key-data.service';
 
+const JWT_KEYS = 'jwtKeys';
+
 @Injectable()
 export class HistoryJwtKeysCallbackHandlerService {
   constructor(
@@ -102,10 +104,10 @@ export class HistoryJwtKeysCallbackHandlerService {
   }
 
   private storeSigningKeys(jwtKeys: JwtKeys) {
-    this.storagePersistanceService.write('jwtKeys', jwtKeys);
+    this.storagePersistanceService.write(JWT_KEYS, jwtKeys);
   }
 
   private readSigningKeys() {
-    return this.storagePersistanceService.read('jwtKeys');
+    return this.storagePersistanceService.read(JWT_KEYS);
   }
 }
