@@ -51,12 +51,17 @@ import { UrlService } from './utils/url/url.service';
 import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';
 
-export const createStaticLoader = (config: OpenIdConfiguration) => new StsConfigStaticLoader(config);
+// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
+export function createStaticLoader(config: OpenIdConfiguration) {
+  return new StsConfigStaticLoader(config);
+}
 
-export const configurationProviderFactory = (
-  oidcConfigService: OidcConfigService,
-  customConfigLoader: StsConfigLoader
-) => (): Promise<any> => customConfigLoader.loadConfig().then((loadedConfig) => oidcConfigService.withConfig(loadedConfig));
+// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
+export function configurationProviderFactory(oidcConfigService: OidcConfigService, customConfigLoader: StsConfigLoader) {
+  const fn = () => customConfigLoader.loadConfig().then((loadedConfig) => oidcConfigService.withConfig(loadedConfig));
+
+  return fn;
+}
 
 export const APP_CONFIG = new InjectionToken<OpenIdConfiguration | StsConfigLoader>('APP_CONFIG');
 
