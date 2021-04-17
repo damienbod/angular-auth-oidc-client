@@ -69,7 +69,7 @@ describe('CodeFlowCallbackService ', () => {
           existingIdToken: '',
         };
         const spy = spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(of(callbackContext));
-        const routerSpy = spyOn(router, 'navigate');
+        const routerSpy = spyOn(router, 'navigateByUrl');
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
         codeFlowCallbackService.authorizedCallbackWithCode('some-url2').subscribe(() => {
           expect(spy).toHaveBeenCalledWith('some-url2');
@@ -93,14 +93,14 @@ describe('CodeFlowCallbackService ', () => {
           existingIdToken: '',
         };
         const spy = spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(of(callbackContext));
-        const routerSpy = spyOn(router, 'navigate');
+        const routerSpy = spyOn(router, 'navigateByUrl');
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           triggerAuthorizationResultEvent: false,
           postLoginRoute: 'postLoginRoute',
         });
         codeFlowCallbackService.authorizedCallbackWithCode('some-url3').subscribe(() => {
           expect(spy).toHaveBeenCalledWith('some-url3');
-          expect(routerSpy).toHaveBeenCalledWith(['postLoginRoute']);
+          expect(routerSpy).toHaveBeenCalledWith('postLoginRoute');
         });
       })
     );
@@ -134,7 +134,7 @@ describe('CodeFlowCallbackService ', () => {
         spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(throwError('error'));
         const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
         const stopPeriodicallTokenCheckSpy = spyOn(intervallService, 'stopPeriodicallTokenCheck');
-        const routerSpy = spyOn(router, 'navigate');
+        const routerSpy = spyOn(router, 'navigateByUrl');
 
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           triggerAuthorizationResultEvent: false,
@@ -145,7 +145,7 @@ describe('CodeFlowCallbackService ', () => {
             expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
             expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
             expect(err).toBeTruthy();
-            expect(routerSpy).toHaveBeenCalledWith(['unauthorizedRoute']);
+            expect(routerSpy).toHaveBeenCalledWith('unauthorizedRoute');
           },
         });
       })
