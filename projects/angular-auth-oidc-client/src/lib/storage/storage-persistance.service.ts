@@ -13,7 +13,8 @@ export type StorageKeys =
   | 'authStateControl'
   | 'session_state'
   | 'storageSilentRenewRunning'
-  | 'storageCustomRequestParams';
+  | 'storageCustomRequestParams'
+  | 'jwtKeys';
 
 @Injectable()
 export class StoragePersistanceService {
