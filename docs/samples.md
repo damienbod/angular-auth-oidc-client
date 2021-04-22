@@ -14,7 +14,7 @@
 
 ## Code Flow with PKCE Using a configuration from an http source and silent renew
 
-Sometimes it is required to load the configuration from an http address. You can load the config from your source, map it into the required format and use the `withConfig(...)` function.
+Sometimes it is required to load the configuration from an http address. You can load the config from your source and map it into the required format using the loader property on the `.forRoot` config.
 
 The properties used in this example are just for demo purposes, you can used any definitions.
 

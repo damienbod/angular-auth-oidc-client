@@ -150,7 +150,7 @@ export class AppComponent implements OnInit {
 
 ## Custom parameters
 
-Custom parameters can be added to the auth request by adding them to the config you are calling the `withConfig(...)` method with. They are provided by
+Custom parameters can be added to the auth request by adding them to the config. They are provided by
 
 ```typescript
 customParams?: {
@@ -161,16 +161,17 @@ customParams?: {
 so you can pass them as an object like this:
 
 ```typescript
-export function loadConfig(oidcConfigService: OidcConfigService) {
-  return () =>
-    oidcConfigService.withConfig({
-      // ...
-      customParams: {
-        response_mode: 'fragment',
-        prompt: 'consent',
+
+
+AuthModule.forRoot({
+      config: {
+        stsServer: '<your sts address here>',
+         customParams: {
+          response_mode: 'fragment',
+          prompt: 'consent',
+         },
       },
-    });
-}
+    }),
 ```
 
 ## Dynamic custom parameters
@@ -233,17 +234,21 @@ The components code is the same then as using it in the main or any other module
 
 ## Delay the loading or pass an existing `.well-known/openid-configuration` configuration
 
-The secure token server `.well-known/openid-configuration` configuration can be requested via an HTTPS call when starting the application in the `APP_INITIALIZER`. This HTTPS call may affect your first page loading time. You can disable this and configure the loading of the `.well-known/openid-configuration` later, just before you start the authentication process. You as a user, can decide when you want to request the well known endpoints.
+The secure token server `.well-known/openid-configuration` configuration can be requested via an HTTPS call when starting the application. This HTTPS call may affect your first page loading time. You can disable this and configure the loading of the `.well-known/openid-configuration` later, just before you start the authentication process. You as a user, can decide when you want to request the well known endpoints.
 
 The property `eagerLoadAuthWellKnownEndpoints` in the configuration sets exactly this. The default is set to `true`, so the `.well-known/openid-configuration` is loaded at the start as in previous versions. Setting this to `false` the `.well-known/openid-configuration` will be loaded when the user starts the authentication.
 
-You also have the option to pass the already existing `.well-known/openid-configuration` into the `withConfig` method as a second parameter. In this case no HTTPS call to load the `.well-known/openid-configuration` will be made.
+You also have the option to pass the already existing `.well-known/openid-configuration` into the module as a second parameter. In this case no HTTPS call to load the `.well-known/openid-configuration` will be made.
 
 ```typescript
-oidcConfigService.withConfig(
-  {
-    /* config */
-  },
-  { issuer: 'myIssuer' /* more .well-known/openid-configuration Properties */ }
-);
+ AuthModule.forRoot({
+    config: {
+      // ...
+      eagerLoadAuthWellKnownEndpoints: true | false
+    },
+
+    authWellKnown: {
+      // ...
+    }
+  }),
 ```
