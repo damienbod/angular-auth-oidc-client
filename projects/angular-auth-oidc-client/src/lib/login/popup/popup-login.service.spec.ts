@@ -18,6 +18,7 @@ import { ResponseTypeValidationService } from '../response-type-validation/respo
 import { ResponseTypeValidationServiceMock } from '../response-type-validation/response-type-validation.service.mock';
 import { UrlServiceMock } from './../../utils/url/url.service-mock';
 import { PopUpLoginService } from './popup-login.service';
+import { PopupResult } from './popup-result';
 import { PopUpService } from './popup.service';
 import { PopUpServiceMock } from './popup.service-mock';
 
@@ -111,6 +112,7 @@ describe('PopUpLoginService', () => {
         });
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+        spyOnProperty(popupService, 'result$').and.returnValue(of({}));
         const spy = spyOn(urlService, 'getAuthorizeUrl');
 
         popUpLoginService.loginWithPopUpStandard().subscribe(() => {
@@ -129,6 +131,7 @@ describe('PopUpLoginService', () => {
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl');
+        spyOnProperty(popupService, 'result$').and.returnValue(of({}));
         const popupSpy = spyOn(popupService, 'openPopUp');
 
         popUpLoginService.loginWithPopUpStandard().subscribe(() => {
@@ -151,7 +154,8 @@ describe('PopUpLoginService', () => {
         const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(true));
         const getUserDataFromStoreSpy = spyOn(userService, 'getUserDataFromStore').and.returnValue({ any: 'userData' });
         const getAccessTokenSpy = spyOn(authStateService, 'getAccessToken').and.returnValue('anyAccessToken');
-        spyOnProperty(popupService, 'receivedUrl$').and.returnValue(of('someUrl'));
+        const popupResult: PopupResult = { userClosed: false, receivedUrl: 'someUrl' };
+        spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
         popUpLoginService.loginWithPopUpStandard().subscribe((result) => {
           expect(checkAuthSpy).toHaveBeenCalledWith('someUrl');
@@ -159,6 +163,33 @@ describe('PopUpLoginService', () => {
           expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
 
           expect(result).toEqual({ isAuthenticated: true, userData: { any: 'userData' }, accessToken: 'anyAccessToken' });
+        });
+      })
+    );
+
+    it(
+      'returns one property if popup was closed by user',
+      waitForAsync(() => {
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
+          authWellknownEndpoint: 'authWellknownEndpoint',
+          responseType: 'stubValue',
+        });
+        spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
+        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+        spyOn(urlService, 'getAuthorizeUrl');
+        spyOn(popupService, 'openPopUp');
+        const checkAuthSpy = spyOn(checkAuthService, 'checkAuth');
+        const getUserDataFromStoreSpy = spyOn(userService, 'getUserDataFromStore');
+        const getAccessTokenSpy = spyOn(authStateService, 'getAccessToken');
+        const popupResult: PopupResult = { userClosed: true };
+        spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
+
+        popUpLoginService.loginWithPopUpStandard().subscribe((result) => {
+          expect(checkAuthSpy).not.toHaveBeenCalled();
+          expect(getUserDataFromStoreSpy).not.toHaveBeenCalled();
+          expect(getAccessTokenSpy).not.toHaveBeenCalled();
+
+          expect(result).toEqual({ isAuthenticated: false });
         });
       })
     );
