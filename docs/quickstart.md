@@ -56,7 +56,6 @@ import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-clien
       },
     }),
   ],
-  providers: [OidcConfigService],
   // ...
 })
 export class AppModule {}

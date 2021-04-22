@@ -122,7 +122,7 @@ export class AuthConfigModule {}
 ```typescript
 import { HttpClient } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { AuthModule, OidcConfigService, OidcSecurityService, StsConfigHttpLoader, StsConfigLoader } from 'angular-auth-oidc-client';
+import { AuthModule, StsConfigHttpLoader, StsConfigLoader } from 'angular-auth-oidc-client';
 import { map } from 'rxjs/operators';
 
 export const httpLoaderFactory = (httpClient: HttpClient) => {
@@ -151,7 +151,6 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
       },
     }),
   ],
-  providers: [OidcSecurityService, OidcConfigService],
   exports: [AuthModule],
 })
 export class AuthConfigModule {}
