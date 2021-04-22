@@ -51,7 +51,7 @@ import { AuthInterceptor /*, ... */ } from 'angular-auth-oidc-client';
     declarations: [...],
     imports: [
         //...
-        AuthModule.forRoot(),
+        AuthModule.forRoot(...),
         HttpClientModule,
     ],
     providers: [

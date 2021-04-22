@@ -26,7 +26,7 @@ Currently the events
 
 are supported.
 
-> Notice that the `ConfigLoaded` event only runs inside the `AppModule`s constructor as the config is loaded with the `APP_INITIALIZER` of Angular.
+> Notice that the `ConfigLoaded` event only runs inside the `AppModule`s constructor as the config is loaded with the `APP_INITIALIZER` of Angular inside of the lib.
 
 You can inject the service and use the events like this:
 
@@ -192,46 +192,38 @@ This example shows how you could set the configuration when loading a child modu
 
 > This is not recommended. Please use the initialization on root level.
 
-You can use the `APP_INITIALIZER` also in child modules with the same syntax.
-
 ```typescript
-import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { AuthModule, OidcConfigService, LogLevel } from 'angular-auth-oidc-client';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-export function configureAuth(oidcConfigService: OidcConfigService) {
-  const action$ = oidcConfigService.withConfig({
-    stsServer: '<your sts address here>',
-    redirectUrl: window.location.origin,
-    postLogoutRedirectUri: window.location.origin,
-    clientId: 'angularClient',
-    scope: 'openid profile email',
-    responseType: 'code',
-    silentRenew: true,
-    silentRenewUrl: `${window.location.origin}/silent-renew.html`,
-    renewTimeBeforeTokenExpiresInSeconds: 10,
-    logLevel: LogLevel.Debug,
-  });
-  return () => action$;
-}
-
 @NgModule({
   declarations: [
     /* */
   ],
-  imports: [AuthModule.forRoot(), HttpClientModule, CommonModule, RouterModule],
+  imports: [
+    AuthModule.forRoot({
+      config: {
+        stsServer: '<your sts address here>',
+        redirectUrl: window.location.origin,
+        postLogoutRedirectUri: window.location.origin,
+        clientId: 'angularClient',
+        scope: 'openid profile email',
+        responseType: 'code',
+        silentRenew: true,
+        silentRenewUrl: `${window.location.origin}/silent-renew.html`,
+        renewTimeBeforeTokenExpiresInSeconds: 10,
+        logLevel: LogLevel.Debug,
+      },
+    }),
+    HttpClientModule,
+    CommonModule,
+    RouterModule,
+  ],
   exports: [
     /* */
-  ],
-  providers: [
-    {
-      provide: APP_INITIALIZER,
-      useFactory: configureAuth,
-      deps: [OidcConfigService],
-      multi: true,
-    },
   ],
 })
 export class ChildModule {}

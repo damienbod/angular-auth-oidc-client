@@ -1,8 +1,14 @@
 # Migrations
 
-## App module simple
+## Version 11 to Version 12
 
-### Old
+TBD
+
+## Version 10 to Version 11
+
+### App module simple
+
+#### Old
 
 ```typescript
 export function loadConfig(oidcConfigService: OidcConfigService) {
@@ -61,7 +67,7 @@ export class AppModule {
 }
 ```
 
-### New
+#### New
 
 ```typescript
 // imports
@@ -104,9 +110,9 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
 export class AppModule {}
 ```
 
-## App module (when loading config from an http endpoint)
+### App module (when loading config from an http endpoint)
 
-### Old
+#### Old
 
 ```typescript
 // imports
@@ -169,7 +175,7 @@ export class AppModule {
 }
 ```
 
-### New
+#### New
 
 ```typescript
 import { NgModule, APP_INITIALIZER } from '@angular/core';
@@ -227,9 +233,9 @@ export function configureAuth(oidcConfigService: OidcConfigService, httpClient: 
 export class AppModule {}
 ```
 
-## App Component
+### App Component
 
-### Old
+#### Old
 
 ```typescript
 import { Component, OnInit, OnDestroy } from '@angular/core';
@@ -274,7 +280,7 @@ export class AppComponent implements OnInit, OnDestroy {
 }
 ```
 
-### New
+#### New
 
 ```typescript
 import { Component, OnInit } from '@angular/core';
@@ -299,9 +305,9 @@ export class AppComponent implements OnInit {
 }
 ```
 
-## isAuthenticated
+### isAuthenticated
 
-### Old
+#### Old
 
 ```typescript
 this.oidcSecurityService.getIsAuthorized().subscribe((isAuthenticated: boolean) => {
@@ -309,7 +315,7 @@ this.oidcSecurityService.getIsAuthorized().subscribe((isAuthenticated: boolean) 
 });
 ```
 
-### New
+#### New
 
 ```typescript
 this.oidcSecurityService.isAuthenticated$.subscribe((isAuthenticated: boolean) => {
@@ -317,9 +323,9 @@ this.oidcSecurityService.isAuthenticated$.subscribe((isAuthenticated: boolean) =
 });
 ```
 
-## User data
+### User data
 
-### Old
+#### Old
 
 ```typescript
 this.oidcSecurityService.getUserData().subscribe((userData: any) => {
@@ -327,7 +333,7 @@ this.oidcSecurityService.getUserData().subscribe((userData: any) => {
 });
 ```
 
-## New
+### New
 
 ```typescript
 this.oidcSecurityService.userData$.subscribe((userData: any) => {
