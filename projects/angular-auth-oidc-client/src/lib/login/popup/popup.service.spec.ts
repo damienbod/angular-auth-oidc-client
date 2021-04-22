@@ -1,4 +1,5 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { PopupResult } from './popup-result';
 import { PopUpService } from './popup.service';
 
 describe('PopUpService', () => {
@@ -68,6 +69,21 @@ describe('PopUpService', () => {
     );
   });
 
+  describe('result$', () => {
+    it(
+      'emits when internal subject is called',
+      waitForAsync(() => {
+        const popupResult: PopupResult = { userClosed: false, receivedUrl: 'some-url1111' };
+
+        popUpService.result$.subscribe((result) => {
+          expect(result).toBe(popupResult);
+        });
+
+        (popUpService as any).resultInternal$.next(popupResult);
+      })
+    );
+  });
+
   describe('openPopup', () => {
     it(
       'popup opens with parameters and default options',
@@ -76,6 +92,8 @@ describe('PopUpService', () => {
           () =>
             ({
               sessionStorage: mockStorage,
+              closed: true,
+              close: () => {},
             } as Window)
         );
         popUpService.openPopUp('url');
@@ -91,6 +109,8 @@ describe('PopUpService', () => {
           () =>
             ({
               sessionStorage: mockStorage,
+              closed: true,
+              close: () => {},
             } as Window)
         );
         popUpService.openPopUp('url', { width: 100 });
@@ -98,6 +118,60 @@ describe('PopUpService', () => {
         expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', 'width=100,height=500,left=50,top=50');
       })
     );
+
+    describe('popup closed', () => {
+      let popup: Window;
+      let popupResult: PopupResult;
+      let cleanUpSpy: jasmine.Spy;
+
+      beforeEach(() => {
+        popup = {
+          sessionStorage: mockStorage,
+          closed: false,
+          close: () => {},
+        } as Window;
+
+        spyOn(window, 'open').and.returnValue(popup);
+
+        cleanUpSpy = spyOn(popUpService as any, 'cleanUp').and.callThrough();
+
+        popupResult = undefined;
+
+        popUpService.result$.subscribe((result) => (popupResult = result));
+      });
+
+      it('message received', fakeAsync(() => {
+        let listener: (event: MessageEvent) => void;
+
+        spyOn(window, 'addEventListener').and.callFake((_, func) => (listener = func));
+
+        popUpService.openPopUp('url');
+
+        expect(popupResult).toBeUndefined();
+        expect(cleanUpSpy).not.toHaveBeenCalled();
+
+        listener(new MessageEvent('message', { data: 'some-url1111' }));
+
+        tick(200);
+
+        expect(popupResult).toEqual({ userClosed: false, receivedUrl: 'some-url1111' });
+        expect(cleanUpSpy).toHaveBeenCalledWith(listener);
+      }));
+
+      it('user closed', fakeAsync(() => {
+        popUpService.openPopUp('url');
+
+        expect(popupResult).toBeUndefined();
+        expect(cleanUpSpy).not.toHaveBeenCalled();
+
+        (popup as any).closed = true;
+
+        tick(200);
+
+        expect(popupResult).toEqual({ userClosed: true });
+        expect(cleanUpSpy).toHaveBeenCalled();
+      }));
+    });
   });
 
   describe('sendMessageToMainWindow', () => {

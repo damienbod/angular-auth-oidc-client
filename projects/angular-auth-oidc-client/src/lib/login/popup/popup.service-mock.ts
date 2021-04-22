@@ -8,6 +8,10 @@ export class PopUpServiceMock {
     return of(null);
   }
 
+  get result$() {
+    return of(null);
+  }
+
   hasPopup() {
     return true;
   }
