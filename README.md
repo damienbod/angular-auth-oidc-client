@@ -112,7 +112,7 @@ If the schematics did not do this already: Import the module and services in you
 ```typescript
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
+import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
 // ...
 
 @NgModule({
@@ -142,7 +142,7 @@ And call the method `checkAuth()` from your `app.component.ts`. The method `chec
 
 ```typescript
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 
 @Component({
