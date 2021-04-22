@@ -8,12 +8,7 @@ export class PopUpService {
   private STORAGE_IDENTIFIER = 'popupauth';
   private popUp: Window;
   private handle: number;
-  private receivedUrlInternal$ = new Subject<string>();
   private resultInternal$ = new Subject<PopupResult>();
-
-  get receivedUrl$(): Observable<string> {
-    return this.receivedUrlInternal$.asObservable();
-  }
 
   get result$(): Observable<PopupResult> {
     return this.resultInternal$.asObservable();
@@ -33,8 +28,6 @@ export class PopUpService {
       if (!event?.data || typeof event.data !== 'string') {
         return;
       }
-
-      this.receivedUrlInternal$.next(event.data);
 
       this.resultInternal$.next({ userClosed: false, receivedUrl: event.data });
 
