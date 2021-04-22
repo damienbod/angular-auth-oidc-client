@@ -108,7 +108,6 @@ describe('Configuration Service', () => {
         const promise = oidcConfigService.withConfig({ stsServer: 'https://please_set' });
 
         promise.then((result) => {
-          console.log(result);
           expect(result).toEqual({
             stsServer: 'https://please_set',
             authWellknownEndpoint: 'https://please_set',
@@ -413,7 +412,6 @@ describe('Configuration Service', () => {
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
 
         oidcConfigService.withConfig(config).then((result) => {
-          console.log(result);
           expect(result).toEqual(expected);
         });
       })

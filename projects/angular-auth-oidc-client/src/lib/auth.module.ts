@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { APP_INITIALIZER, InjectionToken, NgModule } from '@angular/core';
+import { APP_INITIALIZER, InjectionToken, NgModule, Provider } from '@angular/core';
 import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './authState/auth-state.service';
@@ -9,8 +9,9 @@ import { ImplicitFlowCallbackService } from './callback/implicit-flow-callback.s
 import { CheckAuthService } from './check-auth.service';
 import { ConfigValidationService } from './config-validation/config-validation.service';
 import { AuthWellKnownDataService } from './config/auth-well-known-data.service';
+import { AuthWellKnownEndpoints } from './config/auth-well-known-endpoints';
 import { AuthWellKnownService } from './config/auth-well-known.service';
-import { OpenIdConfigLoader, StsConfigLoader, StsConfigStaticLoader } from './config/config-loader';
+import { StsConfigLoader, StsConfigStaticLoader } from './config/config-loader';
 import { ConfigurationProvider } from './config/config.provider';
 import { OidcConfigService } from './config/config.service';
 import { OpenIdConfiguration } from './config/openid-configuration';
@@ -51,19 +52,29 @@ import { UrlService } from './utils/url/url.service';
 import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';
 
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-export function createStaticLoader(config: OpenIdConfiguration) {
-  return new StsConfigStaticLoader(config);
+export interface PassedInitialConfig {
+  authWellKnown?: AuthWellKnownEndpoints;
+  config?: OpenIdConfiguration;
+  loader?: Provider;
 }
 
 // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-export function configurationProviderFactory(oidcConfigService: OidcConfigService, customConfigLoader: StsConfigLoader) {
-  const fn = () => customConfigLoader.loadConfig().then((loadedConfig) => oidcConfigService.withConfig(loadedConfig));
+export function createStaticLoader(passedConfig: PassedInitialConfig) {
+  return new StsConfigStaticLoader(passedConfig.config);
+}
+
+// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
+export function configurationProviderFactory(
+  oidcConfigService: OidcConfigService,
+  loader: StsConfigLoader,
+  passedConfig: PassedInitialConfig
+) {
+  const fn = () => loader.loadConfig().then((loadedConfig) => oidcConfigService.withConfig(loadedConfig, passedConfig.authWellKnown));
 
   return fn;
 }
 
-export const APP_CONFIG = new InjectionToken<OpenIdConfiguration | StsConfigLoader>('APP_CONFIG');
+const PASSED_CONFIG = new InjectionToken<PassedInitialConfig>('PASSED_CONFIG');
 
 @NgModule({
   imports: [CommonModule, HttpClientModule],
@@ -71,27 +82,26 @@ export const APP_CONFIG = new InjectionToken<OpenIdConfiguration | StsConfigLoad
   exports: [],
 })
 export class AuthModule {
-  static forRoot(config: OpenIdConfiguration | OpenIdConfigLoader) {
+  static forRoot(passedConfig: PassedInitialConfig) {
     return {
       ngModule: AuthModule,
       providers: [
-        // Make the APP_CONFIG available through injection
-        { provide: APP_CONFIG, useValue: config },
+        // Make the PASSED_CONFIG available through injection
+        { provide: PASSED_CONFIG, useValue: passedConfig },
 
-        // Either take the passed loader or create a static one
-        // if a normal config was getting passed & inject the config then
-        (config as OpenIdConfigLoader)?.loader || { provide: StsConfigLoader, useFactory: createStaticLoader, deps: [APP_CONFIG] },
+        //Create the loader: Either the one getting passed or a static one
+        passedConfig.loader || { provide: StsConfigLoader, useFactory: createStaticLoader, deps: [PASSED_CONFIG] },
 
         // Load the config when the app starts
         {
           provide: APP_INITIALIZER,
           multi: true,
-          deps: [OidcConfigService, StsConfigLoader],
+          deps: [OidcConfigService, StsConfigLoader, PASSED_CONFIG],
           useFactory: configurationProviderFactory,
         },
         {
           provide: AbstractSecurityStorage,
-          useClass: (config as OpenIdConfiguration)?.storage || BrowserStorageService,
+          useClass: (passedConfig.config as OpenIdConfiguration)?.storage || BrowserStorageService,
         },
         OidcConfigService,
         PublicEventsService,
