@@ -5,6 +5,5 @@ import { AuthModule, OidcConfigService } from 'angular-auth-oidc-client';
 @NgModule({
     imports: [AuthModule.forRoot({ config: <%= authConfig %> })],
     exports: [AuthModule],
-    providers: [OidcConfigService],
 })
 export class AuthConfigModule {}

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
+import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
 import { environment } from '../environments/environment';
 
 @NgModule({
@@ -19,7 +19,6 @@ import { environment } from '../environments/environment';
       },
     }),
   ],
-  providers: [OidcConfigService],
   exports: [AuthModule],
 })
 export class AuthConfigModule {}
