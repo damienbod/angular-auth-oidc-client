@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { APP_INITIALIZER, InjectionToken, NgModule, Provider } from '@angular/core';
+import { APP_INITIALIZER, InjectionToken, ModuleWithProviders, NgModule, Provider } from '@angular/core';
 import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './authState/auth-state.service';
@@ -74,7 +74,7 @@ export function configurationProviderFactory(
   return fn;
 }
 
-const PASSED_CONFIG = new InjectionToken<PassedInitialConfig>('PASSED_CONFIG');
+export const PASSED_CONFIG = new InjectionToken<PassedInitialConfig>('PASSED_CONFIG');
 
 @NgModule({
   imports: [CommonModule, HttpClientModule],
@@ -82,7 +82,7 @@ const PASSED_CONFIG = new InjectionToken<PassedInitialConfig>('PASSED_CONFIG');
   exports: [],
 })
 export class AuthModule {
-  static forRoot(passedConfig: PassedInitialConfig) {
+  static forRoot(passedConfig: PassedInitialConfig): ModuleWithProviders<AuthModule> {
     return {
       ngModule: AuthModule,
       providers: [
@@ -90,7 +90,7 @@ export class AuthModule {
         { provide: PASSED_CONFIG, useValue: passedConfig },
 
         //Create the loader: Either the one getting passed or a static one
-        passedConfig.loader || { provide: StsConfigLoader, useFactory: createStaticLoader, deps: [PASSED_CONFIG] },
+        passedConfig?.loader || { provide: StsConfigLoader, useFactory: createStaticLoader, deps: [PASSED_CONFIG] },
 
         // Load the config when the app starts
         {
@@ -101,7 +101,7 @@ export class AuthModule {
         },
         {
           provide: AbstractSecurityStorage,
-          useClass: (passedConfig.config as OpenIdConfiguration)?.storage || BrowserStorageService,
+          useClass: (passedConfig?.config as OpenIdConfiguration)?.storage || BrowserStorageService,
         },
         OidcConfigService,
         PublicEventsService,
