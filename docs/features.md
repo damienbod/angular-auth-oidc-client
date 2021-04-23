@@ -83,7 +83,7 @@ Then provide the class in the module:
 @NgModule({
     imports: [
         ...
-        AuthModule.forRoot({ storage: CustomStorage })
+        AuthModule.forRoot({ config: { storage: CustomStorage } })
     ],
     ...
 })
@@ -161,8 +161,6 @@ customParams?: {
 so you can pass them as an object like this:
 
 ```typescript
-
-
 AuthModule.forRoot({
       config: {
         stsServer: '<your sts address here>',

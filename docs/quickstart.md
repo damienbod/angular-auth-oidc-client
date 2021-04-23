@@ -33,7 +33,6 @@ After installing the library you can get started with the lib like below.
 Import the module and services in your module.
 
 ```typescript
-import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
 // ...
