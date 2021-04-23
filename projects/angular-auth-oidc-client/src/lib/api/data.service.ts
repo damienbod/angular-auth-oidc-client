@@ -12,12 +12,8 @@ export class DataService {
 
   get<T>(url: string, token?: string): Observable<T> {
     const headers = this.prepareHeaders(token);
-    let params = new HttpParams();
+    const params = this.prepareParams();
 
-    const { ngswBypass } = this.configurationProvider.getOpenIDConfiguration();
-    if (ngswBypass) {
-      params = params.set(NGSW_CUSTOM_PARAM, '');
-    }
     return this.httpClient.get<T>(url, {
       headers,
       params,
@@ -26,12 +22,7 @@ export class DataService {
 
   post<T>(url: string, body: any, headersParams?: HttpHeaders) {
     const headers = headersParams || this.prepareHeaders();
-    let params = new HttpParams();
-
-    const { ngswBypass } = this.configurationProvider.getOpenIDConfiguration();
-    if (ngswBypass) {
-      params = params.set(NGSW_CUSTOM_PARAM, '');
-    }
+    const params = this.prepareParams();
 
     return this.httpClient.post<T>(url, body, { headers, params });
   }
@@ -45,5 +36,16 @@ export class DataService {
     }
 
     return headers;
+  }
+
+  private prepareParams(): HttpParams {
+    let params = new HttpParams();
+    const { ngswBypass } = this.configurationProvider.getOpenIDConfiguration();
+
+    if (ngswBypass) {
+      params = params.set(NGSW_CUSTOM_PARAM, '');
+    }
+
+    return params;
   }
 }

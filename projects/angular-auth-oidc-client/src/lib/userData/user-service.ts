@@ -28,8 +28,6 @@ export class UserService {
     private configurationProvider: ConfigurationProvider
   ) {}
 
-  // TODO CHECK PARAMETERS
-  //  validationResult.idToken can be the complete validationResult
   getAndPersistUserDataInStore(isRenewProcess = false, idToken?: any, decodedIdToken?: any): Observable<any> {
     idToken = idToken || this.storagePersistanceService.getIdToken();
     decodedIdToken = decodedIdToken || this.tokenHelperService.getPayloadFromToken(idToken, false);
