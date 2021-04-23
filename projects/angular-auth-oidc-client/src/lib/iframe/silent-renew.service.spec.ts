@@ -1,5 +1,5 @@
 ﻿import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
@@ -7,6 +7,7 @@ import { ImplicitFlowCallbackServiceMock } from '../callback/implicit-flow-callb
 import { IntervallService } from '../callback/intervall.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { ConfigurationProviderMock } from '../config/config.provider-mock';
+import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsDataServiceMock } from '../flows/flows-data.service-mock';
 import { FlowsService } from '../flows/flows.service';
@@ -25,6 +26,8 @@ describe('SilentRenewService  ', () => {
   let implicitFlowCallbackService: ImplicitFlowCallbackService;
   let iFrameService: IFrameService;
   let configurationProvider: ConfigurationProvider;
+  let flowsDataService: FlowsDataService;
+  let loggerService: LoggerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -49,7 +52,9 @@ describe('SilentRenewService  ', () => {
     iFrameService = TestBed.inject(IFrameService);
     flowHelper = TestBed.inject(FlowHelper);
     implicitFlowCallbackService = TestBed.inject(ImplicitFlowCallbackService);
+    flowsDataService = TestBed.inject(FlowsDataService);
     configurationProvider = TestBed.inject(ConfigurationProvider);
+    loggerService = TestBed.inject(LoggerService);
   });
 
   it('should create', () => {
@@ -144,7 +149,7 @@ describe('SilentRenewService  ', () => {
       expect(codeFlowCallbackSilentRenewIframe).toHaveBeenCalledWith(['detail', 'detail2']);
     }));
 
-    it('calls authorizedImplicitFlowCallback if current flo wis not code flow', fakeAsync(() => {
+    it('calls authorizedImplicitFlowCallback if current flow is not code flow', fakeAsync(() => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
       const codeFlowCallbackSilentRenewIframe = spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe').and.returnValue(of(null));
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
@@ -152,6 +157,48 @@ describe('SilentRenewService  ', () => {
       silentRenewService.silentRenewEventHandler(eventData);
       tick(1000);
       expect(codeFlowCallbackSilentRenewIframe).toHaveBeenCalledWith(['detail', 'detail2']);
+    }));
+
+    it('calls next on refreshSessionWithIFrameCompleted with callbackcontext', fakeAsync(() => {
+      spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
+      spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe').and.returnValue(
+        of({ refreshToken: 'callbackContext' } as CallbackContext)
+      );
+      const eventData = { detail: 'detail?detail2' } as CustomEvent;
+
+      silentRenewService.refreshSessionWithIFrameCompleted$.subscribe((result) => {
+        expect(result).toEqual({ refreshToken: 'callbackContext' } as CallbackContext);
+      });
+
+      silentRenewService.silentRenewEventHandler(eventData);
+      tick(1000);
+    }));
+
+    it('loggs and calls flowsDataService.resetSilentRenewRunning in case of an error', fakeAsync(() => {
+      spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
+      spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe').and.returnValue(throwError('ERROR'));
+      const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
+      const logErrorSpy = spyOn(loggerService, 'logError');
+
+      const eventData = { detail: 'detail?detail2' } as CustomEvent;
+
+      silentRenewService.silentRenewEventHandler(eventData);
+      tick(1000);
+      expect(resetSilentRenewRunningSpy).toHaveBeenCalledTimes(1);
+      expect(logErrorSpy).toHaveBeenCalledTimes(1);
+    }));
+
+    it('calls next on refreshSessionWithIFrameCompleted with null in case of error', fakeAsync(() => {
+      spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
+      spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe').and.returnValue(throwError('ERROR'));
+      const eventData = { detail: 'detail?detail2' } as CustomEvent;
+
+      silentRenewService.refreshSessionWithIFrameCompleted$.subscribe((result) => {
+        expect(result).toBeNull();
+      });
+
+      silentRenewService.silentRenewEventHandler(eventData);
+      tick(1000);
     }));
   });
 });
