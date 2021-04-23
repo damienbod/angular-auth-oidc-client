@@ -425,7 +425,7 @@ describe('ParLoginService', () => {
           expect(getUserDataFromStoreSpy).not.toHaveBeenCalled();
           expect(getAccessTokenSpy).not.toHaveBeenCalled();
 
-          expect(result).toEqual({ isAuthenticated: false });
+          expect(result).toEqual({ isAuthenticated: false, errorMessage: 'User closed popup' });
         });
       })
     );

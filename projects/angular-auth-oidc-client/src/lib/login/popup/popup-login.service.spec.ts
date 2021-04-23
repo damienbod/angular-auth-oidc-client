@@ -168,7 +168,7 @@ describe('PopUpLoginService', () => {
     );
 
     it(
-      'returns one property if popup was closed by user',
+      'returns two properties if popup was closed by user',
       waitForAsync(() => {
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpoint: 'authWellknownEndpoint',
@@ -189,7 +189,7 @@ describe('PopUpLoginService', () => {
           expect(getUserDataFromStoreSpy).not.toHaveBeenCalled();
           expect(getAccessTokenSpy).not.toHaveBeenCalled();
 
-          expect(result).toEqual({ isAuthenticated: false });
+          expect(result).toEqual({ isAuthenticated: false, errorMessage: 'User closed popup' });
         });
       })
     );

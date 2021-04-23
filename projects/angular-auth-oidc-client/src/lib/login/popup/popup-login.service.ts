@@ -55,15 +55,16 @@ export class PopUpLoginService {
 
         return this.popupService.result$.pipe(
           take(1),
-          switchMap((result) => (result.userClosed === true ? of(false) : this.checkAuthService.checkAuth(result.receivedUrl))),
-          map((isAuthenticated) =>
-            isAuthenticated
-              ? {
-                  isAuthenticated: true,
-                  userData: this.userService.getUserDataFromStore(),
-                  accessToken: this.authStateService.getAccessToken(),
-                }
-              : { isAuthenticated: false }
+          switchMap((result) =>
+            result.userClosed === true
+              ? of({ isAuthenticated: false, errorMessage: 'User closed popup' })
+              : this.checkAuthService.checkAuth(result.receivedUrl).pipe(
+                  map((isAuthenticated) => ({
+                    isAuthenticated,
+                    userData: this.userService.getUserDataFromStore(),
+                    accessToken: this.authStateService.getAccessToken(),
+                  }))
+                )
           )
         );
       })
