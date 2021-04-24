@@ -180,7 +180,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(setNonceSpy).toHaveBeenCalledTimes(1);
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
-              authorizationState: 'Unauthorized',
+              isAuthored: false,
               validationResult: ValidationResult.SecureTokenServerError,
               isRenewProcess: undefined,
             });
@@ -204,7 +204,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(setNonceSpy).toHaveBeenCalledTimes(1);
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
-              authorizationState: 'Unauthorized',
+              isAuthorized: false,
               validationResult: ValidationResult.LoginRequired,
               isRenewProcess: undefined,
             });
