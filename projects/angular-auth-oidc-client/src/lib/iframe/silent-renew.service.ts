@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { of, Subject, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
-import { AuthorizedState } from '../authState/authorized-state';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
 import { IntervallService } from '../callback/intervall.service';
 import { ConfigurationProvider } from '../config/config.provider';
@@ -63,7 +62,7 @@ export class SilentRenewService {
 
     if (error) {
       this.authStateService.updateAndPublishAuthState({
-        authorizationState: AuthorizedState.Unauthorized,
+        isAuthorized: false,
         validationResult: ValidationResult.LoginRequired,
         isRenewProcess: true,
       });

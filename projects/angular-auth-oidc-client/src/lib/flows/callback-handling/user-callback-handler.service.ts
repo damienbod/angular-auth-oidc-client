@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AuthStateService } from '../../authState/auth-state.service';
-import { AuthorizedState } from '../../authState/authorized-state';
 import { ConfigurationProvider } from '../../config/config.provider';
 import { LoggerService } from '../../logging/logger.service';
 import { UserService } from '../../userData/user-service';
@@ -71,7 +70,7 @@ export class UserCallbackHandlerService {
 
   private publishAuthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
     this.authStateService.updateAndPublishAuthState({
-      authorizationState: AuthorizedState.Authorized,
+      isAuthorized: true,
       validationResult: stateValidationResult.state,
       isRenewProcess,
     });
@@ -79,7 +78,7 @@ export class UserCallbackHandlerService {
 
   private publishUnauthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
     this.authStateService.updateAndPublishAuthState({
-      authorizationState: AuthorizedState.Unauthorized,
+      isAuthorized: false,
       validationResult: stateValidationResult.state,
       isRenewProcess,
     });
