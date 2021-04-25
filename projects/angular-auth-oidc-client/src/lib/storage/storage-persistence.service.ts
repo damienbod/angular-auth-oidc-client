@@ -39,6 +39,10 @@ export class StoragePersistenceService {
     this.oidcSecurityStorage.remove(keyToStore);
   }
 
+  clear() {
+    this.oidcSecurityStorage.clear();
+  }
+
   resetStorageFlowData() {
     this.remove('session_state');
     this.remove('storageSilentRenewRunning');
