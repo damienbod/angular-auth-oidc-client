@@ -6,7 +6,7 @@ import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 import { AuthWellKnownService } from './auth-well-known.service';
 import { OpenIdConfiguration } from './openid-configuration';
@@ -19,7 +19,7 @@ export class OidcConfigService {
     private publicEventsService: PublicEventsService,
     private configurationProvider: ConfigurationProvider,
     private authWellKnownService: AuthWellKnownService,
-    private storagePersistanceService: StoragePersistanceService,
+    private storagePersistenceService: StoragePersistenceService,
     private configValidationService: ConfigValidationService
   ) {}
 
@@ -36,7 +36,7 @@ export class OidcConfigService {
 
       const usedConfig = this.configurationProvider.setConfig(passedConfig);
 
-      const alreadyExistingAuthWellKnownEndpoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+      const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints');
       if (!!alreadyExistingAuthWellKnownEndpoints) {
         this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
           configuration: passedConfig,

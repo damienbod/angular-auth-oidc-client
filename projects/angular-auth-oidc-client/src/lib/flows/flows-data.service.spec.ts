@@ -3,14 +3,14 @@ import { ConfigurationProvider } from '../config/config.provider';
 import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
-import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 import { FlowsDataService } from './flows-data.service';
 import { RandomService } from './random/random.service';
 
 describe('Flows Data Service', () => {
   let service: FlowsDataService;
-  let storagePersistanceService: StoragePersistanceService;
+  let storagePersistenceService: StoragePersistenceService;
   let configurationProvider: ConfigurationProvider;
 
   beforeEach(() => {
@@ -20,14 +20,14 @@ describe('Flows Data Service', () => {
         RandomService,
         { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
         { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: StoragePersistanceService, useClass: StoragePersistanceServiceMock },
+        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
       ],
     });
   });
 
   beforeEach(() => {
     service = TestBed.inject(FlowsDataService);
-    storagePersistanceService = TestBed.inject(StoragePersistanceService);
+    storagePersistenceService = TestBed.inject(StoragePersistenceService);
     configurationProvider = TestBed.inject(ConfigurationProvider);
   });
 
@@ -41,7 +41,7 @@ describe('Flows Data Service', () => {
 
   describe('nonce', () => {
     it('createNonce returns nonce and stores it', () => {
-      const spy = spyOn(storagePersistanceService, 'write');
+      const spy = spyOn(storagePersistenceService, 'write');
 
       const result = service.createNonce();
 
@@ -52,7 +52,7 @@ describe('Flows Data Service', () => {
 
   describe('AuthStateControl', () => {
     it('getAuthStateControl returns property from store', () => {
-      const spy = spyOn(storagePersistanceService, 'read');
+      const spy = spyOn(storagePersistenceService, 'read');
 
       service.getAuthStateControl();
 
@@ -60,7 +60,7 @@ describe('Flows Data Service', () => {
     });
 
     it('setAuthStateControl saves property in store', () => {
-      const spy = spyOn(storagePersistanceService, 'write');
+      const spy = spyOn(storagePersistenceService, 'write');
 
       service.setAuthStateControl('ToSave');
 
@@ -70,8 +70,8 @@ describe('Flows Data Service', () => {
 
   describe('getExistingOrCreateAuthStateControl', () => {
     it('if nothing stored it creates a 40 char one and saves the authStateControl', () => {
-      spyOn(storagePersistanceService, 'read').withArgs('authStateControl').and.returnValue(null);
-      const setSpy = spyOn(storagePersistanceService, 'write');
+      spyOn(storagePersistenceService, 'read').withArgs('authStateControl').and.returnValue(null);
+      const setSpy = spyOn(storagePersistenceService, 'write');
 
       const result = service.getExistingOrCreateAuthStateControl();
 
@@ -81,8 +81,8 @@ describe('Flows Data Service', () => {
     });
 
     it('if stored it returns the value and does NOT Store the value again', () => {
-      spyOn(storagePersistanceService, 'read').withArgs('authStateControl').and.returnValue('someAuthStateControl');
-      const setSpy = spyOn(storagePersistanceService, 'write');
+      spyOn(storagePersistenceService, 'read').withArgs('authStateControl').and.returnValue('someAuthStateControl');
+      const setSpy = spyOn(storagePersistenceService, 'write');
 
       const result = service.getExistingOrCreateAuthStateControl();
 
@@ -94,7 +94,7 @@ describe('Flows Data Service', () => {
 
   describe('setSessionState', () => {
     it('setSessionState saves the value in the storage', () => {
-      const spy = spyOn(storagePersistanceService, 'write');
+      const spy = spyOn(storagePersistenceService, 'write');
 
       service.setSessionState('Genesis');
 
@@ -103,8 +103,8 @@ describe('Flows Data Service', () => {
   });
 
   describe('resetStorageFlowData', () => {
-    it('resetStorageFlowData calls correct method on storagePersistanceService', () => {
-      const spy = spyOn(storagePersistanceService, 'resetStorageFlowData');
+    it('resetStorageFlowData calls correct method on storagePersistenceService', () => {
+      const spy = spyOn(storagePersistenceService, 'resetStorageFlowData');
 
       service.resetStorageFlowData();
 
@@ -114,7 +114,7 @@ describe('Flows Data Service', () => {
 
   describe('codeVerifier', () => {
     it('getCodeVerifier returns value from the store', () => {
-      const spy = spyOn(storagePersistanceService, 'read').withArgs('codeVerifier').and.returnValue('Genesis');
+      const spy = spyOn(storagePersistenceService, 'read').withArgs('codeVerifier').and.returnValue('Genesis');
 
       const result = service.getCodeVerifier();
 
@@ -123,7 +123,7 @@ describe('Flows Data Service', () => {
     });
 
     it('createCodeVerifier returns random createCodeVerifier and stores it', () => {
-      const setSpy = spyOn(storagePersistanceService, 'write');
+      const setSpy = spyOn(storagePersistenceService, 'write');
 
       const result = service.createCodeVerifier();
 
@@ -151,8 +151,8 @@ describe('Flows Data Service', () => {
       };
       const storedJsonString = JSON.stringify(storageObject);
 
-      spyOn(storagePersistanceService, 'read').withArgs('storageSilentRenewRunning').and.returnValue(storedJsonString);
-      const spyWrite = spyOn(storagePersistanceService, 'write');
+      spyOn(storagePersistenceService, 'read').withArgs('storageSilentRenewRunning').and.returnValue(storedJsonString);
+      const spyWrite = spyOn(storagePersistenceService, 'write');
 
       jasmine.clock().tick((openIDConfiguration.silentRenewTimeoutInSeconds + 1) * 1000);
 
@@ -179,8 +179,8 @@ describe('Flows Data Service', () => {
       };
       const storedJsonString = JSON.stringify(storageObject);
 
-      spyOn(storagePersistanceService, 'read').withArgs('storageSilentRenewRunning').and.returnValue(storedJsonString);
-      const spyWrite = spyOn(storagePersistanceService, 'write');
+      spyOn(storagePersistenceService, 'read').withArgs('storageSilentRenewRunning').and.returnValue(storedJsonString);
+      const spyWrite = spyOn(storagePersistenceService, 'write');
 
       const isSilentRenewRunningResult = service.isSilentRenewRunning();
 
@@ -189,7 +189,7 @@ describe('Flows Data Service', () => {
     });
 
     it('state object does not exist returns false result', () => {
-      spyOn(storagePersistanceService, 'read').withArgs('storageSilentRenewRunning').and.returnValue(null);
+      spyOn(storagePersistenceService, 'read').withArgs('storageSilentRenewRunning').and.returnValue(null);
 
       const isSilentRenewRunningResult = service.isSilentRenewRunning();
       expect(isSilentRenewRunningResult).toBeFalse();
@@ -209,7 +209,7 @@ describe('Flows Data Service', () => {
       };
       const expectedJsonString = JSON.stringify(storageObject);
 
-      const spy = spyOn(storagePersistanceService, 'write');
+      const spy = spyOn(storagePersistenceService, 'write');
       service.setSilentRenewRunning();
       expect(spy).toHaveBeenCalledWith('storageSilentRenewRunning', expectedJsonString);
     });
@@ -217,7 +217,7 @@ describe('Flows Data Service', () => {
 
   describe('resetSilentRenewRunning', () => {
     it('set resetSilentRenewRunning to `` when called', () => {
-      const spy = spyOn(storagePersistanceService, 'write');
+      const spy = spyOn(storagePersistenceService, 'write');
       service.resetSilentRenewRunning();
       expect(spy).toHaveBeenCalledWith('storageSilentRenewRunning', ``);
     });

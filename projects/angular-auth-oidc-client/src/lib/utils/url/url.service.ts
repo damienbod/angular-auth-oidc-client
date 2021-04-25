@@ -4,7 +4,7 @@ import { oneLineTrim } from 'common-tags';
 import { ConfigurationProvider } from '../../config/config.provider';
 import { FlowsDataService } from '../../flows/flows-data.service';
 import { LoggerService } from '../../logging/logger.service';
-import { StoragePersistanceService } from '../../storage/storage-persistance.service';
+import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { TokenValidationService } from '../../validation/token-validation.service';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { UriEncoder } from './uri-encoder';
@@ -18,7 +18,7 @@ export class UrlService {
     private readonly flowsDataService: FlowsDataService,
     private readonly flowHelper: FlowHelper,
     private tokenValidationService: TokenValidationService,
-    private storagePersistanceService: StoragePersistanceService
+    private storagePersistenceService: StoragePersistenceService
   ) {}
 
   getUrlParameter(urlToCheck: any, name: any): string {
@@ -49,7 +49,7 @@ export class UrlService {
   }
 
   getAuthorizeParUrl(requestUri: string): string {
-    const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints');
 
     if (!authWellKnownEndPoints) {
       this.loggerService.logError('authWellKnownEndpoints is undefined');
@@ -93,7 +93,7 @@ export class UrlService {
   }
 
   createEndSessionUrl(idTokenHint: string): string {
-    const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints');
     const endSessionEndpoint = authWellKnownEndPoints?.endSessionEndpoint;
 
     if (!endSessionEndpoint) {
@@ -140,7 +140,7 @@ export class UrlService {
   }
 
   getRevocationEndpointUrl(): string {
-    const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints');
     const revocationEndpoint = authWellKnownEndPoints?.revocationEndpoint;
 
     if (!revocationEndpoint) {
@@ -261,7 +261,7 @@ export class UrlService {
     prompt?: string,
     customRequestParams?: { [key: string]: string | number | boolean }
   ): string {
-    const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints');
     const authorizationEndpoint = authWellKnownEndPoints?.authorizationEndpoint;
 
     if (!authorizationEndpoint) {
@@ -341,7 +341,7 @@ export class UrlService {
 
     this.loggerService.logDebug('RefreshSession created. adding myautostate: ', state);
 
-    const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints');
     if (authWellKnownEndPoints) {
       return this.createAuthorizeUrl('', silentRenewUrl, nonce, state, 'none', customParams);
     }
@@ -366,7 +366,7 @@ export class UrlService {
       return null;
     }
 
-    const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints');
     if (authWellKnownEndPoints) {
       return this.createAuthorizeUrl(codeChallenge, silentRenewUrl, nonce, state, 'none', customParams);
     }
@@ -386,7 +386,7 @@ export class UrlService {
       return null;
     }
 
-    const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints');
     if (authWellKnownEndPoints) {
       return this.createAuthorizeUrl('', redirectUrl, nonce, state, null, customParams);
     }
@@ -410,7 +410,7 @@ export class UrlService {
     const codeVerifier = this.flowsDataService.createCodeVerifier();
     const codeChallenge = this.tokenValidationService.generateCodeChallenge(codeVerifier);
 
-    const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints');
     if (authWellKnownEndPoints) {
       return this.createAuthorizeUrl(codeChallenge, redirectUrl, nonce, state, null, customParams);
     }

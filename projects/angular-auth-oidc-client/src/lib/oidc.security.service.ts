@@ -12,7 +12,7 @@ import { AuthOptions } from './login/auth-options';
 import { LoginService } from './login/login.service';
 import { PopupOptions } from './login/popup/popup-options';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
-import { StoragePersistanceService } from './storage/storage-persistance.service';
+import { StoragePersistenceService } from './storage/storage-persistence.service';
 import { UserService } from './userData/user-service';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
 
@@ -23,7 +23,7 @@ export class OidcSecurityService {
 
     return {
       configuration: openIDConfiguration,
-      wellknown: this.storagePersistanceService.read('authWellKnownEndPoints'),
+      wellknown: this.storagePersistenceService.read('authWellKnownEndPoints'),
     };
   }
 
@@ -54,7 +54,7 @@ export class OidcSecurityService {
     private callbackService: CallbackService,
     private logoffRevocationService: LogoffRevocationService,
     private loginService: LoginService,
-    private storagePersistanceService: StoragePersistanceService,
+    private storagePersistenceService: StoragePersistenceService,
     private refreshSessionService: RefreshSessionService
   ) {}
 
@@ -94,7 +94,7 @@ export class OidcSecurityService {
   // Code Flow with PCKE or Implicit Flow
   authorize(authOptions?: AuthOptions) {
     if (authOptions?.customParams) {
-      this.storagePersistanceService.write('storageCustomRequestParams', authOptions.customParams);
+      this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams);
     }
 
     this.loginService.login(authOptions);
@@ -102,7 +102,7 @@ export class OidcSecurityService {
 
   authorizeWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions) {
     if (authOptions?.customParams) {
-      this.storagePersistanceService.write('storageCustomRequestParams', authOptions.customParams);
+      this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams);
     }
 
     return this.loginService.loginWithPopUp(authOptions, popupOptions);
@@ -110,7 +110,7 @@ export class OidcSecurityService {
 
   forceRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
     if (customParams) {
-      this.storagePersistanceService.write('storageCustomRequestParams', customParams);
+      this.storagePersistenceService.write('storageCustomRequestParams', customParams);
     }
 
     return this.refreshSessionService.forceRefreshSession(customParams);

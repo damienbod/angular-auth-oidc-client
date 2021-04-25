@@ -6,8 +6,8 @@ import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
-import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 import { SigninKeyDataService } from './signin-key-data.service';
 
 const DUMMY_JWKS = {
@@ -28,7 +28,7 @@ const DUMMY_JWKS = {
 
 describe('Signin Key Data Service', () => {
   let service: SigninKeyDataService;
-  let storagePersistanceService: StoragePersistanceService;
+  let storagePersistenceService: StoragePersistenceService;
   let dataService: DataService;
   let loggerService: LoggerService;
 
@@ -38,14 +38,14 @@ describe('Signin Key Data Service', () => {
         SigninKeyDataService,
         { provide: DataService, useClass: DataServiceMock },
         { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: StoragePersistanceService, useClass: StoragePersistanceServiceMock },
+        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
       ],
     });
   });
 
   beforeEach(() => {
     service = TestBed.inject(SigninKeyDataService);
-    storagePersistanceService = TestBed.inject(StoragePersistanceService);
+    storagePersistenceService = TestBed.inject(StoragePersistenceService);
     dataService = TestBed.inject(DataService);
     loggerService = TestBed.inject(LoggerService);
   });
@@ -58,7 +58,7 @@ describe('Signin Key Data Service', () => {
     it(
       'throws error when no wellKnownEndpoints given',
       waitForAsync(() => {
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
         const result = service.getSigningKeys();
 
         result.subscribe({
@@ -72,7 +72,7 @@ describe('Signin Key Data Service', () => {
     it(
       'throws error when no jwksUri given',
       waitForAsync(() => {
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: null });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: null });
         const result = service.getSigningKeys();
 
         result.subscribe({
@@ -86,7 +86,7 @@ describe('Signin Key Data Service', () => {
     it(
       'calls dataservice if jwksurl is given',
       waitForAsync(() => {
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
         const spy = spyOn(dataService, 'get').and.callFake(() => of());
 
         const result = service.getSigningKeys();
@@ -102,7 +102,7 @@ describe('Signin Key Data Service', () => {
     it(
       'should retry once',
       waitForAsync(() => {
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
         spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), of(DUMMY_JWKS)));
 
         service.getSigningKeys().subscribe({
@@ -117,7 +117,7 @@ describe('Signin Key Data Service', () => {
     it(
       'should retry twice',
       waitForAsync(() => {
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
         spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), of(DUMMY_JWKS)));
 
         service.getSigningKeys().subscribe({
@@ -132,7 +132,7 @@ describe('Signin Key Data Service', () => {
     it(
       'should fail after three tries',
       waitForAsync(() => {
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
         spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), throwError({}), of(DUMMY_JWKS)));
 
         service.getSigningKeys().subscribe({
