@@ -4,7 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map, retry } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
 import { LoggerService } from '../../logging/logger.service';
-import { StoragePersistanceService } from '../../storage/storage-persistance.service';
+import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
 import { ParResponse } from './par-response';
 
@@ -14,14 +14,14 @@ export class ParService {
     private loggerService: LoggerService,
     private urlService: UrlService,
     private dataService: DataService,
-    private storagePersistanceService: StoragePersistanceService
+    private storagePersistenceService: StoragePersistenceService
   ) {}
 
   postParRequest(customParams?: { [key: string]: string | number | boolean }): Observable<ParResponse> {
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-    const authWellKnown = this.storagePersistanceService.read('authWellKnownEndPoints');
+    const authWellKnown = this.storagePersistenceService.read('authWellKnownEndPoints');
 
     if (!authWellKnown) {
       return throwError('Could not read PAR endpoint because authWellKnownEndPoints are not given');

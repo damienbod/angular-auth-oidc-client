@@ -7,8 +7,8 @@ import { OidcSecurityService } from '../oidc.security.service';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { AbstractSecurityStorage } from '../storage/abstract-security-storage';
 import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
-import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
 import { CheckSessionService } from './check-session.service';
@@ -19,7 +19,7 @@ describe('SecurityCheckSessionTests', () => {
   let loggerService: LoggerService;
   let configurationProvider: ConfigurationProvider;
   let iFrameService: IFrameService;
-  let storagePersistanceService: StoragePersistanceService;
+  let storagePersistenceService: StoragePersistenceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -30,8 +30,8 @@ describe('SecurityCheckSessionTests', () => {
         IFrameService,
         PublicEventsService,
         {
-          provide: StoragePersistanceService,
-          useClass: StoragePersistanceServiceMock,
+          provide: StoragePersistenceService,
+          useClass: StoragePersistenceServiceMock,
         },
         { provide: LoggerService, useClass: LoggerServiceMock },
         { provide: AbstractSecurityStorage, useClass: BrowserStorageMock },
@@ -45,7 +45,7 @@ describe('SecurityCheckSessionTests', () => {
     configurationProvider = TestBed.inject(ConfigurationProvider);
     loggerService = TestBed.inject(LoggerService);
     iFrameService = TestBed.inject(IFrameService);
-    storagePersistanceService = TestBed.inject(StoragePersistanceService);
+    storagePersistenceService = TestBed.inject(StoragePersistenceService);
   });
 
   afterEach(() => {
@@ -92,7 +92,7 @@ describe('SecurityCheckSessionTests', () => {
         checkSessionIframe: 'https://some-testing-url.com',
       };
 
-      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
       spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
 
       (checkSessionService as any).init();
@@ -118,7 +118,7 @@ describe('SecurityCheckSessionTests', () => {
   it('log warning if authWellKnownEndpoints.check_session_iframe is not existing', () => {
     const spyLogWarning = spyOn<any>(loggerService, 'logWarning');
     spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
-    spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ checkSessionIframe: undefined });
+    spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ checkSessionIframe: undefined });
     (checkSessionService as any).init();
 
     expect(spyLogWarning).toHaveBeenCalledWith('init check session: checkSessionIframe is not configured to run');
@@ -184,7 +184,7 @@ describe('SecurityCheckSessionTests', () => {
       const authWellKnownEndpoints = {
         checkSessionIframe: 'https://some-testing-url.com',
       };
-      spyOn(storagePersistanceService, 'read')
+      spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints')
         .and.returnValue(authWellKnownEndpoints)
         .withArgs('session_state')
@@ -199,7 +199,7 @@ describe('SecurityCheckSessionTests', () => {
       const authWellKnownEndpoints = {
         checkSessionIframe: 'https://some-testing-url.com',
       };
-      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
       const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => {});
       spyOn(loggerService, 'logDebug').and.callFake(() => {});
       (checkSessionService as any).pollServerSession('clientId');
@@ -211,7 +211,7 @@ describe('SecurityCheckSessionTests', () => {
       const authWellKnownEndpoints = {
         checkSessionIframe: 'https://some-testing-url.com',
       };
-      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
       const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => {});
       spyOn(loggerService, 'logDebug').and.callFake(() => {});
       (checkSessionService as any).pollServerSession('');
@@ -224,7 +224,7 @@ describe('SecurityCheckSessionTests', () => {
         checkSessionIframe: 'https://some-testing-url.com',
       };
 
-      spyOn(storagePersistanceService, 'read')
+      spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints')
         .and.returnValue(authWellKnownEndpoints)
         .withArgs('session_state')
@@ -239,7 +239,7 @@ describe('SecurityCheckSessionTests', () => {
       spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue({});
       const authWellKnownEndpoints = null;
 
-      spyOn(storagePersistanceService, 'read')
+      spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints')
         .and.returnValue(authWellKnownEndpoints)
         .withArgs('session_state')

@@ -4,7 +4,7 @@ import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { TokenValidationService } from '../validation/token-validation.service';
 import { AuthorizationResult } from './authorization-result';
 
@@ -17,11 +17,11 @@ export class AuthStateService {
   }
 
   private get isAuthorized() {
-    return !!this.storagePersistanceService.getAccessToken() && !!this.storagePersistanceService.getIdToken();
+    return !!this.storagePersistenceService.getAccessToken() && !!this.storagePersistenceService.getIdToken();
   }
 
   constructor(
-    private storagePersistanceService: StoragePersistanceService,
+    private storagePersistenceService: StoragePersistenceService,
     private loggerService: LoggerService,
     private publicEventsService: PublicEventsService,
     private configurationProvider: ConfigurationProvider,
@@ -33,7 +33,7 @@ export class AuthStateService {
   }
 
   setUnauthorizedAndFireEvent(): void {
-    this.storagePersistanceService.resetAuthStateInStorage();
+    this.storagePersistenceService.resetAuthStateInStorage();
     this.authorizedInternal$.next(false);
   }
 
@@ -45,7 +45,7 @@ export class AuthStateService {
     this.loggerService.logDebug(accessToken);
     this.loggerService.logDebug('storing the accessToken');
 
-    this.storagePersistanceService.write('authzData', accessToken);
+    this.storagePersistenceService.write('authzData', accessToken);
     this.persistAccessTokenExpirationTime(authResult);
     this.setAuthorizedAndFireEvent();
   }
@@ -55,7 +55,7 @@ export class AuthStateService {
       return '';
     }
 
-    const token = this.storagePersistanceService.getAccessToken();
+    const token = this.storagePersistenceService.getAccessToken();
     return this.decodeURIComponentSafely(token);
   }
 
@@ -64,7 +64,7 @@ export class AuthStateService {
       return '';
     }
 
-    const token = this.storagePersistanceService.getIdToken();
+    const token = this.storagePersistenceService.getIdToken();
     return this.decodeURIComponentSafely(token);
   }
 
@@ -73,7 +73,7 @@ export class AuthStateService {
       return '';
     }
 
-    const token = this.storagePersistanceService.getRefreshToken();
+    const token = this.storagePersistenceService.getRefreshToken();
     return this.decodeURIComponentSafely(token);
   }
 
@@ -97,7 +97,7 @@ export class AuthStateService {
   }
 
   hasIdTokenExpired() {
-    const tokenToCheck = this.storagePersistanceService.getIdToken();
+    const tokenToCheck = this.storagePersistenceService.getIdToken();
     const { renewTimeBeforeTokenExpiresInSeconds } = this.configurationProvider.getOpenIDConfiguration();
 
     const idTokenExpired = this.tokenValidationService.hasIdTokenExpired(tokenToCheck, renewTimeBeforeTokenExpiresInSeconds);
@@ -111,7 +111,7 @@ export class AuthStateService {
 
   hasAccessTokenExpiredIfExpiryExists() {
     const { renewTimeBeforeTokenExpiresInSeconds } = this.configurationProvider.getOpenIDConfiguration();
-    const accessTokenExpiresIn = this.storagePersistanceService.read('access_token_expires_at');
+    const accessTokenExpiresIn = this.storagePersistenceService.read('access_token_expires_at');
     const accessTokenHasNotExpired = this.tokenValidationService.validateAccessTokenNotExpired(
       accessTokenExpiresIn,
       renewTimeBeforeTokenExpiresInSeconds
@@ -137,7 +137,7 @@ export class AuthStateService {
   private persistAccessTokenExpirationTime(authResult: any) {
     if (authResult?.expires_in) {
       const accessTokenExpiryTime = new Date(new Date().toUTCString()).valueOf() + authResult.expires_in * 1000;
-      this.storagePersistanceService.write('access_token_expires_at', accessTokenExpiryTime);
+      this.storagePersistenceService.write('access_token_expires_at', accessTokenExpiryTime);
     }
   }
 }
