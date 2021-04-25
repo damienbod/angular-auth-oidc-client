@@ -87,10 +87,14 @@ describe('CheckAuthService', () => {
 
   describe('checkAuth', () => {
     it(
-      'returns false when config is not valid',
+      'returns isAuthenticated: false with error message when config is not valid',
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasValidConfig').and.returnValue(false);
-        checkAuthService.checkAuth().subscribe((result) => expect(result).toBeFalse());
+        checkAuthService
+          .checkAuth()
+          .subscribe((result) =>
+            expect(result).toEqual({ isAuthenticated: false, errorMessage: 'Please provide a configuration before setting up the module' })
+          );
       })
     );
 
@@ -109,7 +113,7 @@ describe('CheckAuthService', () => {
     );
 
     it(
-      'returns false in case handleCallbackAndFireEvents throws an error',
+      'returns isAuthenticated: false with error message in case handleCallbackAndFireEvents throws an error',
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
@@ -117,7 +121,7 @@ describe('CheckAuthService', () => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(throwError('ERROR'));
         checkAuthService.checkAuth().subscribe((result) => {
-          expect(result).toBeFalse();
+          expect(result).toEqual({ isAuthenticated: false, errorMessage: 'ERROR' });
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -132,7 +136,7 @@ describe('CheckAuthService', () => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         checkAuthService.checkAuth().subscribe((result) => {
-          expect(result).toBeTrue();
+          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null });
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -146,7 +150,7 @@ describe('CheckAuthService', () => {
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         checkAuthService.checkAuth().subscribe((result) => {
-          expect(result).toBeTrue();
+          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null });
           expect(spy).not.toHaveBeenCalled();
         });
       })
@@ -164,7 +168,7 @@ describe('CheckAuthService', () => {
         const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
         const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
         checkAuthService.checkAuth().subscribe((result) => {
-          expect(result).toBeTrue();
+          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null });
           expect(setAuthorizedAndFireEventSpy).toHaveBeenCalled();
           expect(userServiceSpy).toHaveBeenCalled();
         });
@@ -183,7 +187,7 @@ describe('CheckAuthService', () => {
         const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
         const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
         checkAuthService.checkAuth().subscribe((result) => {
-          expect(result).toBeFalse();
+          expect(result).toEqual({ isAuthenticated: false, userData: null, accessToken: null });
           expect(setAuthorizedAndFireEventSpy).not.toHaveBeenCalled();
           expect(userServiceSpy).not.toHaveBeenCalled();
         });
@@ -199,7 +203,7 @@ describe('CheckAuthService', () => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
         checkAuthService.checkAuth().subscribe((result) => {
-          expect(result).toBeTrue();
+          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null });
         });
       })
     );
