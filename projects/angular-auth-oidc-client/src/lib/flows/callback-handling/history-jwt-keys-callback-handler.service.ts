@@ -87,7 +87,7 @@ export class HistoryJwtKeysCallbackHandlerService {
     }
 
     this.authStateService.updateAndPublishAuthState({
-      isAuthorized: false,
+      isAuthenticated: false,
       validationResult,
       isRenewProcess,
     });

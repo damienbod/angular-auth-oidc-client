@@ -1,7 +1,7 @@
 import { ValidationResult } from '../validation/validation-result';
 
 export interface AuthorizationResult {
-  isAuthorized: boolean;
+  isAuthenticated: boolean;
   validationResult: ValidationResult;
   isRenewProcess: boolean;
 }

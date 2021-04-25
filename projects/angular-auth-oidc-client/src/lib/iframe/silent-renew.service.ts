@@ -62,7 +62,7 @@ export class SilentRenewService {
 
     if (error) {
       this.authStateService.updateAndPublishAuthState({
-        isAuthorized: false,
+        isAuthenticated: false,
         validationResult: ValidationResult.LoginRequired,
         isRenewProcess: true,
       });

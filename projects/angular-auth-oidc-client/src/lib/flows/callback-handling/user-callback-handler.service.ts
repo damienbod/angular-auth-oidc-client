@@ -70,7 +70,7 @@ export class UserCallbackHandlerService {
 
   private publishAuthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
     this.authStateService.updateAndPublishAuthState({
-      isAuthorized: true,
+      isAuthenticated: true,
       validationResult: stateValidationResult.state,
       isRenewProcess,
     });
@@ -78,7 +78,7 @@ export class UserCallbackHandlerService {
 
   private publishUnauthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
     this.authStateService.updateAndPublishAuthState({
-      isAuthorized: false,
+      isAuthenticated: false,
       validationResult: stateValidationResult.state,
       isRenewProcess,
     });
