@@ -8,8 +8,8 @@ import { ConfigurationProvider } from '../../config/config.provider';
 import { ConfigurationProviderMock } from '../../config/config.provider-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
-import { StoragePersistanceService } from '../../storage/storage-persistance.service';
-import { StoragePersistanceServiceMock } from '../../storage/storage-persistance.service-mock';
+import { StoragePersistenceService } from '../../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../../storage/storage-persistence-service-mock.service';
 import { UrlService } from '../../utils/url/url.service';
 import { UrlServiceMock } from '../../utils/url/url.service-mock';
 import { CallbackContext } from '../callback-context';
@@ -17,7 +17,7 @@ import { RefreshTokenCallbackHandlerService } from './refresh-token-callback-han
 
 describe('RefreshTokenCallbackHandlerService', () => {
   let service: RefreshTokenCallbackHandlerService;
-  let storagePersistanceService: StoragePersistanceService;
+  let storagePersistenceService: StoragePersistenceService;
   let dataService: DataService;
   let configurationProvider: ConfigurationProvider;
 
@@ -29,14 +29,14 @@ describe('RefreshTokenCallbackHandlerService', () => {
         { provide: LoggerService, useClass: LoggerServiceMock },
         { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
         { provide: DataService, useClass: DataServiceMock },
-        { provide: StoragePersistanceService, useClass: StoragePersistanceServiceMock },
+        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
       ],
     });
   });
 
   beforeEach(() => {
     service = TestBed.inject(RefreshTokenCallbackHandlerService);
-    storagePersistanceService = TestBed.inject(StoragePersistanceService);
+    storagePersistenceService = TestBed.inject(StoragePersistenceService);
     dataService = TestBed.inject(DataService);
     configurationProvider = TestBed.inject(ConfigurationProvider);
   });
@@ -69,7 +69,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
       'calls data service if all params are good',
       waitForAsync(() => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
         (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
           expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
@@ -84,7 +84,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
       'calls data service with correct headers if all params are good',
       waitForAsync(() => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
         (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
           const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
@@ -98,7 +98,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
       'returns error in case of http error',
       waitForAsync(() => {
         spyOn(dataService, 'post').and.returnValue(throwError(HTTP_ERROR));
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
 
         (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
@@ -113,7 +113,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
       'retries request in case of no connection http error and succeeds',
       waitForAsync(() => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(createRetriableStream(throwError(CONNECTION_ERROR), of({})));
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
 
         (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
@@ -135,7 +135,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(
           createRetriableStream(throwError(CONNECTION_ERROR), throwError(HTTP_ERROR))
         );
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
 
         (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({

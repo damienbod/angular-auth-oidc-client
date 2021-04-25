@@ -1,5 +1,79 @@
 # Configuration
 
+You can pass three properties into the `AuthModule.forRoot(...)` method to configure the lib.
+
+```
+AuthModule.forRoot({
+  authWellKnown?: AuthWellKnownEndpoints;
+  config?: OpenIdConfiguration;
+  loader?: Provider;
+})
+```
+
+## Configure with static config
+
+You can pass the static config with the `config` property into the `forRoot()` method like this
+
+```ts
+AuthModule.forRoot({
+      config: {
+        /* YOUR CONFIG VALUES HERE */
+      },
+    }),
+```
+
+## Configure with HTTP Config
+
+If you want to load the config from HTTP and then map it to the interface the library provides you can use the `StsConfigHttpLoader` and pass it with the `loader` property
+
+```ts
+import { AuthModule, StsConfigHttpLoader, StsConfigLoader } from 'angular-auth-oidc-client';
+
+export const httpLoaderFactory = (httpClient: HttpClient) => {
+  const config$ = httpClient
+    .get<any>(`https://...`)
+    .pipe(
+      map((customConfig: any) => {
+        return {
+          stsServer: customConfig.stsServer,
+          /* YOUR CONFIG VALUES HERE */
+        };
+      })
+    )
+    .toPromise();
+
+  return new StsConfigHttpLoader(config$);
+};
+
+@NgModule({
+  imports: [
+    AuthModule.forRoot({
+      loader: {
+        provide: StsConfigLoader,
+        useFactory: httpLoaderFactory,
+        deps: [HttpClient],
+      },
+    }),
+  ],
+  exports: [AuthModule],
+})
+export class AuthConfigModule {}
+```
+
+## Passing AuthWellKnown
+
+The third property is `authWellKnown` where you can pass the AuthWellKnownEndpoint if you have it already, otherwise it will be loaded automatically for you with the values from the config you provide.
+
+```ts
+AuthModule.forRoot({
+      authWellKnown: {
+        /* YOUR AUTHWELLKNOWN VALUES HERE */
+      },
+    }),
+```
+
+## Config Values
+
 In this document are all the values which can be set to configure this library.
 
 | Name                                      | Type                                         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Required |

@@ -31,10 +31,11 @@ export class AppComponent {
   }
 
   loginWithPopup() {
-    this.oidcSecurityService.authorizeWithPopUp().subscribe(({ isAuthenticated, userData, accessToken }) => {
+    this.oidcSecurityService.authorizeWithPopUp().subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
       console.log(isAuthenticated);
       console.log(userData);
       console.log(accessToken);
+      console.log(errorMessage);
     });
   }
 

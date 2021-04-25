@@ -1,5 +1,6 @@
 export interface LoginResponse {
   isAuthenticated: boolean;
-  userData: any;
-  accessToken: string;
+  userData?: any;
+  accessToken?: string;
+  errorMessage?: string;
 }

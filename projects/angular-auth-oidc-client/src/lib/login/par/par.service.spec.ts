@@ -5,10 +5,10 @@ import { createRetriableStream } from '../../../test/create-retriable-stream.hel
 import { DataService } from '../../api/data.service';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
-import { StoragePersistanceService } from '../../storage/storage-persistance.service';
+import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
 import { DataServiceMock } from './../../api/data.service-mock';
-import { StoragePersistanceServiceMock } from './../../storage/storage-persistance.service-mock';
+import { StoragePersistenceServiceMock } from '../../storage/storage-persistence-service-mock.service';
 import { UrlServiceMock } from './../../utils/url/url.service-mock';
 import { ParService } from './par.service';
 
@@ -17,7 +17,7 @@ describe('ParService', () => {
   let loggerService: LoggerService;
   let urlService: UrlService;
   let dataService: DataService;
-  let storagePersistanceService: StoragePersistanceService;
+  let storagePersistenceService: StoragePersistenceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -36,8 +36,8 @@ describe('ParService', () => {
           useClass: DataServiceMock,
         },
         {
-          provide: StoragePersistanceService,
-          useClass: StoragePersistanceServiceMock,
+          provide: StoragePersistenceService,
+          useClass: StoragePersistenceServiceMock,
         },
       ],
     });
@@ -47,7 +47,7 @@ describe('ParService', () => {
     service = TestBed.inject(ParService);
     dataService = TestBed.inject(DataService);
     loggerService = TestBed.inject(LoggerService);
-    storagePersistanceService = TestBed.inject(StoragePersistanceService);
+    storagePersistenceService = TestBed.inject(StoragePersistenceService);
     urlService = TestBed.inject(UrlService);
   });
 
@@ -60,7 +60,7 @@ describe('ParService', () => {
       'throws error if authWellKnownEndPoints does not exist in storage',
       waitForAsync(() => {
         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(null);
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
         service.postParRequest().subscribe({
           error: (err) => {
             expect(err).toBe('Could not read PAR endpoint because authWellKnownEndPoints are not given');
@@ -73,7 +73,7 @@ describe('ParService', () => {
       'throws error if par endpoint does not exist in storage',
       waitForAsync(() => {
         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(null);
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ some: 'thing' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ some: 'thing' });
         service.postParRequest().subscribe({
           error: (err) => {
             expect(err).toBe('Could not read PAR endpoint from authWellKnownEndpoints');
@@ -86,7 +86,7 @@ describe('ParService', () => {
       'calls data service with correct params',
       waitForAsync(() => {
         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url123');
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
         const dataServiceSpy = spyOn(dataService, 'post').and.returnValue(of({}));
         service.postParRequest().subscribe(() => {
           expect(dataServiceSpy).toHaveBeenCalledOnceWith('parEndpoint', 'some-url123', jasmine.any(HttpHeaders));
@@ -98,7 +98,7 @@ describe('ParService', () => {
       'Gives back correct object properties',
       waitForAsync(() => {
         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
         spyOn(dataService, 'post').and.returnValue(of({ expires_in: 123, request_uri: 'request_uri' }));
         service.postParRequest().subscribe((result) => {
           expect(result).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
@@ -110,7 +110,7 @@ describe('ParService', () => {
       'throws error if data service has got an error',
       waitForAsync(() => {
         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url789');
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
         spyOn(dataService, 'post').and.returnValue(throwError('AN ERROR'));
         const loggerSpy = spyOn(loggerService, 'logError');
 
@@ -127,7 +127,7 @@ describe('ParService', () => {
       'should retry once',
       waitForAsync(() => {
         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
         spyOn(dataService, 'post').and.returnValue(
           createRetriableStream(throwError({}), of({ expires_in: 123, request_uri: 'request_uri' }))
         );
@@ -145,7 +145,7 @@ describe('ParService', () => {
       'should retry twice',
       waitForAsync(() => {
         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
         spyOn(dataService, 'post').and.returnValue(
           createRetriableStream(throwError({}), throwError({}), of({ expires_in: 123, request_uri: 'request_uri' }))
         );
@@ -163,7 +163,7 @@ describe('ParService', () => {
       'should fail after three tries',
       waitForAsync(() => {
         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
         spyOn(dataService, 'post').and.returnValue(
           createRetriableStream(throwError({}), throwError({}), throwError({}), of({ expires_in: 123, request_uri: 'request_uri' }))
         );

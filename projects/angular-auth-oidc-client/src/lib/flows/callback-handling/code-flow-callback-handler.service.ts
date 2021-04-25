@@ -5,7 +5,7 @@ import { catchError, mergeMap, retryWhen, switchMap } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
 import { ConfigurationProvider } from '../../config/config.provider';
 import { LoggerService } from '../../logging/logger.service';
-import { StoragePersistanceService } from '../../storage/storage-persistance.service';
+import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
 import { TokenValidationService } from '../../validation/token-validation.service';
 import { CallbackContext } from '../callback-context';
@@ -19,7 +19,7 @@ export class CodeFlowCallbackHandlerService {
     private readonly tokenValidationService: TokenValidationService,
     private readonly flowsDataService: FlowsDataService,
     private readonly configurationProvider: ConfigurationProvider,
-    private readonly storagePersistanceService: StoragePersistanceService,
+    private readonly storagePersistenceService: StoragePersistenceService,
     private readonly dataService: DataService
   ) {}
 
@@ -67,7 +67,7 @@ export class CodeFlowCallbackHandlerService {
       return throwError('codeFlowCodeRequest incorrect state');
     }
 
-    const authWellKnown = this.storagePersistanceService.read('authWellKnownEndPoints');
+    const authWellKnown = this.storagePersistenceService.read('authWellKnownEndPoints');
     const tokenEndpoint = authWellKnown?.tokenEndpoint;
     if (!tokenEndpoint) {
       return throwError('Token Endpoint not defined');

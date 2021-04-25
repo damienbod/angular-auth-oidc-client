@@ -4,7 +4,7 @@ import { catchError, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../../authState/auth-state.service';
 import { ConfigurationProvider } from '../../config/config.provider';
 import { LoggerService } from '../../logging/logger.service';
-import { StoragePersistanceService } from '../../storage/storage-persistance.service';
+import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { JwtKeys } from '../../validation/jwtkeys';
 import { ValidationResult } from '../../validation/validation-result';
 import { CallbackContext } from '../callback-context';
@@ -22,13 +22,13 @@ export class HistoryJwtKeysCallbackHandlerService {
     private readonly authStateService: AuthStateService,
     private readonly flowsDataService: FlowsDataService,
     private readonly signInKeyDataService: SigninKeyDataService,
-    private readonly storagePersistanceService: StoragePersistanceService,
+    private readonly storagePersistenceService: StoragePersistenceService,
     private readonly resetAuthDataService: ResetAuthDataService
   ) {}
 
   // STEP 3 Code Flow, STEP 2 Implicit Flow, STEP 3 Refresh Token
   callbackHistoryAndResetJwtKeys(callbackContext: CallbackContext): Observable<CallbackContext> {
-    this.storagePersistanceService.write('authnResult', callbackContext.authResult);
+    this.storagePersistenceService.write('authnResult', callbackContext.authResult);
 
     if (this.historyCleanUpTurnedOn() && !callbackContext.isRenewProcess) {
       this.resetBrowserHistory();
@@ -103,10 +103,10 @@ export class HistoryJwtKeysCallbackHandlerService {
   }
 
   private storeSigningKeys(jwtKeys: JwtKeys) {
-    this.storagePersistanceService.write(JWT_KEYS, jwtKeys);
+    this.storagePersistenceService.write(JWT_KEYS, jwtKeys);
   }
 
   private readSigningKeys() {
-    return this.storagePersistanceService.read(JWT_KEYS);
+    return this.storagePersistenceService.read(JWT_KEYS);
   }
 }

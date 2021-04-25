@@ -1,8 +1,166 @@
 # Migrations
 
-## App module simple
+## Version 11 to Version 12
 
-### Old
+### Configuration in App Module
+
+#### Old:
+
+```ts
+import { HttpClientModule } from '@angular/common/http';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
+// ...
+
+export function configureAuth(oidcConfigService: OidcConfigService) {
+  return () =>
+    oidcConfigService.withConfig({
+      stsServer: '<your sts address here>',
+      redirectUrl: window.location.origin,
+      postLogoutRedirectUri: window.location.origin,
+      clientId: 'angularClient',
+      scope: 'openid profile email',
+      responseType: 'code',
+      silentRenew: true,
+      silentRenewUrl: `${window.location.origin}/silent-renew.html`,
+      logLevel: LogLevel.Debug,
+    });
+}
+
+@NgModule({
+  // ...
+  imports: [
+    // ...
+    AuthModule.forRoot(),
+  ],
+  providers: [
+    OidcConfigService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: configureAuth,
+      deps: [OidcConfigService],
+      multi: true,
+    },
+  ],
+  // ...
+})
+export class AppModule {}
+```
+
+#### New:
+
+```typescript
+import { HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
+import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
+// ...
+
+@NgModule({
+  // ...
+  imports: [
+    // ...
+    AuthModule.forRoot({
+      config: {
+        stsServer: '<your sts address here>',
+        redirectUrl: window.location.origin,
+        postLogoutRedirectUri: window.location.origin,
+        clientId: 'angularClient',
+        scope: 'openid profile email',
+        responseType: 'code',
+        silentRenew: true,
+        silentRenewUrl: `${window.location.origin}/silent-renew.html`,
+        logLevel: LogLevel.Debug,
+      },
+    }),
+  ],
+  // ...
+})
+export class AppModule {}
+```
+
+#### Old (with Http Loading)
+
+```typescript
+import { HttpClient } from '@angular/common/http';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { AuthModule, OidcConfigService, OidcSecurityService } from 'angular-auth-oidc-client';
+import { map, switchMap } from 'rxjs/operators';
+
+export function configureAuth(oidcConfigService: OidcConfigService, httpClient: HttpClient) {
+  const setupAction$ = httpClient.get<any>(`https://...`).pipe(
+    map((customConfig) => {
+      return {
+        stsServer: customConfig.stsServer,
+        //...
+      };
+    }),
+    switchMap((config) => oidcConfigService.withConfig(config))
+  );
+
+  return () => setupAction$.toPromise();
+}
+
+@NgModule({
+  imports: [AuthModule.forRoot()],
+  providers: [
+    OidcSecurityService,
+    OidcConfigService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: configureAuth,
+      deps: [OidcConfigService, HttpClient],
+      multi: true,
+    },
+  ],
+  exports: [AuthModule],
+})
+export class AuthConfigModule {}
+```
+
+#### New (with HTTP Loading)
+
+```typescript
+import { HttpClient } from '@angular/common/http';
+import { NgModule } from '@angular/core';
+import { AuthModule, StsConfigHttpLoader, StsConfigLoader } from 'angular-auth-oidc-client';
+import { map } from 'rxjs/operators';
+
+export const httpLoaderFactory = (httpClient: HttpClient) => {
+  const config$ = httpClient
+    .get<any>(`https://...`)
+    .pipe(
+      map((customConfig: any) => {
+        return {
+          stsServer: customConfig.stsServer,
+          //...
+        };
+      })
+    )
+    .toPromise();
+
+  return new StsConfigHttpLoader(config$);
+};
+
+@NgModule({
+  imports: [
+    AuthModule.forRoot({
+      loader: {
+        provide: StsConfigLoader,
+        useFactory: httpLoaderFactory,
+        deps: [HttpClient],
+      },
+    }),
+  ],
+  exports: [AuthModule],
+})
+export class AuthConfigModule {}
+```
+
+## Version 10 to Version 11
+
+### App module simple
+
+#### Old
 
 ```typescript
 export function loadConfig(oidcConfigService: OidcConfigService) {
@@ -61,7 +219,7 @@ export class AppModule {
 }
 ```
 
-### New
+#### New
 
 ```typescript
 // imports
@@ -104,9 +262,9 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
 export class AppModule {}
 ```
 
-## App module (when loading config from an http endpoint)
+### App module (when loading config from an http endpoint)
 
-### Old
+#### Old
 
 ```typescript
 // imports
@@ -169,7 +327,7 @@ export class AppModule {
 }
 ```
 
-### New
+#### New
 
 ```typescript
 import { NgModule, APP_INITIALIZER } from '@angular/core';
@@ -227,9 +385,9 @@ export function configureAuth(oidcConfigService: OidcConfigService, httpClient: 
 export class AppModule {}
 ```
 
-## App Component
+### App Component
 
-### Old
+#### Old
 
 ```typescript
 import { Component, OnInit, OnDestroy } from '@angular/core';
@@ -274,7 +432,7 @@ export class AppComponent implements OnInit, OnDestroy {
 }
 ```
 
-### New
+#### New
 
 ```typescript
 import { Component, OnInit } from '@angular/core';
@@ -299,9 +457,9 @@ export class AppComponent implements OnInit {
 }
 ```
 
-## isAuthenticated
+### isAuthenticated
 
-### Old
+#### Old
 
 ```typescript
 this.oidcSecurityService.getIsAuthorized().subscribe((isAuthenticated: boolean) => {
@@ -309,7 +467,7 @@ this.oidcSecurityService.getIsAuthorized().subscribe((isAuthenticated: boolean) 
 });
 ```
 
-### New
+#### New
 
 ```typescript
 this.oidcSecurityService.isAuthenticated$.subscribe((isAuthenticated: boolean) => {
@@ -317,9 +475,9 @@ this.oidcSecurityService.isAuthenticated$.subscribe((isAuthenticated: boolean) =
 });
 ```
 
-## User data
+### User data
 
-### Old
+#### Old
 
 ```typescript
 this.oidcSecurityService.getUserData().subscribe((userData: any) => {
@@ -327,7 +485,7 @@ this.oidcSecurityService.getUserData().subscribe((userData: any) => {
 });
 ```
 
-## New
+### New
 
 ```typescript
 this.oidcSecurityService.userData$.subscribe((userData: any) => {

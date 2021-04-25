@@ -22,10 +22,11 @@ This allows you to have the provider's consent prompt display in a popup window 
   }
 
   loginWithPopup() {
-    this.oidcSecurityService.authorizeWithPopUp().subscribe(({ isAuthenticated, userData, accessToken }) => {
+    this.oidcSecurityService.authorizeWithPopUp().subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
       console.log(isAuthenticated);
       console.log(userData);
       console.log(accessToken);
+      console.log(errorMessage);
     });
   }
 ```
@@ -40,7 +41,7 @@ loginWithPopup() {
   const somePopupOptions = { width: 500, height: 500, left: 50, top: 50 };
 
   this.oidcSecurityService.authorizeWithPopUp(null, somePopupOptions)
-    .subscribe(({ isAuthenticated, userData, accessToken }) => {
+    .subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
     /* ... */
     });
 }

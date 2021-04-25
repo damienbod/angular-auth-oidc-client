@@ -3,7 +3,7 @@ import { of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { AuthWellKnownDataService } from './auth-well-known-data.service';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 import { PublicConfiguration } from './public-configuration';
@@ -13,11 +13,11 @@ export class AuthWellKnownService {
   constructor(
     private publicEventsService: PublicEventsService,
     private dataService: AuthWellKnownDataService,
-    private storagePersistanceService: StoragePersistanceService
+    private storagePersistenceService: StoragePersistenceService
   ) {}
 
   getAuthWellKnownEndPoints(authWellknownEndpointUrl: string) {
-    const alreadySavedWellKnownEndpoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+    const alreadySavedWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints');
     if (!!alreadySavedWellKnownEndpoints) {
       return of(alreadySavedWellKnownEndpoints);
     }
@@ -32,7 +32,7 @@ export class AuthWellKnownService {
   }
 
   storeWellKnownEndpoints(mappedWellKnownEndpoints: AuthWellKnownEndpoints) {
-    this.storagePersistanceService.write('authWellKnownEndPoints', mappedWellKnownEndpoints);
+    this.storagePersistenceService.write('authWellKnownEndPoints', mappedWellKnownEndpoints);
   }
 
   private getWellKnownEndPointsFromUrl(authWellknownEndpoint: string) {

@@ -17,7 +17,7 @@ export type StorageKeys =
   | 'jwtKeys';
 
 @Injectable()
-export class StoragePersistanceService {
+export class StoragePersistenceService {
   constructor(
     private readonly oidcSecurityStorage: AbstractSecurityStorage,
     private readonly configurationProvider: ConfigurationProvider

@@ -13,7 +13,7 @@ export type StorageKeys =
   | 'access_token_expires_at';
 
 @Injectable()
-export class StoragePersistanceServiceMock {
+export class StoragePersistenceServiceMock {
   read(key: StorageKeys): any {}
 
   write(key: StorageKeys, value: any) {}
