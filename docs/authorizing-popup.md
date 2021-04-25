@@ -14,10 +14,11 @@ This allows you to have the provider's consent prompt display in a popup window 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => {
-      console.log('app authenticated', isAuthenticated);
-      const at = this.oidcSecurityService.getToken();
-      console.log(`Current access token is '${at}'`);
+    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
+      console.log(isAuthenticated);
+      console.log(userData);
+      console.log(accessToken);
+      console.log(errorMessage);
     });
   }
 

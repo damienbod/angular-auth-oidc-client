@@ -10,6 +10,9 @@ export class AppComponent {
   title = 'sample-code-flow-lazy-loaded';
 
   constructor(public oidcSecurityService: OidcSecurityService) {
-    this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => console.log('app authenticated', isAuthenticated));
+    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken }) => {
+      console.log('app authenticated', isAuthenticated);
+      console.log(`Current access token is '${accessToken}'`);
+    });
   }
 }

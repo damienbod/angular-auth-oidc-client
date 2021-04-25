@@ -156,6 +156,46 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
 export class AuthConfigModule {}
 ```
 
+### Return type of `checkAuth()` method is now an object `LoginResponse`
+
+In the previous version the `checkAuth` method only returned if you are authenticated or not. New the method returns the `LoginResponse` object which provides
+
+```typescript
+export interface LoginResponse {
+  isAuthenticated: boolean;
+  userData?: any;
+  accessToken?: string;
+  errorMessage?: string;
+}
+```
+
+#### Old
+
+```typescript
+this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => {
+  console.log('app authenticated', isAuthenticated);
+});
+```
+
+#### New
+
+```typescript
+this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated }) => {
+  console.log('app authenticated', isAuthenticated);
+});
+```
+
+Or if you want to have all information
+
+```typescript
+this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
+  console.log(isAuthenticated);
+  console.log(userData);
+  console.log(accessToken);
+  console.log(errorMessage);
+});
+```
+
 ## Version 10 to Version 11
 
 ### App module simple
