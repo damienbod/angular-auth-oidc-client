@@ -13,7 +13,7 @@ import { RefreshSessionIframeServiceMock } from '../iframe/refresh-session-ifram
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { AbstractSecurityStorage } from '../storage/abstract-security-storage';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UserService } from '../userData/user-service';
 import { UserServiceMock } from '../userData/user-service-mock';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
@@ -32,7 +32,7 @@ describe('PeriodicallyTokenCheckService', () => {
   let refreshSessionIframeService: RefreshSessionIframeService;
   let refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService;
   let userService: UserService;
-  let storagePersistanceService: StoragePersistanceService;
+  let storagePersistenceService: StoragePersistenceService;
   let resetAuthDataService: ResetAuthDataService;
 
   beforeEach(() => {
@@ -52,7 +52,7 @@ describe('PeriodicallyTokenCheckService', () => {
           useClass: RefreshSessionIframeServiceMock,
         },
         IntervallService,
-        StoragePersistanceService,
+        StoragePersistenceService,
         AbstractSecurityStorage,
       ],
     });
@@ -68,7 +68,7 @@ describe('PeriodicallyTokenCheckService', () => {
     refreshSessionIframeService = TestBed.inject(RefreshSessionIframeService);
     refreshSessionRefreshTokenService = TestBed.inject(RefreshSessionRefreshTokenService);
     userService = TestBed.inject(UserService);
-    storagePersistanceService = TestBed.inject(StoragePersistanceService);
+    storagePersistenceService = TestBed.inject(StoragePersistenceService);
     resetAuthDataService = TestBed.inject(ResetAuthDataService);
   });
 
@@ -172,7 +172,7 @@ describe('PeriodicallyTokenCheckService', () => {
       const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
 
       spyOn(authStateService, 'hasIdTokenExpired').and.returnValue(true);
-      spyOn(storagePersistanceService, 'read').withArgs('storageCustomRequestParams').and.returnValue(undefined);
+      spyOn(storagePersistenceService, 'read').withArgs('storageCustomRequestParams').and.returnValue(undefined);
       spyOn(authStateService, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(true);
 
       spyOn(refreshSessionIframeService, 'refreshSessionWithIframe').and.returnValue(of(true));
@@ -193,7 +193,7 @@ describe('PeriodicallyTokenCheckService', () => {
       spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
       spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
-      spyOn(storagePersistanceService, 'read').withArgs('storageCustomRequestParams').and.returnValue(undefined);
+      spyOn(storagePersistenceService, 'read').withArgs('storageCustomRequestParams').and.returnValue(undefined);
       spyOn(resetAuthDataService, 'resetAuthorizationData');
 
       spyOn(authStateService, 'hasIdTokenExpired').and.returnValue(true);

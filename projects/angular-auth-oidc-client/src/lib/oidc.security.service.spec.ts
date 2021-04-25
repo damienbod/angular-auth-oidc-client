@@ -19,8 +19,8 @@ import { LoginServiceMock } from './login/login.service-mock';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { LogoffRevocationServiceMock } from './logoffRevoke/logoff-revocation.service-mock';
 import { OidcSecurityService } from './oidc.security.service';
-import { StoragePersistanceService } from './storage/storage-persistance.service';
-import { StoragePersistanceServiceMock } from './storage/storage-persistance.service-mock';
+import { StoragePersistenceService } from './storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from './storage/storage-persistence-service-mock.service';
 import { UserService } from './userData/user-service';
 import { UserServiceMock } from './userData/user-service-mock';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
@@ -37,7 +37,7 @@ describe('OidcSecurityService', () => {
   let logoffRevocationService: LogoffRevocationService;
   let loginService: LoginService;
   let refreshSessionService: RefreshSessionService;
-  let storagePersistanceService: StoragePersistanceService;
+  let storagePersistenceService: StoragePersistenceService;
   let checkAuthService: CheckAuthService;
 
   beforeEach(() => {
@@ -74,8 +74,8 @@ describe('OidcSecurityService', () => {
         { provide: LogoffRevocationService, useClass: LogoffRevocationServiceMock },
         { provide: LoginService, useClass: LoginServiceMock },
         {
-          provide: StoragePersistanceService,
-          useClass: StoragePersistanceServiceMock,
+          provide: StoragePersistenceService,
+          useClass: StoragePersistenceServiceMock,
         },
         { provide: RefreshSessionService, useClass: RefreshSessionServiceMock },
       ],
@@ -92,7 +92,7 @@ describe('OidcSecurityService', () => {
     flowsDataService = TestBed.inject(FlowsDataService);
     logoffRevocationService = TestBed.inject(LogoffRevocationService);
     loginService = TestBed.inject(LoginService);
-    storagePersistanceService = TestBed.inject(StoragePersistanceService);
+    storagePersistenceService = TestBed.inject(StoragePersistenceService);
     refreshSessionService = TestBed.inject(RefreshSessionService);
     checkAuthService = TestBed.inject(CheckAuthService);
   });
@@ -168,10 +168,10 @@ describe('OidcSecurityService', () => {
     );
 
     it(
-      'calls storagePersistanceService.write when customParams are given',
+      'calls storagePersistenceService.write when customParams are given',
       waitForAsync(() => {
         const spy = spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(of(null));
-        const writeSpy = spyOn(storagePersistanceService, 'write');
+        const writeSpy = spyOn(storagePersistenceService, 'write');
         oidcSecurityService.forceRefreshSession({ my: 'custom', params: 1 }).subscribe(() => {
           expect(spy).toHaveBeenCalled();
           expect(writeSpy).toHaveBeenCalledWith('storageCustomRequestParams', { my: 'custom', params: 1 });

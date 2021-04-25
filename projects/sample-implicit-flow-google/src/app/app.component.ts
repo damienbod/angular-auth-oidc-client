@@ -17,7 +17,7 @@ export class AppComponent implements OnInit, OnDestroy {
         if (!isAuthenticated) {
           if ('/autologin' !== window.location.pathname) {
             this.write('redirect', window.location.pathname);
-            this.router.navigate(['/autologin']);
+            this.router.navigateByUrl('/autologin');
           }
         }
         if (isAuthenticated) {
@@ -51,9 +51,9 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     if (path.toString().includes('/unauthorized')) {
-      this.router.navigate(['/']);
+      this.router.navigateByUrl('/');
     } else {
-      this.router.navigate([path]);
+      this.router.navigateByUrl(path);
     }
   }
 

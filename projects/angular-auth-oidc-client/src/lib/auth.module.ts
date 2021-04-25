@@ -42,7 +42,7 @@ import { OidcSecurityService } from './oidc.security.service';
 import { PublicEventsService } from './public-events/public-events.service';
 import { AbstractSecurityStorage } from './storage/abstract-security-storage';
 import { BrowserStorageService } from './storage/browser-storage.service';
-import { StoragePersistanceService } from './storage/storage-persistance.service';
+import { StoragePersistenceService } from './storage/storage-persistence.service';
 import { UserService } from './userData/user-service';
 import { EqualityService } from './utils/equality/equality.service';
 import { FlowHelper } from './utils/flowHelper/flow-helper.service';
@@ -121,7 +121,7 @@ export class AuthModule {
         UrlService,
         AuthStateService,
         SigninKeyDataService,
-        StoragePersistanceService,
+        StoragePersistenceService,
         TokenHelperService,
         LoggerService,
         IFrameService,

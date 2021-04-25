@@ -4,19 +4,19 @@ import { throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { LoggerService } from '../logging/logger.service';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { JwtKeys } from '../validation/jwtkeys';
 
 @Injectable()
 export class SigninKeyDataService {
   constructor(
-    private storagePersistanceService: StoragePersistanceService,
+    private storagePersistenceService: StoragePersistenceService,
     private loggerService: LoggerService,
     private dataService: DataService
   ) {}
 
   getSigningKeys() {
-    const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints');
     const jwksUri = authWellKnownEndPoints?.jwksUri;
     if (!jwksUri) {
       const error = `getSigningKeys: authWellKnownEndpoints.jwksUri is: '${jwksUri}'`;

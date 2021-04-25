@@ -4,22 +4,22 @@ import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
-import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 import { AuthWellKnownDataService } from './auth-well-known-data.service';
 import { AuthWellKnownService } from './auth-well-known.service';
 
 describe('AuthWellKnownService', () => {
   let service: AuthWellKnownService;
   let dataService: AuthWellKnownDataService;
-  let storagePersistanceService: StoragePersistanceService;
+  let storagePersistenceService: StoragePersistenceService;
   let publicEventsService: PublicEventsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         AuthWellKnownService,
-        { provide: StoragePersistanceService, useClass: StoragePersistanceServiceMock },
+        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
         { provide: DataService, useClass: DataServiceMock },
         AuthWellKnownDataService,
         PublicEventsService,
@@ -30,7 +30,7 @@ describe('AuthWellKnownService', () => {
   beforeEach(() => {
     service = TestBed.inject(AuthWellKnownService);
     dataService = TestBed.inject(AuthWellKnownDataService);
-    storagePersistanceService = TestBed.inject(StoragePersistanceService);
+    storagePersistenceService = TestBed.inject(StoragePersistenceService);
     publicEventsService = TestBed.inject(PublicEventsService);
   });
 
@@ -43,7 +43,7 @@ describe('AuthWellKnownService', () => {
       'getAuthWellKnownEndPoints return stored endpoints if they exist',
       waitForAsync(() => {
         const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsFromUrl');
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ issuer: 'anything' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ issuer: 'anything' });
         service.getAuthWellKnownEndPoints('any-url').subscribe((result) => {
           expect(dataServiceSpy).not.toHaveBeenCalled();
           expect(result).toEqual({ issuer: 'anything' });
@@ -55,7 +55,7 @@ describe('AuthWellKnownService', () => {
       'getAuthWellKnownEndPoints calls dataservice if none is stored',
       waitForAsync(() => {
         const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsFromUrl').and.returnValue(of({ issuer: 'anything' }));
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
         service.getAuthWellKnownEndPoints('any-url').subscribe((result) => {
           expect(dataServiceSpy).toHaveBeenCalled();
           expect(result).toEqual({ issuer: 'anything' });
@@ -67,7 +67,7 @@ describe('AuthWellKnownService', () => {
       'getAuthWellKnownEndPoints stored the result if http cal is made',
       waitForAsync(() => {
         const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsFromUrl').and.returnValue(of({ issuer: 'anything' }));
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
         const storeSpy = spyOn(service, 'storeWellKnownEndpoints');
         service.getAuthWellKnownEndPoints('any-url').subscribe((result) => {
           expect(dataServiceSpy).toHaveBeenCalled();

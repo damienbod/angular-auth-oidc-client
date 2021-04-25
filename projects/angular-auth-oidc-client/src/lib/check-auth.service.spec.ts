@@ -299,11 +299,11 @@ describe('CheckAuthService', () => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         spyOn(autoLoginService, 'getStoredRedirectRoute').and.returnValue('some-saved-route');
         const deleteSpy = spyOn(autoLoginService, 'deleteStoredRedirectRoute');
-        const routeSpy = spyOn(router, 'navigate');
+        const routeSpy = spyOn(router, 'navigateByUrl');
 
         checkAuthService.checkAuth().subscribe((result) => {
           expect(deleteSpy).toHaveBeenCalledTimes(1);
-          expect(routeSpy).toHaveBeenCalledOnceWith(['some-saved-route']);
+          expect(routeSpy).toHaveBeenCalledOnceWith('some-saved-route');
         });
       })
     );

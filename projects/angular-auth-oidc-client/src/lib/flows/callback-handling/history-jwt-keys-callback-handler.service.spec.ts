@@ -6,8 +6,8 @@ import { ConfigurationProvider } from '../../config/config.provider';
 import { ConfigurationProviderMock } from '../../config/config.provider-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
-import { StoragePersistanceService } from '../../storage/storage-persistance.service';
-import { StoragePersistanceServiceMock } from '../../storage/storage-persistance.service-mock';
+import { StoragePersistenceService } from '../../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../../storage/storage-persistence-service-mock.service';
 import { JwtKey, JwtKeys } from '../../validation/jwtkeys';
 import { ValidationResult } from '../../validation/validation-result';
 import { CallbackContext } from '../callback-context';
@@ -19,9 +19,23 @@ import { SigninKeyDataService } from '../signin-key-data.service';
 import { SigninKeyDataServiceMock } from '../signin-key-data.service-mock';
 import { HistoryJwtKeysCallbackHandlerService } from './history-jwt-keys-callback-handler.service';
 
+const DUMMY_JWT_KEYS: JwtKeys = {
+  keys: [
+    {
+      kty: 'some-value1',
+      use: 'some-value2',
+      kid: 'some-value3',
+      x5t: 'some-value4',
+      e: 'some-value5',
+      n: 'some-value6',
+      x5c: ['some-value7'],
+    },
+  ],
+};
+
 describe('HistoryJwtKeysCallbackHandlerService', () => {
   let service: HistoryJwtKeysCallbackHandlerService;
-  let storagePersistanceService: StoragePersistanceService;
+  let storagePersistenceService: StoragePersistenceService;
   let configurationProvider: ConfigurationProvider;
   let signInKeyDataService: SigninKeyDataService;
   let resetAuthDataService: ResetAuthDataService;
@@ -37,7 +51,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         { provide: AuthStateService, useClass: AuthStateServiceMock },
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
         { provide: SigninKeyDataService, useClass: SigninKeyDataServiceMock },
-        { provide: StoragePersistanceService, useClass: StoragePersistanceServiceMock },
+        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
         { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
       ],
     });
@@ -45,7 +59,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
 
   beforeEach(() => {
     service = TestBed.inject(HistoryJwtKeysCallbackHandlerService);
-    storagePersistanceService = TestBed.inject(StoragePersistanceService);
+    storagePersistenceService = TestBed.inject(StoragePersistenceService);
     resetAuthDataService = TestBed.inject(ResetAuthDataService);
     signInKeyDataService = TestBed.inject(SigninKeyDataService);
     configurationProvider = TestBed.inject(ConfigurationProvider);
@@ -61,13 +75,16 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     it(
       'writes authResult into the storage',
       waitForAsync(() => {
-        const storagePersistanceServiceSpy = spyOn(storagePersistanceService, 'write');
+        const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'write');
         const callbackContext = ({ authResult: 'authResultToStore' } as unknown) as CallbackContext;
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
 
         spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of({ keys: [] } as JwtKeys));
         service.callbackHistoryAndResetJwtKeys(callbackContext).subscribe(() => {
-          expect(storagePersistanceServiceSpy).toHaveBeenCalledOnceWith('authnResult', 'authResultToStore');
+          expect(storagePersistenceServiceSpy).toHaveBeenCalledWith('authnResult', 'authResultToStore');
+
+          // write authnResult & jwtKeys
+          expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(2);
         });
       })
     );
@@ -191,6 +208,91 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
               validationResult: ValidationResult.LoginRequired,
               isRenewProcess: undefined,
             });
+          },
+        });
+      })
+    );
+
+    it(
+      'should store jwtKeys',
+      waitForAsync(() => {
+        const callbackContext = ({ authResult: 'authResultToStore' } as unknown) as CallbackContext;
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
+        const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'write');
+        spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of(DUMMY_JWT_KEYS));
+
+        service.callbackHistoryAndResetJwtKeys(callbackContext).subscribe({
+          next: (callbackContext: CallbackContext) => {
+            expect(storagePersistenceServiceSpy).toHaveBeenCalledWith('authnResult', 'authResultToStore');
+            expect(storagePersistenceServiceSpy).toHaveBeenCalledWith('jwtKeys', DUMMY_JWT_KEYS);
+            expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(2);
+
+            expect(callbackContext.jwtKeys).toEqual(DUMMY_JWT_KEYS);
+          },
+          error: (err) => {
+            expect(err).toBeFalsy();
+          },
+        });
+      })
+    );
+
+    it(
+      'should not store jwtKeys on error',
+      waitForAsync(() => {
+        const callbackContext = ({ authResult: 'authResultToStore' } as unknown) as CallbackContext;
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
+        const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'write');
+        spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(throwError({}));
+
+        service.callbackHistoryAndResetJwtKeys(callbackContext).subscribe({
+          next: (callbackContext: CallbackContext) => {
+            expect(callbackContext).toBeFalsy();
+          },
+          error: (err) => {
+            expect(err).toBeTruthy();
+
+            // storagePersistenceService.write() should not have been called with jwtKeys
+            expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith('authnResult', 'authResultToStore');
+          },
+        });
+      })
+    );
+
+    it(
+      'should fallback to stored jwtKeys on error',
+      waitForAsync(() => {
+        const callbackContext = ({ authResult: 'authResultToStore' } as unknown) as CallbackContext;
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
+        const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'read');
+        storagePersistenceServiceSpy.and.returnValue(DUMMY_JWT_KEYS);
+        spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(throwError({}));
+
+        service.callbackHistoryAndResetJwtKeys(callbackContext).subscribe({
+          next: (callbackContext: CallbackContext) => {
+            expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith('jwtKeys');
+            expect(callbackContext.jwtKeys).toEqual(DUMMY_JWT_KEYS);
+          },
+          error: (err) => {
+            expect(err).toBeFalsy();
+          },
+        });
+      })
+    );
+
+    it(
+      'should throw error if no jwtKeys are stored',
+      waitForAsync(() => {
+        const callbackContext = ({ authResult: 'authResultToStore' } as unknown) as CallbackContext;
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
+        spyOn(storagePersistenceService, 'read').and.returnValue(null);
+        spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(throwError({}));
+
+        service.callbackHistoryAndResetJwtKeys(callbackContext).subscribe({
+          next: (callbackContext: CallbackContext) => {
+            expect(callbackContext).toBeFalsy();
+          },
+          error: (err) => {
+            expect(err).toBeTruthy();
           },
         });
       })

@@ -24,14 +24,14 @@ export class CodeFlowCallbackService {
     return this.flowsService.processCodeFlowCallback(urlToCheck).pipe(
       tap((callbackContext) => {
         if (!triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
-          this.router.navigate([postLoginRoute]);
+          this.router.navigateByUrl(postLoginRoute);
         }
       }),
       catchError((error) => {
         this.flowsDataService.resetSilentRenewRunning();
         this.intervallService.stopPeriodicallTokenCheck();
         if (!triggerAuthorizationResultEvent && !isRenewProcess) {
-          this.router.navigate([unauthorizedRoute]);
+          this.router.navigateByUrl(unauthorizedRoute);
         }
         return throwError(error);
       })

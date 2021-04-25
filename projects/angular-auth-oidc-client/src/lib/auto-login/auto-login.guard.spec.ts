@@ -130,13 +130,13 @@ describe(`AutoLoginGuard`, () => {
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of(true));
         spyOn(localStorage, 'getItem').and.returnValue('stored-route');
         const localStorageSpy = spyOn(localStorage, 'removeItem');
-        const routerSpy = spyOn(router, 'navigate');
+        const routerSpy = spyOn(router, 'navigateByUrl');
         const loginSpy = spyOn(loginService, 'login');
 
         autoLoginGuard.canActivate(null, { url: 'some-url7' } as RouterStateSnapshot).subscribe((result) => {
           expect(result).toBe(true);
           expect(localStorageSpy).toHaveBeenCalledOnceWith('redirect');
-          expect(routerSpy).toHaveBeenCalledOnceWith(['stored-route']);
+          expect(routerSpy).toHaveBeenCalledOnceWith('stored-route');
           expect(loginSpy).not.toHaveBeenCalled();
         });
       })
@@ -221,13 +221,13 @@ describe(`AutoLoginGuard`, () => {
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of(true));
         spyOn(localStorage, 'getItem').and.returnValue('stored-route');
         const localStorageSpy = spyOn(localStorage, 'removeItem');
-        const routerSpy = spyOn(router, 'navigate');
+        const routerSpy = spyOn(router, 'navigateByUrl');
         const loginSpy = spyOn(loginService, 'login');
 
         autoLoginGuard.canLoad({ path: 'some-url14' }, []).subscribe((result) => {
           expect(result).toBe(true);
           expect(localStorageSpy).toHaveBeenCalledOnceWith('redirect');
-          expect(routerSpy).toHaveBeenCalledOnceWith(['stored-route']);
+          expect(routerSpy).toHaveBeenCalledOnceWith('stored-route');
           expect(loginSpy).not.toHaveBeenCalled();
         });
       })

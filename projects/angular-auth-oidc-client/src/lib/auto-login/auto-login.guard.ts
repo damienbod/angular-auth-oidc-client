@@ -35,7 +35,7 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
         if (isAuthorized) {
           if (storedRoute) {
             this.autoLoginService.deleteStoredRedirectRoute();
-            this.router.navigate([storedRoute]);
+            this.router.navigateByUrl(storedRoute);
           }
           return true;
         }

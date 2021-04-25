@@ -8,8 +8,8 @@ import { ConfigurationProvider } from '../../config/config.provider';
 import { ConfigurationProviderMock } from '../../config/config.provider-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
-import { StoragePersistanceService } from '../../storage/storage-persistance.service';
-import { StoragePersistanceServiceMock } from '../../storage/storage-persistance.service-mock';
+import { StoragePersistenceService } from '../../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../../storage/storage-persistence-service-mock.service';
 import { UrlService } from '../../utils/url/url.service';
 import { UrlServiceMock } from '../../utils/url/url.service-mock';
 import { TokenValidationService } from '../../validation/token-validation.service';
@@ -22,7 +22,7 @@ import { CodeFlowCallbackHandlerService } from './code-flow-callback-handler.ser
 describe('CodeFlowCallbackHandlerService', () => {
   let service: CodeFlowCallbackHandlerService;
   let dataService: DataService;
-  let storagePersistanceService: StoragePersistanceService;
+  let storagePersistenceService: StoragePersistenceService;
   let tokenValidationService: TokenValidationService;
   let configurationProvider: ConfigurationProvider;
   let urlService: UrlService;
@@ -36,7 +36,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         { provide: TokenValidationService, useClass: TokenValidationServiceMock },
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
         { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
-        { provide: StoragePersistanceService, useClass: StoragePersistanceServiceMock },
+        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
         { provide: DataService, useClass: DataServiceMock },
       ],
     });
@@ -47,7 +47,7 @@ describe('CodeFlowCallbackHandlerService', () => {
     dataService = TestBed.inject(DataService);
     urlService = TestBed.inject(UrlService);
     configurationProvider = TestBed.inject(ConfigurationProvider);
-    storagePersistanceService = TestBed.inject(StoragePersistanceService);
+    storagePersistenceService = TestBed.inject(StoragePersistenceService);
     tokenValidationService = TestBed.inject(TokenValidationService);
   });
 
@@ -145,7 +145,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       'calls dataService if all params are good',
       waitForAsync(() => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
         service.codeFlowCodeRequest({} as CallbackContext).subscribe((callbackContext) => {
           expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
@@ -157,7 +157,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       'calls url service with custom token params',
       waitForAsync(() => {
         const urlServiceSpy = spyOn(urlService, 'createBodyForCodeFlowCodeRequest');
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ customTokenParams: { foo: 'bar' } });
@@ -173,7 +173,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       'calls dataService with correct headers if all params are good',
       waitForAsync(() => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
         service.codeFlowCodeRequest({} as CallbackContext).subscribe((callbackContext) => {
           const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
@@ -187,7 +187,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       'returns error in case of http error',
       waitForAsync(() => {
         spyOn(dataService, 'post').and.returnValue(throwError(HTTP_ERROR));
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
 
         service.codeFlowCodeRequest({} as CallbackContext).subscribe({
@@ -202,7 +202,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       'retries request in case of no connection http error and succeeds',
       waitForAsync(() => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(createRetriableStream(throwError(CONNECTION_ERROR), of({})));
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
 
         service.codeFlowCodeRequest({} as CallbackContext).subscribe({
@@ -224,7 +224,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(
           createRetriableStream(throwError(CONNECTION_ERROR), throwError(HTTP_ERROR))
         );
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
 
         service.codeFlowCodeRequest({} as CallbackContext).subscribe({
