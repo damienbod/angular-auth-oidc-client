@@ -1,5 +1,10 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-04-25 Version 11.6.7
+
+- Enable handling users closing login popup
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1058)
+
 ### 2021-04-18 Version 11.6.6
 
 - fix: use navigateByUrl to fix url params encoding
