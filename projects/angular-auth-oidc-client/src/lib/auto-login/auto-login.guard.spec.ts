@@ -114,7 +114,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'returns true if authorized',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(true));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
         const localStorageSpy = spyOn(localStorage, 'setItem');
 
         autoLoginGuard.canActivate(null, { url: 'some-url6' } as RouterStateSnapshot).subscribe((result) => {
@@ -127,7 +127,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'if authorized and stored route exists: remove item, navigate to route and return true',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(true));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
         spyOn(localStorage, 'getItem').and.returnValue('stored-route');
         const localStorageSpy = spyOn(localStorage, 'removeItem');
         const routerSpy = spyOn(router, 'navigateByUrl');
@@ -205,7 +205,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'returns true if authorized',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(true));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
         const localStorageSpy = spyOn(localStorage, 'setItem');
 
         autoLoginGuard.canLoad({ path: 'some-url13' }, []).subscribe((result) => {
@@ -218,7 +218,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'if authorized and stored route exists: remove item, navigate to route and return true',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(true));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
         spyOn(localStorage, 'getItem').and.returnValue('stored-route');
         const localStorageSpy = spyOn(localStorage, 'removeItem');
         const routerSpy = spyOn(router, 'navigateByUrl');

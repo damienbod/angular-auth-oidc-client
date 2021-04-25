@@ -1,8 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { AuthStateService } from '../../authState/auth-state.service';
-import { AuthStateServiceMock } from '../../authState/auth-state.service-mock';
 import { CheckAuthService } from '../../check-auth.service';
 import { CheckAuthServiceMock } from '../../check-auth.service-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known.service';
@@ -11,8 +9,6 @@ import { ConfigurationProvider } from '../../config/config.provider';
 import { ConfigurationProviderMock } from '../../config/config.provider-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
-import { UserService } from '../../userData/user-service';
-import { UserServiceMock } from '../../userData/user-service-mock';
 import { UrlService } from '../../utils/url/url.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
 import { ResponseTypeValidationServiceMock } from '../response-type-validation/response-type-validation.service.mock';
@@ -31,8 +27,6 @@ describe('PopUpLoginService', () => {
   let authWellKnownService: AuthWellKnownService;
   let popupService: PopUpService;
   let checkAuthService: CheckAuthService;
-  let userService: UserService;
-  let authStateService: AuthStateService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -46,8 +40,6 @@ describe('PopUpLoginService', () => {
         { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
         { provide: PopUpService, useClass: PopUpServiceMock },
         { provide: CheckAuthService, useClass: CheckAuthServiceMock },
-        { provide: UserService, useClass: UserServiceMock },
-        { provide: AuthStateService, useClass: AuthStateServiceMock },
       ],
     });
   });
@@ -61,8 +53,6 @@ describe('PopUpLoginService', () => {
     authWellKnownService = TestBed.inject(AuthWellKnownService);
     popupService = TestBed.inject(PopUpService);
     checkAuthService = TestBed.inject(CheckAuthService);
-    userService = TestBed.inject(UserService);
-    authStateService = TestBed.inject(AuthStateService);
   });
 
   it('should create', () => {
@@ -151,16 +141,14 @@ describe('PopUpLoginService', () => {
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl');
         spyOn(popupService, 'openPopUp');
-        const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(true));
-        const getUserDataFromStoreSpy = spyOn(userService, 'getUserDataFromStore').and.returnValue({ any: 'userData' });
-        const getAccessTokenSpy = spyOn(authStateService, 'getAccessToken').and.returnValue('anyAccessToken');
+        const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(
+          of({ isAuthenticated: true, userData: { any: 'userData' }, accessToken: 'anyAccessToken' })
+        );
         const popupResult: PopupResult = { userClosed: false, receivedUrl: 'someUrl' };
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
         popUpLoginService.loginWithPopUpStandard().subscribe((result) => {
           expect(checkAuthSpy).toHaveBeenCalledWith('someUrl');
-          expect(getUserDataFromStoreSpy).toHaveBeenCalledTimes(1);
-          expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
 
           expect(result).toEqual({ isAuthenticated: true, userData: { any: 'userData' }, accessToken: 'anyAccessToken' });
         });
@@ -179,15 +167,11 @@ describe('PopUpLoginService', () => {
         spyOn(urlService, 'getAuthorizeUrl');
         spyOn(popupService, 'openPopUp');
         const checkAuthSpy = spyOn(checkAuthService, 'checkAuth');
-        const getUserDataFromStoreSpy = spyOn(userService, 'getUserDataFromStore');
-        const getAccessTokenSpy = spyOn(authStateService, 'getAccessToken');
         const popupResult: PopupResult = { userClosed: true };
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
         popUpLoginService.loginWithPopUpStandard().subscribe((result) => {
           expect(checkAuthSpy).not.toHaveBeenCalled();
-          expect(getUserDataFromStoreSpy).not.toHaveBeenCalled();
-          expect(getAccessTokenSpy).not.toHaveBeenCalled();
 
           expect(result).toEqual({ isAuthenticated: false, errorMessage: 'User closed popup' });
         });
