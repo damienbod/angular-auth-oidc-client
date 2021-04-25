@@ -34,7 +34,7 @@ Import the module and services in your module.
 
 ```typescript
 import { NgModule } from '@angular/core';
-import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
+import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
 // ...
 
 @NgModule({
