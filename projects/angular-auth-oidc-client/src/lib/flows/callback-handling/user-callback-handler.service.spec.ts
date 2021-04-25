@@ -179,7 +179,7 @@ describe('UserCallbackHandlerService', () => {
 
         service.callbackUser(callbackContext).subscribe((resultCallbackContext) => {
           expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
-            isAuthorized: true,
+            isAuthenticated: true,
             validationResult: 'NotSet',
             isRenewProcess: false,
           });
@@ -238,7 +238,7 @@ describe('UserCallbackHandlerService', () => {
 
         service.callbackUser(callbackContext).subscribe((resultCallbackContext) => {
           expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
-            isAuthorized: true,
+            isAuthenticated: true,
             validationResult: 'MaxOffsetExpired',
             isRenewProcess: false,
           });
@@ -297,7 +297,7 @@ describe('UserCallbackHandlerService', () => {
         service.callbackUser(callbackContext).subscribe({
           error: (err) => {
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
-              isAuthorized: false,
+              isAuthenticated: false,
               validationResult: 'MaxOffsetExpired',
               isRenewProcess: false,
             });

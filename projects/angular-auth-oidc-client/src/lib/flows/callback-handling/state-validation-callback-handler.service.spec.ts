@@ -107,7 +107,7 @@ describe('StateValidationCallbackHandlerService', () => {
           error: (err) => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
-              isAuthorized: false,
+              isAuthenticated: false,
               validationResult: ValidationResult.LoginRequired,
               isRenewProcess: true,
             });
