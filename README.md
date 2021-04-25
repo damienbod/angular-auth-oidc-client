@@ -107,43 +107,31 @@ or with yarn
 
 > NOTE If you have done the installation with the schematics, these modules and files should be available already!!!
 
-If the schematics did not do this already: Import the module and services in your module.
+If the schematics did not do this already: Import the `AuthModule` in your module.
 
 ```typescript
 import { HttpClientModule } from '@angular/common/http';
-import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { AuthModule, LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
+import { NgModule } from '@angular/core';
+import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
 // ...
-
-export function configureAuth(oidcConfigService: OidcConfigService) {
-  return () =>
-    oidcConfigService.withConfig({
-      stsServer: '<your sts address here>',
-      redirectUrl: window.location.origin,
-      postLogoutRedirectUri: window.location.origin,
-      clientId: 'angularClient',
-      scope: 'openid profile email',
-      responseType: 'code',
-      silentRenew: true,
-      silentRenewUrl: `${window.location.origin}/silent-renew.html`,
-      logLevel: LogLevel.Debug,
-    });
-}
 
 @NgModule({
   // ...
   imports: [
     // ...
-    AuthModule.forRoot(),
-  ],
-  providers: [
-    OidcConfigService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: configureAuth,
-      deps: [OidcConfigService],
-      multi: true,
-    },
+    AuthModule.forRoot({
+      config: {
+        stsServer: '<your sts address here>',
+        redirectUrl: window.location.origin,
+        postLogoutRedirectUri: window.location.origin,
+        clientId: 'angularClient',
+        scope: 'openid profile email',
+        responseType: 'code',
+        silentRenew: true,
+        silentRenewUrl: `${window.location.origin}/silent-renew.html`,
+        logLevel: LogLevel.Debug,
+      },
+    }),
   ],
   // ...
 })
@@ -154,7 +142,7 @@ And call the method `checkAuth()` from your `app.component.ts`. The method `chec
 
 ```typescript
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { OidcClientNotification, OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 
 @Component({

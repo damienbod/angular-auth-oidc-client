@@ -33,13 +33,12 @@ The `HttpClient` allows you to write [interceptors](https://angular.io/guide/htt
 You can configure the routes you want to send a token with in the configuration
 
 ```typescript
-export function configureAuth(oidcConfigService: OidcConfigService) {
-  return () =>
-    oidcConfigService.withConfig({
-      // ...
-      secureRoutes: ['https://my-secure-url.com/', 'https://my-second-secure-url.com/'],
-    });
-}
+AuthModule.forRoot({
+  config: {
+    // ...
+    secureRoutes: ['https://my-secure-url.com/', 'https://my-second-secure-url.com/'],
+  },
+}),
 ```
 
 and use the interceptor the lib provides you
@@ -51,7 +50,7 @@ import { AuthInterceptor /*, ... */ } from 'angular-auth-oidc-client';
     declarations: [...],
     imports: [
         //...
-        AuthModule.forRoot(),
+        AuthModule.forRoot(...),
         HttpClientModule,
     ],
     providers: [
