@@ -4,7 +4,7 @@ import { PopupOptions } from './popup-options';
 
 @Injectable({ providedIn: 'root' })
 export class PopUpServiceMock {
-  get receivedUrl$() {
+  get result$() {
     return of(null);
   }
 

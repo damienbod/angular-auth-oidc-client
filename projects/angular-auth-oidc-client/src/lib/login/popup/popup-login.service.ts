@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { map, switchMap, take } from 'rxjs/operators';
 import { AuthStateService } from '../../authState/auth-state.service';
 import { CheckAuthService } from '../../check-auth.service';
@@ -53,14 +53,19 @@ export class PopUpLoginService {
 
         this.popupService.openPopUp(authUrl, popupOptions);
 
-        return this.popupService.receivedUrl$.pipe(
+        return this.popupService.result$.pipe(
           take(1),
-          switchMap((url: string) => this.checkAuthService.checkAuth(url)),
-          map((isAuthenticated) => ({
-            isAuthenticated,
-            userData: this.userService.getUserDataFromStore(),
-            accessToken: this.authStateService.getAccessToken(),
-          }))
+          switchMap((result) =>
+            result.userClosed === true
+              ? of({ isAuthenticated: false, errorMessage: 'User closed popup' })
+              : this.checkAuthService.checkAuth(result.receivedUrl).pipe(
+                  map((isAuthenticated) => ({
+                    isAuthenticated,
+                    userData: this.userService.getUserDataFromStore(),
+                    accessToken: this.authStateService.getAccessToken(),
+                  }))
+                )
+          )
         );
       })
     );
