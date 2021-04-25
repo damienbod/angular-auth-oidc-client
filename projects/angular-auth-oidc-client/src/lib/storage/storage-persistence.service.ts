@@ -14,7 +14,8 @@ export type StorageKeys =
   | 'session_state'
   | 'storageSilentRenewRunning'
   | 'storageCustomRequestParams'
-  | 'jwtKeys';
+  | 'jwtKeys'
+  | 'redirect';
 
 @Injectable()
 export class StoragePersistenceService {
