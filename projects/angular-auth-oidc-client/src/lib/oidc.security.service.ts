@@ -9,6 +9,7 @@ import { PublicConfiguration } from './config/public-configuration';
 import { FlowsDataService } from './flows/flows-data.service';
 import { CheckSessionService } from './iframe/check-session.service';
 import { AuthOptions } from './login/auth-options';
+import { LoginResponse } from './login/login-response';
 import { LoginService } from './login/login.service';
 import { PopupOptions } from './login/popup/popup-options';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
@@ -58,11 +59,11 @@ export class OidcSecurityService {
     private refreshSessionService: RefreshSessionService
   ) {}
 
-  checkAuth(url?: string): Observable<boolean> {
+  checkAuth(url?: string): Observable<LoginResponse> {
     return this.checkAuthService.checkAuth(url);
   }
 
-  checkAuthIncludingServer(): Observable<boolean> {
+  checkAuthIncludingServer(): Observable<LoginResponse> {
     return this.checkAuthService.checkAuthIncludingServer();
   }
 

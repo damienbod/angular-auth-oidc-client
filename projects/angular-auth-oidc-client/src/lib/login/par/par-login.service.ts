@@ -1,17 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { map, switchMap, take } from 'rxjs/operators';
-import { AuthStateService } from '../../authState/auth-state.service';
+import { switchMap, take } from 'rxjs/operators';
 import { CheckAuthService } from '../../check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known.service';
 import { ConfigurationProvider } from '../../config/config.provider';
 import { LoggerService } from '../../logging/logger.service';
-import { UserService } from '../../userData/user-service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
 import { AuthOptions } from '../auth-options';
 import { LoginResponse } from '../login-response';
 import { PopupOptions } from '../popup/popup-options';
+import { PopupResultReceivedUrl } from '../popup/popup-result';
 import { PopUpService } from '../popup/popup.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
 import { ParResponse } from './par-response';
@@ -28,8 +27,6 @@ export class ParLoginService {
     private authWellKnownService: AuthWellKnownService,
     private popupService: PopUpService,
     private checkAuthService: CheckAuthService,
-    private userService: UserService,
-    private authStateService: AuthStateService,
     private parService: ParService
   ) {}
 
@@ -111,17 +108,15 @@ export class ParLoginService {
 
         return this.popupService.result$.pipe(
           take(1),
-          switchMap((result) =>
-            result.userClosed === true
-              ? of({ isAuthenticated: false, errorMessage: 'User closed popup' })
-              : this.checkAuthService.checkAuth(result.receivedUrl).pipe(
-                  map((isAuthenticated) => ({
-                    isAuthenticated,
-                    userData: this.userService.getUserDataFromStore(),
-                    accessToken: this.authStateService.getAccessToken(),
-                  }))
-                )
-          )
+          switchMap((result: PopupResultReceivedUrl) => {
+            const { userClosed, receivedUrl } = result;
+
+            if (userClosed) {
+              return of({ isAuthenticated: false, errorMessage: 'User closed popup' });
+            }
+
+            return this.checkAuthService.checkAuth(receivedUrl);
+          })
         );
       })
     );
