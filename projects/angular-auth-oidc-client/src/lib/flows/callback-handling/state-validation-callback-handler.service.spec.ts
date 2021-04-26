@@ -2,7 +2,6 @@ import { DOCUMENT } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { AuthStateService } from '../../authState/auth-state.service';
 import { AuthStateServiceMock } from '../../authState/auth-state.service-mock';
-import { AuthorizedState } from '../../authState/authorized-state';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StateValidationResult } from '../../validation/state-validation-result';
@@ -108,7 +107,7 @@ describe('StateValidationCallbackHandlerService', () => {
           error: (err) => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
-              authorizationState: AuthorizedState.Unauthorized,
+              isAuthenticated: false,
               validationResult: ValidationResult.LoginRequired,
               isRenewProcess: true,
             });

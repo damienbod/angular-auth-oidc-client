@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../../authState/auth-state.service';
-import { AuthorizedState } from '../../authState/authorized-state';
 import { ConfigurationProvider } from '../../config/config.provider';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
@@ -88,7 +87,7 @@ export class HistoryJwtKeysCallbackHandlerService {
     }
 
     this.authStateService.updateAndPublishAuthState({
-      authorizationState: AuthorizedState.Unauthorized,
+      isAuthenticated: false,
       validationResult,
       isRenewProcess,
     });
