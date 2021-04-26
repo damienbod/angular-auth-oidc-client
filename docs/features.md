@@ -74,6 +74,10 @@ export class CustomStorage implements AbstractSecurityStorage {
     public remove(key: string): void {
         ...
     }
+    
+    public clear(): void {
+        ...
+    }
 }
 ```
 

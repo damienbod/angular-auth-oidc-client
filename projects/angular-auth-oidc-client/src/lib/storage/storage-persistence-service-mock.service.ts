@@ -20,6 +20,8 @@ export class StoragePersistenceServiceMock {
 
   remove(key: StorageKeys) {}
 
+  clear() {}
+
   resetStorageFlowData() {
     this.remove('session_state');
     this.remove('storageSilentRenewRunning');

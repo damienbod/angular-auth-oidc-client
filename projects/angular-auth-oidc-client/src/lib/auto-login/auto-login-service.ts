@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 
 const STORAGE_KEY = 'redirect';
 
 @Injectable()
 export class AutoLoginService {
+  constructor(private readonly storageService: StoragePersistenceService) {}
   getStoredRedirectRoute() {
-    return localStorage.getItem(STORAGE_KEY);
+    return this.storageService.read(STORAGE_KEY);
   }
 
   saveStoredRedirectRoute(url: string) {
-    localStorage.setItem(STORAGE_KEY, url);
+    this.storageService.write(STORAGE_KEY, url);
   }
 
   deleteStoredRedirectRoute() {
-    localStorage.removeItem(STORAGE_KEY);
+    this.storageService.remove(STORAGE_KEY);
   }
 }
