@@ -52,7 +52,7 @@ export class AuthStateService {
 
   getAccessToken(): string {
     if (!this.isAuthorized) {
-      return '';
+      return null;
     }
 
     const token = this.storagePersistenceService.getAccessToken();
@@ -61,7 +61,7 @@ export class AuthStateService {
 
   getIdToken(): string {
     if (!this.isAuthorized) {
-      return '';
+      return null;
     }
 
     const token = this.storagePersistenceService.getIdToken();
@@ -70,7 +70,7 @@ export class AuthStateService {
 
   getRefreshToken(): string {
     if (!this.isAuthorized) {
-      return '';
+      return null;
     }
 
     const token = this.storagePersistenceService.getRefreshToken();

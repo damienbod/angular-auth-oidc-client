@@ -4,8 +4,8 @@ import { EventTypes, PublicEventsService } from '../../public-api';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
-import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
 import { TokenValidationService } from '../validation/token-validation.service';
@@ -117,11 +117,11 @@ describe('Auth State Service', () => {
   });
 
   describe('getAccessToken', () => {
-    it('isAuthorized is false returns empty string', () => {
+    it('isAuthorized is false returns null', () => {
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('');
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue('');
       const result = authStateService.getAccessToken();
-      expect(result).toBe('');
+      expect(result).toBe(null);
     });
 
     it('returns false if storagePersistenceService returns something falsy but authorized', () => {
@@ -140,11 +140,11 @@ describe('Auth State Service', () => {
   });
 
   describe('getIdToken', () => {
-    it('isAuthorized is false returns empty string', () => {
+    it('isAuthorized is false returns null', () => {
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('');
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue('');
       const result = authStateService.getIdToken();
-      expect(result).toBe('');
+      expect(result).toBe(null);
     });
 
     it('isAuthorized is true returns decodeURIComponent(token)', () => {
@@ -156,14 +156,14 @@ describe('Auth State Service', () => {
   });
 
   describe('getRefreshToken', () => {
-    it('isAuthorized is false returns empty string', () => {
+    it('isAuthorized is false returns null', () => {
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('');
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue('');
       const result = authStateService.getRefreshToken();
-      expect(result).toBe('');
+      expect(result).toBe(null);
     });
 
-    it('isAuthorized is truereturns decodeURIComponent(token)', () => {
+    it('isAuthorized is true returns decodeURIComponent(token)', () => {
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('HenloLegger');
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue('HenloFuriend');
       spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue('HenloRefreshLegger');

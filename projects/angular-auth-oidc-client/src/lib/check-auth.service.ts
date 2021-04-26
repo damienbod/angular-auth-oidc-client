@@ -12,6 +12,7 @@ import { ConfigurationProvider } from './config/config.provider';
 import { CheckSessionService } from './iframe/check-session.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
 import { LoggerService } from './logging/logger.service';
+import { LoginResponse } from './login/login-response';
 import { PopUpService } from './login/popup/popup.service';
 import { UserService } from './userData/user-service';
 
@@ -33,10 +34,12 @@ export class CheckAuthService {
     private router: Router
   ) {}
 
-  checkAuth(url?: string): Observable<boolean> {
+  checkAuth(url?: string): Observable<LoginResponse> {
     if (!this.configurationProvider.hasValidConfig()) {
-      this.loggerService.logError('Please provide a configuration before setting up the module');
-      return of(false);
+      const errorMessage = 'Please provide a configuration before setting up the module';
+      this.loggerService.logError(errorMessage);
+
+      return of({ isAuthenticated: false, errorMessage });
     }
 
     const { stsServer } = this.configurationProvider.getOpenIDConfiguration();
@@ -47,6 +50,7 @@ export class CheckAuthService {
 
     if (this.popupService.isCurrentlyInPopup()) {
       this.popupService.sendMessageToMainWindow(currentUrl);
+
       return of(null);
     }
 
@@ -70,7 +74,11 @@ export class CheckAuthService {
 
         this.loggerService.logDebug('checkAuth completed fired events, auth: ' + isAuthenticated);
 
-        return isAuthenticated;
+        return {
+          isAuthenticated,
+          userData: this.userService.getUserDataFromStore(),
+          accessToken: this.authStateService.getAccessToken(),
+        };
       }),
       tap(() => {
         const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute();
@@ -79,28 +87,30 @@ export class CheckAuthService {
           this.router.navigateByUrl(savedRouteForRedirect);
         }
       }),
-      catchError((error) => {
-        this.loggerService.logError(error);
-        return of(false);
+      catchError((errorMessage) => {
+        this.loggerService.logError(errorMessage);
+        return of({ isAuthenticated: false, errorMessage });
       })
     );
   }
 
-  checkAuthIncludingServer(): Observable<boolean> {
+  checkAuthIncludingServer(): Observable<LoginResponse> {
     return this.checkAuth().pipe(
-      switchMap((isAuthenticated) => {
+      switchMap((loginResponse) => {
+        const { isAuthenticated } = loginResponse;
+
         if (isAuthenticated) {
-          return of(isAuthenticated);
+          return of(loginResponse);
         }
 
         return this.refreshSessionService.forceRefreshSession().pipe(
           map((result) => !!result?.idToken && !!result?.accessToken),
-          switchMap((isAuth) => {
-            if (isAuth) {
+          switchMap((authenticated) => {
+            if (authenticated) {
               this.startCheckSessionAndValidation();
             }
 
-            return of(isAuth);
+            return of({ ...loginResponse, isAuthenticated: authenticated });
           })
         );
       })

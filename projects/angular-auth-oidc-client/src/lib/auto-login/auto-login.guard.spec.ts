@@ -8,10 +8,10 @@ import { CheckAuthService } from '../check-auth.service';
 import { CheckAuthServiceMock } from '../check-auth.service-mock';
 import { LoginService } from '../login/login.service';
 import { LoginServiceMock } from '../login/login.service-mock';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { AutoLoginService } from './auto-login-service';
 import { AutoLoginGuard } from './auto-login.guard';
-import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 
 describe(`AutoLoginGuard`, () => {
   let autoLoginGuard: AutoLoginGuard;
@@ -122,7 +122,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'returns true if authorized',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(true));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
         const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
         autoLoginGuard.canActivate(null, { url: 'some-url6' } as RouterStateSnapshot).subscribe((result) => {
@@ -135,7 +135,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'if authorized and stored route exists: remove item, navigate to route and return true',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(true));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
         spyOn(storagePersistenceService, 'read').and.returnValue('stored-route');
         const storageServiceSpy = spyOn(storagePersistenceService, 'remove');
         const routerSpy = spyOn(router, 'navigateByUrl');
@@ -213,7 +213,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'returns true if authorized',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(true));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
         const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
         autoLoginGuard.canLoad({ path: 'some-url13' }, []).subscribe((result) => {
@@ -226,7 +226,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'if authorized and stored route exists: remove item, navigate to route and return true',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(true));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
         spyOn(storagePersistenceService, 'read').and.returnValue('stored-route');
         const storageServiceSpy = spyOn(storagePersistenceService, 'remove');
         const routerSpy = spyOn(router, 'navigateByUrl');

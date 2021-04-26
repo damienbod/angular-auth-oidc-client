@@ -1,6 +1,5 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { AuthStateService } from '../../authState/auth-state.service';
 import { CheckAuthService } from '../../check-auth.service';
 import { CheckAuthServiceMock } from '../../check-auth.service-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known.service';
@@ -9,8 +8,6 @@ import { ConfigurationProvider } from '../../config/config.provider';
 import { ConfigurationProviderMock } from '../../config/config.provider-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
-import { UserService } from '../../userData/user-service';
-import { UserServiceMock } from '../../userData/user-service-mock';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
 import { UrlServiceMock } from '../../utils/url/url.service-mock';
@@ -19,7 +16,6 @@ import { PopUpService } from '../popup/popup.service';
 import { PopUpServiceMock } from '../popup/popup.service-mock';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
 import { ResponseTypeValidationServiceMock } from '../response-type-validation/response-type-validation.service.mock';
-import { AuthStateServiceMock } from './../../authState/auth-state.service-mock';
 import { RedirectServiceMock } from './../../utils/redirect/redirect.service-mock';
 import { ParLoginService } from './par-login.service';
 import { ParResponse } from './par-response';
@@ -37,8 +33,6 @@ describe('ParLoginService', () => {
   let redirectService: RedirectService;
   let popupService: PopUpService;
   let checkAuthService: CheckAuthService;
-  let userService: UserService;
-  let authStateService: AuthStateService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -77,14 +71,6 @@ describe('ParLoginService', () => {
           useClass: CheckAuthServiceMock,
         },
         {
-          provide: UserService,
-          useClass: UserServiceMock,
-        },
-        {
-          provide: AuthStateService,
-          useClass: AuthStateServiceMock,
-        },
-        {
           provide: ParService,
           useClass: ParServiceMock,
         },
@@ -103,8 +89,6 @@ describe('ParLoginService', () => {
     redirectService = TestBed.inject(RedirectService);
     popupService = TestBed.inject(PopUpService);
     checkAuthService = TestBed.inject(CheckAuthService);
-    userService = TestBed.inject(UserService);
-    authStateService = TestBed.inject(AuthStateService);
   });
 
   it('should create', () => {
@@ -384,16 +368,14 @@ describe('ParLoginService', () => {
         spyOn(parService, 'postParRequest').and.returnValue(of({ requestUri: 'requestUri' } as ParResponse));
         spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
 
-        const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(true));
-        const getUserDataFromStoreSpy = spyOn(userService, 'getUserDataFromStore').and.returnValue({ any: 'userData' });
-        const getAccessTokenSpy = spyOn(authStateService, 'getAccessToken').and.returnValue('anyAccessToken');
+        const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(
+          of({ isAuthenticated: true, userData: { any: 'userData' }, accessToken: 'anyAccessToken' })
+        );
         const popupResult: PopupResult = { userClosed: false, receivedUrl: 'someUrl' };
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
         service.loginWithPopUpPar().subscribe((result) => {
           expect(checkAuthSpy).toHaveBeenCalledWith('someUrl');
-          expect(getUserDataFromStoreSpy).toHaveBeenCalledTimes(1);
-          expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
 
           expect(result).toEqual({ isAuthenticated: true, userData: { any: 'userData' }, accessToken: 'anyAccessToken' });
         });
@@ -415,15 +397,11 @@ describe('ParLoginService', () => {
         spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
 
         const checkAuthSpy = spyOn(checkAuthService, 'checkAuth');
-        const getUserDataFromStoreSpy = spyOn(userService, 'getUserDataFromStore');
-        const getAccessTokenSpy = spyOn(authStateService, 'getAccessToken');
         const popupResult: PopupResult = { userClosed: true };
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
         service.loginWithPopUpPar().subscribe((result) => {
           expect(checkAuthSpy).not.toHaveBeenCalled();
-          expect(getUserDataFromStoreSpy).not.toHaveBeenCalled();
-          expect(getAccessTokenSpy).not.toHaveBeenCalled();
 
           expect(result).toEqual({ isAuthenticated: false, errorMessage: 'User closed popup' });
         });

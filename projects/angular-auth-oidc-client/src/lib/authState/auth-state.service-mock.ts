@@ -22,15 +22,15 @@ export class AuthStateServiceMock {
   setAuthorizationData(accessToken: any, idToken: any) {}
 
   getAccessToken(): string {
-    return '';
+    return null;
   }
 
   getIdToken(): string {
-    return '';
+    return null;
   }
 
   getRefreshToken(): string {
-    return '';
+    return null;
   }
 
   areAuthStorageTokensValid() {
