@@ -196,6 +196,66 @@ this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, acc
 });
 ```
 
+### Authorization Result has been updated with breaking changes
+
+`AuthorizationResult` has been updated to return a boolean called `isAuthenticated` instead of an `AuthorizedState` enum value called `authorizationState`
+
+### Old
+
+```typescript
+import { Component, OnInit } from '@angular/core';
+import { PublicEventsService, EventTypes, OidcClientNotification, AuthorizationResult, AuthorizedState } from 'angular-auth-oidc-client';
+import { filter } from 'rxjs/operators';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+})
+export class AppComponent implements OnInit {
+  title = 'AuthTest';
+  constructor(private readonly eventService: PublicEventsService) {}
+
+  ngOnInit(): void {
+    this.eventService
+      .registerForEvents()
+      .pipe(filter((notification) => notification.type === EventTypes.NewAuthorizationResult))
+      .subscribe((result: OidcClientNotification<AuthorizationResult>) => {
+        console.log('NewAuthorizationResult', result);
+        console.log('isAuthenticated', result.value.authorizationState === AuthorizedState.Authorized);
+      });
+  }
+}
+```
+
+### New
+
+```typescript
+import { Component, OnInit } from '@angular/core';
+import { PublicEventsService, EventTypes, OidcClientNotification, AuthorizationResult } from 'angular-auth-oidc-client';
+import { filter } from 'rxjs/operators';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+})
+export class AppComponent implements OnInit {
+  title = 'AuthTest';
+  constructor(private readonly eventService: PublicEventsService) {}
+
+  ngOnInit(): void {
+    this.eventService
+      .registerForEvents()
+      .pipe(filter((notification) => notification.type === EventTypes.NewAuthorizationResult))
+      .subscribe((result: OidcClientNotification<AuthorizationResult>) => {
+        console.log('NewAuthorizationResult', result);
+        console.log('isAuthenticated', result.value.isAuthenticated);
+      });
+  }
+}
+```
+
 ## Version 10 to Version 11
 
 ### App module simple
