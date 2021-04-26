@@ -14,7 +14,8 @@ export type StorageKeys =
   | 'session_state'
   | 'storageSilentRenewRunning'
   | 'storageCustomRequestParams'
-  | 'jwtKeys';
+  | 'jwtKeys'
+  | 'redirect';
 
 @Injectable()
 export class StoragePersistenceService {
@@ -36,6 +37,10 @@ export class StoragePersistenceService {
   remove(key: StorageKeys) {
     const keyToStore = this.createKeyWithPrefix(key);
     this.oidcSecurityStorage.remove(keyToStore);
+  }
+
+  clear() {
+    this.oidcSecurityStorage.clear();
   }
 
   resetStorageFlowData() {

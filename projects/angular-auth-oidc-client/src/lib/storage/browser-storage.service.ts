@@ -56,6 +56,22 @@ export class BrowserStorageService implements AbstractSecurityStorage {
     return true;
   }
 
+  clear(): boolean {
+    if (!this.hasStorage()) {
+      this.loggerService.logDebug(`Wanted to clear storage but Storage was falsy`);
+      return false;
+    }
+
+    const storage = this.getStorage();
+    if (!storage) {
+      this.loggerService.logDebug(`Wanted to clear storage but Storage was falsy`);
+      return false;
+    }
+
+    storage.clear();
+    return true;
+  }
+
   private getStorage() {
     const config = this.configProvider.getOpenIDConfiguration();
     if (!config) {

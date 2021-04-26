@@ -8,6 +8,8 @@ import { CheckAuthService } from '../check-auth.service';
 import { CheckAuthServiceMock } from '../check-auth.service-mock';
 import { LoginService } from '../login/login.service';
 import { LoginServiceMock } from '../login/login.service-mock';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { AutoLoginService } from './auto-login-service';
 import { AutoLoginGuard } from './auto-login.guard';
 
@@ -17,6 +19,7 @@ describe(`AutoLoginGuard`, () => {
   let loginService: LoginService;
   let authStateService: AuthStateService;
   let router: Router;
+  let storagePersistenceService: StoragePersistenceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -27,6 +30,10 @@ describe(`AutoLoginGuard`, () => {
         {
           provide: LoginService,
           useClass: LoginServiceMock,
+        },
+        {
+          provide: StoragePersistenceService,
+          useClass: StoragePersistenceServiceMock,
         },
         {
           provide: CheckAuthService,
@@ -42,10 +49,11 @@ describe(`AutoLoginGuard`, () => {
     authStateService = TestBed.inject(AuthStateService);
     router = TestBed.inject(Router);
     loginService = TestBed.inject(LoginService);
+    storagePersistenceService = TestBed.inject(StoragePersistenceService);
   });
 
   afterEach(() => {
-    localStorage.clear();
+    storagePersistenceService.clear();
   });
 
   it('should create', () => {
@@ -100,13 +108,13 @@ describe(`AutoLoginGuard`, () => {
     );
 
     it(
-      'if no route is stored, setItem on localStorage is called',
+      'if no route is stored, write on StoragePersistenceService is called',
       waitForAsync(() => {
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
-        const localStorageSpy = spyOn(localStorage, 'setItem');
+        const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
         autoLoginGuard.canActivate(null, { url: 'some-url5' } as RouterStateSnapshot).subscribe((result) => {
-          expect(localStorageSpy).toHaveBeenCalledOnceWith('redirect', 'some-url5');
+          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'some-url5');
         });
       })
     );
@@ -115,11 +123,11 @@ describe(`AutoLoginGuard`, () => {
       'returns true if authorized',
       waitForAsync(() => {
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
-        const localStorageSpy = spyOn(localStorage, 'setItem');
+        const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
         autoLoginGuard.canActivate(null, { url: 'some-url6' } as RouterStateSnapshot).subscribe((result) => {
           expect(result).toBe(true);
-          expect(localStorageSpy).not.toHaveBeenCalled();
+          expect(storageServiceSpy).not.toHaveBeenCalled();
         });
       })
     );
@@ -128,14 +136,14 @@ describe(`AutoLoginGuard`, () => {
       'if authorized and stored route exists: remove item, navigate to route and return true',
       waitForAsync(() => {
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
-        spyOn(localStorage, 'getItem').and.returnValue('stored-route');
-        const localStorageSpy = spyOn(localStorage, 'removeItem');
+        spyOn(storagePersistenceService, 'read').and.returnValue('stored-route');
+        const storageServiceSpy = spyOn(storagePersistenceService, 'remove');
         const routerSpy = spyOn(router, 'navigateByUrl');
         const loginSpy = spyOn(loginService, 'login');
 
         autoLoginGuard.canActivate(null, { url: 'some-url7' } as RouterStateSnapshot).subscribe((result) => {
           expect(result).toBe(true);
-          expect(localStorageSpy).toHaveBeenCalledOnceWith('redirect');
+          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect');
           expect(routerSpy).toHaveBeenCalledOnceWith('stored-route');
           expect(loginSpy).not.toHaveBeenCalled();
         });
@@ -191,13 +199,13 @@ describe(`AutoLoginGuard`, () => {
     );
 
     it(
-      'if no route is stored, setItem on localStorage is called',
+      'if no route is stored, write on StoragePersistenceService is called',
       waitForAsync(() => {
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
-        const localStorageSpy = spyOn(localStorage, 'setItem');
+        const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
         autoLoginGuard.canLoad({ path: 'some-url12' }, []).subscribe((result) => {
-          expect(localStorageSpy).toHaveBeenCalledOnceWith('redirect', 'some-url12');
+          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'some-url12');
         });
       })
     );
@@ -206,11 +214,11 @@ describe(`AutoLoginGuard`, () => {
       'returns true if authorized',
       waitForAsync(() => {
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
-        const localStorageSpy = spyOn(localStorage, 'setItem');
+        const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
         autoLoginGuard.canLoad({ path: 'some-url13' }, []).subscribe((result) => {
           expect(result).toBe(true);
-          expect(localStorageSpy).not.toHaveBeenCalled();
+          expect(storageServiceSpy).not.toHaveBeenCalled();
         });
       })
     );
@@ -219,14 +227,14 @@ describe(`AutoLoginGuard`, () => {
       'if authorized and stored route exists: remove item, navigate to route and return true',
       waitForAsync(() => {
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
-        spyOn(localStorage, 'getItem').and.returnValue('stored-route');
-        const localStorageSpy = spyOn(localStorage, 'removeItem');
+        spyOn(storagePersistenceService, 'read').and.returnValue('stored-route');
+        const storageServiceSpy = spyOn(storagePersistenceService, 'remove');
         const routerSpy = spyOn(router, 'navigateByUrl');
         const loginSpy = spyOn(loginService, 'login');
 
         autoLoginGuard.canLoad({ path: 'some-url14' }, []).subscribe((result) => {
           expect(result).toBe(true);
-          expect(localStorageSpy).toHaveBeenCalledOnceWith('redirect');
+          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect');
           expect(routerSpy).toHaveBeenCalledOnceWith('stored-route');
           expect(loginSpy).not.toHaveBeenCalled();
         });

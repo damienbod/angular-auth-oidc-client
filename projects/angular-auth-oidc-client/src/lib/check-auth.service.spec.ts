@@ -26,6 +26,8 @@ import { PopUpService } from './login/popup/popup.service';
 import { PopUpServiceMock } from './login/popup/popup.service-mock';
 import { UserService } from './userData/user-service';
 import { UserServiceMock } from './userData/user-service-mock';
+import { StoragePersistenceService } from './storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from './storage/storage-persistence-service-mock.service';
 
 describe('CheckAuthService', () => {
   let checkAuthService: CheckAuthService;
@@ -40,6 +42,7 @@ describe('CheckAuthService', () => {
   let popUpService: PopUpService;
   let autoLoginService: AutoLoginService;
   let router: Router;
+  let storagePersistenceService: StoragePersistenceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -56,6 +59,10 @@ describe('CheckAuthService', () => {
         { provide: PeriodicallyTokenCheckService, useClass: PeriodicallyTokenCheckServiceMock },
         { provide: PopUpService, useClass: PopUpServiceMock },
         { provide: StsConfigLoader, useClass: StsConfigLoaderMock },
+        {
+          provide: StoragePersistenceService,
+          useClass: StoragePersistenceServiceMock,
+        },
         AutoLoginService,
         CheckAuthService,
       ],
@@ -75,10 +82,11 @@ describe('CheckAuthService', () => {
     popUpService = TestBed.inject(PopUpService);
     autoLoginService = TestBed.inject(AutoLoginService);
     router = TestBed.inject(Router);
+    storagePersistenceService = TestBed.inject(StoragePersistenceService);
   });
 
   afterEach(() => {
-    localStorage.clear();
+    storagePersistenceService.clear();
   });
 
   it('should create', () => {
