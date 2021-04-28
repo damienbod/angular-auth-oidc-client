@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "tslib": "^2.0.0",
-    "common-tags": "^1.8.0",
     "jsrsasign-reduced": "^8.0.15"
   },
   "repository": {

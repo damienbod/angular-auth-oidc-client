@@ -1,6 +1,5 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { oneLineTrim } from 'common-tags';
 import { ConfigurationProvider } from '../../config/config.provider';
 import { FlowsDataService } from '../../flows/flows-data.service';
 import { LoggerService } from '../../logging/logger.service';
@@ -111,9 +110,7 @@ export class UrlService {
     }
 
     if (customParams) {
-      for (const [key, value] of Object.entries({ ...customParams })) {
-        params = params.append(key, value.toString());
-      }
+      params = this.appendCustomParams({ ...customParams }, params);
     }
 
     return `${authorizationEndsessionUrl}?${params}`;
@@ -126,7 +123,12 @@ export class UrlService {
       return null;
     }
 
-    return `client_id=${clientId}&token=${token}&token_type_hint=access_token`;
+    let params = this.createHttpParams();
+    params = params.set('client_id', clientId);
+    params = params.set('token', token);
+    params = params.set('token_type_hint', 'access_token');
+
+    return params.toString();
   }
 
   createRevocationEndpointBodyRefreshToken(token: any): string {
@@ -136,7 +138,12 @@ export class UrlService {
       return null;
     }
 
-    return `client_id=${clientId}&token=${token}&token_type_hint=refresh_token`;
+    let params = this.createHttpParams();
+    params = params.set('client_id', clientId);
+    params = params.set('token', token);
+    params = params.set('token_type_hint', 'refresh_token');
+
+    return params.toString();
   }
 
   getRevocationEndpointUrl(): string {
@@ -166,20 +173,21 @@ export class UrlService {
       return null;
     }
 
-    let dataForBody = oneLineTrim`grant_type=authorization_code
-            &client_id=${clientId}
-            &code_verifier=${codeVerifier}
-            &code=${code}`;
+    let params = this.createHttpParams();
+    params = params.set('grant_type', 'authorization_code');
+    params = params.set('client_id', clientId);
+    params = params.set('code_verifier', 'codeVerifier');
+    params = params.set('code', 'code');
 
     if (customTokenParams) {
-      const customParamText = this.composeCustomParamsAsText({ ...customTokenParams });
-      dataForBody = oneLineTrim`${dataForBody}${customParamText}`;
+      params = this.appendCustomParams({ ...customTokenParams }, params);
     }
 
     const silentRenewUrl = this.getSilentRenewUrl();
 
     if (this.flowsDataService.isSilentRenewRunning() && silentRenewUrl) {
-      return oneLineTrim`${dataForBody}&redirect_uri=${silentRenewUrl}`;
+      params = params.set('redirect_uri', silentRenewUrl);
+      return params.toString();
     }
 
     const redirectUrl = this.getRedirectUrl();
@@ -188,7 +196,8 @@ export class UrlService {
       return null;
     }
 
-    return oneLineTrim`${dataForBody}&redirect_uri=${redirectUrl}`;
+    params = params.set('redirect_uri', redirectUrl);
+    return params.toString();
   }
 
   createBodyForCodeFlowRefreshTokensRequest(refreshToken: string, customParams?: { [key: string]: string | number | boolean }): string {
@@ -198,16 +207,16 @@ export class UrlService {
       return null;
     }
 
-    let dataForBody = oneLineTrim`grant_type=refresh_token
-            &client_id=${clientId}
-            &refresh_token=${refreshToken}`;
+    let params = this.createHttpParams();
+    params = params.set('grant_type', 'refresh_token');
+    params = params.set('client_id', clientId);
+    params = params.set('refresh_token', refreshToken);
 
     if (customParams) {
-      const customParamText = this.composeCustomParamsAsText({ ...customParams });
-      dataForBody = `${dataForBody}${customParamText}`;
+      params = this.appendCustomParams({ ...customParams }, params);
     }
 
-    return dataForBody;
+    return params.toString();
   }
 
   createBodyForParCodeFlowRequest(customParamsRequest?: { [key: string]: string | number | boolean }): string {
@@ -227,30 +236,29 @@ export class UrlService {
 
     const { clientId, responseType, scope, hdParam, customParams } = this.configurationProvider.getOpenIDConfiguration();
 
-    let dataForBody = oneLineTrim`client_id=${clientId}
-            &redirect_uri=${redirectUrl}
-            &response_type=${responseType}
-            &scope=${scope}
-            &nonce=${nonce}
-            &state=${state}
-            &code_challenge=${codeChallenge}
-            &code_challenge_method=S256`;
+    let params = this.createHttpParams('');
+    params = params.set('client_id', clientId);
+    params = params.append('redirect_uri', redirectUrl);
+    params = params.append('response_type', responseType);
+    params = params.append('scope', scope);
+    params = params.append('nonce', nonce);
+    params = params.append('state', state);
+    params = params.append('code_challenge', codeChallenge);
+    params = params.append('code_challenge_method', 'S256');
 
     if (hdParam) {
-      dataForBody = `${dataForBody}&hd=${hdParam}`;
+      params = params.append('hd', hdParam);
     }
 
     if (customParams) {
-      const customParamText = this.composeCustomParamsAsText({ ...customParams });
-      dataForBody = `${dataForBody}${customParamText}`;
+      params = this.appendCustomParams({ ...customParams }, params);
     }
 
     if (customParamsRequest) {
-      const customParamText = this.composeCustomParamsAsText({ ...customParamsRequest });
-      dataForBody = `${dataForBody}${customParamText}`;
+      params = this.appendCustomParams({ ...customParamsRequest }, params);
     }
 
-    return dataForBody;
+    return params.toString();
   }
 
   private createAuthorizeUrl(
@@ -460,17 +468,17 @@ export class UrlService {
     return clientId;
   }
 
-  private composeCustomParamsAsText(customParams: { [key: string]: string | number | boolean }): string {
-    let customParamText = '';
-
-    for (const [key, value] of Object.entries(customParams)) {
-      customParamText = customParamText.concat(`&${key}=${value.toString()}`);
+  private appendCustomParams(customParams: { [key: string]: string | number | boolean }, params: HttpParams): HttpParams {
+    for (const [key, value] of Object.entries({ ...customParams })) {
+      params = params.append(key, value.toString());
     }
 
-    return customParamText;
+    return params;
   }
 
-  private createHttpParams(existingParams: string): HttpParams {
+  private createHttpParams(existingParams?: string): HttpParams {
+    existingParams = existingParams ?? '';
+
     const params = new HttpParams({
       fromString: existingParams,
       encoder: new UriEncoder(),
