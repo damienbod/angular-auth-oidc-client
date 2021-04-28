@@ -6,7 +6,16 @@ The `logoff()` function sends an end session request to the OIDC server, if it i
 logout() {
    this.oidcSecurityService.logoff();
 }
+```
 
+You can pass a `urlHandler` and custom parameters if you want.
+
+Example:
+
+```typescript
+logout() {
+   this.oidcSecurityService.logoff({ customParams : { foo:"bar", baz: "Henlo" }});
+}
 ```
 
 The `logoffAndRevokeTokens()` function revokes the access token and the refresh token if using a refresh flow, and then logoff like above.
