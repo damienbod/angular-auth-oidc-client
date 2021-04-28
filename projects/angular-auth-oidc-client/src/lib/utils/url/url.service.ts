@@ -176,8 +176,8 @@ export class UrlService {
     let params = this.createHttpParams();
     params = params.set('grant_type', 'authorization_code');
     params = params.set('client_id', clientId);
-    params = params.set('code_verifier', 'codeVerifier');
-    params = params.set('code', 'code');
+    params = params.set('code_verifier', codeVerifier);
+    params = params.set('code', code);
 
     if (customTokenParams) {
       params = this.appendCustomParams({ ...customTokenParams }, params);
