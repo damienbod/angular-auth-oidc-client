@@ -256,6 +256,41 @@ export class AppComponent implements OnInit {
 }
 ```
 
+### `logoff` expects object now
+
+The parameter to be passed into the `logoff` method is now an object with the properties `urlHandler` and `customParams` which provides you to pass custom parameters to the logoff url.
+
+#### Old
+
+```typescript
+logoff(urlHandler?: (url: string) => any) {
+  return this.logoffRevocationService.logoff(urlHandler);
+}
+```
+
+called with
+
+```typescript
+const urlHandler = () => {};
+service.logoff(urlHandler);
+```
+
+#### New
+
+```typescript
+logoff(authOptions?: AuthOptions) {
+  const { urlHandler, customParams } = authOptions || {};
+}
+```
+
+called with
+
+```typescript
+const urlHandler = () => {};
+const customParams = /* */; // pass them if you want to
+service.logoff({ urlHandler, customParams });
+```
+
 ## Version 10 to Version 11
 
 ### App module simple

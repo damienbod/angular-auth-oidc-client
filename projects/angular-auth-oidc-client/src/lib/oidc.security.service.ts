@@ -124,9 +124,10 @@ export class OidcSecurityService {
   }
 
   // Logs out on the server and the local client.
-  // If the server state has changed, checksession, then only a local logout.
-  logoff(urlHandler?: (url: string) => any) {
-    return this.logoffRevocationService.logoff(urlHandler);
+  // If the server state has changed, check session, then only a local logout.
+  logoff(authOptions?: AuthOptions) {
+    const { urlHandler, customParams } = authOptions || {};
+    return this.logoffRevocationService.logoff(urlHandler, customParams);
   }
 
   logoffLocal() {
@@ -149,7 +150,7 @@ export class OidcSecurityService {
     return this.logoffRevocationService.revokeRefreshToken(refreshToken);
   }
 
-  getEndSessionUrl(): string | null {
-    return this.logoffRevocationService.getEndSessionUrl();
+  getEndSessionUrl(customParams?: { [p: string]: string | number | boolean }): string | null {
+    return this.logoffRevocationService.getEndSessionUrl(customParams);
   }
 }

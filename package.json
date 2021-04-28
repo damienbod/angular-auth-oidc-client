@@ -58,7 +58,6 @@
     "@angular/platform-browser": "~11.0.5",
     "@angular/platform-browser-dynamic": "~11.0.5",
     "@angular/router": "~11.0.5",
-    "common-tags": "^1.8.0",
     "jsrsasign-reduced": "^8.0.15",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
