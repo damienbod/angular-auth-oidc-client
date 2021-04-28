@@ -810,7 +810,7 @@ describe('UrlService Tests', () => {
     });
 
     it('returns null if no clientId is set', () => {
-      const codeVerifier = 'codeverifier';
+      const codeVerifier = 'this_is_a_codeverifier';
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       const clientId = null;
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId });
@@ -819,8 +819,8 @@ describe('UrlService Tests', () => {
     });
 
     it('returns null if silentrenewRunning is false and redirectUrl is falsy', () => {
-      const codeVerifier = 'codeverifier';
-      const code = 'code';
+      const codeVerifier = 'this_is_a_codeverifier';
+      const code = 'this_is_a_code';
       const redirectUrl = null;
       const clientId = 'clientId';
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
@@ -833,10 +833,10 @@ describe('UrlService Tests', () => {
     });
 
     it('returns correctUrl with silentrenewRunning is false', () => {
-      const codeVerifier = 'codeVerifier';
-      const code = 'code';
-      const redirectUrl = 'redirectUrl';
-      const clientId = 'clientId';
+      const codeVerifier = 'this_is_a_codeverifier';
+      const code = 'this_is_a_code';
+      const redirectUrl = 'this_is_a_redirectUrl';
+      const clientId = 'this_is_a_clientId';
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId, redirectUrl });
@@ -848,10 +848,10 @@ describe('UrlService Tests', () => {
     });
 
     it('returns correctUrl with silentrenewRunning is true', () => {
-      const codeVerifier = 'codeVerifier';
-      const code = 'code';
-      const silentRenewUrl = 'silentRenewUrl';
-      const clientId = 'clientId';
+      const codeVerifier = 'this_is_a_codeverifier';
+      const code = 'this_is_a_code';
+      const silentRenewUrl = 'this_is_a_silentRenewUrl';
+      const clientId = 'this_is_a_clientId';
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId, silentRenewUrl });
@@ -863,10 +863,10 @@ describe('UrlService Tests', () => {
     });
 
     it('returns correctUrl when customTokenParams are provided', () => {
-      const codeVerifier = 'codeVerifier';
-      const code = 'code';
-      const silentRenewUrl = 'silentRenewUrl';
-      const clientId = 'clientId';
+      const codeVerifier = 'this_is_a_codeverifier';
+      const code = 'this_is_a_code';
+      const silentRenewUrl = 'this_is_a_silentRenewUrl';
+      const clientId = 'this_is_a_clientId';
       const customTokenParams = { foo: 'bar' };
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
