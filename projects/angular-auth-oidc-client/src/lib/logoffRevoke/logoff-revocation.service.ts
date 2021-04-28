@@ -23,10 +23,10 @@ export class LogoffRevocationService {
   ) {}
 
   // Logs out on the server and the local client.
-  // If the server state has changed, checksession, then only a local logout.
-  logoff(urlHandler?: (url: string) => any) {
+  // If the server state has changed, check session, then only a local logout.
+  logoff(urlHandler?: (url: string) => any, customParams?: { [p: string]: string | number | boolean }) {
     this.loggerService.logDebug('logoff, remove auth ');
-    const endSessionUrl = this.getEndSessionUrl();
+    const endSessionUrl = this.getEndSessionUrl(customParams);
     this.resetAuthDataService.resetAuthorizationData();
 
     if (!endSessionUrl) {
@@ -130,8 +130,8 @@ export class LogoffRevocationService {
     );
   }
 
-  getEndSessionUrl(): string | null {
+  getEndSessionUrl(customParams?: { [p: string]: string | number | boolean }): string | null {
     const idToken = this.storagePersistenceService.getIdToken();
-    return this.urlService.createEndSessionUrl(idToken);
+    return this.urlService.createEndSessionUrl(idToken, customParams);
   }
 }

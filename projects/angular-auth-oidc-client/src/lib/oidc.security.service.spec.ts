@@ -19,8 +19,8 @@ import { LoginServiceMock } from './login/login.service-mock';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { LogoffRevocationServiceMock } from './logoffRevoke/logoff-revocation.service-mock';
 import { OidcSecurityService } from './oidc.security.service';
-import { StoragePersistenceService } from './storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from './storage/storage-persistence-service-mock.service';
+import { StoragePersistenceService } from './storage/storage-persistence.service';
 import { UserService } from './userData/user-service';
 import { UserServiceMock } from './userData/user-service-mock';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
@@ -404,7 +404,7 @@ describe('OidcSecurityService', () => {
         const spy = spyOn(logoffRevocationService, 'logoff');
 
         oidcSecurityService.logoff();
-        expect(spy).toHaveBeenCalledWith(undefined);
+        expect(spy).toHaveBeenCalledWith(undefined, undefined);
       })
     );
 
@@ -415,8 +415,21 @@ describe('OidcSecurityService', () => {
 
         const urlHandler = () => {};
 
-        oidcSecurityService.logoff(urlHandler);
-        expect(spy).toHaveBeenCalledWith(urlHandler);
+        oidcSecurityService.logoff({ urlHandler });
+        expect(spy).toHaveBeenCalledWith(urlHandler, undefined);
+      })
+    );
+
+    it(
+      'calls logoffRevocationService.logoff with urlHandler if it is given',
+      waitForAsync(() => {
+        const spy = spyOn(logoffRevocationService, 'logoff');
+
+        const urlHandler = () => {};
+        const customParams = { my: 'custom', params: 1 };
+
+        oidcSecurityService.logoff({ urlHandler, customParams });
+        expect(spy).toHaveBeenCalledWith(urlHandler, customParams);
       })
     );
   });

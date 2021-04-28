@@ -72,11 +72,8 @@ export class UrlService {
 
     const urlParts = authorizationEndpoint.split('?');
     const authorizationUrl = urlParts[0];
-
-    let params = new HttpParams({
-      fromString: urlParts[1],
-      encoder: new UriEncoder(),
-    });
+    const existingParams = urlParts[1];
+    let params = this.createHttpParams(existingParams);
 
     params = params.set('request_uri', requestUri);
     params = params.append('client_id', clientId);
@@ -92,7 +89,7 @@ export class UrlService {
     return this.createUrlImplicitFlowAuthorize(customParams) || '';
   }
 
-  createEndSessionUrl(idTokenHint: string): string {
+  createEndSessionUrl(idTokenHint: string, customParams?: { [p: string]: string | number | boolean }): string {
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints');
     const endSessionEndpoint = authWellKnownEndPoints?.endSessionEndpoint;
 
@@ -101,19 +98,22 @@ export class UrlService {
     }
 
     const urlParts = endSessionEndpoint.split('?');
-
     const authorizationEndsessionUrl = urlParts[0];
+    const existingParams = urlParts[1];
+    let params = this.createHttpParams(existingParams);
 
-    let params = new HttpParams({
-      fromString: urlParts[1],
-      encoder: new UriEncoder(),
-    });
     params = params.set('id_token_hint', idTokenHint);
 
     const postLogoutRedirectUri = this.getPostLogoutRedirectUrl();
 
     if (postLogoutRedirectUri) {
       params = params.append('post_logout_redirect_uri', postLogoutRedirectUri);
+    }
+
+    if (customParams) {
+      for (const [key, value] of Object.entries({ ...customParams })) {
+        params = params.append(key, value.toString());
+      }
     }
 
     return `${authorizationEndsessionUrl}?${params}`;
@@ -172,7 +172,7 @@ export class UrlService {
             &code=${code}`;
 
     if (customTokenParams) {
-      const customParamText = this.composeCustomParams({ ...customTokenParams });
+      const customParamText = this.composeCustomParamsAsText({ ...customTokenParams });
       dataForBody = oneLineTrim`${dataForBody}${customParamText}`;
     }
 
@@ -203,7 +203,7 @@ export class UrlService {
             &refresh_token=${refreshToken}`;
 
     if (customParams) {
-      const customParamText = this.composeCustomParams({ ...customParams });
+      const customParamText = this.composeCustomParamsAsText({ ...customParams });
       dataForBody = `${dataForBody}${customParamText}`;
     }
 
@@ -241,12 +241,12 @@ export class UrlService {
     }
 
     if (customParams) {
-      const customParamText = this.composeCustomParams({ ...customParams });
+      const customParamText = this.composeCustomParamsAsText({ ...customParams });
       dataForBody = `${dataForBody}${customParamText}`;
     }
 
     if (customParamsRequest) {
-      const customParamText = this.composeCustomParams({ ...customParamsRequest });
+      const customParamText = this.composeCustomParamsAsText({ ...customParamsRequest });
       dataForBody = `${dataForBody}${customParamText}`;
     }
 
@@ -288,11 +288,8 @@ export class UrlService {
 
     const urlParts = authorizationEndpoint.split('?');
     const authorizationUrl = urlParts[0];
-
-    let params = new HttpParams({
-      fromString: urlParts[1],
-      encoder: new UriEncoder(),
-    });
+    const existingParams = urlParts[1];
+    let params = this.createHttpParams(existingParams);
 
     params = params.set('client_id', clientId);
     params = params.append('redirect_uri', redirectUrl);
@@ -463,7 +460,7 @@ export class UrlService {
     return clientId;
   }
 
-  private composeCustomParams(customParams: { [key: string]: string | number | boolean }) {
+  private composeCustomParamsAsText(customParams: { [key: string]: string | number | boolean }): string {
     let customParamText = '';
 
     for (const [key, value] of Object.entries(customParams)) {
@@ -471,5 +468,14 @@ export class UrlService {
     }
 
     return customParamText;
+  }
+
+  private createHttpParams(existingParams: string): HttpParams {
+    const params = new HttpParams({
+      fromString: existingParams,
+      encoder: new UriEncoder(),
+    });
+
+    return params;
   }
 }
