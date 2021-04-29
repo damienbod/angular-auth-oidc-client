@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { AuthOptions } from '../auth-options';
 import { ConfigurationProvider } from '../config/config.provider';
-import { AuthOptions } from './auth-options';
 import { LoginResponse } from './login-response';
 import { ParLoginService } from './par/par-login.service';
 import { PopUpLoginService } from './popup/popup-login.service';

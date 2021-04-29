@@ -1,5 +1,6 @@
 // Public classes.
 
+export * from './auth-options';
 export * from './auth.module';
 export * from './authState/authorization-result';
 export * from './authState/authorized-state';
