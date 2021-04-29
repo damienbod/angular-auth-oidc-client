@@ -15,6 +15,7 @@ export abstract class AbstractSecurityStorage {
   /**
    * This method must contain the logic to write the storage.
    *
+   * @param key The key to write a value for
    * @param value The value for the given key
    */
   public abstract write(key: string, value: any): void;
