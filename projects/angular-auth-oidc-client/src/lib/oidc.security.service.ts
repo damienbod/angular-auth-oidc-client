@@ -18,6 +18,9 @@ import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.servic
 
 @Injectable()
 export class OidcSecurityService {
+  /**
+   * Gets the currently active OpenID configuration.
+   */
   get configuration(): PublicConfiguration {
     const openIDConfiguration = this.configurationProvider.getOpenIDConfiguration();
 
@@ -27,18 +30,31 @@ export class OidcSecurityService {
     };
   }
 
+  /**
+   * Provides information about the user after they have logged in.
+   */
   get userData$() {
     return this.userService.userData$;
   }
 
+  /**
+   * Emits each time an authorization event occurs. Returns true if the user is authenticated and false if they are not.
+   */
   get isAuthenticated$() {
     return this.authStateService.authorized$;
   }
 
+  /**
+   * Emits each time the server sends a CheckSession event and the value changed. This property will always return
+   * true.
+   */
   get checkSessionChanged$() {
     return this.checkSessionService.checkSessionChanged$;
   }
 
+  /**
+   * Emits on possible STS callback. The observable will never contain a value.
+   */
   get stsCallback$() {
     return this.callbackService.stsCallback$;
   }
@@ -58,39 +74,75 @@ export class OidcSecurityService {
     private refreshSessionService: RefreshSessionService
   ) {}
 
+  /**
+   * Starts the complete setup flow. Calling will start the entire authentication flow, and the returned observable
+   * will denote whether the user was successfully authenticated.
+   *
+   * @param url The url to perform the authorization on the behalf of.
+   */
   checkAuth(url?: string): Observable<boolean> {
     return this.checkAuthService.checkAuth(url);
   }
 
+  /**
+   * Checks the server for an authenticated session using the iframe silent renew if not locally authenticated.
+   */
   checkAuthIncludingServer(): Observable<boolean> {
     return this.checkAuthService.checkAuthIncludingServer();
   }
 
+  /**
+   * Returns the access token for the login scenario.
+   */
   getToken(): string {
     return this.authStateService.getAccessToken();
   }
 
+  /**
+   * Returns the ID token for the login scenario.
+   */
   getIdToken(): string {
     return this.authStateService.getIdToken();
   }
 
+  /**
+   * Returns the refresh token, if present, for the login scenario.
+   */
   getRefreshToken(): string {
     return this.authStateService.getRefreshToken();
   }
 
+  /**
+   * Returns the payload from the ID token.
+   *
+   * @param encode Set to true if the payload is base64 encoded
+   */
   getPayloadFromIdToken(encode = false): any {
     const token = this.getIdToken();
     return this.tokenHelperService.getPayloadFromToken(token, encode);
   }
 
+  /**
+   * Sets a custom state for the authorize request.
+   *
+   * @param state The state to set.
+   */
   setState(state: string): void {
     this.flowsDataService.setAuthStateControl(state);
   }
 
+  /**
+   * Gets the state value used for the authorize request.
+   */
   getState(): string {
     return this.flowsDataService.getAuthStateControl();
   }
 
+  /**
+   * Redirects the user to the STS to begin the authentication process.
+   *
+   * @param authOptions The custom options for the the authentication request.
+   */
   // Code Flow with PCKE or Implicit Flow
   authorize(authOptions?: AuthOptions) {
     if (authOptions?.customParams) {
@@ -100,6 +152,12 @@ export class OidcSecurityService {
     this.loginService.login(authOptions);
   }
 
+  /**
+   * Opens the STS in a new window to begin the authentication process.
+   *
+   * @param authOptions The custom options for the authentication request.
+   * @param popupOptions The configuration for the popup window.
+   */
   authorizeWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions) {
     if (authOptions?.customParams) {
       this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams);
@@ -108,6 +166,11 @@ export class OidcSecurityService {
     return this.loginService.loginWithPopUp(authOptions, popupOptions);
   }
 
+  /**
+   * Manually refreshes the session.
+   *
+   * @param customParams Custom parameters to pass to the refresh request.
+   */
   forceRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
     if (customParams) {
       this.storagePersistenceService.write('storageCustomRequestParams', customParams);
@@ -116,38 +179,59 @@ export class OidcSecurityService {
     return this.refreshSessionService.forceRefreshSession(customParams);
   }
 
+  /**
+   * Revokes the refresh token (if present) and the access token on the server and then performs the logoff operation.
+   *
+   * @param urlHandler An optional url handler for the logoff request.
+   */
   // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
   // only the access token is revoked. Then the logout run.
   logoffAndRevokeTokens(urlHandler?: (url: string) => any) {
     return this.logoffRevocationService.logoffAndRevokeTokens(urlHandler);
   }
 
-  // Logs out on the server and the local client.
-  // If the server state has changed, checksession, then only a local logout.
+  /**
+   * Logs out on the server and the local client. If the server state has changed, confirmed via checksession,
+   * then only a local logout is performed.
+   *
+   * @param urlHandler
+   */
   logoff(urlHandler?: (url: string) => any) {
     return this.logoffRevocationService.logoff(urlHandler);
   }
 
+  /**
+   * Logs the user out of the application without logging them out of the server.
+   */
   logoffLocal() {
     return this.logoffRevocationService.logoffLocal();
   }
 
-  // https://tools.ietf.org/html/rfc7009
-  // revokes an access token on the STS. This is only required in the code flow with refresh tokens.
-  // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
-  // This makes it possible to manage your own tokens.
+  /**
+   * Revokes an access token on the STS. This is only required in the code flow with refresh tokens. If no token is
+   * provided, then the token from the storage is revoked. You can pass any token to revoke.
+   * https://tools.ietf.org/html/rfc7009
+   *
+   * @param accessToken The access token to revoke.
+   */
   revokeAccessToken(accessToken?: any) {
     return this.logoffRevocationService.revokeAccessToken(accessToken);
   }
 
-  // https://tools.ietf.org/html/rfc7009
-  // revokes a refresh token on the STS. This is only required in the code flow with refresh tokens.
-  // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
-  // This makes it possible to manage your own tokens.
+  /**
+   * Revokes a refresh token on the STS. This is only required in the code flow with refresh tokens. If no token is
+   * provided, then the token from the storage is revoked. You can pass any token to revoke.
+   * https://tools.ietf.org/html/rfc7009
+   *
+   * @param refreshToken The access token to revoke.
+   */
   revokeRefreshToken(refreshToken?: any) {
     return this.logoffRevocationService.revokeRefreshToken(refreshToken);
   }
 
+  /**
+   * Creates the ENS session URL which can be used to implement an alternate server logout.
+   */
   getEndSessionUrl(): string | null {
     return this.logoffRevocationService.getEndSessionUrl();
   }
