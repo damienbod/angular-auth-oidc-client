@@ -10,6 +10,7 @@ import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
+import { TokenResponse } from '../tokens/token-response';
 
 export const MAX_RETRY_ATTEMPTS = 3;
 @Injectable({ providedIn: 'root' })
@@ -26,7 +27,7 @@ export class RefreshSessionService {
     private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService
   ) {}
 
-  forceRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
+  forceRefreshSession(customParams?: { [key: string]: string | number | boolean }): Observable<TokenResponse | null> {
     if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
       return this.startRefreshSession(customParams).pipe(
         map(() => {

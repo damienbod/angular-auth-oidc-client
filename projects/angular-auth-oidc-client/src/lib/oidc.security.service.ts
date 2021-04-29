@@ -15,6 +15,8 @@ import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.servic
 import { StoragePersistenceService } from './storage/storage-persistence.service';
 import { UserService } from './userData/user-service';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
+import { LoginResponse } from './login/login-response';
+import { TokenResponse } from './tokens/token-response';
 
 @Injectable()
 export class OidcSecurityService {
@@ -33,14 +35,14 @@ export class OidcSecurityService {
   /**
    * Provides information about the user after they have logged in.
    */
-  get userData$() {
+  get userData$(): Observable<any> {
     return this.userService.userData$;
   }
 
   /**
    * Emits each time an authorization event occurs. Returns true if the user is authenticated and false if they are not.
    */
-  get isAuthenticated$() {
+  get isAuthenticated$(): Observable<boolean> {
     return this.authStateService.authorized$;
   }
 
@@ -48,14 +50,14 @@ export class OidcSecurityService {
    * Emits each time the server sends a CheckSession event and the value changed. This property will always return
    * true.
    */
-  get checkSessionChanged$() {
+  get checkSessionChanged$(): Observable<boolean> {
     return this.checkSessionService.checkSessionChanged$;
   }
 
   /**
    * Emits on possible STS callback. The observable will never contain a value.
    */
-  get stsCallback$() {
+  get stsCallback$(): Observable<any> {
     return this.callbackService.stsCallback$;
   }
 
@@ -144,7 +146,7 @@ export class OidcSecurityService {
    * @param authOptions The custom options for the the authentication request.
    */
   // Code Flow with PCKE or Implicit Flow
-  authorize(authOptions?: AuthOptions) {
+  authorize(authOptions?: AuthOptions): void {
     if (authOptions?.customParams) {
       this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams);
     }
@@ -158,7 +160,7 @@ export class OidcSecurityService {
    * @param authOptions The custom options for the authentication request.
    * @param popupOptions The configuration for the popup window.
    */
-  authorizeWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions) {
+  authorizeWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
     if (authOptions?.customParams) {
       this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams);
     }
@@ -171,7 +173,7 @@ export class OidcSecurityService {
    *
    * @param customParams Custom parameters to pass to the refresh request.
    */
-  forceRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
+  forceRefreshSession(customParams?: { [key: string]: string | number | boolean }): Observable<TokenResponse> {
     if (customParams) {
       this.storagePersistenceService.write('storageCustomRequestParams', customParams);
     }
@@ -186,7 +188,7 @@ export class OidcSecurityService {
    */
   // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
   // only the access token is revoked. Then the logout run.
-  logoffAndRevokeTokens(urlHandler?: (url: string) => any) {
+  logoffAndRevokeTokens(urlHandler?: (url: string) => any): Observable<any> {
     return this.logoffRevocationService.logoffAndRevokeTokens(urlHandler);
   }
 
@@ -196,14 +198,14 @@ export class OidcSecurityService {
    *
    * @param urlHandler
    */
-  logoff(urlHandler?: (url: string) => any) {
+  logoff(urlHandler?: (url: string) => any): void {
     return this.logoffRevocationService.logoff(urlHandler);
   }
 
   /**
    * Logs the user out of the application without logging them out of the server.
    */
-  logoffLocal() {
+  logoffLocal(): void {
     return this.logoffRevocationService.logoffLocal();
   }
 
@@ -214,7 +216,7 @@ export class OidcSecurityService {
    *
    * @param accessToken The access token to revoke.
    */
-  revokeAccessToken(accessToken?: any) {
+  revokeAccessToken(accessToken?: any): Observable<any> {
     return this.logoffRevocationService.revokeAccessToken(accessToken);
   }
 
@@ -225,7 +227,7 @@ export class OidcSecurityService {
    *
    * @param refreshToken The access token to revoke.
    */
-  revokeRefreshToken(refreshToken?: any) {
+  revokeRefreshToken(refreshToken?: any): Observable<any> {
     return this.logoffRevocationService.revokeRefreshToken(refreshToken);
   }
 
