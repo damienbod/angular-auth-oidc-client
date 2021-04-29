@@ -7,7 +7,7 @@ import { FlowsDataService } from '../flows/flows-data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { LoggerService } from '../logging/logger.service';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UserService } from '../userData/user-service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { IntervallService } from './intervall.service';
@@ -26,7 +26,7 @@ export class PeriodicallyTokenCheckService {
     private refreshSessionIframeService: RefreshSessionIframeService,
     private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService,
     private intervalService: IntervallService,
-    private storagePersistanceService: StoragePersistanceService
+    private storagePersistenceService: StoragePersistenceService
   ) {}
 
   startTokenValidationPeriodically(repeatAfterSeconds: number) {
@@ -73,7 +73,7 @@ export class PeriodicallyTokenCheckService {
         this.flowsDataService.setSilentRenewRunning();
 
         // Retrieve Dynamically Set Custom Params
-        const customParams: { [key: string]: string | number | boolean } = this.storagePersistanceService.read(
+        const customParams: { [key: string]: string | number | boolean } = this.storagePersistenceService.read(
           'storageCustomRequestParams'
         );
 

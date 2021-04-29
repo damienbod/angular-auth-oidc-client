@@ -8,8 +8,8 @@ import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
-import { StoragePersistanceServiceMock } from '../storage/storage-persistance.service-mock';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
@@ -26,7 +26,7 @@ describe('User Service', () => {
   let configProvider: ConfigurationProvider;
   let loggerService: LoggerService;
   let userService: UserService;
-  let storagePersistanceService: StoragePersistanceService;
+  let storagePersistenceService: StoragePersistenceService;
   let eventsService: PublicEventsService;
   let dataService: DataService;
 
@@ -34,8 +34,8 @@ describe('User Service', () => {
     TestBed.configureTestingModule({
       providers: [
         {
-          provide: StoragePersistanceService,
-          useClass: StoragePersistanceServiceMock,
+          provide: StoragePersistenceService,
+          useClass: StoragePersistenceServiceMock,
         },
         { provide: LoggerService, useClass: LoggerServiceMock },
         { provide: DataService, useClass: DataServiceMock },
@@ -53,7 +53,7 @@ describe('User Service', () => {
     configProvider = TestBed.inject(ConfigurationProvider);
     loggerService = TestBed.inject(LoggerService);
     userService = TestBed.inject(UserService);
-    storagePersistanceService = TestBed.inject(StoragePersistanceService);
+    storagePersistenceService = TestBed.inject(StoragePersistenceService);
     eventsService = TestBed.inject(PublicEventsService);
     dataService = TestBed.inject(DataService);
   });
@@ -182,7 +182,7 @@ describe('User Service', () => {
         spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
         const spy = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
         spyOn(loggerService, 'logDebug');
-        spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
+        spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
 
         userService.getAndPersistUserDataInStore(isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
           expect(userDataFromSts).toEqual(token);
@@ -213,7 +213,7 @@ describe('User Service', () => {
         spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
         const spyGetIdentityUserData = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
         spyOn(loggerService, 'logDebug');
-        spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
+        spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
 
         userService.getAndPersistUserDataInStore(isRenewProcess, idToken, decodedIdToken).subscribe({
           error: (err) => {
@@ -262,15 +262,15 @@ describe('User Service', () => {
     });
 
     it('returns value if there is data', () => {
-      spyOn(storagePersistanceService, 'read').withArgs('userData').and.returnValue('userData');
+      spyOn(storagePersistenceService, 'read').withArgs('userData').and.returnValue('userData');
       const result = userService.getUserDataFromStore();
       expect(result).toBeTruthy();
     });
   });
 
   describe('setUserDataToStore', () => {
-    it('sets userdata in storagePersistanceService', () => {
-      const spy = spyOn(storagePersistanceService, 'write');
+    it('sets userdata in storagePersistenceService', () => {
+      const spy = spyOn(storagePersistenceService, 'write');
       userService.setUserDataToStore('userDataForTest');
       expect(spy).toHaveBeenCalledWith('userData', 'userDataForTest');
     });
@@ -289,8 +289,8 @@ describe('User Service', () => {
   });
 
   describe('resetUserDataInStore', () => {
-    it('resets userdata sets null in storagePersistanceService', () => {
-      const spy = spyOn(storagePersistanceService, 'remove');
+    it('resets userdata sets null in storagePersistenceService', () => {
+      const spy = spyOn(storagePersistenceService, 'remove');
       userService.resetUserDataInStore();
       expect(spy).toHaveBeenCalledWith('userData');
     });
@@ -360,8 +360,8 @@ describe('User Service', () => {
       'does nothing if no authwellknownepdints are set',
       waitForAsync(() => {
         const serviceAsAny = userService as any;
-        spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+        spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
         serviceAsAny.getIdentityUserData().subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
@@ -374,8 +374,8 @@ describe('User Service', () => {
       'does nothing if no userinfoEndpoint is set',
       waitForAsync(() => {
         const serviceAsAny = userService as any;
-        spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
-        spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ userinfoEndpoint: null });
+        spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ userinfoEndpoint: null });
         serviceAsAny.getIdentityUserData().subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
@@ -389,8 +389,8 @@ describe('User Service', () => {
       waitForAsync(() => {
         const serviceAsAny = userService as any;
         const spy = spyOn(dataService, 'get').and.returnValue(of({}));
-        spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
-        spyOn(storagePersistanceService, 'read')
+        spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+        spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints')
           .and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
         serviceAsAny.getIdentityUserData().subscribe(() => {
@@ -403,8 +403,8 @@ describe('User Service', () => {
   it(
     'should retry once',
     waitForAsync(() => {
-      spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
-      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
+      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
       spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), of(DUMMY_USER_DATA)));
 
       (userService as any).getIdentityUserData().subscribe({
@@ -419,8 +419,8 @@ describe('User Service', () => {
   it(
     'should retry twice',
     waitForAsync(() => {
-      spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
-      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
+      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
       spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), of(DUMMY_USER_DATA)));
 
       (userService as any).getIdentityUserData().subscribe({
@@ -435,8 +435,8 @@ describe('User Service', () => {
   it(
     'should fail after three tries',
     waitForAsync(() => {
-      spyOn(storagePersistanceService, 'getAccessToken').and.returnValue('accessToken');
-      spyOn(storagePersistanceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
+      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
       spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), throwError({}), of(DUMMY_USER_DATA)));
 
       (userService as any).getIdentityUserData().subscribe({

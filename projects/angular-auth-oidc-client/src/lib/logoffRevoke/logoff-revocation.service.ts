@@ -6,7 +6,7 @@ import { DataService } from '../api/data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { LoggerService } from '../logging/logger.service';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { RedirectService } from '../utils/redirect/redirect.service';
 import { UrlService } from '../utils/url/url.service';
 
@@ -14,7 +14,7 @@ import { UrlService } from '../utils/url/url.service';
 export class LogoffRevocationService {
   constructor(
     private dataService: DataService,
-    private storagePersistanceService: StoragePersistanceService,
+    private storagePersistenceService: StoragePersistenceService,
     private loggerService: LoggerService,
     private urlService: UrlService,
     private checkSessionService: CheckSessionService,
@@ -51,12 +51,12 @@ export class LogoffRevocationService {
   // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
   // only the access token is revoked. Then the logout run.
   logoffAndRevokeTokens(urlHandler?: (url: string) => any) {
-    if (!this.storagePersistanceService.read('authWellKnownEndPoints')?.revocationEndpoint) {
+    if (!this.storagePersistenceService.read('authWellKnownEndPoints')?.revocationEndpoint) {
       this.loggerService.logDebug('revocation endpoint not supported');
       this.logoff(urlHandler);
     }
 
-    if (this.storagePersistanceService.getRefreshToken()) {
+    if (this.storagePersistenceService.getRefreshToken()) {
       return this.revokeRefreshToken().pipe(
         switchMap((result) => this.revokeAccessToken(result)),
         catchError((error) => {
@@ -83,7 +83,7 @@ export class LogoffRevocationService {
   // the storage is revoked. You can pass any token to revoke. This makes it possible to
   // manage your own tokens. The is a public API.
   revokeAccessToken(accessToken?: any) {
-    const accessTok = accessToken || this.storagePersistanceService.getAccessToken();
+    const accessTok = accessToken || this.storagePersistenceService.getAccessToken();
     const body = this.urlService.createRevocationEndpointBodyAccessToken(accessTok);
     const url = this.urlService.getRevocationEndpointUrl();
 
@@ -109,7 +109,7 @@ export class LogoffRevocationService {
   // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
   // This makes it possible to manage your own tokens.
   revokeRefreshToken(refreshToken?: any) {
-    const refreshTok = refreshToken || this.storagePersistanceService.getRefreshToken();
+    const refreshTok = refreshToken || this.storagePersistenceService.getRefreshToken();
     const body = this.urlService.createRevocationEndpointBodyRefreshToken(refreshTok);
     const url = this.urlService.getRevocationEndpointUrl();
 
@@ -131,7 +131,7 @@ export class LogoffRevocationService {
   }
 
   getEndSessionUrl(): string | null {
-    const idToken = this.storagePersistanceService.getIdToken();
+    const idToken = this.storagePersistenceService.getIdToken();
     return this.urlService.createEndSessionUrl(idToken);
   }
 }

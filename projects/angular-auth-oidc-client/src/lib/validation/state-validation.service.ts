@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ConfigurationProvider } from '../config/config.provider';
 import { CallbackContext } from '../flows/callback-context';
 import { LoggerService } from '../logging/logger.service';
-import { StoragePersistanceService } from '../storage/storage-persistance.service';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { EqualityService } from '../utils/equality/equality.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
@@ -13,7 +13,7 @@ import { ValidationResult } from './validation-result';
 @Injectable()
 export class StateValidationService {
   constructor(
-    private storagePersistanceService: StoragePersistanceService,
+    private storagePersistenceService: StoragePersistenceService,
     private tokenValidationService: TokenValidationService,
     private tokenHelperService: TokenHelperService,
     private loggerService: LoggerService,
@@ -36,7 +36,7 @@ export class StateValidationService {
 
   validateState(callbackContext): StateValidationResult {
     const toReturn = new StateValidationResult();
-    const authStateControl = this.storagePersistanceService.read('authStateControl');
+    const authStateControl = this.storagePersistenceService.read('authStateControl');
 
     if (!this.tokenValidationService.validateStateFromHashCallback(callbackContext.authResult.state, authStateControl)) {
       this.loggerService.logWarning('authorizedCallback incorrect state');
@@ -72,7 +72,7 @@ export class StateValidationService {
         return toReturn;
       }
 
-      const authNonce = this.storagePersistanceService.read('authNonce');
+      const authNonce = this.storagePersistenceService.read('authNonce');
 
       if (!this.tokenValidationService.validateIdTokenNonce(toReturn.decodedIdToken, authNonce, ignoreNonceAfterRefresh)) {
         this.loggerService.logWarning('authorizedCallback incorrect nonce');
@@ -101,7 +101,7 @@ export class StateValidationService {
         return toReturn;
       }
 
-      const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
+      const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints');
 
       if (authWellKnownEndPoints) {
         if (issValidationOff) {
@@ -254,20 +254,20 @@ export class StateValidationService {
 
   private handleSuccessfulValidation(): void {
     const { autoCleanStateAfterAuthentication } = this.configurationProvider.getOpenIDConfiguration();
-    this.storagePersistanceService.write('authNonce', '');
+    this.storagePersistenceService.write('authNonce', '');
 
     if (autoCleanStateAfterAuthentication) {
-      this.storagePersistanceService.write('authStateControl', '');
+      this.storagePersistenceService.write('authStateControl', '');
     }
     this.loggerService.logDebug('AuthorizedCallback token(s) validated, continue');
   }
 
   private handleUnsuccessfulValidation(): void {
     const { autoCleanStateAfterAuthentication } = this.configurationProvider.getOpenIDConfiguration();
-    this.storagePersistanceService.write('authNonce', '');
+    this.storagePersistenceService.write('authNonce', '');
 
     if (autoCleanStateAfterAuthentication) {
-      this.storagePersistanceService.write('authStateControl', '');
+      this.storagePersistenceService.write('authStateControl', '');
     }
     this.loggerService.logDebug('AuthorizedCallback token(s) invalid');
   }

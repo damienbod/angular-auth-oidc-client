@@ -3,10 +3,10 @@ import { ConfigurationProvider } from '../config/config.provider';
 import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 import { BrowserStorageMock } from './browser-storage.service-mock';
-import { StoragePersistanceService } from './storage-persistance.service';
+import { StoragePersistenceService } from './storage-persistence.service';
 
-describe('Storage Persistance Service', () => {
-  let service: StoragePersistanceService;
+describe('Storage Persistence Service', () => {
+  let service: StoragePersistenceService;
   let configurationProvider: ConfigurationProvider;
   let securityStorage: AbstractSecurityStorage;
   let storageSpy: jasmine.Spy;
@@ -16,7 +16,7 @@ describe('Storage Persistance Service', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        StoragePersistanceService,
+        StoragePersistenceService,
         { provide: AbstractSecurityStorage, useClass: BrowserStorageMock },
         { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
       ],
@@ -26,7 +26,7 @@ describe('Storage Persistance Service', () => {
   beforeEach(() => {
     configurationProvider = TestBed.inject(ConfigurationProvider);
 
-    service = TestBed.inject(StoragePersistanceService);
+    service = TestBed.inject(StoragePersistenceService);
     securityStorage = TestBed.inject(AbstractSecurityStorage);
 
     storageSpy = spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId: storagePrefix });
