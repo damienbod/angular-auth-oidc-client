@@ -4,9 +4,8 @@
   "lib": {
     "entryFile": "src/public-api.ts",
     "umdModuleIds": {
-      "jsrsasign-reduced": "jsrsasign-reduced",
-      "common-tags": "common-tags"
+      "jsrsasign-reduced": "jsrsasign-reduced"
     }
   },
-  "whitelistedNonPeerDependencies": ["jsrsasign-reduced", "common-tags"]
+  "whitelistedNonPeerDependencies": ["jsrsasign-reduced"]
 }

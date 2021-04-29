@@ -106,7 +106,7 @@ export interface AuthOptions {
 }
 ```
 
-where you can pass a custom `urlHandler` which is getting called instead of the redirect and you can pass custom parameters which can maybe change everytime you want to login. See also [Custom parameters](features.md/#custom-parameters)
+where you can pass a custom `urlHandler` which is getting called instead of the redirect and you can pass custom parameters which can maybe change every time you want to login. See also [Custom parameters](features.md/#custom-parameters)
 
 ## logoffAndRevokeTokens(urlHandler?: (url: string) => any)
 
@@ -114,7 +114,7 @@ The refresh token and and the access token are revoked on the server. If the ref
 
 ## logoff(urlHandler?: (url: string) => any)
 
-Logs out on the server and the local client. If the server state has changed, checksession, then only a local logout.
+Logs out on the server and the local client. If the server state has changed, check session, then only a local logout.
 
 ## logoffLocal()
 
@@ -132,13 +132,13 @@ revokes a refresh token on the STS. This is only required in the code flow with 
 If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
 This makes it possible to manage your own tokens.
 
-## getEndSessionUrl(): string | null
+## getEndSessionUrl(customParams?: { [key: string]: string | number | boolean }): string | null
 
-Creates the ens session URL which can be used to implement youe own custom server logout.
+Creates the ens session URL which can be used to implement your own custom server logout. You can pass custom params directly into the method.
 
 ## forceRefreshSession(customParams?: { [key: string]: string | number | boolean }): Observable
 
-Makes it possible to refresh the tokens at any time you require. You can pass custom parameters which can maybe change everytime you want to refresh session. See also [Custom parameters](features.md/#custom-parameters)
+Makes it possible to refresh the tokens at any time you require. You can pass custom parameters which can maybe change every time you want to refresh session. See also [Custom parameters](features.md/#custom-parameters)
 
 ```typescript
 refreshSession() {

@@ -6,8 +6,8 @@ import { FlowsDataService } from '../../flows/flows-data.service';
 import { RandomService } from '../../flows/random/random.service';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
-import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../../storage/storage-persistence-service-mock.service';
+import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { TokenValidationService } from '../../validation/token-validation.service';
 import { TokenValidationServiceMock } from '../../validation/token-validation.service-mock';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
@@ -574,6 +574,36 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
+    it('createAuthorizeUrl default', () => {
+      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      config.redirectUrl = 'https://localhost:44386';
+      config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+      config.responseType = 'id_token token';
+      config.scope = 'openid email profile';
+
+      configurationProvider.setConfig(config);
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
+        authorizationEndpoint: 'http://example',
+      });
+
+      const value = (service as any).createAuthorizeUrl(
+        '', // Implicit Flow
+        config.redirectUrl,
+        'nonce',
+        'state'
+      );
+
+      const expectValue =
+        'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
+        '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
+        '&response_type=id_token%20token' +
+        '&scope=openid%20email%20profile' +
+        '&nonce=nonce' +
+        '&state=state';
+
+      expect(value).toEqual(expectValue);
+    });
+
     it('createEndSessionUrl with azure-ad-b2c policy parameter', () => {
       const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
@@ -780,7 +810,7 @@ describe('UrlService Tests', () => {
     });
 
     it('returns null if no clientId is set', () => {
-      const codeVerifier = 'codeverifier';
+      const codeVerifier = 'this_is_a_codeverifier';
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       const clientId = null;
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId });
@@ -789,8 +819,8 @@ describe('UrlService Tests', () => {
     });
 
     it('returns null if silentrenewRunning is false and redirectUrl is falsy', () => {
-      const codeVerifier = 'codeverifier';
-      const code = 'code';
+      const codeVerifier = 'this_is_a_codeverifier';
+      const code = 'this_is_a_code';
       const redirectUrl = null;
       const clientId = 'clientId';
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
@@ -803,10 +833,10 @@ describe('UrlService Tests', () => {
     });
 
     it('returns correctUrl with silentrenewRunning is false', () => {
-      const codeVerifier = 'codeverifier';
-      const code = 'code';
-      const redirectUrl = 'redirectUrl';
-      const clientId = 'clientId';
+      const codeVerifier = 'this_is_a_codeverifier';
+      const code = 'this_is_a_code';
+      const redirectUrl = 'this_is_a_redirectUrl';
+      const clientId = 'this_is_a_clientId';
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId, redirectUrl });
@@ -818,10 +848,10 @@ describe('UrlService Tests', () => {
     });
 
     it('returns correctUrl with silentrenewRunning is true', () => {
-      const codeVerifier = 'codeverifier';
-      const code = 'code';
-      const silentRenewUrl = 'silentRenewUrl';
-      const clientId = 'clientId';
+      const codeVerifier = 'this_is_a_codeverifier';
+      const code = 'this_is_a_code';
+      const silentRenewUrl = 'this_is_a_silentRenewUrl';
+      const clientId = 'this_is_a_clientId';
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId, silentRenewUrl });
@@ -833,10 +863,10 @@ describe('UrlService Tests', () => {
     });
 
     it('returns correctUrl when customTokenParams are provided', () => {
-      const codeVerifier = 'codeverifier';
-      const code = 'code';
-      const silentRenewUrl = 'silentRenewUrl';
-      const clientId = 'clientId';
+      const codeVerifier = 'this_is_a_codeverifier';
+      const code = 'this_is_a_code';
+      const silentRenewUrl = 'this_is_a_silentRenewUrl';
+      const clientId = 'this_is_a_clientId';
       const customTokenParams = { foo: 'bar' };
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
@@ -1336,6 +1366,28 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
+    it('createEndSessionUrl appends custom params when some are passed', () => {
+      const config = {
+        stsServer: 'https://localhost:5001',
+        redirectUrl: 'https://localhost:44386',
+        clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
+        responseType: 'id_token token',
+        scope: 'openid email profile',
+        postLogoutRedirectUri: null,
+      };
+
+      configurationProvider.setConfig(config);
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
+        endSessionEndpoint: 'http://example',
+      });
+
+      const value = service.createEndSessionUrl('mytoken', { some: 'custom', params: 'forme' });
+
+      const expectValue = 'http://example?id_token_hint=mytoken&some=custom&params=forme';
+
+      expect(value).toEqual(expectValue);
+    });
+
     it('createEndSessionUrl returns null if no wellknownEndpoints given', () => {
       configurationProvider.setConfig({});
 
@@ -1355,36 +1407,6 @@ describe('UrlService Tests', () => {
       const value = service.createEndSessionUrl('mytoken');
 
       const expectValue = null;
-
-      expect(value).toEqual(expectValue);
-    });
-
-    it('createAuthorizeUrl default', () => {
-      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-      config.redirectUrl = 'https://localhost:44386';
-      config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-      config.responseType = 'id_token token';
-      config.scope = 'openid email profile';
-
-      configurationProvider.setConfig(config);
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
-        authorizationEndpoint: 'http://example',
-      });
-
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        config.redirectUrl,
-        'nonce',
-        'state'
-      );
-
-      const expectValue =
-        'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
-        '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
-        '&response_type=id_token%20token' +
-        '&scope=openid%20email%20profile' +
-        '&nonce=nonce' +
-        '&state=state';
 
       expect(value).toEqual(expectValue);
     });
