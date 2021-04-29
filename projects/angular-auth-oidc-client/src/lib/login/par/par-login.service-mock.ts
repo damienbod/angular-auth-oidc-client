@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AuthOptions } from '../auth-options';
+import { AuthOptions } from '../../auth-options';
 import { PopupOptions } from '../popup/popup-options';
 
 @Injectable()

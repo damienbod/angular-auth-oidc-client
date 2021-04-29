@@ -1,4 +1,4 @@
-import { AuthOptions } from '../auth-options';
+import { AuthOptions } from '../../auth-options';
 
 export class StandardLoginServiceMock {
   loginStandard(authOptions?: AuthOptions) {}

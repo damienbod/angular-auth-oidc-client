@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
+import { AuthOptions } from '../../auth-options';
 import { AuthWellKnownService } from '../../config/auth-well-known.service';
 import { ConfigurationProvider } from '../../config/config.provider';
 import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
-import { AuthOptions } from '../auth-options';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
 
 @Injectable()

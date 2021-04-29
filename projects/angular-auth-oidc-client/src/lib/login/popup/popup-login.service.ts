@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { map, switchMap, take } from 'rxjs/operators';
+import { AuthOptions } from '../../auth-options';
 import { AuthStateService } from '../../authState/auth-state.service';
 import { CheckAuthService } from '../../check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known.service';
@@ -8,7 +9,6 @@ import { ConfigurationProvider } from '../../config/config.provider';
 import { LoggerService } from '../../logging/logger.service';
 import { UserService } from '../../userData/user-service';
 import { UrlService } from '../../utils/url/url.service';
-import { AuthOptions } from '../auth-options';
 import { LoginResponse } from '../login-response';
 import { PopupOptions } from '../popup/popup-options';
 import { PopUpService } from '../popup/popup.service';
