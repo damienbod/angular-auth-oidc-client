@@ -1,4 +1,4 @@
-import { AuthOptions } from '../auth-options';
+import { AuthOptions } from '../../auth-options';
 import { PopupOptions } from '../popup/popup-options';
 
 export class PopUpLoginServiceMock {
