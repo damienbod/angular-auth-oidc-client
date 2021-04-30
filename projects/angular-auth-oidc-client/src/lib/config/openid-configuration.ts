@@ -26,8 +26,8 @@ export interface OpenIdConfiguration {
   /**
    * This is this scopes which are requested from the server from this client.
    * This must match the STS server configuration.
-   * The 'openid' scope is required. The 'offline_access' scope can be requested when using refresh tokens 
-   * but this is optional and some STS do not support this or recommend not requesting this even when using 
+   * The 'openid' scope is required. The 'offline_access' scope can be requested when using refresh tokens
+   * but this is optional and some STS do not support this or recommend not requesting this even when using
    * refresh tokens in the browser.
    */
   scope?: string;
