@@ -1,6 +1,6 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { of, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, retry, switchMap, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
@@ -43,14 +43,14 @@ export class LogoffRevocationService {
     }
   }
 
-  logoffLocal() {
+  logoffLocal(): void {
     this.resetAuthDataService.resetAuthorizationData();
     this.checkSessionService.stop();
   }
 
   // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
   // only the access token is revoked. Then the logout run.
-  logoffAndRevokeTokens(urlHandler?: (url: string) => any) {
+  logoffAndRevokeTokens(urlHandler?: (url: string) => any): Observable<any> {
     if (!this.storagePersistenceService.read('authWellKnownEndPoints')?.revocationEndpoint) {
       this.loggerService.logDebug('revocation endpoint not supported');
       this.logoff(urlHandler);
@@ -82,7 +82,7 @@ export class LogoffRevocationService {
   // revokes an access token on the STS. If no token is provided, then the token from
   // the storage is revoked. You can pass any token to revoke. This makes it possible to
   // manage your own tokens. The is a public API.
-  revokeAccessToken(accessToken?: any) {
+  revokeAccessToken(accessToken?: any): Observable<any> {
     const accessTok = accessToken || this.storagePersistenceService.getAccessToken();
     const body = this.urlService.createRevocationEndpointBodyAccessToken(accessTok);
     const url = this.urlService.getRevocationEndpointUrl();
@@ -108,7 +108,7 @@ export class LogoffRevocationService {
   // revokes an refresh token on the STS. This is only required in the code flow with refresh tokens.
   // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
   // This makes it possible to manage your own tokens.
-  revokeRefreshToken(refreshToken?: any) {
+  revokeRefreshToken(refreshToken?: any): Observable<any> {
     const refreshTok = refreshToken || this.storagePersistenceService.getRefreshToken();
     const body = this.urlService.createRevocationEndpointBodyRefreshToken(refreshTok);
     const url = this.urlService.getRevocationEndpointUrl();

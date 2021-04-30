@@ -42,7 +42,7 @@ export class RefreshSessionIframeService {
     });
   }
 
-  private initSilentRenewRequest() {
+  private initSilentRenewRequest(): void {
     const instanceId = Math.random();
 
     const initDestroyHandler = this.renderer.listen('window', 'oidc-silent-renew-init', (e: CustomEvent) => {

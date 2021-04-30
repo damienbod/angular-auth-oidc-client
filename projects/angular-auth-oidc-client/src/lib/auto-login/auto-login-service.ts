@@ -6,15 +6,27 @@ const STORAGE_KEY = 'redirect';
 @Injectable()
 export class AutoLoginService {
   constructor(private readonly storageService: StoragePersistenceService) {}
-  getStoredRedirectRoute() {
+
+  /**
+   * Gets the stored redirect route from storage.
+   */
+  getStoredRedirectRoute(): string {
     return this.storageService.read(STORAGE_KEY);
   }
 
+  /**
+   * Saves the redirect url to storage.
+   *
+   * @param url The redirect url to save.
+   */
   saveStoredRedirectRoute(url: string) {
     this.storageService.write(STORAGE_KEY, url);
   }
 
-  deleteStoredRedirectRoute() {
+  /**
+   * Removes the redirect url from storage.
+   */
+  deleteStoredRedirectRoute(): void {
     this.storageService.remove(STORAGE_KEY);
   }
 }
