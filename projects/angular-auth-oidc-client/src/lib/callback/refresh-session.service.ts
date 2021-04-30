@@ -10,6 +10,8 @@ import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
+import { TokenResponse } from '../tokens/token-response';
+import { CallbackContext } from '../flows/callback-context';
 
 export const MAX_RETRY_ATTEMPTS = 3;
 @Injectable({ providedIn: 'root' })
@@ -26,7 +28,7 @@ export class RefreshSessionService {
     private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService
   ) {}
 
-  forceRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
+  forceRefreshSession(customParams?: { [key: string]: string | number | boolean }): Observable<TokenResponse | null> {
     if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
       return this.startRefreshSession(customParams).pipe(
         map(() => {
@@ -66,7 +68,7 @@ export class RefreshSessionService {
     );
   }
 
-  private startRefreshSession(customParams?: { [key: string]: string | number | boolean }) {
+  private startRefreshSession(customParams?: { [key: string]: string | number | boolean }): Observable<boolean | CallbackContext | null> {
     const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
     this.loggerService.logDebug(`Checking: silentRenewRunning: ${isSilentRenewRunning}`);
     const shouldBeExecuted = !isSilentRenewRunning;
@@ -96,7 +98,7 @@ export class RefreshSessionService {
     );
   }
 
-  private timeoutRetryStrategy(errorAttempts: Observable<any>) {
+  private timeoutRetryStrategy(errorAttempts: Observable<any>): Observable<number> {
     return errorAttempts.pipe(
       mergeMap((error, index) => {
         const scalingDuration = 1000;

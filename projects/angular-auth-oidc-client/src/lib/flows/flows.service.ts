@@ -8,6 +8,7 @@ import { RefreshSessionCallbackHandlerService } from './callback-handling/refres
 import { RefreshTokenCallbackHandlerService } from './callback-handling/refresh-token-callback-handler.service';
 import { StateValidationCallbackHandlerService } from './callback-handling/state-validation-callback-handler.service';
 import { UserCallbackHandlerService } from './callback-handling/user-callback-handler.service';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class FlowsService {
@@ -21,7 +22,7 @@ export class FlowsService {
     private readonly refreshTokenCallbackHandlerService: RefreshTokenCallbackHandlerService
   ) {}
 
-  processCodeFlowCallback(urlToCheck: string) {
+  processCodeFlowCallback(urlToCheck: string): Observable<CallbackContext> {
     return this.codeFlowCallbackHandlerService.codeFlowCallback(urlToCheck).pipe(
       switchMap((callbackContext) => this.codeFlowCallbackHandlerService.codeFlowCodeRequest(callbackContext)),
       switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
@@ -30,7 +31,7 @@ export class FlowsService {
     );
   }
 
-  processSilentRenewCodeFlowCallback(firstContext: CallbackContext) {
+  processSilentRenewCodeFlowCallback(firstContext: CallbackContext): Observable<CallbackContext> {
     return this.codeFlowCallbackHandlerService.codeFlowCodeRequest(firstContext).pipe(
       switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
       switchMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext)),
@@ -38,7 +39,7 @@ export class FlowsService {
     );
   }
 
-  processImplicitFlowCallback(hash?: string) {
+  processImplicitFlowCallback(hash?: string): Observable<CallbackContext> {
     return this.implicitFlowCallbackHandlerService.implicitFlowCallback(hash).pipe(
       switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
       switchMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext)),
@@ -46,7 +47,7 @@ export class FlowsService {
     );
   }
 
-  processRefreshToken(customParams?: { [key: string]: string | number | boolean }) {
+  processRefreshToken(customParams?: { [key: string]: string | number | boolean }): Observable<CallbackContext> {
     return this.refreshSessionCallbackHandlerService.refreshSessionWithRefreshTokens().pipe(
       switchMap((callbackContext) => this.refreshTokenCallbackHandlerService.refreshTokensRequestTokens(callbackContext, customParams)),
       switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
