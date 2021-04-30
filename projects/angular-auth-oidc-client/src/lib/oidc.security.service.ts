@@ -232,7 +232,7 @@ export class OidcSecurityService {
   }
 
   /**
-   * Creates the ENS session URL which can be used to implement an alternate server logout.
+   * Creates the end session URL which can be used to implement an alternate server logout.
    */
   getEndSessionUrl(): string | null {
     return this.logoffRevocationService.getEndSessionUrl();
