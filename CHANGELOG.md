@@ -4,6 +4,14 @@
 
 - Enable handling users closing login popup
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1058)
+- Renamed all occurrences of "Persistance" to "Persistence"
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1064)
+- Document public facing API
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1073)
+- Exported and moved authOptions
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1076)
+- Fix(randomService): fix misuse of Uint8Array
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1078)
 
 ### 2021-04-18 Version 11.6.6
 
