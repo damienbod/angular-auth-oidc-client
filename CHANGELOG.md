@@ -14,6 +14,8 @@
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1078)
 - hooking into the zone again to avoid outside ngzone messages and throw event only when value change
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1082)
+- fixed json stringify objects and storage
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1083)
 
 ### 2021-04-18 Version 11.6.6
 
