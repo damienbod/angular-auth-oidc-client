@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
@@ -13,7 +14,7 @@ export class AuthStateService {
   private authorizedInternal$ = new BehaviorSubject<boolean>(false);
 
   get authorized$() {
-    return this.authorizedInternal$.asObservable();
+    return this.authorizedInternal$.asObservable().pipe(distinctUntilChanged());
   }
 
   private get isAuthorized() {
