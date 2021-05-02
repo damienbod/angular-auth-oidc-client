@@ -3,7 +3,7 @@ export interface AuthWellKnownEndpoints {
   jwksUri?: string;
   authorizationEndpoint?: string;
   tokenEndpoint?: string;
-  userinfoEndpoint?: string;
+  userInfoEndpoint?: string;
   endSessionEndpoint?: string;
   checkSessionIframe?: string;
   revocationEndpoint?: string;

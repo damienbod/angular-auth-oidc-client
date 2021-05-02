@@ -15,8 +15,8 @@ export class ConfigValidationService {
 
     const allErrorMessages = this.getAllMessagesOfType('error', allMessages);
     const allWarnings = this.getAllMessagesOfType('warning', allMessages);
-    allErrorMessages.map((message) => this.loggerService.logError(message));
-    allWarnings.map((message) => this.loggerService.logWarning(message));
+    allErrorMessages.forEach((message) => this.loggerService.logError(message));
+    allWarnings.forEach((message) => this.loggerService.logWarning(message));
 
     return allErrorMessages.length === 0;
   }

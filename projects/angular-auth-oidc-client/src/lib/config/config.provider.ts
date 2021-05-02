@@ -3,19 +3,24 @@ import { OpenIdConfiguration } from './openid-configuration';
 
 @Injectable()
 export class ConfigurationProvider {
-  private openIdConfigurationInternal: OpenIdConfiguration;
+  private configsInternal: Record<string, OpenIdConfiguration> = {};
 
-  hasValidConfig() {
-    return !!this.openIdConfigurationInternal;
+  hasValidConfig(): boolean {
+    return Object.keys(this.configsInternal).length > 0;
   }
 
-  setConfig(readyConfig: OpenIdConfiguration) {
-    this.openIdConfigurationInternal = readyConfig;
-
-    return this.openIdConfigurationInternal;
+  setConfig(readyConfig: OpenIdConfiguration): void {
+    const { uniqueId } = readyConfig;
+    this.configsInternal[uniqueId] = readyConfig;
   }
 
-  getOpenIDConfiguration(): OpenIdConfiguration {
-    return this.openIdConfigurationInternal || null;
+  getOpenIDConfiguration(uniqueId?: string): OpenIdConfiguration {
+    if (!!uniqueId) {
+      return this.configsInternal[uniqueId] || null;
+    }
+
+    const [, value] = Object.entries(this.configsInternal)[0];
+
+    return value || null;
   }
 }
