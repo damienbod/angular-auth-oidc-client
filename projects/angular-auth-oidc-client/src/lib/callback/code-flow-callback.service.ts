@@ -23,7 +23,7 @@ export class CodeFlowCallbackService {
       configId
     );
 
-    return this.flowsService.processCodeFlowCallback(urlToCheck).pipe(
+    return this.flowsService.processCodeFlowCallback(urlToCheck, configId).pipe(
       tap((callbackContext) => {
         if (!triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
           this.router.navigateByUrl(postLoginRoute);

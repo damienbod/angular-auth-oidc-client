@@ -53,7 +53,7 @@ export class SilentRenewService {
     return !useRefreshToken && silentRenew;
   }
 
-  codeFlowCallbackSilentRenewIframe(urlParts: any) {
+  codeFlowCallbackSilentRenewIframe(urlParts: any, configId: string) {
     const params = new HttpParams({
       fromString: urlParts[1],
     });
@@ -88,7 +88,7 @@ export class SilentRenewService {
       existingIdToken: null,
     };
 
-    return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext).pipe(
+    return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext, configId).pipe(
       catchError((errorFromFlow) => {
         this.intervalService.stopPeriodicTokenCheck();
         this.resetAuthDataService.resetAuthorizationData();
@@ -109,7 +109,7 @@ export class SilentRenewService {
 
     if (isCodeFlow) {
       const urlParts = e.detail.toString().split('?');
-      callback$ = this.codeFlowCallbackSilentRenewIframe(urlParts);
+      callback$ = this.codeFlowCallbackSilentRenewIframe(urlParts, configId);
     } else {
       callback$ = this.implicitFlowCallbackService.authorizedImplicitFlowCallback(e.detail);
     }

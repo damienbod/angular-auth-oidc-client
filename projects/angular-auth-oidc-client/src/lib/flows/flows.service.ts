@@ -25,7 +25,7 @@ export class FlowsService {
   processCodeFlowCallback(urlToCheck: string, configId: string): Observable<CallbackContext> {
     return this.codeFlowCallbackHandlerService.codeFlowCallback(urlToCheck).pipe(
       switchMap((callbackContext) => this.codeFlowCallbackHandlerService.codeFlowCodeRequest(callbackContext)),
-      switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
+      switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext, configId)),
       switchMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext, configId)),
       switchMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext, configId))
     );
@@ -33,7 +33,7 @@ export class FlowsService {
 
   processSilentRenewCodeFlowCallback(firstContext: CallbackContext, configId: string): Observable<CallbackContext> {
     return this.codeFlowCallbackHandlerService.codeFlowCodeRequest(firstContext).pipe(
-      switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
+      switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext, configId)),
       switchMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext, configId)),
       switchMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext, configId))
     );
@@ -41,7 +41,7 @@ export class FlowsService {
 
   processImplicitFlowCallback(configId: string, hash?: string): Observable<CallbackContext> {
     return this.implicitFlowCallbackHandlerService.implicitFlowCallback(hash).pipe(
-      switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
+      switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext, configId)),
       switchMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext, configId)),
       switchMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext, configId))
     );
@@ -52,7 +52,7 @@ export class FlowsService {
       switchMap((callbackContext) =>
         this.refreshTokenCallbackHandlerService.refreshTokensRequestTokens(callbackContext, configId, customParams)
       ),
-      switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
+      switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext, configId)),
       switchMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext, configId)),
       switchMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext, configId))
     );

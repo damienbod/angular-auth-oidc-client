@@ -63,7 +63,7 @@ export class StateValidationService {
 
       toReturn.idToken = callbackContext.authResult.id_token;
 
-      toReturn.decodedIdToken = this.tokenHelperService.getPayloadFromToken(toReturn.idToken, false);
+      toReturn.decodedIdToken = this.tokenHelperService.getPayloadFromToken(toReturn.idToken, false, configId);
 
       if (!this.tokenValidationService.validateSignatureIdToken(toReturn.idToken, callbackContext.jwtKeys, configId)) {
         this.loggerService.logDebug(configId, 'authorizedCallback Signature validation failed id_token');
@@ -175,7 +175,7 @@ export class StateValidationService {
 
     // only do check if id_token returned, no always the case when using refresh tokens
     if (callbackContext.authResult.id_token) {
-      const idTokenHeader = this.tokenHelperService.getHeaderFromToken(toReturn.idToken, false);
+      const idTokenHeader = this.tokenHelperService.getHeaderFromToken(toReturn.idToken, false, configId);
 
       // The at_hash is optional for the code flow
       if (isCurrentFlowCodeFlow && !(toReturn.decodedIdToken.at_hash as string)) {
@@ -211,7 +211,7 @@ export class StateValidationService {
     if (!callbackContext.existingIdToken) {
       return true;
     }
-    const decodedIdToken = this.tokenHelperService.getPayloadFromToken(callbackContext.existingIdToken, false);
+    const decodedIdToken = this.tokenHelperService.getPayloadFromToken(callbackContext.existingIdToken, false, configId);
 
     // Upon successful validation of the Refresh Token, the response body is the Token Response of Section 3.1.3.3
     // except that it might not contain an id_token.

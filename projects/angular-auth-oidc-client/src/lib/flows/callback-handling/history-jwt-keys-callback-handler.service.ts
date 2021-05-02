@@ -27,34 +27,33 @@ export class HistoryJwtKeysCallbackHandlerService {
   ) {}
 
   // STEP 3 Code Flow, STEP 2 Implicit Flow, STEP 3 Refresh Token
-  callbackHistoryAndResetJwtKeys(callbackContext: CallbackContext): Observable<CallbackContext> {
-    this.storagePersistenceService.write('authnResult', callbackContext.authResult);
+  callbackHistoryAndResetJwtKeys(callbackContext: CallbackContext, configId: string): Observable<CallbackContext> {
+    this.storagePersistenceService.write('authnResult', callbackContext.authResult, configId);
 
-    if (this.historyCleanUpTurnedOn() && !callbackContext.isRenewProcess) {
+    if (this.historyCleanUpTurnedOn(configId) && !callbackContext.isRenewProcess) {
       this.resetBrowserHistory();
     } else {
-      this.loggerService.logDebug('history clean up inactive');
+      this.loggerService.logDebug(configId, 'history clean up inactive');
     }
 
     if (callbackContext.authResult.error) {
       const errorMessage = `authorizedCallbackProcedure came with error: ${callbackContext.authResult.error}`;
-      this.loggerService.logDebug(errorMessage);
+      this.loggerService.logDebug(configId, errorMessage);
       this.resetAuthDataService.resetAuthorizationData();
       this.flowsDataService.setNonce('');
       this.handleResultErrorFromCallback(callbackContext.authResult, callbackContext.isRenewProcess);
       return throwError(errorMessage);
     }
 
-    this.loggerService.logDebug(callbackContext.authResult);
-    this.loggerService.logDebug('authorizedCallback created, begin token validation');
+    this.loggerService.logDebug(configId, `AuthResult '${callbackContext.authResult}'. AuthorizedCallback created, begin token validation`);
 
     return this.signInKeyDataService.getSigningKeys().pipe(
-      tap((jwtKeys: JwtKeys) => this.storeSigningKeys(jwtKeys)),
+      tap((jwtKeys: JwtKeys) => this.storeSigningKeys(jwtKeys, configId)),
       catchError((err) => {
         // fallback: try to load jwtKeys from storage
-        const storedJwtKeys = this.readSigningKeys();
+        const storedJwtKeys = this.readSigningKeys(configId);
         if (!!storedJwtKeys) {
-          this.loggerService.logWarning(`Failed to retrieve signing keys, fallback to stored keys`);
+          this.loggerService.logWarning(configId, `Failed to retrieve signing keys, fallback to stored keys`);
           return of(storedJwtKeys);
         }
 
@@ -68,12 +67,12 @@ export class HistoryJwtKeysCallbackHandlerService {
         }
 
         const errorMessage = `Failed to retrieve signing key`;
-        this.loggerService.logWarning(errorMessage);
+        this.loggerService.logWarning(configId, errorMessage);
         return throwError(errorMessage);
       }),
       catchError((err) => {
         const errorMessage = `Failed to retrieve signing key with error: ${err}`;
-        this.loggerService.logWarning(errorMessage);
+        this.loggerService.logWarning(configId, errorMessage);
         return throwError(errorMessage);
       })
     );
@@ -93,8 +92,8 @@ export class HistoryJwtKeysCallbackHandlerService {
     });
   }
 
-  private historyCleanUpTurnedOn() {
-    const { historyCleanupOff } = this.configurationProvider.getOpenIDConfiguration();
+  private historyCleanUpTurnedOn(configId: string) {
+    const { historyCleanupOff } = this.configurationProvider.getOpenIDConfiguration(configId);
     return !historyCleanupOff;
   }
 
@@ -102,11 +101,11 @@ export class HistoryJwtKeysCallbackHandlerService {
     window.history.replaceState({}, window.document.title, window.location.origin + window.location.pathname);
   }
 
-  private storeSigningKeys(jwtKeys: JwtKeys) {
-    this.storagePersistenceService.write(JWT_KEYS, jwtKeys);
+  private storeSigningKeys(jwtKeys: JwtKeys, configId: string) {
+    this.storagePersistenceService.write(JWT_KEYS, jwtKeys, configId);
   }
 
-  private readSigningKeys() {
-    return this.storagePersistenceService.read(JWT_KEYS);
+  private readSigningKeys(configId: string) {
+    return this.storagePersistenceService.read(JWT_KEYS, configId);
   }
 }

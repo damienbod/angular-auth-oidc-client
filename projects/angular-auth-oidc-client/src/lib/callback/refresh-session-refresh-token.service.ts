@@ -22,7 +22,7 @@ export class RefreshSessionRefreshTokenService {
   ): Observable<CallbackContext> {
     this.loggerService.logDebug(configId, 'BEGIN refresh session Authorize');
 
-    return this.flowsService.processRefreshToken(customParams).pipe(
+    return this.flowsService.processRefreshToken(configId, customParams).pipe(
       catchError((error) => {
         this.intervalService.stopPeriodicTokenCheck();
         this.resetAuthDataService.resetAuthorizationData();
