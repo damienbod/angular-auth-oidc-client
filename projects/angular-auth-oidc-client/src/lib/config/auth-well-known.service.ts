@@ -21,7 +21,7 @@ export class AuthWellKnownService {
       return of(alreadySavedWellKnownEndpoints);
     }
 
-    return this.getWellKnownEndPointsFromUrl(authWellknownEndpointUrl).pipe(
+    return this.getWellKnownEndPointsFromUrl(authWellknownEndpointUrl, configId).pipe(
       tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(configId, mappedWellKnownEndpoints)),
       catchError((error) => {
         this.publicEventsService.fireEvent(EventTypes.ConfigLoadingFailed, null);
@@ -34,7 +34,7 @@ export class AuthWellKnownService {
     this.storagePersistenceService.write('authWellKnownEndPoints', mappedWellKnownEndpoints, configId);
   }
 
-  private getWellKnownEndPointsFromUrl(authWellknownEndpoint: string) {
-    return this.dataService.getWellKnownEndPointsFromUrl(authWellknownEndpoint);
+  private getWellKnownEndPointsFromUrl(authWellknownEndpoint: string, configId: string) {
+    return this.dataService.getWellKnownEndPointsFromUrl(authWellknownEndpoint, configId);
   }
 }

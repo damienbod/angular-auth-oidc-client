@@ -32,13 +32,13 @@ export class OidcConfigService {
 
   private handleConfig(passedConfig: OpenIdConfiguration): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (!this.configValidationService.validateConfig(passedConfig)) {
-        this.loggerService.logError('Validation of config rejected with errors. Config is NOT set.');
-        resolve(null);
-      }
-
       if (!passedConfig.uniqueId) {
         passedConfig.uniqueId = this.createUniqueId(10);
+      }
+
+      if (!this.configValidationService.validateConfig(passedConfig)) {
+        this.loggerService.logError(passedConfig.uniqueId, 'Validation of config rejected with errors. Config is NOT set.');
+        resolve(null);
       }
 
       if (!passedConfig.authWellknownEndpoint) {
@@ -48,7 +48,7 @@ export class OidcConfigService {
       const usedConfig = this.prepareConfig(passedConfig);
       this.configurationProvider.setConfig(usedConfig);
 
-      const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints');
+      const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', usedConfig.uniqueId);
       if (!!alreadyExistingAuthWellKnownEndpoints) {
         usedConfig.authWellKnown = alreadyExistingAuthWellKnownEndpoints;
         this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
@@ -56,10 +56,10 @@ export class OidcConfigService {
         resolve(usedConfig);
       }
 
-      const passedAuthWellKnownEndpoints = passedConfig.authWellKnown;
+      const passedAuthWellKnownEndpoints = usedConfig.authWellKnown;
 
       if (!!passedAuthWellKnownEndpoints) {
-        this.authWellKnownService.storeWellKnownEndpoints(passedAuthWellKnownEndpoints);
+        this.authWellKnownService.storeWellKnownEndpoints(usedConfig.uniqueId, passedAuthWellKnownEndpoints);
         usedConfig.authWellKnown = alreadyExistingAuthWellKnownEndpoints;
         this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
 
@@ -68,7 +68,7 @@ export class OidcConfigService {
 
       if (usedConfig.eagerLoadAuthWellKnownEndpoints) {
         this.authWellKnownService
-          .getAuthWellKnownEndPoints(usedConfig.authWellknownEndpoint)
+          .getAuthWellKnownEndPoints(usedConfig.authWellknownEndpoint, usedConfig.uniqueId)
           .pipe(
             catchError((error) => {
               this.loggerService.logError('Getting auth well known endpoints failed on start', error);

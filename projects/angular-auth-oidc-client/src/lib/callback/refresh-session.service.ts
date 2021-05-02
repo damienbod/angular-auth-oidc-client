@@ -9,8 +9,8 @@ import { FlowsDataService } from '../flows/flows-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
+import { LoginResponse } from '../login/login-response';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
-import { LoginResponse } from './../../../../../dist/angular-auth-oidc-client/lib/login/login-response.d';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 
 export const MAX_RETRY_ATTEMPTS = 3;
@@ -98,12 +98,12 @@ export class RefreshSessionService {
           return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(configId, customParams);
         }
 
-        return this.refreshSessionIframeService.refreshSessionWithIframe(customParams);
+        return this.refreshSessionIframeService.refreshSessionWithIframe(configId, customParams);
       })
     );
   }
 
-  private timeoutRetryStrategy(errorAttempts: Observable<any>): Observable<number> {
+  private timeoutRetryStrategy(errorAttempts: Observable<any>, configId: string): Observable<number> {
     return errorAttempts.pipe(
       mergeMap((error, index) => {
         const scalingDuration = 1000;

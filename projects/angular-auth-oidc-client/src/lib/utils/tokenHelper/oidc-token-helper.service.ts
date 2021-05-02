@@ -17,24 +17,24 @@ export class TokenHelperService {
     return date;
   }
 
-  getHeaderFromToken(token: any, encoded: boolean) {
-    if (!this.tokenIsValid(token)) {
+  getHeaderFromToken(token: any, encoded: boolean, configId: string) {
+    if (!this.tokenIsValid(token, configId)) {
       return {};
     }
 
     return this.getPartOfToken(token, 0, encoded);
   }
 
-  getPayloadFromToken(token: any, encoded: boolean) {
-    if (!this.tokenIsValid(token)) {
+  getPayloadFromToken(token: any, encoded: boolean, configId: string) {
+    if (!this.tokenIsValid(token, configId)) {
       return {};
     }
 
     return this.getPartOfToken(token, 1, encoded);
   }
 
-  getSignatureFromToken(token: any, encoded: boolean) {
-    if (!this.tokenIsValid(token)) {
+  getSignatureFromToken(token: any, encoded: boolean, configId: string) {
+    if (!this.tokenIsValid(token, configId)) {
       return {};
     }
 
@@ -71,7 +71,7 @@ export class TokenHelperService {
     const decoded = typeof window !== 'undefined' ? window.atob(output) : Buffer.from(output, 'base64').toString('binary');
 
     try {
-      // Going backwards: from bytestream, to percent-encoding, to original string.
+      // Going backwards: from byte stream, to percent-encoding, to original string.
       return decodeURIComponent(
         decoded
           .split('')
@@ -83,21 +83,21 @@ export class TokenHelperService {
     }
   }
 
-  private tokenIsValid(token: string) {
+  private tokenIsValid(token: string, configId: string) {
     if (!token) {
-      this.loggerService.logError(`token '${token}' is not valid --> token falsy`);
+      this.loggerService.logError(configId, `token '${token}' is not valid --> token falsy`);
       return false;
     }
 
     if (!(token as string).includes('.')) {
-      this.loggerService.logError(`token '${token}' is not valid --> no dots included`);
+      this.loggerService.logError(configId, `token '${token}' is not valid --> no dots included`);
       return false;
     }
 
     const parts = token.split('.');
 
     if (parts.length !== PARTS_OF_TOKEN) {
-      this.loggerService.logError(`token '${token}' is not valid --> token has to have exactly ${PARTS_OF_TOKEN - 1} dots`);
+      this.loggerService.logError(configId, `token '${token}' is not valid --> token has to have exactly ${PARTS_OF_TOKEN - 1} dots`);
       return false;
     }
 

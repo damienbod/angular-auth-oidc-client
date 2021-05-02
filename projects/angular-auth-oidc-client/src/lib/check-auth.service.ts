@@ -116,8 +116,8 @@ export class CheckAuthService {
   }
 
   private startCheckSessionAndValidation(configId: string) {
-    if (this.checkSessionService.isCheckSessionConfigured()) {
-      this.checkSessionService.start();
+    if (this.checkSessionService.isCheckSessionConfigured(configId)) {
+      this.checkSessionService.start(configId);
     }
 
     const { tokenRefreshInSeconds } = this.configurationProvider.getOpenIDConfiguration(configId);

@@ -84,7 +84,7 @@ export class PeriodicallyTokenCheckService {
           return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(configId, customParams);
         }
 
-        return this.refreshSessionIframeService.refreshSessionWithIframe(customParams);
+        return this.refreshSessionIframeService.refreshSessionWithIframe(configId, customParams);
       })
     );
 

@@ -9,8 +9,8 @@ const WELL_KNOWN_SUFFIX = `/.well-known/openid-configuration`;
 export class AuthWellKnownDataService {
   constructor(private readonly http: DataService) {}
 
-  getWellKnownEndPointsFromUrl(authWellknownEndpoint: string) {
-    return this.getWellKnownDocument(authWellknownEndpoint).pipe(
+  getWellKnownEndPointsFromUrl(authWellknownEndpoint: string, configId: string) {
+    return this.getWellKnownDocument(authWellknownEndpoint, configId).pipe(
       map(
         (wellKnownEndpoints) =>
           ({
@@ -29,13 +29,13 @@ export class AuthWellKnownDataService {
     );
   }
 
-  private getWellKnownDocument(wellKnownEndpoint: string) {
+  private getWellKnownDocument(wellKnownEndpoint: string, configId: string) {
     let url = wellKnownEndpoint;
 
     if (!wellKnownEndpoint.includes(WELL_KNOWN_SUFFIX)) {
       url = `${wellKnownEndpoint}${WELL_KNOWN_SUFFIX}`;
     }
 
-    return this.http.get<any>(url).pipe(retry(2));
+    return this.http.get<any>(url, configId, null).pipe(retry(2));
   }
 }

@@ -34,7 +34,7 @@ export class LogoffRevocationService {
       return;
     }
 
-    if (this.checkSessionService.serverStateChanged()) {
+    if (this.checkSessionService.serverStateChanged(configId)) {
       this.loggerService.logDebug(configId, 'only local login cleaned up, server session has changed');
     } else if (urlHandler) {
       urlHandler(endSessionUrl);

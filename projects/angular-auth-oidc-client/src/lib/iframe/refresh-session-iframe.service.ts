@@ -19,21 +19,21 @@ export class RefreshSessionIframeService {
     this.renderer = rendererFactory.createRenderer(null, null);
   }
 
-  refreshSessionWithIframe(customParams?: { [key: string]: string | number | boolean }): Observable<boolean> {
-    this.loggerService.logDebug('BEGIN refresh session Authorize Iframe renew');
+  refreshSessionWithIframe(configId: string, customParams?: { [key: string]: string | number | boolean }): Observable<boolean> {
+    this.loggerService.logDebug(configId, 'BEGIN refresh session Authorize Iframe renew');
     const url = this.urlService.getRefreshSessionSilentRenewUrl(customParams);
-    return this.sendAuthorizeRequestUsingSilentRenew(url);
+    return this.sendAuthorizeRequestUsingSilentRenew(url, configId);
   }
 
-  private sendAuthorizeRequestUsingSilentRenew(url: string): Observable<boolean> {
+  private sendAuthorizeRequestUsingSilentRenew(url: string, configId: string): Observable<boolean> {
     const sessionIframe = this.silentRenewService.getOrCreateIframe();
     this.initSilentRenewRequest();
-    this.loggerService.logDebug('sendAuthorizeRequestUsingSilentRenew for URL:' + url);
+    this.loggerService.logDebug(configId, 'sendAuthorizeRequestUsingSilentRenew for URL:' + url);
 
     return new Observable((observer) => {
       const onLoadHandler = () => {
         sessionIframe.removeEventListener('load', onLoadHandler);
-        this.loggerService.logDebug('removed event listener from IFrame');
+        this.loggerService.logDebug(configId, 'removed event listener from IFrame');
         observer.next(true);
         observer.complete();
       };

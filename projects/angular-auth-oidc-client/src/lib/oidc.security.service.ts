@@ -142,7 +142,7 @@ export class OidcSecurityService {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
 
     const token = this.getIdToken(configId);
-    return this.tokenHelperService.getPayloadFromToken(token, encode);
+    return this.tokenHelperService.getPayloadFromToken(token, encode, configId);
   }
 
   /**
