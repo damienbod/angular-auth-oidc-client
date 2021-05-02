@@ -30,7 +30,7 @@ export class StateValidationCallbackHandlerService {
     } else {
       const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${this.doc.location.hash}`;
       this.loggerService.logWarning(configId, errorMessage);
-      this.resetAuthDataService.resetAuthorizationData();
+      this.resetAuthDataService.resetAuthorizationData(configId);
       this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
       return throwError(errorMessage);
     }

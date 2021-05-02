@@ -14,7 +14,7 @@ import { SilentRenewService } from './iframe/silent-renew.service';
 import { LoggerService } from './logging/logger.service';
 import { LoginResponse } from './login/login-response';
 import { PopUpService } from './login/popup/popup.service';
-import { UserService } from './userData/user-service';
+import { UserService } from './userData/user.service';
 
 @Injectable()
 export class CheckAuthService {

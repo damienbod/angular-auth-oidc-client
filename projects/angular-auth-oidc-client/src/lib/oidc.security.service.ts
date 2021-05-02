@@ -14,7 +14,7 @@ import { LoginService } from './login/login.service';
 import { PopupOptions } from './login/popup/popup-options';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { StoragePersistenceService } from './storage/storage-persistence.service';
-import { UserService } from './userData/user-service';
+import { UserService } from './userData/user.service';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
 
 @Injectable()

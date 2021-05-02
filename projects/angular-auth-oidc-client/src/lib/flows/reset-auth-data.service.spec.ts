@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
-import { UserService } from '../userData/user-service';
 import { UserServiceMock } from '../userData/user-service-mock';
+import { UserService } from '../userData/user.service';
 import { FlowsDataService } from './flows-data.service';
 import { FlowsDataServiceMock } from './flows-data.service-mock';
 import { ResetAuthDataService } from './reset-auth-data.service';

@@ -42,7 +42,7 @@ import { PublicEventsService } from './public-events/public-events.service';
 import { AbstractSecurityStorage } from './storage/abstract-security-storage';
 import { BrowserStorageService } from './storage/browser-storage.service';
 import { StoragePersistenceService } from './storage/storage-persistence.service';
-import { UserService } from './userData/user-service';
+import { UserService } from './userData/user.service';
 import { EqualityService } from './utils/equality/equality.service';
 import { FlowHelper } from './utils/flowHelper/flow-helper.service';
 import { PlatformProvider } from './utils/platform-provider/platform.provider';

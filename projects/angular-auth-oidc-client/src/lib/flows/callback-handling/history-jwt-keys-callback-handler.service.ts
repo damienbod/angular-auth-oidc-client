@@ -39,7 +39,7 @@ export class HistoryJwtKeysCallbackHandlerService {
     if (callbackContext.authResult.error) {
       const errorMessage = `authorizedCallbackProcedure came with error: ${callbackContext.authResult.error}`;
       this.loggerService.logDebug(configId, errorMessage);
-      this.resetAuthDataService.resetAuthorizationData();
+      this.resetAuthDataService.resetAuthorizationData(configId);
       this.flowsDataService.setNonce('');
       this.handleResultErrorFromCallback(callbackContext.authResult, callbackContext.isRenewProcess);
       return throwError(errorMessage);
@@ -47,7 +47,7 @@ export class HistoryJwtKeysCallbackHandlerService {
 
     this.loggerService.logDebug(configId, `AuthResult '${callbackContext.authResult}'. AuthorizedCallback created, begin token validation`);
 
-    return this.signInKeyDataService.getSigningKeys().pipe(
+    return this.signInKeyDataService.getSigningKeys(configId).pipe(
       tap((jwtKeys: JwtKeys) => this.storeSigningKeys(jwtKeys, configId)),
       catchError((err) => {
         // fallback: try to load jwtKeys from storage

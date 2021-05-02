@@ -26,8 +26,8 @@ import { PopUpService } from './login/popup/popup.service';
 import { PopUpServiceMock } from './login/popup/popup.service-mock';
 import { StoragePersistenceServiceMock } from './storage/storage-persistence-service-mock.service';
 import { StoragePersistenceService } from './storage/storage-persistence.service';
-import { UserService } from './userData/user-service';
 import { UserServiceMock } from './userData/user-service-mock';
+import { UserService } from './userData/user.service';
 
 describe('CheckAuthService', () => {
   let checkAuthService: CheckAuthService;

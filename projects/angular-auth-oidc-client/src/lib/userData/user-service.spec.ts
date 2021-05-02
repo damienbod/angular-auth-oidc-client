@@ -8,13 +8,13 @@ import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
-import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
-import { UserService } from './user-service';
+import { UserService } from './user.service';
 
 const DUMMY_USER_DATA = {
   sub: 'a5461470-33eb-4b2d-82d4-b0484e96ad7f',

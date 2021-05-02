@@ -22,7 +22,7 @@ export class ImplicitFlowCallbackHandlerService {
 
     this.loggerService.logDebug(configId, 'BEGIN authorizedCallback, no auth data');
     if (!isRenewProcessData) {
-      this.resetAuthDataService.resetAuthorizationData();
+      this.resetAuthDataService.resetAuthorizationData(configId);
     }
 
     hash = hash || this.doc.location.hash.substr(1);

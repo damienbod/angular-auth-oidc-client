@@ -25,7 +25,7 @@ export class RefreshSessionRefreshTokenService {
     return this.flowsService.processRefreshToken(configId, customParams).pipe(
       catchError((error) => {
         this.intervalService.stopPeriodicTokenCheck();
-        this.resetAuthDataService.resetAuthorizationData();
+        this.resetAuthDataService.resetAuthorizationData(configId);
         return throwError(error);
       })
     );

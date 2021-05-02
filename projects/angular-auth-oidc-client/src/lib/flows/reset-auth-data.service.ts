@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthStateService } from '../authState/auth-state.service';
-import { UserService } from '../userData/user-service';
+import { UserService } from '../userData/user.service';
 import { FlowsDataService } from './flows-data.service';
 
 @Injectable()
@@ -11,9 +11,9 @@ export class ResetAuthDataService {
     private readonly userService: UserService
   ) {}
 
-  resetAuthorizationData(): void {
-    this.userService.resetUserDataInStore();
+  resetAuthorizationData(configId: string): void {
+    this.userService.resetUserDataInStore(configId);
     this.flowsDataService.resetStorageFlowData();
-    this.authStateService.setUnauthorizedAndFireEvent();
+    this.authStateService.setUnauthorizedAndFireEvent(configId);
   }
 }

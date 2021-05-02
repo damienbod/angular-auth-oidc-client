@@ -4,7 +4,7 @@ import { catchError, switchMap } from 'rxjs/operators';
 import { AuthStateService } from '../../authState/auth-state.service';
 import { ConfigurationProvider } from '../../config/config.provider';
 import { LoggerService } from '../../logging/logger.service';
-import { UserService } from '../../userData/user-service';
+import { UserService } from '../../userData/user.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
@@ -55,7 +55,7 @@ export class UserCallbackHandlerService {
 
             return of(callbackContext);
           } else {
-            this.resetAuthDataService.resetAuthorizationData();
+            this.resetAuthDataService.resetAuthorizationData(configId);
             this.publishUnauthorizedState(validationResult, isRenewProcess);
             const errorMessage = `Called for userData but they were ${userData}`;
             this.loggerService.logWarning(configId, errorMessage);

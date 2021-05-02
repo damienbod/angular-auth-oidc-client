@@ -8,7 +8,7 @@ import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { UserService } from '../userData/user-service';
+import { UserService } from '../userData/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { IntervalService } from './interval.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
@@ -65,7 +65,7 @@ export class PeriodicallyTokenCheckService {
         const config = this.configurationProvider.getOpenIDConfiguration(configId);
 
         if (!config?.silentRenew) {
-          this.resetAuthDataService.resetAuthorizationData();
+          this.resetAuthDataService.resetAuthorizationData(configId);
           return of(null);
         }
 

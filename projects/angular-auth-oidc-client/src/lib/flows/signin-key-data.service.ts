@@ -15,21 +15,24 @@ export class SigninKeyDataService {
     private dataService: DataService
   ) {}
 
-  getSigningKeys() {
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints');
+  getSigningKeys(configId: string) {
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
     const jwksUri = authWellKnownEndPoints?.jwksUri;
     if (!jwksUri) {
       const error = `getSigningKeys: authWellKnownEndpoints.jwksUri is: '${jwksUri}'`;
-      this.loggerService.logWarning(error);
+      this.loggerService.logWarning(configId, error);
       return throwError(error);
     }
 
     this.loggerService.logDebug('Getting signinkeys from ', jwksUri);
 
-    return this.dataService.get<JwtKeys>(jwksUri).pipe(retry(2), catchError(this.handleErrorGetSigningKeys));
+    return this.dataService.get<JwtKeys>(jwksUri, configId, null).pipe(
+      retry(2),
+      catchError((e) => this.handleErrorGetSigningKeys(e, configId))
+    );
   }
 
-  private handleErrorGetSigningKeys(errorResponse: HttpResponse<any> | any) {
+  private handleErrorGetSigningKeys(errorResponse: HttpResponse<any> | any, configId: string) {
     let errMsg = '';
     if (errorResponse instanceof HttpResponse) {
       const body = errorResponse.body || {};
@@ -40,7 +43,7 @@ export class SigninKeyDataService {
       const { message } = errorResponse;
       errMsg = !!message ? message : `${errorResponse}`;
     }
-    this.loggerService.logError(errMsg);
-    return throwError(new Error(errMsg));
+    this.loggerService.logError(configId, errMsg);
+    return throwError(errMsg);
   }
 }

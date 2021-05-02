@@ -30,7 +30,7 @@ export class UserService {
 
   getAndPersistUserDataInStore(configId: string, isRenewProcess = false, idToken?: any, decodedIdToken?: any): Observable<any> {
     idToken = idToken || this.storagePersistenceService.getIdToken(configId);
-    decodedIdToken = decodedIdToken || this.tokenHelperService.getPayloadFromToken(idToken, false);
+    decodedIdToken = decodedIdToken || this.tokenHelperService.getPayloadFromToken(idToken, false, configId);
 
     const existingUserDataFromStorage = this.getUserDataFromStore(configId);
     const haveUserData = !!existingUserDataFromStorage;
@@ -39,7 +39,7 @@ export class UserService {
 
     const accessToken = this.storagePersistenceService.getAccessToken(configId);
     if (!(isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow)) {
-      this.loggerService.logDebug(`authorizedCallback id_token flow with accessToken ${accessToken}`);
+      this.loggerService.logDebug(configId, `authorizedCallback id_token flow with accessToken ${accessToken}`);
 
       this.setUserDataToStore(decodedIdToken, configId);
       return of(decodedIdToken);
@@ -96,7 +96,7 @@ export class UserService {
           return data;
         } else {
           // something went wrong, user data sub does not match that from id_token
-          this.loggerService.logWarning(`User data sub does not match sub in id_token, resetting`);
+          this.loggerService.logWarning(configId, `User data sub does not match sub in id_token, resetting`);
           this.resetUserDataInStore(configId);
           return null;
         }
@@ -110,7 +110,7 @@ export class UserService {
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
 
     if (!authWellKnownEndPoints) {
-      this.loggerService.logWarning('init check session: authWellKnownEndpoints is undefined');
+      this.loggerService.logWarning(configId, 'init check session: authWellKnownEndpoints is undefined');
       return throwError('authWellKnownEndpoints is undefined');
     }
 
@@ -118,12 +118,13 @@ export class UserService {
 
     if (!userInfoEndpoint) {
       this.loggerService.logError(
+        configId,
         'init check session: authWellKnownEndpoints.userinfo_endpoint is undefined; set auto_userinfo = false in config'
       );
       return throwError('authWellKnownEndpoints.userinfo_endpoint is undefined');
     }
 
-    return this.oidcDataService.get(userInfoEndpoint, token).pipe(retry(2));
+    return this.oidcDataService.get(userInfoEndpoint, configId, token).pipe(retry(2));
   }
 
   private validateUserDataSubIdToken(idTokenSub: any, userDataSub: any): boolean {

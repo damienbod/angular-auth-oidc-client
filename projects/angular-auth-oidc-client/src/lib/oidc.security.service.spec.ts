@@ -21,8 +21,8 @@ import { LogoffRevocationServiceMock } from './logoffRevoke/logoff-revocation.se
 import { OidcSecurityService } from './oidc.security.service';
 import { StoragePersistenceServiceMock } from './storage/storage-persistence-service-mock.service';
 import { StoragePersistenceService } from './storage/storage-persistence.service';
-import { UserService } from './userData/user-service';
 import { UserServiceMock } from './userData/user-service-mock';
+import { UserService } from './userData/user.service';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
 import { TokenHelperServiceMock } from './utils/tokenHelper/oidc-token-helper.service-mock';
 

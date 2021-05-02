@@ -23,8 +23,8 @@ export class FlowsService {
   ) {}
 
   processCodeFlowCallback(urlToCheck: string, configId: string): Observable<CallbackContext> {
-    return this.codeFlowCallbackHandlerService.codeFlowCallback(urlToCheck).pipe(
-      switchMap((callbackContext) => this.codeFlowCallbackHandlerService.codeFlowCodeRequest(callbackContext)),
+    return this.codeFlowCallbackHandlerService.codeFlowCallback(urlToCheck, configId).pipe(
+      switchMap((callbackContext) => this.codeFlowCallbackHandlerService.codeFlowCodeRequest(callbackContext, configId)),
       switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext, configId)),
       switchMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext, configId)),
       switchMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext, configId))
@@ -32,7 +32,7 @@ export class FlowsService {
   }
 
   processSilentRenewCodeFlowCallback(firstContext: CallbackContext, configId: string): Observable<CallbackContext> {
-    return this.codeFlowCallbackHandlerService.codeFlowCodeRequest(firstContext).pipe(
+    return this.codeFlowCallbackHandlerService.codeFlowCodeRequest(firstContext, configId).pipe(
       switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext, configId)),
       switchMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext, configId)),
       switchMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext, configId))
