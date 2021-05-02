@@ -24,10 +24,10 @@ describe('ConfigurationProviderTests', () => {
     expect(configurationProvider.getOpenIDConfiguration()).toBeDefined();
   });
 
-  it('hasValidConfig is true if config is set', () => {
+  it('hasConfig is true if config is set', () => {
     configurationProvider.setConfig({ stsServer: 'hello' });
 
-    expect(configurationProvider.hasValidConfig()).toBeTrue();
+    expect(configurationProvider.hasConfig()).toBeTrue();
   });
 
   it('get openIDConfiguration returns null when openIdConfigurationInternal is falsy', () => {

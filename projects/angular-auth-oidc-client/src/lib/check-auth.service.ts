@@ -35,7 +35,7 @@ export class CheckAuthService {
   ) {}
 
   checkAuth(url?: string): Observable<LoginResponse> {
-    if (!this.configurationProvider.hasValidConfig()) {
+    if (!this.configurationProvider.hasConfig()) {
       const errorMessage = 'Please provide a configuration before setting up the module';
       this.loggerService.logError(errorMessage);
 
