@@ -9,7 +9,6 @@ import { ImplicitFlowCallbackService } from './callback/implicit-flow-callback.s
 import { CheckAuthService } from './check-auth.service';
 import { ConfigValidationService } from './config-validation/config-validation.service';
 import { AuthWellKnownDataService } from './config/auth-well-known-data.service';
-import { AuthWellKnownEndpoints } from './config/auth-well-known-endpoints';
 import { AuthWellKnownService } from './config/auth-well-known.service';
 import { StsConfigLoader, StsConfigStaticLoader } from './config/config-loader';
 import { ConfigurationProvider } from './config/config.provider';
@@ -53,9 +52,9 @@ import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';
 
 export interface PassedInitialConfig {
-  authWellKnown?: AuthWellKnownEndpoints;
-  config?: OpenIdConfiguration;
+  config?: OpenIdConfiguration | OpenIdConfiguration[];
   loader?: Provider;
+  storage?: any;
 }
 
 // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
@@ -64,12 +63,9 @@ export function createStaticLoader(passedConfig: PassedInitialConfig) {
 }
 
 // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-export function configurationProviderFactory(
-  oidcConfigService: OidcConfigService,
-  loader: StsConfigLoader,
-  passedConfig: PassedInitialConfig
-) {
-  const fn = () => loader.loadConfig().then((loadedConfig) => oidcConfigService.withConfig(loadedConfig, passedConfig.authWellKnown));
+export function configurationProviderFactory(oidcConfigService: OidcConfigService, loader: StsConfigLoader) {
+  const allLoadPromises = Promise.all(loader.loadConfigs());
+  const fn = () => allLoadPromises.then((configs) => oidcConfigService.withConfigs(configs));
 
   return fn;
 }
@@ -89,7 +85,7 @@ export class AuthModule {
         // Make the PASSED_CONFIG available through injection
         { provide: PASSED_CONFIG, useValue: passedConfig },
 
-        //Create the loader: Either the one getting passed or a static one
+        // Create the loader: Either the one getting passed or a static one
         passedConfig?.loader || { provide: StsConfigLoader, useFactory: createStaticLoader, deps: [PASSED_CONFIG] },
 
         // Load the config when the app starts
@@ -99,9 +95,10 @@ export class AuthModule {
           deps: [OidcConfigService, StsConfigLoader, PASSED_CONFIG],
           useFactory: configurationProviderFactory,
         },
+
         {
           provide: AbstractSecurityStorage,
-          useClass: (passedConfig?.config as OpenIdConfiguration)?.storage || BrowserStorageService,
+          useClass: passedConfig?.storage || BrowserStorageService,
         },
         OidcConfigService,
         PublicEventsService,

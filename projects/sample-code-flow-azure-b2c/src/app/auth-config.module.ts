@@ -14,7 +14,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
         scope: 'openid https://damienbod.onmicrosoft.com/testapi/demo.read',
         responseType: 'code',
         silentRenew: true,
-        autoUserinfo: false,
+        autoUserInfo: false,
         silentRenewUrl: window.location.origin + '/silent-renew.html',
         logLevel: LogLevel.Debug,
         renewTimeBeforeTokenExpiresInSeconds: 60,

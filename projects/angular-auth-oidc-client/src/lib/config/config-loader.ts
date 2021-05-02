@@ -6,21 +6,29 @@ export class OpenIdConfigLoader {
 }
 
 export abstract class StsConfigLoader {
-  abstract loadConfig(): Promise<any>;
+  abstract loadConfigs(): Promise<OpenIdConfiguration>[];
 }
 
 export class StsConfigStaticLoader implements StsConfigLoader {
-  constructor(private passedConfig: OpenIdConfiguration) {}
+  constructor(private passedConfigs: OpenIdConfiguration | OpenIdConfiguration[]) {}
 
-  loadConfig(): Promise<any> {
-    return new Promise((resolve, reject) => resolve(this.passedConfig));
+  loadConfigs(): Promise<OpenIdConfiguration>[] {
+    if (Array.isArray(this.passedConfigs)) {
+      const allInstantStaticPromises = this.passedConfigs.map((x) => new Promise((resolve, _) => resolve(x)));
+
+      return allInstantStaticPromises;
+    }
+
+    const singleStaticPromise = new Promise((resolve, _) => resolve(this.passedConfigs));
+
+    return [singleStaticPromise];
   }
 }
 
 export class StsConfigHttpLoader implements StsConfigLoader {
-  constructor(private config$: Promise<any>) {}
+  constructor(private configs$: Promise<OpenIdConfiguration> | Promise<OpenIdConfiguration>[]) {}
 
-  loadConfig(): Promise<any> {
-    return this.config$;
+  loadConfigs(): Promise<any>[] {
+    return Array.isArray(this.configs$) ? this.configs$ : [this.configs$];
   }
 }

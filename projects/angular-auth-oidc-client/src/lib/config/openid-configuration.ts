@@ -1,13 +1,19 @@
 import { LogLevel } from '../logging/log-level';
+import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 
 export interface OpenIdConfiguration {
+  uniqueId?: string;
   /**
    * The url to the Security Token Service (STS) server.
    * This field is required.
    */
   stsServer?: string;
   /** Override the default STS wellknown endpoint postfix. */
+  // TODO CHANGE THIS IN `...URL`
   authWellknownEndpoint?: string;
+  // TODO CHANGE THIS IN `authWellknownEndpoint`
+  authWellKnown?: AuthWellKnownEndpoints;
+
   /** The redirect URL defined on the STS. */
   redirectUrl?: string;
   /**
@@ -83,7 +89,7 @@ export interface OpenIdConfiguration {
   /** Route, if the server returns a 401. This is an Angular route. HTTP 401 */
   unauthorizedRoute?: string;
   /** When set to true, library automatically gets user info after authentication */
-  autoUserinfo?: boolean;
+  autoUserInfo?: boolean;
   /** When set to true, library automatically gets user info after token renew */
   renewUserInfoAfterTokenRenew?: boolean;
   /** Used for custom state logic handling. The state is not automatically reset when set to false */

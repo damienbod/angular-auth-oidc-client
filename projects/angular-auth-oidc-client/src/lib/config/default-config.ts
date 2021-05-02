@@ -21,7 +21,7 @@ export const DEFAULT_CONFIG: OpenIdConfiguration = {
   postLoginRoute: '/',
   forbiddenRoute: '/forbidden',
   unauthorizedRoute: '/unauthorized',
-  autoUserinfo: true,
+  autoUserInfo: true,
   autoCleanStateAfterAuthentication: true,
   triggerAuthorizationResultEvent: false,
   logLevel: LogLevel.Warn,

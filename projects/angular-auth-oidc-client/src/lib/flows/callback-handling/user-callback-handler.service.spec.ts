@@ -70,7 +70,7 @@ describe('UserCallbackHandlerService', () => {
           existingIdToken: null,
         };
 
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserinfo: false });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserInfo: false });
         const spy = spyOn(flowsDataService, 'setSessionState');
 
         service.callbackUser(callbackContext).subscribe((resultCallbackContext) => {
@@ -96,7 +96,7 @@ describe('UserCallbackHandlerService', () => {
           existingIdToken: null,
         };
 
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserinfo: false });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserInfo: false });
         const spy = spyOn(flowsDataService, 'setSessionState');
 
         service.callbackUser(callbackContext).subscribe((resultCallbackContext) => {
@@ -122,7 +122,7 @@ describe('UserCallbackHandlerService', () => {
           existingIdToken: null,
         };
 
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserinfo: false });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserInfo: false });
         const spy = spyOn(flowsDataService, 'setSessionState');
 
         service.callbackUser(callbackContext).subscribe((resultCallbackContext) => {
@@ -148,7 +148,7 @@ describe('UserCallbackHandlerService', () => {
           existingIdToken: null,
         };
 
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserinfo: false });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserInfo: false });
         const spy = spyOn(flowsDataService, 'setSessionState');
 
         service.callbackUser(callbackContext).subscribe((resultCallbackContext) => {
@@ -174,7 +174,7 @@ describe('UserCallbackHandlerService', () => {
           existingIdToken: null,
         };
 
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserinfo: false });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserInfo: false });
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
 
         service.callbackUser(callbackContext).subscribe((resultCallbackContext) => {
@@ -204,7 +204,7 @@ describe('UserCallbackHandlerService', () => {
           existingIdToken: null,
         };
 
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserinfo: true });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserInfo: true });
         const getAndPersistUserDataInStoreSpy = spyOn(userService, 'getAndPersistUserDataInStore').and.returnValue(
           of({ user: 'some_data' })
         );
@@ -232,7 +232,7 @@ describe('UserCallbackHandlerService', () => {
           existingIdToken: null,
         };
 
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserinfo: true });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserInfo: true });
         spyOn(userService, 'getAndPersistUserDataInStore').and.returnValue(of({ user: 'some_data' }));
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
 
@@ -248,7 +248,7 @@ describe('UserCallbackHandlerService', () => {
     );
 
     it(
-      'calls flowsDataService.setSessionState with correct params if userdata is present and NOT refresh token',
+      'calls flowsDataService.setSessionState with correct params if user data is present and NOT refresh token',
       waitForAsync(() => {
         const svr = new StateValidationResult('accesstoken', 'idtoken', true, 'decoded', ValidationResult.MaxOffsetExpired);
         const callbackContext = {
@@ -263,7 +263,7 @@ describe('UserCallbackHandlerService', () => {
           existingIdToken: null,
         };
 
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserinfo: true });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserInfo: true });
         spyOn(userService, 'getAndPersistUserDataInStore').and.returnValue(of({ user: 'some_data' }));
         const setSessionStateSpy = spyOn(flowsDataService, 'setSessionState');
 
@@ -290,7 +290,7 @@ describe('UserCallbackHandlerService', () => {
           existingIdToken: null,
         };
 
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserinfo: true });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserInfo: true });
         spyOn(userService, 'getAndPersistUserDataInStore').and.returnValue(of(null));
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
 
@@ -323,7 +323,7 @@ describe('UserCallbackHandlerService', () => {
           existingIdToken: null,
         };
 
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserinfo: true });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserInfo: true });
         spyOn(userService, 'getAndPersistUserDataInStore').and.returnValue(of(null));
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
 

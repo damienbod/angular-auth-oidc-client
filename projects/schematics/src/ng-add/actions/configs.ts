@@ -32,7 +32,7 @@ const AZURE_AD_SILENT_RENEW = `{
             silentRenew: true,
             maxIdTokenIatOffsetAllowedInSeconds: 600,
             issValidationOff: false,
-            autoUserinfo: false,
+            autoUserInfo: false,
             silentRenewUrl: window.location.origin + '/silent-renew.html',
             customParams: {
               prompt: 'select_account', // login, consent
@@ -50,7 +50,7 @@ const AZURE_AD_REFRESH_TOKENS = `{
             useRefreshToken: true,
             maxIdTokenIatOffsetAllowedInSeconds: 600,
             issValidationOff: false,
-            autoUserinfo: false,
+            autoUserInfo: false,
             customParams: {
               prompt: 'select_account', // login, consent
             },
@@ -94,3 +94,4 @@ const OIDC_PLAIN = `{
         }`;
 
 export { DEFAULT_CONFIG, AZURE_AD_SILENT_RENEW, IFRAME_SILENT_RENEW, AZURE_AD_REFRESH_TOKENS, OIDC_PLAIN, AUTH_0, OAUTH_PAR };
+

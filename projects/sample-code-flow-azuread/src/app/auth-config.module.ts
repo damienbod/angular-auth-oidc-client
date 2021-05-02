@@ -14,7 +14,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
         silentRenew: true,
         maxIdTokenIatOffsetAllowedInSeconds: 600,
         issValidationOff: true,
-        autoUserinfo: false,
+        autoUserInfo: false,
         // silentRenewUrl: window.location.origin + '/silent-renew.html',
         useRefreshToken: true,
         logLevel: LogLevel.Debug,
