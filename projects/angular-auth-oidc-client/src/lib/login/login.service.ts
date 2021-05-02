@@ -21,9 +21,9 @@ export class LoginService {
     const { usePushedAuthorisationRequests } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (usePushedAuthorisationRequests) {
-      return this.parLoginService.loginPar(authOptions);
+      return this.parLoginService.loginPar(configId, authOptions);
     } else {
-      return this.standardLoginService.loginStandard(authOptions);
+      return this.standardLoginService.loginStandard(configId, authOptions);
     }
   }
 
@@ -31,9 +31,9 @@ export class LoginService {
     const { usePushedAuthorisationRequests } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (usePushedAuthorisationRequests) {
-      return this.parLoginService.loginWithPopUpPar(authOptions, popupOptions);
+      return this.parLoginService.loginWithPopUpPar(configId, authOptions, popupOptions);
     } else {
-      return this.popUpLoginService.loginWithPopUpStandard(authOptions, popupOptions);
+      return this.popUpLoginService.loginWithPopUpStandard(configId, authOptions, popupOptions);
     }
   }
 }

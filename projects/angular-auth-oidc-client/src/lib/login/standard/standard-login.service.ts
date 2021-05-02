@@ -18,22 +18,22 @@ export class StandardLoginService {
     private authWellKnownService: AuthWellKnownService
   ) {}
 
-  loginStandard(authOptions?: AuthOptions): void {
-    if (!this.responseTypeValidationService.hasConfigValidResponseType()) {
-      this.loggerService.logError('Invalid response type!');
+  loginStandard(configId: string, authOptions?: AuthOptions): void {
+    if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
+      this.loggerService.logError(configId, 'Invalid response type!');
       return;
     }
 
-    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration();
+    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!authWellknownEndpoint) {
-      this.loggerService.logError('no authWellknownEndpoint given!');
+      this.loggerService.logError(configId, 'no authWellknownEndpoint given!');
       return;
     }
 
-    this.loggerService.logDebug('BEGIN Authorize OIDC Flow, no auth data');
+    this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow, no auth data');
 
-    this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint).subscribe(() => {
+    this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint, configId).subscribe(() => {
       const { urlHandler, customParams } = authOptions || {};
 
       const url = this.urlService.getAuthorizeUrl(customParams);

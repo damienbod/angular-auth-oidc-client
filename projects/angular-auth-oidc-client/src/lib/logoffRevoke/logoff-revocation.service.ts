@@ -24,18 +24,18 @@ export class LogoffRevocationService {
 
   // Logs out on the server and the local client.
   // If the server state has changed, check session, then only a local logout.
-  logoff(urlHandler?: (url: string) => any, customParams?: { [p: string]: string | number | boolean }) {
-    this.loggerService.logDebug('logoff, remove auth ');
-    const endSessionUrl = this.getEndSessionUrl(customParams);
+  logoff(configId: string, urlHandler?: (url: string) => any, customParams?: { [p: string]: string | number | boolean }) {
+    this.loggerService.logDebug(configId, 'logoff, remove auth ');
+    const endSessionUrl = this.getEndSessionUrl(configId, customParams);
     this.resetAuthDataService.resetAuthorizationData();
 
     if (!endSessionUrl) {
-      this.loggerService.logDebug('only local login cleaned up, no end_session_endpoint');
+      this.loggerService.logDebug(configId, 'only local login cleaned up, no end_session_endpoint');
       return;
     }
 
     if (this.checkSessionService.serverStateChanged()) {
-      this.loggerService.logDebug('only local login cleaned up, server session has changed');
+      this.loggerService.logDebug(configId, 'only local login cleaned up, server session has changed');
     } else if (urlHandler) {
       urlHandler(endSessionUrl);
     } else {
@@ -50,30 +50,30 @@ export class LogoffRevocationService {
 
   // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
   // only the access token is revoked. Then the logout run.
-  logoffAndRevokeTokens(urlHandler?: (url: string) => any): Observable<any> {
-    if (!this.storagePersistenceService.read('authWellKnownEndPoints')?.revocationEndpoint) {
-      this.loggerService.logDebug('revocation endpoint not supported');
-      this.logoff(urlHandler);
+  logoffAndRevokeTokens(configId: string, urlHandler?: (url: string) => any): Observable<any> {
+    if (!this.storagePersistenceService.read('authWellKnownEndPoints', configId)?.revocationEndpoint) {
+      this.loggerService.logDebug(configId, 'revocation endpoint not supported');
+      this.logoff(configId, urlHandler);
     }
 
-    if (this.storagePersistenceService.getRefreshToken()) {
-      return this.revokeRefreshToken().pipe(
+    if (this.storagePersistenceService.getRefreshToken(configId)) {
+      return this.revokeRefreshToken(configId).pipe(
         switchMap((result) => this.revokeAccessToken(result)),
         catchError((error) => {
           const errorMessage = `revoke token failed`;
           this.loggerService.logError(errorMessage, error);
           return throwError(errorMessage);
         }),
-        tap(() => this.logoff(urlHandler))
+        tap(() => this.logoff(configId, urlHandler))
       );
     } else {
-      return this.revokeAccessToken().pipe(
+      return this.revokeAccessToken(configId).pipe(
         catchError((error) => {
           const errorMessage = `revoke access token failed`;
           this.loggerService.logError(errorMessage, error);
           return throwError(errorMessage);
         }),
-        tap(() => this.logoff(urlHandler))
+        tap(() => this.logoff(configId, urlHandler))
       );
     }
   }
@@ -82,23 +82,23 @@ export class LogoffRevocationService {
   // revokes an access token on the STS. If no token is provided, then the token from
   // the storage is revoked. You can pass any token to revoke. This makes it possible to
   // manage your own tokens. The is a public API.
-  revokeAccessToken(accessToken?: any): Observable<any> {
-    const accessTok = accessToken || this.storagePersistenceService.getAccessToken();
+  revokeAccessToken(configId: string, accessToken?: any): Observable<any> {
+    const accessTok = accessToken || this.storagePersistenceService.getAccessToken(configId);
     const body = this.urlService.createRevocationEndpointBodyAccessToken(accessTok);
     const url = this.urlService.getRevocationEndpointUrl();
 
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-    return this.dataService.post(url, body, headers).pipe(
+    return this.dataService.post(url, body, configId, headers).pipe(
       retry(2),
       switchMap((response: any) => {
-        this.loggerService.logDebug('revocation endpoint post response: ', response);
+        this.loggerService.logDebug(configId, 'revocation endpoint post response: ', response);
         return of(response);
       }),
       catchError((error) => {
         const errorMessage = `Revocation request failed`;
-        this.loggerService.logError(errorMessage, error);
+        this.loggerService.logError(configId, errorMessage, error);
         return throwError(errorMessage);
       })
     );
@@ -108,18 +108,18 @@ export class LogoffRevocationService {
   // revokes an refresh token on the STS. This is only required in the code flow with refresh tokens.
   // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
   // This makes it possible to manage your own tokens.
-  revokeRefreshToken(refreshToken?: any): Observable<any> {
-    const refreshTok = refreshToken || this.storagePersistenceService.getRefreshToken();
+  revokeRefreshToken(configId: string, refreshToken?: any): Observable<any> {
+    const refreshTok = refreshToken || this.storagePersistenceService.getRefreshToken(configId);
     const body = this.urlService.createRevocationEndpointBodyRefreshToken(refreshTok);
     const url = this.urlService.getRevocationEndpointUrl();
 
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-    return this.dataService.post(url, body, headers).pipe(
+    return this.dataService.post(url, body, configId, headers).pipe(
       retry(2),
       switchMap((response: any) => {
-        this.loggerService.logDebug('revocation endpoint post response: ', response);
+        this.loggerService.logDebug(configId, 'revocation endpoint post response: ', response);
         return of(response);
       }),
       catchError((error) => {
@@ -130,8 +130,8 @@ export class LogoffRevocationService {
     );
   }
 
-  getEndSessionUrl(customParams?: { [p: string]: string | number | boolean }): string | null {
-    const idToken = this.storagePersistenceService.getIdToken();
+  getEndSessionUrl(configId: string, customParams?: { [p: string]: string | number | boolean }): string | null {
+    const idToken = this.storagePersistenceService.getIdToken(configId);
     return this.urlService.createEndSessionUrl(idToken, customParams);
   }
 }

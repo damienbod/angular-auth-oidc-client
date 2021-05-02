@@ -215,8 +215,10 @@ export class OidcSecurityService {
    */
   // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
   // only the access token is revoked. Then the logout run.
-  logoffAndRevokeTokens(urlHandler?: (url: string) => any): Observable<any> {
-    return this.logoffRevocationService.logoffAndRevokeTokens(urlHandler);
+  logoffAndRevokeTokens(urlHandler?: (url: string) => any, configId?: string): Observable<any> {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
+    return this.logoffRevocationService.logoffAndRevokeTokens(configId, urlHandler);
   }
 
   /**
@@ -225,9 +227,11 @@ export class OidcSecurityService {
    *
    * @param authOptions
    */
-  logoff(authOptions?: AuthOptions) {
+  logoff(authOptions?: AuthOptions, configId?: string) {
     const { urlHandler, customParams } = authOptions || {};
-    return this.logoffRevocationService.logoff(urlHandler, customParams);
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
+    return this.logoffRevocationService.logoff(configId, urlHandler, customParams);
   }
 
   /**
@@ -264,7 +268,9 @@ export class OidcSecurityService {
    *
    * @param customParams
    */
-  getEndSessionUrl(customParams?: { [p: string]: string | number | boolean }): string | null {
-    return this.logoffRevocationService.getEndSessionUrl(customParams);
+  getEndSessionUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): string | null {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
+    return this.logoffRevocationService.getEndSessionUrl(configId, customParams);
   }
 }

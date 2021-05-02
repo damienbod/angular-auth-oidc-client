@@ -25,24 +25,24 @@ export class PopUpLoginService {
     private checkAuthService: CheckAuthService
   ) {}
 
-  loginWithPopUpStandard(authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
-    if (!this.responseTypeValidationService.hasConfigValidResponseType()) {
+  loginWithPopUpStandard(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
+    if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
       const errorMessage = 'Invalid response type!';
-      this.loggerService.logError(errorMessage);
+      this.loggerService.logError(configId, errorMessage);
       return throwError(errorMessage);
     }
 
-    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration();
+    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!authWellknownEndpoint) {
       const errorMessage = 'no authWellknownEndpoint given!';
-      this.loggerService.logError(errorMessage);
+      this.loggerService.logError(configId, errorMessage);
       return throwError(errorMessage);
     }
 
-    this.loggerService.logDebug('BEGIN Authorize OIDC Flow with popup, no auth data');
+    this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow with popup, no auth data');
 
-    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint).pipe(
+    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint, configId).pipe(
       switchMap(() => {
         const { customParams } = authOptions || {};
 

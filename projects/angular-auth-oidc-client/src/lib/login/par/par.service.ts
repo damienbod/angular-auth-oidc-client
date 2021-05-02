@@ -17,11 +17,11 @@ export class ParService {
     private storagePersistenceService: StoragePersistenceService
   ) {}
 
-  postParRequest(customParams?: { [key: string]: string | number | boolean }): Observable<ParResponse> {
+  postParRequest(configId: string, customParams?: { [key: string]: string | number | boolean }): Observable<ParResponse> {
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-    const authWellKnown = this.storagePersistenceService.read('authWellKnownEndPoints');
+    const authWellKnown = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
 
     if (!authWellKnown) {
       return throwError('Could not read PAR endpoint because authWellKnownEndPoints are not given');
@@ -34,7 +34,7 @@ export class ParService {
 
     const data = this.urlService.createBodyForParCodeFlowRequest(customParams);
 
-    return this.dataService.post(parEndpoint, data, headers).pipe(
+    return this.dataService.post(parEndpoint, data, configId, headers).pipe(
       retry(2),
       map((response: any) => {
         this.loggerService.logDebug('par response: ', response);

@@ -30,26 +30,26 @@ export class ParLoginService {
     private parService: ParService
   ) {}
 
-  loginPar(authOptions?: AuthOptions): void {
-    if (!this.responseTypeValidationService.hasConfigValidResponseType()) {
-      this.loggerService.logError('Invalid response type!');
+  loginPar(configId: string, authOptions?: AuthOptions): void {
+    if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
+      this.loggerService.logError(configId, 'Invalid response type!');
       return;
     }
 
-    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration();
+    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!authWellknownEndpoint) {
-      this.loggerService.logError('no authWellknownEndpoint given!');
+      this.loggerService.logError(configId, 'no authWellknownEndpoint given!');
       return;
     }
 
-    this.loggerService.logDebug('BEGIN Authorize OIDC Flow, no auth data');
+    this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow, no auth data');
 
     const { urlHandler, customParams } = authOptions || {};
 
     this.authWellKnownService
-      .getAuthWellKnownEndPoints(authWellknownEndpoint)
-      .pipe(switchMap(() => this.parService.postParRequest(customParams)))
+      .getAuthWellKnownEndPoints(authWellknownEndpoint, configId)
+      .pipe(switchMap(() => this.parService.postParRequest(configId, customParams)))
       .subscribe((response) => {
         this.loggerService.logDebug('par response: ', response);
 
@@ -58,7 +58,7 @@ export class ParLoginService {
         this.loggerService.logDebug('par request url: ', url);
 
         if (!url) {
-          this.loggerService.logError(`Could not create url with param ${response.requestUri}: '${url}'`);
+          this.loggerService.logError(configId, `Could not create url with param ${response.requestUri}: '${url}'`);
           return;
         }
 
@@ -70,27 +70,27 @@ export class ParLoginService {
       });
   }
 
-  loginWithPopUpPar(authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
-    if (!this.responseTypeValidationService.hasConfigValidResponseType()) {
+  loginWithPopUpPar(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
+    if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
       const errorMessage = 'Invalid response type!';
-      this.loggerService.logError(errorMessage);
+      this.loggerService.logError(configId, errorMessage);
       return throwError(errorMessage);
     }
 
-    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration();
+    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!authWellknownEndpoint) {
       const errorMessage = 'no authWellknownEndpoint given!';
-      this.loggerService.logError(errorMessage);
+      this.loggerService.logError(configId, errorMessage);
       return throwError(errorMessage);
     }
 
-    this.loggerService.logDebug('BEGIN Authorize OIDC Flow with popup, no auth data');
+    this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow with popup, no auth data');
 
     const { customParams } = authOptions || {};
 
-    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint).pipe(
-      switchMap(() => this.parService.postParRequest(customParams)),
+    return this.authWellKnownService.getAuthWellKnownEndPoints(configId, authWellknownEndpoint).pipe(
+      switchMap(() => this.parService.postParRequest(configId, customParams)),
       switchMap((response: ParResponse) => {
         this.loggerService.logDebug('par response: ', response);
 
@@ -100,7 +100,7 @@ export class ParLoginService {
 
         if (!url) {
           const errorMessage = `Could not create url with param ${response.requestUri}: 'url'`;
-          this.loggerService.logError(errorMessage);
+          this.loggerService.logError(configId, errorMessage);
           return throwError(errorMessage);
         }
 
