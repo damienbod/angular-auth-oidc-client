@@ -8,7 +8,6 @@ export * from './config/auth-well-known-endpoints';
 export * from './config/config-loader';
 export * from './config/config.service';
 export * from './config/openid-configuration';
-export * from './config/public-configuration';
 export * from './interceptor/auth.interceptor';
 export * from './logging/log-level';
 export * from './logging/logger.service';

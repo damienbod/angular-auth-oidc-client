@@ -6,7 +6,6 @@ import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { AuthWellKnownDataService } from './auth-well-known-data.service';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
-import { PublicConfiguration } from './public-configuration';
 
 @Injectable()
 export class AuthWellKnownService {
@@ -25,7 +24,7 @@ export class AuthWellKnownService {
     return this.getWellKnownEndPointsFromUrl(authWellknownEndpointUrl).pipe(
       tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(mappedWellKnownEndpoints)),
       catchError((error) => {
-        this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoadingFailed, null);
+        this.publicEventsService.fireEvent(EventTypes.ConfigLoadingFailed, null);
         return throwError(error);
       })
     );

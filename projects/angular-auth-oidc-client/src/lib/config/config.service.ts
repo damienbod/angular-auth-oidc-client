@@ -11,7 +11,6 @@ import { AuthWellKnownService } from './auth-well-known.service';
 import { ConfigurationProvider } from './config.provider';
 import { DEFAULT_CONFIG } from './default-config';
 import { OpenIdConfiguration } from './openid-configuration';
-import { PublicConfiguration } from './public-configuration';
 
 @Injectable()
 export class OidcConfigService {
@@ -51,10 +50,8 @@ export class OidcConfigService {
 
       const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints');
       if (!!alreadyExistingAuthWellKnownEndpoints) {
-        this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
-          configuration: usedConfig,
-          wellknown: alreadyExistingAuthWellKnownEndpoints,
-        });
+        usedConfig.authWellKnown = alreadyExistingAuthWellKnownEndpoints;
+        this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
 
         resolve(usedConfig);
       }
@@ -63,10 +60,8 @@ export class OidcConfigService {
 
       if (!!passedAuthWellKnownEndpoints) {
         this.authWellKnownService.storeWellKnownEndpoints(passedAuthWellKnownEndpoints);
-        this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
-          configuration: usedConfig,
-          wellknown: passedAuthWellKnownEndpoints,
-        });
+        usedConfig.authWellKnown = alreadyExistingAuthWellKnownEndpoints;
+        this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
 
         resolve(usedConfig);
       }
@@ -79,22 +74,17 @@ export class OidcConfigService {
               this.loggerService.logError('Getting auth well known endpoints failed on start', error);
               return throwError(error);
             }),
-            tap((wellknownEndPoints) =>
-              this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
-                configuration: usedConfig,
-                wellknown: wellknownEndPoints,
-              })
-            )
+            tap((wellknownEndPoints) => {
+              usedConfig.authWellKnown = wellknownEndPoints;
+              this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
+            })
           )
           .subscribe(
             () => resolve(usedConfig),
             () => reject()
           );
       } else {
-        this.publicEventsService.fireEvent<PublicConfiguration>(EventTypes.ConfigLoaded, {
-          configuration: passedConfig,
-          wellknown: null,
-        });
+        this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
         resolve(usedConfig);
       }
     });

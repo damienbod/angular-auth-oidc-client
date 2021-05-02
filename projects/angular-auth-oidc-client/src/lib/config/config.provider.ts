@@ -23,4 +23,8 @@ export class ConfigurationProvider {
 
     return value || null;
   }
+
+  getAllConfigurations(): OpenIdConfiguration[] {
+    return Object.values(this.configsInternal);
+  }
 }

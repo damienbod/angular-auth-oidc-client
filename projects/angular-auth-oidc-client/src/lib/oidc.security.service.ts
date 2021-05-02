@@ -6,7 +6,7 @@ import { CallbackService } from './callback/callback.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
 import { CheckAuthService } from './check-auth.service';
 import { ConfigurationProvider } from './config/config.provider';
-import { PublicConfiguration } from './config/public-configuration';
+import { OpenIdConfiguration } from './config/openid-configuration';
 import { FlowsDataService } from './flows/flows-data.service';
 import { CheckSessionService } from './iframe/check-session.service';
 import { LoginResponse } from './login/login-response';
@@ -20,18 +20,6 @@ import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.servic
 
 @Injectable()
 export class OidcSecurityService {
-  /**
-   * Gets the currently active OpenID configuration.
-   */
-  get configuration(): PublicConfiguration {
-    const openIDConfiguration = this.configurationProvider.getOpenIDConfiguration();
-
-    return {
-      configuration: openIDConfiguration,
-      wellknown: this.storagePersistenceService.read('authWellKnownEndPoints'),
-    };
-  }
-
   /**
    * Provides information about the user after they have logged in.
    */
@@ -75,6 +63,26 @@ export class OidcSecurityService {
     private storagePersistenceService: StoragePersistenceService,
     private refreshSessionService: RefreshSessionService
   ) {}
+
+  /**
+   * Returns the currently active OpenID configurations.
+   *
+   * @returns OpenIdConfiguration if only one is active, an array otherwise
+   */
+  getConfigurations(): OpenIdConfiguration[] {
+    return this.configurationProvider.getAllConfigurations();
+  }
+
+  /**
+   * Returns a single active OpenIdConfiguration.
+   *
+   * @param uniqueId The uniqueId to identify the config. If not passed, the first one is being returned
+   *
+   * @returns OpenIdConfiguration if only one is active, an array otherwise
+   */
+  getConfiguration(uniqueId?: string): OpenIdConfiguration {
+    return this.configurationProvider.getOpenIDConfiguration(uniqueId);
+  }
 
   /**
    * Starts the complete setup flow. Calling will start the entire authentication flow, and the returned observable
