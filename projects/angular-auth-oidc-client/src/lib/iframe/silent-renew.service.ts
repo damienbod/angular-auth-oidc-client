@@ -38,22 +38,22 @@ export class SilentRenewService {
     private intervalService: IntervalService
   ) {}
 
-  getOrCreateIframe(): HTMLIFrameElement {
+  getOrCreateIframe(configId: string): HTMLIFrameElement {
     const existingIframe = this.getExistingIframe();
 
     if (!existingIframe) {
-      return this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_SILENT_RENEW_IDENTIFIER);
+      return this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_SILENT_RENEW_IDENTIFIER, configId);
     }
 
     return existingIframe;
   }
 
-  isSilentRenewConfigured() {
-    const { useRefreshToken, silentRenew } = this.configurationProvider.getOpenIDConfiguration();
+  isSilentRenewConfigured(configId: string) {
+    const { useRefreshToken, silentRenew } = this.configurationProvider.getOpenIDConfiguration(configId);
     return !useRefreshToken && silentRenew;
   }
 
-  codeFlowCallbackSilentRenewIframe(urlParts) {
+  codeFlowCallbackSilentRenewIframe(urlParts: any) {
     const params = new HttpParams({
       fromString: urlParts[1],
     });
@@ -68,7 +68,7 @@ export class SilentRenewService {
       });
       this.resetAuthDataService.resetAuthorizationData();
       this.flowsDataService.setNonce('');
-      this.intervalService.stopPeriodicallTokenCheck();
+      this.intervalService.stopPeriodicTokenCheck();
       return throwError(error);
     }
 
@@ -90,15 +90,15 @@ export class SilentRenewService {
 
     return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext).pipe(
       catchError((errorFromFlow) => {
-        this.intervalService.stopPeriodicallTokenCheck();
+        this.intervalService.stopPeriodicTokenCheck();
         this.resetAuthDataService.resetAuthorizationData();
         return throwError(errorFromFlow);
       })
     );
   }
 
-  silentRenewEventHandler(e: CustomEvent) {
-    this.loggerService.logDebug('silentRenewEventHandler');
+  silentRenewEventHandler(e: CustomEvent, configId: string) {
+    this.loggerService.logDebug(configId, 'silentRenewEventHandler');
     if (!e.detail) {
       return;
     }
@@ -120,7 +120,7 @@ export class SilentRenewService {
         this.flowsDataService.resetSilentRenewRunning();
       },
       (err: any) => {
-        this.loggerService.logError('Error: ' + err);
+        this.loggerService.logError(configId, 'Error: ' + err);
         this.refreshSessionWithIFrameCompletedInternal$.next(null);
         this.flowsDataService.resetSilentRenewRunning();
       }

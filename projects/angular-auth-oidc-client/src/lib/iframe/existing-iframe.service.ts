@@ -19,11 +19,11 @@ export class IFrameService {
     return null;
   }
 
-  addIFrameToWindowBody(identifier: string): HTMLIFrameElement {
+  addIFrameToWindowBody(identifier: string, configId: string): HTMLIFrameElement {
     const sessionIframe = this.doc.createElement('iframe');
     sessionIframe.id = identifier;
     sessionIframe.title = identifier;
-    this.loggerService.logDebug(sessionIframe);
+    this.loggerService.logDebug(configId, sessionIframe);
     sessionIframe.style.display = 'none';
     this.doc.body.appendChild(sessionIframe);
     return sessionIframe;

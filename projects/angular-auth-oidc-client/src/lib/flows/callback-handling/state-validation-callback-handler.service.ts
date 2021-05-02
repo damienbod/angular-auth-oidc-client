@@ -20,16 +20,16 @@ export class StateValidationCallbackHandlerService {
 
   // STEP 4 All flows
 
-  callbackStateValidation(callbackContext: CallbackContext): Observable<CallbackContext> {
-    const validationResult = this.stateValidationService.getValidatedStateResult(callbackContext);
+  callbackStateValidation(callbackContext: CallbackContext, configId: string): Observable<CallbackContext> {
+    const validationResult = this.stateValidationService.getValidatedStateResult(callbackContext, configId);
     callbackContext.validationResult = validationResult;
 
     if (validationResult.authResponseIsValid) {
-      this.authStateService.setAuthorizationData(validationResult.accessToken, callbackContext.authResult);
+      this.authStateService.setAuthorizationData(validationResult.accessToken, callbackContext.authResult, configId);
       return of(callbackContext);
     } else {
       const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${this.doc.location.hash}`;
-      this.loggerService.logWarning(errorMessage);
+      this.loggerService.logWarning(configId, errorMessage);
       this.resetAuthDataService.resetAuthorizationData();
       this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
       return throwError(errorMessage);

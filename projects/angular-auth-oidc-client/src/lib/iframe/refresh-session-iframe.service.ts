@@ -26,8 +26,8 @@ export class RefreshSessionIframeService {
   }
 
   private sendAuthorizeRequestUsingSilentRenew(url: string, configId: string): Observable<boolean> {
-    const sessionIframe = this.silentRenewService.getOrCreateIframe();
-    this.initSilentRenewRequest();
+    const sessionIframe = this.silentRenewService.getOrCreateIframe(configId);
+    this.initSilentRenewRequest(configId);
     this.loggerService.logDebug(configId, 'sendAuthorizeRequestUsingSilentRenew for URL:' + url);
 
     return new Observable((observer) => {
@@ -42,7 +42,7 @@ export class RefreshSessionIframeService {
     });
   }
 
-  private initSilentRenewRequest(): void {
+  private initSilentRenewRequest(configId: string): void {
     const instanceId = Math.random();
 
     const initDestroyHandler = this.renderer.listen('window', 'oidc-silent-renew-init', (e: CustomEvent) => {
@@ -52,7 +52,7 @@ export class RefreshSessionIframeService {
       }
     });
     const renewDestroyHandler = this.renderer.listen('window', 'oidc-silent-renew-message', (e) =>
-      this.silentRenewService.silentRenewEventHandler(e)
+      this.silentRenewService.silentRenewEventHandler(e, configId)
     );
 
     this.doc.defaultView.dispatchEvent(

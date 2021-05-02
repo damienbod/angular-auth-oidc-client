@@ -124,8 +124,8 @@ export class CheckAuthService {
 
     this.periodicallyTokenCheckService.startTokenValidationPeriodically(tokenRefreshInSeconds, configId);
 
-    if (this.silentRenewService.isSilentRenewConfigured()) {
-      this.silentRenewService.getOrCreateIframe();
+    if (this.silentRenewService.isSilentRenewConfigured(configId)) {
+      this.silentRenewService.getOrCreateIframe(configId);
     }
   }
 }

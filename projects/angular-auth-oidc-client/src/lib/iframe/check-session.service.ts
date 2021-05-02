@@ -177,7 +177,7 @@ export class CheckSessionService {
     const existingIframe = this.getExistingIframe();
 
     if (!existingIframe) {
-      const frame = this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
+      const frame = this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_CHECK_SESSION_IDENTIFIER, configId);
       this.bindMessageEventToIframe(configId);
       return frame;
     }

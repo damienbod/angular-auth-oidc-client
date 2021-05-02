@@ -17,10 +17,10 @@ export class ImplicitFlowCallbackHandlerService {
 
   // STEP 1 Code Flow
   // STEP 1 Implicit Flow
-  implicitFlowCallback(hash?: string): Observable<CallbackContext> {
+  implicitFlowCallback(configId: string, hash?: string): Observable<CallbackContext> {
     const isRenewProcessData = this.flowsDataService.isSilentRenewRunning();
 
-    this.loggerService.logDebug('BEGIN authorizedCallback, no auth data');
+    this.loggerService.logDebug(configId, 'BEGIN authorizedCallback, no auth data');
     if (!isRenewProcessData) {
       this.resetAuthDataService.resetAuthorizationData();
     }
