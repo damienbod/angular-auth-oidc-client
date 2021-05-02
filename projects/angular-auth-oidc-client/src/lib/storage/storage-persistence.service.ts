@@ -1,5 +1,4 @@
 ﻿import { Injectable } from '@angular/core';
-import { ConfigurationProvider } from '../config/config.provider';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 
 export type StorageKeys =
@@ -19,59 +18,54 @@ export type StorageKeys =
 
 @Injectable()
 export class StoragePersistenceService {
-  constructor(
-    private readonly oidcSecurityStorage: AbstractSecurityStorage,
-    private readonly configurationProvider: ConfigurationProvider
-  ) {}
+  constructor(private readonly oidcSecurityStorage: AbstractSecurityStorage) {}
 
-  read(key: StorageKeys) {
-    const keyToRead = this.createKeyWithPrefix(key);
+  read(key: StorageKeys, configId: string): any {
+    const keyToRead = this.createKeyWithPrefix(key, configId);
     return this.oidcSecurityStorage.read(keyToRead);
   }
 
-  write(key: StorageKeys, value: any) {
-    const keyToStore = this.createKeyWithPrefix(key);
+  write(key: StorageKeys, value: any, configId: string): void {
+    const keyToStore = this.createKeyWithPrefix(key, configId);
     this.oidcSecurityStorage.write(keyToStore, value);
   }
 
-  remove(key: StorageKeys) {
-    const keyToStore = this.createKeyWithPrefix(key);
+  remove(key: StorageKeys, configId: string): void {
+    const keyToStore = this.createKeyWithPrefix(key, configId);
     this.oidcSecurityStorage.remove(keyToStore);
   }
 
-  clear() {
+  clear(): void {
     this.oidcSecurityStorage.clear();
   }
 
-  resetStorageFlowData() {
-    this.remove('session_state');
-    this.remove('storageSilentRenewRunning');
-    this.remove('codeVerifier');
-    this.remove('userData');
-    this.remove('storageCustomRequestParams');
-    this.remove('access_token_expires_at');
+  resetStorageFlowData(configId: string): void {
+    this.remove('session_state', configId);
+    this.remove('storageSilentRenewRunning', configId);
+    this.remove('codeVerifier', configId);
+    this.remove('userData', configId);
+    this.remove('storageCustomRequestParams', configId);
+    this.remove('access_token_expires_at', configId);
   }
 
-  resetAuthStateInStorage() {
-    this.remove('authzData');
-    this.remove('authnResult');
+  resetAuthStateInStorage(configId: string): void {
+    this.remove('authzData', configId);
+    this.remove('authnResult', configId);
   }
 
-  getAccessToken(): any {
-    return this.read('authzData');
+  getAccessToken(configId: string): string {
+    return this.read('authzData', configId);
   }
 
-  getIdToken(): any {
-    return this.read('authnResult')?.id_token;
+  getIdToken(configId: string): string {
+    return this.read('authnResult', configId)?.id_token;
   }
 
-  getRefreshToken(): any {
-    return this.read('authnResult')?.refresh_token;
+  getRefreshToken(configId: string): string {
+    return this.read('authnResult', configId)?.refresh_token;
   }
 
-  private createKeyWithPrefix(key: string) {
-    const config = this.configurationProvider.getOpenIDConfiguration();
-    const prefix = config?.clientId || '';
-    return `${prefix}_${key}`;
+  private createKeyWithPrefix(key: string, configId: string) {
+    return `${configId}-${key}`;
   }
 }

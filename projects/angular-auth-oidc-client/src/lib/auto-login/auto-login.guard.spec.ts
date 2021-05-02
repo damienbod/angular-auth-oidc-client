@@ -10,8 +10,8 @@ import { LoginService } from '../login/login.service';
 import { LoginServiceMock } from '../login/login.service-mock';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { AutoLoginService } from './auto-login-service';
 import { AutoLoginGuard } from './auto-login.guard';
+import { AutoLoginService } from './auto-login.service';
 
 describe(`AutoLoginGuard`, () => {
   let autoLoginGuard: AutoLoginGuard;

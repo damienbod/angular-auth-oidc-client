@@ -26,13 +26,13 @@ export class CallbackService {
     return this.urlService.isCallbackFromSts(currentUrl);
   }
 
-  handleCallbackAndFireEvents(currentCallbackUrl: string): Observable<CallbackContext> {
+  handleCallbackAndFireEvents(currentCallbackUrl: string, configId: string): Observable<CallbackContext> {
     let callback$: Observable<any>;
 
     if (this.flowHelper.isCurrentFlowCodeFlow()) {
-      callback$ = this.codeFlowCallbackService.authorizedCallbackWithCode(currentCallbackUrl);
+      callback$ = this.codeFlowCallbackService.authorizedCallbackWithCode(currentCallbackUrl, configId);
     } else if (this.flowHelper.isCurrentFlowAnyImplicitFlow()) {
-      callback$ = this.implicitFlowCallbackService.authorizedImplicitFlowCallback();
+      callback$ = this.implicitFlowCallbackService.authorizedImplicitFlowCallback(configId);
     }
 
     return callback$.pipe(tap(() => this.stsCallbackInternal$.next()));

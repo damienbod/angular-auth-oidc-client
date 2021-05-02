@@ -6,12 +6,12 @@ import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { ResetAuthDataServiceMock } from '../flows/reset-auth-data.service-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
-import { IntervallService } from './intervall.service';
+import { IntervalService } from './interval.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 
 describe('RefreshSessionRefreshTokenService', () => {
   let refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService;
-  let intervalService: IntervallService;
+  let intervalService: IntervalService;
   let resetAuthDataService: ResetAuthDataService;
   let flowsService: FlowsService;
 
@@ -23,7 +23,7 @@ describe('RefreshSessionRefreshTokenService', () => {
         { provide: LoggerService, useClass: LoggerServiceMock },
         { provide: FlowsService, useClass: FlowsServiceMock },
         { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
-        IntervallService,
+        IntervalService,
       ],
     });
   });
@@ -31,7 +31,7 @@ describe('RefreshSessionRefreshTokenService', () => {
   beforeEach(() => {
     flowsService = TestBed.inject(FlowsService);
     refreshSessionRefreshTokenService = TestBed.inject(RefreshSessionRefreshTokenService);
-    intervalService = TestBed.inject(IntervallService);
+    intervalService = TestBed.inject(IntervalService);
     resetAuthDataService = TestBed.inject(ResetAuthDataService);
   });
 

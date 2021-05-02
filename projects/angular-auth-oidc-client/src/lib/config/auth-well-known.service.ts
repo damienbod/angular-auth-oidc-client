@@ -15,14 +15,14 @@ export class AuthWellKnownService {
     private storagePersistenceService: StoragePersistenceService
   ) {}
 
-  getAuthWellKnownEndPoints(authWellknownEndpointUrl: string) {
-    const alreadySavedWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints');
+  getAuthWellKnownEndPoints(authWellknownEndpointUrl: string, configId: string) {
+    const alreadySavedWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
     if (!!alreadySavedWellKnownEndpoints) {
       return of(alreadySavedWellKnownEndpoints);
     }
 
     return this.getWellKnownEndPointsFromUrl(authWellknownEndpointUrl).pipe(
-      tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(mappedWellKnownEndpoints)),
+      tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(configId, mappedWellKnownEndpoints)),
       catchError((error) => {
         this.publicEventsService.fireEvent(EventTypes.ConfigLoadingFailed, null);
         return throwError(error);
@@ -30,8 +30,8 @@ export class AuthWellKnownService {
     );
   }
 
-  storeWellKnownEndpoints(mappedWellKnownEndpoints: AuthWellKnownEndpoints) {
-    this.storagePersistenceService.write('authWellKnownEndPoints', mappedWellKnownEndpoints);
+  storeWellKnownEndpoints(configId: string, mappedWellKnownEndpoints: AuthWellKnownEndpoints) {
+    this.storagePersistenceService.write('authWellKnownEndPoints', mappedWellKnownEndpoints, configId);
   }
 
   private getWellKnownEndPointsFromUrl(authWellknownEndpoint: string) {

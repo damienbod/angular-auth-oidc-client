@@ -9,11 +9,11 @@ import { FlowsDataServiceMock } from '../flows/flows-data.service-mock';
 import { FlowsService } from '../flows/flows.service';
 import { FlowsServiceMock } from '../flows/flows.service-mock';
 import { ImplicitFlowCallbackService } from './implicit-flow-callback.service';
-import { IntervallService } from './intervall.service';
+import { IntervalService } from './interval.service';
 
 describe('ImplicitFlowCallbackService ', () => {
   let implicitFlowCallbackService: ImplicitFlowCallbackService;
-  let intervalService: IntervallService;
+  let intervalService: IntervalService;
   let flowsService: FlowsService;
   let configurationProvider: ConfigurationProvider;
   let flowsDataService: FlowsDataService;
@@ -26,7 +26,7 @@ describe('ImplicitFlowCallbackService ', () => {
         ImplicitFlowCallbackService,
         { provide: FlowsService, useClass: FlowsServiceMock },
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
-        IntervallService,
+        IntervalService,
         { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
       ],
     });
@@ -35,7 +35,7 @@ describe('ImplicitFlowCallbackService ', () => {
   beforeEach(() => {
     implicitFlowCallbackService = TestBed.inject(ImplicitFlowCallbackService);
     configurationProvider = TestBed.inject(ConfigurationProvider);
-    intervalService = TestBed.inject(IntervallService);
+    intervalService = TestBed.inject(IntervalService);
     flowsDataService = TestBed.inject(FlowsDataService);
     flowsService = TestBed.inject(FlowsService);
     router = TestBed.inject(Router);

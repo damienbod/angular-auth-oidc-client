@@ -4,7 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { AuthStateService } from './authState/auth-state.service';
 import { AuthStateServiceMock } from './authState/auth-state.service-mock';
-import { AutoLoginService } from './auto-login/auto-login-service';
+import { AutoLoginService } from './auto-login/auto-login.service';
 import { CallbackService } from './callback/callback.service';
 import { CallbackServiceMock } from './callback/callback.service-mock';
 import { PeriodicallyTokenCheckService } from './callback/periodically-token-check.service';

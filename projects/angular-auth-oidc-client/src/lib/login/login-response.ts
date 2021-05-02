@@ -3,4 +3,5 @@ export interface LoginResponse {
   userData?: any;
   accessToken?: string;
   errorMessage?: string;
+  configId?: string;
 }

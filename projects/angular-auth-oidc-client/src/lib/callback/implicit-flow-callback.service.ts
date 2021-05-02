@@ -5,7 +5,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config/config.provider';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
-import { IntervallService } from './intervall.service';
+import { IntervalService } from './interval.service';
 
 @Injectable({ providedIn: 'root' })
 export class ImplicitFlowCallbackService {
@@ -14,12 +14,14 @@ export class ImplicitFlowCallbackService {
     private configurationProvider: ConfigurationProvider,
     private router: Router,
     private flowsDataService: FlowsDataService,
-    private intervalService: IntervallService
+    private intervalService: IntervalService
   ) {}
 
-  authorizedImplicitFlowCallback(hash?: string) {
+  authorizedImplicitFlowCallback(configId: string, hash?: string) {
     const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
-    const { triggerAuthorizationResultEvent, postLoginRoute, unauthorizedRoute } = this.configurationProvider.getOpenIDConfiguration();
+    const { triggerAuthorizationResultEvent, postLoginRoute, unauthorizedRoute } = this.configurationProvider.getOpenIDConfiguration(
+      configId
+    );
 
     return this.flowsService.processImplicitFlowCallback(hash).pipe(
       tap((callbackContext) => {
@@ -29,7 +31,7 @@ export class ImplicitFlowCallbackService {
       }),
       catchError((error) => {
         this.flowsDataService.resetSilentRenewRunning();
-        this.intervalService.stopPeriodicallTokenCheck();
+        this.intervalService.stopPeriodicTokenCheck();
         if (!triggerAuthorizationResultEvent && !isRenewProcess) {
           this.router.navigateByUrl(unauthorizedRoute);
         }

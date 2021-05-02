@@ -14,9 +14,9 @@ export class ConfigurationProvider {
     this.configsInternal[uniqueId] = readyConfig;
   }
 
-  getOpenIDConfiguration(uniqueId?: string): OpenIdConfiguration {
-    if (!!uniqueId) {
-      return this.configsInternal[uniqueId] || null;
+  getOpenIDConfiguration(configId: string): OpenIdConfiguration {
+    if (!!configId) {
+      return this.configsInternal[configId] || null;
     }
 
     const [, value] = Object.entries(this.configsInternal)[0];

@@ -17,14 +17,14 @@ import { StoragePersistenceService } from '../storage/storage-persistence.servic
 import { UserService } from '../userData/user-service';
 import { UserServiceMock } from '../userData/user-service-mock';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
-import { IntervallService } from './intervall.service';
+import { IntervalService } from './interval.service';
 import { PeriodicallyTokenCheckService } from './periodically-token-check.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 import { RefreshSessionRefreshTokenServiceMock } from './refresh-session-refresh-token.service-mock';
 
 describe('PeriodicallyTokenCheckService', () => {
   let periodicallyTokenCheckService: PeriodicallyTokenCheckService;
-  let intervalService: IntervallService;
+  let intervalService: IntervalService;
   let configurationProvider: ConfigurationProvider;
   let flowsDataService: FlowsDataService;
   let flowHelper: FlowHelper;
@@ -51,7 +51,7 @@ describe('PeriodicallyTokenCheckService', () => {
           provide: RefreshSessionIframeService,
           useClass: RefreshSessionIframeServiceMock,
         },
-        IntervallService,
+        IntervalService,
         StoragePersistenceService,
         AbstractSecurityStorage,
       ],
@@ -60,7 +60,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
   beforeEach(() => {
     periodicallyTokenCheckService = TestBed.inject(PeriodicallyTokenCheckService);
-    intervalService = TestBed.inject(IntervallService);
+    intervalService = TestBed.inject(IntervalService);
     configurationProvider = TestBed.inject(ConfigurationProvider);
     flowsDataService = TestBed.inject(FlowsDataService);
     flowHelper = TestBed.inject(FlowHelper);

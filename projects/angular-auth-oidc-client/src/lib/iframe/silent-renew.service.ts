@@ -4,7 +4,7 @@ import { of, Subject, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
-import { IntervallService } from '../callback/intervall.service';
+import { IntervalService } from '../callback/interval.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
@@ -35,7 +35,7 @@ export class SilentRenewService {
     private loggerService: LoggerService,
     private flowHelper: FlowHelper,
     private implicitFlowCallbackService: ImplicitFlowCallbackService,
-    private intervalService: IntervallService
+    private intervalService: IntervalService
   ) {}
 
   getOrCreateIframe(): HTMLIFrameElement {

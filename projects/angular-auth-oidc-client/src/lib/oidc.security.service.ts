@@ -14,7 +14,6 @@ import { LoginService } from './login/login.service';
 import { PopupOptions } from './login/popup/popup-options';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { StoragePersistenceService } from './storage/storage-persistence.service';
-import { TokenResponse } from './tokens/token-response';
 import { UserService } from './userData/user-service';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
 
@@ -80,8 +79,10 @@ export class OidcSecurityService {
    *
    * @returns OpenIdConfiguration if only one is active, an array otherwise
    */
-  getConfiguration(uniqueId?: string): OpenIdConfiguration {
-    return this.configurationProvider.getOpenIDConfiguration(uniqueId);
+  getConfiguration(configId?: string): OpenIdConfiguration {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
+    return this.configurationProvider.getOpenIDConfiguration(configId);
   }
 
   /**
@@ -90,36 +91,46 @@ export class OidcSecurityService {
    *
    * @param url The url to perform the authorization on the behalf of.
    */
-  checkAuth(url?: string): Observable<LoginResponse> {
-    return this.checkAuthService.checkAuth(url);
+  checkAuth(url?: string, configId?: string): Observable<LoginResponse> {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
+    return this.checkAuthService.checkAuth(url, configId);
   }
 
   /**
    * Checks the server for an authenticated session using the iframe silent renew if not locally authenticated.
    */
-  checkAuthIncludingServer(): Observable<LoginResponse> {
-    return this.checkAuthService.checkAuthIncludingServer();
+  checkAuthIncludingServer(configId?: string): Observable<LoginResponse> {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
+    return this.checkAuthService.checkAuthIncludingServer(configId);
   }
 
   /**
    * Returns the access token for the login scenario.
    */
-  getToken(): string {
-    return this.authStateService.getAccessToken();
+  getToken(configId?: string): string {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
+    return this.authStateService.getAccessToken(configId);
   }
 
   /**
    * Returns the ID token for the login scenario.
    */
-  getIdToken(): string {
-    return this.authStateService.getIdToken();
+  getIdToken(configId?: string): string {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
+    return this.authStateService.getIdToken(configId);
   }
 
   /**
    * Returns the refresh token, if present, for the login scenario.
    */
-  getRefreshToken(): string {
-    return this.authStateService.getRefreshToken();
+  getRefreshToken(configId?: string): string {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
+    return this.authStateService.getRefreshToken(configId);
   }
 
   /**
@@ -127,8 +138,10 @@ export class OidcSecurityService {
    *
    * @param encode Set to true if the payload is base64 encoded
    */
-  getPayloadFromIdToken(encode = false): any {
-    const token = this.getIdToken();
+  getPayloadFromIdToken(encode = false, configId?: string): any {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
+    const token = this.getIdToken(configId);
     return this.tokenHelperService.getPayloadFromToken(token, encode);
   }
 
@@ -154,12 +167,14 @@ export class OidcSecurityService {
    * @param authOptions The custom options for the the authentication request.
    */
   // Code Flow with PCKE or Implicit Flow
-  authorize(authOptions?: AuthOptions): void {
+  authorize(authOptions?: AuthOptions, configId?: string): void {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
     if (authOptions?.customParams) {
-      this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams);
+      this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams, configId);
     }
 
-    this.loginService.login(authOptions);
+    this.loginService.login(configId, authOptions);
   }
 
   /**
@@ -168,12 +183,14 @@ export class OidcSecurityService {
    * @param authOptions The custom options for the authentication request.
    * @param popupOptions The configuration for the popup window.
    */
-  authorizeWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
+  authorizeWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions, configId?: string): Observable<LoginResponse> {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
     if (authOptions?.customParams) {
-      this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams);
+      this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams, configId);
     }
 
-    return this.loginService.loginWithPopUp(authOptions, popupOptions);
+    return this.loginService.loginWithPopUp(configId, authOptions, popupOptions);
   }
 
   /**
@@ -181,12 +198,14 @@ export class OidcSecurityService {
    *
    * @param customParams Custom parameters to pass to the refresh request.
    */
-  forceRefreshSession(customParams?: { [key: string]: string | number | boolean }): Observable<TokenResponse> {
+  forceRefreshSession(customParams?: { [key: string]: string | number | boolean }, configId?: string): Observable<LoginResponse> {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
     if (customParams) {
-      this.storagePersistenceService.write('storageCustomRequestParams', customParams);
+      this.storagePersistenceService.write('storageCustomRequestParams', customParams, configId);
     }
 
-    return this.refreshSessionService.forceRefreshSession(customParams);
+    return this.refreshSessionService.forceRefreshSession(configId, customParams);
   }
 
   /**

@@ -2,6 +2,11 @@
 
 ## Version 11 to Version 12
 
+To be documents:
+
+- AutoUserinfo --> AutoUserInfo
+- authwellknown is now part of the config
+
 ### Configuration in App Module
 
 #### Old:

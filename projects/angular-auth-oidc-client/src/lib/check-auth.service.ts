@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
-import { AutoLoginService } from './auto-login/auto-login-service';
+import { AutoLoginService } from './auto-login/auto-login.service';
 import { CallbackService } from './callback/callback.service';
 import { PeriodicallyTokenCheckService } from './callback/periodically-token-check.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
@@ -34,17 +34,17 @@ export class CheckAuthService {
     private router: Router
   ) {}
 
-  checkAuth(url?: string): Observable<LoginResponse> {
+  checkAuth(configId: string, url?: string): Observable<LoginResponse> {
     if (!this.configurationProvider.hasConfig()) {
-      const errorMessage = 'Please provide a configuration before setting up the module';
-      this.loggerService.logError(errorMessage);
+      const errorMessage = 'Please provide at least one configuration before setting up the module';
+      this.loggerService.logError(configId, errorMessage);
 
       return of({ isAuthenticated: false, errorMessage });
     }
 
-    const { stsServer } = this.configurationProvider.getOpenIDConfiguration();
+    const { stsServer, uniqueId } = this.configurationProvider.getOpenIDConfiguration(configId);
 
-    this.loggerService.logDebug('STS server: ', stsServer);
+    this.loggerService.logDebug(uniqueId, `Working with config '${uniqueId}' using ${stsServer}`);
 
     const currentUrl = url || this.doc.defaultView.location.toString();
 
@@ -58,44 +58,45 @@ export class CheckAuthService {
 
     this.loggerService.logDebug('currentUrl to check auth with: ', currentUrl);
 
-    const callback$ = isCallback ? this.callbackService.handleCallbackAndFireEvents(currentUrl) : of(null);
+    const callback$ = isCallback ? this.callbackService.handleCallbackAndFireEvents(currentUrl, configId) : of(null);
 
     return callback$.pipe(
       map(() => {
-        const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
+        const isAuthenticated = this.authStateService.areAuthStorageTokensValid(uniqueId);
         if (isAuthenticated) {
-          this.startCheckSessionAndValidation();
+          this.startCheckSessionAndValidation(uniqueId);
 
           if (!isCallback) {
             this.authStateService.setAuthorizedAndFireEvent();
-            this.userService.publishUserDataIfExists();
+            this.userService.publishUserDataIfExists(configId);
           }
         }
 
-        this.loggerService.logDebug('checkAuth completed fired events, auth: ' + isAuthenticated);
+        this.loggerService.logDebug(uniqueId, 'checkAuth completed - firing events now. isAuthenticated: ' + isAuthenticated);
 
         return {
           isAuthenticated,
-          userData: this.userService.getUserDataFromStore(),
-          accessToken: this.authStateService.getAccessToken(),
+          userData: this.userService.getUserDataFromStore(uniqueId),
+          accessToken: this.authStateService.getAccessToken(uniqueId),
+          configId: uniqueId,
         };
       }),
       tap(() => {
-        const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute();
+        const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute(uniqueId);
         if (savedRouteForRedirect) {
-          this.autoLoginService.deleteStoredRedirectRoute();
+          this.autoLoginService.deleteStoredRedirectRoute(uniqueId);
           this.router.navigateByUrl(savedRouteForRedirect);
         }
       }),
       catchError((errorMessage) => {
-        this.loggerService.logError(errorMessage);
+        this.loggerService.logError(uniqueId, errorMessage);
         return of({ isAuthenticated: false, errorMessage });
       })
     );
   }
 
-  checkAuthIncludingServer(): Observable<LoginResponse> {
-    return this.checkAuth().pipe(
+  checkAuthIncludingServer(configId: string): Observable<LoginResponse> {
+    return this.checkAuth(configId).pipe(
       switchMap((loginResponse) => {
         const { isAuthenticated } = loginResponse;
 
@@ -103,28 +104,25 @@ export class CheckAuthService {
           return of(loginResponse);
         }
 
-        return this.refreshSessionService.forceRefreshSession().pipe(
-          map((result) => !!result?.idToken && !!result?.accessToken),
-          switchMap((authenticated) => {
-            if (authenticated) {
-              this.startCheckSessionAndValidation();
+        return this.refreshSessionService.forceRefreshSession(configId).pipe(
+          tap((loginResponseAfterRefreshSession) => {
+            if (loginResponseAfterRefreshSession.isAuthenticated) {
+              this.startCheckSessionAndValidation(configId);
             }
-
-            return of({ ...loginResponse, isAuthenticated: authenticated });
           })
         );
       })
     );
   }
 
-  private startCheckSessionAndValidation() {
+  private startCheckSessionAndValidation(configId: string) {
     if (this.checkSessionService.isCheckSessionConfigured()) {
       this.checkSessionService.start();
     }
 
-    const { tokenRefreshInSeconds } = this.configurationProvider.getOpenIDConfiguration();
+    const { tokenRefreshInSeconds } = this.configurationProvider.getOpenIDConfiguration(configId);
 
-    this.periodicallyTokenCheckService.startTokenValidationPeriodically(tokenRefreshInSeconds);
+    this.periodicallyTokenCheckService.startTokenValidationPeriodically(tokenRefreshInSeconds, configId);
 
     if (this.silentRenewService.isSilentRenewConfigured()) {
       this.silentRenewService.getOrCreateIframe();

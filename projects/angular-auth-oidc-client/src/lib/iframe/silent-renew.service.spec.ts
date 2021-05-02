@@ -4,7 +4,7 @@ import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
 import { ImplicitFlowCallbackServiceMock } from '../callback/implicit-flow-callback.service-mock';
-import { IntervallService } from '../callback/intervall.service';
+import { IntervalService } from '../callback/interval.service';
 import { ConfigurationProvider } from '../config/config.provider';
 import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { CallbackContext } from '../flows/callback-context';
@@ -41,7 +41,7 @@ describe('SilentRenewService  ', () => {
         { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
         FlowHelper,
         IFrameService,
-        IntervallService,
+        IntervalService,
         { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
       ],
     });

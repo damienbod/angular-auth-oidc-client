@@ -10,8 +10,8 @@ export class AutoLoginService {
   /**
    * Gets the stored redirect route from storage.
    */
-  getStoredRedirectRoute(): string {
-    return this.storageService.read(STORAGE_KEY);
+  getStoredRedirectRoute(configId: string): string {
+    return this.storageService.read(STORAGE_KEY, configId);
   }
 
   /**
@@ -19,14 +19,14 @@ export class AutoLoginService {
    *
    * @param url The redirect url to save.
    */
-  saveStoredRedirectRoute(url: string) {
-    this.storageService.write(STORAGE_KEY, url);
+  saveStoredRedirectRoute(configId: string, url: string) {
+    this.storageService.write(STORAGE_KEY, url, configId);
   }
 
   /**
    * Removes the redirect url from storage.
    */
-  deleteStoredRedirectRoute(): void {
-    this.storageService.remove(STORAGE_KEY);
+  deleteStoredRedirectRoute(configId: string): void {
+    this.storageService.remove(STORAGE_KEY, configId);
   }
 }

@@ -6,8 +6,8 @@ import { LogLevel } from './log-level';
 export class LoggerService {
   constructor(private configurationProvider: ConfigurationProvider) {}
 
-  logError(message: any, ...args: any[]) {
-    if (this.loggingIsTurnedOff()) {
+  logError(configId: string, message: any, ...args: any[]) {
+    if (this.loggingIsTurnedOff(configId)) {
       return;
     }
 
@@ -18,16 +18,16 @@ export class LoggerService {
     }
   }
 
-  logWarning(message: any, ...args: any[]) {
-    if (!this.logLevelIsSet()) {
+  logWarning(configId: string, message: any, ...args: any[]) {
+    if (!this.logLevelIsSet(configId)) {
       return;
     }
 
-    if (this.loggingIsTurnedOff()) {
+    if (this.loggingIsTurnedOff(configId)) {
       return;
     }
 
-    if (!this.currentLogLevelIsEqualOrSmallerThan(LogLevel.Warn)) {
+    if (!this.currentLogLevelIsEqualOrSmallerThan(configId, LogLevel.Warn)) {
       return;
     }
 
@@ -38,16 +38,16 @@ export class LoggerService {
     }
   }
 
-  logDebug(message: any, ...args: any[]) {
-    if (!this.logLevelIsSet()) {
+  logDebug(configId: string, message: any, ...args: any[]) {
+    if (!this.logLevelIsSet(configId)) {
       return;
     }
 
-    if (this.loggingIsTurnedOff()) {
+    if (this.loggingIsTurnedOff(configId)) {
       return;
     }
 
-    if (!this.currentLogLevelIsEqualOrSmallerThan(LogLevel.Debug)) {
+    if (!this.currentLogLevelIsEqualOrSmallerThan(configId, LogLevel.Debug)) {
       return;
     }
 
@@ -58,13 +58,13 @@ export class LoggerService {
     }
   }
 
-  private currentLogLevelIsEqualOrSmallerThan(logLevelToCompare: LogLevel) {
-    const { logLevel } = this.configurationProvider.getOpenIDConfiguration() || {};
+  private currentLogLevelIsEqualOrSmallerThan(configId: string, logLevelToCompare: LogLevel) {
+    const { logLevel } = this.configurationProvider.getOpenIDConfiguration(configId) || {};
     return logLevel <= logLevelToCompare;
   }
 
-  private logLevelIsSet() {
-    const { logLevel } = this.configurationProvider.getOpenIDConfiguration() || {};
+  private logLevelIsSet(configId: string) {
+    const { logLevel } = this.configurationProvider.getOpenIDConfiguration(configId) || {};
 
     if (logLevel === null) {
       return false;
@@ -77,8 +77,8 @@ export class LoggerService {
     return true;
   }
 
-  private loggingIsTurnedOff() {
-    const { logLevel } = this.configurationProvider.getOpenIDConfiguration() || {};
+  private loggingIsTurnedOff(configId: string) {
+    const { logLevel } = this.configurationProvider.getOpenIDConfiguration(configId) || {};
 
     return logLevel === LogLevel.None;
   }

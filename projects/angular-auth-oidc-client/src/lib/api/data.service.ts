@@ -10,9 +10,10 @@ const NGSW_CUSTOM_PARAM = 'ngsw-bypass';
 export class DataService {
   constructor(private httpClient: HttpBaseService, private readonly configurationProvider: ConfigurationProvider) {}
 
-  get<T>(url: string, token?: string): Observable<T> {
+  // TODO: make token optional
+  get<T>(url: string, configId: string, token: string): Observable<T> {
     const headers = this.prepareHeaders(token);
-    const params = this.prepareParams();
+    const params = this.prepareParams(configId);
 
     return this.httpClient.get<T>(url, {
       headers,
@@ -20,9 +21,9 @@ export class DataService {
     });
   }
 
-  post<T>(url: string, body: any, headersParams?: HttpHeaders) {
+  post<T>(url: string, body: any, configId: string, headersParams?: HttpHeaders) {
     const headers = headersParams || this.prepareHeaders();
-    const params = this.prepareParams();
+    const params = this.prepareParams(configId);
 
     return this.httpClient.post<T>(url, body, { headers, params });
   }
@@ -38,9 +39,9 @@ export class DataService {
     return headers;
   }
 
-  private prepareParams(): HttpParams {
+  private prepareParams(configId: string): HttpParams {
     let params = new HttpParams();
-    const { ngswBypass } = this.configurationProvider.getOpenIDConfiguration();
+    const { ngswBypass } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (ngswBypass) {
       params = params.set(NGSW_CUSTOM_PARAM, '');
