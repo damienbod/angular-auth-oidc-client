@@ -67,7 +67,7 @@ export class SilentRenewService {
         isRenewProcess: true,
       });
       this.resetAuthDataService.resetAuthorizationData(configId);
-      this.flowsDataService.setNonce('');
+      this.flowsDataService.setNonce('', configId);
       this.intervalService.stopPeriodicTokenCheck();
       return throwError(error);
     }
@@ -117,12 +117,12 @@ export class SilentRenewService {
     callback$.subscribe(
       (callbackContext) => {
         this.refreshSessionWithIFrameCompletedInternal$.next(callbackContext);
-        this.flowsDataService.resetSilentRenewRunning();
+        this.flowsDataService.resetSilentRenewRunning(configId);
       },
       (err: any) => {
         this.loggerService.logError(configId, 'Error: ' + err);
         this.refreshSessionWithIFrameCompletedInternal$.next(null);
-        this.flowsDataService.resetSilentRenewRunning();
+        this.flowsDataService.resetSilentRenewRunning(configId);
       }
     );
   }

@@ -35,7 +35,7 @@ export class UserCallbackHandlerService {
       }
 
       if (!isRenewProcess && !refreshToken) {
-        this.flowsDataService.setSessionState(authResult.session_state);
+        this.flowsDataService.setSessionState(authResult.session_state, configId);
       }
 
       this.publishAuthorizedState(validationResult, isRenewProcess);
@@ -48,7 +48,7 @@ export class UserCallbackHandlerService {
         switchMap((userData) => {
           if (!!userData) {
             if (!refreshToken) {
-              this.flowsDataService.setSessionState(authResult.session_state);
+              this.flowsDataService.setSessionState(authResult.session_state, configId);
             }
 
             this.publishAuthorizedState(validationResult, isRenewProcess);

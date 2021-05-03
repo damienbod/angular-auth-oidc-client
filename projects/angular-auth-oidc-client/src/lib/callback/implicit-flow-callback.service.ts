@@ -18,7 +18,7 @@ export class ImplicitFlowCallbackService {
   ) {}
 
   authorizedImplicitFlowCallback(configId: string, hash?: string) {
-    const isRenewProcess = this.flowsDataService.isSilentRenewRunning();
+    const isRenewProcess = this.flowsDataService.isSilentRenewRunning(configId);
     const { triggerAuthorizationResultEvent, postLoginRoute, unauthorizedRoute } = this.configurationProvider.getOpenIDConfiguration(
       configId
     );
@@ -30,7 +30,7 @@ export class ImplicitFlowCallbackService {
         }
       }),
       catchError((error) => {
-        this.flowsDataService.resetSilentRenewRunning();
+        this.flowsDataService.resetSilentRenewRunning(configId);
         this.intervalService.stopPeriodicTokenCheck();
         if (!triggerAuthorizationResultEvent && !isRenewProcess) {
           this.router.navigateByUrl(unauthorizedRoute);

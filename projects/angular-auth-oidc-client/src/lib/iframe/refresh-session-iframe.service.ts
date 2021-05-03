@@ -21,7 +21,7 @@ export class RefreshSessionIframeService {
 
   refreshSessionWithIframe(configId: string, customParams?: { [key: string]: string | number | boolean }): Observable<boolean> {
     this.loggerService.logDebug(configId, 'BEGIN refresh session Authorize Iframe renew');
-    const url = this.urlService.getRefreshSessionSilentRenewUrl(customParams);
+    const url = this.urlService.getRefreshSessionSilentRenewUrl(configId, customParams);
     return this.sendAuthorizeRequestUsingSilentRenew(url, configId);
   }
 

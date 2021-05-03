@@ -74,7 +74,7 @@ export class RefreshSessionService {
     configId: string,
     customParams?: { [key: string]: string | number | boolean }
   ): Observable<boolean | CallbackContext | null> {
-    const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
+    const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning(configId);
     this.loggerService.logDebug(configId, `Checking: silentRenewRunning: ${isSilentRenewRunning}`);
     const shouldBeExecuted = !isSilentRenewRunning;
 
@@ -91,7 +91,7 @@ export class RefreshSessionService {
 
     return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint, configId).pipe(
       switchMap(() => {
-        this.flowsDataService.setSilentRenewRunning();
+        this.flowsDataService.setSilentRenewRunning(configId);
 
         if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
           // Refresh Session using Refresh tokens
@@ -115,7 +115,7 @@ export class RefreshSessionService {
 
         this.loggerService.logDebug(configId, `forceRefreshSession timeout. Attempt #${currentAttempt}`);
 
-        this.flowsDataService.resetSilentRenewRunning();
+        this.flowsDataService.resetSilentRenewRunning(configId);
         return timer(currentAttempt * scalingDuration);
       })
     );

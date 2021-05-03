@@ -41,7 +41,7 @@ export class PeriodicallyTokenCheckService {
     const periodicallyCheck$ = this.intervalService.startPeriodicTokenCheck(repeatAfterSeconds).pipe(
       switchMap(() => {
         const idToken = this.authStateService.getIdToken(configId);
-        const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
+        const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning(configId);
         const userDataFromStore = this.userService.getUserDataFromStore(configId);
 
         this.loggerService.logDebug(
@@ -71,7 +71,7 @@ export class PeriodicallyTokenCheckService {
 
         this.loggerService.logDebug(configId, 'starting silent renew...');
 
-        this.flowsDataService.setSilentRenewRunning();
+        this.flowsDataService.setSilentRenewRunning(configId);
 
         // Retrieve Dynamically Set Custom Params
         const customParams: { [key: string]: string | number | boolean } = this.storagePersistenceService.read(
@@ -91,7 +91,7 @@ export class PeriodicallyTokenCheckService {
     this.intervalService.runTokenValidationRunning = periodicallyCheck$
       .pipe(
         catchError((error) => {
-          this.flowsDataService.resetSilentRenewRunning();
+          this.flowsDataService.resetSilentRenewRunning(configId);
           return throwError(error);
         })
       )
@@ -99,7 +99,7 @@ export class PeriodicallyTokenCheckService {
         () => {
           this.loggerService.logDebug(configId, 'silent renew, periodic check finished!');
           if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
-            this.flowsDataService.resetSilentRenewRunning();
+            this.flowsDataService.resetSilentRenewRunning(configId);
           }
         },
         (err) => this.loggerService.logError('silent renew failed!', err)
