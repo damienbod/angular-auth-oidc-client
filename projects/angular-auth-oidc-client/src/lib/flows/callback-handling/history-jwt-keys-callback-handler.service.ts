@@ -40,7 +40,7 @@ export class HistoryJwtKeysCallbackHandlerService {
       const errorMessage = `authorizedCallbackProcedure came with error: ${callbackContext.authResult.error}`;
       this.loggerService.logDebug(configId, errorMessage);
       this.resetAuthDataService.resetAuthorizationData(configId);
-      this.flowsDataService.setNonce('');
+      this.flowsDataService.setNonce('', configId);
       this.handleResultErrorFromCallback(callbackContext.authResult, callbackContext.isRenewProcess);
       return throwError(errorMessage);
     }

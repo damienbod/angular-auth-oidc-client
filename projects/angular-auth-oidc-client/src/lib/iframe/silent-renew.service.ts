@@ -105,7 +105,7 @@ export class SilentRenewService {
 
     let callback$ = of(null);
 
-    const isCodeFlow = this.flowHelper.isCurrentFlowCodeFlow();
+    const isCodeFlow = this.flowHelper.isCurrentFlowCodeFlow(configId);
 
     if (isCodeFlow) {
       const urlParts = e.detail.toString().split('?');

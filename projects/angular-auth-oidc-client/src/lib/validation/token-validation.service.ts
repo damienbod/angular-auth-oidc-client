@@ -57,7 +57,7 @@ export class TokenValidationService {
   // id_token C7: The current time MUST be before the time represented by the exp Claim
   // (possibly allowing for some small leeway to account for clock skew).
   hasIdTokenExpired(token: string, configId: string, offsetSeconds?: number): boolean {
-    const decoded = this.tokenHelperService.getPayloadFromToken(token, false);
+    const decoded = this.tokenHelperService.getPayloadFromToken(token, false, configId);
 
     return !this.validateIdTokenExpNotExpired(decoded, configId, offsetSeconds);
   }
@@ -300,7 +300,7 @@ export class TokenValidationService {
       return false;
     }
 
-    const headerData = this.tokenHelperService.getHeaderFromToken(idToken, false);
+    const headerData = this.tokenHelperService.getHeaderFromToken(idToken, false, configId);
 
     if (Object.keys(headerData).length === 0 && headerData.constructor === Object) {
       this.loggerService.logWarning(configId, 'id token has no header data');

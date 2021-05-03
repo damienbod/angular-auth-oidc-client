@@ -29,9 +29,9 @@ export class CallbackService {
   handleCallbackAndFireEvents(currentCallbackUrl: string, configId: string): Observable<CallbackContext> {
     let callback$: Observable<any>;
 
-    if (this.flowHelper.isCurrentFlowCodeFlow()) {
+    if (this.flowHelper.isCurrentFlowCodeFlow(configId)) {
       callback$ = this.codeFlowCallbackService.authorizedCallbackWithCode(currentCallbackUrl, configId);
-    } else if (this.flowHelper.isCurrentFlowAnyImplicitFlow()) {
+    } else if (this.flowHelper.isCurrentFlowAnyImplicitFlow(configId)) {
       callback$ = this.implicitFlowCallbackService.authorizedImplicitFlowCallback(configId);
     }
 

@@ -34,8 +34,8 @@ export class UserService {
 
     const existingUserDataFromStorage = this.getUserDataFromStore(configId);
     const haveUserData = !!existingUserDataFromStorage;
-    const isCurrentFlowImplicitFlowWithAccessToken = this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken();
-    const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow();
+    const isCurrentFlowImplicitFlowWithAccessToken = this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken(configId);
+    const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow(configId);
 
     const accessToken = this.storagePersistenceService.getAccessToken(configId);
     if (!(isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow)) {

@@ -40,7 +40,7 @@ export class UrlService {
   }
 
   getRefreshSessionSilentRenewUrl(configId: string, customParams?: { [key: string]: string | number | boolean }): string {
-    if (this.flowHelper.isCurrentFlowCodeFlow()) {
+    if (this.flowHelper.isCurrentFlowCodeFlow(configId)) {
       return this.createUrlCodeFlowWithSilentRenew(configId, customParams);
     }
 
@@ -81,7 +81,7 @@ export class UrlService {
   }
 
   getAuthorizeUrl(configId: string, customParams?: { [key: string]: string | number | boolean }): string {
-    if (this.flowHelper.isCurrentFlowCodeFlow()) {
+    if (this.flowHelper.isCurrentFlowCodeFlow(configId)) {
       return this.createUrlCodeFlowAuthorize(configId, customParams);
     }
 
@@ -161,7 +161,7 @@ export class UrlService {
   }
 
   createBodyForCodeFlowCodeRequest(code: string, configId: string, customTokenParams?: { [p: string]: string | number | boolean }): string {
-    const codeVerifier = this.flowsDataService.getCodeVerifier();
+    const codeVerifier = this.flowsDataService.getCodeVerifier(configId);
     if (!codeVerifier) {
       this.loggerService.logError(`CodeVerifier is not set `, codeVerifier);
       return null;
@@ -185,7 +185,7 @@ export class UrlService {
 
     const silentRenewUrl = this.getSilentRenewUrl(configId);
 
-    if (this.flowsDataService.isSilentRenewRunning() && silentRenewUrl) {
+    if (this.flowsDataService.isSilentRenewRunning(configId) && silentRenewUrl) {
       params = params.set('redirect_uri', silentRenewUrl);
       return params.toString();
     }
@@ -230,12 +230,12 @@ export class UrlService {
       return null;
     }
 
-    const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
-    const nonce = this.flowsDataService.createNonce();
+    const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
+    const nonce = this.flowsDataService.createNonce(configId);
     this.loggerService.logDebug(configId, 'Authorize created. adding myautostate: ' + state);
 
     // code_challenge with "S256"
-    const codeVerifier = this.flowsDataService.createCodeVerifier();
+    const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
     const codeChallenge = this.tokenValidationService.generateCodeChallenge(codeVerifier);
 
     const { clientId, responseType, scope, hdParam, customParams } = this.configurationProvider.getOpenIDConfiguration(configId);
@@ -311,7 +311,7 @@ export class UrlService {
     params = params.append('nonce', nonce);
     params = params.append('state', state);
 
-    if (this.flowHelper.isCurrentFlowCodeFlow()) {
+    if (this.flowHelper.isCurrentFlowCodeFlow(configId)) {
       params = params.append('code_challenge', codeChallenge);
       params = params.append('code_challenge_method', 'S256');
     }
@@ -340,8 +340,8 @@ export class UrlService {
   }
 
   private createUrlImplicitFlowWithSilentRenew(configId: string, customParams?: { [key: string]: string | number | boolean }): string {
-    const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
-    const nonce = this.flowsDataService.createNonce();
+    const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
+    const nonce = this.flowsDataService.createNonce(configId);
 
     const silentRenewUrl = this.getSilentRenewUrl(configId);
 
@@ -361,13 +361,13 @@ export class UrlService {
   }
 
   private createUrlCodeFlowWithSilentRenew(configId: string, customParams?: { [key: string]: string | number | boolean }): string {
-    const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
-    const nonce = this.flowsDataService.createNonce();
+    const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
+    const nonce = this.flowsDataService.createNonce(configId);
 
     this.loggerService.logDebug(configId, 'RefreshSession created. adding myautostate: ' + state);
 
     // code_challenge with "S256"
-    const codeVerifier = this.flowsDataService.createCodeVerifier();
+    const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
     const codeChallenge = this.tokenValidationService.generateCodeChallenge(codeVerifier);
 
     const silentRenewUrl = this.getSilentRenewUrl(configId);
@@ -386,8 +386,8 @@ export class UrlService {
   }
 
   private createUrlImplicitFlowAuthorize(configId: string, customParams?: { [key: string]: string | number | boolean }): string {
-    const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
-    const nonce = this.flowsDataService.createNonce();
+    const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
+    const nonce = this.flowsDataService.createNonce(configId);
     this.loggerService.logDebug(configId, 'Authorize created. adding myautostate: ' + state);
 
     const redirectUrl = this.getRedirectUrl(configId);
@@ -406,8 +406,8 @@ export class UrlService {
   }
 
   private createUrlCodeFlowAuthorize(configId: string, customParams?: { [key: string]: string | number | boolean }): string {
-    const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
-    const nonce = this.flowsDataService.createNonce();
+    const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
+    const nonce = this.flowsDataService.createNonce(configId);
     this.loggerService.logDebug(configId, 'Authorize created. adding myautostate: ' + state);
 
     const redirectUrl = this.getRedirectUrl(configId);
@@ -417,7 +417,7 @@ export class UrlService {
     }
 
     // code_challenge with "S256"
-    const codeVerifier = this.flowsDataService.createCodeVerifier();
+    const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
     const codeChallenge = this.tokenValidationService.generateCodeChallenge(codeVerifier);
 
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);

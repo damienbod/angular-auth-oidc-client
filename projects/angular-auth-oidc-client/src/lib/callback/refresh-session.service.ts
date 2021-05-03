@@ -29,7 +29,7 @@ export class RefreshSessionService {
   ) {}
 
   forceRefreshSession(configId: string, customParams?: { [key: string]: string | number | boolean }): Observable<LoginResponse> {
-    if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
+    if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(configId)) {
       return this.startRefreshSession(configId, customParams).pipe(
         map(() => {
           const isAuthenticated = this.authStateService.areAuthStorageTokensValid(configId);
@@ -93,7 +93,7 @@ export class RefreshSessionService {
       switchMap(() => {
         this.flowsDataService.setSilentRenewRunning(configId);
 
-        if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
+        if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(configId)) {
           // Refresh Session using Refresh tokens
           return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(configId, customParams);
         }

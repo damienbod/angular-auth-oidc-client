@@ -7,11 +7,11 @@ export class ResponseTypeValidationService {
   constructor(private loggerService: LoggerService, private flowHelper: FlowHelper) {}
 
   hasConfigValidResponseType(configId: string): boolean {
-    if (this.flowHelper.isCurrentFlowAnyImplicitFlow()) {
+    if (this.flowHelper.isCurrentFlowAnyImplicitFlow(configId)) {
       return true;
     }
 
-    if (this.flowHelper.isCurrentFlowCodeFlow()) {
+    if (this.flowHelper.isCurrentFlowCodeFlow(configId)) {
       return true;
     }
 

@@ -45,8 +45,8 @@ export class StateValidationService {
       return toReturn;
     }
 
-    const isCurrentFlowImplicitFlowWithAccessToken = this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken();
-    const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow();
+    const isCurrentFlowImplicitFlowWithAccessToken = this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken(configId);
+    const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow(configId);
 
     if (isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow) {
       toReturn.accessToken = callbackContext.authResult.access_token;
