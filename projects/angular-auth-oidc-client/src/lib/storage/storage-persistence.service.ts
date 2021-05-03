@@ -1,4 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
+import { ConfigurationProvider } from '../config/config.provider';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 
 export type StorageKeys =
@@ -18,21 +19,51 @@ export type StorageKeys =
 
 @Injectable()
 export class StoragePersistenceService {
-  constructor(private readonly oidcSecurityStorage: AbstractSecurityStorage) {}
+  constructor(
+    private readonly oidcSecurityStorage: AbstractSecurityStorage,
+    private readonly configurationProvider: ConfigurationProvider
+  ) {}
+
+  getExistingConfigId(clientId: string): string {
+    const config = JSON.parse(sessionStorage.getItem(clientId) || null);
+
+    if (!config) {
+      return null;
+    }
+
+    return Object.keys(config)[0];
+  }
 
   read(key: StorageKeys, configId: string): any {
-    const keyToRead = this.createKeyWithPrefix(key, configId);
-    return this.oidcSecurityStorage.read(keyToRead);
+    const { clientId } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const clientsConfigs = this.oidcSecurityStorage.read(clientId) || {};
+    const config = clientsConfigs[configId] || {};
+
+    return config[key];
   }
 
   write(key: StorageKeys, value: any, configId: string): void {
-    const keyToStore = this.createKeyWithPrefix(key, configId);
-    this.oidcSecurityStorage.write(keyToStore, value);
+    const { clientId } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const clientsConfigs = this.oidcSecurityStorage.read(clientId) || {};
+    const config = clientsConfigs[configId];
+
+    if (!!config) {
+      config[key] = value;
+      this.oidcSecurityStorage.write(clientId, clientsConfigs);
+    } else {
+      const newConfig = this.createConfig(configId);
+      newConfig[configId][key] = value;
+      this.oidcSecurityStorage.write(clientId, newConfig);
+    }
   }
 
   remove(key: StorageKeys, configId: string): void {
-    const keyToStore = this.createKeyWithPrefix(key, configId);
-    this.oidcSecurityStorage.remove(keyToStore);
+    const { clientId } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const clientsConfigs = this.oidcSecurityStorage.read(clientId) || {};
+    const config = clientsConfigs[configId] || {};
+    delete config[key];
+
+    this.oidcSecurityStorage.write(clientId, config);
   }
 
   clear(): void {
@@ -65,7 +96,10 @@ export class StoragePersistenceService {
     return this.read('authnResult', configId)?.refresh_token;
   }
 
-  private createKeyWithPrefix(key: string, configId: string) {
-    return `${configId}-${key}`;
+  private createConfig(configId: string) {
+    const toReturn = {};
+    toReturn[configId] = {};
+
+    return toReturn;
   }
 }

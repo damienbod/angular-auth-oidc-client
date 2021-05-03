@@ -33,7 +33,8 @@ export class OidcConfigService {
   private handleConfig(passedConfig: OpenIdConfiguration): Promise<any> {
     return new Promise((resolve, reject) => {
       if (!passedConfig.uniqueId) {
-        passedConfig.uniqueId = this.createUniqueId(10);
+        const existingId = this.storagePersistenceService.getExistingConfigId(passedConfig.clientId);
+        passedConfig.uniqueId = existingId ?? this.createUniqueId(10);
       }
 
       if (!this.configValidationService.validateConfig(passedConfig)) {

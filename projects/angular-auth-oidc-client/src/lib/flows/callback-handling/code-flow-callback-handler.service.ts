@@ -63,7 +63,6 @@ export class CodeFlowCallbackHandlerService {
     const isStateCorrect = this.tokenValidationService.validateStateFromHashCallback(callbackContext.state, authStateControl, configId);
 
     if (!isStateCorrect) {
-      this.loggerService.logWarning(configId, 'codeFlowCodeRequest incorrect state');
       return throwError('codeFlowCodeRequest incorrect state');
     }
 
