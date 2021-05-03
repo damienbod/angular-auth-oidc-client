@@ -94,7 +94,7 @@ export class OidcSecurityService {
   checkAuth(url?: string, configId?: string): Observable<LoginResponse> {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
 
-    return this.checkAuthService.checkAuth(url, configId);
+    return this.checkAuthService.checkAuth(configId, url);
   }
 
   /**
