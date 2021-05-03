@@ -34,7 +34,7 @@ export class RefreshTokenCallbackHandlerService {
       return throwError('Token Endpoint not defined');
     }
 
-    const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken, customParams);
+    const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken, configId, customParams);
 
     return this.dataService.post(tokenEndpoint, data, configId, headers).pipe(
       switchMap((response: any) => {

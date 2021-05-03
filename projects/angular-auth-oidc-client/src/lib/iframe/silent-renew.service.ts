@@ -66,7 +66,7 @@ export class SilentRenewService {
         validationResult: ValidationResult.LoginRequired,
         isRenewProcess: true,
       });
-      this.resetAuthDataService.resetAuthorizationData();
+      this.resetAuthDataService.resetAuthorizationData(configId);
       this.flowsDataService.setNonce('');
       this.intervalService.stopPeriodicTokenCheck();
       return throwError(error);
@@ -91,7 +91,7 @@ export class SilentRenewService {
     return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext, configId).pipe(
       catchError((errorFromFlow) => {
         this.intervalService.stopPeriodicTokenCheck();
-        this.resetAuthDataService.resetAuthorizationData();
+        this.resetAuthDataService.resetAuthorizationData(configId);
         return throwError(errorFromFlow);
       })
     );

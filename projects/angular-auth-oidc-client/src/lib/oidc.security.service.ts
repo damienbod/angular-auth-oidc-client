@@ -150,15 +150,19 @@ export class OidcSecurityService {
    *
    * @param state The state to set.
    */
-  setState(state: string): void {
-    this.flowsDataService.setAuthStateControl(state);
+  setState(state: string, configId?: string): void {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
+    this.flowsDataService.setAuthStateControl(state, configId);
   }
 
   /**
    * Gets the state value used for the authorize request.
    */
-  getState(): string {
-    return this.flowsDataService.getAuthStateControl();
+  getState(configId?: string): string {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
+    return this.flowsDataService.getAuthStateControl(configId);
   }
 
   /**
@@ -237,8 +241,10 @@ export class OidcSecurityService {
   /**
    * Logs the user out of the application without logging them out of the server.
    */
-  logoffLocal(): void {
-    return this.logoffRevocationService.logoffLocal();
+  logoffLocal(configId?: string): void {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
+    return this.logoffRevocationService.logoffLocal(configId);
   }
 
   /**
@@ -248,8 +254,10 @@ export class OidcSecurityService {
    *
    * @param accessToken The access token to revoke.
    */
-  revokeAccessToken(accessToken?: any): Observable<any> {
-    return this.logoffRevocationService.revokeAccessToken(accessToken);
+  revokeAccessToken(accessToken?: any, configId?: string): Observable<any> {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
+    return this.logoffRevocationService.revokeAccessToken(configId, accessToken);
   }
 
   /**
@@ -259,7 +267,9 @@ export class OidcSecurityService {
    *
    * @param refreshToken The access token to revoke.
    */
-  revokeRefreshToken(refreshToken?: any): Observable<any> {
+  revokeRefreshToken(refreshToken?: any, configId?: string): Observable<any> {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+
     return this.logoffRevocationService.revokeRefreshToken(refreshToken);
   }
 

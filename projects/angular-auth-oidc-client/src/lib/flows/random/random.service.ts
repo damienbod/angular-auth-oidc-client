@@ -6,13 +6,13 @@ import { LoggerService } from '../../logging/logger.service';
 export class RandomService {
   constructor(@Inject(DOCUMENT) private readonly doc: any, private loggerService: LoggerService) {}
 
-  createRandom(requiredLength: number): string {
+  createRandom(requiredLength: number, configId: string): string {
     if (requiredLength <= 0) {
       return '';
     }
 
     if (requiredLength > 0 && requiredLength < 7) {
-      this.loggerService.logWarning(`RandomService called with ${requiredLength} but 7 chars is the minimum, returning 10 chars`);
+      this.loggerService.logWarning(configId, `RandomService called with ${requiredLength} but 7 chars is the minimum, returning 10 chars`);
       requiredLength = 10;
     }
 

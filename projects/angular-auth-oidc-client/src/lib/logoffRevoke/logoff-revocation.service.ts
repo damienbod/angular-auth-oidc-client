@@ -27,7 +27,7 @@ export class LogoffRevocationService {
   logoff(configId: string, urlHandler?: (url: string) => any, customParams?: { [p: string]: string | number | boolean }) {
     this.loggerService.logDebug(configId, 'logoff, remove auth ');
     const endSessionUrl = this.getEndSessionUrl(configId, customParams);
-    this.resetAuthDataService.resetAuthorizationData();
+    this.resetAuthDataService.resetAuthorizationData(configId);
 
     if (!endSessionUrl) {
       this.loggerService.logDebug(configId, 'only local login cleaned up, no end_session_endpoint');
@@ -43,8 +43,8 @@ export class LogoffRevocationService {
     }
   }
 
-  logoffLocal(): void {
-    this.resetAuthDataService.resetAuthorizationData();
+  logoffLocal(configId: string): void {
+    this.resetAuthDataService.resetAuthorizationData(configId);
     this.checkSessionService.stop();
   }
 
@@ -84,8 +84,8 @@ export class LogoffRevocationService {
   // manage your own tokens. The is a public API.
   revokeAccessToken(configId: string, accessToken?: any): Observable<any> {
     const accessTok = accessToken || this.storagePersistenceService.getAccessToken(configId);
-    const body = this.urlService.createRevocationEndpointBodyAccessToken(accessTok);
-    const url = this.urlService.getRevocationEndpointUrl();
+    const body = this.urlService.createRevocationEndpointBodyAccessToken(accessTok, configId);
+    const url = this.urlService.getRevocationEndpointUrl(configId);
 
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
@@ -110,8 +110,8 @@ export class LogoffRevocationService {
   // This makes it possible to manage your own tokens.
   revokeRefreshToken(configId: string, refreshToken?: any): Observable<any> {
     const refreshTok = refreshToken || this.storagePersistenceService.getRefreshToken(configId);
-    const body = this.urlService.createRevocationEndpointBodyRefreshToken(refreshTok);
-    const url = this.urlService.getRevocationEndpointUrl();
+    const body = this.urlService.createRevocationEndpointBodyRefreshToken(refreshTok, configId);
+    const url = this.urlService.getRevocationEndpointUrl(configId);
 
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
@@ -132,6 +132,6 @@ export class LogoffRevocationService {
 
   getEndSessionUrl(configId: string, customParams?: { [p: string]: string | number | boolean }): string | null {
     const idToken = this.storagePersistenceService.getIdToken(configId);
-    return this.urlService.createEndSessionUrl(idToken, customParams);
+    return this.urlService.createEndSessionUrl(idToken, configId, customParams);
   }
 }

@@ -53,7 +53,7 @@ export class ParLoginService {
       .subscribe((response) => {
         this.loggerService.logDebug('par response: ', response);
 
-        const url = this.urlService.getAuthorizeParUrl(response.requestUri);
+        const url = this.urlService.getAuthorizeParUrl(response.requestUri, configId);
 
         this.loggerService.logDebug('par request url: ', url);
 
@@ -94,7 +94,7 @@ export class ParLoginService {
       switchMap((response: ParResponse) => {
         this.loggerService.logDebug('par response: ', response);
 
-        const url = this.urlService.getAuthorizeParUrl(response.requestUri);
+        const url = this.urlService.getAuthorizeParUrl(response.requestUri, configId);
 
         this.loggerService.logDebug('par request url: ', url);
 

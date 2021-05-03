@@ -32,7 +32,7 @@ export class ParService {
       return throwError('Could not read PAR endpoint from authWellKnownEndpoints');
     }
 
-    const data = this.urlService.createBodyForParCodeFlowRequest(customParams);
+    const data = this.urlService.createBodyForParCodeFlowRequest(configId, customParams);
 
     return this.dataService.post(parEndpoint, data, configId, headers).pipe(
       retry(2),
