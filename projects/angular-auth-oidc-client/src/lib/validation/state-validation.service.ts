@@ -254,20 +254,20 @@ export class StateValidationService {
 
   private handleSuccessfulValidation(): void {
     const { autoCleanStateAfterAuthentication } = this.configurationProvider.getOpenIDConfiguration();
-    this.storagePersistenceService.write('authNonce', null);
+    this.storagePersistenceService.write('authNonce', '');
 
     if (autoCleanStateAfterAuthentication) {
-      this.storagePersistenceService.write('authStateControl', null);
+      this.storagePersistenceService.write('authStateControl', '');
     }
     this.loggerService.logDebug('AuthorizedCallback token(s) validated, continue');
   }
 
   private handleUnsuccessfulValidation(): void {
     const { autoCleanStateAfterAuthentication } = this.configurationProvider.getOpenIDConfiguration();
-    this.storagePersistenceService.write('authNonce', null);
+    this.storagePersistenceService.write('authNonce', '');
 
     if (autoCleanStateAfterAuthentication) {
-      this.storagePersistenceService.write('authStateControl', null);
+      this.storagePersistenceService.write('authStateControl', '');
     }
     this.loggerService.logDebug('AuthorizedCallback token(s) invalid');
   }

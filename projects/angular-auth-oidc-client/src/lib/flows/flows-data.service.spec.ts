@@ -3,8 +3,8 @@ import { ConfigurationProvider } from '../config/config.provider';
 import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 import { FlowsDataService } from './flows-data.service';
 import { RandomService } from './random/random.service';
 
@@ -149,15 +149,16 @@ describe('Flows Data Service', () => {
         state: 'running',
         dateOfLaunchedProcessUtc: baseTime.toISOString(),
       };
+      const storedJsonString = JSON.stringify(storageObject);
 
-      spyOn(storagePersistenceService, 'read').withArgs('storageSilentRenewRunning').and.returnValue(storageObject);
+      spyOn(storagePersistenceService, 'read').withArgs('storageSilentRenewRunning').and.returnValue(storedJsonString);
       const spyWrite = spyOn(storagePersistenceService, 'write');
 
       jasmine.clock().tick((openIDConfiguration.silentRenewTimeoutInSeconds + 1) * 1000);
 
       const isSilentRenewRunningResult = service.isSilentRenewRunning();
 
-      expect(spyWrite).toHaveBeenCalledWith('storageSilentRenewRunning', null);
+      expect(spyWrite).toHaveBeenCalledWith('storageSilentRenewRunning', '');
       expect(isSilentRenewRunningResult).toBeFalse();
     });
 
@@ -176,8 +177,9 @@ describe('Flows Data Service', () => {
         state: 'running',
         dateOfLaunchedProcessUtc: baseTime.toISOString(),
       };
+      const storedJsonString = JSON.stringify(storageObject);
 
-      spyOn(storagePersistenceService, 'read').withArgs('storageSilentRenewRunning').and.returnValue(storageObject);
+      spyOn(storagePersistenceService, 'read').withArgs('storageSilentRenewRunning').and.returnValue(storedJsonString);
       const spyWrite = spyOn(storagePersistenceService, 'write');
 
       const isSilentRenewRunningResult = service.isSilentRenewRunning();
@@ -205,18 +207,19 @@ describe('Flows Data Service', () => {
         state: 'running',
         dateOfLaunchedProcessUtc: baseTime.toISOString(),
       };
+      const expectedJsonString = JSON.stringify(storageObject);
 
       const spy = spyOn(storagePersistenceService, 'write');
       service.setSilentRenewRunning();
-      expect(spy).toHaveBeenCalledWith('storageSilentRenewRunning', storageObject);
+      expect(spy).toHaveBeenCalledWith('storageSilentRenewRunning', expectedJsonString);
     });
   });
 
   describe('resetSilentRenewRunning', () => {
-    it('set resetSilentRenewRunning to null when called', () => {
+    it('set resetSilentRenewRunning to `` when called', () => {
       const spy = spyOn(storagePersistenceService, 'write');
       service.resetSilentRenewRunning();
-      expect(spy).toHaveBeenCalledWith('storageSilentRenewRunning', null);
+      expect(spy).toHaveBeenCalledWith('storageSilentRenewRunning', ``);
     });
   });
 });
