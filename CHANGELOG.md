@@ -1,6 +1,6 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
-### 2021-05-01 Version 11.6.8
+### 2021-05-04 Version 11.6.8
 
 - bugfix incorrect storage for silent renew, requires Json object
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1086)
