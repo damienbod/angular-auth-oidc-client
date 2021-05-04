@@ -15,7 +15,8 @@ export type StorageKeys =
   | 'storageSilentRenewRunning'
   | 'storageCustomRequestParams'
   | 'jwtKeys'
-  | 'redirect';
+  | 'redirect'
+  | 'configIds';
 
 @Injectable()
 export class StoragePersistenceService {
@@ -23,16 +24,6 @@ export class StoragePersistenceService {
     private readonly oidcSecurityStorage: AbstractSecurityStorage,
     private readonly configurationProvider: ConfigurationProvider
   ) {}
-
-  getExistingConfigId(clientId: string): string {
-    const config = JSON.parse(sessionStorage.getItem(clientId) || null);
-
-    if (!config) {
-      return null;
-    }
-
-    return Object.keys(config)[0];
-  }
 
   read(key: StorageKeys, configId: string): any {
     const { clientId } = this.configurationProvider.getOpenIDConfiguration(configId);

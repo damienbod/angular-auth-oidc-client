@@ -25,18 +25,29 @@ export class OidcConfigService {
   ) {}
 
   withConfigs(passedConfigs: OpenIdConfiguration[]): Promise<any> {
-    const allHandleConfigPromises = passedConfigs.map((x) => this.handleConfig(x));
+    this.createAndStoreIds(passedConfigs);
+    const allHandleConfigPromises = passedConfigs.map((x, index) => this.handleConfig(x));
 
     return Promise.all(allHandleConfigPromises);
   }
 
+  private createAndStoreIds(passedConfigs: OpenIdConfiguration[]) {
+    const objectToStore = {};
+
+    const savedConfigs = JSON.parse(sessionStorage.getItem('configIds') || null) || {};
+    passedConfigs.forEach((config, index) => {
+      if (!config.uniqueId) {
+        const existingId = Object.values(savedConfigs)[index] as string;
+        config.uniqueId = existingId ?? this.createUniqueId(10);
+        objectToStore[index] = config.uniqueId;
+      }
+    });
+
+    sessionStorage.setItem('configIds', JSON.stringify(objectToStore));
+  }
+
   private handleConfig(passedConfig: OpenIdConfiguration): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (!passedConfig.uniqueId) {
-        const existingId = this.storagePersistenceService.getExistingConfigId(passedConfig.clientId);
-        passedConfig.uniqueId = existingId ?? this.createUniqueId(10);
-      }
-
       if (!this.configValidationService.validateConfig(passedConfig)) {
         this.loggerService.logError(passedConfig.uniqueId, 'Validation of config rejected with errors. Config is NOT set.');
         resolve(null);
