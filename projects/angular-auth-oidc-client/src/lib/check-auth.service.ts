@@ -9,11 +9,13 @@ import { CallbackService } from './callback/callback.service';
 import { PeriodicallyTokenCheckService } from './callback/periodically-token-check.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
 import { ConfigurationProvider } from './config/config.provider';
+import { OpenIdConfiguration } from './config/openid-configuration';
 import { CheckSessionService } from './iframe/check-session.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
 import { LoggerService } from './logging/logger.service';
 import { LoginResponse } from './login/login-response';
 import { PopUpService } from './login/popup/popup.service';
+import { StoragePersistenceService } from './storage/storage-persistence.service';
 import { UserService } from './userData/user.service';
 
 @Injectable()
@@ -31,7 +33,8 @@ export class CheckAuthService {
     private periodicallyTokenCheckService: PeriodicallyTokenCheckService,
     private popupService: PopUpService,
     private autoLoginService: AutoLoginService,
-    private router: Router
+    private router: Router,
+    private storagePersistenceService: StoragePersistenceService
   ) {}
 
   checkAuth(passedConfigId: string, url?: string): Observable<LoginResponse> {
@@ -42,11 +45,11 @@ export class CheckAuthService {
       return of({ isAuthenticated: false, errorMessage });
     }
 
-    const { stsServer, configId } = this.configurationProvider.getOpenIDConfiguration(passedConfigId);
+    const currentUrl = url || this.doc.defaultView.location.toString();
+
+    const { stsServer, configId } = this.getConfiguration(passedConfigId, currentUrl);
 
     this.loggerService.logDebug(configId, `Working with config '${configId}' using ${stsServer}`);
-
-    const currentUrl = url || this.doc.defaultView.location.toString();
 
     if (this.popupService.isCurrentlyInPopup()) {
       this.popupService.sendMessageToMainWindow(currentUrl);
@@ -67,7 +70,7 @@ export class CheckAuthService {
           this.startCheckSessionAndValidation(configId);
 
           if (!isCallback) {
-            this.authStateService.setAuthorizedAndFireEvent();
+            this.authStateService.setAuthorizedAndFireEvent(configId);
             this.userService.publishUserDataIfExists(configId);
           }
         }
@@ -125,5 +128,23 @@ export class CheckAuthService {
     if (this.silentRenewService.isSilentRenewConfigured(configId)) {
       this.silentRenewService.getOrCreateIframe(configId);
     }
+  }
+
+  private getConfiguration(configId?: string, url?: string): OpenIdConfiguration {
+    if (!!url) {
+      const urlParams = new URLSearchParams(url);
+      const stateFromUrl = urlParams.get('state');
+      const allConfigs = this.configurationProvider.getAllConfigurations();
+
+      for (const config of allConfigs) {
+        const storedState = this.storagePersistenceService.read('authStateControl', config.configId);
+
+        if (storedState === stateFromUrl) {
+          return config;
+        }
+      }
+    }
+
+    return this.configurationProvider.getOpenIDConfiguration(configId);
   }
 }

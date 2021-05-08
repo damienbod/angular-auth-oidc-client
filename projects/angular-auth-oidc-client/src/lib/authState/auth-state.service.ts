@@ -2,16 +2,18 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config/config.provider';
+import { AuthResult } from '../flows/callback-context';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { TokenValidationService } from '../validation/token-validation.service';
-import { AuthorizationResult } from './authorization-result';
+import { AuthorizationResult, ConfigAuthorizedResult } from './authorization-result';
 
 @Injectable()
 export class AuthStateService {
-  private authorizedInternal$ = new BehaviorSubject<boolean>(false);
+  private configAuthorizedResultsInternal: Record<string, boolean> = {};
+  private authorizedInternal$ = new BehaviorSubject<ConfigAuthorizedResult[] | boolean>(null);
 
   get authorized$() {
     return this.authorizedInternal$.asObservable().pipe(distinctUntilChanged());
@@ -25,25 +27,46 @@ export class AuthStateService {
     private tokenValidationService: TokenValidationService
   ) {}
 
-  setAuthorizedAndFireEvent(): void {
-    this.authorizedInternal$.next(true);
+  setAuthorizedAndFireEvent(configId: string): void {
+    if (this.configurationProvider.hasManyConfigs()) {
+      this.configAuthorizedResultsInternal[configId] = true;
+      const result: ConfigAuthorizedResult[] = Object.entries(this.configAuthorizedResultsInternal).map(([key, value]) => ({
+        configId: key,
+        isAuthenticated: value,
+      }));
+
+      this.authorizedInternal$.next(result);
+    } else {
+      this.authorizedInternal$.next(true);
+    }
   }
 
   setUnauthorizedAndFireEvent(configId: string): void {
     this.storagePersistenceService.resetAuthStateInStorage(configId);
-    this.authorizedInternal$.next(false);
+
+    if (this.configurationProvider.hasManyConfigs()) {
+      this.configAuthorizedResultsInternal[configId] = false;
+      const result: ConfigAuthorizedResult[] = Object.entries(this.configAuthorizedResultsInternal).map(([key, value]) => ({
+        configId: key,
+        isAuthenticated: value,
+      }));
+
+      this.authorizedInternal$.next(result);
+    } else {
+      this.authorizedInternal$.next(false);
+    }
   }
 
   updateAndPublishAuthState(authorizationResult: AuthorizationResult) {
     this.publicEventsService.fireEvent<AuthorizationResult>(EventTypes.NewAuthorizationResult, authorizationResult);
   }
 
-  setAuthorizationData(accessToken: string, authResult: any, configId: string) {
+  setAuthorizationData(accessToken: string, authResult: AuthResult, configId: string) {
     this.loggerService.logDebug(configId, `storing the accessToken '${accessToken}'`);
 
     this.storagePersistenceService.write('authzData', accessToken, configId);
     this.persistAccessTokenExpirationTime(authResult, configId);
-    this.setAuthorizedAndFireEvent();
+    this.setAuthorizedAndFireEvent(configId);
   }
 
   getAccessToken(configId: string): string {

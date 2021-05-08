@@ -44,6 +44,7 @@ export class OidcConfigService {
       if (!this.configValidationService.validateConfig(passedConfig)) {
         this.loggerService.logError(passedConfig.configId, 'Validation of config rejected with errors. Config is NOT set.');
         resolve(null);
+        return;
       }
 
       if (!passedConfig.authWellknownEndpoint) {
@@ -59,6 +60,7 @@ export class OidcConfigService {
         this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
 
         resolve(usedConfig);
+        return;
       }
 
       const passedAuthWellKnownEndpoints = usedConfig.authWellKnown;
@@ -69,6 +71,7 @@ export class OidcConfigService {
         this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
 
         resolve(usedConfig);
+        return;
       }
 
       if (usedConfig.eagerLoadAuthWellKnownEndpoints) {
@@ -91,6 +94,7 @@ export class OidcConfigService {
       } else {
         this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
         resolve(usedConfig);
+        return;
       }
     });
   }

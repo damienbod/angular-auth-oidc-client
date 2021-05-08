@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthOptions } from './auth-options';
 import { AuthStateService } from './authState/auth-state.service';
+import { ConfigAuthorizedResult } from './authState/authorization-result';
 import { CallbackService } from './callback/callback.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
 import { CheckAuthService } from './check-auth.service';
@@ -13,7 +14,6 @@ import { LoginResponse } from './login/login-response';
 import { LoginService } from './login/login.service';
 import { PopupOptions } from './login/popup/popup-options';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
-import { StoragePersistenceService } from './storage/storage-persistence.service';
 import { UserService } from './userData/user.service';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
 
@@ -29,7 +29,7 @@ export class OidcSecurityService {
   /**
    * Emits each time an authorization event occurs. Returns true if the user is authenticated and false if they are not.
    */
-  get isAuthenticated$(): Observable<boolean> {
+  get isAuthenticated$(): Observable<ConfigAuthorizedResult[] | boolean> {
     return this.authStateService.authorized$;
   }
 
@@ -59,7 +59,6 @@ export class OidcSecurityService {
     private callbackService: CallbackService,
     private logoffRevocationService: LogoffRevocationService,
     private loginService: LoginService,
-    private storagePersistenceService: StoragePersistenceService,
     private refreshSessionService: RefreshSessionService
   ) {}
 
@@ -171,12 +170,8 @@ export class OidcSecurityService {
    * @param authOptions The custom options for the the authentication request.
    */
   // Code Flow with PCKE or Implicit Flow
-  authorize(authOptions?: AuthOptions, configId?: string): void {
+  authorize(configId?: string, authOptions?: AuthOptions): void {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
-
-    if (authOptions?.customParams) {
-      this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams, configId);
-    }
 
     this.loginService.login(configId, authOptions);
   }
@@ -189,10 +184,6 @@ export class OidcSecurityService {
    */
   authorizeWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions, configId?: string): Observable<LoginResponse> {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
-
-    if (authOptions?.customParams) {
-      this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams, configId);
-    }
 
     return this.loginService.loginWithPopUp(configId, authOptions, popupOptions);
   }
@@ -227,7 +218,7 @@ export class OidcSecurityService {
    *
    * @param authOptions
    */
-  logoff(authOptions?: AuthOptions, configId?: string) {
+  logoff(configId?: string, authOptions?: AuthOptions) {
     const { urlHandler, customParams } = authOptions || {};
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
@@ -266,7 +257,7 @@ export class OidcSecurityService {
   revokeRefreshToken(refreshToken?: any, configId?: string): Observable<any> {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
-    return this.logoffRevocationService.revokeRefreshToken(refreshToken);
+    return this.logoffRevocationService.revokeRefreshToken(configId, refreshToken);
   }
 
   /**

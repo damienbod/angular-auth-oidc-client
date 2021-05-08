@@ -10,7 +10,7 @@ export class HomeComponent implements OnInit {
   configurations: OpenIdConfiguration[];
   userDataChanged$: Observable<OidcClientNotification<any>>;
   userData$: Observable<any>;
-  isAuthenticated$: Observable<boolean>;
+  isAuthenticated$: Observable<any>;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
@@ -20,15 +20,15 @@ export class HomeComponent implements OnInit {
     this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
   }
 
-  login() {
-    this.oidcSecurityService.authorize();
+  login(configId: string) {
+    this.oidcSecurityService.authorize(configId);
   }
 
   forceRefreshSession() {
     this.oidcSecurityService.forceRefreshSession().subscribe((result) => console.warn(result));
   }
 
-  logout() {
-    this.oidcSecurityService.logoff();
+  logout(configId: string) {
+    this.oidcSecurityService.logoff(configId);
   }
 }

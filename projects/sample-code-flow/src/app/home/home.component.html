@@ -1,13 +1,11 @@
 <div>Welcome to home Route</div>
 
-<div *ngIf="isAuthenticated$ | async as isAuthenticated; else noAuth">
-  <button (click)="logout()">Logout</button>
-  <button (click)="forceRefreshSession()">RefreshSession</button>
+<div *ngIf="isAuthenticated$ | async as isAuthenticated">
+  <!-- <button (click)="logout()">Logout</button>
+  <button (click)="forceRefreshSession()">RefreshSession</button> -->
   <hr />
 
   <br />
-
-  Is Authenticated: {{ isAuthenticated }}
 
   <br />
   userData
@@ -16,11 +14,10 @@
   <br />
 </div>
 
-<ng-template #noAuth>
-  <button (click)="login()">Login</button>
-  <hr />
-  You are NOT authenticated
-</ng-template>
+Is Authenticated: {{ isAuthenticated$ | async | json }}
 
-Configuration loaded:
-<pre>{{ configurations | json }}</pre>
+<div *ngFor="let config of configurations">
+  <h3>{{ config.configId }}</h3>
+  <button (click)="login(config.configId)">Login with {{ config.configId }}</button>
+  <pre>{{ config | json }}</pre>
+</div>

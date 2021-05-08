@@ -9,12 +9,16 @@ export class ConfigurationProvider {
     return Object.keys(this.configsInternal).length > 0;
   }
 
+  hasManyConfigs(): boolean {
+    return Object.keys(this.configsInternal).length > 1;
+  }
+
   setConfig(readyConfig: OpenIdConfiguration): void {
     const { configId } = readyConfig;
     this.configsInternal[configId] = readyConfig;
   }
 
-  getOpenIDConfiguration(configId?: string): OpenIdConfiguration {
+  getOpenIDConfiguration(configId?: string, url?: string): OpenIdConfiguration {
     if (!!configId) {
       return this.configsInternal[configId] || null;
     }

@@ -5,3 +5,8 @@ export interface AuthorizationResult {
   validationResult: ValidationResult;
   isRenewProcess: boolean;
 }
+
+export interface ConfigAuthorizedResult {
+  configId: string;
+  isAuthenticated: boolean;
+}

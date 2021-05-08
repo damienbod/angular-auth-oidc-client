@@ -12,6 +12,7 @@ import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.servi
 
 @Injectable()
 export class UserService {
+  private configUserDataResultsInternal: Record<string, boolean> = {};
   private userDataInternal$ = new BehaviorSubject<any>(null);
 
   get userData$() {
@@ -70,22 +71,17 @@ export class UserService {
 
   publishUserDataIfExists(configId: string) {
     const userData = this.getUserDataFromStore(configId);
-    if (userData) {
-      this.userDataInternal$.next(userData);
-      this.eventService.fireEvent(EventTypes.UserDataChanged, userData);
-    }
+    this.updateUserDataAndFireEvent(configId, userData);
   }
 
-  setUserDataToStore(value: any, configId: string): void {
-    this.storagePersistenceService.write('userData', value, configId);
-    this.userDataInternal$.next(value);
-    this.eventService.fireEvent(EventTypes.UserDataChanged, value);
+  setUserDataToStore(userData: any, configId: string): void {
+    this.storagePersistenceService.write('userData', userData, configId);
+    this.updateUserDataAndFireEvent(configId, userData);
   }
 
   resetUserDataInStore(configId: string): void {
     this.storagePersistenceService.remove('userData', configId);
-    this.eventService.fireEvent(EventTypes.UserDataChanged, null);
-    this.userDataInternal$.next(null);
+    this.updateUserDataAndFireEvent(configId, null);
   }
 
   private getUserDataOidcFlowAndSave(idTokenSub: any, configId: string): Observable<any> {
@@ -142,5 +138,21 @@ export class UserService {
     }
 
     return true;
+  }
+
+  private updateUserDataAndFireEvent(configId: string, userData: any) {
+    if (this.configurationProvider.hasManyConfigs()) {
+      this.configUserDataResultsInternal[configId] = userData;
+      const result = Object.entries(this.configUserDataResultsInternal).map(([key, value]) => ({
+        configId: key,
+        userData: value,
+      }));
+
+      this.userDataInternal$.next(result);
+    } else {
+      this.userDataInternal$.next(userData);
+    }
+
+    this.eventService.fireEvent(EventTypes.UserDataChanged, userData);
   }
 }

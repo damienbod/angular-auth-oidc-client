@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthOptions } from '../auth-options';
 import { ConfigurationProvider } from '../config/config.provider';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { LoginResponse } from './login-response';
 import { ParLoginService } from './par/par-login.service';
 import { PopUpLoginService } from './popup/popup-login.service';
@@ -14,10 +15,15 @@ export class LoginService {
     private configurationProvider: ConfigurationProvider,
     private parLoginService: ParLoginService,
     private popUpLoginService: PopUpLoginService,
-    private standardLoginService: StandardLoginService
+    private standardLoginService: StandardLoginService,
+    private storagePersistenceService: StoragePersistenceService
   ) {}
 
   login(configId: string, authOptions?: AuthOptions): void {
+    if (authOptions?.customParams) {
+      this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams, configId);
+    }
+
     const { usePushedAuthorisationRequests } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (usePushedAuthorisationRequests) {
@@ -28,6 +34,10 @@ export class LoginService {
   }
 
   loginWithPopUp(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
+    if (authOptions?.customParams) {
+      this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams, configId);
+    }
+
     const { usePushedAuthorisationRequests } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (usePushedAuthorisationRequests) {
