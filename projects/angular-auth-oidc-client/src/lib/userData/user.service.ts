@@ -150,7 +150,7 @@ export class UserService {
 
       this.userDataInternal$.next(result);
     } else {
-      this.userDataInternal$.next({ configId, userData: passedUserData });
+      this.userDataInternal$.next(passedUserData);
     }
 
     this.eventService.fireEvent(EventTypes.UserDataChanged, { configId, userData: passedUserData });
