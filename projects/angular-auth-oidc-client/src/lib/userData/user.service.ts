@@ -12,7 +12,6 @@ import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.servi
 
 @Injectable()
 export class UserService {
-  private configUserDataResultsInternal: Record<string, boolean> = {};
   private userDataInternal$ = new BehaviorSubject<any>(null);
 
   get userData$() {
@@ -71,17 +70,17 @@ export class UserService {
 
   publishUserDataIfExists(configId: string) {
     const userData = this.getUserDataFromStore(configId);
-    this.updateUserDataAndFireEvent(configId, userData);
+    this.fireUserDataEvent(configId, userData);
   }
 
   setUserDataToStore(userData: any, configId: string): void {
     this.storagePersistenceService.write('userData', userData, configId);
-    this.updateUserDataAndFireEvent(configId, userData);
+    this.fireUserDataEvent(configId, userData);
   }
 
   resetUserDataInStore(configId: string): void {
     this.storagePersistenceService.remove('userData', configId);
-    this.updateUserDataAndFireEvent(configId, null);
+    this.fireUserDataEvent(configId, null);
   }
 
   private getUserDataOidcFlowAndSave(idTokenSub: any, configId: string): Observable<any> {
@@ -140,19 +139,20 @@ export class UserService {
     return true;
   }
 
-  private updateUserDataAndFireEvent(configId: string, userData: any) {
+  private fireUserDataEvent(configId: string, passedUserData: any) {
     if (this.configurationProvider.hasManyConfigs()) {
-      this.configUserDataResultsInternal[configId] = userData;
-      const result = Object.entries(this.configUserDataResultsInternal).map(([key, value]) => ({
-        configId: key,
-        userData: value,
-      }));
+      const configs = this.configurationProvider.getAllConfigurations();
+      const result = configs.map((config) => {
+        const userDataFromStore = this.getUserDataFromStore(config.configId);
+
+        return { configId: config.configId, userData: userDataFromStore };
+      });
 
       this.userDataInternal$.next(result);
     } else {
-      this.userDataInternal$.next(userData);
+      this.userDataInternal$.next({ configId, userData: passedUserData });
     }
 
-    this.eventService.fireEvent(EventTypes.UserDataChanged, userData);
+    this.eventService.fireEvent(EventTypes.UserDataChanged, { configId, userData: passedUserData });
   }
 }

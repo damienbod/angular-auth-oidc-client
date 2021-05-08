@@ -12,7 +12,6 @@ import { AuthorizationResult, ConfigAuthorizedResult } from './authorization-res
 
 @Injectable()
 export class AuthStateService {
-  private configAuthorizedResultsInternal: Record<string, boolean> = {};
   private authorizedInternal$ = new BehaviorSubject<ConfigAuthorizedResult[] | boolean>(null);
 
   get authorized$() {
@@ -27,12 +26,12 @@ export class AuthStateService {
     private tokenValidationService: TokenValidationService
   ) {}
 
-  setAuthorizedAndFireEvent(configId: string): void {
+  setAuthorizedAndFireEvent(): void {
     if (this.configurationProvider.hasManyConfigs()) {
-      this.configAuthorizedResultsInternal[configId] = true;
-      const result: ConfigAuthorizedResult[] = Object.entries(this.configAuthorizedResultsInternal).map(([key, value]) => ({
-        configId: key,
-        isAuthenticated: value,
+      const configs = this.configurationProvider.getAllConfigurations();
+      const result: ConfigAuthorizedResult[] = configs.map(({ configId }) => ({
+        configId,
+        isAuthenticated: this.isAuthorized(configId),
       }));
 
       this.authorizedInternal$.next(result);
@@ -41,14 +40,14 @@ export class AuthStateService {
     }
   }
 
-  setUnauthorizedAndFireEvent(configId: string): void {
-    this.storagePersistenceService.resetAuthStateInStorage(configId);
+  setUnauthorizedAndFireEvent(configIdToReset: string): void {
+    this.storagePersistenceService.resetAuthStateInStorage(configIdToReset);
 
     if (this.configurationProvider.hasManyConfigs()) {
-      this.configAuthorizedResultsInternal[configId] = false;
-      const result: ConfigAuthorizedResult[] = Object.entries(this.configAuthorizedResultsInternal).map(([key, value]) => ({
-        configId: key,
-        isAuthenticated: value,
+      const configs = this.configurationProvider.getAllConfigurations();
+      const result: ConfigAuthorizedResult[] = configs.map(({ configId }) => ({
+        configId,
+        isAuthenticated: this.isAuthorized(configId),
       }));
 
       this.authorizedInternal$.next(result);
@@ -66,7 +65,7 @@ export class AuthStateService {
 
     this.storagePersistenceService.write('authzData', accessToken, configId);
     this.persistAccessTokenExpirationTime(authResult, configId);
-    this.setAuthorizedAndFireEvent(configId);
+    this.setAuthorizedAndFireEvent();
   }
 
   getAccessToken(configId: string): string {
