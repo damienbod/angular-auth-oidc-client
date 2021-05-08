@@ -69,7 +69,7 @@ export class LogoffRevocationService {
     } else {
       return this.revokeAccessToken(configId).pipe(
         catchError((error) => {
-          const errorMessage = `revoke access token failed`;
+          const errorMessage = `revoke accessToken failed`;
           this.loggerService.logError(errorMessage, error);
           return throwError(errorMessage);
         }),

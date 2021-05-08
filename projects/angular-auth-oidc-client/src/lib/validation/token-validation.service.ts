@@ -76,7 +76,7 @@ export class TokenValidationService {
     const nowWithOffset = new Date(new Date().toUTCString()).valueOf() + offsetSeconds * 1000;
     const tokenNotExpired = tokenExpirationValue > nowWithOffset;
 
-    this.loggerService.logDebug(configId, `Has id_token expired: ${!tokenNotExpired}, ${tokenExpirationValue} > ${nowWithOffset}`);
+    this.loggerService.logDebug(configId, `Has idToken expired: ${!tokenNotExpired}, ${tokenExpirationValue} > ${nowWithOffset}`);
 
     // Token not expired?
     return tokenNotExpired;
@@ -93,10 +93,7 @@ export class TokenValidationService {
     const nowWithOffset = new Date(new Date().toUTCString()).valueOf() + offsetSeconds * 1000;
     const tokenNotExpired = accessTokenExpirationValue > nowWithOffset;
 
-    this.loggerService.logDebug(
-      configId,
-      `Has access_token expired: ${!tokenNotExpired}, ${accessTokenExpirationValue} > ${nowWithOffset}`
-    );
+    this.loggerService.logDebug(configId, `Has accessToken expired: ${!tokenNotExpired}, ${accessTokenExpirationValue} > ${nowWithOffset}`);
 
     // access token not expired?
     return tokenNotExpired;

@@ -88,7 +88,7 @@ export class AuthStateService {
       return false;
     }
 
-    this.loggerService.logDebug(configId, 'persisted idToken and access token are valid');
+    this.loggerService.logDebug(configId, 'persisted idToken and accessToken are valid');
     return true;
   }
 

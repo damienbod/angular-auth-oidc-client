@@ -47,7 +47,8 @@ export class HistoryJwtKeysCallbackHandlerService {
 
     this.loggerService.logDebug(
       configId,
-      `AuthResult '${JSON.stringify(callbackContext.authResult)}'. AuthorizedCallback created, begin token validation`
+      `AuthResult '${JSON.stringify(callbackContext.authResult, null, 2)}'.
+      AuthorizedCallback created, begin token validation`
     );
 
     return this.signInKeyDataService.getSigningKeys(configId).pipe(
