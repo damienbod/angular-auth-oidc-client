@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { of, throwError } from 'rxjs';
+import { forkJoin, of, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { ConfigurationProvider } from '../config/config.provider';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
@@ -29,80 +30,112 @@ export class PeriodicallyTokenCheckService {
     private storagePersistenceService: StoragePersistenceService
   ) {}
 
-  startTokenValidationPeriodically(repeatAfterSeconds: number, configId: string) {
-    const { silentRenew } = this.configurationProvider.getOpenIDConfiguration(configId);
+  startTokenValidationPeriodically(): void {
+    const configsWithSilentRenewEnabled = this.getConfigsWithSilentRenewEnabled();
 
-    if (!!this.intervalService.runTokenValidationRunning || !silentRenew) {
+    if (configsWithSilentRenewEnabled.length <= 0) {
       return;
     }
 
-    this.loggerService.logDebug(configId, `starting token validation check every ${repeatAfterSeconds}s`);
+    const refreshTimeInSeconds = this.getSmallestRefreshTimeFromConfigs(configsWithSilentRenewEnabled);
 
-    const periodicallyCheck$ = this.intervalService.startPeriodicTokenCheck(repeatAfterSeconds).pipe(
+    if (!!this.intervalService.runTokenValidationRunning) {
+      return;
+    }
+
+    // START PERIODICALLY CHECK ONCE AND CHECK EACH CONFIG WHICH HAS IT ENABLED
+    const periodicallyCheck$ = this.intervalService.startPeriodicTokenCheck(refreshTimeInSeconds).pipe(
       switchMap(() => {
-        const idToken = this.authStateService.getIdToken(configId);
-        const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning(configId);
-        const userDataFromStore = this.userService.getUserDataFromStore(configId);
+        const objectWithConfigIdsAndRefreshEvent = {};
 
-        this.loggerService.logDebug(
-          configId,
-          `Checking: silentRenewRunning: ${isSilentRenewRunning} - has idToken: ${!!idToken} - has userData: ${!!userDataFromStore}`
-        );
+        configsWithSilentRenewEnabled.forEach(({ configId }) => {
+          const refreshEvent$ = this.createRefreshEventForConfig(configId);
+          const refreshEventWithErrorHandler$ = refreshEvent$.pipe(
+            catchError((error) => {
+              this.flowsDataService.resetSilentRenewRunning(configId);
+              return throwError(error);
+            })
+          );
 
-        const shouldBeExecuted = userDataFromStore && !isSilentRenewRunning && idToken;
+          objectWithConfigIdsAndRefreshEvent[configId] = refreshEventWithErrorHandler$;
+        });
 
-        if (!shouldBeExecuted) {
-          return of(null);
-        }
-
-        const idTokenHasExpired = this.authStateService.hasIdTokenExpired(configId);
-        const accessTokenHasExpired = this.authStateService.hasAccessTokenExpiredIfExpiryExists(configId);
-
-        if (!idTokenHasExpired && !accessTokenHasExpired) {
-          return of(null);
-        }
-
-        const config = this.configurationProvider.getOpenIDConfiguration(configId);
-
-        if (!config?.silentRenew) {
-          this.resetAuthDataService.resetAuthorizationData(configId);
-          return of(null);
-        }
-
-        this.loggerService.logDebug(configId, 'starting silent renew...');
-
-        this.flowsDataService.setSilentRenewRunning(configId);
-
-        // Retrieve Dynamically Set Custom Params
-        const customParams: { [key: string]: string | number | boolean } = this.storagePersistenceService.read(
-          'storageCustomRequestParams',
-          configId
-        );
-
-        if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(configId)) {
-          // Refresh Session using Refresh tokens
-          return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(configId, customParams);
-        }
-
-        return this.refreshSessionIframeService.refreshSessionWithIframe(configId, customParams);
+        return forkJoin(objectWithConfigIdsAndRefreshEvent);
       })
     );
 
-    this.intervalService.runTokenValidationRunning = periodicallyCheck$
-      .pipe(
-        catchError((error) => {
-          this.flowsDataService.resetSilentRenewRunning(configId);
-          return throwError(error);
-        })
-      )
-      .subscribe(
-        () => {
-          this.loggerService.logDebug(configId, 'silent renew, periodic check finished!');
-          if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(configId)) {
-            this.flowsDataService.resetSilentRenewRunning(configId);
+    this.intervalService.runTokenValidationRunning = periodicallyCheck$.subscribe(
+      (objectWithConfigIds) => {
+        for (const [key, _] of Object.entries(objectWithConfigIds)) {
+          this.loggerService.logDebug(key, 'silent renew, periodic check finished!');
+          if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(key)) {
+            this.flowsDataService.resetSilentRenewRunning(key);
           }
-        },
-        (err) => this.loggerService.logError('silent renew failed!', err)
-      );
+        }
+      },
+      (err) => this.loggerService.logError('silent renew failed!', err)
+    );
+  }
+
+  private getSmallestRefreshTimeFromConfigs(configsWithSilentRenewEnabled: OpenIdConfiguration[]): number {
+    const result = configsWithSilentRenewEnabled.reduce((prev, curr) =>
+      prev.tokenRefreshInSeconds < curr.tokenRefreshInSeconds ? prev : curr
+    );
+
+    return result.tokenRefreshInSeconds;
+  }
+
+  private getConfigsWithSilentRenewEnabled(): OpenIdConfiguration[] {
+    return this.configurationProvider.getAllConfigurations().filter((x) => x.silentRenew);
+  }
+
+  private createRefreshEventForConfig(configId: string) {
+    const idToken = this.authStateService.getIdToken(configId);
+    const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning(configId);
+    const userDataFromStore = this.userService.getUserDataFromStore(configId);
+
+    this.loggerService.logDebug(
+      configId,
+      `Checking: silentRenewRunning: ${isSilentRenewRunning} - has idToken: ${!!idToken} - has userData: ${!!userDataFromStore}`
+    );
+
+    const shouldBeExecuted = userDataFromStore && !isSilentRenewRunning && idToken;
+
+    if (!shouldBeExecuted) {
+      return of(null);
+    }
+
+    const idTokenHasExpired = this.authStateService.hasIdTokenExpired(configId);
+    const accessTokenHasExpired = this.authStateService.hasAccessTokenExpiredIfExpiryExists(configId);
+
+    if (!idTokenHasExpired && !accessTokenHasExpired) {
+      return of(null);
+    }
+
+    // TODO FGO THROW STARTING SILENT RENEW
+
+    const config = this.configurationProvider.getOpenIDConfiguration(configId);
+
+    if (!config?.silentRenew) {
+      this.resetAuthDataService.resetAuthorizationData(configId);
+      return of(null);
+    }
+
+    this.loggerService.logDebug(configId, 'starting silent renew...');
+
+    this.flowsDataService.setSilentRenewRunning(configId);
+
+    // Retrieve Dynamically Set Custom Params
+    const customParams: { [key: string]: string | number | boolean } = this.storagePersistenceService.read(
+      'storageCustomRequestParams',
+      configId
+    );
+
+    if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(configId)) {
+      // Refresh Session using Refresh tokens
+      return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(configId, customParams);
+    }
+
+    return this.refreshSessionIframeService.refreshSessionWithIframe(configId, customParams);
   }
 }

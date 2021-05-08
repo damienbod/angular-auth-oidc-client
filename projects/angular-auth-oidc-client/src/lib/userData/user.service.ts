@@ -39,7 +39,7 @@ export class UserService {
 
     const accessToken = this.storagePersistenceService.getAccessToken(configId);
     if (!(isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow)) {
-      this.loggerService.logDebug(configId, `authorizedCallback id_token flow with accessToken ${accessToken}`);
+      this.loggerService.logDebug(configId, `authorizedCallback idToken flow with accessToken ${accessToken}`);
 
       this.setUserDataToStore(decodedIdToken, configId);
       return of(decodedIdToken);
@@ -55,7 +55,7 @@ export class UserService {
             this.loggerService.logDebug('accessToken: ', accessToken);
             return of(userData);
           } else {
-            return throwError('no user data, request failed');
+            return throwError('Received no user data, request failed');
           }
         })
       );

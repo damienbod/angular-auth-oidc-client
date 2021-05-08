@@ -75,12 +75,12 @@ export class OidcSecurityService {
   /**
    * Returns a single active OpenIdConfiguration.
    *
-   * @param uniqueId The uniqueId to identify the config. If not passed, the first one is being returned
+   * @param configId The configId to identify the config. If not passed, the first one is being returned
    *
    * @returns OpenIdConfiguration if only one is active, an array otherwise
    */
   getConfiguration(configId?: string): OpenIdConfiguration {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.configurationProvider.getOpenIDConfiguration(configId);
   }
@@ -92,7 +92,7 @@ export class OidcSecurityService {
    * @param url The url to perform the authorization on the behalf of.
    */
   checkAuth(url?: string, configId?: string): Observable<LoginResponse> {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.checkAuthService.checkAuth(configId, url);
   }
@@ -101,7 +101,7 @@ export class OidcSecurityService {
    * Checks the server for an authenticated session using the iframe silent renew if not locally authenticated.
    */
   checkAuthIncludingServer(configId?: string): Observable<LoginResponse> {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.checkAuthService.checkAuthIncludingServer(configId);
   }
@@ -110,7 +110,7 @@ export class OidcSecurityService {
    * Returns the access token for the login scenario.
    */
   getToken(configId?: string): string {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.authStateService.getAccessToken(configId);
   }
@@ -119,7 +119,7 @@ export class OidcSecurityService {
    * Returns the ID token for the login scenario.
    */
   getIdToken(configId?: string): string {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.authStateService.getIdToken(configId);
   }
@@ -128,7 +128,7 @@ export class OidcSecurityService {
    * Returns the refresh token, if present, for the login scenario.
    */
   getRefreshToken(configId?: string): string {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.authStateService.getRefreshToken(configId);
   }
@@ -139,7 +139,7 @@ export class OidcSecurityService {
    * @param encode Set to true if the payload is base64 encoded
    */
   getPayloadFromIdToken(encode = false, configId?: string): any {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     const token = this.getIdToken(configId);
     return this.tokenHelperService.getPayloadFromToken(token, encode, configId);
@@ -151,7 +151,7 @@ export class OidcSecurityService {
    * @param state The state to set.
    */
   setState(state: string, configId?: string): void {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     this.flowsDataService.setAuthStateControl(state, configId);
   }
@@ -160,7 +160,7 @@ export class OidcSecurityService {
    * Gets the state value used for the authorize request.
    */
   getState(configId?: string): string {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.flowsDataService.getAuthStateControl(configId);
   }
@@ -172,7 +172,7 @@ export class OidcSecurityService {
    */
   // Code Flow with PCKE or Implicit Flow
   authorize(authOptions?: AuthOptions, configId?: string): void {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     if (authOptions?.customParams) {
       this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams, configId);
@@ -188,7 +188,7 @@ export class OidcSecurityService {
    * @param popupOptions The configuration for the popup window.
    */
   authorizeWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions, configId?: string): Observable<LoginResponse> {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     if (authOptions?.customParams) {
       this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams, configId);
@@ -203,11 +203,7 @@ export class OidcSecurityService {
    * @param customParams Custom parameters to pass to the refresh request.
    */
   forceRefreshSession(customParams?: { [key: string]: string | number | boolean }, configId?: string): Observable<LoginResponse> {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
-
-    if (customParams) {
-      this.storagePersistenceService.write('storageCustomRequestParams', customParams, configId);
-    }
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.refreshSessionService.forceRefreshSession(configId, customParams);
   }
@@ -220,7 +216,7 @@ export class OidcSecurityService {
   // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
   // only the access token is revoked. Then the logout run.
   logoffAndRevokeTokens(urlHandler?: (url: string) => any, configId?: string): Observable<any> {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.logoffRevocationService.logoffAndRevokeTokens(configId, urlHandler);
   }
@@ -233,7 +229,7 @@ export class OidcSecurityService {
    */
   logoff(authOptions?: AuthOptions, configId?: string) {
     const { urlHandler, customParams } = authOptions || {};
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.logoffRevocationService.logoff(configId, urlHandler, customParams);
   }
@@ -242,7 +238,7 @@ export class OidcSecurityService {
    * Logs the user out of the application without logging them out of the server.
    */
   logoffLocal(configId?: string): void {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.logoffRevocationService.logoffLocal(configId);
   }
@@ -255,7 +251,7 @@ export class OidcSecurityService {
    * @param accessToken The access token to revoke.
    */
   revokeAccessToken(accessToken?: any, configId?: string): Observable<any> {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.logoffRevocationService.revokeAccessToken(configId, accessToken);
   }
@@ -268,7 +264,7 @@ export class OidcSecurityService {
    * @param refreshToken The access token to revoke.
    */
   revokeRefreshToken(refreshToken?: any, configId?: string): Observable<any> {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.logoffRevocationService.revokeRefreshToken(refreshToken);
   }
@@ -279,7 +275,7 @@ export class OidcSecurityService {
    * @param customParams
    */
   getEndSessionUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): string | null {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.uniqueId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.logoffRevocationService.getEndSessionUrl(configId, customParams);
   }

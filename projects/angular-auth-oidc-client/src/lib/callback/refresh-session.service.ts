@@ -10,6 +10,7 @@ import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.se
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
 import { LoginResponse } from '../login/login-response';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 
@@ -25,10 +26,15 @@ export class RefreshSessionService {
     private authStateService: AuthStateService,
     private authWellKnownService: AuthWellKnownService,
     private refreshSessionIframeService: RefreshSessionIframeService,
+    private storagePersistenceService: StoragePersistenceService,
     private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService
   ) {}
 
   forceRefreshSession(configId: string, customParams?: { [key: string]: string | number | boolean }): Observable<LoginResponse> {
+    if (customParams) {
+      this.storagePersistenceService.write('storageCustomRequestParams', customParams, configId);
+    }
+
     if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(configId)) {
       return this.startRefreshSession(configId, customParams).pipe(
         map(() => {

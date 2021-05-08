@@ -79,16 +79,16 @@ export class AuthStateService {
     }
 
     if (this.hasIdTokenExpired(configId)) {
-      this.loggerService.logDebug(configId, 'persisted id_token is expired');
+      this.loggerService.logDebug(configId, 'persisted idToken is expired');
       return false;
     }
 
     if (this.hasAccessTokenExpiredIfExpiryExists(configId)) {
-      this.loggerService.logDebug(configId, 'persisted access_token is expired');
+      this.loggerService.logDebug(configId, 'persisted accessToken is expired');
       return false;
     }
 
-    this.loggerService.logDebug(configId, 'persisted id_token and access token are valid');
+    this.loggerService.logDebug(configId, 'persisted idToken and access token are valid');
     return true;
   }
 

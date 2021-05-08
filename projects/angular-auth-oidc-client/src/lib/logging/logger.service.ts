@@ -12,9 +12,9 @@ export class LoggerService {
     }
 
     if (!!args && args.length) {
-      console.error(message, ...args);
+      console.error(configId + ' - ' + message, ...args);
     } else {
-      console.error(message);
+      console.error(configId + ' - ' + message);
     }
   }
 
@@ -32,9 +32,9 @@ export class LoggerService {
     }
 
     if (!!args && args.length) {
-      console.warn(message, ...args);
+      console.warn(configId + ' - ' + message, ...args);
     } else {
-      console.warn(message);
+      console.warn(configId + ' - ' + message);
     }
   }
 
@@ -52,9 +52,9 @@ export class LoggerService {
     }
 
     if (!!args && args.length) {
-      console.log(message, ...args);
+      console.log(configId + ' - ' + message, ...args);
     } else {
-      console.log(message);
+      console.log(configId + ' - ' + message);
     }
   }
 

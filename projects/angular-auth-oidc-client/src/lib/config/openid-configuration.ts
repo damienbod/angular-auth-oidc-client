@@ -2,7 +2,7 @@ import { LogLevel } from '../logging/log-level';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 
 export interface OpenIdConfiguration {
-  uniqueId?: string;
+  configId?: string;
   /**
    * The url to the Security Token Service (STS) server.
    * This field is required.

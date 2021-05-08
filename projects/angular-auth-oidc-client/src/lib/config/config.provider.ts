@@ -10,11 +10,11 @@ export class ConfigurationProvider {
   }
 
   setConfig(readyConfig: OpenIdConfiguration): void {
-    const { uniqueId } = readyConfig;
-    this.configsInternal[uniqueId] = readyConfig;
+    const { configId } = readyConfig;
+    this.configsInternal[configId] = readyConfig;
   }
 
-  getOpenIDConfiguration(configId: string): OpenIdConfiguration {
+  getOpenIDConfiguration(configId?: string): OpenIdConfiguration {
     if (!!configId) {
       return this.configsInternal[configId] || null;
     }

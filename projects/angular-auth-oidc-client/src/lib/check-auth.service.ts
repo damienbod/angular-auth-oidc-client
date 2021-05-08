@@ -34,17 +34,17 @@ export class CheckAuthService {
     private router: Router
   ) {}
 
-  checkAuth(configId: string, url?: string): Observable<LoginResponse> {
+  checkAuth(passedConfigId: string, url?: string): Observable<LoginResponse> {
     if (!this.configurationProvider.hasConfig()) {
       const errorMessage = 'Please provide at least one configuration before setting up the module';
-      this.loggerService.logError(configId, errorMessage);
+      this.loggerService.logError(passedConfigId, errorMessage);
 
       return of({ isAuthenticated: false, errorMessage });
     }
 
-    const { stsServer, uniqueId } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const { stsServer, configId } = this.configurationProvider.getOpenIDConfiguration(passedConfigId);
 
-    this.loggerService.logDebug(uniqueId, `Working with config '${uniqueId}' using ${stsServer}`);
+    this.loggerService.logDebug(configId, `Working with config '${configId}' using ${stsServer}`);
 
     const currentUrl = url || this.doc.defaultView.location.toString();
 
@@ -62,9 +62,9 @@ export class CheckAuthService {
 
     return callback$.pipe(
       map(() => {
-        const isAuthenticated = this.authStateService.areAuthStorageTokensValid(uniqueId);
+        const isAuthenticated = this.authStateService.areAuthStorageTokensValid(configId);
         if (isAuthenticated) {
-          this.startCheckSessionAndValidation(uniqueId);
+          this.startCheckSessionAndValidation(configId);
 
           if (!isCallback) {
             this.authStateService.setAuthorizedAndFireEvent();
@@ -72,24 +72,24 @@ export class CheckAuthService {
           }
         }
 
-        this.loggerService.logDebug(uniqueId, 'checkAuth completed - firing events now. isAuthenticated: ' + isAuthenticated);
+        this.loggerService.logDebug(configId, 'checkAuth completed - firing events now. isAuthenticated: ' + isAuthenticated);
 
         return {
           isAuthenticated,
-          userData: this.userService.getUserDataFromStore(uniqueId),
-          accessToken: this.authStateService.getAccessToken(uniqueId),
-          configId: uniqueId,
+          userData: this.userService.getUserDataFromStore(configId),
+          accessToken: this.authStateService.getAccessToken(configId),
+          configId,
         };
       }),
       tap(() => {
-        const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute(uniqueId);
+        const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute(configId);
         if (savedRouteForRedirect) {
-          this.autoLoginService.deleteStoredRedirectRoute(uniqueId);
+          this.autoLoginService.deleteStoredRedirectRoute(configId);
           this.router.navigateByUrl(savedRouteForRedirect);
         }
       }),
       catchError((errorMessage) => {
-        this.loggerService.logError(uniqueId, errorMessage);
+        this.loggerService.logError(configId, errorMessage);
         return of({ isAuthenticated: false, errorMessage });
       })
     );
@@ -120,9 +120,7 @@ export class CheckAuthService {
       this.checkSessionService.start(configId);
     }
 
-    const { tokenRefreshInSeconds } = this.configurationProvider.getOpenIDConfiguration(configId);
-
-    this.periodicallyTokenCheckService.startTokenValidationPeriodically(tokenRefreshInSeconds, configId);
+    this.periodicallyTokenCheckService.startTokenValidationPeriodically();
 
     if (this.silentRenewService.isSilentRenewConfigured(configId)) {
       this.silentRenewService.getOrCreateIframe(configId);

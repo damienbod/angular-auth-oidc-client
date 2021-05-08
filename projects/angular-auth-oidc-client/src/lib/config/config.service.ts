@@ -25,31 +25,24 @@ export class OidcConfigService {
   ) {}
 
   withConfigs(passedConfigs: OpenIdConfiguration[]): Promise<any> {
-    this.createAndStoreIds(passedConfigs);
-    const allHandleConfigPromises = passedConfigs.map((x, index) => this.handleConfig(x));
+    this.createUniqueIds(passedConfigs);
+    const allHandleConfigPromises = passedConfigs.map((x) => this.handleConfig(x));
 
     return Promise.all(allHandleConfigPromises);
   }
 
-  private createAndStoreIds(passedConfigs: OpenIdConfiguration[]) {
-    const objectToStore = {};
-
-    const savedConfigs = JSON.parse(sessionStorage.getItem('configIds') || null) || {};
+  private createUniqueIds(passedConfigs: OpenIdConfiguration[]) {
     passedConfigs.forEach((config, index) => {
-      if (!config.uniqueId) {
-        const existingId = Object.values(savedConfigs)[index] as string;
-        config.uniqueId = existingId ?? this.createUniqueId(10);
-        objectToStore[index] = config.uniqueId;
+      if (!config.configId) {
+        config.configId = `${index}-${config.clientId}`;
       }
     });
-
-    sessionStorage.setItem('configIds', JSON.stringify(objectToStore));
   }
 
   private handleConfig(passedConfig: OpenIdConfiguration): Promise<any> {
     return new Promise((resolve, reject) => {
       if (!this.configValidationService.validateConfig(passedConfig)) {
-        this.loggerService.logError(passedConfig.uniqueId, 'Validation of config rejected with errors. Config is NOT set.');
+        this.loggerService.logError(passedConfig.configId, 'Validation of config rejected with errors. Config is NOT set.');
         resolve(null);
       }
 
@@ -60,7 +53,7 @@ export class OidcConfigService {
       const usedConfig = this.prepareConfig(passedConfig);
       this.configurationProvider.setConfig(usedConfig);
 
-      const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', usedConfig.uniqueId);
+      const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', usedConfig.configId);
       if (!!alreadyExistingAuthWellKnownEndpoints) {
         usedConfig.authWellKnown = alreadyExistingAuthWellKnownEndpoints;
         this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
@@ -71,7 +64,7 @@ export class OidcConfigService {
       const passedAuthWellKnownEndpoints = usedConfig.authWellKnown;
 
       if (!!passedAuthWellKnownEndpoints) {
-        this.authWellKnownService.storeWellKnownEndpoints(usedConfig.uniqueId, passedAuthWellKnownEndpoints);
+        this.authWellKnownService.storeWellKnownEndpoints(usedConfig.configId, passedAuthWellKnownEndpoints);
         usedConfig.authWellKnown = alreadyExistingAuthWellKnownEndpoints;
         this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
 
@@ -80,7 +73,7 @@ export class OidcConfigService {
 
       if (usedConfig.eagerLoadAuthWellKnownEndpoints) {
         this.authWellKnownService
-          .getAuthWellKnownEndPoints(usedConfig.authWellknownEndpoint, usedConfig.uniqueId)
+          .getAuthWellKnownEndPoints(usedConfig.authWellknownEndpoint, usedConfig.configId)
           .pipe(
             catchError((error) => {
               this.loggerService.logError('Getting auth well known endpoints failed on start', error);
@@ -116,15 +109,5 @@ export class OidcConfigService {
       currentConfig.useRefreshToken = false;
       currentConfig.usePushedAuthorisationRequests = false;
     }
-  }
-
-  private createUniqueId(length: number) {
-    const result = [];
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
-      result.push(characters.charAt(Math.floor(Math.random() * charactersLength)));
-    }
-    return result.join('');
   }
 }
