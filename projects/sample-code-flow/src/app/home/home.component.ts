@@ -31,4 +31,12 @@ export class HomeComponent implements OnInit {
   logout(configId: string) {
     this.oidcSecurityService.logoff(configId);
   }
+
+  // login(configId: string) {
+  //   this.oidcSecurityService.authorize(configId);
+  // }
+
+  // logout(configId: string) {
+  //   this.oidcSecurityService.logoff(configId);
+  // }
 }

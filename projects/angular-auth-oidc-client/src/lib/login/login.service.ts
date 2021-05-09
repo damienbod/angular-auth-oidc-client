@@ -33,7 +33,7 @@ export class LoginService {
     }
   }
 
-  loginWithPopUp(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
+  loginWithPopUp(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse | LoginResponse[]> {
     if (authOptions?.customParams) {
       this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams, configId);
     }

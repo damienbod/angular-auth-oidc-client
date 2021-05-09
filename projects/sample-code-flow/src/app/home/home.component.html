@@ -7,6 +7,10 @@ Is Authenticated:
 UserData
 <pre>{{ userData$ | async | json }}</pre>
 
+<!-- <button (click)="login()">Login</button>
+<button (click)="logout()">Logout</button>
+<pre>{{ configuration | json }}</pre> -->
+
 <div *ngFor="let config of configurations">
   <h3>{{ config.configId }}</h3>
   <button (click)="login(config.configId)">Login with {{ config.configId }}</button>

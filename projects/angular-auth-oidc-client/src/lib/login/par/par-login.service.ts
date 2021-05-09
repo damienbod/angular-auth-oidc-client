@@ -70,7 +70,7 @@ export class ParLoginService {
       });
   }
 
-  loginWithPopUpPar(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
+  loginWithPopUpPar(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse | LoginResponse[]> {
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
       const errorMessage = 'Invalid response type!';
       this.loggerService.logError(configId, errorMessage);

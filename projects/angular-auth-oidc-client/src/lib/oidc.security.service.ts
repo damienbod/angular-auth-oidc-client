@@ -91,9 +91,11 @@ export class OidcSecurityService {
    * @param url The url to perform the authorization on the behalf of.
    */
   checkAuth(url?: string, configId?: string): Observable<LoginResponse> {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
-
     return this.checkAuthService.checkAuth(configId, url);
+  }
+
+  checkAuthMultiple(url?: string, configId?: string): Observable<LoginResponse[]> {
+    return this.checkAuthService.checkAuthMultiple(configId, url);
   }
 
   /**
@@ -182,7 +184,11 @@ export class OidcSecurityService {
    * @param authOptions The custom options for the authentication request.
    * @param popupOptions The configuration for the popup window.
    */
-  authorizeWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions, configId?: string): Observable<LoginResponse> {
+  authorizeWithPopUp(
+    authOptions?: AuthOptions,
+    popupOptions?: PopupOptions,
+    configId?: string
+  ): Observable<LoginResponse | LoginResponse[]> {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.loginService.loginWithPopUp(configId, authOptions, popupOptions);

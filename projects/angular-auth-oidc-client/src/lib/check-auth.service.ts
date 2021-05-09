@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
 import { AutoLoginService } from './auto-login/auto-login.service';
@@ -38,16 +38,72 @@ export class CheckAuthService {
   ) {}
 
   checkAuth(passedConfigId: string, url?: string): Observable<LoginResponse> {
+    if (this.currentUrlHasStateParam()) {
+      const stateParamFromUrl = this.getStateParamFromCurrentUrl();
+      const config = this.getConfigurationWithUrlState(stateParamFromUrl);
+
+      return this.checkAuthWithConfig(config, url);
+    }
+
+    if (!!passedConfigId) {
+      const config = this.configurationProvider.getOpenIDConfiguration(passedConfigId);
+      return this.checkAuthWithConfig(config, url);
+    }
+
+    const onlyExistingConfig = this.configurationProvider.getOpenIDConfiguration();
+    return this.checkAuthWithConfig(onlyExistingConfig, url);
+  }
+
+  checkAuthMultiple(passedConfigId: string, url?: string): Observable<LoginResponse[]> {
+    if (this.currentUrlHasStateParam()) {
+      const stateParamFromUrl = this.getStateParamFromCurrentUrl();
+      const config = this.getConfigurationWithUrlState(stateParamFromUrl);
+      return this.checkAuthWithConfig(config, url).pipe(map((x) => [x]));
+    }
+
+    if (!!passedConfigId) {
+      const config = this.configurationProvider.getOpenIDConfiguration(passedConfigId);
+      return this.checkAuthWithConfig(config, url).pipe(map((x) => [x]));
+    }
+
+    const allConfigs = this.configurationProvider.getAllConfigurations();
+    const allChecks$ = allConfigs.map((x) => this.checkAuthWithConfig(x, url));
+
+    return forkJoin(allChecks$);
+  }
+
+  checkAuthIncludingServer(configId: string): Observable<LoginResponse> {
+    const onlyExistingConfig = this.configurationProvider.getOpenIDConfiguration();
+    return this.checkAuthWithConfig(onlyExistingConfig).pipe(
+      switchMap((loginResponse) => {
+        const { isAuthenticated } = loginResponse;
+
+        if (isAuthenticated) {
+          return of(loginResponse);
+        }
+
+        return this.refreshSessionService.forceRefreshSession(configId).pipe(
+          tap((loginResponseAfterRefreshSession) => {
+            if (loginResponseAfterRefreshSession.isAuthenticated) {
+              this.startCheckSessionAndValidation(configId);
+            }
+          })
+        );
+      })
+    );
+  }
+
+  checkAuthWithConfig(config: OpenIdConfiguration, url?: string): Observable<LoginResponse> {
+    const { configId, stsServer } = config;
+
     if (!this.configurationProvider.hasConfig()) {
       const errorMessage = 'Please provide at least one configuration before setting up the module';
-      this.loggerService.logError(passedConfigId, errorMessage);
+      this.loggerService.logError(configId, errorMessage);
 
       return of({ isAuthenticated: false, errorMessage });
     }
 
     const currentUrl = url || this.doc.defaultView.location.toString();
-
-    const { stsServer, configId } = this.getConfiguration(passedConfigId, currentUrl);
 
     this.loggerService.logDebug(configId, `Working with config '${configId}' using ${stsServer}`);
 
@@ -98,26 +154,6 @@ export class CheckAuthService {
     );
   }
 
-  checkAuthIncludingServer(configId: string): Observable<LoginResponse> {
-    return this.checkAuth(configId).pipe(
-      switchMap((loginResponse) => {
-        const { isAuthenticated } = loginResponse;
-
-        if (isAuthenticated) {
-          return of(loginResponse);
-        }
-
-        return this.refreshSessionService.forceRefreshSession(configId).pipe(
-          tap((loginResponseAfterRefreshSession) => {
-            if (loginResponseAfterRefreshSession.isAuthenticated) {
-              this.startCheckSessionAndValidation(configId);
-            }
-          })
-        );
-      })
-    );
-  }
-
   private startCheckSessionAndValidation(configId: string) {
     if (this.checkSessionService.isCheckSessionConfigured(configId)) {
       this.checkSessionService.start(configId);
@@ -130,21 +166,32 @@ export class CheckAuthService {
     }
   }
 
-  private getConfiguration(configId?: string, url?: string): OpenIdConfiguration {
-    if (!!url) {
-      const urlParams = new URLSearchParams(url);
-      const stateFromUrl = urlParams.get('state');
-      const allConfigs = this.configurationProvider.getAllConfigurations();
+  private getConfigurationWithUrlState(stateFromUrl: string): OpenIdConfiguration {
+    const allConfigs = this.configurationProvider.getAllConfigurations();
 
-      for (const config of allConfigs) {
-        const storedState = this.storagePersistenceService.read('authStateControl', config.configId);
+    for (const config of allConfigs) {
+      const storedState = this.storagePersistenceService.read('authStateControl', config.configId);
 
-        if (storedState === stateFromUrl) {
-          return config;
-        }
+      if (storedState === stateFromUrl) {
+        return config;
       }
     }
 
-    return this.configurationProvider.getOpenIDConfiguration(configId);
+    return null;
+  }
+
+  private getStateParamFromCurrentUrl(): string {
+    const currentUrl = this.getCurrentUrl();
+    const urlParams = new URLSearchParams(currentUrl);
+    const stateFromUrl = urlParams.get('state');
+    return stateFromUrl;
+  }
+
+  private currentUrlHasStateParam(): boolean {
+    return !!this.getStateParamFromCurrentUrl();
+  }
+
+  private getCurrentUrl(): string {
+    return this.doc.defaultView.location.toString();
   }
 }
