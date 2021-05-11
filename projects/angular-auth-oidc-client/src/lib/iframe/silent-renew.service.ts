@@ -111,7 +111,7 @@ export class SilentRenewService {
       const urlParts = e.detail.toString().split('?');
       callback$ = this.codeFlowCallbackSilentRenewIframe(urlParts, configId);
     } else {
-      callback$ = this.implicitFlowCallbackService.authorizedImplicitFlowCallback(e.detail);
+      callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(e.detail);
     }
 
     callback$.subscribe(

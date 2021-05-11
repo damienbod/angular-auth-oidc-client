@@ -39,7 +39,7 @@ export class UserService {
 
     const accessToken = this.storagePersistenceService.getAccessToken(configId);
     if (!(isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow)) {
-      this.loggerService.logDebug(configId, `authorizedCallback idToken flow with accessToken ${accessToken}`);
+      this.loggerService.logDebug(configId, `authCallback idToken flow with accessToken ${accessToken}`);
 
       this.setUserDataToStore(decodedIdToken, configId);
       return of(decodedIdToken);

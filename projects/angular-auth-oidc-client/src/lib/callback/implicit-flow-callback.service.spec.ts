@@ -50,7 +50,7 @@ describe('ImplicitFlowCallbackService ', () => {
       const spy = spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(of(null));
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
 
-      implicitFlowCallbackService.authorizedImplicitFlowCallback('some-hash');
+      implicitFlowCallbackService.authenticatedImplicitFlowCallback('some-hash');
 
       expect(spy).toHaveBeenCalledWith('some-hash');
     });
@@ -72,7 +72,7 @@ describe('ImplicitFlowCallbackService ', () => {
         const spy = spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(of(callbackContext));
         const routerSpy = spyOn(router, 'navigateByUrl');
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
-        implicitFlowCallbackService.authorizedImplicitFlowCallback('some-hash').subscribe(() => {
+        implicitFlowCallbackService.authenticatedImplicitFlowCallback('some-hash').subscribe(() => {
           expect(spy).toHaveBeenCalledWith('some-hash');
           expect(routerSpy).not.toHaveBeenCalled();
         });
@@ -99,7 +99,7 @@ describe('ImplicitFlowCallbackService ', () => {
           triggerAuthorizationResultEvent: false,
           postLoginRoute: 'postLoginRoute',
         });
-        implicitFlowCallbackService.authorizedImplicitFlowCallback('some-hash').subscribe(() => {
+        implicitFlowCallbackService.authenticatedImplicitFlowCallback('some-hash').subscribe(() => {
           expect(spy).toHaveBeenCalledWith('some-hash');
           expect(routerSpy).toHaveBeenCalledWith('postLoginRoute');
         });
@@ -117,7 +117,7 @@ describe('ImplicitFlowCallbackService ', () => {
           triggerAuthorizationResultEvent: false,
           postLoginRoute: 'postLoginRoute',
         });
-        implicitFlowCallbackService.authorizedImplicitFlowCallback('some-hash').subscribe({
+        implicitFlowCallbackService.authenticatedImplicitFlowCallback('some-hash').subscribe({
           error: (err) => {
             expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
             expect(stopPeriodicallyTokenCheckSpy).toHaveBeenCalled();
@@ -141,7 +141,7 @@ describe('ImplicitFlowCallbackService ', () => {
           triggerAuthorizationResultEvent: false,
           unauthorizedRoute: 'unauthorizedRoute',
         });
-        implicitFlowCallbackService.authorizedImplicitFlowCallback('some-hash').subscribe({
+        implicitFlowCallbackService.authenticatedImplicitFlowCallback('some-hash').subscribe({
           error: (err) => {
             expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
             expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();

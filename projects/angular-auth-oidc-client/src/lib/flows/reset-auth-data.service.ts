@@ -14,6 +14,6 @@ export class ResetAuthDataService {
   resetAuthorizationData(configId: string): void {
     this.userService.resetUserDataInStore(configId);
     this.flowsDataService.resetStorageFlowData(configId);
-    this.authStateService.setUnauthorizedAndFireEvent(configId);
+    this.authStateService.setUnauthenticatedAndFireEvent(configId);
   }
 }

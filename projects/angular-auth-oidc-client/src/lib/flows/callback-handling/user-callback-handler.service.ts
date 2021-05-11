@@ -38,7 +38,7 @@ export class UserCallbackHandlerService {
         this.flowsDataService.setSessionState(authResult.session_state, configId);
       }
 
-      this.publishAuthorizedState(validationResult, isRenewProcess);
+      this.publishAuthState(validationResult, isRenewProcess);
       return of(callbackContext);
     }
 
@@ -51,12 +51,12 @@ export class UserCallbackHandlerService {
               this.flowsDataService.setSessionState(authResult.session_state, configId);
             }
 
-            this.publishAuthorizedState(validationResult, isRenewProcess);
+            this.publishAuthState(validationResult, isRenewProcess);
 
             return of(callbackContext);
           } else {
             this.resetAuthDataService.resetAuthorizationData(configId);
-            this.publishUnauthorizedState(validationResult, isRenewProcess);
+            this.publishUnauthenticatedState(validationResult, isRenewProcess);
             const errorMessage = `Called for userData but they were ${userData}`;
             this.loggerService.logWarning(configId, errorMessage);
             return throwError(errorMessage);
@@ -70,7 +70,7 @@ export class UserCallbackHandlerService {
       );
   }
 
-  private publishAuthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
+  private publishAuthState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
     this.authStateService.updateAndPublishAuthState({
       isAuthenticated: true,
       validationResult: stateValidationResult.state,
@@ -78,7 +78,7 @@ export class UserCallbackHandlerService {
     });
   }
 
-  private publishUnauthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
+  private publishUnauthenticatedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
     this.authStateService.updateAndPublishAuthState({
       isAuthenticated: false,
       validationResult: stateValidationResult.state,

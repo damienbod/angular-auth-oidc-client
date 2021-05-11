@@ -37,7 +37,7 @@ export class HistoryJwtKeysCallbackHandlerService {
     }
 
     if (callbackContext.authResult.error) {
-      const errorMessage = `authorizedCallbackProcedure came with error: ${callbackContext.authResult.error}`;
+      const errorMessage = `AuthCallback AuthResult came with error: ${callbackContext.authResult.error}`;
       this.loggerService.logDebug(configId, errorMessage);
       this.resetAuthDataService.resetAuthorizationData(configId);
       this.flowsDataService.setNonce('', configId);
@@ -48,7 +48,7 @@ export class HistoryJwtKeysCallbackHandlerService {
     this.loggerService.logDebug(
       configId,
       `AuthResult '${JSON.stringify(callbackContext.authResult, null, 2)}'.
-      AuthorizedCallback created, begin token validation`
+      AuthCallback created, begin token validation`
     );
 
     return this.signInKeyDataService.getSigningKeys(configId).pipe(

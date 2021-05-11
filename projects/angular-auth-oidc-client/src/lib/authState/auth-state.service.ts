@@ -8,14 +8,14 @@ import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { TokenValidationService } from '../validation/token-validation.service';
-import { AuthorizationResult, ConfigAuthorizedResult } from './authorization-result';
+import { AuthenticatedResult, ConfigAuthenticatedResult } from './auth-result';
 
 @Injectable()
 export class AuthStateService {
-  private authorizedInternal$ = new BehaviorSubject<ConfigAuthorizedResult[] | boolean>(null);
+  private authenticatedInternal$ = new BehaviorSubject<ConfigAuthenticatedResult[] | boolean>(null);
 
-  get authorized$() {
-    return this.authorizedInternal$.asObservable().pipe(distinctUntilChanged());
+  get authenticated$() {
+    return this.authenticatedInternal$.asObservable().pipe(distinctUntilChanged());
   }
 
   constructor(
@@ -26,38 +26,38 @@ export class AuthStateService {
     private tokenValidationService: TokenValidationService
   ) {}
 
-  setAuthorizedAndFireEvent(): void {
+  setAuthenticatedAndFireEvent(): void {
     if (this.configurationProvider.hasManyConfigs()) {
       const configs = this.configurationProvider.getAllConfigurations();
-      const result: ConfigAuthorizedResult[] = configs.map(({ configId }) => ({
+      const result: ConfigAuthenticatedResult[] = configs.map(({ configId }) => ({
         configId,
-        isAuthenticated: this.isAuthorized(configId),
+        isAuthenticated: this.isAuthenticated(configId),
       }));
 
-      this.authorizedInternal$.next(result);
+      this.authenticatedInternal$.next(result);
     } else {
-      this.authorizedInternal$.next(true);
+      this.authenticatedInternal$.next(true);
     }
   }
 
-  setUnauthorizedAndFireEvent(configIdToReset: string): void {
+  setUnauthenticatedAndFireEvent(configIdToReset: string): void {
     this.storagePersistenceService.resetAuthStateInStorage(configIdToReset);
 
     if (this.configurationProvider.hasManyConfigs()) {
       const configs = this.configurationProvider.getAllConfigurations();
-      const result: ConfigAuthorizedResult[] = configs.map(({ configId }) => ({
+      const result: ConfigAuthenticatedResult[] = configs.map(({ configId }) => ({
         configId,
-        isAuthenticated: this.isAuthorized(configId),
+        isAuthenticated: this.isAuthenticated(configId),
       }));
 
-      this.authorizedInternal$.next(result);
+      this.authenticatedInternal$.next(result);
     } else {
-      this.authorizedInternal$.next(false);
+      this.authenticatedInternal$.next(false);
     }
   }
 
-  updateAndPublishAuthState(authorizationResult: AuthorizationResult) {
-    this.publicEventsService.fireEvent<AuthorizationResult>(EventTypes.NewAuthorizationResult, authorizationResult);
+  updateAndPublishAuthState(authorizationResult: AuthenticatedResult) {
+    this.publicEventsService.fireEvent<AuthenticatedResult>(EventTypes.NewAuthorizationResult, authorizationResult);
   }
 
   setAuthorizationData(accessToken: string, authResult: AuthResult, configId: string) {
@@ -65,11 +65,11 @@ export class AuthStateService {
 
     this.storagePersistenceService.write('authzData', accessToken, configId);
     this.persistAccessTokenExpirationTime(authResult, configId);
-    this.setAuthorizedAndFireEvent();
+    this.setAuthenticatedAndFireEvent();
   }
 
   getAccessToken(configId: string): string {
-    if (!this.isAuthorized(configId)) {
+    if (!this.isAuthenticated(configId)) {
       return null;
     }
 
@@ -78,7 +78,7 @@ export class AuthStateService {
   }
 
   getIdToken(configId: string): string {
-    if (!this.isAuthorized(configId)) {
+    if (!this.isAuthenticated(configId)) {
       return null;
     }
 
@@ -87,7 +87,7 @@ export class AuthStateService {
   }
 
   getRefreshToken(configId: string): string {
-    if (!this.isAuthorized(configId)) {
+    if (!this.isAuthenticated(configId)) {
       return null;
     }
 
@@ -96,7 +96,7 @@ export class AuthStateService {
   }
 
   areAuthStorageTokensValid(configId: string) {
-    if (!this.isAuthorized(configId)) {
+    if (!this.isAuthenticated(configId)) {
       return false;
     }
 
@@ -160,7 +160,7 @@ export class AuthStateService {
     }
   }
 
-  private isAuthorized(configId: string): boolean {
+  private isAuthenticated(configId: string): boolean {
     return !!this.storagePersistenceService.getAccessToken(configId) && !!this.storagePersistenceService.getIdToken(configId);
   }
 }

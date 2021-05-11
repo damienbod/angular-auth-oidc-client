@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { AuthorizationResult } from './authorization-result';
+import { AuthenticatedResult } from './auth-result';
 
 @Injectable()
 export class AuthStateServiceMock {
@@ -17,7 +17,7 @@ export class AuthStateServiceMock {
 
   initStateFromStorage(): void {}
 
-  updateAndPublishAuthState(authorizationResult: AuthorizationResult) {}
+  updateAndPublishAuthState(authorizationResult: AuthenticatedResult) {}
 
   setAuthorizationData(accessToken: any, idToken: any) {}
 

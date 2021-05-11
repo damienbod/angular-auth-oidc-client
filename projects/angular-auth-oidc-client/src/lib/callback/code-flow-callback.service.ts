@@ -17,7 +17,7 @@ export class CodeFlowCallbackService {
     private router: Router
   ) {}
 
-  authorizedCallbackWithCode(urlToCheck: string, configId: string) {
+  authenticatedCallbackWithCode(urlToCheck: string, configId: string) {
     const isRenewProcess = this.flowsDataService.isSilentRenewRunning(configId);
     const { triggerAuthorizationResultEvent, postLoginRoute, unauthorizedRoute } = this.configurationProvider.getOpenIDConfiguration(
       configId

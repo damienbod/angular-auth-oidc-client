@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthOptions } from './auth-options';
+import { ConfigAuthenticatedResult } from './authState/auth-result';
 import { AuthStateService } from './authState/auth-state.service';
-import { ConfigAuthorizedResult } from './authState/authorization-result';
 import { CallbackService } from './callback/callback.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
 import { CheckAuthService } from './check-auth.service';
@@ -29,8 +29,8 @@ export class OidcSecurityService {
   /**
    * Emits each time an authorization event occurs. Returns true if the user is authenticated and false if they are not.
    */
-  get isAuthenticated$(): Observable<ConfigAuthorizedResult[] | boolean> {
-    return this.authStateService.authorized$;
+  get isAuthenticated$(): Observable<ConfigAuthenticatedResult[] | boolean> {
+    return this.authStateService.authenticated$;
   }
 
   /**

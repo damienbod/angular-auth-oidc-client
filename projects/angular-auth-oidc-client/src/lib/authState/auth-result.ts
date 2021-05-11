@@ -1,12 +1,12 @@
 import { ValidationResult } from '../validation/validation-result';
 
-export interface AuthorizationResult {
+export interface AuthenticatedResult {
   isAuthenticated: boolean;
   validationResult: ValidationResult;
   isRenewProcess: boolean;
 }
 
-export interface ConfigAuthorizedResult {
+export interface ConfigAuthenticatedResult {
   configId: string;
   isAuthenticated: boolean;
 }

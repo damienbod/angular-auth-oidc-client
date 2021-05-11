@@ -126,7 +126,7 @@ export class CheckAuthService {
           this.startCheckSessionAndValidation(configId);
 
           if (!isCallback) {
-            this.authStateService.setAuthorizedAndFireEvent();
+            this.authStateService.setAuthenticatedAndFireEvent();
             this.userService.publishUserDataIfExists(configId);
           }
         }

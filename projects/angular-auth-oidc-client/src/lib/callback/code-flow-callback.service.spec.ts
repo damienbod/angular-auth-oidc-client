@@ -50,7 +50,7 @@ describe('CodeFlowCallbackService ', () => {
       const spy = spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(of(null));
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
 
-      codeFlowCallbackService.authorizedCallbackWithCode('some-url1');
+      codeFlowCallbackService.authenticatedCallbackWithCode('some-url1');
       expect(spy).toHaveBeenCalledWith('some-url1');
     });
 
@@ -71,7 +71,7 @@ describe('CodeFlowCallbackService ', () => {
         const spy = spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(of(callbackContext));
         const routerSpy = spyOn(router, 'navigateByUrl');
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
-        codeFlowCallbackService.authorizedCallbackWithCode('some-url2').subscribe(() => {
+        codeFlowCallbackService.authenticatedCallbackWithCode('some-url2').subscribe(() => {
           expect(spy).toHaveBeenCalledWith('some-url2');
           expect(routerSpy).not.toHaveBeenCalled();
         });
@@ -98,7 +98,7 @@ describe('CodeFlowCallbackService ', () => {
           triggerAuthorizationResultEvent: false,
           postLoginRoute: 'postLoginRoute',
         });
-        codeFlowCallbackService.authorizedCallbackWithCode('some-url3').subscribe(() => {
+        codeFlowCallbackService.authenticatedCallbackWithCode('some-url3').subscribe(() => {
           expect(spy).toHaveBeenCalledWith('some-url3');
           expect(routerSpy).toHaveBeenCalledWith('postLoginRoute');
         });
@@ -116,7 +116,7 @@ describe('CodeFlowCallbackService ', () => {
           triggerAuthorizationResultEvent: false,
           postLoginRoute: 'postLoginRoute',
         });
-        codeFlowCallbackService.authorizedCallbackWithCode('some-url4').subscribe({
+        codeFlowCallbackService.authenticatedCallbackWithCode('some-url4').subscribe({
           error: (err) => {
             expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
             expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
@@ -140,7 +140,7 @@ describe('CodeFlowCallbackService ', () => {
           triggerAuthorizationResultEvent: false,
           unauthorizedRoute: 'unauthorizedRoute',
         });
-        codeFlowCallbackService.authorizedCallbackWithCode('some-url5').subscribe({
+        codeFlowCallbackService.authenticatedCallbackWithCode('some-url5').subscribe({
           error: (err) => {
             expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
             expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();

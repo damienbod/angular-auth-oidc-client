@@ -30,9 +30,9 @@ export class CallbackService {
     let callback$: Observable<any>;
 
     if (this.flowHelper.isCurrentFlowCodeFlow(configId)) {
-      callback$ = this.codeFlowCallbackService.authorizedCallbackWithCode(currentCallbackUrl, configId);
+      callback$ = this.codeFlowCallbackService.authenticatedCallbackWithCode(currentCallbackUrl, configId);
     } else if (this.flowHelper.isCurrentFlowAnyImplicitFlow(configId)) {
-      callback$ = this.implicitFlowCallbackService.authorizedImplicitFlowCallback(configId);
+      callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(configId);
     }
 
     return callback$.pipe(tap(() => this.stsCallbackInternal$.next()));

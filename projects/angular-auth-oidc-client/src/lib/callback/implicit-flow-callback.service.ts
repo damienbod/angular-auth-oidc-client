@@ -17,7 +17,7 @@ export class ImplicitFlowCallbackService {
     private intervalService: IntervalService
   ) {}
 
-  authorizedImplicitFlowCallback(configId: string, hash?: string) {
+  authenticatedImplicitFlowCallback(configId: string, hash?: string) {
     const isRenewProcess = this.flowsDataService.isSilentRenewRunning(configId);
     const { triggerAuthorizationResultEvent, postLoginRoute, unauthorizedRoute } = this.configurationProvider.getOpenIDConfiguration(
       configId

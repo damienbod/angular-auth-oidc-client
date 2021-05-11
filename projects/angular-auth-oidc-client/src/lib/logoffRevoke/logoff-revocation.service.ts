@@ -24,7 +24,7 @@ export class LogoffRevocationService {
 
   // Logs out on the server and the local client.
   // If the server state has changed, check session, then only a local logout.
-  logoff(configId: string, urlHandler?: (url: string) => any, customParams?: { [p: string]: string | number | boolean }) {
+  logoff(configId: string, urlHandler?: (url: string) => any, customParams?: { [p: string]: string | number | boolean }): void {
     this.loggerService.logDebug(configId, 'logoff, remove auth ');
     const endSessionUrl = this.getEndSessionUrl(configId, customParams);
     this.resetAuthDataService.resetAuthorizationData(configId);

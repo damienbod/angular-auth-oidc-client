@@ -39,7 +39,7 @@ export class StateValidationService {
     const authStateControl = this.storagePersistenceService.read('authStateControl', configId);
 
     if (!this.tokenValidationService.validateStateFromHashCallback(callbackContext.authResult.state, authStateControl, configId)) {
-      this.loggerService.logWarning(configId, 'authorizedCallback incorrect state');
+      this.loggerService.logWarning(configId, 'authCallback incorrect state');
       toReturn.state = ValidationResult.StatesDoNotMatch;
       this.handleUnsuccessfulValidation(configId);
       return toReturn;
@@ -66,7 +66,7 @@ export class StateValidationService {
       toReturn.decodedIdToken = this.tokenHelperService.getPayloadFromToken(toReturn.idToken, false, configId);
 
       if (!this.tokenValidationService.validateSignatureIdToken(toReturn.idToken, callbackContext.jwtKeys, configId)) {
-        this.loggerService.logDebug(configId, 'authorizedCallback Signature validation failed id_token');
+        this.loggerService.logDebug(configId, 'authCallback Signature validation failed id_token');
         toReturn.state = ValidationResult.SignatureFailed;
         this.handleUnsuccessfulValidation(configId);
         return toReturn;
@@ -75,14 +75,14 @@ export class StateValidationService {
       const authNonce = this.storagePersistenceService.read('authNonce', configId);
 
       if (!this.tokenValidationService.validateIdTokenNonce(toReturn.decodedIdToken, authNonce, ignoreNonceAfterRefresh, configId)) {
-        this.loggerService.logWarning(configId, 'authorizedCallback incorrect nonce');
+        this.loggerService.logWarning(configId, 'authCallback incorrect nonce');
         toReturn.state = ValidationResult.IncorrectNonce;
         this.handleUnsuccessfulValidation(configId);
         return toReturn;
       }
 
       if (!this.tokenValidationService.validateRequiredIdToken(toReturn.decodedIdToken, configId)) {
-        this.loggerService.logDebug(configId, 'authorizedCallback Validation, one of the REQUIRED properties missing from id_token');
+        this.loggerService.logDebug(configId, 'authCallback Validation, one of the REQUIRED properties missing from id_token');
         toReturn.state = ValidationResult.RequiredPropertyMissing;
         this.handleUnsuccessfulValidation(configId);
         return toReturn;
@@ -98,7 +98,7 @@ export class StateValidationService {
       ) {
         this.loggerService.logWarning(
           configId,
-          'authorizedCallback Validation, iat rejected id_token was issued too far away from the current time'
+          'authCallback Validation, iat rejected id_token was issued too far away from the current time'
         );
         toReturn.state = ValidationResult.MaxOffsetExpired;
         this.handleUnsuccessfulValidation(configId);
@@ -114,7 +114,7 @@ export class StateValidationService {
           !issValidationOff &&
           !this.tokenValidationService.validateIdTokenIss(toReturn.decodedIdToken, authWellKnownEndPoints.issuer, configId)
         ) {
-          this.loggerService.logWarning(configId, 'authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer');
+          this.loggerService.logWarning(configId, 'authCallback incorrect iss does not match authWellKnownEndpoints issuer');
           toReturn.state = ValidationResult.IssDoesNotMatchIssuer;
           this.handleUnsuccessfulValidation(configId);
           return toReturn;
@@ -127,35 +127,35 @@ export class StateValidationService {
       }
 
       if (!this.tokenValidationService.validateIdTokenAud(toReturn.decodedIdToken, clientId, configId)) {
-        this.loggerService.logWarning(configId, 'authorizedCallback incorrect aud');
+        this.loggerService.logWarning(configId, 'authCallback incorrect aud');
         toReturn.state = ValidationResult.IncorrectAud;
         this.handleUnsuccessfulValidation(configId);
         return toReturn;
       }
 
       if (!this.tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(toReturn.decodedIdToken)) {
-        this.loggerService.logWarning(configId, 'authorizedCallback missing azp');
+        this.loggerService.logWarning(configId, 'authCallback missing azp');
         toReturn.state = ValidationResult.IncorrectAzp;
         this.handleUnsuccessfulValidation(configId);
         return toReturn;
       }
 
       if (!this.tokenValidationService.validateIdTokenAzpValid(toReturn.decodedIdToken, clientId)) {
-        this.loggerService.logWarning(configId, 'authorizedCallback incorrect azp');
+        this.loggerService.logWarning(configId, 'authCallback incorrect azp');
         toReturn.state = ValidationResult.IncorrectAzp;
         this.handleUnsuccessfulValidation(configId);
         return toReturn;
       }
 
       if (!this.isIdTokenAfterRefreshTokenRequestValid(callbackContext, toReturn.decodedIdToken, configId)) {
-        this.loggerService.logWarning(configId, 'authorizedCallback pre, post id_token claims do not match in refresh');
+        this.loggerService.logWarning(configId, 'authCallback pre, post id_token claims do not match in refresh');
         toReturn.state = ValidationResult.IncorrectIdTokenClaimsAfterRefresh;
         this.handleUnsuccessfulValidation(configId);
         return toReturn;
       }
 
       if (!this.tokenValidationService.validateIdTokenExpNotExpired(toReturn.decodedIdToken, configId)) {
-        this.loggerService.logWarning(configId, 'authorizedCallback id token expired');
+        this.loggerService.logWarning(configId, 'authCallback id token expired');
         toReturn.state = ValidationResult.TokenExpired;
         this.handleUnsuccessfulValidation(configId);
         return toReturn;
@@ -189,7 +189,7 @@ export class StateValidationService {
         ) ||
         !toReturn.accessToken
       ) {
-        this.loggerService.logWarning(configId, 'authorizedCallback incorrect at_hash');
+        this.loggerService.logWarning(configId, 'authCallback incorrect at_hash');
         toReturn.state = ValidationResult.IncorrectAtHash;
         this.handleUnsuccessfulValidation(configId);
         return toReturn;
@@ -264,7 +264,7 @@ export class StateValidationService {
     if (autoCleanStateAfterAuthentication) {
       this.storagePersistenceService.write('authStateControl', null, configId);
     }
-    this.loggerService.logDebug(configId, 'AuthorizedCallback token(s) validated, continue');
+    this.loggerService.logDebug(configId, 'authCallback token(s) validated, continue');
   }
 
   private handleUnsuccessfulValidation(configId: string): void {
@@ -274,6 +274,6 @@ export class StateValidationService {
     if (autoCleanStateAfterAuthentication) {
       this.storagePersistenceService.write('authStateControl', null, configId);
     }
-    this.loggerService.logDebug(configId, 'AuthorizedCallback token(s) invalid');
+    this.loggerService.logDebug(configId, 'authCallback token(s) invalid');
   }
 }

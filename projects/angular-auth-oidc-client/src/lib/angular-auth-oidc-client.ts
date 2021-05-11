@@ -2,7 +2,7 @@
 
 export * from './auth-options';
 export * from './auth.module';
-export * from './authState/authorization-result';
+export * from './authState/auth-result';
 // export * from './auto-login/auto-login.guard';
 export * from './config/auth-well-known-endpoints';
 export * from './config/config-loader';

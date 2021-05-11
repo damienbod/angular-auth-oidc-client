@@ -49,13 +49,13 @@ describe('Auth State Service', () => {
   });
 
   it('public authorize$ is observable$', () => {
-    expect(authStateService.authorized$).toEqual(jasmine.any(Observable));
+    expect(authStateService.authenticated$).toEqual(jasmine.any(Observable));
   });
 
   describe('setAuthorizedAndFireEvent', () => {
     it('throws event when state is being set to `true`', () => {
       const spy = spyOn((authStateService as any).authorizedInternal$, 'next');
-      authStateService.setAuthorizedAndFireEvent();
+      authStateService.setAuthenticatedAndFireEvent();
       expect(spy).toHaveBeenCalledWith(true);
     });
   });
@@ -63,13 +63,13 @@ describe('Auth State Service', () => {
   describe('setUnauthorizedAndFireEvent', () => {
     it('persist AuthState In Storage', () => {
       const spy = spyOn(storagePersistenceService, 'resetAuthStateInStorage');
-      authStateService.setUnauthorizedAndFireEvent();
+      authStateService.setUnauthenticatedAndFireEvent();
       expect(spy).toHaveBeenCalled();
     });
 
     it('throws event when state is being set to `false`', () => {
       const spy = spyOn((authStateService as any).authorizedInternal$, 'next');
-      authStateService.setUnauthorizedAndFireEvent();
+      authStateService.setUnauthenticatedAndFireEvent();
       expect(spy).toHaveBeenCalledWith(false);
     });
   });
