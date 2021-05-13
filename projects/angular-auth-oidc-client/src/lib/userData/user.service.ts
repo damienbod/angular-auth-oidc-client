@@ -9,10 +9,11 @@ import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
+import { ConfigUserDataResult } from './config-userdata-result';
 
 @Injectable()
 export class UserService {
-  private userDataInternal$ = new BehaviorSubject<any>(null);
+  private userDataInternal$ = new BehaviorSubject<ConfigUserDataResult | ConfigUserDataResult[]>(null);
 
   get userData$() {
     return this.userDataInternal$.asObservable();

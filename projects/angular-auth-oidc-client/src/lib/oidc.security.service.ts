@@ -14,6 +14,7 @@ import { LoginResponse } from './login/login-response';
 import { LoginService } from './login/login.service';
 import { PopupOptions } from './login/popup/popup-options';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
+import { ConfigUserDataResult } from './userData/config-userdata-result';
 import { UserService } from './userData/user.service';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
 
@@ -22,7 +23,7 @@ export class OidcSecurityService {
   /**
    * Provides information about the user after they have logged in.
    */
-  get userData$(): Observable<any> {
+  get userData$(): Observable<ConfigUserDataResult | ConfigUserDataResult[]> {
     return this.userService.userData$;
   }
 
@@ -82,6 +83,10 @@ export class OidcSecurityService {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.configurationProvider.getOpenIDConfiguration(configId);
+  }
+
+  getUserData(configId: string) {
+    // TODO FGO IMPLEMENT
   }
 
   /**

@@ -1,4 +1,5 @@
 import { ensureClientId } from './ensure-clientId.rule';
+import { ensureNoDuplicatedConfigsRule } from './ensure-no-duplicated-configs.rule';
 import { ensureRedirectRule } from './ensure-redirect-url.rule';
 import { ensureSilentRenewUrlWhenNoRefreshTokenUsed } from './ensure-silentRenewUrl-with-no-refreshtokens.rule';
 import { ensureStsServer } from './ensure-sts-server.rule';
@@ -11,3 +12,5 @@ export const allRules = [
   ensureClientId,
   ensureSilentRenewUrlWhenNoRefreshTokenUsed,
 ];
+
+export const allMultipleConfigRules = [ensureNoDuplicatedConfigsRule];

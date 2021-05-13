@@ -2,11 +2,15 @@ import { Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../angular-auth-oidc-client';
 import { LoggerService } from '../logging/logger.service';
 import { Level, RuleValidationResult } from './rule';
-import { allRules } from './rules';
+import { allMultipleConfigRules, allRules } from './rules';
 
 @Injectable()
 export class ConfigValidationService {
   constructor(private loggerService: LoggerService) {}
+
+  validateConfigs(passedConfigs: [OpenIdConfiguration]) {
+    const allValidationResults = allMultipleConfigRules.map((rule) => rule(passedConfigs));
+  }
 
   validateConfig(passedConfig: OpenIdConfiguration): boolean {
     const allValidationResults = allRules.map((rule) => rule(passedConfig));
