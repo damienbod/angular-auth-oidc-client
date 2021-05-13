@@ -110,7 +110,7 @@ export class OidcSecurityService {
   /**
    * Returns the access token for the login scenario.
    */
-  getToken(configId?: string): string {
+  getAccessToken(configId?: string): string {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.authStateService.getAccessToken(configId);
