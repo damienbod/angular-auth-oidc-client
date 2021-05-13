@@ -23,7 +23,7 @@ export class OidcSecurityService {
   /**
    * Provides information about the user after they have logged in.
    */
-  get userData$(): Observable<ConfigUserDataResult | ConfigUserDataResult[]> {
+  get userData$(): Observable<ConfigUserDataResult[] | any> {
     return this.userService.userData$;
   }
 
@@ -86,7 +86,7 @@ export class OidcSecurityService {
   }
 
   getUserData(configId: string) {
-    // TODO FGO IMPLEMENT
+    return this.userService.getUserDataFromStore(configId);
   }
 
   /**

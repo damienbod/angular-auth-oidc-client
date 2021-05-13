@@ -13,7 +13,7 @@ import { ConfigUserDataResult } from './config-userdata-result';
 
 @Injectable()
 export class UserService {
-  private userDataInternal$ = new BehaviorSubject<ConfigUserDataResult | ConfigUserDataResult[]>(null);
+  private userDataInternal$ = new BehaviorSubject<ConfigUserDataResult[] | any>(null);
 
   get userData$() {
     return this.userDataInternal$.asObservable();
