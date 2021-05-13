@@ -23,7 +23,7 @@ import { environment } from '../environments/environment';
           redirectUrl: window.location.origin,
           postLogoutRedirectUri: window.location.origin,
           clientId: 'angularClient',
-          scope: 'openid profile email',
+          scope: 'openid profile',
           responseType: 'code',
           silentRenew: true,
           silentRenewUrl: `${window.location.origin}/silent-renew.html`,

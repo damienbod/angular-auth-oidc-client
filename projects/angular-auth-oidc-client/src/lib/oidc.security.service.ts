@@ -212,7 +212,7 @@ export class OidcSecurityService {
    */
   // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
   // only the access token is revoked. Then the logout run.
-  logoffAndRevokeTokens(urlHandler?: (url: string) => any, configId?: string): Observable<any> {
+  logoffAndRevokeTokens(configId?: string, urlHandler?: (url: string) => any): Observable<any> {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.logoffRevocationService.logoffAndRevokeTokens(configId, urlHandler);
@@ -238,6 +238,10 @@ export class OidcSecurityService {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.logoffRevocationService.logoffLocal(configId);
+  }
+
+  logoffLocalMultiple() {
+    return this.logoffRevocationService.logoffLocalMultiple();
   }
 
   /**

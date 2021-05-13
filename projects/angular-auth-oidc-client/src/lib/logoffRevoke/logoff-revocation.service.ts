@@ -1,5 +1,6 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ConfigurationProvider } from 'dist/angular-auth-oidc-client/lib/config/config.provider';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, retry, switchMap, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
@@ -19,7 +20,8 @@ export class LogoffRevocationService {
     private urlService: UrlService,
     private checkSessionService: CheckSessionService,
     private resetAuthDataService: ResetAuthDataService,
-    private redirectService: RedirectService
+    private redirectService: RedirectService,
+    private configurationProvider: ConfigurationProvider
   ) {}
 
   // Logs out on the server and the local client.
@@ -46,6 +48,12 @@ export class LogoffRevocationService {
   logoffLocal(configId: string): void {
     this.resetAuthDataService.resetAuthorizationData(configId);
     this.checkSessionService.stop();
+  }
+
+  logoffLocalMultiple() {
+    const allConfigs = this.configurationProvider.getAllConfigurations();
+
+    allConfigs.forEach(({ configId }) => this.logoffLocal(configId));
   }
 
   // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
