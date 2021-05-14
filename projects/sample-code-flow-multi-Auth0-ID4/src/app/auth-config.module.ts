@@ -21,7 +21,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
           redirectUrl: window.location.origin,
           postLogoutRedirectUri: window.location.origin,
           clientId: 'Ujh5oSBAFr1BuilgkZPcMWEgnuREgrwU',
-          scope: 'openid profile offline_access',
+          scope: 'openid profile offline_access auth0-user-api-one',
           responseType: 'code',
           silentRenew: true,
           useRefreshToken: true,
