@@ -7,44 +7,40 @@ import { Observable } from 'rxjs';
   templateUrl: 'home.component.html',
 })
 export class HomeComponent implements OnInit {
-  configuration: OpenIdConfiguration;
+  configurations: OpenIdConfiguration[];
   userDataChanged$: Observable<OidcClientNotification<any>>;
   userData$: Observable<any>;
-  isAuthenticated = false;
+  isAuthenticated$: Observable<any>;
+
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.configuration = this.oidcSecurityService.getConfiguration();
+    this.configurations = this.oidcSecurityService.getConfigurations();
     this.userData$ = this.oidcSecurityService.userData$;
-
-    this.oidcSecurityService.isAuthenticated$.subscribe((authenticated) => {
-      this.isAuthenticated = authenticated;
-
-      console.warn('authenticated: ', authenticated);
-    });
+    this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
   }
 
-  login() {
-    this.oidcSecurityService.authorize();
+  login(configId: string) {
+    this.oidcSecurityService.authorize(configId);
   }
 
-  refreshSession() {
-    this.oidcSecurityService.forceRefreshSession().subscribe((result) => console.log(result));
+  forceRefreshSession() {
+    this.oidcSecurityService.forceRefreshSession().subscribe((result) => console.warn(result));
   }
 
-  logout() {
-    this.oidcSecurityService.logoff();
+  logout(configId: string) {
+    this.oidcSecurityService.logoff(configId);
   }
 
-  logoffAndRevokeTokens() {
-    this.oidcSecurityService.logoffAndRevokeTokens().subscribe((result) => console.log(result));
+  refreshSession(configId: string) {
+    this.oidcSecurityService.forceRefreshSession(null, configId).subscribe((result) => console.log(result));
   }
 
-  revokeRefreshToken() {
-    this.oidcSecurityService.revokeRefreshToken().subscribe((result) => console.log(result));
+  logoffAndRevokeTokens(configId: string) {
+    this.oidcSecurityService.logoffAndRevokeTokens(null, configId).subscribe((result) => console.log(result));
   }
 
-  revokeAccessToken() {
-    this.oidcSecurityService.revokeAccessToken().subscribe((result) => console.log(result));
+  revokeRefreshToken(configId: string) {
+    this.oidcSecurityService.revokeRefreshToken(null, configId).subscribe((result) => console.log(result));
   }
 }
