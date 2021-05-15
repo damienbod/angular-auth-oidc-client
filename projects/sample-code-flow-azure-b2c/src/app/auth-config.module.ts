@@ -6,7 +6,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
     AuthModule.forRoot({
       config: {
         stsServer: 'https://login.microsoftonline.com/damienbod.onmicrosoft.com/v2.0',
-        authWellknownEndpoint:
+        authWellknownEndpointUrl:
           'https://damienbod.b2clogin.com/damienbod.onmicrosoft.com/B2C_1_b2cpolicydamien/v2.0/.well-known/openid-configuration',
         redirectUrl: window.location.origin,
         postLogoutRedirectUri: window.location.origin,
