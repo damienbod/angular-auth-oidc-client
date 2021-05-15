@@ -28,7 +28,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
           authWellknownEndpointUrl: 'https://login.microsoftonline.com/7ff95b15-dc21-4ba6-bc92-824856578fc1/v2.0',
           redirectUrl: window.location.origin,
           clientId: 'ad6b0351-92b4-4ee9-ac8d-3e76e5fd1c67',
-          scope: 'openid api://577ea995-2235-40d3-9c96-047afda4ab02/access_as_user',
+          scope: 'openid offline_access api://577ea995-2235-40d3-9c96-047afda4ab02/access_as_user',
           responseType: 'code',
           silentRenew: true,
           maxIdTokenIatOffsetAllowedInSeconds: 600,
