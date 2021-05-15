@@ -1,32 +1,55 @@
-// import { PLATFORM_ID } from '@angular/core';
-// import { TestBed } from '@angular/core/testing';
-// import { PlatformProvider } from './platform.provider';
+import { PLATFORM_ID } from '@angular/core';
+import { createServiceFactory, SpectatorService } from '@ngneat/spectator';
+import { PlatformProvider } from './platform.provider';
 
-// describe('PlatformProvider Tests', () => {
-//   it('should create', () => {
-//     TestBed.configureTestingModule({
-//       providers: [PlatformProvider, { provide: PLATFORM_ID, useValue: 'browser' }],
-//     });
+describe('PlatformProvider Tests', () => {
+  describe('platform browser', () => {
+    let spec: SpectatorService<PlatformProvider>;
+    let service: PlatformProvider;
 
-//     const service = TestBed.inject(PlatformProvider);
-//     expect(service).toBeTruthy();
-//   });
+    const provider = { provide: PLATFORM_ID, useValue: 'browser' };
 
-//   it('isBrowser equals true if "isPlatformBrowser" is true', () => {
-//     TestBed.configureTestingModule({
-//       providers: [PlatformProvider, { provide: PLATFORM_ID, useValue: 'browser' }],
-//     });
+    const createService = createServiceFactory({
+      service: PlatformProvider,
+      providers: [provider],
+    });
 
-//     const service = TestBed.inject(PlatformProvider);
-//     expect(service.isBrowser).toBe(true);
-//   });
+    beforeEach(() => {
+      spec = createService();
+      service = spec.service;
+    });
 
-//   it('isBrowser equals true if "isPlatformBrowser" is true', () => {
-//     TestBed.configureTestingModule({
-//       providers: [PlatformProvider, { provide: PLATFORM_ID, useValue: 'notABrowser' }],
-//     });
+    it('should create', () => {
+      expect(service).toBeTruthy();
+    });
 
-//     const service = TestBed.inject(PlatformProvider);
-//     expect(service.isBrowser).toBe(false);
-//   });
-// });
+    it('isBrowser equals true if "isPlatformBrowser" is true', () => {
+      expect(service.isBrowser).toBe(true);
+    });
+  });
+
+  describe('platform not a browser', () => {
+    let spec: SpectatorService<PlatformProvider>;
+    let service: PlatformProvider;
+
+    const provider = { provide: PLATFORM_ID, useValue: 'notABrowser' };
+
+    const createService = createServiceFactory({
+      service: PlatformProvider,
+      providers: [provider],
+    });
+
+    beforeEach(() => {
+      spec = createService();
+      service = spec.service;
+    });
+
+    it('should create', () => {
+      expect(service).toBeTruthy();
+    });
+
+    it('isBrowser equals false if platform is not a browser', () => {
+      expect(service.isBrowser).toBe(false);
+    });
+  });
+});
