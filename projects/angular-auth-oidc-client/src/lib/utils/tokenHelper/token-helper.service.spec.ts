@@ -42,268 +42,268 @@ describe('TokenHelperService', () => {
     });
   });
 
-  // describe('getPayloadFromToken', () => {
-  //   it('returns not null if token is undefined, encode is false', () => {
-  //     const result = tokenHelperService.getPayloadFromToken(undefined, false);
-  //     expect(result).toEqual({});
-  //   });
+  describe('getPayloadFromToken', () => {
+    it('returns not null if token is undefined, encode is false', () => {
+      const result = service.getPayloadFromToken(undefined, false, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token is undefined, encode is true', () => {
-  //     const result = tokenHelperService.getPayloadFromToken(undefined, true);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token is undefined, encode is true', () => {
+      const result = service.getPayloadFromToken(undefined, true, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token is null, encode is true', () => {
-  //     const result = tokenHelperService.getPayloadFromToken(null, true);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token is null, encode is true', () => {
+      const result = service.getPayloadFromToken(null, true, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token is empty, encode is true', () => {
-  //     const result = tokenHelperService.getPayloadFromToken('', true);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token is empty, encode is true', () => {
+      const result = service.getPayloadFromToken('', true, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token has no points, encode is true', () => {
-  //     const result = tokenHelperService.getPayloadFromToken('testStringWithoutDots', true);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token has no points, encode is true', () => {
+      const result = service.getPayloadFromToken('testStringWithoutDots', true, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token has no points, encode is false', () => {
-  //     const result = tokenHelperService.getPayloadFromToken('testStringWithoutDots', false);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token has no points, encode is false', () => {
+      const result = service.getPayloadFromToken('testStringWithoutDots', false, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token has only one point, encode is false', () => {
-  //     const result = tokenHelperService.getPayloadFromToken('testStringWith.dot', false);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token has only one point, encode is false', () => {
+      const result = service.getPayloadFromToken('testStringWith.dot', false, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns payload if token is correct, encode is true 1', () => {
-  //     const token = 'abc.def.ghi';
-  //     const expected = 'def';
-  //     const result = tokenHelperService.getPayloadFromToken(token, true);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is true 1', () => {
+      const token = 'abc.def.ghi';
+      const expected = 'def';
+      const result = service.getPayloadFromToken(token, true, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is true 2', () => {
-  //     const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
-  //     const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-  //     const result = tokenHelperService.getPayloadFromToken(token, true);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is true 2', () => {
+      const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
+      const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
+      const result = service.getPayloadFromToken(token, true, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is true 3', () => {
-  //     const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
-  //     const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-  //     const result = tokenHelperService.getPayloadFromToken(token, true);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is true 3', () => {
+      const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
+      const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
+      const result = service.getPayloadFromToken(token, true, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is true 4', () => {
-  //     const token = 'SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==';
-  //     const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-  //     const result = tokenHelperService.getPayloadFromToken(token, true);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is true 4', () => {
+      const token = 'SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==';
+      const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
+      const result = service.getPayloadFromToken(token, true, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is false 1', () => {
-  //     const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
-  //     const expected = JSON.parse('{ "text" : "Hello World 123!"}');
-  //     const result = tokenHelperService.getPayloadFromToken(token, false);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is false 1', () => {
+      const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
+      const expected = JSON.parse('{ "text" : "Hello World 123!"}');
+      const result = service.getPayloadFromToken(token, false, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is false 2', () => {
-  //     const token = 'SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==';
-  //     const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
-  //     const result = tokenHelperService.getPayloadFromToken(token, false);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is false 2', () => {
+      const token = 'SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==';
+      const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
+      const result = service.getPayloadFromToken(token, false, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is false 3', () => {
-  //     const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9obiBEw7PDqyJ9.wMn-1oLWnxKJolMGb7YKnlwjqusWf4xnnjABgFaDkI4';
-  //     const jsonString = `{ "name" : "John D\xF3\xEB" }`;
-  //     const expected = JSON.parse(jsonString);
-  //     const result = tokenHelperService.getPayloadFromToken(token, false);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is false 3', () => {
+      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9obiBEw7PDqyJ9.wMn-1oLWnxKJolMGb7YKnlwjqusWf4xnnjABgFaDkI4';
+      const jsonString = `{ "name" : "John D\xF3\xEB" }`;
+      const expected = JSON.parse(jsonString);
+      const result = service.getPayloadFromToken(token, false, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is false 4', () => {
-  //     const token =
-  //       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9' +
-  //       '.eyJzdWIiOiIxIiwibmFtZSI6IkpvaG4gRF83NDc377-977-9MDEiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNTE2MjI0MjQyfQ' +
-  //       '.RqIi_sO2g592anknIvfks4p7kPy8mOcN0YZUHz-8pFw';
+    it('returns payload if token is correct, encode is false 4', () => {
+      const token =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9' +
+        '.eyJzdWIiOiIxIiwibmFtZSI6IkpvaG4gRF83NDc377-977-9MDEiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNTE2MjI0MjQyfQ' +
+        '.RqIi_sO2g592anknIvfks4p7kPy8mOcN0YZUHz-8pFw';
 
-  //     const jsonString = `{ "admin": true, "sub": "1", "iat": 1516224242 }`;
-  //     const expected = JSON.parse(jsonString);
-  //     const result = tokenHelperService.getPayloadFromToken(token, false);
+      const jsonString = `{ "admin": true, "sub": "1", "iat": 1516224242 }`;
+      const expected = JSON.parse(jsonString);
+      const result = service.getPayloadFromToken(token, false, '');
 
-  //     expect(result).toEqual(jasmine.objectContaining(expected));
-  //   });
-  // });
+      expect(result).toEqual(jasmine.objectContaining(expected));
+    });
+  });
 
-  // describe('getHeaderFromToken', () => {
-  //   it('returns not null if token is undefined, encode is false', () => {
-  //     const result = tokenHelperService.getHeaderFromToken(undefined, false);
-  //     expect(result).toEqual({});
-  //   });
+  describe('getHeaderFromToken', () => {
+    it('returns not null if token is undefined, encode is false', () => {
+      const result = service.getHeaderFromToken(undefined, false, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token is undefined, encode is true', () => {
-  //     const result = tokenHelperService.getHeaderFromToken(undefined, true);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token is undefined, encode is true', () => {
+      const result = service.getHeaderFromToken(undefined, true, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token is null, encode is true', () => {
-  //     const result = tokenHelperService.getHeaderFromToken(null, true);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token is null, encode is true', () => {
+      const result = service.getHeaderFromToken(null, true, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token is empty, encode is true', () => {
-  //     const result = tokenHelperService.getHeaderFromToken('', true);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token is empty, encode is true', () => {
+      const result = service.getHeaderFromToken('', true, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token has no points, encode is true', () => {
-  //     const result = tokenHelperService.getHeaderFromToken('testStringWithoutDots', true);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token has no points, encode is true', () => {
+      const result = service.getHeaderFromToken('testStringWithoutDots', true, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token has no points, encode is false', () => {
-  //     const result = tokenHelperService.getHeaderFromToken('testStringWithoutDots', false);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token has no points, encode is false', () => {
+      const result = service.getHeaderFromToken('testStringWithoutDots', false, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token has only one point, encode is false', () => {
-  //     const result = tokenHelperService.getHeaderFromToken('testStringWith.dot', false);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token has only one point, encode is false', () => {
+      const result = service.getHeaderFromToken('testStringWith.dot', false, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns payload if token is correct, encode is true', () => {
-  //     const token = 'abc.def.ghi';
-  //     const expected = 'abc';
-  //     const result = tokenHelperService.getHeaderFromToken(token, true);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is true', () => {
+      const token = 'abc.def.ghi';
+      const expected = 'abc';
+      const result = service.getHeaderFromToken(token, true, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is true', () => {
-  //     const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.def.ghi';
-  //     const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-  //     const result = tokenHelperService.getHeaderFromToken(token, true);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is true', () => {
+      const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.def.ghi';
+      const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
+      const result = service.getHeaderFromToken(token, true, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is false', () => {
-  //     const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.def.ghi';
-  //     const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
-  //     const result = tokenHelperService.getHeaderFromToken(token, false);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is false', () => {
+      const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.def.ghi';
+      const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
+      const result = service.getHeaderFromToken(token, false, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is false', () => {
-  //     const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==.SGVsbG8gV29ybGQgMTIzIQ==';
-  //     const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
-  //     const result = tokenHelperService.getHeaderFromToken(token, false);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is false', () => {
+      const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==.SGVsbG8gV29ybGQgMTIzIQ==';
+      const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
+      const result = service.getHeaderFromToken(token, false, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is true', () => {
-  //     const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.abc.ghi';
-  //     const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-  //     const result = tokenHelperService.getHeaderFromToken(token, true);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is true', () => {
+      const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.abc.ghi';
+      const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
+      const result = service.getHeaderFromToken(token, true, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is true', () => {
-  //     const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==.SGVsbG8gV29ybGQgMTIzIQ==';
-  //     const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-  //     const result = tokenHelperService.getHeaderFromToken(token, true);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is true', () => {
+      const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==.SGVsbG8gV29ybGQgMTIzIQ==';
+      const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
+      const result = service.getHeaderFromToken(token, true, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is false', () => {
-  //     const token = 'eyJ0ZXh0IjogIkhlbGxvIFdvcmxkIDEyMyEifQ=.SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-  //     const expected = JSON.parse(`{"text": "Hello World 123!"}`);
-  //     const result = tokenHelperService.getHeaderFromToken(token, false);
-  //     expect(expected).toEqual(result);
-  //   });
-  // });
+    it('returns payload if token is correct, encode is false', () => {
+      const token = 'eyJ0ZXh0IjogIkhlbGxvIFdvcmxkIDEyMyEifQ=.SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
+      const expected = JSON.parse(`{"text": "Hello World 123!"}`);
+      const result = service.getHeaderFromToken(token, false, '');
+      expect(expected).toEqual(result);
+    });
+  });
 
-  // describe('getSignatureFromToken', () => {
-  //   it('returns not null if token is undefined, encode is false', () => {
-  //     const result = tokenHelperService.getSignatureFromToken(undefined, false);
-  //     expect(result).toEqual({});
-  //   });
+  describe('getSignatureFromToken', () => {
+    it('returns not null if token is undefined, encode is false', () => {
+      const result = service.getSignatureFromToken(undefined, false, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token is undefined, encode is true', () => {
-  //     const result = tokenHelperService.getSignatureFromToken(undefined, true);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token is undefined, encode is true', () => {
+      const result = service.getSignatureFromToken(undefined, true, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token is null, encode is true', () => {
-  //     const result = tokenHelperService.getSignatureFromToken(null, true);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token is null, encode is true', () => {
+      const result = service.getSignatureFromToken(null, true, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token is empty, encode is true', () => {
-  //     const result = tokenHelperService.getSignatureFromToken('', true);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token is empty, encode is true', () => {
+      const result = service.getSignatureFromToken('', true, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token has no points, encode is true', () => {
-  //     const result = tokenHelperService.getSignatureFromToken('testStringWithoutDots', true);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token has no points, encode is true', () => {
+      const result = service.getSignatureFromToken('testStringWithoutDots', true, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token has no points, encode is false', () => {
-  //     const result = tokenHelperService.getSignatureFromToken('testStringWithoutDots', false);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token has no points, encode is false', () => {
+      const result = service.getSignatureFromToken('testStringWithoutDots', false, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns not null if token has only one point, encode is false', () => {
-  //     const result = tokenHelperService.getSignatureFromToken('testStringWith.dot', false);
-  //     expect(result).toEqual({});
-  //   });
+    it('returns not null if token has only one point, encode is false', () => {
+      const result = service.getSignatureFromToken('testStringWith.dot', false, '');
+      expect(result).toEqual({});
+    });
 
-  //   it('returns payload if token is correct, encode is true', () => {
-  //     const token = 'abc.def.ghi';
-  //     const expected = 'ghi';
-  //     const result = tokenHelperService.getSignatureFromToken(token, true);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is true', () => {
+      const token = 'abc.def.ghi';
+      const expected = 'ghi';
+      const result = service.getSignatureFromToken(token, true, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is true', () => {
-  //     const token = 'def.ghi.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-  //     const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-  //     const result = tokenHelperService.getSignatureFromToken(token, true);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is true', () => {
+      const token = 'def.ghi.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
+      const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
+      const result = service.getSignatureFromToken(token, true, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is false', () => {
-  //     const token = 'def.ghi.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-  //     const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
-  //     const result = tokenHelperService.getSignatureFromToken(token, false);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is false', () => {
+      const token = 'def.ghi.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
+      const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
+      const result = service.getSignatureFromToken(token, false, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is false', () => {
-  //     const token = 'SGVsbG8gV29ybGQgMTIzIQ==.SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-  //     const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
-  //     const result = tokenHelperService.getSignatureFromToken(token, false);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is false', () => {
+      const token = 'SGVsbG8gV29ybGQgMTIzIQ==.SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
+      const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
+      const result = service.getSignatureFromToken(token, false, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is true', () => {
-  //     const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.abc.ghi';
-  //     const expected = 'ghi';
-  //     const result = tokenHelperService.getSignatureFromToken(token, true);
-  //     expect(expected).toEqual(result);
-  //   });
+    it('returns payload if token is correct, encode is true', () => {
+      const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.abc.ghi';
+      const expected = 'ghi';
+      const result = service.getSignatureFromToken(token, true, '');
+      expect(expected).toEqual(result);
+    });
 
-  //   it('returns payload if token is correct, encode is true', () => {
-  //     const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==.SGVsbG8gV29ybGQgMTIzIQ==';
-  //     const expected = 'SGVsbG8gV29ybGQgMTIzIQ==';
-  //     const result = tokenHelperService.getSignatureFromToken(token, true);
-  //     expect(expected).toEqual(result);
-  //   });
-  // });
+    it('returns payload if token is correct, encode is true', () => {
+      const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==.SGVsbG8gV29ybGQgMTIzIQ==';
+      const expected = 'SGVsbG8gV29ybGQgMTIzIQ==';
+      const result = service.getSignatureFromToken(token, true, '');
+      expect(expected).toEqual(result);
+    });
+  });
 });
