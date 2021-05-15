@@ -1,43 +1,43 @@
-// import { DOCUMENT } from '@angular/common';
-// import { TestBed } from '@angular/core/testing';
-// import { RedirectService } from './redirect.service';
+import { DOCUMENT } from '@angular/common';
+import { createServiceFactory, SpectatorService } from '@ngneat/spectator';
+import { RedirectService } from './redirect.service';
 
-// describe('Redirect Service Tests', () => {
-//   let service: RedirectService;
-//   let myDocument: any;
+describe('RedirectService', () => {
+  let spec: SpectatorService<RedirectService>;
+  let service: RedirectService;
+  let myDocument: any;
 
-//   beforeEach(() => {
-//     TestBed.configureTestingModule({
-//       providers: [
-//         RedirectService,
-//         {
-//           provide: DOCUMENT,
-//           useValue: {
-//             location: {
-//               get href() {
-//                 return 'fakeUrl';
-//               },
-//               set href(v) {},
-//             },
-//           },
-//         },
-//       ],
-//     });
-//   });
+  const createService = createServiceFactory({
+    service: RedirectService,
+    providers: [
+      {
+        provide: DOCUMENT,
+        useValue: {
+          location: {
+            get href() {
+              return 'fakeUrl';
+            },
+            set href(v) {},
+          },
+        },
+      },
+    ],
+  });
 
-//   beforeEach(() => {
-//     service = TestBed.inject(RedirectService);
-//     myDocument = TestBed.inject(DOCUMENT);
-//   });
+  beforeEach(() => {
+    spec = createService();
+    service = spec.service;
+    myDocument = spec.inject(DOCUMENT);
+  });
 
-//   it('should create', () => {
-//     expect(service).toBeTruthy();
-//     expect(myDocument).toBeTruthy();
-//   });
+  it('should create', () => {
+    expect(service).toBeTruthy();
+    expect(myDocument).toBeTruthy();
+  });
 
-//   it('redirectTo sets window location href', () => {
-//     const spy = spyOnProperty(myDocument.location, 'href', 'set');
-//     service.redirectTo('anyurl');
-//     expect(spy).toHaveBeenCalledWith('anyurl');
-//   });
-// });
+  it('redirectTo sets window location href', () => {
+    const spy = spyOnProperty(myDocument.location, 'href', 'set');
+    service.redirectTo('anyurl');
+    expect(spy).toHaveBeenCalledWith('anyurl');
+  });
+});
