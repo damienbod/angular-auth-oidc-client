@@ -35,12 +35,4 @@ export class HomeComponent implements OnInit {
   refreshSession(configId: string) {
     this.oidcSecurityService.forceRefreshSession(null, configId).subscribe((result) => console.log(result));
   }
-
-  logoffAndRevokeTokens(configId: string) {
-    this.oidcSecurityService.logoffAndRevokeTokens(configId).subscribe((result) => console.log(result));
-  }
-
-  revokeRefreshToken(configId: string) {
-    this.oidcSecurityService.revokeRefreshToken(null, configId).subscribe((result) => console.log(result));
-  }
 }

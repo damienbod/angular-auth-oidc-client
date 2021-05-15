@@ -1,0 +1,17 @@
+<div>Welcome to home Route</div>
+
+<br />
+UserData
+<pre>{{ userData$ | async | json }}</pre>
+
+<!-- <button (click)="login()">Login</button>
+<button (click)="logout()">Logout</button>
+<pre>{{ configuration | json }}</pre> -->
+
+<div *ngFor="let config of configurations">
+  <h3>{{ config.configId }}</h3>
+  <button (click)="login(config.configId)">Login with {{ config.configId }}</button>
+  <button (click)="logout(config.configId)">Logout</button>
+  <button (click)="refreshSession(config.configId)">Refresh session</button>
+  <pre>{{ config | json }}</pre>
+</div>
