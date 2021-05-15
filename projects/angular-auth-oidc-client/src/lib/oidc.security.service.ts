@@ -195,11 +195,7 @@ export class OidcSecurityService {
    * @param authOptions The custom options for the authentication request.
    * @param popupOptions The configuration for the popup window.
    */
-  authorizeWithPopUp(
-    authOptions?: AuthOptions,
-    popupOptions?: PopupOptions,
-    configId?: string
-  ): Observable<LoginResponse | LoginResponse[]> {
+  authorizeWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions, configId?: string): Observable<LoginResponse> {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
     return this.loginService.loginWithPopUp(configId, authOptions, popupOptions);

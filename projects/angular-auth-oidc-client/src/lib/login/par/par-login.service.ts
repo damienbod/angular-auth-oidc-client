@@ -70,7 +70,7 @@ export class ParLoginService {
       });
   }
 
-  loginWithPopUpPar(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse | LoginResponse[]> {
+  loginWithPopUpPar(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
       const errorMessage = 'Invalid response type!';
       this.loggerService.logError(configId, errorMessage);
@@ -89,7 +89,7 @@ export class ParLoginService {
 
     const { customParams } = authOptions || {};
 
-    return this.authWellKnownService.getAuthWellKnownEndPoints(configId, authWellknownEndpointUrl).pipe(
+    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).pipe(
       switchMap(() => this.parService.postParRequest(configId, customParams)),
       switchMap((response: ParResponse) => {
         this.loggerService.logDebug('par response: ', response);

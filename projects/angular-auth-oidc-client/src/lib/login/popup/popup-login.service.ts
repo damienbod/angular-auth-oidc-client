@@ -25,11 +25,7 @@ export class PopUpLoginService {
     private checkAuthService: CheckAuthService
   ) {}
 
-  loginWithPopUpStandard(
-    configId: string,
-    authOptions?: AuthOptions,
-    popupOptions?: PopupOptions
-  ): Observable<LoginResponse | LoginResponse[]> {
+  loginWithPopUpStandard(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
       const errorMessage = 'Invalid response type!';
       this.loggerService.logError(configId, errorMessage);
