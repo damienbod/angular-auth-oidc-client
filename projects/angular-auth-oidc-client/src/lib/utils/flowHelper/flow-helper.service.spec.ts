@@ -40,129 +40,127 @@ describe('FlowHelper', () => {
     });
   });
 
-  describe('currentFlowIs', () => {});
+  describe('currentFlowIs', () => {
+    it('currentFlowIs returns true if current flow is code flow', () => {
+      const config = { responseType: 'code', configId: 'configId' };
 
-  // it('currentFlowIs returns true if current flow is code flow', () => {
-  //   const config = { responseType: 'code' };
+      configProvider.getOpenIDConfiguration.and.returnValue(config);
 
-  //   configProvider.setConfig(config);
+      expect(flowHelper.currentFlowIs('code', config.configId)).toBeTrue();
+    });
 
-  //   expect(flowHelper.currentFlowIs('code')).toBeTrue();
-  // });
+    it('currentFlowIs returns true if current flow is code flow (array)', () => {
+      const config = { responseType: 'code', configId: 'configId' };
 
-  // it('currentFlowIs returns true if current flow is code flow (array)', () => {
-  //   const config = { responseType: 'code' };
+      configProvider.getOpenIDConfiguration.and.returnValue(config);
 
-  //   configProvider.setConfig(config);
+      expect(flowHelper.currentFlowIs(['code'], config.configId)).toBeTrue();
+    });
 
-  //   expect(flowHelper.currentFlowIs(['code'])).toBeTrue();
-  // });
+    it('currentFlowIs returns true if current flow is id_token token or code (array)', () => {
+      const config = { responseType: 'id_token token', configId: 'configId' };
 
-  // it('currentFlowIs returns true if current flow is id_token token or code (array)', () => {
-  //   const config = { responseType: 'id_token token' };
+      configProvider.getOpenIDConfiguration.and.returnValue(config);
 
-  //   configProvider.setConfig(config);
+      expect(flowHelper.currentFlowIs(['id_token token', 'code'], config.configId)).toBeTrue();
+    });
 
-  //   expect(flowHelper.currentFlowIs(['id_token token', 'code'])).toBeTrue();
-  // });
+    it('currentFlowIs returns true if current flow is code flow', () => {
+      const config = { responseType: 'id_token token', configId: 'configId' };
 
-  // it('currentFlowIs returns true if current flow is code flow', () => {
-  //   const config = { responseType: 'id_token token' };
+      configProvider.getOpenIDConfiguration.and.returnValue(config);
 
-  //   configProvider.setConfig(config);
+      expect(flowHelper.currentFlowIs('code', config.configId)).toBeFalse();
+    });
+  });
 
-  //   expect(flowHelper.currentFlowIs('code')).toBeFalse();
-  // });
+  describe('isCurrentFlowImplicitFlowWithAccessToken', () => {
+    it('isCurrentFlowImplicitFlowWithAccessToken return true if flow is "id_token token"', () => {
+      const config = { responseType: 'id_token token', configId: 'configId' };
+      configProvider.getOpenIDConfiguration.and.returnValue(config);
 
-  // it('isCurrentFlowImplicitFlowWithAccessToken return true if flow is "id_token token"', () => {
-  //   const config = { responseType: 'id_token token' };
+      const result = flowHelper.isCurrentFlowImplicitFlowWithAccessToken(config.configId);
 
-  //   configProvider.setConfig(config);
-  //   const result = flowHelper.isCurrentFlowImplicitFlowWithAccessToken();
+      expect(result).toBeTrue();
+    });
 
-  //   expect(result).toBeTrue();
-  // });
+    it('isCurrentFlowImplicitFlowWithAccessToken return false if flow is not "id_token token"', () => {
+      const config = { responseType: 'id_token2 token2', configId: 'configId' };
+      configProvider.getOpenIDConfiguration.and.returnValue(config);
 
-  // it('isCurrentFlowImplicitFlowWithAccessToken return false if flow is not "id_token token"', () => {
-  //   const config = { responseType: 'id_token2 token2' };
+      const result = flowHelper.isCurrentFlowImplicitFlowWithAccessToken(config.configId);
 
-  //   configProvider.setConfig(config);
-  //   const result = flowHelper.isCurrentFlowImplicitFlowWithAccessToken();
+      expect(result).toBeFalse();
+    });
+  });
 
-  //   expect(result).toBeFalse();
-  // });
+  describe('isCurrentFlowImplicitFlowWithoutAccessToken', () => {
+    it('isCurrentFlowImplicitFlowWithoutAccessToken return true if flow is "id_token"', () => {
+      const config = { responseType: 'id_token', configId: 'configId' };
+      configProvider.getOpenIDConfiguration.and.returnValue(config);
 
-  // it('isCurrentFlowImplicitFlowWithoutAccessToken return true if flow is "id_token"', () => {
-  //   const config = { responseType: 'id_token' };
+      const result = (flowHelper as any).isCurrentFlowImplicitFlowWithoutAccessToken(config.configId);
 
-  //   configProvider.setConfig(config);
-  //   const result = flowHelper.isCurrentFlowImplicitFlowWithoutAccessToken();
+      expect(result).toBeTrue();
+    });
 
-  //   expect(result).toBeTrue();
-  // });
+    it('isCurrentFlowImplicitFlowWithoutAccessToken return false if flow is not "id_token token"', () => {
+      const config = { responseType: 'id_token2', configId: 'configId' };
+      configProvider.getOpenIDConfiguration.and.returnValue(config);
 
-  // it('isCurrentFlowImplicitFlowWithoutAccessToken return false if flow is not "id_token token"', () => {
-  //   const config = { responseType: 'id_token2' };
+      const result = (flowHelper as any).isCurrentFlowImplicitFlowWithoutAccessToken(config.configId);
 
-  //   configProvider.setConfig(config);
-  //   const result = flowHelper.isCurrentFlowImplicitFlowWithoutAccessToken();
+      expect(result).toBeFalse();
+    });
+  });
 
-  //   expect(result).toBeFalse();
-  // });
+  describe('isCurrentFlowCodeFlowWithRefreshTokens', () => {
+    it('isCurrentFlowCodeFlowWithRefreshTokens return false if flow is not code flow', () => {
+      const config = { responseType: 'not code', configId: 'configId' };
+      configProvider.getOpenIDConfiguration.and.returnValue(config);
+      const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config.configId);
+      expect(result).toBeFalse();
+    });
+    it('isCurrentFlowCodeFlowWithRefreshTokens return false if useRefreshToken is set to false', () => {
+      const config = { responseType: 'not code', useRefreshToken: false, configId: 'configId' };
+      configProvider.getOpenIDConfiguration.and.returnValue(config);
+      const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config.configId);
+      expect(result).toBeFalse();
+    });
+    it('isCurrentFlowCodeFlowWithRefreshTokens return true if useRefreshToken is set to true and code flow', () => {
+      const config = { responseType: 'code', useRefreshToken: true, configId: 'configId' };
+      configProvider.getOpenIDConfiguration.and.returnValue(config);
+      const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config.configId);
+      expect(result).toBeTrue();
+    });
+  });
 
-  // it('isCurrentFlowCodeFlowWithRefreshTokens return false if flow is not code flow', () => {
-  //   const config = { responseType: 'not code' };
+  describe('isCurrentFlowAnyImplicitFlow', () => {
+    it('returns true if currentFlowIsImplicitFlowWithAccessToken is true', () => {
+      spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(true);
+      spyOn(flowHelper as any, 'isCurrentFlowImplicitFlowWithoutAccessToken').and.returnValue(false);
 
-  //   configProvider.setConfig(config);
-  //   const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens();
+      const result = flowHelper.isCurrentFlowAnyImplicitFlow('anyConfigId');
 
-  //   expect(result).toBeFalse();
-  // });
+      expect(result).toBeTrue();
+    });
 
-  // it('isCurrentFlowCodeFlowWithRefreshTokens return false if useRefreshToken is set to false', () => {
-  //   const config = { responseType: 'not code', useRefreshToken: false };
+    it('returns true if isCurrentFlowImplicitFlowWithoutAccessToken is true', () => {
+      spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(false);
+      spyOn(flowHelper as any, 'isCurrentFlowImplicitFlowWithoutAccessToken').and.returnValue(true);
 
-  //   configProvider.setConfig(config);
-  //   const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens();
+      const result = flowHelper.isCurrentFlowAnyImplicitFlow('anyConfigId');
 
-  //   expect(result).toBeFalse();
-  // });
+      expect(result).toBeTrue();
+    });
 
-  // it('isCurrentFlowCodeFlowWithRefreshTokens return true if useRefreshToken is set to true and code flow', () => {
-  //   const config = { responseType: 'code', useRefreshToken: true };
+    it('returns false it is not any implicit flow', () => {
+      spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(false);
+      spyOn(flowHelper as any, 'isCurrentFlowImplicitFlowWithoutAccessToken').and.returnValue(false);
 
-  //   configProvider.setConfig(config);
-  //   const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens();
+      const result = flowHelper.isCurrentFlowAnyImplicitFlow('anyConfigId');
 
-  //   expect(result).toBeTrue();
-  // });
-
-  // describe('isCurrentFlowAnyImplicitFlow', () => {
-  //   it('returns true if currentFlowIsImplicitFlowWithAccessToken is true', () => {
-  //     spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(true);
-  //     spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithoutAccessToken').and.returnValue(false);
-
-  //     const result = flowHelper.isCurrentFlowAnyImplicitFlow();
-
-  //     expect(result).toBeTrue();
-  //   });
-
-  //   it('returns true if isCurrentFlowImplicitFlowWithoutAccessToken is true', () => {
-  //     spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(false);
-  //     spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithoutAccessToken').and.returnValue(true);
-
-  //     const result = flowHelper.isCurrentFlowAnyImplicitFlow();
-
-  //     expect(result).toBeTrue();
-  //   });
-
-  //   it('returns false it is not any implicit flow', () => {
-  //     spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(false);
-  //     spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithoutAccessToken').and.returnValue(false);
-
-  //     const result = flowHelper.isCurrentFlowAnyImplicitFlow();
-
-  //     expect(result).toBeFalse();
-  //   });
-  // });
+      expect(result).toBeFalse();
+    });
+  });
 });
