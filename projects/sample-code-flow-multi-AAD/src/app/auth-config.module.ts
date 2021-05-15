@@ -36,9 +36,6 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
           autoUserInfo: false,
           useRefreshToken: true,
           logLevel: LogLevel.Debug,
-          customParams: {
-            prompt: 'select_account', // login, consent
-          },
         },
       ],
     }),
