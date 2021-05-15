@@ -21,13 +21,13 @@ export class ParService {
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-    const authWellKnown = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+    const authWellknownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
 
-    if (!authWellKnown) {
+    if (!authWellknownEndpoints) {
       return throwError('Could not read PAR endpoint because authWellKnownEndPoints are not given');
     }
 
-    const parEndpoint = authWellKnown.parEndpoint;
+    const parEndpoint = authWellknownEndpoints.parEndpoint;
     if (!parEndpoint) {
       return throwError('Could not read PAR endpoint from authWellKnownEndpoints');
     }

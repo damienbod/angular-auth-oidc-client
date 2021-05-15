@@ -56,18 +56,18 @@ export class OidcConfigService {
 
       const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', usedConfig.configId);
       if (!!alreadyExistingAuthWellKnownEndpoints) {
-        usedConfig.authWellKnown = alreadyExistingAuthWellKnownEndpoints;
+        usedConfig.authWellknownEndpoints = alreadyExistingAuthWellKnownEndpoints;
         this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
 
         resolve(usedConfig);
         return;
       }
 
-      const passedAuthWellKnownEndpoints = usedConfig.authWellKnown;
+      const passedAuthWellKnownEndpoints = usedConfig.authWellknownEndpoints;
 
       if (!!passedAuthWellKnownEndpoints) {
         this.authWellKnownService.storeWellKnownEndpoints(usedConfig.configId, passedAuthWellKnownEndpoints);
-        usedConfig.authWellKnown = alreadyExistingAuthWellKnownEndpoints;
+        usedConfig.authWellknownEndpoints = alreadyExistingAuthWellKnownEndpoints;
         this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
 
         resolve(usedConfig);
@@ -83,7 +83,7 @@ export class OidcConfigService {
               return throwError(error);
             }),
             tap((wellknownEndPoints) => {
-              usedConfig.authWellKnown = wellknownEndPoints;
+              usedConfig.authWellknownEndpoints = wellknownEndPoints;
               this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
             })
           )

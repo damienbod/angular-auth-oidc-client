@@ -2,35 +2,38 @@ import { Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
 import { Level, RuleValidationResult } from './rule';
-import { allMultipleConfigRules, allRules } from './rules';
+import { allRules } from './rules';
+import { allMultipleConfigRules } from './rules/index';
 
 @Injectable()
 export class ConfigValidationService {
   constructor(private loggerService: LoggerService) {}
 
-  validateConfigs(passedConfigs: [OpenIdConfiguration]): boolean {
-    const allValidationResults = allMultipleConfigRules.map((rule) => rule(passedConfigs));
+  validateConfigs(passedConfigs: OpenIdConfiguration[]): boolean {
+    const result = passedConfigs.map((passedConfig) => this.validateConfigInternal(passedConfig, allMultipleConfigRules));
 
-    const errorCount = this.processValidationResultsAndGetErrorCount(allValidationResults);
-
-    return errorCount === 0;
+    return result.every((x) => x === true);
   }
 
   validateConfig(passedConfig: OpenIdConfiguration): boolean {
-    const allValidationResults = allRules.map((rule) => rule(passedConfig));
+    return this.validateConfigInternal(passedConfig, allRules);
+  }
 
-    const errorCount = this.processValidationResultsAndGetErrorCount(allValidationResults);
+  private validateConfigInternal(passedConfig: OpenIdConfiguration, allRulesToUse: any[]): boolean {
+    const allValidationResults = allRulesToUse.map((rule) => rule(passedConfig));
+
+    const errorCount = this.processValidationResultsAndGetErrorCount(allValidationResults, passedConfig.configId);
 
     return errorCount === 0;
   }
 
-  private processValidationResultsAndGetErrorCount(allValidationResults: RuleValidationResult[]) {
+  private processValidationResultsAndGetErrorCount(allValidationResults: RuleValidationResult[], configId: string) {
     const allMessages = allValidationResults.filter((x) => x.messages.length > 0);
 
     const allErrorMessages = this.getAllMessagesOfType('error', allMessages);
     const allWarnings = this.getAllMessagesOfType('warning', allMessages);
-    allErrorMessages.forEach((message) => this.loggerService.logErrorGeneral(message));
-    allWarnings.forEach((message) => this.loggerService.logWarningGeneral(message));
+    allErrorMessages.forEach((message) => this.loggerService.logError(configId, message));
+    allWarnings.forEach((message) => this.loggerService.logWarning(configId, message));
 
     return allErrorMessages.length;
   }

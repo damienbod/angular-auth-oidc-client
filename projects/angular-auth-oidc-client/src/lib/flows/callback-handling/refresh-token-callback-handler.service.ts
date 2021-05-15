@@ -28,8 +28,8 @@ export class RefreshTokenCallbackHandlerService {
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-    const authWellKnown = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
-    const tokenEndpoint = authWellKnown?.tokenEndpoint;
+    const authWellknownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+    const tokenEndpoint = authWellknownEndpoints?.tokenEndpoint;
     if (!tokenEndpoint) {
       return throwError('Token Endpoint not defined');
     }
