@@ -56,11 +56,11 @@ export class AuthStateService {
     }
   }
 
-  updateAndPublishAuthState(authorizationResult: AuthenticatedResult) {
+  updateAndPublishAuthState(authorizationResult: AuthenticatedResult): void {
     this.publicEventsService.fireEvent<AuthenticatedResult>(EventTypes.NewAuthorizationResult, authorizationResult);
   }
 
-  setAuthorizationData(accessToken: string, authResult: AuthResult, configId: string) {
+  setAuthorizationData(accessToken: string, authResult: AuthResult, configId: string): void {
     this.loggerService.logDebug(configId, `storing the accessToken '${accessToken}'`);
 
     this.storagePersistenceService.write('authzData', accessToken, configId);
@@ -95,7 +95,7 @@ export class AuthStateService {
     return this.decodeURIComponentSafely(token);
   }
 
-  areAuthStorageTokensValid(configId: string) {
+  areAuthStorageTokensValid(configId: string): boolean {
     if (!this.isAuthenticated(configId)) {
       return false;
     }
@@ -145,7 +145,11 @@ export class AuthStateService {
     return hasExpired;
   }
 
-  private decodeURIComponentSafely(token: string) {
+  isAuthenticated(configId: string): boolean {
+    return !!this.storagePersistenceService.getAccessToken(configId) && !!this.storagePersistenceService.getIdToken(configId);
+  }
+
+  private decodeURIComponentSafely(token: string): string {
     if (token) {
       return decodeURIComponent(token);
     } else {
@@ -153,14 +157,10 @@ export class AuthStateService {
     }
   }
 
-  private persistAccessTokenExpirationTime(authResult: any, configId: string) {
+  private persistAccessTokenExpirationTime(authResult: any, configId: string): void {
     if (authResult?.expires_in) {
       const accessTokenExpiryTime = new Date(new Date().toUTCString()).valueOf() + authResult.expires_in * 1000;
       this.storagePersistenceService.write('access_token_expires_at', accessTokenExpiryTime, configId);
     }
-  }
-
-  private isAuthenticated(configId: string): boolean {
-    return !!this.storagePersistenceService.getAccessToken(configId) && !!this.storagePersistenceService.getIdToken(configId);
   }
 }

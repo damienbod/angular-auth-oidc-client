@@ -103,6 +103,10 @@ export class OidcSecurityService {
     return this.checkAuthService.checkAuthMultiple(configId, url);
   }
 
+  isAuthenticated(configId: string): boolean {
+    return this.authStateService.isAuthenticated(configId);
+  }
+
   /**
    * Checks the server for an authenticated session using the iframe silent renew if not locally authenticated.
    */
