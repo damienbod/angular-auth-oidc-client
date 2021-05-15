@@ -59,7 +59,7 @@ export class FlowsDataService {
   }
 
   isSilentRenewRunning(configId: string) {
-    const storageObject = this.storagePersistenceService.read('storageSilentRenewRunning', configId);
+    const storageObject = JSON.parse(this.storagePersistenceService.read('storageSilentRenewRunning', configId));
 
     if (storageObject) {
       const { silentRenewTimeoutInSeconds } = this.configurationProvider.getOpenIDConfiguration(configId);
@@ -87,10 +87,10 @@ export class FlowsDataService {
       dateOfLaunchedProcessUtc: new Date().toISOString(),
     };
 
-    this.storagePersistenceService.write('storageSilentRenewRunning', storageObject, configId);
+    this.storagePersistenceService.write('storageSilentRenewRunning', JSON.stringify(storageObject), configId);
   }
 
   resetSilentRenewRunning(configId: string) {
-    this.storagePersistenceService.write('storageSilentRenewRunning', null, configId);
+    this.storagePersistenceService.write('storageSilentRenewRunning', '', configId);
   }
 }

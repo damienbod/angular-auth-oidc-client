@@ -262,7 +262,7 @@ export class StateValidationService {
     this.storagePersistenceService.write('authNonce', null, configId);
 
     if (autoCleanStateAfterAuthentication) {
-      this.storagePersistenceService.write('authStateControl', null, configId);
+      this.storagePersistenceService.write('authStateControl', '', configId);
     }
     this.loggerService.logDebug(configId, 'authCallback token(s) validated, continue');
   }
@@ -272,7 +272,7 @@ export class StateValidationService {
     this.storagePersistenceService.write('authNonce', null, configId);
 
     if (autoCleanStateAfterAuthentication) {
-      this.storagePersistenceService.write('authStateControl', null, configId);
+      this.storagePersistenceService.write('authStateControl', '', configId);
     }
     this.loggerService.logDebug(configId, 'authCallback token(s) invalid');
   }
