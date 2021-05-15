@@ -12,8 +12,6 @@ UserData
   <h3>{{ config.configId }}</h3>
   <button (click)="login(config.configId)">Login with {{ config.configId }}</button>
   <button (click)="logout(config.configId)">Logout</button>
-  <button (click)="logoffAndRevokeTokens(config.configId)">Logout and revoke tokens</button>
-  <button (click)="revokeRefreshToken(config.configId)">Revoke refresh token</button>
   <button (click)="refreshSession(config.configId)">Refresh session</button>
   <pre>{{ config | json }}</pre>
 </div>
