@@ -27,10 +27,6 @@ export class FlowHelper {
     return this.currentFlowIs('id_token token', configId);
   }
 
-  isCurrentFlowImplicitFlowWithoutAccessToken(configId: string) {
-    return this.currentFlowIs('id_token', configId);
-  }
-
   currentFlowIs(flowTypes: string[] | string, configId: string) {
     const { responseType } = this.configurationProvider.getOpenIDConfiguration(configId);
 
@@ -39,5 +35,9 @@ export class FlowHelper {
     }
 
     return responseType === flowTypes;
+  }
+
+  private isCurrentFlowImplicitFlowWithoutAccessToken(configId: string) {
+    return this.currentFlowIs('id_token', configId);
   }
 }
