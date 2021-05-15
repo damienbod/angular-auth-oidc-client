@@ -32,8 +32,14 @@ export class HomeComponent implements OnInit {
     this.oidcSecurityService.logoff(configId);
   }
 
-  refreshSession(configId: string) {
+  refreshSessionId4(configId: string) {
     this.oidcSecurityService.forceRefreshSession(null, configId).subscribe((result) => console.log(result));
+  }
+
+  refreshSessionAuth0(configId: string) {
+    this.oidcSecurityService
+      .forceRefreshSession({ scope: 'openid profile offline_access auth0-user-api-spa' }, configId)
+      .subscribe((result) => console.log(result));
   }
 
   logoffAndRevokeTokens(configId: string) {
