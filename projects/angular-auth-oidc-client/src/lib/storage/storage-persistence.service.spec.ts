@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../config/config.provider';
-import { ConfigurationProviderMock } from '../config/config.provider-mock';
+import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 import { BrowserStorageMock } from './browser-storage.service-mock';
 import { StoragePersistenceService } from './storage-persistence.service';

@@ -1,5 +1,5 @@
+import { DEFAULT_CONFIG } from '../default-config';
 import { StsConfigLoader } from './config-loader';
-import { DEFAULT_CONFIG } from './default-config';
 
 export class StsConfigLoaderMock implements StsConfigLoader {
   loadConfig(): Promise<any> {

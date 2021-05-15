@@ -5,11 +5,11 @@ import { createRetriableStream } from '../../../test/create-retriable-stream.hel
 import { DataService } from '../../api/data.service';
 import { DataServiceMock } from '../../api/data.service-mock';
 import { ConfigurationProvider } from '../../config/config.provider';
-import { ConfigurationProviderMock } from '../../config/config.provider-mock';
+import { ConfigurationProviderMock } from '../../config/provider/config.provider-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
-import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../../storage/storage-persistence-service-mock.service';
+import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
 import { UrlServiceMock } from '../../utils/url/url.service-mock';
 import { TokenValidationService } from '../../validation/token-validation.service';

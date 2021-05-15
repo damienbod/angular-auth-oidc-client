@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ConfigurationProvider } from '../config/config.provider';
+import { ConfigurationProvider } from '../config/provider/config.provider';
 import { CallbackContext } from '../flows/callback-context';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';

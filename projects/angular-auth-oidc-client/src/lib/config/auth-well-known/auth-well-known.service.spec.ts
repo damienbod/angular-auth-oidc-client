@@ -4,10 +4,10 @@ import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
-import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
-import { AuthWellKnownDataService } from './auth-well-known-data.service';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { AuthWellKnownService } from './auth-well-known.service';
+import { AuthWellKnownDataService } from './auth-well-known/auth-well-known-data.service';
 
 describe('AuthWellKnownService', () => {
   let service: AuthWellKnownService;

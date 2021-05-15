@@ -1,8 +1,8 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { createRetriableStream } from '../../test/create-retriable-stream.helper';
-import { DataService } from '../api/data.service';
-import { DataServiceMock } from '../api/data.service-mock';
+import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
+import { DataService } from '../../api/data.service';
+import { DataServiceMock } from '../../api/data.service-mock';
 import { AuthWellKnownDataService } from './auth-well-known-data.service';
 
 const DUMMY_WELL_KNOWN_DOCUMENT = {

@@ -1,5 +1,5 @@
 import { Provider } from '@angular/core';
-import { OpenIdConfiguration } from './openid-configuration';
+import { OpenIdConfiguration } from '../openid-configuration';
 
 export class OpenIdConfigLoader {
   loader?: Provider;

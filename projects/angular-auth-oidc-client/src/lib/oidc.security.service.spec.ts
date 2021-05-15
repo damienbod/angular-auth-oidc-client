@@ -9,7 +9,7 @@ import { RefreshSessionServiceMock } from './callback/refresh-session.service.mo
 import { CheckAuthService } from './check-auth.service';
 import { CheckAuthServiceMock } from './check-auth.service-mock';
 import { ConfigurationProvider } from './config/config.provider';
-import { ConfigurationProviderMock } from './config/config.provider-mock';
+import { ConfigurationProviderMock } from './config/provider/config.provider-mock';
 import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsDataServiceMock } from './flows/flows-data.service-mock';
 import { CheckSessionService } from './iframe/check-session.service';

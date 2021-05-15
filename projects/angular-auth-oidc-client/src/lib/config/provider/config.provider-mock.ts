@@ -1,5 +1,5 @@
-import { DEFAULT_CONFIG } from './default-config';
-import { OpenIdConfiguration } from './openid-configuration';
+import { DEFAULT_CONFIG } from '../default-config';
+import { OpenIdConfiguration } from '../openid-configuration';
 
 export class ConfigurationProviderMock {
   private configInternal = null;

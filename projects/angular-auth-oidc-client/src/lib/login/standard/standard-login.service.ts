@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AuthOptions } from '../../auth-options';
-import { AuthWellKnownService } from '../../config/auth-well-known.service';
-import { ConfigurationProvider } from '../../config/config.provider';
+import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
+import { ConfigurationProvider } from '../../config/provider/config.provider';
 import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';

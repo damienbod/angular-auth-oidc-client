@@ -6,7 +6,7 @@ import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.
 import { ImplicitFlowCallbackServiceMock } from '../callback/implicit-flow-callback.service-mock';
 import { IntervalService } from '../callback/interval.service';
 import { ConfigurationProvider } from '../config/config.provider';
-import { ConfigurationProviderMock } from '../config/config.provider-mock';
+import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsDataServiceMock } from '../flows/flows-data.service-mock';

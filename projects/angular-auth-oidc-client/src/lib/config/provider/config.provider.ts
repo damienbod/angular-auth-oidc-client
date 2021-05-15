@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { OpenIdConfiguration } from './openid-configuration';
+import { OpenIdConfiguration } from '../openid-configuration';
 
 @Injectable()
 export class ConfigurationProvider {

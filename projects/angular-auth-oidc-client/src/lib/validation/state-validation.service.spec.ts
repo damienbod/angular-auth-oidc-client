@@ -1,14 +1,14 @@
 /* eslint-disable max-len */
 import { TestBed } from '@angular/core/testing';
-import { AuthWellKnownEndpoints } from '../config/auth-well-known-endpoints';
+import { AuthWellKnownEndpoints } from '../config/auth-well-known/auth-well-known-endpoints';
 import { ConfigurationProvider } from '../config/config.provider';
-import { ConfigurationProviderMock } from '../config/config.provider-mock';
 import { OpenIdConfiguration } from '../config/openid-configuration';
+import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { LogLevel } from '../logging/log-level';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
-import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { EqualityService } from '../utils/equality/equality.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';

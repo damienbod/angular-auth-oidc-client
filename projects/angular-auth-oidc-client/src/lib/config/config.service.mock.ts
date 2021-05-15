@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
-import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
+import { AuthWellKnownEndpoints } from './auth-well-known/auth-well-known-endpoints';
 import { OpenIdConfiguration } from './openid-configuration';
 
 @Injectable()

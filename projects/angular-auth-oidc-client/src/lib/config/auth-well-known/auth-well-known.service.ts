@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { EventTypes } from '../public-events/event-types';
-import { PublicEventsService } from '../public-events/public-events.service';
-import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { EventTypes } from '../../public-events/event-types';
+import { PublicEventsService } from '../../public-events/public-events.service';
+import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { AuthWellKnownDataService } from './auth-well-known-data.service';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 

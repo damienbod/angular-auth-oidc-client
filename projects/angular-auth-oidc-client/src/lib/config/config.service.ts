@@ -1,16 +1,16 @@
 ﻿import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { ConfigValidationService } from '../config-validation/config-validation.service';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
-import { AuthWellKnownService } from './auth-well-known.service';
-import { ConfigurationProvider } from './config.provider';
+import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
 import { DEFAULT_CONFIG } from './default-config';
 import { OpenIdConfiguration } from './openid-configuration';
+import { ConfigurationProvider } from './provider/config.provider';
+import { ConfigValidationService } from './validation/config-validation.service';
 
 @Injectable()
 export class OidcConfigService {

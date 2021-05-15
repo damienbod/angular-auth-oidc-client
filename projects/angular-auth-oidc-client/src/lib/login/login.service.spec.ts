@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../config/config.provider';
-import { ConfigurationProviderMock } from '../config/config.provider-mock';
+import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { LoginService } from './login.service';
 import { ParLoginService } from './par/par-login.service';
 import { ParLoginServiceMock } from './par/par-login.service-mock';

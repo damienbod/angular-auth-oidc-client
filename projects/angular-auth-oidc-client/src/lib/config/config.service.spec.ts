@@ -2,7 +2,6 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
-import { ConfigValidationService } from '../config-validation/config-validation.service';
 import { LogLevel } from '../logging/log-level';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
@@ -12,13 +11,14 @@ import { StoragePersistenceServiceMock } from '../storage/storage-persistence-se
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { PlatformProviderMock } from './../utils/platform-provider/platform.provider-mock';
-import { AuthWellKnownService } from './auth-well-known.service';
-import { AuthWellKnownServiceMock } from './auth-well-known.service-mock';
-import { ConfigurationProvider } from './config.provider';
-import { ConfigurationProviderMock } from './config.provider-mock';
+import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
+import { AuthWellKnownServiceMock } from './auth-well-known/auth-well-known.service-mock';
 import { OidcConfigService } from './config.service';
 import { DEFAULT_CONFIG } from './default-config';
 import { OpenIdConfiguration } from './openid-configuration';
+import { ConfigurationProvider } from './provider/config.provider';
+import { ConfigurationProviderMock } from './provider/config.provider-mock';
+import { ConfigValidationService } from './validation/config-validation.service';
 
 describe('Configuration Service', () => {
   let oidcConfigService: OidcConfigService;

@@ -1,4 +1,4 @@
-import { OpenIdConfiguration } from '../../config/openid-configuration';
+import { OpenIdConfiguration } from '../../openid-configuration';
 import { POSITIVE_VALIDATION_RESULT, RuleValidationResult } from '../rule';
 
 const createIdentifierToCheck = (passedConfig: OpenIdConfiguration): string => {

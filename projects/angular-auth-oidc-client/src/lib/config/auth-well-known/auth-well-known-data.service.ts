@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { map, retry } from 'rxjs/operators';
-import { DataService } from '../api/data.service';
+import { DataService } from '../../api/data.service';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 
 const WELL_KNOWN_SUFFIX = `/.well-known/openid-configuration`;
