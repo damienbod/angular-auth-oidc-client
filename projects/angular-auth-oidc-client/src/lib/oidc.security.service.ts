@@ -103,7 +103,9 @@ export class OidcSecurityService {
     return this.checkAuthService.checkAuthMultiple(configId, url);
   }
 
-  isAuthenticated(configId: string): boolean {
+  isAuthenticated(configId?: string): boolean {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
+
     return this.authStateService.isAuthenticated(configId);
   }
 
