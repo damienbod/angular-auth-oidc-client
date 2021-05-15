@@ -36,9 +36,9 @@ export class ParLoginService {
       return;
     }
 
-    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
 
-    if (!authWellknownEndpoint) {
+    if (!authWellknownEndpointUrl) {
       this.loggerService.logError(configId, 'no authWellknownEndpoint given!');
       return;
     }
@@ -48,7 +48,7 @@ export class ParLoginService {
     const { urlHandler, customParams } = authOptions || {};
 
     this.authWellKnownService
-      .getAuthWellKnownEndPoints(authWellknownEndpoint, configId)
+      .getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId)
       .pipe(switchMap(() => this.parService.postParRequest(configId, customParams)))
       .subscribe((response) => {
         this.loggerService.logDebug('par response: ', response);
@@ -77,9 +77,9 @@ export class ParLoginService {
       return throwError(errorMessage);
     }
 
-    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
 
-    if (!authWellknownEndpoint) {
+    if (!authWellknownEndpointUrl) {
       const errorMessage = 'no authWellknownEndpoint given!';
       this.loggerService.logError(configId, errorMessage);
       return throwError(errorMessage);
@@ -89,7 +89,7 @@ export class ParLoginService {
 
     const { customParams } = authOptions || {};
 
-    return this.authWellKnownService.getAuthWellKnownEndPoints(configId, authWellknownEndpoint).pipe(
+    return this.authWellKnownService.getAuthWellKnownEndPoints(configId, authWellknownEndpointUrl).pipe(
       switchMap(() => this.parService.postParRequest(configId, customParams)),
       switchMap((response: ParResponse) => {
         this.loggerService.logDebug('par response: ', response);

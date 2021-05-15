@@ -47,8 +47,8 @@ export class OidcConfigService {
         return;
       }
 
-      if (!passedConfig.authWellknownEndpoint) {
-        passedConfig.authWellknownEndpoint = passedConfig.stsServer;
+      if (!passedConfig.authWellknownEndpointUrl) {
+        passedConfig.authWellknownEndpointUrl = passedConfig.stsServer;
       }
 
       const usedConfig = this.prepareConfig(passedConfig);
@@ -76,7 +76,7 @@ export class OidcConfigService {
 
       if (usedConfig.eagerLoadAuthWellKnownEndpoints) {
         this.authWellKnownService
-          .getAuthWellKnownEndPoints(usedConfig.authWellknownEndpoint, usedConfig.configId)
+          .getAuthWellKnownEndPoints(usedConfig.authWellknownEndpointUrl, usedConfig.configId)
           .pipe(
             catchError((error) => {
               this.loggerService.logError('Getting auth well known endpoints failed on start', error);

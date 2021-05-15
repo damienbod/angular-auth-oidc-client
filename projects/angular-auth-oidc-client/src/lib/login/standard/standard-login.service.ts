@@ -24,16 +24,16 @@ export class StandardLoginService {
       return;
     }
 
-    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
 
-    if (!authWellknownEndpoint) {
+    if (!authWellknownEndpointUrl) {
       this.loggerService.logError(configId, 'no authWellknownEndpoint given!');
       return;
     }
 
     this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow, no auth data');
 
-    this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint, configId).subscribe(() => {
+    this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).subscribe(() => {
       const { urlHandler, customParams } = authOptions || {};
 
       const url = this.urlService.getAuthorizeUrl(configId, customParams);

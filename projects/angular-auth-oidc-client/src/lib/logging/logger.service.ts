@@ -18,6 +18,14 @@ export class LoggerService {
     }
   }
 
+  logErrorGeneral(message: any, ...args: any[]) {
+    if (!!args && args.length) {
+      console.error(`[ERROR] - ${message}`, ...args);
+    } else {
+      console.error(`[ERROR] - ${message}`);
+    }
+  }
+
   logWarning(configId: string, message: any, ...args: any[]) {
     if (!this.logLevelIsSet(configId)) {
       return;
@@ -35,6 +43,14 @@ export class LoggerService {
       console.warn(`[WARN] ${configId} - ${message}`, ...args);
     } else {
       console.warn(`[WARN] ${configId} - ${message}`);
+    }
+  }
+
+  logWarningGeneral(message: any, ...args: any[]) {
+    if (!!args && args.length) {
+      console.warn(`[WARN] - ${message}`, ...args);
+    } else {
+      console.warn(`[WARN] - ${message}`);
     }
   }
 

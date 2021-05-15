@@ -88,14 +88,14 @@ export class RefreshSessionService {
       return of(null);
     }
 
-    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration(configId) || {};
+    const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId) || {};
 
-    if (!authWellknownEndpoint) {
+    if (!authWellknownEndpointUrl) {
       this.loggerService.logError(configId, 'no authWellKnownEndpoint given!');
       return of(null);
     }
 
-    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint, configId).pipe(
+    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).pipe(
       switchMap(() => {
         this.flowsDataService.setSilentRenewRunning(configId);
 

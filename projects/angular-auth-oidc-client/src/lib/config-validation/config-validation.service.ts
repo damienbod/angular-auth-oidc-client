@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { OpenIdConfiguration } from '../angular-auth-oidc-client';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
 import { Level, RuleValidationResult } from './rule';
 import { allMultipleConfigRules, allRules } from './rules';
@@ -8,21 +8,31 @@ import { allMultipleConfigRules, allRules } from './rules';
 export class ConfigValidationService {
   constructor(private loggerService: LoggerService) {}
 
-  validateConfigs(passedConfigs: [OpenIdConfiguration]) {
+  validateConfigs(passedConfigs: [OpenIdConfiguration]): boolean {
     const allValidationResults = allMultipleConfigRules.map((rule) => rule(passedConfigs));
+
+    const errorCount = this.processValidationResultsAndGetErrorCount(allValidationResults);
+
+    return errorCount === 0;
   }
 
   validateConfig(passedConfig: OpenIdConfiguration): boolean {
     const allValidationResults = allRules.map((rule) => rule(passedConfig));
 
+    const errorCount = this.processValidationResultsAndGetErrorCount(allValidationResults);
+
+    return errorCount === 0;
+  }
+
+  private processValidationResultsAndGetErrorCount(allValidationResults: RuleValidationResult[]) {
     const allMessages = allValidationResults.filter((x) => x.messages.length > 0);
 
     const allErrorMessages = this.getAllMessagesOfType('error', allMessages);
     const allWarnings = this.getAllMessagesOfType('warning', allMessages);
-    allErrorMessages.forEach((message) => this.loggerService.logError(passedConfig.configId, message));
-    allWarnings.forEach((message) => this.loggerService.logWarning(passedConfig.configId, message));
+    allErrorMessages.forEach((message) => this.loggerService.logErrorGeneral(message));
+    allWarnings.forEach((message) => this.loggerService.logWarningGeneral(message));
 
-    return allErrorMessages.length === 0;
+    return allErrorMessages.length;
   }
 
   private getAllMessagesOfType(type: Level, results: RuleValidationResult[]) {

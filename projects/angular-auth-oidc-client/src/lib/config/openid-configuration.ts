@@ -9,8 +9,7 @@ export interface OpenIdConfiguration {
    */
   stsServer?: string;
   /** Override the default STS wellknown endpoint postfix. */
-  // TODO CHANGE THIS IN `...URL`
-  authWellknownEndpoint?: string;
+  authWellknownEndpointUrl?: string;
   // TODO CHANGE THIS IN `authWellknownEndpoint`
   authWellKnown?: AuthWellKnownEndpoints;
 

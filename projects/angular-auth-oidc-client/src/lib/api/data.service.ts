@@ -10,8 +10,7 @@ const NGSW_CUSTOM_PARAM = 'ngsw-bypass';
 export class DataService {
   constructor(private httpClient: HttpBaseService, private readonly configurationProvider: ConfigurationProvider) {}
 
-  // TODO: make token optional
-  get<T>(url: string, configId: string, token: string): Observable<T> {
+  get<T>(url: string, configId: string, token?: string): Observable<T> {
     const headers = this.prepareHeaders(token);
     const params = this.prepareParams(configId);
 

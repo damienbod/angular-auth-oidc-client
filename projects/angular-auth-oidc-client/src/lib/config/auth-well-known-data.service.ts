@@ -36,6 +36,6 @@ export class AuthWellKnownDataService {
       url = `${wellKnownEndpoint}${WELL_KNOWN_SUFFIX}`;
     }
 
-    return this.http.get<any>(url, configId, null).pipe(retry(2));
+    return this.http.get<any>(url, configId).pipe(retry(2));
   }
 }

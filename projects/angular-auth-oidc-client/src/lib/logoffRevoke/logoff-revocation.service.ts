@@ -1,9 +1,9 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ConfigurationProvider } from 'dist/angular-auth-oidc-client/lib/config/config.provider';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, retry, switchMap, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
+import { ConfigurationProvider } from '../config/config.provider';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { LoggerService } from '../logging/logger.service';

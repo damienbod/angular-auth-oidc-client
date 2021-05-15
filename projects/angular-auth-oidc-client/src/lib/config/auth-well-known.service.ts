@@ -34,7 +34,7 @@ export class AuthWellKnownService {
     this.storagePersistenceService.write('authWellKnownEndPoints', mappedWellKnownEndpoints, configId);
   }
 
-  private getWellKnownEndPointsFromUrl(authWellknownEndpoint: string, configId: string) {
-    return this.dataService.getWellKnownEndPointsFromUrl(authWellknownEndpoint, configId);
+  private getWellKnownEndPointsFromUrl(authWellknownEndpointUrl: string, configId: string) {
+    return this.dataService.getWellKnownEndPointsFromUrl(authWellknownEndpointUrl, configId);
   }
 }

@@ -8,6 +8,8 @@ import { FlowsDataService } from '../flows/flows-data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { LoggerService } from '../logging/logger.service';
+import { EventTypes } from '../public-events/event-types';
+import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UserService } from '../userData/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
@@ -27,7 +29,8 @@ export class PeriodicallyTokenCheckService {
     private refreshSessionIframeService: RefreshSessionIframeService,
     private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService,
     private intervalService: IntervalService,
-    private storagePersistenceService: StoragePersistenceService
+    private storagePersistenceService: StoragePersistenceService,
+    private publicEventsService: PublicEventsService
   ) {}
 
   startTokenValidationPeriodically(): void {
@@ -112,7 +115,7 @@ export class PeriodicallyTokenCheckService {
       return of(null);
     }
 
-    // TODO FGO THROW STARTING SILENT RENEW
+    this.publicEventsService.fireEvent(EventTypes.SilentRenewStarted);
 
     const config = this.configurationProvider.getOpenIDConfiguration(configId);
 
