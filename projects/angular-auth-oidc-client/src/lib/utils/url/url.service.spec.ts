@@ -245,138 +245,148 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    // it('createAuthorizeUrl with prompt adds prompt value', () => {
-    //   const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-    //   config.redirectUrl = 'https://localhost:44386';
-    //   config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-    //   config.responseType = 'id_token token';
-    //   config.scope = 'openid email profile';
+    it('createAuthorizeUrl with prompt adds prompt value', () => {
+      const config = {
+        stsServer: 'https://localhost:5001',
+        redirectUrl: 'https://localhost:44386',
+        clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
+        responseType: 'id_token token',
+        scope: 'openid email profile',
+        configId: 'configId',
+      } as OpenIdConfiguration;
 
-    //   configurationProvider.setConfig(config);
-    //   spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
-    //     authorizationEndpoint: 'http://example',
-    //   });
+      configurationProvider.getOpenIDConfiguration.and.returnValue(config);
+      storagePersistenceService.read
+        .withArgs('authWellKnownEndPoints', config.configId)
+        .and.returnValue({ authorizationEndpoint: 'http://example' });
 
-    //   const value = (service as any).createAuthorizeUrl(
-    //     '', // Implicit Flow
-    //     config.redirectUrl,
-    //     'nonce',
-    //     'state',
-    //     'myprompt'
-    //   );
+      const value = (service as any).createAuthorizeUrl(
+        '', // Implicit Flow
+        config.redirectUrl,
+        'nonce',
+        'state',
+        config.configId,
+        'myprompt'
+      );
 
-    //   const expectValue =
-    //     'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
-    //     '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
-    //     '&response_type=id_token%20token' +
-    //     '&scope=openid%20email%20profile' +
-    //     '&nonce=nonce' +
-    //     '&state=state' +
-    //     '&prompt=myprompt';
+      const expectValue =
+        'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
+        '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
+        '&response_type=id_token%20token' +
+        '&scope=openid%20email%20profile' +
+        '&nonce=nonce' +
+        '&state=state' +
+        '&prompt=myprompt';
 
-    //   expect(value).toEqual(expectValue);
-    // });
+      expect(value).toEqual(expectValue);
+    });
 
-    // it('createAuthorizeUrl with prompt and custom values adds prompt value and custom values', () => {
-    //   const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-    //   config.redirectUrl = 'https://localhost:44386';
-    //   config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-    //   config.responseType = 'id_token token';
-    //   config.scope = 'openid email profile';
+    it('createAuthorizeUrl with prompt and custom values adds prompt value and custom values', () => {
+      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      config.redirectUrl = 'https://localhost:44386';
+      config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+      config.responseType = 'id_token token';
+      config.scope = 'openid email profile';
+      config.configId = 'configId';
 
-    //   configurationProvider.setConfig(config);
-    //   spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
-    //     authorizationEndpoint: 'http://example',
-    //   });
+      configurationProvider.getOpenIDConfiguration.and.returnValue(config);
+      storagePersistenceService.read
+        .withArgs('authWellKnownEndPoints', config.configId)
+        .and.returnValue({ authorizationEndpoint: 'http://example' });
 
-    //   const value = (service as any).createAuthorizeUrl(
-    //     '', // Implicit Flow
-    //     config.redirectUrl,
-    //     'nonce',
-    //     'state',
-    //     'myprompt',
-    //     { to: 'add', as: 'well' }
-    //   );
+      const value = (service as any).createAuthorizeUrl(
+        '', // Implicit Flow
+        config.redirectUrl,
+        'nonce',
+        'state',
+        config.configId,
+        'myprompt',
+        { to: 'add', as: 'well' }
+      );
 
-    //   const expectValue =
-    //     'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
-    //     '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
-    //     '&response_type=id_token%20token' +
-    //     '&scope=openid%20email%20profile' +
-    //     '&nonce=nonce' +
-    //     '&state=state' +
-    //     '&prompt=myprompt' +
-    //     '&to=add&as=well';
+      const expectValue =
+        'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
+        '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
+        '&response_type=id_token%20token' +
+        '&scope=openid%20email%20profile' +
+        '&nonce=nonce' +
+        '&state=state' +
+        '&prompt=myprompt' +
+        '&to=add&as=well';
 
-    //   expect(value).toEqual(expectValue);
-    // });
+      expect(value).toEqual(expectValue);
+    });
 
-    // it('createAuthorizeUrl with hdParam adds hdparam value', () => {
-    //   const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-    //   config.redirectUrl = 'https://localhost:44386';
-    //   config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-    //   config.responseType = 'id_token token';
-    //   config.scope = 'openid email profile';
-    //   config.hdParam = 'myHdParam';
+    it('createAuthorizeUrl with hdParam adds hdparam value', () => {
+      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      config.redirectUrl = 'https://localhost:44386';
+      config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+      config.responseType = 'id_token token';
+      config.scope = 'openid email profile';
+      config.hdParam = 'myHdParam';
+      config.configId = 'configId';
 
-    //   configurationProvider.setConfig(config);
-    //   spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
-    //     authorizationEndpoint: 'http://example',
-    //   });
+      configurationProvider.getOpenIDConfiguration.and.returnValue(config);
+      storagePersistenceService.read
+        .withArgs('authWellKnownEndPoints', config.configId)
+        .and.returnValue({ authorizationEndpoint: 'http://example' });
 
-    //   const value = (service as any).createAuthorizeUrl(
-    //     '', // Implicit Flow
-    //     config.redirectUrl,
-    //     'nonce',
-    //     'state'
-    //   );
+      const value = (service as any).createAuthorizeUrl(
+        '', // Implicit Flow
+        config.redirectUrl,
+        'nonce',
+        'state',
+        config.configId
+      );
 
-    //   const expectValue =
-    //     'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
-    //     '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
-    //     '&response_type=id_token%20token' +
-    //     '&scope=openid%20email%20profile' +
-    //     '&nonce=nonce' +
-    //     '&state=state' +
-    //     '&hd=myHdParam';
+      const expectValue =
+        'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
+        '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
+        '&response_type=id_token%20token' +
+        '&scope=openid%20email%20profile' +
+        '&nonce=nonce' +
+        '&state=state' +
+        '&hd=myHdParam';
 
-    //   expect(value).toEqual(expectValue);
-    // });
+      expect(value).toEqual(expectValue);
+    });
 
-    // it('createAuthorizeUrl with custom value', () => {
-    //   const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-    //   config.redirectUrl = 'https://localhost:44386';
-    //   config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-    //   config.responseType = 'id_token token';
-    //   config.scope = 'openid email profile';
+    it('createAuthorizeUrl with custom value', () => {
+      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      config.redirectUrl = 'https://localhost:44386';
+      config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+      config.responseType = 'id_token token';
+      config.scope = 'openid email profile';
+      config.configId = 'configId';
 
-    //   config.customParams = {
-    //     testcustom: 'customvalue',
-    //   };
+      config.customParams = {
+        testcustom: 'customvalue',
+      };
 
-    //   configurationProvider.setConfig(config);
-    //   spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
-    //     authorizationEndpoint: 'http://example',
-    //   });
+      configurationProvider.getOpenIDConfiguration.and.returnValue(config);
+      storagePersistenceService.read
+        .withArgs('authWellKnownEndPoints', config.configId)
+        .and.returnValue({ authorizationEndpoint: 'http://example' });
 
-    //   const value = (service as any).createAuthorizeUrl(
-    //     '', // Implicit Flow
-    //     config.redirectUrl,
-    //     'nonce',
-    //     'state'
-    //   );
+      const value = (service as any).createAuthorizeUrl(
+        '', // Implicit Flow
+        config.redirectUrl,
+        'nonce',
+        'state',
+        config.configId
+      );
 
-    //   const expectValue =
-    //     'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
-    //     '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
-    //     '&response_type=id_token%20token' +
-    //     '&scope=openid%20email%20profile' +
-    //     '&nonce=nonce' +
-    //     '&state=state' +
-    //     '&testcustom=customvalue';
+      const expectValue =
+        'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
+        '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
+        '&response_type=id_token%20token' +
+        '&scope=openid%20email%20profile' +
+        '&nonce=nonce' +
+        '&state=state' +
+        '&testcustom=customvalue';
 
-    //   expect(value).toEqual(expectValue);
-    // });
+      expect(value).toEqual(expectValue);
+    });
 
     // it('createAuthorizeUrl with custom values', () => {
     //   const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
