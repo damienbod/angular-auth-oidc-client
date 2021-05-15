@@ -16,7 +16,7 @@ import { PopupOptions } from './login/popup/popup-options';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { ConfigUserDataResult } from './userData/config-userdata-result';
 import { UserService } from './userData/user.service';
-import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
+import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
 
 @Injectable()
 export class OidcSecurityService {

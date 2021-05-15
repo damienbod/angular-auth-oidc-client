@@ -46,7 +46,7 @@ import { UserService } from './userData/user.service';
 import { EqualityService } from './utils/equality/equality.service';
 import { FlowHelper } from './utils/flowHelper/flow-helper.service';
 import { PlatformProvider } from './utils/platform-provider/platform.provider';
-import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
+import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
 import { UrlService } from './utils/url/url.service';
 import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';

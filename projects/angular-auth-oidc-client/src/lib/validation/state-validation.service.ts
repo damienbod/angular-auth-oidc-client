@@ -5,7 +5,7 @@ import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { EqualityService } from '../utils/equality/equality.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
-import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
+import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { StateValidationResult } from './state-validation-result';
 import { TokenValidationService } from './token-validation.service';
 import { ValidationResult } from './validation-result';

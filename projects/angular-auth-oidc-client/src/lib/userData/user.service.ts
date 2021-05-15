@@ -8,7 +8,7 @@ import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
-import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
+import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { ConfigUserDataResult } from './config-userdata-result';
 
 @Injectable()

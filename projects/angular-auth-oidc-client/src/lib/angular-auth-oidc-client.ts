@@ -16,7 +16,7 @@ export * from './public-events/event-types';
 export * from './public-events/notification';
 export * from './public-events/public-events.service';
 export * from './storage/abstract-security-storage';
-export * from './utils/tokenHelper/oidc-token-helper.service';
+export * from './utils/tokenHelper/token-helper.service';
 export * from './validation/jwtkeys';
 export * from './validation/state-validation-result';
 export * from './validation/token-validation.service';
