@@ -17,6 +17,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
           issValidationOff: false,
           autoUserInfo: false,
           useRefreshToken: true,
+          ignoreNonceAfterRefresh: true,
           logLevel: LogLevel.Debug,
         },
         {
