@@ -77,9 +77,12 @@ export class PeriodicallyTokenCheckService {
           const customParamsRefresh: { [key: string]: string | number | boolean } = this.storagePersistenceService.read(
             'storageCustomParamsRefresh'
           );
+          const { customParamsRefreshToken } = this.configurationProvider.getOpenIDConfiguration();
+
+          const mergedParams = { ...customParamsRefresh, ...customParamsRefreshToken };
 
           // Refresh Session using Refresh tokens
-          return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(customParamsRefresh);
+          return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(mergedParams);
         }
 
         // Retrieve Dynamically Set Custom Params

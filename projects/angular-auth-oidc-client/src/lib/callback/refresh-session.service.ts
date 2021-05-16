@@ -30,7 +30,9 @@ export class RefreshSessionService {
 
   forceRefreshSession(extraCustomParams?: { [key: string]: string | number | boolean }): Observable<TokenResponse | null> {
     if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
-      return this.startRefreshSession(extraCustomParams).pipe(
+      const { customParamsRefreshToken } = this.configurationProvider.getOpenIDConfiguration();
+      const mergedParams = { ...extraCustomParams, ...customParamsRefreshToken };
+      return this.startRefreshSession(mergedParams).pipe(
         map(() => {
           const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
           if (isAuthenticated) {
