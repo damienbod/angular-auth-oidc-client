@@ -240,7 +240,7 @@ export class OidcSecurityService {
   /**
    * Creates the end session URL which can be used to implement an alternate server logout.
    */
-  getEndSessionUrl(): string | null {
-    return this.logoffRevocationService.getEndSessionUrl();
+  getEndSessionUrl(customParams?: { [key: string]: string | number | boolean }): string | null {
+    return this.logoffRevocationService.getEndSessionUrl(customParams);
   }
 }

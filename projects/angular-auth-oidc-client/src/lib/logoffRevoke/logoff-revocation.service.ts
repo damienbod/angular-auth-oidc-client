@@ -132,11 +132,13 @@ export class LogoffRevocationService {
     );
   }
 
-  getEndSessionUrl(): string | null {
+  getEndSessionUrl(customParams?: { [key: string]: string | number | boolean }): string | null {
     const idToken = this.storagePersistenceService.getIdToken();
 
     const { customParamsEndSession } = this.configurationProvider.getOpenIDConfiguration();
 
-    return this.urlService.createEndSessionUrl(idToken, customParamsEndSession);
+    const mergedParams = { ...customParams, ...customParamsEndSession };
+
+    return this.urlService.createEndSessionUrl(idToken, mergedParams);
   }
 }
