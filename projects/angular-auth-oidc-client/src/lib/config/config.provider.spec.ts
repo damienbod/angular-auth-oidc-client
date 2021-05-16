@@ -72,6 +72,8 @@ describe('ConfigurationProviderTests', () => {
       disableIatOffsetValidation: false,
       storage: sessionStorage,
       customParams: {},
+      customParamsRefreshToken: {},
+      customParamsEndSession: {},
       eagerLoadAuthWellKnownEndpoints: true,
       disableRefreshIdTokenAuthTimeValidation: false,
       tokenRefreshInSeconds: 4,
