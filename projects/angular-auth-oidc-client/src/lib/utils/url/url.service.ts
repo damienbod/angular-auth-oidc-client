@@ -92,7 +92,7 @@ export class UrlService {
     return this.createUrlImplicitFlowAuthorize(customParams) || '';
   }
 
-  createEndSessionUrl(idTokenHint: string): string {
+  createEndSessionUrl(idTokenHint: string, customParamsEndSession?: { [p: string]: string | number | boolean }): string {
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints');
     const endSessionEndpoint = authWellKnownEndPoints?.endSessionEndpoint;
 
@@ -109,6 +109,12 @@ export class UrlService {
       encoder: new UriEncoder(),
     });
     params = params.set('id_token_hint', idTokenHint);
+
+    if (customParamsEndSession) {
+      for (const [key, value] of Object.entries({ ...customParamsEndSession })) {
+        params = params.append(key, value.toString());
+      }
+    }
 
     const postLogoutRedirectUri = this.getPostLogoutRedirectUrl();
 
@@ -191,7 +197,10 @@ export class UrlService {
     return oneLineTrim`${dataForBody}&redirect_uri=${redirectUrl}`;
   }
 
-  createBodyForCodeFlowRefreshTokensRequest(refreshToken: string, customParams?: { [key: string]: string | number | boolean }): string {
+  createBodyForCodeFlowRefreshTokensRequest(
+    refreshToken: string,
+    customParamsRefresh?: { [key: string]: string | number | boolean }
+  ): string {
     const clientId = this.getClientId();
 
     if (!clientId) {
@@ -202,8 +211,8 @@ export class UrlService {
             &client_id=${clientId}
             &refresh_token=${refreshToken}`;
 
-    if (customParams) {
-      const customParamText = this.composeCustomParams({ ...customParams });
+    if (customParamsRefresh) {
+      const customParamText = this.composeCustomParams({ ...customParamsRefresh });
       dataForBody = `${dataForBody}${customParamText}`;
     }
 

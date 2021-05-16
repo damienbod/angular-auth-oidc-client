@@ -9,14 +9,14 @@ import { ConfigurationProvider } from './config/config.provider';
 import { PublicConfiguration } from './config/public-configuration';
 import { FlowsDataService } from './flows/flows-data.service';
 import { CheckSessionService } from './iframe/check-session.service';
+import { LoginResponse } from './login/login-response';
 import { LoginService } from './login/login.service';
 import { PopupOptions } from './login/popup/popup-options';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { StoragePersistenceService } from './storage/storage-persistence.service';
+import { TokenResponse } from './tokens/token-response';
 import { UserService } from './userData/user-service';
 import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
-import { LoginResponse } from './login/login-response';
-import { TokenResponse } from './tokens/token-response';
 
 @Injectable()
 export class OidcSecurityService {
@@ -174,8 +174,14 @@ export class OidcSecurityService {
    * @param customParams Custom parameters to pass to the refresh request.
    */
   forceRefreshSession(customParams?: { [key: string]: string | number | boolean }): Observable<TokenResponse> {
+    const { useRefreshToken } = this.configurationProvider.getOpenIDConfiguration();
+
     if (customParams) {
-      this.storagePersistenceService.write('storageCustomRequestParams', customParams);
+      if (useRefreshToken) {
+        this.storagePersistenceService.write('storageCustomParamsRefresh', customParams);
+      } else {
+        this.storagePersistenceService.write('storageCustomRequestParams', customParams);
+      }
     }
 
     return this.refreshSessionService.forceRefreshSession(customParams);
@@ -234,7 +240,7 @@ export class OidcSecurityService {
   /**
    * Creates the end session URL which can be used to implement an alternate server logout.
    */
-  getEndSessionUrl(): string | null {
-    return this.logoffRevocationService.getEndSessionUrl();
+  getEndSessionUrl(customParams?: { [key: string]: string | number | boolean }): string | null {
+    return this.logoffRevocationService.getEndSessionUrl(customParams);
   }
 }

@@ -14,6 +14,7 @@ export type StorageKeys =
   | 'session_state'
   | 'storageSilentRenewRunning'
   | 'storageCustomRequestParams'
+  | 'storageCustomParamsRefresh'
   | 'jwtKeys';
 
 @Injectable()
@@ -44,6 +45,7 @@ export class StoragePersistenceService {
     this.remove('codeVerifier');
     this.remove('userData');
     this.remove('storageCustomRequestParams');
+    this.remove('storageCustomParamsRefresh');
     this.remove('access_token_expires_at');
   }
 

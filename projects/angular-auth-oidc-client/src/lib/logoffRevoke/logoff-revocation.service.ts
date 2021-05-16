@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, retry, switchMap, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
+import { ConfigurationProvider } from '../config/config.provider';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { LoggerService } from '../logging/logger.service';
@@ -19,7 +20,8 @@ export class LogoffRevocationService {
     private urlService: UrlService,
     private checkSessionService: CheckSessionService,
     private resetAuthDataService: ResetAuthDataService,
-    private redirectService: RedirectService
+    private redirectService: RedirectService,
+    private configurationProvider: ConfigurationProvider
   ) {}
 
   // Logs out on the server and the local client.
@@ -130,8 +132,13 @@ export class LogoffRevocationService {
     );
   }
 
-  getEndSessionUrl(): string | null {
+  getEndSessionUrl(customParams?: { [key: string]: string | number | boolean }): string | null {
     const idToken = this.storagePersistenceService.getIdToken();
-    return this.urlService.createEndSessionUrl(idToken);
+
+    const { customParamsEndSession } = this.configurationProvider.getOpenIDConfiguration();
+
+    const mergedParams = { ...customParams, ...customParamsEndSession };
+
+    return this.urlService.createEndSessionUrl(idToken, mergedParams);
   }
 }

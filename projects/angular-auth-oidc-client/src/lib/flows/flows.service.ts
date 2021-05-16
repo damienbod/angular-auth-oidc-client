@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { CallbackContext } from './callback-context';
 import { CodeFlowCallbackHandlerService } from './callback-handling/code-flow-callback-handler.service';
@@ -8,7 +9,6 @@ import { RefreshSessionCallbackHandlerService } from './callback-handling/refres
 import { RefreshTokenCallbackHandlerService } from './callback-handling/refresh-token-callback-handler.service';
 import { StateValidationCallbackHandlerService } from './callback-handling/state-validation-callback-handler.service';
 import { UserCallbackHandlerService } from './callback-handling/user-callback-handler.service';
-import { Observable } from 'rxjs';
 
 @Injectable()
 export class FlowsService {
@@ -47,9 +47,11 @@ export class FlowsService {
     );
   }
 
-  processRefreshToken(customParams?: { [key: string]: string | number | boolean }): Observable<CallbackContext> {
+  processRefreshToken(customParamsRefresh?: { [key: string]: string | number | boolean }): Observable<CallbackContext> {
     return this.refreshSessionCallbackHandlerService.refreshSessionWithRefreshTokens().pipe(
-      switchMap((callbackContext) => this.refreshTokenCallbackHandlerService.refreshTokensRequestTokens(callbackContext, customParams)),
+      switchMap((callbackContext) =>
+        this.refreshTokenCallbackHandlerService.refreshTokensRequestTokens(callbackContext, customParamsRefresh)
+      ),
       switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
       switchMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext)),
       switchMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext))
