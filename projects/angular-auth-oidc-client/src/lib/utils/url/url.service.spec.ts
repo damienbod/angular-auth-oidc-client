@@ -5,7 +5,7 @@ import { ConfigurationProvider } from '../../config/provider/config.provider';
 import { FlowsDataService } from '../../flows/flows-data.service';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
-import { TokenValidationService } from '../../validation/token-validation.service';
+import { JsrsAsignReducedService } from '../../validation/jsrsasign-reduced.service';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { UrlService } from './url.service';
 
@@ -16,13 +16,13 @@ describe('UrlService Tests', () => {
   let configurationProvider: SpyObject<ConfigurationProvider>;
   let flowHelper: SpyObject<FlowHelper>;
   let flowsDataService: SpyObject<FlowsDataService>;
-  let tokenValidationService: SpyObject<TokenValidationService>;
   let storagePersistenceService: SpyObject<StoragePersistenceService>;
+  let jsrsAsignReducedService: SpyObject<JsrsAsignReducedService>;
   let mywindow: any;
 
   const createService = createServiceFactory({
     service: UrlService,
-    mocks: [ConfigurationProvider, LoggerService, FlowsDataService, FlowHelper, TokenValidationService, StoragePersistenceService],
+    mocks: [ConfigurationProvider, LoggerService, FlowsDataService, FlowHelper, JsrsAsignReducedService, StoragePersistenceService],
   });
 
   beforeEach(() => {
@@ -33,8 +33,9 @@ describe('UrlService Tests', () => {
     configurationProvider = spec.inject(ConfigurationProvider);
     flowHelper = spec.inject(FlowHelper);
     flowsDataService = spec.inject(FlowsDataService);
-    tokenValidationService = spec.inject(TokenValidationService);
     storagePersistenceService = spec.inject(StoragePersistenceService);
+    jsrsAsignReducedService = spec.inject(JsrsAsignReducedService);
+
     mywindow = spec.inject(DOCUMENT).defaultView;
   });
 
@@ -945,7 +946,7 @@ describe('UrlService Tests', () => {
       flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue('testState');
       flowsDataService.createNonce.and.returnValue('testNonce');
       flowsDataService.createCodeVerifier.and.returnValue('testCodeVerifier');
-      tokenValidationService.generateCodeChallenge.and.returnValue('testCodeChallenge');
+      jsrsAsignReducedService.generateCodeChallenge.and.returnValue('testCodeChallenge');
 
       const result = service.createBodyForParCodeFlowRequest('configId');
       expect(result).toBe(
@@ -966,7 +967,7 @@ describe('UrlService Tests', () => {
       flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue('testState');
       flowsDataService.createNonce.and.returnValue('testNonce');
       flowsDataService.createCodeVerifier.and.returnValue('testCodeVerifier');
-      tokenValidationService.generateCodeChallenge.and.returnValue('testCodeChallenge');
+      jsrsAsignReducedService.generateCodeChallenge.and.returnValue('testCodeChallenge');
 
       const result = service.createBodyForParCodeFlowRequest('configId');
       expect(result).toBe(
@@ -987,7 +988,7 @@ describe('UrlService Tests', () => {
       flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue('testState');
       flowsDataService.createNonce.and.returnValue('testNonce');
       flowsDataService.createCodeVerifier.and.returnValue('testCodeVerifier');
-      tokenValidationService.generateCodeChallenge.and.returnValue('testCodeChallenge');
+      jsrsAsignReducedService.generateCodeChallenge.and.returnValue('testCodeChallenge');
 
       const result = service.createBodyForParCodeFlowRequest('configId');
       expect(result).toBe(
@@ -1007,7 +1008,7 @@ describe('UrlService Tests', () => {
       flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue('testState');
       flowsDataService.createNonce.and.returnValue('testNonce');
       flowsDataService.createCodeVerifier.and.returnValue('testCodeVerifier');
-      tokenValidationService.generateCodeChallenge.and.returnValue('testCodeChallenge');
+      jsrsAsignReducedService.generateCodeChallenge.and.returnValue('testCodeChallenge');
 
       const result = service.createBodyForParCodeFlowRequest('configId', { any: 'otherThing' });
       expect(result).toBe(
@@ -1100,7 +1101,7 @@ describe('UrlService Tests', () => {
       flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
       flowsDataService.createNonce.and.returnValue(nonce);
       flowsDataService.createCodeVerifier.and.returnValue(codeVerifier);
-      tokenValidationService.generateCodeChallenge.and.returnValue(codeChallenge);
+      jsrsAsignReducedService.generateCodeChallenge.and.returnValue(codeChallenge);
 
       configurationProvider.getOpenIDConfiguration.and.returnValue({
         silentRenewUrl,
@@ -1126,7 +1127,7 @@ describe('UrlService Tests', () => {
       flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
       flowsDataService.createNonce.and.returnValue(nonce);
       flowsDataService.createCodeVerifier.and.returnValue(codeVerifier);
-      tokenValidationService.generateCodeChallenge.and.returnValue(codeChallenge);
+      jsrsAsignReducedService.generateCodeChallenge.and.returnValue(codeChallenge);
 
       storagePersistenceService.read.withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ authorizationEndpoint });
       configurationProvider.getOpenIDConfiguration.and.returnValue({
@@ -1156,7 +1157,7 @@ describe('UrlService Tests', () => {
       flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
       flowsDataService.createNonce.and.returnValue(nonce);
       flowsDataService.createCodeVerifier.and.returnValue(codeVerifier);
-      tokenValidationService.generateCodeChallenge.and.returnValue(codeChallenge);
+      jsrsAsignReducedService.generateCodeChallenge.and.returnValue(codeChallenge);
 
       storagePersistenceService.read.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
       configurationProvider.getOpenIDConfiguration.and.returnValue({ silentRenewUrl, clientId, responseType });
@@ -1269,7 +1270,7 @@ describe('UrlService Tests', () => {
       flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
       flowsDataService.createNonce.and.returnValue(nonce);
       flowsDataService.createCodeVerifier.and.returnValue(codeVerifier);
-      tokenValidationService.generateCodeChallenge.and.returnValue(codeChallenge);
+      jsrsAsignReducedService.generateCodeChallenge.and.returnValue(codeChallenge);
 
       storagePersistenceService.read.withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ authorizationEndpoint });
       configurationProvider.getOpenIDConfiguration.and.returnValue({
@@ -1301,7 +1302,7 @@ describe('UrlService Tests', () => {
       flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
       flowsDataService.createNonce.and.returnValue(nonce);
       flowsDataService.createCodeVerifier.and.returnValue(codeVerifier);
-      tokenValidationService.generateCodeChallenge.and.returnValue(codeChallenge);
+      jsrsAsignReducedService.generateCodeChallenge.and.returnValue(codeChallenge);
 
       storagePersistenceService.read.withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ authorizationEndpoint });
       configurationProvider.getOpenIDConfiguration.and.returnValue({
@@ -1332,7 +1333,7 @@ describe('UrlService Tests', () => {
       flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
       flowsDataService.createNonce.and.returnValue(nonce);
       flowsDataService.createCodeVerifier.and.returnValue(codeVerifier);
-      tokenValidationService.generateCodeChallenge.and.returnValue(codeChallenge);
+      jsrsAsignReducedService.generateCodeChallenge.and.returnValue(codeChallenge);
 
       storagePersistenceService.read.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
       configurationProvider.getOpenIDConfiguration.and.returnValue({ redirectUrl, clientId, responseType });

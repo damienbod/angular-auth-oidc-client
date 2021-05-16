@@ -1,7 +1,8 @@
 ﻿import { Injectable } from '@angular/core';
-import { hextob64u, KEYUTIL, KJUR } from 'jsrsasign-reduced';
+import { KEYUTIL, KJUR } from 'jsrsasign-reduced';
 import { LoggerService } from '../logging/logger.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
+import { JsrsAsignReducedService } from './jsrsasign-reduced.service';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
@@ -52,7 +53,11 @@ export class TokenValidationService {
   static refreshTokenNoncePlaceholder = '--RefreshToken--';
   keyAlgorithms: string[] = ['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'PS256', 'PS384', 'PS512'];
 
-  constructor(private tokenHelperService: TokenHelperService, private loggerService: LoggerService) {}
+  constructor(
+    private tokenHelperService: TokenHelperService,
+    private loggerService: LoggerService,
+    private jsrsAsignReducedService: JsrsAsignReducedService
+  ) {}
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
   // (possibly allowing for some small leeway to account for clock skew).
@@ -397,12 +402,12 @@ export class TokenValidationService {
       sha = 'sha512';
     }
 
-    const testData = this.generateAtHash('' + accessToken, sha);
+    const testData = this.jsrsAsignReducedService.generateAtHash('' + accessToken, sha);
     this.loggerService.logDebug(configId, 'at_hash client validation not decoded:' + testData);
     if (testData === (atHash as string)) {
       return true; // isValid;
     } else {
-      const testValue = this.generateAtHash('' + decodeURIComponent(accessToken), sha);
+      const testValue = this.jsrsAsignReducedService.generateAtHash('' + decodeURIComponent(accessToken), sha);
       this.loggerService.logDebug(configId, '-gen access--' + testValue);
       if (testValue === (atHash as string)) {
         return true; // isValid
@@ -410,20 +415,5 @@ export class TokenValidationService {
     }
 
     return false;
-  }
-
-  generateCodeChallenge(codeVerifier: any): string {
-    const hash = KJUR.crypto.Util.hashString(codeVerifier, 'sha256');
-    const testData = hextob64u(hash);
-
-    return testData;
-  }
-
-  private generateAtHash(accessToken: any, sha: string): string {
-    const hash = KJUR.crypto.Util.hashString(accessToken, sha);
-    const first128bits = hash.substr(0, hash.length / 2);
-    const testData = hextob64u(first128bits);
-
-    return testData;
   }
 }

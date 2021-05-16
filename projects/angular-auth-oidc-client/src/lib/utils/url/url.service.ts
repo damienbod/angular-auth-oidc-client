@@ -4,7 +4,7 @@ import { ConfigurationProvider } from '../../config/provider/config.provider';
 import { FlowsDataService } from '../../flows/flows-data.service';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
-import { TokenValidationService } from '../../validation/token-validation.service';
+import { JsrsAsignReducedService } from '../../validation/jsrsasign-reduced.service';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { UriEncoder } from './uri-encoder';
 
@@ -16,8 +16,8 @@ export class UrlService {
     private readonly loggerService: LoggerService,
     private readonly flowsDataService: FlowsDataService,
     private readonly flowHelper: FlowHelper,
-    private tokenValidationService: TokenValidationService,
-    private storagePersistenceService: StoragePersistenceService
+    private storagePersistenceService: StoragePersistenceService,
+    private jsrsAsignReducedService: JsrsAsignReducedService
   ) {}
 
   getUrlParameter(urlToCheck: any, name: any): string {
@@ -236,7 +236,7 @@ export class UrlService {
 
     // code_challenge with "S256"
     const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
-    const codeChallenge = this.tokenValidationService.generateCodeChallenge(codeVerifier);
+    const codeChallenge = this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier);
 
     const { clientId, responseType, scope, hdParam, customParams } = this.configurationProvider.getOpenIDConfiguration(configId);
 
@@ -368,7 +368,7 @@ export class UrlService {
 
     // code_challenge with "S256"
     const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
-    const codeChallenge = this.tokenValidationService.generateCodeChallenge(codeVerifier);
+    const codeChallenge = this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier);
 
     const silentRenewUrl = this.getSilentRenewUrl(configId);
 
@@ -418,7 +418,7 @@ export class UrlService {
 
     // code_challenge with "S256"
     const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
-    const codeChallenge = this.tokenValidationService.generateCodeChallenge(codeVerifier);
+    const codeChallenge = this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier);
 
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
     if (authWellKnownEndPoints) {
