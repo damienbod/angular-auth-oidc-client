@@ -312,7 +312,7 @@ export class TokenValidationService {
       let keyToValidate;
 
       // If only one key, use it
-      if (jwtkeys.keys.length === 1 && ((jwtkeys.keys[0].kty as string) === jwtKtyToUse)) {
+      if (jwtkeys.keys.length === 1 && (jwtkeys.keys[0].kty as string) === jwtKtyToUse) {
         keyToValidate = jwtkeys.keys[0];
       } else {
         // More than one key
