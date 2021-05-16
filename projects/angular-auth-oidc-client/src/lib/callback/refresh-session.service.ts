@@ -28,9 +28,9 @@ export class RefreshSessionService {
     private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService
   ) {}
 
-  forceRefreshSession(customParams?: { [key: string]: string | number | boolean }): Observable<TokenResponse | null> {
+  forceRefreshSession(extraCustomParams?: { [key: string]: string | number | boolean }): Observable<TokenResponse | null> {
     if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
-      return this.startRefreshSession(customParams).pipe(
+      return this.startRefreshSession(extraCustomParams).pipe(
         map(() => {
           const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
           if (isAuthenticated) {
@@ -49,7 +49,7 @@ export class RefreshSessionService {
     const timeOutTime = silentRenewTimeoutInSeconds * 1000;
 
     return forkJoin([
-      this.startRefreshSession(customParams),
+      this.startRefreshSession(extraCustomParams),
       this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1)),
     ]).pipe(
       timeout(timeOutTime),
@@ -68,7 +68,9 @@ export class RefreshSessionService {
     );
   }
 
-  private startRefreshSession(customParams?: { [key: string]: string | number | boolean }): Observable<boolean | CallbackContext | null> {
+  private startRefreshSession(extraCustomParams?: {
+    [key: string]: string | number | boolean;
+  }): Observable<boolean | CallbackContext | null> {
     const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
     this.loggerService.logDebug(`Checking: silentRenewRunning: ${isSilentRenewRunning}`);
     const shouldBeExecuted = !isSilentRenewRunning;
@@ -90,10 +92,10 @@ export class RefreshSessionService {
 
         if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
           // Refresh Session using Refresh tokens
-          return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(customParams);
+          return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(extraCustomParams);
         }
 
-        return this.refreshSessionIframeService.refreshSessionWithIframe(customParams);
+        return this.refreshSessionIframeService.refreshSessionWithIframe(extraCustomParams);
       })
     );
   }
