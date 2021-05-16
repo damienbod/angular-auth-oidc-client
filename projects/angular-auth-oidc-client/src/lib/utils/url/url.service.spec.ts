@@ -15,7 +15,7 @@ describe('UrlService Tests', () => {
 
   let configurationProvider: SpyObject<ConfigurationProvider>;
   let flowHelper: SpyObject<FlowHelper>;
-  // let flowsDataService: FlowsDataService;
+  let flowsDataService: SpyObject<FlowsDataService>;
   // let tokenValidationService: TokenValidationService;
   let storagePersistenceService: SpyObject<StoragePersistenceService>;
   let mywindow: any;
@@ -32,7 +32,7 @@ describe('UrlService Tests', () => {
     service = spec.inject(UrlService);
     configurationProvider = spec.inject(ConfigurationProvider);
     flowHelper = spec.inject(FlowHelper);
-    // flowsDataService = spec.inject(FlowsDataService);
+    flowsDataService = spec.inject(FlowsDataService);
     // tokenValidationService = spec.inject(TokenValidationService);
     storagePersistenceService = spec.inject(StoragePersistenceService);
     mywindow = spec.inject(DOCUMENT).defaultView;
@@ -816,82 +816,86 @@ describe('UrlService Tests', () => {
     });
   });
 
-  // describe('createBodyForCodeFlowCodeRequest', () => {
-  //   it('returns null if no code verifier is set', () => {
-  //     spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(null);
-  //     const result = service.createBodyForCodeFlowCodeRequest('notRelevantParam');
-  //     expect(result).toBeNull();
-  //   });
+  describe('createBodyForCodeFlowCodeRequest', () => {
+    it('returns null if no code verifier is set', () => {
+      flowsDataService.getCodeVerifier.and.returnValue(null);
 
-  //   it('returns null if no clientId is set', () => {
-  //     const codeVerifier = 'this_is_a_codeverifier';
-  //     spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
-  //     const clientId = null;
-  //     spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId });
-  //     const result = service.createBodyForCodeFlowCodeRequest('notRelevantParam');
-  //     expect(result).toBeNull();
-  //   });
+      const result = service.createBodyForCodeFlowCodeRequest('notRelevantParam', 'configId');
 
-  //   it('returns null if silentrenewRunning is false and redirectUrl is falsy', () => {
-  //     const codeVerifier = 'this_is_a_codeverifier';
-  //     const code = 'this_is_a_code';
-  //     const redirectUrl = null;
-  //     const clientId = 'clientId';
-  //     spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
-  //     spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-  //     spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId, redirectUrl });
+      expect(result).toBeNull();
+    });
 
-  //     const result = service.createBodyForCodeFlowCodeRequest(code);
+    it('returns null if no clientId is set', () => {
+      const codeVerifier = 'this_is_a_codeverifier';
+      flowsDataService.getCodeVerifier.and.returnValue(codeVerifier);
+      const clientId = null;
 
-  //     expect(result).toBeNull();
-  //   });
+      configurationProvider.getOpenIDConfiguration.and.returnValue({ clientId });
 
-  //   it('returns correctUrl with silentrenewRunning is false', () => {
-  //     const codeVerifier = 'this_is_a_codeverifier';
-  //     const code = 'this_is_a_code';
-  //     const redirectUrl = 'this_is_a_redirectUrl';
-  //     const clientId = 'this_is_a_clientId';
-  //     spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
-  //     spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-  //     spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId, redirectUrl });
+      const result = service.createBodyForCodeFlowCodeRequest('notRelevantParam', 'configId');
+      expect(result).toBeNull();
+    });
 
-  //     const result = service.createBodyForCodeFlowCodeRequest(code);
-  //     const expected = `grant_type=authorization_code&client_id=${clientId}&code_verifier=${codeVerifier}&code=${code}&redirect_uri=${redirectUrl}`;
+    it('returns null if silentrenewRunning is false and redirectUrl is falsy', () => {
+      const codeVerifier = 'this_is_a_codeverifier';
+      const code = 'this_is_a_code';
+      const redirectUrl = null;
+      const clientId = 'clientId';
+      flowsDataService.getCodeVerifier.and.returnValue(codeVerifier);
+      flowsDataService.isSilentRenewRunning.and.returnValue(false);
+      configurationProvider.getOpenIDConfiguration.and.returnValue({ clientId, redirectUrl });
 
-  //     expect(result).toBe(expected);
-  //   });
+      const result = service.createBodyForCodeFlowCodeRequest(code, 'configId');
 
-  //   it('returns correctUrl with silentrenewRunning is true', () => {
-  //     const codeVerifier = 'this_is_a_codeverifier';
-  //     const code = 'this_is_a_code';
-  //     const silentRenewUrl = 'this_is_a_silentRenewUrl';
-  //     const clientId = 'this_is_a_clientId';
-  //     spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
-  //     spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-  //     spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId, silentRenewUrl });
+      expect(result).toBeNull();
+    });
 
-  //     const result = service.createBodyForCodeFlowCodeRequest(code);
-  //     const expected = `grant_type=authorization_code&client_id=${clientId}&code_verifier=${codeVerifier}&code=${code}&redirect_uri=${silentRenewUrl}`;
+    it('returns correctUrl with silentRenewRunning is false', () => {
+      const codeVerifier = 'this_is_a_codeverifier';
+      const code = 'this_is_a_code';
+      const redirectUrl = 'this_is_a_redirectUrl';
+      const clientId = 'this_is_a_clientId';
+      flowsDataService.getCodeVerifier.and.returnValue(codeVerifier);
+      flowsDataService.isSilentRenewRunning.and.returnValue(false);
+      configurationProvider.getOpenIDConfiguration.and.returnValue({ clientId, redirectUrl });
 
-  //     expect(result).toBe(expected);
-  //   });
+      const result = service.createBodyForCodeFlowCodeRequest(code, 'configId');
+      const expected = `grant_type=authorization_code&client_id=${clientId}&code_verifier=${codeVerifier}&code=${code}&redirect_uri=${redirectUrl}`;
 
-  //   it('returns correctUrl when customTokenParams are provided', () => {
-  //     const codeVerifier = 'this_is_a_codeverifier';
-  //     const code = 'this_is_a_code';
-  //     const silentRenewUrl = 'this_is_a_silentRenewUrl';
-  //     const clientId = 'this_is_a_clientId';
-  //     const customTokenParams = { foo: 'bar' };
-  //     spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
-  //     spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-  //     spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId, silentRenewUrl });
+      expect(result).toBe(expected);
+    });
 
-  //     const result = service.createBodyForCodeFlowCodeRequest(code, customTokenParams);
-  //     const expected = `grant_type=authorization_code&client_id=${clientId}&code_verifier=${codeVerifier}&code=${code}&foo=bar&redirect_uri=${silentRenewUrl}`;
+    it('returns correctUrl with silentRenewRunning is true', () => {
+      const codeVerifier = 'this_is_a_codeverifier';
+      const code = 'this_is_a_code';
+      const silentRenewUrl = 'this_is_a_silentRenewUrl';
+      const clientId = 'this_is_a_clientId';
+      flowsDataService.getCodeVerifier.and.returnValue(codeVerifier);
+      flowsDataService.isSilentRenewRunning.and.returnValue(true);
+      configurationProvider.getOpenIDConfiguration.and.returnValue({ clientId, silentRenewUrl });
 
-  //     expect(result).toBe(expected);
-  //   });
-  // });
+      const result = service.createBodyForCodeFlowCodeRequest(code, 'configId');
+      const expected = `grant_type=authorization_code&client_id=${clientId}&code_verifier=${codeVerifier}&code=${code}&redirect_uri=${silentRenewUrl}`;
+
+      expect(result).toBe(expected);
+    });
+
+    it('returns correctUrl when customTokenParams are provided', () => {
+      const codeVerifier = 'this_is_a_codeverifier';
+      const code = 'this_is_a_code';
+      const silentRenewUrl = 'this_is_a_silentRenewUrl';
+      const clientId = 'this_is_a_clientId';
+      const customTokenParams = { foo: 'bar' };
+      flowsDataService.getCodeVerifier.and.returnValue(codeVerifier);
+      flowsDataService.isSilentRenewRunning.and.returnValue(true);
+      configurationProvider.getOpenIDConfiguration.and.returnValue({ clientId, silentRenewUrl });
+
+      const result = service.createBodyForCodeFlowCodeRequest(code, 'configId', customTokenParams);
+      const expected = `grant_type=authorization_code&client_id=${clientId}&code_verifier=${codeVerifier}&code=${code}&foo=bar&redirect_uri=${silentRenewUrl}`;
+
+      expect(result).toBe(expected);
+    });
+  });
 
   // describe('createBodyForCodeFlowRefreshTokensRequest', () => {
   //   it('returns correct url', () => {
