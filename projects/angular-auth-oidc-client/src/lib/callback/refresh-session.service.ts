@@ -30,13 +30,13 @@ export class RefreshSessionService {
     private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService
   ) {}
 
-  forceRefreshSession(configId: string, customParams?: { [key: string]: string | number | boolean }): Observable<LoginResponse> {
-    if (customParams) {
-      this.storagePersistenceService.write('storageCustomRequestParams', customParams, configId);
+  forceRefreshSession(configId: string, extraCustomParams?: { [key: string]: string | number | boolean }): Observable<LoginResponse> {
+    if (extraCustomParams) {
+      this.storagePersistenceService.write('storageCustomRequestParams', extraCustomParams, configId);
     }
 
     if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(configId)) {
-      return this.startRefreshSession(configId, customParams).pipe(
+      return this.startRefreshSession(configId, extraCustomParams).pipe(
         map(() => {
           const isAuthenticated = this.authStateService.areAuthStorageTokensValid(configId);
           if (isAuthenticated) {
@@ -56,7 +56,7 @@ export class RefreshSessionService {
     const timeOutTime = silentRenewTimeoutInSeconds * 1000;
 
     return forkJoin([
-      this.startRefreshSession(configId, customParams),
+      this.startRefreshSession(configId, extraCustomParams),
       this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1)),
     ]).pipe(
       timeout(timeOutTime),
@@ -78,7 +78,7 @@ export class RefreshSessionService {
 
   private startRefreshSession(
     configId: string,
-    customParams?: { [key: string]: string | number | boolean }
+    extraCustomParams?: { [key: string]: string | number | boolean }
   ): Observable<boolean | CallbackContext | null> {
     const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning(configId);
     this.loggerService.logDebug(configId, `Checking: silentRenewRunning: ${isSilentRenewRunning}`);
@@ -101,10 +101,10 @@ export class RefreshSessionService {
 
         if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(configId)) {
           // Refresh Session using Refresh tokens
-          return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(configId, customParams);
+          return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(configId, extraCustomParams);
         }
 
-        return this.refreshSessionIframeService.refreshSessionWithIframe(configId, customParams);
+        return this.refreshSessionIframeService.refreshSessionWithIframe(configId, extraCustomParams);
       })
     );
   }

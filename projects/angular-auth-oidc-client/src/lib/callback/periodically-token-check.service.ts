@@ -128,16 +128,22 @@ export class PeriodicallyTokenCheckService {
 
     this.flowsDataService.setSilentRenewRunning(configId);
 
+    if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(configId)) {
+      // Retrieve Dynamically Set Custom Params for refresh body
+      const customParamsRefresh: { [key: string]: string | number | boolean } = this.storagePersistenceService.read(
+        'storageCustomParamsRefresh',
+        configId
+      );
+
+      // Refresh Session using Refresh tokens
+      return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(configId, customParamsRefresh);
+    }
+
     // Retrieve Dynamically Set Custom Params
     const customParams: { [key: string]: string | number | boolean } = this.storagePersistenceService.read(
       'storageCustomRequestParams',
       configId
     );
-
-    if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(configId)) {
-      // Refresh Session using Refresh tokens
-      return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(configId, customParams);
-    }
 
     return this.refreshSessionIframeService.refreshSessionWithIframe(configId, customParams);
   }

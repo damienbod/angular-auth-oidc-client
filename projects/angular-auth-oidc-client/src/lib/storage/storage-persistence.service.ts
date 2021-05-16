@@ -13,6 +13,8 @@ export type StorageKeys =
   | 'session_state'
   | 'storageSilentRenewRunning'
   | 'storageCustomRequestParams'
+  | 'storageCustomParamsRefresh'
+  | 'storageCustomParamsEndSession'
   | 'jwtKeys'
   | 'redirect'
   | 'configIds';
@@ -53,6 +55,8 @@ export class StoragePersistenceService {
     this.remove('userData', configId);
     this.remove('storageCustomRequestParams', configId);
     this.remove('access_token_expires_at', configId);
+    this.remove('storageCustomParamsRefresh', configId);
+    this.remove('storageCustomParamsEndSession', configId);
   }
 
   resetAuthStateInStorage(configId: string): void {

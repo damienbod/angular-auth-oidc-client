@@ -18,11 +18,11 @@ export class RefreshSessionRefreshTokenService {
 
   refreshSessionWithRefreshTokens(
     configId: string,
-    customParams?: { [key: string]: string | number | boolean }
+    customParamsRefresh?: { [key: string]: string | number | boolean }
   ): Observable<CallbackContext> {
     this.loggerService.logDebug(configId, 'BEGIN refresh session Authorize');
 
-    return this.flowsService.processRefreshToken(configId, customParams).pipe(
+    return this.flowsService.processRefreshToken(configId, customParamsRefresh).pipe(
       catchError((error) => {
         this.intervalService.stopPeriodicTokenCheck();
         this.resetAuthDataService.resetAuthorizationData(configId);

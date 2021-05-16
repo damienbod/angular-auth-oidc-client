@@ -47,10 +47,10 @@ export class FlowsService {
     );
   }
 
-  processRefreshToken(configId: string, customParams?: { [key: string]: string | number | boolean }): Observable<CallbackContext> {
+  processRefreshToken(configId: string, customParamsRefresh?: { [key: string]: string | number | boolean }): Observable<CallbackContext> {
     return this.refreshSessionCallbackHandlerService.refreshSessionWithRefreshTokens(configId).pipe(
       switchMap((callbackContext) =>
-        this.refreshTokenCallbackHandlerService.refreshTokensRequestTokens(callbackContext, configId, customParams)
+        this.refreshTokenCallbackHandlerService.refreshTokensRequestTokens(callbackContext, configId, customParamsRefresh)
       ),
       switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext, configId)),
       switchMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext, configId)),
