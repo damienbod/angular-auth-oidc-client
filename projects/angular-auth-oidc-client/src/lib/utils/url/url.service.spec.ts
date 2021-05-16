@@ -750,57 +750,71 @@ describe('UrlService Tests', () => {
     });
   });
 
-  // describe('getAuthorizeUrl', () => {
-  //   it('calls createUrlCodeFlowAuthorize if current flow is code flow', () => {
-  //     spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-  //     const spy = spyOn(service as any, 'createUrlCodeFlowAuthorize');
-  //     service.getAuthorizeUrl();
-  //     expect(spy).toHaveBeenCalled();
-  //   });
+  describe('getAuthorizeUrl', () => {
+    it('calls createUrlCodeFlowAuthorize if current flow is code flow', () => {
+      flowHelper.isCurrentFlowCodeFlow.and.returnValue(true);
+      const spy = spyOn(service as any, 'createUrlCodeFlowAuthorize');
 
-  //   it('calls createUrlImplicitFlowAuthorize if current flow is NOT code flow', () => {
-  //     spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
-  //     const spyCreateUrlCodeFlowAuthorize = spyOn(service as any, 'createUrlCodeFlowAuthorize');
-  //     const spyCreateUrlImplicitFlowAuthorize = spyOn(service as any, 'createUrlImplicitFlowAuthorize');
-  //     service.getAuthorizeUrl();
-  //     expect(spyCreateUrlCodeFlowAuthorize).not.toHaveBeenCalled();
-  //     expect(spyCreateUrlImplicitFlowAuthorize).toHaveBeenCalled();
-  //   });
+      service.getAuthorizeUrl('configId');
 
-  //   it('return empty string if flow is not code flow and createUrlImplicitFlowAuthorize returns falsy', () => {
-  //     spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
-  //     const spy = spyOn(service as any, 'createUrlImplicitFlowAuthorize').and.returnValue('');
-  //     const result = service.getAuthorizeUrl();
-  //     expect(spy).toHaveBeenCalled();
-  //     expect(result).toBe('');
-  //   });
-  // });
+      expect(spy).toHaveBeenCalled();
+    });
 
-  // describe('getRefreshSessionSilentRenewUrl', () => {
-  //   it('calls createUrlCodeFlowWithSilentRenew if current flow is code flow', () => {
-  //     spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-  //     const spy = spyOn(service as any, 'createUrlCodeFlowWithSilentRenew');
-  //     service.getRefreshSessionSilentRenewUrl();
-  //     expect(spy).toHaveBeenCalled();
-  //   });
+    it('calls createUrlImplicitFlowAuthorize if current flow is NOT code flow', () => {
+      flowHelper.isCurrentFlowCodeFlow.and.returnValue(false);
 
-  //   it('calls createUrlImplicitFlowWithSilentRenew if current flow is NOT code flow', () => {
-  //     spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
-  //     const spyCreateUrlCodeFlowWithSilentRenew = spyOn(service as any, 'createUrlCodeFlowWithSilentRenew');
-  //     const spyCreateUrlImplicitFlowWithSilentRenew = spyOn(service as any, 'createUrlImplicitFlowWithSilentRenew');
-  //     service.getRefreshSessionSilentRenewUrl();
-  //     expect(spyCreateUrlCodeFlowWithSilentRenew).not.toHaveBeenCalled();
-  //     expect(spyCreateUrlImplicitFlowWithSilentRenew).toHaveBeenCalled();
-  //   });
+      const spyCreateUrlCodeFlowAuthorize = spyOn(service as any, 'createUrlCodeFlowAuthorize');
+      const spyCreateUrlImplicitFlowAuthorize = spyOn(service as any, 'createUrlImplicitFlowAuthorize');
 
-  //   it('return empty string if flow is not code flow and createUrlImplicitFlowWithSilentRenew returns falsy', () => {
-  //     spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
-  //     const spy = spyOn(service as any, 'createUrlImplicitFlowWithSilentRenew').and.returnValue('');
-  //     const result = service.getRefreshSessionSilentRenewUrl();
-  //     expect(spy).toHaveBeenCalled();
-  //     expect(result).toBe('');
-  //   });
-  // });
+      service.getAuthorizeUrl('configId');
+
+      expect(spyCreateUrlCodeFlowAuthorize).not.toHaveBeenCalled();
+      expect(spyCreateUrlImplicitFlowAuthorize).toHaveBeenCalled();
+    });
+
+    it('return empty string if flow is not code flow and createUrlImplicitFlowAuthorize returns falsy', () => {
+      flowHelper.isCurrentFlowCodeFlow.and.returnValue(false);
+
+      const spy = spyOn(service as any, 'createUrlImplicitFlowAuthorize').and.returnValue('');
+
+      const result = service.getAuthorizeUrl('configId');
+      expect(spy).toHaveBeenCalled();
+      expect(result).toBe('');
+    });
+  });
+
+  describe('getRefreshSessionSilentRenewUrl', () => {
+    it('calls createUrlCodeFlowWithSilentRenew if current flow is code flow', () => {
+      flowHelper.isCurrentFlowCodeFlow.and.returnValue(true);
+      const spy = spyOn(service as any, 'createUrlCodeFlowWithSilentRenew');
+
+      service.getRefreshSessionSilentRenewUrl('configId');
+
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('calls createUrlImplicitFlowWithSilentRenew if current flow is NOT code flow', () => {
+      flowHelper.isCurrentFlowCodeFlow.and.returnValue(false);
+
+      const spyCreateUrlCodeFlowWithSilentRenew = spyOn(service as any, 'createUrlCodeFlowWithSilentRenew');
+      const spyCreateUrlImplicitFlowWithSilentRenew = spyOn(service as any, 'createUrlImplicitFlowWithSilentRenew');
+
+      service.getRefreshSessionSilentRenewUrl('configId');
+
+      expect(spyCreateUrlCodeFlowWithSilentRenew).not.toHaveBeenCalled();
+      expect(spyCreateUrlImplicitFlowWithSilentRenew).toHaveBeenCalled();
+    });
+
+    it('return empty string if flow is not code flow and createUrlImplicitFlowWithSilentRenew returns falsy', () => {
+      flowHelper.isCurrentFlowCodeFlow.and.returnValue(false);
+      const spy = spyOn(service as any, 'createUrlImplicitFlowWithSilentRenew').and.returnValue('');
+
+      const result = service.getRefreshSessionSilentRenewUrl('configId');
+
+      expect(spy).toHaveBeenCalled();
+      expect(result).toBe('');
+    });
+  });
 
   // describe('createBodyForCodeFlowCodeRequest', () => {
   //   it('returns null if no code verifier is set', () => {
