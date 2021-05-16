@@ -579,120 +579,123 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    // it('createAuthorizeUrl default', () => {
-    //   const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-    //   config.redirectUrl = 'https://localhost:44386';
-    //   config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-    //   config.responseType = 'id_token token';
-    //   config.scope = 'openid email profile';
+    it('createAuthorizeUrl default', () => {
+      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      config.redirectUrl = 'https://localhost:44386';
+      config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+      config.responseType = 'id_token token';
+      config.scope = 'openid email profile';
+      config.configId = 'configId';
 
-    //   configurationProvider.setConfig(config);
-    //   spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
-    //     authorizationEndpoint: 'http://example',
-    //   });
+      configurationProvider.getOpenIDConfiguration.and.returnValue(config);
+      storagePersistenceService.read
+        .withArgs('authWellKnownEndPoints', config.configId)
+        .and.returnValue({ authorizationEndpoint: 'http://example' });
 
-    //   const value = (service as any).createAuthorizeUrl(
-    //     '', // Implicit Flow
-    //     config.redirectUrl,
-    //     'nonce',
-    //     'state'
-    //   );
+      const value = (service as any).createAuthorizeUrl(
+        '', // Implicit Flow
+        config.redirectUrl,
+        'nonce',
+        'state',
+        config.configId
+      );
 
-    //   const expectValue =
-    //     'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
-    //     '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
-    //     '&response_type=id_token%20token' +
-    //     '&scope=openid%20email%20profile' +
-    //     '&nonce=nonce' +
-    //     '&state=state';
+      const expectValue =
+        'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
+        '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
+        '&response_type=id_token%20token' +
+        '&scope=openid%20email%20profile' +
+        '&nonce=nonce' +
+        '&state=state';
 
-    //   expect(value).toEqual(expectValue);
-    // });
+      expect(value).toEqual(expectValue);
+    });
+  });
 
-    // it('createEndSessionUrl with azure-ad-b2c policy parameter', () => {
-    //   const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-    //   config.redirectUrl = 'https://localhost:44386';
-    //   config.clientId = 'myid';
-    //   config.responseType = 'id_token token';
-    //   config.scope = 'openid email profile';
-    //   config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+  describe('createEndSessionUrl', () => {
+    it('createEndSessionUrl with azure-ad-b2c policy parameter', () => {
+      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      config.redirectUrl = 'https://localhost:44386';
+      config.clientId = 'myid';
+      config.responseType = 'id_token token';
+      config.scope = 'openid email profile';
+      config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+      config.configId = 'configId';
 
-    //   const endSessionEndpoint = 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in';
-    //   configurationProvider.setConfig(config);
-    //   spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
-    //     endSessionEndpoint,
-    //   });
-    //   const value = service.createEndSessionUrl('UzI1NiIsImtpZCI6Il');
+      const endSessionEndpoint = 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in';
+      configurationProvider.getOpenIDConfiguration.and.returnValue(config);
+      storagePersistenceService.read.withArgs('authWellKnownEndPoints', config.configId).and.returnValue({ endSessionEndpoint });
+      const value = service.createEndSessionUrl('UzI1NiIsImtpZCI6Il', config.configId);
 
-    //   const expectValue =
-    //     'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in' +
-    //     '&id_token_hint=UzI1NiIsImtpZCI6Il' +
-    //     '&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
+      const expectValue =
+        'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in' +
+        '&id_token_hint=UzI1NiIsImtpZCI6Il' +
+        '&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
 
-    //   expect(value).toEqual(expectValue);
-    // });
+      expect(value).toEqual(expectValue);
+    });
+  });
 
-    // it('createRevocationBody access_token default', () => {
-    //   const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-    //   config.redirectUrl = 'https://localhost:44386';
-    //   config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-    //   config.responseType = 'id_token token';
-    //   config.scope = 'openid email profile';
-    //   config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+  describe('createRevocationEndpointBodyAccessToken', () => {
+    it('createRevocationBody access_token default', () => {
+      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      config.redirectUrl = 'https://localhost:44386';
+      config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+      config.responseType = 'id_token token';
+      config.scope = 'openid email profile';
+      config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+      config.configId = 'configId';
 
-    //   const revocationEndpoint = 'http://example?cod=ddd';
-    //   configurationProvider.setConfig(config);
-    //   spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
-    //     revocationEndpoint,
-    //   });
+      const revocationEndpoint = 'http://example?cod=ddd';
+      configurationProvider.getOpenIDConfiguration.and.returnValue(config);
+      storagePersistenceService.read.withArgs('authWellKnownEndPoints', config.configId).and.returnValue({ revocationEndpoint });
 
-    //   const value = service.createRevocationEndpointBodyAccessToken('mytoken');
-    //   const expectValue =
-    //     'client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&token=mytoken&token_type_hint=access_token';
+      const value = service.createRevocationEndpointBodyAccessToken('mytoken', config.configId);
+      const expectValue =
+        'client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&token=mytoken&token_type_hint=access_token';
 
-    //   expect(value).toEqual(expectValue);
-    // });
+      expect(value).toEqual(expectValue);
+    });
 
-    // it('createRevocationEndpointBodyAccessToken returns null when no clientId is given', () => {
-    //   const config = { stsServer: 'https://localhost:5001', clientId: null } as OpenIdConfiguration;
+    it('createRevocationEndpointBodyAccessToken returns null when no clientId is given', () => {
+      const config = { stsServer: 'https://localhost:5001', clientId: null, configId: 'configId' } as OpenIdConfiguration;
 
-    //   configurationProvider.setConfig(config);
+      configurationProvider.getOpenIDConfiguration.and.returnValue(config);
 
-    //   const value = service.createRevocationEndpointBodyAccessToken('mytoken');
+      const value = service.createRevocationEndpointBodyAccessToken('mytoken', config.configId);
 
-    //   expect(value).toBeNull();
-    // });
+      expect(value).toBeNull();
+    });
+  });
 
-    // it('createRevocationBody refresh_token default', () => {
-    //   const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-    //   config.redirectUrl = 'https://localhost:44386';
-    //   config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-    //   config.responseType = 'id_token token';
-    //   config.scope = 'openid email profile';
-    //   config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+  describe('createRevocationEndpointBodyRefreshToken', () => {
+    it('createRevocationBody refresh_token default', () => {
+      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      config.redirectUrl = 'https://localhost:44386';
+      config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+      config.responseType = 'id_token token';
+      config.scope = 'openid email profile';
+      config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+      config.configId = 'configId';
 
-    //   const revocationEndpoint = 'http://example?cod=ddd';
-    //   configurationProvider.setConfig(config);
-    //   spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
-    //     revocationEndpoint,
-    //   });
+      const revocationEndpoint = 'http://example?cod=ddd';
+      configurationProvider.getOpenIDConfiguration.and.returnValue(config);
+      storagePersistenceService.read.withArgs('authWellKnownEndPoints', config.configId).and.returnValue({ revocationEndpoint });
 
-    //   const value = service.createRevocationEndpointBodyRefreshToken('mytoken');
-    //   const expectValue =
-    //     'client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&token=mytoken&token_type_hint=refresh_token';
+      const value = service.createRevocationEndpointBodyRefreshToken('mytoken', config.configId);
+      const expectValue =
+        'client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com&token=mytoken&token_type_hint=refresh_token';
+      expect(value).toEqual(expectValue);
+    });
 
-    //   expect(value).toEqual(expectValue);
-    // });
+    it('createRevocationEndpointBodyRefreshToken returns null when no clientId is given', () => {
+      const config = { stsServer: 'https://localhost:5001', clientId: null, configId: 'configId' } as OpenIdConfiguration;
+      configurationProvider.getOpenIDConfiguration.and.returnValue(config);
 
-    // it('createRevocationEndpointBodyRefreshToken returns null when no clientId is given', () => {
-    //   const config = { stsServer: 'https://localhost:5001', clientId: null } as OpenIdConfiguration;
+      const value = service.createRevocationEndpointBodyRefreshToken('mytoken', config.configId);
 
-    //   configurationProvider.setConfig(config);
-
-    //   const value = service.createRevocationEndpointBodyRefreshToken('mytoken');
-
-    //   expect(value).toBeNull();
-    // });
+      expect(value).toBeNull();
+    });
 
     // it('getRevocationEndpointUrl with params', () => {
     //   const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
@@ -701,17 +704,13 @@ describe('UrlService Tests', () => {
     //   config.responseType = 'id_token token';
     //   config.scope = 'openid email profile';
     //   config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
-
     //   const revocationEndpoint = 'http://example?cod=ddd';
     //   configurationProvider.setConfig(config);
     //   spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
     //     revocationEndpoint,
     //   });
-
     //   const value = service.getRevocationEndpointUrl();
-
     //   const expectValue = 'http://example';
-
     //   expect(value).toEqual(expectValue);
     // });
 
@@ -722,35 +721,26 @@ describe('UrlService Tests', () => {
     //   config.responseType = 'id_token token';
     //   config.scope = 'openid email profile';
     //   config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
-
     //   const revocationEndpoint = 'http://example';
     //   configurationProvider.setConfig(config);
     //   spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
     //     revocationEndpoint,
     //   });
-
     //   const value = service.getRevocationEndpointUrl();
-
     //   const expectValue = 'http://example';
-
     //   expect(value).toEqual(expectValue);
     // });
-
     // it('getRevocationEndpointUrl returns null when there is not revociationendpoint given', () => {
     //   configurationProvider.setConfig(null);
     //   spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({
     //     revocationEndpoint: null,
     //   });
     //   const value = service.getRevocationEndpointUrl();
-
     //   expect(value).toBeNull();
     // });
-
     // it('getRevocationEndpointUrl returns null when there is no wellKnownEndpoints given', () => {
     //   configurationProvider.setConfig(null);
-
     //   const value = service.getRevocationEndpointUrl();
-
     //   expect(value).toBeNull();
     // });
   });
