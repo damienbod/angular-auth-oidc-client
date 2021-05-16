@@ -1016,333 +1016,333 @@ describe('UrlService Tests', () => {
     });
   });
 
-  // describe('createUrlImplicitFlowWithSilentRenew', () => {
-  //   it('returns null if silentrenewUrl is falsy', () => {
-  //     const state = 'testState';
-  //     const nonce = 'testNonce';
-  //     const silentRenewUrl = null;
-
-  //     spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
-  //     spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
-
-  //     configurationProvider.getOpenIDConfiguration.and.returnValue({
-  //       silentRenewUrl,
-  //     });
-
-  //     const serviceAsAny = service as any;
-
-  //     const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew();
-  //     expect(result).toBeNull();
-  //   });
-
-  //   it('returns correct url if wellknownendpoints are given', () => {
-  //     const state = 'testState';
-  //     const nonce = 'testNonce';
-  //     const silentRenewUrl = 'http://any-url.com';
-  //     const authorizationEndpoint = 'authorizationEndpoint';
-  //     const clientId = 'clientId';
-  //     const responseType = 'responseType';
-  //     const scope = 'testScope';
-
-  //     spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
-  //     spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
-
-  //     storagePersistenceService.read.withArgs('authWellKnownEndPoints').and.returnValue({
-  //       authorizationEndpoint,
-  //     });
-  //     configurationProvider.getOpenIDConfiguration.and.returnValue({
-  //       silentRenewUrl,
-  //       clientId,
-  //       responseType,
-  //       scope,
-  //     });
-
-  //     const serviceAsAny = service as any;
-
-  //     const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew();
-  //     expect(result).toBe(
-  //       `authorizationEndpoint?client_id=${clientId}&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&prompt=none`
-  //     );
-  //   });
-
-  //   it('returns correct url if wellknownendpoints are given', () => {
-  //     const state = 'testState';
-  //     const nonce = 'testNonce';
-  //     const silentRenewUrl = 'http://any-url.com';
-  //     const clientId = 'clientId';
-  //     const responseType = 'responseType';
-
-  //     spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
-  //     spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
-
-  //     storagePersistenceService.read.withArgs('authWellKnownEndPoints').and.returnValue(null);
-  //     configurationProvider.getOpenIDConfiguration.and.returnValue({
-  //       silentRenewUrl,
-  //       clientId,
-  //       responseType,
-  //     });
-
-  //     const serviceAsAny = service as any;
-
-  //     const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew();
-  //     expect(result).toBe(null);
-  //   });
-  // });
-
-  // describe('createUrlCodeFlowWithSilentRenew', () => {
-  //   it('returns null if silentrenewUrl is falsy', () => {
-  //     const state = 'testState';
-  //     const nonce = 'testNonce';
-  //     const silentRenewUrl = null;
-  //     const codeVerifier = 'codeVerifier';
-  //     const codeChallenge = 'codeChallenge ';
-
-  //     spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
-  //     spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
-  //     spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-  //     spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
-
-  //     configurationProvider.getOpenIDConfiguration.and.returnValue({
-  //       silentRenewUrl,
-  //     });
-
-  //     const serviceAsAny = service as any;
-
-  //     const result = serviceAsAny.createUrlCodeFlowWithSilentRenew();
-  //     expect(result).toBeNull();
-  //   });
-
-  //   it('returns correct url if wellknownendpoints are given', () => {
-  //     const state = 'testState';
-  //     const nonce = 'testNonce';
-  //     const silentRenewUrl = 'http://any-url.com';
-  //     const authorizationEndpoint = 'authorizationEndpoint';
-  //     const clientId = 'clientId';
-  //     const responseType = 'responseType';
-  //     const codeVerifier = 'codeVerifier';
-  //     const codeChallenge = 'codeChallenge ';
-  //     const scope = 'testScope';
-
-  //     spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
-  //     spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
-  //     spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-  //     spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
-
-  //     storagePersistenceService.read.withArgs('authWellKnownEndPoints').and.returnValue({ authorizationEndpoint });
-  //     configurationProvider.getOpenIDConfiguration.and.returnValue({
-  //       silentRenewUrl,
-  //       clientId,
-  //       responseType,
-  //       scope,
-  //     });
-
-  //     const serviceAsAny = service as any;
-
-  //     const result = serviceAsAny.createUrlCodeFlowWithSilentRenew();
-  //     expect(result).toBe(
-  //       `authorizationEndpoint?client_id=${clientId}&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&prompt=none`
-  //     );
-  //   });
-
-  //   it('returns empty string if no wellknownendpoints are given', () => {
-  //     const state = 'testState';
-  //     const nonce = 'testNonce';
-  //     const silentRenewUrl = 'http://any-url.com';
-  //     const clientId = 'clientId';
-  //     const responseType = 'responseType';
-  //     const codeVerifier = 'codeVerifier';
-  //     const codeChallenge = 'codeChallenge ';
-
-  //     spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
-  //     spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
-  //     spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-  //     spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
-
-  //     storagePersistenceService.read.withArgs('authWellKnownEndPoints').and.returnValue(null);
-  //     configurationProvider.getOpenIDConfiguration.and.returnValue({ silentRenewUrl, clientId, responseType });
-
-  //     const serviceAsAny = service as any;
-
-  //     const result = serviceAsAny.createUrlCodeFlowWithSilentRenew();
-  //     expect(result).toBe(null);
-  //   });
-  // });
-
-  // describe('createUrlImplicitFlowAuthorize', () => {
-  //   it('returns correct url if wellknownendpoints are given', () => {
-  //     const state = 'testState';
-  //     const nonce = 'testNonce';
-  //     const redirectUrl = 'http://any-url.com';
-  //     const authorizationEndpoint = 'authorizationEndpoint';
-  //     const clientId = 'clientId';
-  //     const responseType = 'responseType';
-  //     const scope = 'testScope';
-
-  //     spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
-  //     spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
-
-  //     storagePersistenceService.read.withArgs('authWellKnownEndPoints').and.returnValue({ authorizationEndpoint });
-  //     configurationProvider.getOpenIDConfiguration.and.returnValue({
-  //       redirectUrl,
-  //       clientId,
-  //       responseType,
-  //       scope,
-  //     });
-
-  //     const serviceAsAny = service as any;
-
-  //     const result = serviceAsAny.createUrlImplicitFlowAuthorize();
-  //     expect(result).toBe(
-  //       `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}`
-  //     );
-  //   });
-
-  //   it('returns empty string if no wellknownendpoints are given', () => {
-  //     const state = 'testState';
-  //     const nonce = 'testNonce';
-  //     const redirectUrl = 'http://any-url.com';
-  //     const clientId = 'clientId';
-  //     const responseType = 'responseType';
-
-  //     spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
-  //     spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
-
-  //     storagePersistenceService.read.withArgs('authWellKnownEndPoints').and.returnValue(null);
-  //     configurationProvider.getOpenIDConfiguration.and.returnValue({ redirectUrl, clientId, responseType });
-
-  //     const serviceAsAny = service as any;
-
-  //     const result = serviceAsAny.createUrlImplicitFlowAuthorize();
-  //     expect(result).toBe(null);
-  //   });
-
-  //   it('returns null if there is nor redirecturl', () => {
-  //     const state = 'testState';
-  //     const nonce = 'testNonce';
-  //     const redirectUrl = '';
-  //     const clientId = 'clientId';
-  //     const responseType = 'responseType';
-
-  //     spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
-  //     spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
-
-  //     storagePersistenceService.read.withArgs('authWellKnownEndPoints').and.returnValue(null);
-  //     configurationProvider.getOpenIDConfiguration.and.returnValue({ redirectUrl, clientId, responseType });
-
-  //     const serviceAsAny = service as any;
-
-  //     const result = serviceAsAny.createUrlImplicitFlowAuthorize();
-  //     expect(result).toBe(null);
-  //   });
-  // });
-
-  // describe('createUrlCodeFlowAuthorize', () => {
-  //   it('returns null if redirectUrl  is falsy', () => {
-  //     const state = 'testState';
-  //     const nonce = 'testNonce';
-  //     const redirectUrl = null;
-
-  //     spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
-  //     spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
-
-  //     configurationProvider.getOpenIDConfiguration.and.returnValue({
-  //       redirectUrl,
-  //     });
-
-  //     const serviceAsAny = service as any;
-
-  //     const result = serviceAsAny.createUrlCodeFlowAuthorize();
-  //     expect(result).toBeNull();
-  //   });
-
-  //   it('returns correct url if wellknownendpoints are given', () => {
-  //     const state = 'testState';
-  //     const nonce = 'testNonce';
-  //     const scope = 'testScope';
-  //     const redirectUrl = 'http://any-url.com';
-  //     const authorizationEndpoint = 'authorizationEndpoint';
-  //     const clientId = 'clientId';
-  //     const responseType = 'responseType';
-  //     const codeVerifier = 'codeVerifier';
-  //     const codeChallenge = 'codeChallenge ';
-
-  //     spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
-  //     spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
-  //     spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-  //     spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
-
-  //     storagePersistenceService.read.withArgs('authWellKnownEndPoints').and.returnValue({ authorizationEndpoint });
-  //     configurationProvider.getOpenIDConfiguration.and.returnValue({
-  //       redirectUrl,
-  //       clientId,
-  //       responseType,
-  //       scope,
-  //     });
-
-  //     const serviceAsAny = service as any;
-
-  //     const result = serviceAsAny.createUrlCodeFlowAuthorize();
-  //     expect(result).toBe(
-  //       `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}`
-  //     );
-  //   });
-
-  //   it('returns correct url if wellknownendpoints and custom params are given', () => {
-  //     const state = 'testState';
-  //     const nonce = 'testNonce';
-  //     const scope = 'testScope';
-  //     const redirectUrl = 'http://any-url.com';
-  //     const authorizationEndpoint = 'authorizationEndpoint';
-  //     const clientId = 'clientId';
-  //     const responseType = 'responseType';
-  //     const codeVerifier = 'codeVerifier';
-  //     const codeChallenge = 'codeChallenge ';
-
-  //     spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
-  //     spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
-  //     spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-  //     spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
-
-  //     storagePersistenceService.read.withArgs('authWellKnownEndPoints').and.returnValue({ authorizationEndpoint });
-  //     configurationProvider.getOpenIDConfiguration.and.returnValue({
-  //       redirectUrl,
-  //       clientId,
-  //       responseType,
-  //       scope,
-  //     });
-
-  //     const serviceAsAny = service as any;
-
-  //     const result = serviceAsAny.createUrlCodeFlowAuthorize({ to: 'add', as: 'well' });
-  //     expect(result).toBe(
-  //       `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com` +
-  //         `&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&to=add&as=well`
-  //     );
-  //   });
-
-  //   it('returns empty string if no wellknownendpoints are given', () => {
-  //     const state = 'testState';
-  //     const nonce = 'testNonce';
-  //     const redirectUrl = 'http://any-url.com';
-  //     const clientId = 'clientId';
-  //     const responseType = 'responseType';
-  //     const codeVerifier = 'codeVerifier';
-  //     const codeChallenge = 'codeChallenge ';
-
-  //     spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
-  //     spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
-  //     spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-  //     spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue(codeChallenge);
-
-  //     storagePersistenceService.read.withArgs('authWellKnownEndPoints').and.returnValue(null);
-  //     configurationProvider.getOpenIDConfiguration.and.returnValue({ redirectUrl, clientId, responseType });
-
-  //     const serviceAsAny = service as any;
-
-  //     const result = serviceAsAny.createUrlCodeFlowAuthorize();
-  //     expect(result).toBe(null);
-  //   });
-  // });
+  describe('createUrlImplicitFlowWithSilentRenew', () => {
+    it('returns null if silentrenewUrl is falsy', () => {
+      const state = 'testState';
+      const nonce = 'testNonce';
+      const silentRenewUrl = null;
+
+      flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
+      flowsDataService.createNonce.and.returnValue(nonce);
+
+      configurationProvider.getOpenIDConfiguration.and.returnValue({
+        silentRenewUrl,
+      });
+
+      const serviceAsAny = service as any;
+
+      const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew('configId');
+      expect(result).toBeNull();
+    });
+
+    it('returns correct url if wellknownendpoints are given', () => {
+      const state = 'testState';
+      const nonce = 'testNonce';
+      const silentRenewUrl = 'http://any-url.com';
+      const authorizationEndpoint = 'authorizationEndpoint';
+      const clientId = 'clientId';
+      const responseType = 'responseType';
+      const scope = 'testScope';
+
+      flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
+      flowsDataService.createNonce.and.returnValue(nonce);
+
+      storagePersistenceService.read.withArgs('authWellKnownEndPoints', 'configId').and.returnValue({
+        authorizationEndpoint,
+      });
+      configurationProvider.getOpenIDConfiguration.and.returnValue({
+        silentRenewUrl,
+        clientId,
+        responseType,
+        scope,
+      });
+
+      const serviceAsAny = service as any;
+
+      const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew('configId');
+      expect(result).toBe(
+        `authorizationEndpoint?client_id=${clientId}&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&prompt=none`
+      );
+    });
+
+    it('returns correct url if wellknownendpoints are given', () => {
+      const state = 'testState';
+      const nonce = 'testNonce';
+      const silentRenewUrl = 'http://any-url.com';
+      const clientId = 'clientId';
+      const responseType = 'responseType';
+
+      flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
+      flowsDataService.createNonce.and.returnValue(nonce);
+
+      storagePersistenceService.read.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
+      configurationProvider.getOpenIDConfiguration.and.returnValue({
+        silentRenewUrl,
+        clientId,
+        responseType,
+      });
+
+      const serviceAsAny = service as any;
+
+      const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew('configId');
+      expect(result).toBe(null);
+    });
+  });
+
+  describe('createUrlCodeFlowWithSilentRenew', () => {
+    it('returns null if silentrenewUrl is falsy', () => {
+      const state = 'testState';
+      const nonce = 'testNonce';
+      const silentRenewUrl = null;
+      const codeVerifier = 'codeVerifier';
+      const codeChallenge = 'codeChallenge ';
+
+      flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
+      flowsDataService.createNonce.and.returnValue(nonce);
+      flowsDataService.createCodeVerifier.and.returnValue(codeVerifier);
+      tokenValidationService.generateCodeChallenge.and.returnValue(codeChallenge);
+
+      configurationProvider.getOpenIDConfiguration.and.returnValue({
+        silentRenewUrl,
+      });
+
+      const serviceAsAny = service as any;
+
+      const result = serviceAsAny.createUrlCodeFlowWithSilentRenew('configId');
+      expect(result).toBeNull();
+    });
+
+    it('returns correct url if wellknownendpoints are given', () => {
+      const state = 'testState';
+      const nonce = 'testNonce';
+      const silentRenewUrl = 'http://any-url.com';
+      const authorizationEndpoint = 'authorizationEndpoint';
+      const clientId = 'clientId';
+      const responseType = 'responseType';
+      const codeVerifier = 'codeVerifier';
+      const codeChallenge = 'codeChallenge ';
+      const scope = 'testScope';
+
+      flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
+      flowsDataService.createNonce.and.returnValue(nonce);
+      flowsDataService.createCodeVerifier.and.returnValue(codeVerifier);
+      tokenValidationService.generateCodeChallenge.and.returnValue(codeChallenge);
+
+      storagePersistenceService.read.withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ authorizationEndpoint });
+      configurationProvider.getOpenIDConfiguration.and.returnValue({
+        silentRenewUrl,
+        clientId,
+        responseType,
+        scope,
+      });
+
+      const serviceAsAny = service as any;
+
+      const result = serviceAsAny.createUrlCodeFlowWithSilentRenew('configId');
+      expect(result).toBe(
+        `authorizationEndpoint?client_id=${clientId}&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&prompt=none`
+      );
+    });
+
+    it('returns empty string if no wellknownendpoints are given', () => {
+      const state = 'testState';
+      const nonce = 'testNonce';
+      const silentRenewUrl = 'http://any-url.com';
+      const clientId = 'clientId';
+      const responseType = 'responseType';
+      const codeVerifier = 'codeVerifier';
+      const codeChallenge = 'codeChallenge ';
+
+      flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
+      flowsDataService.createNonce.and.returnValue(nonce);
+      flowsDataService.createCodeVerifier.and.returnValue(codeVerifier);
+      tokenValidationService.generateCodeChallenge.and.returnValue(codeChallenge);
+
+      storagePersistenceService.read.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
+      configurationProvider.getOpenIDConfiguration.and.returnValue({ silentRenewUrl, clientId, responseType });
+
+      const serviceAsAny = service as any;
+
+      const result = serviceAsAny.createUrlCodeFlowWithSilentRenew('configId');
+      expect(result).toBe(null);
+    });
+  });
+
+  describe('createUrlImplicitFlowAuthorize', () => {
+    it('returns correct url if wellknownendpoints are given', () => {
+      const state = 'testState';
+      const nonce = 'testNonce';
+      const redirectUrl = 'http://any-url.com';
+      const authorizationEndpoint = 'authorizationEndpoint';
+      const clientId = 'clientId';
+      const responseType = 'responseType';
+      const scope = 'testScope';
+
+      flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
+      flowsDataService.createNonce.and.returnValue(nonce);
+
+      storagePersistenceService.read.withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ authorizationEndpoint });
+      configurationProvider.getOpenIDConfiguration.and.returnValue({
+        redirectUrl,
+        clientId,
+        responseType,
+        scope,
+      });
+
+      const serviceAsAny = service as any;
+
+      const result = serviceAsAny.createUrlImplicitFlowAuthorize('configId');
+      expect(result).toBe(
+        `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}`
+      );
+    });
+
+    it('returns empty string if no wellknownendpoints are given', () => {
+      const state = 'testState';
+      const nonce = 'testNonce';
+      const redirectUrl = 'http://any-url.com';
+      const clientId = 'clientId';
+      const responseType = 'responseType';
+
+      flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
+      flowsDataService.createNonce.and.returnValue(nonce);
+
+      storagePersistenceService.read.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
+      configurationProvider.getOpenIDConfiguration.and.returnValue({ redirectUrl, clientId, responseType });
+
+      const serviceAsAny = service as any;
+
+      const result = serviceAsAny.createUrlImplicitFlowAuthorize('configId');
+      expect(result).toBe(null);
+    });
+
+    it('returns null if there is nor redirecturl', () => {
+      const state = 'testState';
+      const nonce = 'testNonce';
+      const redirectUrl = '';
+      const clientId = 'clientId';
+      const responseType = 'responseType';
+
+      flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
+      flowsDataService.createNonce.and.returnValue(nonce);
+
+      storagePersistenceService.read.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
+      configurationProvider.getOpenIDConfiguration.and.returnValue({ redirectUrl, clientId, responseType });
+
+      const serviceAsAny = service as any;
+
+      const result = serviceAsAny.createUrlImplicitFlowAuthorize('configId');
+      expect(result).toBe(null);
+    });
+  });
+
+  describe('createUrlCodeFlowAuthorize', () => {
+    it('returns null if redirectUrl  is falsy', () => {
+      const state = 'testState';
+      const nonce = 'testNonce';
+      const redirectUrl = null;
+
+      flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
+      flowsDataService.createNonce.and.returnValue(nonce);
+
+      configurationProvider.getOpenIDConfiguration.and.returnValue({
+        redirectUrl,
+      });
+
+      const serviceAsAny = service as any;
+
+      const result = serviceAsAny.createUrlCodeFlowAuthorize('configId');
+      expect(result).toBeNull();
+    });
+
+    it('returns correct url if wellknownendpoints are given', () => {
+      const state = 'testState';
+      const nonce = 'testNonce';
+      const scope = 'testScope';
+      const redirectUrl = 'http://any-url.com';
+      const authorizationEndpoint = 'authorizationEndpoint';
+      const clientId = 'clientId';
+      const responseType = 'responseType';
+      const codeVerifier = 'codeVerifier';
+      const codeChallenge = 'codeChallenge ';
+
+      flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
+      flowsDataService.createNonce.and.returnValue(nonce);
+      flowsDataService.createCodeVerifier.and.returnValue(codeVerifier);
+      tokenValidationService.generateCodeChallenge.and.returnValue(codeChallenge);
+
+      storagePersistenceService.read.withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ authorizationEndpoint });
+      configurationProvider.getOpenIDConfiguration.and.returnValue({
+        redirectUrl,
+        clientId,
+        responseType,
+        scope,
+      });
+
+      const serviceAsAny = service as any;
+
+      const result = serviceAsAny.createUrlCodeFlowAuthorize('configId');
+      expect(result).toBe(
+        `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}`
+      );
+    });
+
+    it('returns correct url if wellknownendpoints and custom params are given', () => {
+      const state = 'testState';
+      const nonce = 'testNonce';
+      const scope = 'testScope';
+      const redirectUrl = 'http://any-url.com';
+      const authorizationEndpoint = 'authorizationEndpoint';
+      const clientId = 'clientId';
+      const responseType = 'responseType';
+      const codeVerifier = 'codeVerifier';
+      const codeChallenge = 'codeChallenge ';
+
+      flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
+      flowsDataService.createNonce.and.returnValue(nonce);
+      flowsDataService.createCodeVerifier.and.returnValue(codeVerifier);
+      tokenValidationService.generateCodeChallenge.and.returnValue(codeChallenge);
+
+      storagePersistenceService.read.withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ authorizationEndpoint });
+      configurationProvider.getOpenIDConfiguration.and.returnValue({
+        redirectUrl,
+        clientId,
+        responseType,
+        scope,
+      });
+
+      const serviceAsAny = service as any;
+
+      const result = serviceAsAny.createUrlCodeFlowAuthorize('configId', { to: 'add', as: 'well' });
+      expect(result).toBe(
+        `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com` +
+          `&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&to=add&as=well`
+      );
+    });
+
+    it('returns empty string if no wellknownendpoints are given', () => {
+      const state = 'testState';
+      const nonce = 'testNonce';
+      const redirectUrl = 'http://any-url.com';
+      const clientId = 'clientId';
+      const responseType = 'responseType';
+      const codeVerifier = 'codeVerifier';
+      const codeChallenge = 'codeChallenge ';
+
+      flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue(state);
+      flowsDataService.createNonce.and.returnValue(nonce);
+      flowsDataService.createCodeVerifier.and.returnValue(codeVerifier);
+      tokenValidationService.generateCodeChallenge.and.returnValue(codeChallenge);
+
+      storagePersistenceService.read.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
+      configurationProvider.getOpenIDConfiguration.and.returnValue({ redirectUrl, clientId, responseType });
+
+      const serviceAsAny = service as any;
+
+      const result = serviceAsAny.createUrlCodeFlowAuthorize('configId');
+      expect(result).toBe(null);
+    });
+  });
 
   describe('createEndSessionUrl', () => {
     it('createEndSessionUrl create url when all parameters given', () => {
