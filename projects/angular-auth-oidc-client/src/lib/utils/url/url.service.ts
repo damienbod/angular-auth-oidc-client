@@ -92,7 +92,7 @@ export class UrlService {
     return this.createUrlImplicitFlowAuthorize(customParams) || '';
   }
 
-  createEndSessionUrl(idTokenHint: string): string {
+  createEndSessionUrl(idTokenHint: string, customTokenEndSession?: { [p: string]: string | number | boolean }): string {
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints');
     const endSessionEndpoint = authWellKnownEndPoints?.endSessionEndpoint;
 
@@ -109,6 +109,12 @@ export class UrlService {
       encoder: new UriEncoder(),
     });
     params = params.set('id_token_hint', idTokenHint);
+
+    if (customTokenEndSession) {
+      for (const [key, value] of Object.entries({ ...customTokenEndSession })) {
+        params = params.append(key, value.toString());
+      }
+    }
 
     const postLogoutRedirectUri = this.getPostLogoutRedirectUrl();
 
