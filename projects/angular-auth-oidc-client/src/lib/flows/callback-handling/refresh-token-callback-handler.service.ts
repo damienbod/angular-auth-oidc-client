@@ -22,7 +22,7 @@ export class RefreshTokenCallbackHandlerService {
   // STEP 2 Refresh Token
   refreshTokensRequestTokens(
     callbackContext: CallbackContext,
-    customParams?: { [key: string]: string | number | boolean }
+    customParamsRefresh?: { [key: string]: string | number | boolean }
   ): Observable<CallbackContext> {
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
@@ -33,7 +33,7 @@ export class RefreshTokenCallbackHandlerService {
       return throwError('Token Endpoint not defined');
     }
 
-    const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken, customParams);
+    const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken, customParamsRefresh);
 
     return this.dataService.post(tokenEndpoint, data, headers).pipe(
       switchMap((response: any) => {

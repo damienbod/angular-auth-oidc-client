@@ -4,14 +4,14 @@ import { map, mergeMap, retryWhen, switchMap, take, timeout } from 'rxjs/operato
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthWellKnownService } from '../config/auth-well-known.service';
 import { ConfigurationProvider } from '../config/config.provider';
+import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
+import { TokenResponse } from '../tokens/token-response';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
-import { TokenResponse } from '../tokens/token-response';
-import { CallbackContext } from '../flows/callback-context';
 
 export const MAX_RETRY_ATTEMPTS = 3;
 @Injectable({ providedIn: 'root' })

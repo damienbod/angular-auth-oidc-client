@@ -72,15 +72,20 @@ export class PeriodicallyTokenCheckService {
 
         this.flowsDataService.setSilentRenewRunning();
 
+        if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
+          // Retrieve Dynamically Set Custom Params for refresh body
+          const customParamsRefresh: { [key: string]: string | number | boolean } = this.storagePersistenceService.read(
+            'storageCustomParamsRefresh'
+          );
+
+          // Refresh Session using Refresh tokens
+          return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(customParamsRefresh);
+        }
+
         // Retrieve Dynamically Set Custom Params
         const customParams: { [key: string]: string | number | boolean } = this.storagePersistenceService.read(
           'storageCustomRequestParams'
         );
-
-        if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
-          // Refresh Session using Refresh tokens
-          return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(customParams);
-        }
 
         return this.refreshSessionIframeService.refreshSessionWithIframe(customParams);
       })

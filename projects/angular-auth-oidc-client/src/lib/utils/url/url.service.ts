@@ -191,7 +191,10 @@ export class UrlService {
     return oneLineTrim`${dataForBody}&redirect_uri=${redirectUrl}`;
   }
 
-  createBodyForCodeFlowRefreshTokensRequest(refreshToken: string, customParams?: { [key: string]: string | number | boolean }): string {
+  createBodyForCodeFlowRefreshTokensRequest(
+    refreshToken: string,
+    customParamsRefresh?: { [key: string]: string | number | boolean }
+  ): string {
     const clientId = this.getClientId();
 
     if (!clientId) {
@@ -202,8 +205,8 @@ export class UrlService {
             &client_id=${clientId}
             &refresh_token=${refreshToken}`;
 
-    if (customParams) {
-      const customParamText = this.composeCustomParams({ ...customParams });
+    if (customParamsRefresh) {
+      const customParamText = this.composeCustomParams({ ...customParamsRefresh });
       dataForBody = `${dataForBody}${customParamText}`;
     }
 
