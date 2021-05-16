@@ -16,7 +16,7 @@ describe('UrlService Tests', () => {
   let configurationProvider: SpyObject<ConfigurationProvider>;
   let flowHelper: SpyObject<FlowHelper>;
   let flowsDataService: SpyObject<FlowsDataService>;
-  // let tokenValidationService: TokenValidationService;
+  let tokenValidationService: SpyObject<TokenValidationService>;
   let storagePersistenceService: SpyObject<StoragePersistenceService>;
   let mywindow: any;
 
@@ -33,7 +33,7 @@ describe('UrlService Tests', () => {
     configurationProvider = spec.inject(ConfigurationProvider);
     flowHelper = spec.inject(FlowHelper);
     flowsDataService = spec.inject(FlowsDataService);
-    // tokenValidationService = spec.inject(TokenValidationService);
+    tokenValidationService = spec.inject(TokenValidationService);
     storagePersistenceService = spec.inject(StoragePersistenceService);
     mywindow = spec.inject(DOCUMENT).defaultView;
   });
@@ -897,119 +897,124 @@ describe('UrlService Tests', () => {
     });
   });
 
-  // describe('createBodyForCodeFlowRefreshTokensRequest', () => {
-  //   it('returns correct url', () => {
-  //     const clientId = 'clientId';
-  //     const refreshToken = 'refreshToken';
-  //     spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId });
-  //     const result = service.createBodyForCodeFlowRefreshTokensRequest(refreshToken);
-  //     expect(result).toBe(`grant_type=refresh_token&client_id=${clientId}&refresh_token=${refreshToken}`);
-  //   });
+  describe('createBodyForCodeFlowRefreshTokensRequest', () => {
+    it('returns correct url', () => {
+      const clientId = 'clientId';
+      const refreshToken = 'refreshToken';
+      configurationProvider.getOpenIDConfiguration.and.returnValue({ clientId });
+      const result = service.createBodyForCodeFlowRefreshTokensRequest(refreshToken, 'configId');
+      expect(result).toBe(`grant_type=refresh_token&client_id=${clientId}&refresh_token=${refreshToken}`);
+    });
 
-  //   it('returns correct url with custom params if custom params are passed', () => {
-  //     const clientId = 'clientId';
-  //     const refreshToken = 'refreshToken';
-  //     spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId });
-  //     const result = service.createBodyForCodeFlowRefreshTokensRequest(refreshToken, { any: 'thing' });
-  //     expect(result).toBe(`grant_type=refresh_token&client_id=${clientId}&refresh_token=${refreshToken}&any=thing`);
-  //   });
+    it('returns correct url with custom params if custom params are passed', () => {
+      const clientId = 'clientId';
+      const refreshToken = 'refreshToken';
+      configurationProvider.getOpenIDConfiguration.and.returnValue({ clientId });
+      const result = service.createBodyForCodeFlowRefreshTokensRequest(refreshToken, 'configId', { any: 'thing' });
+      expect(result).toBe(`grant_type=refresh_token&client_id=${clientId}&refresh_token=${refreshToken}&any=thing`);
+    });
 
-  //   it('returns null if clientId is falsy', () => {
-  //     const clientId = '';
-  //     const refreshToken = 'refreshToken';
-  //     spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId });
-  //     const result = service.createBodyForCodeFlowRefreshTokensRequest(refreshToken);
-  //     expect(result).toBe(null);
-  //   });
-  // });
+    it('returns null if clientId is falsy', () => {
+      const clientId = '';
+      const refreshToken = 'refreshToken';
+      configurationProvider.getOpenIDConfiguration.and.returnValue({ clientId });
+      const result = service.createBodyForCodeFlowRefreshTokensRequest(refreshToken, 'configId');
+      expect(result).toBe(null);
+    });
+  });
 
-  // describe('createBodyForParCodeFlowRequest', () => {
-  //   it('returns null redirectUrl is falsy', () => {
-  //     spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ redirectUrl: '' });
-  //     const result = service.createBodyForParCodeFlowRequest();
-  //     expect(result).toBe(null);
-  //   });
+  describe('createBodyForParCodeFlowRequest', () => {
+    it('returns null redirectUrl is falsy', () => {
+      configurationProvider.getOpenIDConfiguration.and.returnValue({ redirectUrl: '' });
 
-  //   it('returns basic url with no extras if properties are given', () => {
-  //     spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
-  //       clientId: 'testClientId',
-  //       responseType: 'testResponseType',
-  //       scope: 'testScope',
-  //       hdParam: null,
-  //       customParams: null,
-  //       redirectUrl: 'testRedirectUrl',
-  //     });
-  //     spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('testState');
-  //     spyOn(flowsDataService, 'createNonce').and.returnValue('testNonce');
-  //     spyOn(flowsDataService, 'createCodeVerifier').and.returnValue('testCodeVerifier');
-  //     spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue('testCodeChallenge');
+      const result = service.createBodyForParCodeFlowRequest('configId');
 
-  //     const result = service.createBodyForParCodeFlowRequest();
-  //     expect(result).toBe(
-  //       `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256`
-  //     );
-  //   });
+      expect(result).toBe(null);
+    });
 
-  //   it('returns basic url with hdParam if properties are given', () => {
-  //     spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
-  //       clientId: 'testClientId',
-  //       responseType: 'testResponseType',
-  //       scope: 'testScope',
-  //       hdParam: 'testHdParam',
-  //       customParams: null,
-  //       redirectUrl: 'testRedirectUrl',
-  //     });
-  //     spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('testState');
-  //     spyOn(flowsDataService, 'createNonce').and.returnValue('testNonce');
-  //     spyOn(flowsDataService, 'createCodeVerifier').and.returnValue('testCodeVerifier');
-  //     spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue('testCodeChallenge');
+    it('returns basic url with no extras if properties are given', () => {
+      configurationProvider.getOpenIDConfiguration.and.returnValue({
+        clientId: 'testClientId',
+        responseType: 'testResponseType',
+        scope: 'testScope',
+        hdParam: null,
+        customParams: null,
+        redirectUrl: 'testRedirectUrl',
+        configId: 'configId',
+      });
+      flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue('testState');
+      flowsDataService.createNonce.and.returnValue('testNonce');
+      flowsDataService.createCodeVerifier.and.returnValue('testCodeVerifier');
+      tokenValidationService.generateCodeChallenge.and.returnValue('testCodeChallenge');
 
-  //     const result = service.createBodyForParCodeFlowRequest();
-  //     expect(result).toBe(
-  //       `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam`
-  //     );
-  //   });
+      const result = service.createBodyForParCodeFlowRequest('configId');
+      expect(result).toBe(
+        `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256`
+      );
+    });
 
-  //   it('returns basic url with hdParam and custom params if properties are given', () => {
-  //     spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
-  //       clientId: 'testClientId',
-  //       responseType: 'testResponseType',
-  //       scope: 'testScope',
-  //       hdParam: 'testHdParam',
-  //       customParams: { any: 'thing' },
-  //       redirectUrl: 'testRedirectUrl',
-  //     });
-  //     spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('testState');
-  //     spyOn(flowsDataService, 'createNonce').and.returnValue('testNonce');
-  //     spyOn(flowsDataService, 'createCodeVerifier').and.returnValue('testCodeVerifier');
-  //     spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue('testCodeChallenge');
+    it('returns basic url with hdParam if properties are given', () => {
+      configurationProvider.getOpenIDConfiguration.and.returnValue({
+        clientId: 'testClientId',
+        responseType: 'testResponseType',
+        scope: 'testScope',
+        hdParam: 'testHdParam',
+        customParams: null,
+        redirectUrl: 'testRedirectUrl',
+        configId: 'configId',
+      });
+      flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue('testState');
+      flowsDataService.createNonce.and.returnValue('testNonce');
+      flowsDataService.createCodeVerifier.and.returnValue('testCodeVerifier');
+      tokenValidationService.generateCodeChallenge.and.returnValue('testCodeChallenge');
 
-  //     const result = service.createBodyForParCodeFlowRequest();
-  //     expect(result).toBe(
-  //       `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam&any=thing`
-  //     );
-  //   });
+      const result = service.createBodyForParCodeFlowRequest('configId');
+      expect(result).toBe(
+        `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam`
+      );
+    });
 
-  //   it('returns basic url with hdParam and custom params and passed cutom params if properties are given', () => {
-  //     spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
-  //       clientId: 'testClientId',
-  //       responseType: 'testResponseType',
-  //       scope: 'testScope',
-  //       hdParam: 'testHdParam',
-  //       customParams: { any: 'thing' },
-  //       redirectUrl: 'testRedirectUrl',
-  //     });
-  //     spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('testState');
-  //     spyOn(flowsDataService, 'createNonce').and.returnValue('testNonce');
-  //     spyOn(flowsDataService, 'createCodeVerifier').and.returnValue('testCodeVerifier');
-  //     spyOn(tokenValidationService, 'generateCodeChallenge').and.returnValue('testCodeChallenge');
+    it('returns basic url with hdParam and custom params if properties are given', () => {
+      configurationProvider.getOpenIDConfiguration.and.returnValue({
+        clientId: 'testClientId',
+        responseType: 'testResponseType',
+        scope: 'testScope',
+        hdParam: 'testHdParam',
+        customParams: { any: 'thing' },
+        redirectUrl: 'testRedirectUrl',
+        configId: 'configId',
+      });
+      flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue('testState');
+      flowsDataService.createNonce.and.returnValue('testNonce');
+      flowsDataService.createCodeVerifier.and.returnValue('testCodeVerifier');
+      tokenValidationService.generateCodeChallenge.and.returnValue('testCodeChallenge');
 
-  //     const result = service.createBodyForParCodeFlowRequest({ any: 'otherThing' });
-  //     expect(result).toBe(
-  //       `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam&any=thing&any=otherThing`
-  //     );
-  //   });
-  // });
+      const result = service.createBodyForParCodeFlowRequest('configId');
+      expect(result).toBe(
+        `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam&any=thing`
+      );
+    });
+
+    it('returns basic url with hdParam and custom params and passed cutom params if properties are given', () => {
+      configurationProvider.getOpenIDConfiguration.and.returnValue({
+        clientId: 'testClientId',
+        responseType: 'testResponseType',
+        scope: 'testScope',
+        hdParam: 'testHdParam',
+        customParams: { any: 'thing' },
+        redirectUrl: 'testRedirectUrl',
+      });
+      flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue('testState');
+      flowsDataService.createNonce.and.returnValue('testNonce');
+      flowsDataService.createCodeVerifier.and.returnValue('testCodeVerifier');
+      tokenValidationService.generateCodeChallenge.and.returnValue('testCodeChallenge');
+
+      const result = service.createBodyForParCodeFlowRequest('configId', { any: 'otherThing' });
+      expect(result).toBe(
+        `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam&any=thing&any=otherThing`
+      );
+    });
+  });
 
   // describe('createUrlImplicitFlowWithSilentRenew', () => {
   //   it('returns null if silentrenewUrl is falsy', () => {
