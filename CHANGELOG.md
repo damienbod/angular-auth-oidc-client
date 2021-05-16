@@ -1,5 +1,11 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-05-04 Version 11.6.9
+
+- Support Custom Params for EndSession and RefreshTokens Renew
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1093)
+- Added Auth0 example
+
 ### 2021-05-04 Version 11.6.8
 
 - bugfix incorrect storage for silent renew, requires Json object
