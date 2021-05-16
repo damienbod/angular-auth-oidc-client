@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, retry, switchMap, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
-import { ConfigurationProvider } from '../config/provider/config.provider';
+import { ConfigurationProvider } from '../config/config.provider';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { LoggerService } from '../logging/logger.service';
