@@ -126,6 +126,8 @@ describe('ConfigurationProviderTests', () => {
       tokenRefreshInSeconds: 4,
       refreshTokenRetryInSeconds: 3,
       ngswBypass: false,
+      customParamsRefreshToken: {},
+      customParamsEndSession: {},
     };
 
     configurationProvider.setConfig(config);
@@ -175,6 +177,8 @@ describe('ConfigurationProviderTests', () => {
       tokenRefreshInSeconds: 4,
       refreshTokenRetryInSeconds: 3,
       ngswBypass: false,
+      customParamsRefreshToken: {},
+      customParamsEndSession: {},
     };
 
     spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);

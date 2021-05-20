@@ -74,9 +74,9 @@ export class PeriodicallyTokenCheckService {
 
         if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens()) {
           // Retrieve Dynamically Set Custom Params for refresh body
-          const customParamsRefresh: { [key: string]: string | number | boolean } = this.storagePersistenceService.read(
-            'storageCustomParamsRefresh'
-          );
+          const customParamsRefresh: { [key: string]: string | number | boolean } =
+            this.storagePersistenceService.read('storageCustomParamsRefresh') || {};
+
           const { customParamsRefreshToken } = this.configurationProvider.getOpenIDConfiguration();
 
           const mergedParams = { ...customParamsRefresh, ...customParamsRefreshToken };

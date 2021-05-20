@@ -11,10 +11,10 @@ import { CheckSessionService } from '../iframe/check-session.service';
 import { CheckSessionServiceMock } from '../iframe/check-session.service-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { RedirectServiceMock } from '../utils/redirect/redirect.service-mock';
 import { UrlService } from '../utils/url/url.service';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 import { RedirectService } from './../utils/redirect/redirect.service';
 import { UrlServiceMock } from './../utils/url/url.service-mock';
 import { LogoffRevocationService } from './logoff-revocation.service';
@@ -342,11 +342,12 @@ describe('Logout and Revoke Service', () => {
       const paramToken = 'damienId';
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue(paramToken);
       const revocationSpy = spyOn(urlService, 'createEndSessionUrl');
-      // Act
+
       // Act
       service.getEndSessionUrl();
+
       // Assert
-      expect(revocationSpy).toHaveBeenCalledWith(paramToken);
+      expect(revocationSpy).toHaveBeenCalledWith(paramToken, {});
     });
   });
 

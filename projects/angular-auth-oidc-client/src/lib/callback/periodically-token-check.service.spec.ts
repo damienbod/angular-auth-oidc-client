@@ -187,13 +187,17 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(resetAuthorizationDataSpy).toHaveBeenCalled();
     }));
 
-    it('calls refreshSessionWithRefreshTokens if current flow is Code flow wiht refresh tokens', fakeAsync(() => {
+    it('calls refreshSessionWithRefreshTokens if current flow is Code flow with refresh tokens', fakeAsync(() => {
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenew: true });
       spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
       spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
       spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
-      spyOn(storagePersistenceService, 'read').withArgs('storageCustomRequestParams').and.returnValue(undefined);
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('storageCustomRequestParams')
+        .and.returnValue(undefined)
+        .withArgs('storageCustomParamsRefresh')
+        .and.returnValue({});
       spyOn(resetAuthDataService, 'resetAuthorizationData');
 
       spyOn(authStateService, 'hasIdTokenExpired').and.returnValue(true);
