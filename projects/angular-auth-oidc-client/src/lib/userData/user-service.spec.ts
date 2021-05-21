@@ -24,7 +24,7 @@ const DUMMY_USER_DATA = {
   organization: 'testing',
 };
 
-fdescribe('User Service', () => {
+describe('User Service', () => {
   let configProvider: ConfigurationProvider;
   let loggerService: LoggerService;
   let userService: UserService;
