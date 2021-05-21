@@ -324,12 +324,10 @@ export class UrlService {
       params = params.append('hd', hdParam);
     }
 
-    if (customParamsAuthRequest) {
-      params = this.appendCustomParams({ ...customParamsAuthRequest }, params);
-    }
+    const mergedParams = { ...customParamsAuthRequest, ...customRequestParams };
 
-    if (customRequestParams) {
-      params = this.appendCustomParams({ ...customRequestParams }, params);
+    if (mergedParams) {
+      params = this.appendCustomParams({ ...mergedParams }, params);
     }
 
     return `${authorizationUrl}?${params}`;
