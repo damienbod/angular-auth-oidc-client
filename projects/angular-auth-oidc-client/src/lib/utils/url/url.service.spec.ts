@@ -212,7 +212,7 @@ describe('UrlService Tests', () => {
         responseType: 'code',
         scope: 'openid email profile',
         redirectUrl: 'https://localhost:44386',
-        customParams: {
+        customParamsAuthRequest: {
           testcustom: 'customvalue',
         },
         configId: 'configId',
@@ -434,7 +434,7 @@ describe('UrlService Tests', () => {
         clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         responseType: 'id_token token',
         scope: 'openid email profile',
-        customParams: {
+        customParamsAuthRequest: {
           t4: 'ABC abc 123',
           t3: '#',
           t2: '-_.!~*()',
@@ -478,7 +478,7 @@ describe('UrlService Tests', () => {
         clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         responseType: 'id_token token',
         scope: 'openid email profile',
-        customParams: null,
+        customParamsAuthRequest: null,
         configId: 'configId',
       };
 
@@ -939,7 +939,7 @@ describe('UrlService Tests', () => {
         responseType: 'testResponseType',
         scope: 'testScope',
         hdParam: null,
-        customParams: null,
+        customParamsAuthRequest: null,
         redirectUrl: 'testRedirectUrl',
         configId: 'configId',
       });
@@ -960,7 +960,7 @@ describe('UrlService Tests', () => {
         responseType: 'testResponseType',
         scope: 'testScope',
         hdParam: 'testHdParam',
-        customParams: null,
+        customParamsAuthRequest: null,
         redirectUrl: 'testRedirectUrl',
         configId: 'configId',
       });
@@ -981,7 +981,7 @@ describe('UrlService Tests', () => {
         responseType: 'testResponseType',
         scope: 'testScope',
         hdParam: 'testHdParam',
-        customParams: { any: 'thing' },
+        customParamsAuthRequest: { any: 'thing' },
         redirectUrl: 'testRedirectUrl',
         configId: 'configId',
       });
@@ -996,13 +996,13 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns basic url with hdParam and custom params and passed cutom params if properties are given', () => {
+    it('returns basic url with hdParam and custom params and passed custom params if properties are given', () => {
       configurationProvider.getOpenIDConfiguration.and.returnValue({
         clientId: 'testClientId',
         responseType: 'testResponseType',
         scope: 'testScope',
         hdParam: 'testHdParam',
-        customParams: { any: 'thing' },
+        customParamsAuthRequest: { any1: 'thing' },
         redirectUrl: 'testRedirectUrl',
       });
       flowsDataService.getExistingOrCreateAuthStateControl.and.returnValue('testState');
@@ -1010,9 +1010,9 @@ describe('UrlService Tests', () => {
       flowsDataService.createCodeVerifier.and.returnValue('testCodeVerifier');
       jsrsAsignReducedService.generateCodeChallenge.and.returnValue('testCodeChallenge');
 
-      const result = service.createBodyForParCodeFlowRequest('configId', { any: 'otherThing' });
+      const result = service.createBodyForParCodeFlowRequest('configId', { any2: 'otherThing' });
       expect(result).toBe(
-        `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam&any=thing&any=otherThing`
+        `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam&any1=thing&any2=otherThing`
       );
     });
   });

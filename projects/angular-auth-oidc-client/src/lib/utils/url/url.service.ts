@@ -65,7 +65,7 @@ export class UrlService {
     const { clientId } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!clientId) {
-      this.loggerService.logError(`createAuthorizeUrl could not add clientId because it was: `, clientId);
+      this.loggerService.logError(`getAuthorizeParUrl could not add clientId because it was: `, clientId);
       return null;
     }
 
@@ -325,7 +325,8 @@ export class UrlService {
     }
 
     const mergedParams = { ...customParamsAuthRequest, ...customRequestParams };
-
+    console.log(customParamsAuthRequest);
+    console.log(customRequestParams);
     if (mergedParams) {
       params = this.appendCustomParams({ ...mergedParams }, params);
     }
