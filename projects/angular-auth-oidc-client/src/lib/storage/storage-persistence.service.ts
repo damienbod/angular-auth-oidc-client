@@ -15,9 +15,9 @@ export type StorageKeys =
   | 'storageCustomRequestParams'
   | 'storageCustomParamsRefresh'
   | 'storageCustomParamsEndSession'
-  | 'jwtKeys'
   | 'redirect'
-  | 'configIds';
+  | 'configIds'
+  | 'jwtKeys';
 
 @Injectable()
 export class StoragePersistenceService {

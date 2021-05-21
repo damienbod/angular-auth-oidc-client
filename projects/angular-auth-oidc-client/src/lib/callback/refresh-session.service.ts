@@ -35,8 +35,12 @@ export class RefreshSessionService {
       this.storagePersistenceService.write('storageCustomRequestParams', extraCustomParams, configId);
     }
 
+    const { customParamsRefreshToken } = this.configurationProvider.getOpenIDConfiguration();
+
+    const mergedParams = { ...extraCustomParams, ...customParamsRefreshToken };
+
     if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(configId)) {
-      return this.startRefreshSession(configId, extraCustomParams).pipe(
+      return this.startRefreshSession(configId, mergedParams).pipe(
         map(() => {
           const isAuthenticated = this.authStateService.areAuthStorageTokensValid(configId);
           if (isAuthenticated) {

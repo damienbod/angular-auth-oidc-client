@@ -130,13 +130,15 @@ export class PeriodicallyTokenCheckService {
 
     if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(configId)) {
       // Retrieve Dynamically Set Custom Params for refresh body
-      const customParamsRefresh: { [key: string]: string | number | boolean } = this.storagePersistenceService.read(
-        'storageCustomParamsRefresh',
-        configId
-      );
+      const customParamsRefresh: { [key: string]: string | number | boolean } =
+        this.storagePersistenceService.read('storageCustomParamsRefresh', configId) || {};
+
+      const { customParamsRefreshToken } = this.configurationProvider.getOpenIDConfiguration();
+
+      const mergedParams = { ...customParamsRefresh, ...customParamsRefreshToken };
 
       // Refresh Session using Refresh tokens
-      return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(configId, customParamsRefresh);
+      return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(configId, mergedParams);
     }
 
     // Retrieve Dynamically Set Custom Params

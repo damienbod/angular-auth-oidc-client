@@ -324,36 +324,43 @@ export class TokenValidationService {
 
     let isValid = false;
 
-    if (!headerData.hasOwnProperty('kid')) {
-      // exactly 1 key in the jwtkeys and no kid in the Jose header
-      // kty	"RSA" or EC use "sig"
-      let amountOfMatchingKeys = 0;
-      for (const key of jwtkeys.keys) {
-        if ((key.kty as string) === jwtKtyToUse && (key.use as string) === 'sig') {
-          amountOfMatchingKeys = amountOfMatchingKeys + 1;
+    // No kid in the Jose header
+    if (!kid) {
+      let keyToValidate;
+
+      // If only one key, use it
+      if (jwtkeys.keys.length === 1 && (jwtkeys.keys[0].kty as string) === jwtKtyToUse) {
+        keyToValidate = jwtkeys.keys[0];
+      } else {
+        // More than one key
+        // Make sure there's exactly 1 key candidate
+        // kty "RSA" and "EC" uses "sig"
+        let amountOfMatchingKeys = 0;
+        for (const key of jwtkeys.keys) {
+          if ((key.kty as string) === jwtKtyToUse && (key.use as string) === 'sig') {
+            amountOfMatchingKeys++;
+            keyToValidate = key;
+          }
+        }
+
+        if (amountOfMatchingKeys > 1) {
+          this.loggerService.logWarning(configId, 'no ID Token kid claim in JOSE header and multiple supplied in jwks_uri');
+          return false;
         }
       }
 
-      if (amountOfMatchingKeys === 0) {
+      if (!keyToValidate) {
         this.loggerService.logWarning(configId, 'no keys found, incorrect Signature, validation failed for id_token');
         return false;
       }
 
-      if (amountOfMatchingKeys > 1) {
-        this.loggerService.logWarning(configId, 'no ID Token kid claim in JOSE header and multiple supplied in jwks_uri');
-        return false;
+      isValid = KJUR.jws.JWS.verify(idToken, KEYUTIL.getKey(keyToValidate), [alg]);
+
+      if (!isValid) {
+        this.loggerService.logWarning(configId, 'incorrect Signature, validation failed for id_token');
       }
 
-      for (const key of jwtkeys.keys) {
-        if ((key.kty as string) === jwtKtyToUse && (key.use as string) === 'sig') {
-          const publickey = KEYUTIL.getKey(key);
-          isValid = KJUR.jws.JWS.verify(idToken, publickey, [alg]);
-          if (!isValid) {
-            this.loggerService.logWarning(configId, 'incorrect Signature, validation failed for id_token');
-          }
-          return isValid;
-        }
-      }
+      return isValid;
     } else {
       // kid in the Jose header of id_token
       for (const key of jwtkeys.keys) {

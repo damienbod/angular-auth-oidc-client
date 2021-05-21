@@ -209,6 +209,17 @@ export class OidcSecurityService {
   forceRefreshSession(customParams?: { [key: string]: string | number | boolean }, configId?: string): Observable<LoginResponse> {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
+    // TODO MOVE THAT CODE INTO Method
+    // const { useRefreshToken } = this.configurationProvider.getOpenIDConfiguration();
+
+    // if (customParams) {
+    //   if (useRefreshToken) {
+    //     this.storagePersistenceService.write('storageCustomParamsRefresh', customParams);
+    //   } else {
+    //     this.storagePersistenceService.write('storageCustomRequestParams', customParams);
+    //   }
+    // }
+
     return this.refreshSessionService.forceRefreshSession(configId, customParams);
   }
 
