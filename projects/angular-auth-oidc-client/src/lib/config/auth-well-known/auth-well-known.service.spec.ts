@@ -43,7 +43,7 @@
 //       'getAuthWellKnownEndPoints return stored endpoints if they exist',
 //       waitForAsync(() => {
 //         const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsFromUrl');
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ issuer: 'anything' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ issuer: 'anything' });
 //         service.getAuthWellKnownEndPoints('any-url').subscribe((result) => {
 //           expect(dataServiceSpy).not.toHaveBeenCalled();
 //           expect(result).toEqual({ issuer: 'anything' });
@@ -55,7 +55,7 @@
 //       'getAuthWellKnownEndPoints calls dataservice if none is stored',
 //       waitForAsync(() => {
 //         const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsFromUrl').and.returnValue(of({ issuer: 'anything' }));
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
 //         service.getAuthWellKnownEndPoints('any-url').subscribe((result) => {
 //           expect(dataServiceSpy).toHaveBeenCalled();
 //           expect(result).toEqual({ issuer: 'anything' });
@@ -67,7 +67,7 @@
 //       'getAuthWellKnownEndPoints stored the result if http cal is made',
 //       waitForAsync(() => {
 //         const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsFromUrl').and.returnValue(of({ issuer: 'anything' }));
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
 //         const storeSpy = spyOn(service, 'storeWellKnownEndpoints');
 //         service.getAuthWellKnownEndPoints('any-url').subscribe((result) => {
 //           expect(dataServiceSpy).toHaveBeenCalled();

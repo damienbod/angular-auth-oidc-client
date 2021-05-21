@@ -92,7 +92,7 @@
 //         checkSessionIframe: 'https://some-testing-url.com',
 //       };
 
-//       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+//       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
 //       spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
 
 //       (checkSessionService as any).init();
@@ -118,7 +118,7 @@
 //   it('log warning if authWellKnownEndpoints.check_session_iframe is not existing', () => {
 //     const spyLogWarning = spyOn<any>(loggerService, 'logWarning');
 //     spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
-//     spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ checkSessionIframe: undefined });
+//     spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ checkSessionIframe: undefined });
 //     (checkSessionService as any).init();
 
 //     expect(spyLogWarning).toHaveBeenCalledWith('init check session: checkSessionIframe is not configured to run');
@@ -185,7 +185,7 @@
 //         checkSessionIframe: 'https://some-testing-url.com',
 //       };
 //       spyOn(storagePersistenceService, 'read')
-//         .withArgs('authWellKnownEndPoints')
+//         .withArgs('authWellKnownEndPoints', 'configId')
 //         .and.returnValue(authWellKnownEndpoints)
 //         .withArgs('session_state')
 //         .and.returnValue('session_state');
@@ -199,7 +199,7 @@
 //       const authWellKnownEndpoints = {
 //         checkSessionIframe: 'https://some-testing-url.com',
 //       };
-//       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+//       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
 //       const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 //       spyOn(loggerService, 'logDebug').and.callFake(() => {});
 //       (checkSessionService as any).pollServerSession('clientId');
@@ -211,7 +211,7 @@
 //       const authWellKnownEndpoints = {
 //         checkSessionIframe: 'https://some-testing-url.com',
 //       };
-//       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
+//       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
 //       const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 //       spyOn(loggerService, 'logDebug').and.callFake(() => {});
 //       (checkSessionService as any).pollServerSession('');
@@ -225,7 +225,7 @@
 //       };
 
 //       spyOn(storagePersistenceService, 'read')
-//         .withArgs('authWellKnownEndPoints')
+//         .withArgs('authWellKnownEndPoints', 'configId')
 //         .and.returnValue(authWellKnownEndpoints)
 //         .withArgs('session_state')
 //         .and.returnValue(null);
@@ -240,7 +240,7 @@
 //       const authWellKnownEndpoints = null;
 
 //       spyOn(storagePersistenceService, 'read')
-//         .withArgs('authWellKnownEndPoints')
+//         .withArgs('authWellKnownEndPoints', 'configId')
 //         .and.returnValue(authWellKnownEndpoints)
 //         .withArgs('session_state')
 //         .and.returnValue('some_session_state');

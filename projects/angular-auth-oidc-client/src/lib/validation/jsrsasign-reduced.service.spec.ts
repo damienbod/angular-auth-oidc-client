@@ -1,17 +1,18 @@
-import { createServiceFactory, SpectatorService } from '@ngneat/spectator';
+import { TestBed } from '@angular/core/testing';
 import { JsrsAsignReducedService } from './jsrsasign-reduced.service';
 
-describe('TokenValidationService', () => {
-  let spec: SpectatorService<JsrsAsignReducedService>;
+describe('JsrsAsignReducedService', () => {
   let service: JsrsAsignReducedService;
 
-  const createService = createServiceFactory({
-    service: JsrsAsignReducedService,
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [],
+      providers: [JsrsAsignReducedService],
+    });
   });
 
   beforeEach(() => {
-    spec = createService();
-    service = spec.service;
+    service = TestBed.inject(JsrsAsignReducedService);
   });
 
   it('should create', () => {

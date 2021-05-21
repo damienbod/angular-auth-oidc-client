@@ -70,7 +70,7 @@
 
 //   describe('getExistingOrCreateAuthStateControl', () => {
 //     it('if nothing stored it creates a 40 char one and saves the authStateControl', () => {
-//       spyOn(storagePersistenceService, 'read').withArgs('authStateControl').and.returnValue(null);
+//       spyOn(storagePersistenceService, 'read').withArgs('authStateControl', 'configId').and.returnValue(null);
 //       const setSpy = spyOn(storagePersistenceService, 'write');
 
 //       const result = service.getExistingOrCreateAuthStateControl();
@@ -81,7 +81,7 @@
 //     });
 
 //     it('if stored it returns the value and does NOT Store the value again', () => {
-//       spyOn(storagePersistenceService, 'read').withArgs('authStateControl').and.returnValue('someAuthStateControl');
+//       spyOn(storagePersistenceService, 'read').withArgs('authStateControl', 'configId').and.returnValue('someAuthStateControl');
 //       const setSpy = spyOn(storagePersistenceService, 'write');
 
 //       const result = service.getExistingOrCreateAuthStateControl();

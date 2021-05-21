@@ -140,7 +140,11 @@ export class UserService {
     return true;
   }
 
-  private fireUserDataEvent(configId: string, passedUserData: any) {
+  private fireUserDataEvent(configId: string, passedUserData: any): void {
+    if (!passedUserData) {
+      return;
+    }
+
     if (this.configurationProvider.hasManyConfigs()) {
       const configs = this.configurationProvider.getAllConfigurations();
       const result = configs.map((config) => {

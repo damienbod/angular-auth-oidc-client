@@ -1,33 +1,33 @@
-import { createServiceFactory, SpectatorService } from '@ngneat/spectator';
+import { TestBed } from '@angular/core/testing';
 import { LoggerService } from '../../logging/logger.service';
+import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { TokenHelperService } from './token-helper.service';
 
-describe('TokenHelperService', () => {
-  let spec: SpectatorService<TokenHelperService>;
-  let service: TokenHelperService;
+describe('Token Helper Service', () => {
+  let tokenHelperService: TokenHelperService;
 
-  const createService = createServiceFactory({
-    service: TokenHelperService,
-    mocks: [LoggerService],
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [TokenHelperService, { provide: LoggerService, useClass: LoggerServiceMock }],
+    });
   });
 
   beforeEach(() => {
-    spec = createService();
-    service = spec.service;
+    tokenHelperService = TestBed.inject(TokenHelperService);
   });
 
   it('should create', () => {
-    expect(service).toBeTruthy();
+    expect(tokenHelperService).toBeTruthy();
   });
 
   describe('getTokenExpirationDate', () => {
     it('returns not null if param has no property exp', () => {
-      const result = service.getTokenExpirationDate({});
+      const result = tokenHelperService.getTokenExpirationDate({});
       expect(result).toBeDefined();
     });
 
     it('returns date if param has no property exp', () => {
-      const result = service.getTokenExpirationDate({});
+      const result = tokenHelperService.getTokenExpirationDate({});
       expect(result instanceof Date).toBe(true);
     });
 
@@ -35,7 +35,7 @@ describe('TokenHelperService', () => {
       const expectedDate = new Date(0);
       expectedDate.setUTCSeconds(123);
 
-      const result = service.getTokenExpirationDate({
+      const result = tokenHelperService.getTokenExpirationDate({
         exp: 123,
       });
       expect(expectedDate.toString()).toEqual(result.toString());
@@ -44,79 +44,79 @@ describe('TokenHelperService', () => {
 
   describe('getPayloadFromToken', () => {
     it('returns not null if token is undefined, encode is false', () => {
-      const result = service.getPayloadFromToken(undefined, false, '');
+      const result = tokenHelperService.getPayloadFromToken(undefined, false, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token is undefined, encode is true', () => {
-      const result = service.getPayloadFromToken(undefined, true, '');
+      const result = tokenHelperService.getPayloadFromToken(undefined, true, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token is null, encode is true', () => {
-      const result = service.getPayloadFromToken(null, true, '');
+      const result = tokenHelperService.getPayloadFromToken(null, true, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token is empty, encode is true', () => {
-      const result = service.getPayloadFromToken('', true, '');
+      const result = tokenHelperService.getPayloadFromToken('', true, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token has no points, encode is true', () => {
-      const result = service.getPayloadFromToken('testStringWithoutDots', true, '');
+      const result = tokenHelperService.getPayloadFromToken('testStringWithoutDots', true, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token has no points, encode is false', () => {
-      const result = service.getPayloadFromToken('testStringWithoutDots', false, '');
+      const result = tokenHelperService.getPayloadFromToken('testStringWithoutDots', false, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token has only one point, encode is false', () => {
-      const result = service.getPayloadFromToken('testStringWith.dot', false, '');
+      const result = tokenHelperService.getPayloadFromToken('testStringWith.dot', false, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns payload if token is correct, encode is true 1', () => {
       const token = 'abc.def.ghi';
       const expected = 'def';
-      const result = service.getPayloadFromToken(token, true, '');
+      const result = tokenHelperService.getPayloadFromToken(token, true, 'configId');
       expect(expected).toEqual(result);
     });
 
     it('returns payload if token is correct, encode is true 2', () => {
       const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
       const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-      const result = service.getPayloadFromToken(token, true, '');
+      const result = tokenHelperService.getPayloadFromToken(token, true, 'configId');
       expect(expected).toEqual(result);
     });
 
     it('returns payload if token is correct, encode is true 3', () => {
       const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
       const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-      const result = service.getPayloadFromToken(token, true, '');
+      const result = tokenHelperService.getPayloadFromToken(token, true, 'configId');
       expect(expected).toEqual(result);
     });
 
     it('returns payload if token is correct, encode is true 4', () => {
       const token = 'SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==';
       const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-      const result = service.getPayloadFromToken(token, true, '');
+      const result = tokenHelperService.getPayloadFromToken(token, true, 'configId');
       expect(expected).toEqual(result);
     });
 
     it('returns payload if token is correct, encode is false 1', () => {
       const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
       const expected = JSON.parse('{ "text" : "Hello World 123!"}');
-      const result = service.getPayloadFromToken(token, false, '');
+      const result = tokenHelperService.getPayloadFromToken(token, false, 'configId');
       expect(expected).toEqual(result);
     });
 
     it('returns payload if token is correct, encode is false 2', () => {
       const token = 'SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==';
       const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
-      const result = service.getPayloadFromToken(token, false, '');
+      const result = tokenHelperService.getPayloadFromToken(token, false, 'configId');
       expect(expected).toEqual(result);
     });
 
@@ -124,7 +124,7 @@ describe('TokenHelperService', () => {
       const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9obiBEw7PDqyJ9.wMn-1oLWnxKJolMGb7YKnlwjqusWf4xnnjABgFaDkI4';
       const jsonString = `{ "name" : "John D\xF3\xEB" }`;
       const expected = JSON.parse(jsonString);
-      const result = service.getPayloadFromToken(token, false, '');
+      const result = tokenHelperService.getPayloadFromToken(token, false, 'configId');
       expect(expected).toEqual(result);
     });
 
@@ -136,7 +136,7 @@ describe('TokenHelperService', () => {
 
       const jsonString = `{ "admin": true, "sub": "1", "iat": 1516224242 }`;
       const expected = JSON.parse(jsonString);
-      const result = service.getPayloadFromToken(token, false, '');
+      const result = tokenHelperService.getPayloadFromToken(token, false, 'configId');
 
       expect(result).toEqual(jasmine.objectContaining(expected));
     });
@@ -144,165 +144,165 @@ describe('TokenHelperService', () => {
 
   describe('getHeaderFromToken', () => {
     it('returns not null if token is undefined, encode is false', () => {
-      const result = service.getHeaderFromToken(undefined, false, '');
+      const result = tokenHelperService.getHeaderFromToken(undefined, false, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token is undefined, encode is true', () => {
-      const result = service.getHeaderFromToken(undefined, true, '');
+      const result = tokenHelperService.getHeaderFromToken(undefined, true, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token is null, encode is true', () => {
-      const result = service.getHeaderFromToken(null, true, '');
+      const result = tokenHelperService.getHeaderFromToken(null, true, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token is empty, encode is true', () => {
-      const result = service.getHeaderFromToken('', true, '');
+      const result = tokenHelperService.getHeaderFromToken('', true, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token has no points, encode is true', () => {
-      const result = service.getHeaderFromToken('testStringWithoutDots', true, '');
+      const result = tokenHelperService.getHeaderFromToken('testStringWithoutDots', true, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token has no points, encode is false', () => {
-      const result = service.getHeaderFromToken('testStringWithoutDots', false, '');
+      const result = tokenHelperService.getHeaderFromToken('testStringWithoutDots', false, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token has only one point, encode is false', () => {
-      const result = service.getHeaderFromToken('testStringWith.dot', false, '');
+      const result = tokenHelperService.getHeaderFromToken('testStringWith.dot', false, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns payload if token is correct, encode is true', () => {
       const token = 'abc.def.ghi';
       const expected = 'abc';
-      const result = service.getHeaderFromToken(token, true, '');
+      const result = tokenHelperService.getHeaderFromToken(token, true, 'configId');
       expect(expected).toEqual(result);
     });
 
     it('returns payload if token is correct, encode is true', () => {
       const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.def.ghi';
       const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-      const result = service.getHeaderFromToken(token, true, '');
+      const result = tokenHelperService.getHeaderFromToken(token, true, 'configId');
       expect(expected).toEqual(result);
     });
 
     it('returns payload if token is correct, encode is false', () => {
       const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.def.ghi';
       const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
-      const result = service.getHeaderFromToken(token, false, '');
+      const result = tokenHelperService.getHeaderFromToken(token, false, 'configId');
       expect(expected).toEqual(result);
     });
 
     it('returns payload if token is correct, encode is false', () => {
       const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==.SGVsbG8gV29ybGQgMTIzIQ==';
       const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
-      const result = service.getHeaderFromToken(token, false, '');
+      const result = tokenHelperService.getHeaderFromToken(token, false, 'configId');
       expect(expected).toEqual(result);
     });
 
     it('returns payload if token is correct, encode is true', () => {
       const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.abc.ghi';
       const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-      const result = service.getHeaderFromToken(token, true, '');
+      const result = tokenHelperService.getHeaderFromToken(token, true, 'configId');
       expect(expected).toEqual(result);
     });
 
     it('returns payload if token is correct, encode is true', () => {
       const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==.SGVsbG8gV29ybGQgMTIzIQ==';
       const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-      const result = service.getHeaderFromToken(token, true, '');
+      const result = tokenHelperService.getHeaderFromToken(token, true, 'configId');
       expect(expected).toEqual(result);
     });
 
     it('returns payload if token is correct, encode is false', () => {
       const token = 'eyJ0ZXh0IjogIkhlbGxvIFdvcmxkIDEyMyEifQ=.SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
       const expected = JSON.parse(`{"text": "Hello World 123!"}`);
-      const result = service.getHeaderFromToken(token, false, '');
+      const result = tokenHelperService.getHeaderFromToken(token, false, 'configId');
       expect(expected).toEqual(result);
     });
   });
 
   describe('getSignatureFromToken', () => {
     it('returns not null if token is undefined, encode is false', () => {
-      const result = service.getSignatureFromToken(undefined, false, '');
+      const result = tokenHelperService.getSignatureFromToken(undefined, false, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token is undefined, encode is true', () => {
-      const result = service.getSignatureFromToken(undefined, true, '');
+      const result = tokenHelperService.getSignatureFromToken(undefined, true, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token is null, encode is true', () => {
-      const result = service.getSignatureFromToken(null, true, '');
+      const result = tokenHelperService.getSignatureFromToken(null, true, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token is empty, encode is true', () => {
-      const result = service.getSignatureFromToken('', true, '');
+      const result = tokenHelperService.getSignatureFromToken('', true, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token has no points, encode is true', () => {
-      const result = service.getSignatureFromToken('testStringWithoutDots', true, '');
+      const result = tokenHelperService.getSignatureFromToken('testStringWithoutDots', true, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token has no points, encode is false', () => {
-      const result = service.getSignatureFromToken('testStringWithoutDots', false, '');
+      const result = tokenHelperService.getSignatureFromToken('testStringWithoutDots', false, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns not null if token has only one point, encode is false', () => {
-      const result = service.getSignatureFromToken('testStringWith.dot', false, '');
+      const result = tokenHelperService.getSignatureFromToken('testStringWith.dot', false, 'configId');
       expect(result).toEqual({});
     });
 
     it('returns payload if token is correct, encode is true', () => {
       const token = 'abc.def.ghi';
       const expected = 'ghi';
-      const result = service.getSignatureFromToken(token, true, '');
+      const result = tokenHelperService.getSignatureFromToken(token, true, 'configId');
       expect(expected).toEqual(result);
     });
 
     it('returns payload if token is correct, encode is true', () => {
       const token = 'def.ghi.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
       const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-      const result = service.getSignatureFromToken(token, true, '');
+      const result = tokenHelperService.getSignatureFromToken(token, true, 'configId');
       expect(expected).toEqual(result);
     });
 
     it('returns payload if token is correct, encode is false', () => {
       const token = 'def.ghi.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
       const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
-      const result = service.getSignatureFromToken(token, false, '');
+      const result = tokenHelperService.getSignatureFromToken(token, false, 'configId');
       expect(expected).toEqual(result);
     });
 
     it('returns payload if token is correct, encode is false', () => {
       const token = 'SGVsbG8gV29ybGQgMTIzIQ==.SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
       const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
-      const result = service.getSignatureFromToken(token, false, '');
+      const result = tokenHelperService.getSignatureFromToken(token, false, 'configId');
       expect(expected).toEqual(result);
     });
 
     it('returns payload if token is correct, encode is true', () => {
       const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.abc.ghi';
       const expected = 'ghi';
-      const result = service.getSignatureFromToken(token, true, '');
+      const result = tokenHelperService.getSignatureFromToken(token, true, 'configId');
       expect(expected).toEqual(result);
     });
 
     it('returns payload if token is correct, encode is true', () => {
       const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==.SGVsbG8gV29ybGQgMTIzIQ==';
       const expected = 'SGVsbG8gV29ybGQgMTIzIQ==';
-      const result = service.getSignatureFromToken(token, true, '');
+      const result = tokenHelperService.getSignatureFromToken(token, true, 'configId');
       expect(expected).toEqual(result);
     });
   });

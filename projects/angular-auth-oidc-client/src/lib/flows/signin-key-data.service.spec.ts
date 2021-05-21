@@ -58,7 +58,7 @@
 //     it(
 //       'throws error when no wellKnownEndpoints given',
 //       waitForAsync(() => {
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
 //         const result = service.getSigningKeys();
 
 //         result.subscribe({
@@ -72,7 +72,7 @@
 //     it(
 //       'throws error when no jwksUri given',
 //       waitForAsync(() => {
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: null });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ jwksUri: null });
 //         const result = service.getSigningKeys();
 
 //         result.subscribe({
@@ -86,7 +86,7 @@
 //     it(
 //       'calls dataservice if jwksurl is given',
 //       waitForAsync(() => {
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ jwksUri: 'someUrl' });
 //         const spy = spyOn(dataService, 'get').and.callFake(() => of());
 
 //         const result = service.getSigningKeys();
@@ -102,7 +102,7 @@
 //     it(
 //       'should retry once',
 //       waitForAsync(() => {
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ jwksUri: 'someUrl' });
 //         spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), of(DUMMY_JWKS)));
 
 //         service.getSigningKeys().subscribe({
@@ -117,7 +117,7 @@
 //     it(
 //       'should retry twice',
 //       waitForAsync(() => {
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ jwksUri: 'someUrl' });
 //         spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), of(DUMMY_JWKS)));
 
 //         service.getSigningKeys().subscribe({
@@ -132,7 +132,7 @@
 //     it(
 //       'should fail after three tries',
 //       waitForAsync(() => {
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ jwksUri: 'someUrl' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ jwksUri: 'someUrl' });
 //         spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), throwError({}), of(DUMMY_JWKS)));
 
 //         service.getSigningKeys().subscribe({

@@ -60,7 +60,7 @@
 //       'throws error if authWellKnownEndPoints does not exist in storage',
 //       waitForAsync(() => {
 //         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(null);
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
 //         service.postParRequest().subscribe({
 //           error: (err) => {
 //             expect(err).toBe('Could not read PAR endpoint because authWellKnownEndPoints are not given');
@@ -73,7 +73,7 @@
 //       'throws error if par endpoint does not exist in storage',
 //       waitForAsync(() => {
 //         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(null);
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ some: 'thing' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ some: 'thing' });
 //         service.postParRequest().subscribe({
 //           error: (err) => {
 //             expect(err).toBe('Could not read PAR endpoint from authWellKnownEndpoints');
@@ -86,7 +86,7 @@
 //       'calls data service with correct params',
 //       waitForAsync(() => {
 //         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url123');
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ parEndpoint: 'parEndpoint' });
 //         const dataServiceSpy = spyOn(dataService, 'post').and.returnValue(of({}));
 //         service.postParRequest().subscribe(() => {
 //           expect(dataServiceSpy).toHaveBeenCalledOnceWith('parEndpoint', 'some-url123', jasmine.any(HttpHeaders));
@@ -98,7 +98,7 @@
 //       'Gives back correct object properties',
 //       waitForAsync(() => {
 //         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ parEndpoint: 'parEndpoint' });
 //         spyOn(dataService, 'post').and.returnValue(of({ expires_in: 123, request_uri: 'request_uri' }));
 //         service.postParRequest().subscribe((result) => {
 //           expect(result).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
@@ -110,7 +110,7 @@
 //       'throws error if data service has got an error',
 //       waitForAsync(() => {
 //         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url789');
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ parEndpoint: 'parEndpoint' });
 //         spyOn(dataService, 'post').and.returnValue(throwError('AN ERROR'));
 //         const loggerSpy = spyOn(loggerService, 'logError');
 
@@ -127,7 +127,7 @@
 //       'should retry once',
 //       waitForAsync(() => {
 //         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ parEndpoint: 'parEndpoint' });
 //         spyOn(dataService, 'post').and.returnValue(
 //           createRetriableStream(throwError({}), of({ expires_in: 123, request_uri: 'request_uri' }))
 //         );
@@ -145,7 +145,7 @@
 //       'should retry twice',
 //       waitForAsync(() => {
 //         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ parEndpoint: 'parEndpoint' });
 //         spyOn(dataService, 'post').and.returnValue(
 //           createRetriableStream(throwError({}), throwError({}), of({ expires_in: 123, request_uri: 'request_uri' }))
 //         );
@@ -163,7 +163,7 @@
 //       'should fail after three tries',
 //       waitForAsync(() => {
 //         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ parEndpoint: 'parEndpoint' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ parEndpoint: 'parEndpoint' });
 //         spyOn(dataService, 'post').and.returnValue(
 //           createRetriableStream(throwError({}), throwError({}), throwError({}), of({ expires_in: 123, request_uri: 'request_uri' }))
 //         );

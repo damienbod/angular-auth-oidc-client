@@ -1,138 +1,143 @@
-import { createServiceFactory, SpectatorService, SpyObject } from '@ngneat/spectator';
+import { TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../../config/provider/config.provider';
+import { ConfigurationProviderMock } from '../../config/provider/config.provider-mock';
+import { PlatformProvider } from '../platform-provider/platform.provider';
+import { PlatformProviderMock } from '../platform-provider/platform.provider-mock';
 import { FlowHelper } from './flow-helper.service';
+import { FlowHelperMock } from './flow-helper.service.mock';
 
-describe('FlowHelper', () => {
-  let flowHelperSpec: SpectatorService<FlowHelper>;
+describe('Flow Helper Service', () => {
+  let configProvider: ConfigurationProvider;
   let flowHelper: FlowHelper;
-  let configProvider: SpyObject<ConfigurationProvider>;
 
-  const createService = createServiceFactory({
-    service: FlowHelper,
-    mocks: [ConfigurationProvider],
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
+        { provide: FlowHelper, useClass: FlowHelperMock },
+        { provide: PlatformProvider, useClass: PlatformProviderMock },
+      ],
+    });
   });
 
   beforeEach(() => {
-    flowHelperSpec = createService();
-    flowHelper = flowHelperSpec.service;
-    configProvider = flowHelperSpec.inject<ConfigurationProvider>(ConfigurationProvider);
+    configProvider = TestBed.inject(ConfigurationProvider);
+    flowHelper = TestBed.inject(FlowHelper);
   });
 
   it('should create', () => {
     expect(flowHelper).toBeTruthy();
   });
 
-  describe('isCurrentFlowCodeFlow', () => {
-    it('isCurrentFlowCodeFlow returns false if current flow is not code flow', () => {
-      const config = { responseType: 'id_token token', configId: 'configId' };
+  it('isCurrentFlowCodeFlow returns false if current flow is not code flow', () => {
+    const config = { responseType: 'id_token token', configId: 'configId' };
 
-      configProvider.getOpenIDConfiguration.and.returnValue(config);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
 
-      expect(flowHelper.isCurrentFlowCodeFlow(config.configId)).toBeFalse();
-    });
-
-    it('isCurrentFlowCodeFlow returns true if current flow is code flow', () => {
-      const config = { responseType: 'code', configId: 'configId' };
-
-      configProvider.getOpenIDConfiguration.and.returnValue(config);
-
-      expect(flowHelper.isCurrentFlowCodeFlow(config.configId)).toBeTrue();
-    });
+    expect(flowHelper.isCurrentFlowCodeFlow('configId')).toBeFalse();
   });
 
-  describe('currentFlowIs', () => {
-    it('currentFlowIs returns true if current flow is code flow', () => {
-      const config = { responseType: 'code', configId: 'configId' };
+  it('isCurrentFlowCodeFlow returns true if current flow is code flow', () => {
+    const config = { responseType: 'code' };
 
-      configProvider.getOpenIDConfiguration.and.returnValue(config);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
 
-      expect(flowHelper.currentFlowIs('code', config.configId)).toBeTrue();
-    });
-
-    it('currentFlowIs returns true if current flow is code flow (array)', () => {
-      const config = { responseType: 'code', configId: 'configId' };
-
-      configProvider.getOpenIDConfiguration.and.returnValue(config);
-
-      expect(flowHelper.currentFlowIs(['code'], config.configId)).toBeTrue();
-    });
-
-    it('currentFlowIs returns true if current flow is id_token token or code (array)', () => {
-      const config = { responseType: 'id_token token', configId: 'configId' };
-
-      configProvider.getOpenIDConfiguration.and.returnValue(config);
-
-      expect(flowHelper.currentFlowIs(['id_token token', 'code'], config.configId)).toBeTrue();
-    });
-
-    it('currentFlowIs returns true if current flow is code flow', () => {
-      const config = { responseType: 'id_token token', configId: 'configId' };
-
-      configProvider.getOpenIDConfiguration.and.returnValue(config);
-
-      expect(flowHelper.currentFlowIs('code', config.configId)).toBeFalse();
-    });
+    expect(flowHelper.isCurrentFlowCodeFlow('configId')).toBeTrue();
   });
 
-  describe('isCurrentFlowImplicitFlowWithAccessToken', () => {
-    it('isCurrentFlowImplicitFlowWithAccessToken return true if flow is "id_token token"', () => {
-      const config = { responseType: 'id_token token', configId: 'configId' };
-      configProvider.getOpenIDConfiguration.and.returnValue(config);
+  it('currentFlowIs returns true if current flow is code flow', () => {
+    const config = { responseType: 'code' };
 
-      const result = flowHelper.isCurrentFlowImplicitFlowWithAccessToken(config.configId);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
 
-      expect(result).toBeTrue();
-    });
-
-    it('isCurrentFlowImplicitFlowWithAccessToken return false if flow is not "id_token token"', () => {
-      const config = { responseType: 'id_token2 token2', configId: 'configId' };
-      configProvider.getOpenIDConfiguration.and.returnValue(config);
-
-      const result = flowHelper.isCurrentFlowImplicitFlowWithAccessToken(config.configId);
-
-      expect(result).toBeFalse();
-    });
+    expect(flowHelper.currentFlowIs('code', 'configId')).toBeTrue();
   });
 
-  describe('isCurrentFlowImplicitFlowWithoutAccessToken', () => {
-    it('isCurrentFlowImplicitFlowWithoutAccessToken return true if flow is "id_token"', () => {
-      const config = { responseType: 'id_token', configId: 'configId' };
-      configProvider.getOpenIDConfiguration.and.returnValue(config);
+  it('currentFlowIs returns true if current flow is code flow (array)', () => {
+    const config = { responseType: 'code' };
 
-      const result = (flowHelper as any).isCurrentFlowImplicitFlowWithoutAccessToken(config.configId);
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
 
-      expect(result).toBeTrue();
-    });
-
-    it('isCurrentFlowImplicitFlowWithoutAccessToken return false if flow is not "id_token token"', () => {
-      const config = { responseType: 'id_token2', configId: 'configId' };
-      configProvider.getOpenIDConfiguration.and.returnValue(config);
-
-      const result = (flowHelper as any).isCurrentFlowImplicitFlowWithoutAccessToken(config.configId);
-
-      expect(result).toBeFalse();
-    });
+    expect(flowHelper.currentFlowIs(['code'], 'configId')).toBeTrue();
   });
 
-  describe('isCurrentFlowCodeFlowWithRefreshTokens', () => {
-    it('isCurrentFlowCodeFlowWithRefreshTokens return false if flow is not code flow', () => {
-      const config = { responseType: 'not code', configId: 'configId' };
-      configProvider.getOpenIDConfiguration.and.returnValue(config);
-      const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config.configId);
-      expect(result).toBeFalse();
-    });
-    it('isCurrentFlowCodeFlowWithRefreshTokens return false if useRefreshToken is set to false', () => {
-      const config = { responseType: 'not code', useRefreshToken: false, configId: 'configId' };
-      configProvider.getOpenIDConfiguration.and.returnValue(config);
-      const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config.configId);
-      expect(result).toBeFalse();
-    });
-    it('isCurrentFlowCodeFlowWithRefreshTokens return true if useRefreshToken is set to true and code flow', () => {
-      const config = { responseType: 'code', useRefreshToken: true, configId: 'configId' };
-      configProvider.getOpenIDConfiguration.and.returnValue(config);
-      const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config.configId);
-      expect(result).toBeTrue();
-    });
+  it('currentFlowIs returns true if current flow is id_token token or code (array)', () => {
+    const config = { responseType: 'id_token token' };
+
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
+
+    expect(flowHelper.currentFlowIs(['id_token token', 'code'], 'configId')).toBeTrue();
+  });
+
+  it('currentFlowIs returns true if current flow is code flow', () => {
+    const config = { responseType: 'id_token token' };
+
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
+
+    expect(flowHelper.currentFlowIs('code', 'configId')).toBeFalse();
+  });
+
+  it('isCurrentFlowImplicitFlowWithAccessToken return true if flow is "id_token token"', () => {
+    const config = { responseType: 'id_token token' };
+
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
+    const result = flowHelper.isCurrentFlowImplicitFlowWithAccessToken('configId');
+
+    expect(result).toBeTrue();
+  });
+
+  it('isCurrentFlowImplicitFlowWithAccessToken return false if flow is not "id_token token"', () => {
+    const config = { responseType: 'id_token2 token2' };
+
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
+    const result = flowHelper.isCurrentFlowImplicitFlowWithAccessToken('configId');
+
+    expect(result).toBeFalse();
+  });
+
+  it('isCurrentFlowImplicitFlowWithoutAccessToken return true if flow is "id_token"', () => {
+    const config = { responseType: 'id_token' };
+
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
+    const result = (flowHelper as any).isCurrentFlowImplicitFlowWithoutAccessToken('configId');
+
+    expect(result).toBeTrue();
+  });
+
+  it('isCurrentFlowImplicitFlowWithoutAccessToken return false if flow is not "id_token token"', () => {
+    const config = { responseType: 'id_token2' };
+
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
+    const result = (flowHelper as any).isCurrentFlowImplicitFlowWithoutAccessToken('configId');
+
+    expect(result).toBeFalse();
+  });
+
+  it('isCurrentFlowCodeFlowWithRefreshTokens return false if flow is not code flow', () => {
+    const config = { responseType: 'not code' };
+
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
+    const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens('configId');
+
+    expect(result).toBeFalse();
+  });
+
+  it('isCurrentFlowCodeFlowWithRefreshTokens return false if useRefreshToken is set to false', () => {
+    const config = { responseType: 'not code', useRefreshToken: false };
+
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
+    const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens('configId');
+
+    expect(result).toBeFalse();
+  });
+
+  it('isCurrentFlowCodeFlowWithRefreshTokens return true if useRefreshToken is set to true and code flow', () => {
+    const config = { responseType: 'code', useRefreshToken: true };
+
+    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
+    const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens('configId');
+
+    expect(result).toBeTrue();
   });
 
   describe('isCurrentFlowAnyImplicitFlow', () => {
@@ -140,7 +145,7 @@ describe('FlowHelper', () => {
       spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(true);
       spyOn(flowHelper as any, 'isCurrentFlowImplicitFlowWithoutAccessToken').and.returnValue(false);
 
-      const result = flowHelper.isCurrentFlowAnyImplicitFlow('anyConfigId');
+      const result = flowHelper.isCurrentFlowAnyImplicitFlow('configId');
 
       expect(result).toBeTrue();
     });
@@ -149,7 +154,7 @@ describe('FlowHelper', () => {
       spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(false);
       spyOn(flowHelper as any, 'isCurrentFlowImplicitFlowWithoutAccessToken').and.returnValue(true);
 
-      const result = flowHelper.isCurrentFlowAnyImplicitFlow('anyConfigId');
+      const result = flowHelper.isCurrentFlowAnyImplicitFlow('configId');
 
       expect(result).toBeTrue();
     });
@@ -158,7 +163,7 @@ describe('FlowHelper', () => {
       spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(false);
       spyOn(flowHelper as any, 'isCurrentFlowImplicitFlowWithoutAccessToken').and.returnValue(false);
 
-      const result = flowHelper.isCurrentFlowAnyImplicitFlow('anyConfigId');
+      const result = flowHelper.isCurrentFlowAnyImplicitFlow('configId');
 
       expect(result).toBeFalse();
     });

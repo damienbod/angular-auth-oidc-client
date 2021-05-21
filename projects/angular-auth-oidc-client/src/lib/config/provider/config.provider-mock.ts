@@ -15,4 +15,12 @@ export class ConfigurationProviderMock {
   setConfig(configuration: OpenIdConfiguration) {
     this.configInternal = configuration;
   }
+
+  hasManyConfigs(): boolean {
+    return false;
+  }
+
+  getAllConfigurations(): OpenIdConfiguration[] {
+    return [this.configInternal];
+  }
 }

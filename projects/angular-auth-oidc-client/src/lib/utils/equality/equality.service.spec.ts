@@ -1,17 +1,18 @@
-import { createServiceFactory, SpectatorService } from '@ngneat/spectator';
+import { TestBed } from '@angular/core/testing';
+import { IFrameService } from '../../iframe/existing-iframe.service';
 import { EqualityService } from './equality.service';
 
 describe('EqualityService Tests', () => {
-  let equalityHelperServiceSpec: SpectatorService<EqualityService>;
   let equalityHelperService: EqualityService;
 
-  const createService = createServiceFactory({
-    service: EqualityService,
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [EqualityService, IFrameService],
+    });
   });
 
   beforeEach(() => {
-    equalityHelperServiceSpec = createService();
-    equalityHelperService = equalityHelperServiceSpec.service;
+    equalityHelperService = TestBed.inject(EqualityService);
   });
 
   it('should create', () => {

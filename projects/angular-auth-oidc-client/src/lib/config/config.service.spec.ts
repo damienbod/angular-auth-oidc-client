@@ -152,7 +152,7 @@
 //       'if authWellKnownEndPointsAlreadyStored the events are fired and resolve',
 //       waitForAsync(() => {
 //         const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: null };
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ any: 'thing' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ any: 'thing' });
 //         const eventServiceSpy = spyOn(eventsService, 'fireEvent');
 //         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
 //         const promise = oidcConfigService.withConfig(config);
@@ -174,7 +174,7 @@
 //       waitForAsync(() => {
 //         const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: null };
 //         const authWellKnown = { issuer: 'issuerForTesting' };
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
 //         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
 //         const eventServiceSpy = spyOn(eventsService, 'fireEvent');
 //         const storeWellKnownEndpointsSpy = spyOn(authWellKnownService, 'storeWellKnownEndpoints');
@@ -197,7 +197,7 @@
 //       'if eagerLoadAuthWellKnownEndpoints is true: call getAuthWellKnownEndPoints',
 //       waitForAsync(() => {
 //         const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
 //         spyOn(configurationProvider, 'setConfig').and.returnValue(config);
 //         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
 //         const getWellKnownEndPointsFromUrlSpy = spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
@@ -212,7 +212,7 @@
 //       'if eagerLoadAuthWellKnownEndpoints is false: DO NOT call getAuthWellKnownEndPoints',
 //       waitForAsync(() => {
 //         const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: false };
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
 //         const storeWellKnownEndpointsSpy = spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
 //         spyOn(configurationProvider, 'setConfig').and.returnValue(config);
 //         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
@@ -292,7 +292,7 @@
 //       'if eagerLoadAuthWellKnownEndpoints is true: fire event',
 //       waitForAsync(() => {
 //         const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
 //         spyOn(configurationProvider, 'setConfig').and.returnValue(config);
 //         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
 //         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));

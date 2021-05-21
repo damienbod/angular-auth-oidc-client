@@ -1,33 +1,33 @@
 import { DOCUMENT } from '@angular/common';
-import { createServiceFactory, SpectatorService } from '@ngneat/spectator';
+import { TestBed } from '@angular/core/testing';
 import { RedirectService } from './redirect.service';
 
-describe('RedirectService', () => {
-  let spec: SpectatorService<RedirectService>;
+describe('Redirect Service Tests', () => {
   let service: RedirectService;
   let myDocument: any;
 
-  const createService = createServiceFactory({
-    service: RedirectService,
-    providers: [
-      {
-        provide: DOCUMENT,
-        useValue: {
-          location: {
-            get href() {
-              return 'fakeUrl';
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        RedirectService,
+        {
+          provide: DOCUMENT,
+          useValue: {
+            location: {
+              get href() {
+                return 'fakeUrl';
+              },
+              set href(v) {},
             },
-            set href(v) {},
           },
         },
-      },
-    ],
+      ],
+    });
   });
 
   beforeEach(() => {
-    spec = createService();
-    service = spec.service;
-    myDocument = spec.inject(DOCUMENT);
+    service = TestBed.inject(RedirectService);
+    myDocument = TestBed.inject(DOCUMENT);
   });
 
   it('should create', () => {
@@ -37,9 +37,7 @@ describe('RedirectService', () => {
 
   it('redirectTo sets window location href', () => {
     const spy = spyOnProperty(myDocument.location, 'href', 'set');
-
     service.redirectTo('anyurl');
-
     expect(spy).toHaveBeenCalledWith('anyurl');
   });
 });

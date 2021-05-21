@@ -69,7 +69,7 @@
 //       'calls data service if all params are good',
 //       waitForAsync(() => {
 //         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
 //         (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
 //           expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
@@ -84,7 +84,7 @@
 //       'calls data service with correct headers if all params are good',
 //       waitForAsync(() => {
 //         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
 //         (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
 //           const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
@@ -98,7 +98,7 @@
 //       'returns error in case of http error',
 //       waitForAsync(() => {
 //         spyOn(dataService, 'post').and.returnValue(throwError(HTTP_ERROR));
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 //         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
 
 //         (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
@@ -113,7 +113,7 @@
 //       'retries request in case of no connection http error and succeeds',
 //       waitForAsync(() => {
 //         const postSpy = spyOn(dataService, 'post').and.returnValue(createRetriableStream(throwError(CONNECTION_ERROR), of({})));
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 //         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
 
 //         (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
@@ -135,7 +135,7 @@
 //         const postSpy = spyOn(dataService, 'post').and.returnValue(
 //           createRetriableStream(throwError(CONNECTION_ERROR), throwError(HTTP_ERROR))
 //         );
-//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+//         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 //         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
 
 //         (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
