@@ -18,7 +18,7 @@ export class ConfigurationProvider {
     this.configsInternal[configId] = readyConfig;
   }
 
-  getOpenIDConfiguration(configId?: string, url?: string): OpenIdConfiguration {
+  getOpenIDConfiguration(configId?: string): OpenIdConfiguration {
     if (!!configId) {
       return this.configsInternal[configId] || null;
     }

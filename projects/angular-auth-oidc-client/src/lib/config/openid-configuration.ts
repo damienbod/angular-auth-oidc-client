@@ -127,16 +127,17 @@ export interface OpenIdConfiguration {
   /** The storage mechanism to use */
   storage?: any;
   /** Extra parameters to add to the authorization URL request */
-  customParams?: { [key: string]: string | number | boolean };
+  customParamsAuthRequest?: { [key: string]: string | number | boolean };
 
   /** Extra parameters to add to the refresh token request body */
-  customParamsRefreshToken?: { [key: string]: string | number | boolean };
+  customParamsRefreshTokenRequest?: { [key: string]: string | number | boolean };
 
   /** Extra parameters to add to the authorization EndSession request */
-  customParamsEndSession?: { [key: string]: string | number | boolean };
+  customParamsEndSessionRequest?: { [key: string]: string | number | boolean };
 
   /** Extra parameters to add to the token URL request */
-  customTokenParams?: { [key: string]: string | number | boolean };
+  customParamsCodeRequest?: { [key: string]: string | number | boolean };
+
   /** Denotes if the AuthWellKnownEndpoints should be loaded at startup or when the user calls the authorize method. */
   eagerLoadAuthWellKnownEndpoints?: boolean;
 

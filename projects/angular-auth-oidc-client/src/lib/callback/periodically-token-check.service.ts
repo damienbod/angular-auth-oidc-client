@@ -133,9 +133,9 @@ export class PeriodicallyTokenCheckService {
       const customParamsRefresh: { [key: string]: string | number | boolean } =
         this.storagePersistenceService.read('storageCustomParamsRefresh', configId) || {};
 
-      const { customParamsRefreshToken } = this.configurationProvider.getOpenIDConfiguration();
+      const { customParamsRefreshTokenRequest } = this.configurationProvider.getOpenIDConfiguration();
 
-      const mergedParams = { ...customParamsRefresh, ...customParamsRefreshToken };
+      const mergedParams = { ...customParamsRefreshTokenRequest, ...customParamsRefresh };
 
       // Refresh Session using Refresh tokens
       return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(configId, mergedParams);

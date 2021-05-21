@@ -77,7 +77,11 @@ export class CodeFlowCallbackHandlerService {
 
     const config = this.configurationProvider.getOpenIDConfiguration(configId);
 
-    const bodyForCodeFlow = this.urlService.createBodyForCodeFlowCodeRequest(callbackContext.code, configId, config?.customTokenParams);
+    const bodyForCodeFlow = this.urlService.createBodyForCodeFlowCodeRequest(
+      callbackContext.code,
+      configId,
+      config?.customParamsCodeRequest
+    );
 
     return this.dataService.post(tokenEndpoint, bodyForCodeFlow, configId, headers).pipe(
       switchMap((response) => {

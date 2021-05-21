@@ -140,9 +140,9 @@ export class LogoffRevocationService {
 
   getEndSessionUrl(configId: string, customParams?: { [p: string]: string | number | boolean }): string | null {
     const idToken = this.storagePersistenceService.getIdToken(configId);
-    const { customParamsEndSession } = this.configurationProvider.getOpenIDConfiguration();
+    const { customParamsEndSessionRequest } = this.configurationProvider.getOpenIDConfiguration();
 
-    const mergedParams = { ...customParams, ...customParamsEndSession };
+    const mergedParams = { ...customParamsEndSessionRequest, ...customParams };
 
     return this.urlService.createEndSessionUrl(idToken, configId, mergedParams);
   }

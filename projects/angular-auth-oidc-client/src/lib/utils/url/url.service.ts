@@ -238,7 +238,7 @@ export class UrlService {
     const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
     const codeChallenge = this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier);
 
-    const { clientId, responseType, scope, hdParam, customParams } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const { clientId, responseType, scope, hdParam, customParamsAuthRequest } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     let params = this.createHttpParams('');
     params = params.set('client_id', clientId);
@@ -254,8 +254,8 @@ export class UrlService {
       params = params.append('hd', hdParam);
     }
 
-    if (customParams) {
-      params = this.appendCustomParams({ ...customParams }, params);
+    if (customParamsAuthRequest) {
+      params = this.appendCustomParams({ ...customParamsAuthRequest }, params);
     }
 
     if (customParamsRequest) {
@@ -282,7 +282,7 @@ export class UrlService {
       return null;
     }
 
-    const { clientId, responseType, scope, hdParam, customParams } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const { clientId, responseType, scope, hdParam, customParamsAuthRequest } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!clientId) {
       this.loggerService.logError(configId, `createAuthorizeUrl could not add clientId because it was: `, clientId);
@@ -324,16 +324,12 @@ export class UrlService {
       params = params.append('hd', hdParam);
     }
 
-    if (customParams) {
-      for (const [key, value] of Object.entries({ ...customParams })) {
-        params = params.append(key, value.toString());
-      }
+    if (customParamsAuthRequest) {
+      params = this.appendCustomParams({ ...customParamsAuthRequest }, params);
     }
 
     if (customRequestParams) {
-      for (const [key, value] of Object.entries({ ...customRequestParams })) {
-        params = params.append(key, value.toString());
-      }
+      params = this.appendCustomParams({ ...customRequestParams }, params);
     }
 
     return `${authorizationUrl}?${params}`;

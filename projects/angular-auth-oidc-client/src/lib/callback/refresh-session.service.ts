@@ -35,9 +35,9 @@ export class RefreshSessionService {
       this.storagePersistenceService.write('storageCustomRequestParams', extraCustomParams, configId);
     }
 
-    const { customParamsRefreshToken } = this.configurationProvider.getOpenIDConfiguration();
+    const { customParamsRefreshTokenRequest } = this.configurationProvider.getOpenIDConfiguration();
 
-    const mergedParams = { ...extraCustomParams, ...customParamsRefreshToken };
+    const mergedParams = { ...customParamsRefreshTokenRequest, ...extraCustomParams };
 
     if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(configId)) {
       return this.startRefreshSession(configId, mergedParams).pipe(

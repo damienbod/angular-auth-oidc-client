@@ -360,7 +360,7 @@ describe('UrlService Tests', () => {
       config.scope = 'openid email profile';
       config.configId = 'configId';
 
-      config.customParams = {
+      config.customParamsAuthRequest = {
         testcustom: 'customvalue',
       };
 
@@ -396,7 +396,7 @@ describe('UrlService Tests', () => {
       config.responseType = 'id_token token';
       config.scope = 'openid email profile';
       config.configId = 'configId';
-      config.customParams = {
+      config.customParamsAuthRequest = {
         t4: 'ABC abc 123',
         t3: '#',
         t2: '-_.!~*()',
