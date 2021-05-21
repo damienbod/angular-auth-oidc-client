@@ -31,9 +31,7 @@ export class RefreshSessionService {
   ) {}
 
   forceRefreshSession(configId: string, extraCustomParams?: { [key: string]: string | number | boolean }): Observable<LoginResponse> {
-    if (extraCustomParams) {
-      this.storagePersistenceService.write('storageCustomRequestParams', extraCustomParams, configId);
-    }
+    this.persistCustomParams(extraCustomParams, configId);
 
     const { customParamsRefreshTokenRequest } = this.configurationProvider.getOpenIDConfiguration();
 
@@ -78,6 +76,18 @@ export class RefreshSessionService {
         return null;
       })
     );
+  }
+
+  private persistCustomParams(extraCustomParams: { [key: string]: string | number | boolean }, configId: string) {
+    const { useRefreshToken } = this.configurationProvider.getOpenIDConfiguration();
+
+    if (extraCustomParams) {
+      if (useRefreshToken) {
+        this.storagePersistenceService.write('storageCustomParamsRefresh', extraCustomParams, configId);
+      } else {
+        this.storagePersistenceService.write('storageCustomRequestParams', extraCustomParams, configId);
+      }
+    }
   }
 
   private startRefreshSession(
