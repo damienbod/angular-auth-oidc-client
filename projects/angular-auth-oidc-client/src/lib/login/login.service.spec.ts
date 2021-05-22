@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
-import { ConfigurationProvider } from '../config/config.provider';
+import { ConfigurationProvider } from '../config/provider/config.provider';
 import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { LoginService } from './login.service';
 import { ParLoginService } from './par/par-login.service';
@@ -48,7 +48,7 @@ describe('LoginService', () => {
       const loginParSpy = spyOn(parLoginService, 'loginPar');
       const standardLoginSpy = spyOn(standardLoginService, 'loginStandard');
 
-      service.login();
+      service.login('configId');
 
       expect(loginParSpy).toHaveBeenCalledTimes(1);
       expect(standardLoginSpy).not.toHaveBeenCalled();
@@ -59,7 +59,7 @@ describe('LoginService', () => {
       const loginParSpy = spyOn(parLoginService, 'loginPar');
       const standardLoginSpy = spyOn(standardLoginService, 'loginStandard');
 
-      service.login();
+      service.login('configId');
 
       expect(loginParSpy).not.toHaveBeenCalled();
       expect(standardLoginSpy).toHaveBeenCalledTimes(1);
@@ -72,7 +72,7 @@ describe('LoginService', () => {
       const loginParSpy = spyOn(parLoginService, 'loginWithPopUpPar');
       const loginWithPopUpStandardSpy = spyOn(popUpLoginService, 'loginWithPopUpStandard');
 
-      service.loginWithPopUp();
+      service.loginWithPopUp('configId');
 
       expect(loginParSpy).toHaveBeenCalledTimes(1);
       expect(loginWithPopUpStandardSpy).not.toHaveBeenCalled();
@@ -83,7 +83,7 @@ describe('LoginService', () => {
       const loginParSpy = spyOn(parLoginService, 'loginPar');
       const loginWithPopUpStandardSpy = spyOn(popUpLoginService, 'loginWithPopUpStandard');
 
-      service.loginWithPopUp();
+      service.loginWithPopUp('configId');
 
       expect(loginParSpy).not.toHaveBeenCalled();
       expect(loginWithPopUpStandardSpy).toHaveBeenCalledTimes(1);

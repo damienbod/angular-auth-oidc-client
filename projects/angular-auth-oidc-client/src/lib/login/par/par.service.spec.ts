@@ -61,7 +61,7 @@ describe('ParService', () => {
       waitForAsync(() => {
         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(null);
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
-        service.postParRequest().subscribe({
+        service.postParRequest('configId').subscribe({
           error: (err) => {
             expect(err).toBe('Could not read PAR endpoint because authWellKnownEndPoints are not given');
           },
@@ -74,7 +74,7 @@ describe('ParService', () => {
       waitForAsync(() => {
         spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(null);
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ some: 'thing' });
-        service.postParRequest().subscribe({
+        service.postParRequest('configId').subscribe({
           error: (err) => {
             expect(err).toBe('Could not read PAR endpoint from authWellKnownEndpoints');
           },
@@ -90,7 +90,7 @@ describe('ParService', () => {
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ parEndpoint: 'parEndpoint' });
         const dataServiceSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-        service.postParRequest().subscribe(() => {
+        service.postParRequest('configId').subscribe(() => {
           expect(dataServiceSpy).toHaveBeenCalledOnceWith('parEndpoint', 'some-url123', jasmine.any(HttpHeaders));
         });
       })
@@ -104,7 +104,7 @@ describe('ParService', () => {
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ parEndpoint: 'parEndpoint' });
         spyOn(dataService, 'post').and.returnValue(of({ expires_in: 123, request_uri: 'request_uri' }));
-        service.postParRequest().subscribe((result) => {
+        service.postParRequest('configId').subscribe((result) => {
           expect(result).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
         });
       })
@@ -120,7 +120,7 @@ describe('ParService', () => {
         spyOn(dataService, 'post').and.returnValue(throwError('AN ERROR'));
         const loggerSpy = spyOn(loggerService, 'logError');
 
-        service.postParRequest().subscribe({
+        service.postParRequest('configId').subscribe({
           error: (err) => {
             expect(err).toBe('There was an error on ParService postParRequest');
             expect(loggerSpy).toHaveBeenCalledOnceWith('There was an error on ParService postParRequest', 'AN ERROR');
@@ -140,7 +140,7 @@ describe('ParService', () => {
           createRetriableStream(throwError({}), of({ expires_in: 123, request_uri: 'request_uri' }))
         );
 
-        service.postParRequest().subscribe({
+        service.postParRequest('configId').subscribe({
           next: (res) => {
             expect(res).toBeTruthy();
             expect(res).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
@@ -160,7 +160,7 @@ describe('ParService', () => {
           createRetriableStream(throwError({}), throwError({}), of({ expires_in: 123, request_uri: 'request_uri' }))
         );
 
-        service.postParRequest().subscribe({
+        service.postParRequest('configId').subscribe({
           next: (res) => {
             expect(res).toBeTruthy();
             expect(res).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
@@ -180,7 +180,7 @@ describe('ParService', () => {
           createRetriableStream(throwError({}), throwError({}), throwError({}), of({ expires_in: 123, request_uri: 'request_uri' }))
         );
 
-        service.postParRequest().subscribe({
+        service.postParRequest('configId').subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },
