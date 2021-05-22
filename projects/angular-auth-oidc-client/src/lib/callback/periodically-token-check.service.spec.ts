@@ -82,7 +82,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
       spyOn(intervalService as any, 'runTokenValidationRunning').and.returnValue(new Subscription());
 
-      const result = periodicallyTokenCheckService.startTokenValidationPeriodically(99);
+      const result = periodicallyTokenCheckService.startTokenValidationPeriodically();
 
       expect(result).toBeUndefined();
     });
@@ -90,7 +90,7 @@ describe('PeriodicallyTokenCheckService', () => {
     it('returns if openIDConfiguration.silentrenew is false', () => {
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenew: false });
 
-      const result = periodicallyTokenCheckService.startTokenValidationPeriodically(99);
+      const result = periodicallyTokenCheckService.startTokenValidationPeriodically();
 
       expect(result).toBeUndefined();
     });
@@ -99,7 +99,7 @@ describe('PeriodicallyTokenCheckService', () => {
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenew: true });
       const isCurrentFlowCodeFlowWithRefreshTokensSpy = spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
       const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
-      periodicallyTokenCheckService.startTokenValidationPeriodically(1);
+      periodicallyTokenCheckService.startTokenValidationPeriodically();
       tick(1000);
       intervalService.runTokenValidationRunning.unsubscribe();
       intervalService.runTokenValidationRunning = null;
@@ -113,7 +113,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenew: true });
 
-      periodicallyTokenCheckService.startTokenValidationPeriodically(1);
+      periodicallyTokenCheckService.startTokenValidationPeriodically();
       expect(periodicallyTokenCheckService.startTokenValidationPeriodically).toThrow();
       tick(1000);
 
@@ -132,7 +132,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
       spyOn(refreshSessionIframeService, 'refreshSessionWithIframe').and.returnValue(of(true));
 
-      periodicallyTokenCheckService.startTokenValidationPeriodically(1);
+      periodicallyTokenCheckService.startTokenValidationPeriodically();
       tick(1000);
       intervalService.runTokenValidationRunning.unsubscribe();
       intervalService.runTokenValidationRunning = null;
@@ -154,7 +154,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
       spyOn(refreshSessionIframeService, 'refreshSessionWithIframe').and.returnValue(of(true));
 
-      periodicallyTokenCheckService.startTokenValidationPeriodically(1);
+      periodicallyTokenCheckService.startTokenValidationPeriodically();
       tick(1000);
       intervalService.runTokenValidationRunning.unsubscribe();
       intervalService.runTokenValidationRunning = null;
@@ -172,12 +172,12 @@ describe('PeriodicallyTokenCheckService', () => {
       const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
 
       spyOn(authStateService, 'hasIdTokenExpired').and.returnValue(true);
-      spyOn(storagePersistenceService, 'read').withArgs('storageCustomRequestParams').and.returnValue(undefined);
+      spyOn(storagePersistenceService, 'read').withArgs('storageCustomRequestParams', 'configId').and.returnValue(undefined);
       spyOn(authStateService, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(true);
 
       spyOn(refreshSessionIframeService, 'refreshSessionWithIframe').and.returnValue(of(true));
 
-      periodicallyTokenCheckService.startTokenValidationPeriodically(1);
+      periodicallyTokenCheckService.startTokenValidationPeriodically();
       tick(1000);
       silentRenewSpy.and.returnValue({ silentRenew: false });
       tick(1000);
@@ -193,7 +193,7 @@ describe('PeriodicallyTokenCheckService', () => {
       spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
       spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
-      spyOn(storagePersistenceService, 'read').withArgs('storageCustomRequestParams').and.returnValue(undefined);
+      spyOn(storagePersistenceService, 'read').withArgs('storageCustomRequestParams', 'configId').and.returnValue(undefined);
       spyOn(resetAuthDataService, 'resetAuthorizationData');
 
       spyOn(authStateService, 'hasIdTokenExpired').and.returnValue(true);
@@ -204,7 +204,7 @@ describe('PeriodicallyTokenCheckService', () => {
         'refreshSessionWithRefreshTokens'
       ).and.returnValue(of(null));
 
-      periodicallyTokenCheckService.startTokenValidationPeriodically(1);
+      periodicallyTokenCheckService.startTokenValidationPeriodically();
       tick(1000);
       intervalService.runTokenValidationRunning.unsubscribe();
       intervalService.runTokenValidationRunning = null;

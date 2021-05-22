@@ -3,5 +3,6 @@ export interface LoginResponse {
   userData?: any;
   accessToken?: string;
   errorMessage?: string;
+  idToken?: string;
   configId?: string;
 }

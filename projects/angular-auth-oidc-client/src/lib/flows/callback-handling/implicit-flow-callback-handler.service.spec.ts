@@ -109,7 +109,7 @@ describe('ImplicitFlowCallbackHandlerService', () => {
           existingIdToken: null,
         } as CallbackContext;
 
-        service.implicitFlowCallback().subscribe((callbackContext) => {
+        service.implicitFlowCallback('configId').subscribe((callbackContext) => {
           expect(callbackContext).toEqual(expectedCallbackContext);
         });
       })

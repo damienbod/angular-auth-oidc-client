@@ -2,7 +2,7 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { AuthStateService } from '../../authState/auth-state.service';
 import { AuthStateServiceMock } from '../../authState/auth-state.service-mock';
-import { ConfigurationProvider } from '../../config/config.provider';
+import { ConfigurationProvider } from '../../config/provider/config.provider';
 import { ConfigurationProviderMock } from '../../config/provider/config.provider-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
@@ -18,7 +18,6 @@ import { UserCallbackHandlerService } from './user-callback-handler.service';
 
 describe('UserCallbackHandlerService', () => {
   let service: UserCallbackHandlerService;
-  // let loggerService: LoggerService;
   let configurationProvider: ConfigurationProvider;
   let authStateService: AuthStateService;
   let flowsDataService: FlowsDataService;
@@ -44,7 +43,6 @@ describe('UserCallbackHandlerService', () => {
     configurationProvider = TestBed.inject(ConfigurationProvider);
     flowsDataService = TestBed.inject(FlowsDataService);
     authStateService = TestBed.inject(AuthStateService);
-    // loggerService = TestBed.inject(LoggerService);
     userService = TestBed.inject(UserService);
     resetAuthDataService = TestBed.inject(ResetAuthDataService);
   });
@@ -73,7 +71,7 @@ describe('UserCallbackHandlerService', () => {
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserInfo: false });
         const spy = spyOn(flowsDataService, 'setSessionState');
 
-        service.callbackUser(callbackContext).subscribe((resultCallbackContext) => {
+        service.callbackUser(callbackContext, 'configId').subscribe((resultCallbackContext) => {
           expect(spy).toHaveBeenCalledOnceWith('mystate');
           expect(resultCallbackContext).toEqual(callbackContext);
         });
@@ -99,7 +97,7 @@ describe('UserCallbackHandlerService', () => {
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserInfo: false });
         const spy = spyOn(flowsDataService, 'setSessionState');
 
-        service.callbackUser(callbackContext).subscribe((resultCallbackContext) => {
+        service.callbackUser(callbackContext, 'configId').subscribe((resultCallbackContext) => {
           expect(spy).not.toHaveBeenCalled();
           expect(resultCallbackContext).toEqual(callbackContext);
         });
@@ -125,7 +123,7 @@ describe('UserCallbackHandlerService', () => {
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserInfo: false });
         const spy = spyOn(flowsDataService, 'setSessionState');
 
-        service.callbackUser(callbackContext).subscribe((resultCallbackContext) => {
+        service.callbackUser(callbackContext, 'configId').subscribe((resultCallbackContext) => {
           expect(spy).not.toHaveBeenCalled();
           expect(resultCallbackContext).toEqual(callbackContext);
         });
@@ -151,7 +149,7 @@ describe('UserCallbackHandlerService', () => {
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserInfo: false });
         const spy = spyOn(flowsDataService, 'setSessionState');
 
-        service.callbackUser(callbackContext).subscribe((resultCallbackContext) => {
+        service.callbackUser(callbackContext, 'configId').subscribe((resultCallbackContext) => {
           expect(spy).not.toHaveBeenCalled();
           expect(resultCallbackContext).toEqual(callbackContext);
         });
@@ -177,7 +175,7 @@ describe('UserCallbackHandlerService', () => {
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ autoUserInfo: false });
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
 
-        service.callbackUser(callbackContext).subscribe((resultCallbackContext) => {
+        service.callbackUser(callbackContext, 'configId').subscribe((resultCallbackContext) => {
           expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
             isAuthenticated: true,
             validationResult: 'NotSet',
@@ -209,7 +207,7 @@ describe('UserCallbackHandlerService', () => {
           of({ user: 'some_data' })
         );
 
-        service.callbackUser(callbackContext).subscribe((resultCallbackContext) => {
+        service.callbackUser(callbackContext, 'configId').subscribe((resultCallbackContext) => {
           expect(getAndPersistUserDataInStoreSpy).toHaveBeenCalledOnceWith(false, 'idtoken', 'decoded');
           expect(resultCallbackContext).toEqual(callbackContext);
         });
@@ -236,7 +234,7 @@ describe('UserCallbackHandlerService', () => {
         spyOn(userService, 'getAndPersistUserDataInStore').and.returnValue(of({ user: 'some_data' }));
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
 
-        service.callbackUser(callbackContext).subscribe((resultCallbackContext) => {
+        service.callbackUser(callbackContext, 'configId').subscribe((resultCallbackContext) => {
           expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
             isAuthenticated: true,
             validationResult: 'MaxOffsetExpired',
@@ -267,7 +265,7 @@ describe('UserCallbackHandlerService', () => {
         spyOn(userService, 'getAndPersistUserDataInStore').and.returnValue(of({ user: 'some_data' }));
         const setSessionStateSpy = spyOn(flowsDataService, 'setSessionState');
 
-        service.callbackUser(callbackContext).subscribe((resultCallbackContext) => {
+        service.callbackUser(callbackContext, 'configId').subscribe((resultCallbackContext) => {
           expect(setSessionStateSpy).toHaveBeenCalledOnceWith('mystate');
           expect(resultCallbackContext).toEqual(callbackContext);
         });
@@ -294,7 +292,7 @@ describe('UserCallbackHandlerService', () => {
         spyOn(userService, 'getAndPersistUserDataInStore').and.returnValue(of(null));
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
 
-        service.callbackUser(callbackContext).subscribe({
+        service.callbackUser(callbackContext, 'configId').subscribe({
           error: (err) => {
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
               isAuthenticated: false,
@@ -327,7 +325,7 @@ describe('UserCallbackHandlerService', () => {
         spyOn(userService, 'getAndPersistUserDataInStore').and.returnValue(of(null));
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
 
-        service.callbackUser(callbackContext).subscribe({
+        service.callbackUser(callbackContext, 'configId').subscribe({
           error: (err) => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(err).toEqual('Failed to retrieve user info with error:  Called for userData but they were null');

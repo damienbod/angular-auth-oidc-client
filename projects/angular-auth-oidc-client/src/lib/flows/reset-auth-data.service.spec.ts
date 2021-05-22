@@ -38,15 +38,15 @@ describe('ResetAuthDataService', () => {
   describe('resetAuthorizationData', () => {
     it('calls resetUserDataInStore when autoUserInfo is true', () => {
       const resetUserDataInStoreSpy = spyOn(userService, 'resetUserDataInStore');
-      service.resetAuthorizationData();
+      service.resetAuthorizationData('configId');
       expect(resetUserDataInStoreSpy).toHaveBeenCalled();
     });
 
     it('calls correct methods', () => {
       const resetStorageFlowDataSpy = spyOn(flowsDataService, 'resetStorageFlowData');
-      const setUnauthorizedAndFireEventSpy = spyOn(authStateService, 'setUnauthorizedAndFireEvent');
+      const setUnauthorizedAndFireEventSpy = spyOn(authStateService, 'setUnauthenticatedAndFireEvent');
 
-      service.resetAuthorizationData();
+      service.resetAuthorizationData('configId');
 
       expect(resetStorageFlowDataSpy).toHaveBeenCalled();
       expect(setUnauthorizedAndFireEventSpy).toHaveBeenCalled();

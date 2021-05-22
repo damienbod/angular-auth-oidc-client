@@ -4,7 +4,7 @@ import { of, throwError } from 'rxjs';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
 import { DataServiceMock } from '../../api/data.service-mock';
-import { ConfigurationProvider } from '../../config/config.provider';
+import { ConfigurationProvider } from '../../config/provider/config.provider';
 import { ConfigurationProviderMock } from '../../config/provider/config.provider-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
@@ -75,7 +75,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
 
         (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
           expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
-          const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
+          const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
           expect(httpHeaders.has('Content-Type')).toBeTrue();
           expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
         });
@@ -91,7 +91,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
         (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
-          const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
+          const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
           expect(httpHeaders.has('Content-Type')).toBeTrue();
           expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
         });

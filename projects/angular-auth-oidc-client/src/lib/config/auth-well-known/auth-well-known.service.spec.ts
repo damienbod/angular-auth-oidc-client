@@ -2,6 +2,7 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { DataService } from '../../api/data.service';
 import { DataServiceMock } from '../../api/data.service-mock';
+import { EventTypes } from '../../public-events/event-types';
 import { PublicEventsService } from '../../public-events/public-events.service';
 import { StoragePersistenceServiceMock } from '../../storage/storage-persistence-service-mock.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
@@ -43,7 +44,7 @@ describe('AuthWellKnownService', () => {
       waitForAsync(() => {
         const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsFromUrl');
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ issuer: 'anything' });
-        service.getAuthWellKnownEndPoints('any-url').subscribe((result) => {
+        service.getAuthWellKnownEndPoints('any-url', 'configId').subscribe((result) => {
           expect(dataServiceSpy).not.toHaveBeenCalled();
           expect(result).toEqual({ issuer: 'anything' });
         });
@@ -55,7 +56,7 @@ describe('AuthWellKnownService', () => {
       waitForAsync(() => {
         const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsFromUrl').and.returnValue(of({ issuer: 'anything' }));
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
-        service.getAuthWellKnownEndPoints('any-url').subscribe((result) => {
+        service.getAuthWellKnownEndPoints('any-url', 'configId').subscribe((result) => {
           expect(dataServiceSpy).toHaveBeenCalled();
           expect(result).toEqual({ issuer: 'anything' });
         });
@@ -68,7 +69,7 @@ describe('AuthWellKnownService', () => {
         const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsFromUrl').and.returnValue(of({ issuer: 'anything' }));
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
         const storeSpy = spyOn(service, 'storeWellKnownEndpoints');
-        service.getAuthWellKnownEndPoints('any-url').subscribe((result) => {
+        service.getAuthWellKnownEndPoints('any-url', 'configId').subscribe((result) => {
           expect(dataServiceSpy).toHaveBeenCalled();
           expect(storeSpy).toHaveBeenCalled();
           expect(result).toEqual({ issuer: 'anything' });
@@ -81,7 +82,7 @@ describe('AuthWellKnownService', () => {
       waitForAsync(() => {
         spyOn(dataService, 'getWellKnownEndPointsFromUrl').and.returnValue(throwError('This is an error'));
         const publicEventsServiceSpy = spyOn(publicEventsService, 'fireEvent');
-        service.getAuthWellKnownEndPoints('any-url').subscribe({
+        service.getAuthWellKnownEndPoints('any-url', 'configId').subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
             expect(publicEventsServiceSpy).toHaveBeenCalledTimes(1);

@@ -2,7 +2,7 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
-import { ConfigurationProvider } from '../config/config.provider';
+import { ConfigurationProvider } from '../config/provider/config.provider';
 import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsDataServiceMock } from '../flows/flows-data.service-mock';
@@ -50,8 +50,8 @@ describe('CodeFlowCallbackService ', () => {
       const spy = spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(of(null));
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
 
-      codeFlowCallbackService.authenticatedCallbackWithCode('some-url1');
-      expect(spy).toHaveBeenCalledWith('some-url1');
+      codeFlowCallbackService.authenticatedCallbackWithCode('some-url1', 'configId');
+      expect(spy).toHaveBeenCalledWith('some-url1', 'configId');
     });
 
     it(
@@ -71,8 +71,8 @@ describe('CodeFlowCallbackService ', () => {
         const spy = spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(of(callbackContext));
         const routerSpy = spyOn(router, 'navigateByUrl');
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
-        codeFlowCallbackService.authenticatedCallbackWithCode('some-url2').subscribe(() => {
-          expect(spy).toHaveBeenCalledWith('some-url2');
+        codeFlowCallbackService.authenticatedCallbackWithCode('some-url2', 'configId').subscribe(() => {
+          expect(spy).toHaveBeenCalledWith('some-url2', 'configId');
           expect(routerSpy).not.toHaveBeenCalled();
         });
       })
@@ -98,8 +98,8 @@ describe('CodeFlowCallbackService ', () => {
           triggerAuthorizationResultEvent: false,
           postLoginRoute: 'postLoginRoute',
         });
-        codeFlowCallbackService.authenticatedCallbackWithCode('some-url3').subscribe(() => {
-          expect(spy).toHaveBeenCalledWith('some-url3');
+        codeFlowCallbackService.authenticatedCallbackWithCode('some-url3', 'configId').subscribe(() => {
+          expect(spy).toHaveBeenCalledWith('some-url3', 'configId');
           expect(routerSpy).toHaveBeenCalledWith('postLoginRoute');
         });
       })
@@ -110,13 +110,13 @@ describe('CodeFlowCallbackService ', () => {
       waitForAsync(() => {
         spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(throwError('error'));
         const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
-        const stopPeriodicallTokenCheckSpy = spyOn(intervallService, 'stopPeriodicallTokenCheck');
+        const stopPeriodicallTokenCheckSpy = spyOn(intervalService, 'stopPeriodicTokenCheck');
 
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           triggerAuthorizationResultEvent: false,
           postLoginRoute: 'postLoginRoute',
         });
-        codeFlowCallbackService.authenticatedCallbackWithCode('some-url4').subscribe({
+        codeFlowCallbackService.authenticatedCallbackWithCode('some-url4', 'configId').subscribe({
           error: (err) => {
             expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
             expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
@@ -133,14 +133,14 @@ describe('CodeFlowCallbackService ', () => {
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
         spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(throwError('error'));
         const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
-        const stopPeriodicallTokenCheckSpy = spyOn(intervallService, 'stopPeriodicallTokenCheck');
+        const stopPeriodicallTokenCheckSpy = spyOn(intervalService, 'stopPeriodicTokenCheck');
         const routerSpy = spyOn(router, 'navigateByUrl');
 
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           triggerAuthorizationResultEvent: false,
           unauthorizedRoute: 'unauthorizedRoute',
         });
-        codeFlowCallbackService.authenticatedCallbackWithCode('some-url5').subscribe({
+        codeFlowCallbackService.authenticatedCallbackWithCode('some-url5', 'configId').subscribe({
           error: (err) => {
             expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
             expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();

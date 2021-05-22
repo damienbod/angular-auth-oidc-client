@@ -45,7 +45,7 @@ describe('RefreshSessionRefreshTokenService', () => {
       waitForAsync(() => {
         const spy = spyOn(flowsService, 'processRefreshToken').and.returnValue(of(null));
 
-        refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens().subscribe(() => {
+        refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens('configId').subscribe(() => {
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -56,9 +56,9 @@ describe('RefreshSessionRefreshTokenService', () => {
       waitForAsync(() => {
         spyOn(flowsService, 'processRefreshToken').and.returnValue(throwError('error'));
         const resetSilentRenewRunningSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
-        const stopPeriodicallyTokenCheckSpy = spyOn(intervalService, 'stopPeriodicallTokenCheck');
+        const stopPeriodicallyTokenCheckSpy = spyOn(intervalService, 'stopPeriodicTokenCheck');
 
-        refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens().subscribe({
+        refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens('configId').subscribe({
           error: (err) => {
             expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
             expect(stopPeriodicallyTokenCheckSpy).toHaveBeenCalled();

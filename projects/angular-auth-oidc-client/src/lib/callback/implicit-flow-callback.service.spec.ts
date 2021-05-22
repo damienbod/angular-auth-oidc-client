@@ -111,7 +111,7 @@ describe('ImplicitFlowCallbackService ', () => {
       waitForAsync(() => {
         spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(throwError('error'));
         const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
-        const stopPeriodicallyTokenCheckSpy = spyOn(intervalService, 'stopPeriodicallTokenCheck');
+        const stopPeriodicallyTokenCheckSpy = spyOn(intervalService, 'stopPeriodicTokenCheck');
 
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           triggerAuthorizationResultEvent: false,
@@ -134,7 +134,7 @@ describe('ImplicitFlowCallbackService ', () => {
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
         spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(throwError('error'));
         const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
-        const stopPeriodicallTokenCheckSpy = spyOn(intervalService, 'stopPeriodicallTokenCheck');
+        const stopPeriodicallTokenCheckSpy = spyOn(intervalService, 'stopPeriodicTokenCheck');
         const routerSpy = spyOn(router, 'navigateByUrl');
 
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({

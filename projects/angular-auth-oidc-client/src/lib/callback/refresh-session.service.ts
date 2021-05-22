@@ -46,7 +46,7 @@ export class RefreshSessionService {
               idToken: this.authStateService.getIdToken(configId),
               accessToken: this.authStateService.getAccessToken(configId),
               isAuthenticated,
-            };
+            } as LoginResponse;
           }
 
           return null;

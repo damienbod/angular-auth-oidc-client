@@ -59,7 +59,7 @@ describe('Signin Key Data Service', () => {
       'throws error when no wellKnownEndpoints given',
       waitForAsync(() => {
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
-        const result = service.getSigningKeys();
+        const result = service.getSigningKeys('configId');
 
         result.subscribe({
           error: (err) => {
@@ -73,7 +73,7 @@ describe('Signin Key Data Service', () => {
       'throws error when no jwksUri given',
       waitForAsync(() => {
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ jwksUri: null });
-        const result = service.getSigningKeys();
+        const result = service.getSigningKeys('configId');
 
         result.subscribe({
           error: (err) => {
@@ -89,11 +89,11 @@ describe('Signin Key Data Service', () => {
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ jwksUri: 'someUrl' });
         const spy = spyOn(dataService, 'get').and.callFake(() => of());
 
-        const result = service.getSigningKeys();
+        const result = service.getSigningKeys('configId');
 
         result.subscribe({
           complete: () => {
-            expect(spy).toHaveBeenCalledWith('someUrl');
+            expect(spy).toHaveBeenCalledWith('someUrl', 'configId');
           },
         });
       })
@@ -105,7 +105,7 @@ describe('Signin Key Data Service', () => {
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ jwksUri: 'someUrl' });
         spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), of(DUMMY_JWKS)));
 
-        service.getSigningKeys().subscribe({
+        service.getSigningKeys('configId').subscribe({
           next: (res) => {
             expect(res).toBeTruthy();
             expect(res).toEqual(DUMMY_JWKS);
@@ -120,7 +120,7 @@ describe('Signin Key Data Service', () => {
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ jwksUri: 'someUrl' });
         spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), of(DUMMY_JWKS)));
 
-        service.getSigningKeys().subscribe({
+        service.getSigningKeys('configId').subscribe({
           next: (res) => {
             expect(res).toBeTruthy();
             expect(res).toEqual(DUMMY_JWKS);
@@ -135,7 +135,7 @@ describe('Signin Key Data Service', () => {
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ jwksUri: 'someUrl' });
         spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), throwError({}), of(DUMMY_JWKS)));
 
-        service.getSigningKeys().subscribe({
+        service.getSigningKeys('configId').subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },
@@ -160,7 +160,7 @@ describe('Signin Key Data Service', () => {
         const logSpy = spyOn(loggerService, 'logError');
         (service as any).handleErrorGetSigningKeys(new HttpResponse({ status: 400, statusText: 'nono' })).subscribe({
           error: () => {
-            expect(logSpy).toHaveBeenCalledWith('400 - nono {}');
+            expect(logSpy).toHaveBeenCalledWith('400 - nono {}', 'configId');
           },
         });
       })
@@ -172,7 +172,7 @@ describe('Signin Key Data Service', () => {
         const logSpy = spyOn(loggerService, 'logError');
         (service as any).handleErrorGetSigningKeys('Just some Error').subscribe({
           error: () => {
-            expect(logSpy).toHaveBeenCalledWith('Just some Error');
+            expect(logSpy).toHaveBeenCalledWith('Just some Error', 'configId');
           },
         });
       })
@@ -184,7 +184,7 @@ describe('Signin Key Data Service', () => {
         const logSpy = spyOn(loggerService, 'logError');
         (service as any).handleErrorGetSigningKeys({ message: 'Just some Error' }).subscribe({
           error: () => {
-            expect(logSpy).toHaveBeenCalledWith('Just some Error');
+            expect(logSpy).toHaveBeenCalledWith('Just some Error', 'configId');
           },
         });
       })
