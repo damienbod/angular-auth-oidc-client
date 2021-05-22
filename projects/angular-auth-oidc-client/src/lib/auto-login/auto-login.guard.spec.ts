@@ -13,7 +13,7 @@ import { StoragePersistenceServiceMock } from '../storage/storage-persistence.se
 import { AutoLoginGuard } from './auto-login.guard';
 import { AutoLoginService } from './auto-login.service';
 
-describe(`AutoLoginGuard`, () => {
+xdescribe(`AutoLoginGuard`, () => {
   let autoLoginGuard: AutoLoginGuard;
   let checkAuthService: CheckAuthService;
   let loginService: LoginService;
