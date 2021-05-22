@@ -5,8 +5,8 @@ import { createRetriableStream } from '../../../test/create-retriable-stream.hel
 import { DataService } from '../../api/data.service';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
-import { StoragePersistenceServiceMock } from '../../storage/storage-persistence-service-mock.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { UrlService } from '../../utils/url/url.service';
 import { DataServiceMock } from './../../api/data.service-mock';
 import { UrlServiceMock } from './../../utils/url/url.service-mock';

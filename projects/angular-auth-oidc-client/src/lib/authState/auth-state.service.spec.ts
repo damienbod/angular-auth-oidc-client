@@ -5,8 +5,8 @@ import { ConfigurationProvider } from '../config/provider/config.provider';
 import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
 import { TokenValidationService } from '../validation/token-validation.service';
@@ -55,7 +55,7 @@ describe('Auth State Service', () => {
 
   describe('setAuthorizedAndFireEvent', () => {
     it('throws event when state is being set to `true`', () => {
-      const spy = spyOn((authStateService as any).authorizedInternal$, 'next');
+      const spy = spyOn((authStateService as any).authenticatedInternal$, 'next');
       authStateService.setAuthenticatedAndFireEvent();
       expect(spy).toHaveBeenCalledWith(true);
     });
@@ -69,7 +69,7 @@ describe('Auth State Service', () => {
     });
 
     it('throws event when state is being set to `false`', () => {
-      const spy = spyOn((authStateService as any).authorizedInternal$, 'next');
+      const spy = spyOn((authStateService as any).authenticatedInternal$, 'next');
       authStateService.setUnauthenticatedAndFireEvent('configId');
       expect(spy).toHaveBeenCalledWith(false);
     });
@@ -126,7 +126,7 @@ describe('Auth State Service', () => {
     });
 
     it('returns false if storagePersistenceService returns something falsy but authorized', () => {
-      spyOnProperty(authStateService as any, 'isAuthorized', 'get').and.returnValue(true);
+      spyOn(authStateService, 'isAuthenticated').and.returnValue(true);
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('');
       const result = authStateService.getAccessToken('configId');
       expect(result).toBe('');
@@ -225,9 +225,11 @@ describe('Auth State Service', () => {
   describe('hasIdTokenExpired', () => {
     it('tokenValidationService gets called with id token if id_token is set', () => {
       configurationProvider.setConfig({ renewTimeBeforeTokenExpiresInSeconds: 30 });
-      spyOn(storagePersistenceService, 'read').withArgs('authnResult', 'configId').and.returnValue({ id_token: 'idToken' });
+      spyOn(storagePersistenceService, 'getIdToken').withArgs('configId').and.returnValue('idToken');
       const spy = spyOn(tokenValidationService, 'hasIdTokenExpired').and.callFake((a, b) => true);
+
       authStateService.hasIdTokenExpired('configId');
+
       expect(spy).toHaveBeenCalledWith('idToken', 'configId', 30);
     });
 
@@ -238,7 +240,9 @@ describe('Auth State Service', () => {
       const spy = spyOn(eventsService, 'fireEvent');
 
       spyOn(storagePersistenceService, 'read').withArgs('authnResult', 'configId').and.returnValue('idToken');
+
       const result = authStateService.hasIdTokenExpired('configId');
+
       expect(result).toBe(true);
       expect(spy).toHaveBeenCalledWith(EventTypes.IdTokenExpired, true);
     });

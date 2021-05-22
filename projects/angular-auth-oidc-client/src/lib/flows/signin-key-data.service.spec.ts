@@ -6,8 +6,8 @@ import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { SigninKeyDataService } from './signin-key-data.service';
 
 const DUMMY_JWKS = {

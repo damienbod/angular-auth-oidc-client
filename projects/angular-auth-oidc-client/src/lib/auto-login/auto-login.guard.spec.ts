@@ -8,8 +8,8 @@ import { CheckAuthService } from '../check-auth.service';
 import { CheckAuthServiceMock } from '../check-auth.service-mock';
 import { LoginService } from '../login/login.service';
 import { LoginServiceMock } from '../login/login.service-mock';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { AutoLoginGuard } from './auto-login.guard';
 import { AutoLoginService } from './auto-login.service';
 

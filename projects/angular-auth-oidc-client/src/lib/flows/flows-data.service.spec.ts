@@ -3,8 +3,8 @@ import { ConfigurationProvider } from '../config/provider/config.provider';
 import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { FlowsDataService } from './flows-data.service';
 import { RandomService } from './random/random.service';
 

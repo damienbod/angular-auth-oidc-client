@@ -4,8 +4,8 @@ import { DataService } from '../../api/data.service';
 import { DataServiceMock } from '../../api/data.service-mock';
 import { EventTypes } from '../../public-events/event-types';
 import { PublicEventsService } from '../../public-events/public-events.service';
-import { StoragePersistenceServiceMock } from '../../storage/storage-persistence-service-mock.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { AuthWellKnownDataService } from './auth-well-known-data.service';
 import { AuthWellKnownService } from './auth-well-known.service';
 
