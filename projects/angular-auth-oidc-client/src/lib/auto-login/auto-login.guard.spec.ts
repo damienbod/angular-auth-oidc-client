@@ -1,7 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Router, RouterStateSnapshot } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AutoLoginGuard } from 'angular-auth-oidc-client';
 import { of } from 'rxjs';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
@@ -11,6 +10,7 @@ import { LoginService } from '../login/login.service';
 import { LoginServiceMock } from '../login/login.service-mock';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { AutoLoginGuard } from './auto-login.guard';
 import { AutoLoginService } from './auto-login.service';
 
 describe(`AutoLoginGuard`, () => {
@@ -76,7 +76,7 @@ describe(`AutoLoginGuard`, () => {
       'should NOT call checkAuth() if authenticated already',
       waitForAsync(() => {
         const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
-        spyOnProperty(authStateService, 'authorized$', 'get').and.returnValue(of(true));
+        spyOnProperty(authStateService, 'authenticated$', 'get').and.returnValue(of(true));
 
         autoLoginGuard.canActivate(null, { url: 'some-url2' } as RouterStateSnapshot).subscribe(() => {
           expect(checkAuthServiceSpy).not.toHaveBeenCalled();
@@ -167,7 +167,7 @@ describe(`AutoLoginGuard`, () => {
       'should NOT call checkAuth() if authenticated already',
       waitForAsync(() => {
         const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
-        spyOnProperty(authStateService, 'authorized$', 'get').and.returnValue(of(true));
+        spyOnProperty(authStateService, 'authenticated$', 'get').and.returnValue(of(true));
 
         autoLoginGuard.canLoad({ path: 'some-url9' }, []).subscribe(() => {
           expect(checkAuthServiceSpy).not.toHaveBeenCalled();

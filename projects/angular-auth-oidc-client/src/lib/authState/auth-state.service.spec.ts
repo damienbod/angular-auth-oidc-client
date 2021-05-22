@@ -265,7 +265,7 @@ describe('Auth State Service', () => {
       spyOn(storagePersistenceService, 'read').withArgs('access_token_expires_at', 'configId').and.returnValue(date);
       const spy = spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(validateAccessTokenNotExpiredResult);
       const result = authStateService.hasAccessTokenExpiredIfExpiryExists('configId');
-      expect(spy).toHaveBeenCalledWith(date, 5);
+      expect(spy).toHaveBeenCalledWith(date, 'configId', 5);
       expect(result).toEqual(expectedResult);
     });
 

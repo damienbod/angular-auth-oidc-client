@@ -63,10 +63,10 @@ describe('CallbackService ', () => {
       'calls authorizedCallbackWithCode if current flow is code flow',
       waitForAsync(() => {
         spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-        const authorizedCallbackWithCodeSpy = spyOn(codeFlowCallbackService, 'authorizedCallbackWithCode').and.returnValue(of(null));
+        const authorizedCallbackWithCodeSpy = spyOn(codeFlowCallbackService, 'authenticatedCallbackWithCode').and.returnValue(of(null));
 
-        callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
-          expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl');
+        callbackService.handleCallbackAndFireEvents('anyUrl', 'configId').subscribe(() => {
+          expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl', 'configId');
         });
       })
     );
@@ -76,11 +76,11 @@ describe('CallbackService ', () => {
       waitForAsync(() => {
         spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
         spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(true);
-        const authorizedCallbackWithCodeSpy = spyOn(implicitFlowCallbackService, 'authorizedImplicitFlowCallback').and.returnValue(
+        const authorizedCallbackWithCodeSpy = spyOn(implicitFlowCallbackService, 'authenticatedImplicitFlowCallback').and.returnValue(
           of(null)
         );
 
-        callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
+        callbackService.handleCallbackAndFireEvents('anyUrl', 'configId').subscribe(() => {
           expect(authorizedCallbackWithCodeSpy).toHaveBeenCalled();
         });
       })
@@ -89,10 +89,10 @@ describe('CallbackService ', () => {
     it('emits callbackinternal no matter which flow it is', () => {
       const callbackSpy = spyOn((callbackService as any).stsCallbackInternal$, 'next');
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-      const authorizedCallbackWithCodeSpy = spyOn(codeFlowCallbackService, 'authorizedCallbackWithCode').and.returnValue(of(null));
+      const authorizedCallbackWithCodeSpy = spyOn(codeFlowCallbackService, 'authenticatedCallbackWithCode').and.returnValue(of(null));
 
-      callbackService.handleCallbackAndFireEvents('anyUrl').subscribe(() => {
-        expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl');
+      callbackService.handleCallbackAndFireEvents('anyUrl', 'configId').subscribe(() => {
+        expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl', 'configId');
         expect(callbackSpy).toHaveBeenCalled();
       });
     });
