@@ -99,7 +99,7 @@ describe('CheckAuthService', () => {
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasConfig').and.returnValue(false);
         checkAuthService
-          .checkAuth()
+          .checkAuth('configId')
           .subscribe((result) =>
             expect(result).toEqual({ isAuthenticated: false, errorMessage: 'Please provide a configuration before setting up the module' })
           );
@@ -113,7 +113,7 @@ describe('CheckAuthService', () => {
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
         spyOn(popUpService, 'isCurrentlyInPopup').and.returnValue(true);
         const popupSpy = spyOn(popUpService, 'sendMessageToMainWindow');
-        checkAuthService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth('configId').subscribe((result) => {
           expect(result).toBeNull();
           expect(popupSpy).toHaveBeenCalled();
         });
@@ -128,7 +128,7 @@ describe('CheckAuthService', () => {
         spyOn(callBackService, 'isCallback').and.returnValue(true);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(throwError('ERROR'));
-        checkAuthService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth('configId').subscribe((result) => {
           expect(result).toEqual({ isAuthenticated: false, errorMessage: 'ERROR' });
           expect(spy).toHaveBeenCalled();
         });
@@ -143,7 +143,7 @@ describe('CheckAuthService', () => {
         spyOn(callBackService, 'isCallback').and.returnValue(true);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-        checkAuthService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth('configId').subscribe((result) => {
           expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null });
           expect(spy).toHaveBeenCalled();
         });
@@ -157,7 +157,7 @@ describe('CheckAuthService', () => {
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
-        checkAuthService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth('configId').subscribe((result) => {
           expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null });
           expect(spy).not.toHaveBeenCalled();
         });
@@ -173,9 +173,9 @@ describe('CheckAuthService', () => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
 
-        const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
+        const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthenticatedAndFireEvent');
         const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
-        checkAuthService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth('configId').subscribe((result) => {
           expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null });
           expect(setAuthorizedAndFireEventSpy).toHaveBeenCalled();
           expect(userServiceSpy).toHaveBeenCalled();
@@ -192,9 +192,9 @@ describe('CheckAuthService', () => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
 
-        const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
+        const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthenticatedAndFireEvent');
         const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
-        checkAuthService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth('configId').subscribe((result) => {
           expect(result).toEqual({ isAuthenticated: false, userData: null, accessToken: null });
           expect(setAuthorizedAndFireEventSpy).not.toHaveBeenCalled();
           expect(userServiceSpy).not.toHaveBeenCalled();
@@ -210,7 +210,7 @@ describe('CheckAuthService', () => {
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
-        checkAuthService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth('configId').subscribe((result) => {
           expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null });
         });
       })
@@ -224,9 +224,9 @@ describe('CheckAuthService', () => {
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
-        const spy = spyOn(authStateService, 'setAuthorizedAndFireEvent');
+        const spy = spyOn(authStateService, 'setAuthenticatedAndFireEvent');
 
-        checkAuthService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth('configId').subscribe((result) => {
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -242,7 +242,7 @@ describe('CheckAuthService', () => {
 
         const spy = spyOn(userService, 'publishUserDataIfExists');
 
-        checkAuthService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth('configId').subscribe((result) => {
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -262,8 +262,8 @@ describe('CheckAuthService', () => {
 
         const spy = spyOn(periodicallyTokenCheckService, 'startTokenValidationPeriodically');
 
-        checkAuthService.checkAuth().subscribe((result) => {
-          expect(spy).toHaveBeenCalledWith(7);
+        checkAuthService.checkAuth('configId').subscribe((result) => {
+          expect(spy).toHaveBeenCalled();
         });
       })
     );
@@ -279,7 +279,7 @@ describe('CheckAuthService', () => {
         spyOn(checkSessionService, 'isCheckSessionConfigured').and.returnValue(true);
         const spy = spyOn(checkSessionService, 'start');
 
-        checkAuthService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth('configId').subscribe((result) => {
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -296,7 +296,7 @@ describe('CheckAuthService', () => {
         spyOn(silentRenewService, 'isSilentRenewConfigured').and.returnValue(true);
         const spy = spyOn(silentRenewService, 'getOrCreateIframe');
 
-        checkAuthService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth('configId').subscribe((result) => {
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -313,7 +313,7 @@ describe('CheckAuthService', () => {
         const deleteSpy = spyOn(autoLoginService, 'deleteStoredRedirectRoute');
         const routeSpy = spyOn(router, 'navigateByUrl');
 
-        checkAuthService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth('configId').subscribe((result) => {
           expect(deleteSpy).toHaveBeenCalledTimes(1);
           expect(routeSpy).toHaveBeenCalledOnceWith('some-saved-route');
         });
@@ -333,7 +333,7 @@ describe('CheckAuthService', () => {
         spyOn(silentRenewService, 'isSilentRenewConfigured').and.returnValue(true);
         const spy = spyOn(silentRenewService, 'getOrCreateIframe');
 
-        checkAuthService.checkAuthIncludingServer().subscribe((result) => {
+        checkAuthService.checkAuthIncludingServer('configId').subscribe((result) => {
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -352,10 +352,11 @@ describe('CheckAuthService', () => {
           of({
             idToken: 'idToken',
             accessToken: 'access_token',
+            isAuthenticated: false,
           })
         );
 
-        checkAuthService.checkAuthIncludingServer().subscribe((result) => {
+        checkAuthService.checkAuthIncludingServer('configId').subscribe((result) => {
           expect(result).toBeTruthy();
         });
       })

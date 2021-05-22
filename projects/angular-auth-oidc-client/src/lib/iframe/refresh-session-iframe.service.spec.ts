@@ -44,7 +44,7 @@ describe('RefreshSessionIframeService ', () => {
           'sendAuthorizeRequestUsingSilentRenew'
         ).and.returnValue(of(null));
 
-        refreshSessionIframeService.refreshSessionWithIframe().subscribe(() => {
+        refreshSessionIframeService.refreshSessionWithIframe('configId').subscribe(() => {
           expect(sendAuthorizeRequestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url');
         });
       })
@@ -67,7 +67,7 @@ describe('RefreshSessionIframeService ', () => {
 
         spyOn(refreshSessionIframeService as any, 'sendAuthorizeRequestUsingSilentRenew').and.callThrough();
 
-        refreshSessionIframeService.refreshSessionWithIframe().subscribe((result) => {
+        refreshSessionIframeService.refreshSessionWithIframe('configId').subscribe((result) => {
           expect(result).toBeTrue();
           expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
         });

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ConfigurationProvider } from '../config/config.provider';
+import { ConfigurationProvider } from '../config/provider/config.provider';
 import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 import { BrowserStorageMock } from './browser-storage.service-mock';
@@ -39,7 +39,7 @@ describe('Storage Persistence Service', () => {
   describe('read', () => {
     it('reads from oidcSecurityStorage with correct key', () => {
       const spy = spyOn(securityStorage, 'read');
-      service.read('authNonce');
+      service.read('authNonce', 'configId');
 
       const keyToRead = `${storagePrefix}_authNonce`;
       expect(spy).toHaveBeenCalledWith(keyToRead);
@@ -48,7 +48,7 @@ describe('Storage Persistence Service', () => {
     it('reads from oidcSecurityStorage with fallback key if no config is set (not throw exception)', () => {
       storageSpy.and.returnValue(null);
       const spy = spyOn(securityStorage, 'read');
-      service.read('authzData');
+      service.read('authzData', 'configId');
 
       const keyToRead = `_authzData`;
       expect(spy).toHaveBeenCalledWith(keyToRead);
@@ -58,7 +58,7 @@ describe('Storage Persistence Service', () => {
   describe('write', () => {
     it('writes to oidcSecurityStorage with correct key', () => {
       const spy = spyOn(securityStorage, 'write');
-      service.write('authNonce', 'anyValue');
+      service.write('authNonce', 'anyValue', 'configId');
 
       const keyToWrite = `${storagePrefix}_authNonce`;
       expect(spy).toHaveBeenCalledWith(keyToWrite, 'anyValue');
@@ -68,7 +68,7 @@ describe('Storage Persistence Service', () => {
   describe('resetStorageFlowData', () => {
     it('resets the correct values', () => {
       const spy = spyOn(securityStorage, 'remove');
-      service.resetStorageFlowData();
+      service.resetStorageFlowData('configId');
 
       expect(spy.calls.argsFor(0)).toEqual(['storagePrefix_session_state']);
       expect(spy.calls.argsFor(1)).toEqual(['storagePrefix_storageSilentRenewRunning']);
@@ -81,7 +81,7 @@ describe('Storage Persistence Service', () => {
   describe('resetAuthStateInStorage', () => {
     it('resets the correct values', () => {
       const spy = spyOn(securityStorage, 'remove');
-      service.resetAuthStateInStorage();
+      service.resetAuthStateInStorage('configId');
 
       expect(spy.calls.argsFor(0)).toEqual(['storagePrefix_authzData']);
       expect(spy.calls.argsFor(1)).toEqual(['storagePrefix_authnResult']);
@@ -92,7 +92,7 @@ describe('Storage Persistence Service', () => {
     it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
       const returnValue = 'someValue';
       const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-      const result = service.getAccessToken();
+      const result = service.getAccessToken('configId');
 
       expect(result).toBe(returnValue);
       const keyToRead = `${storagePrefix}_authzData`;
@@ -101,7 +101,7 @@ describe('Storage Persistence Service', () => {
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
       const spy = spyOn(securityStorage, 'read').and.returnValue(null);
-      const result = service.getAccessToken();
+      const result = service.getAccessToken('configId');
 
       expect(result).toBeFalsy();
       const keyToRead = `${storagePrefix}_authzData`;
@@ -113,7 +113,7 @@ describe('Storage Persistence Service', () => {
     it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
       const returnValue = { id_token: 'someValue' };
       const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-      const result = service.getIdToken();
+      const result = service.getIdToken('configId');
 
       expect(result).toBe('someValue');
       const keyToRead = `${storagePrefix}_authnResult`;
@@ -122,7 +122,7 @@ describe('Storage Persistence Service', () => {
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
       const spy = spyOn(securityStorage, 'read').and.returnValue(null);
-      const result = service.getIdToken();
+      const result = service.getIdToken('configId');
 
       expect(result).toBeFalsy();
       const keyToRead = `${storagePrefix}_authnResult`;
@@ -135,7 +135,7 @@ describe('Storage Persistence Service', () => {
       const returnValue = 'someValue';
       const keyToRead = `${storagePrefix}_authnResult`;
       const spy = spyOn(securityStorage, 'read').withArgs(keyToRead).and.returnValue({ refresh_token: returnValue });
-      const result = service.getRefreshToken();
+      const result = service.getRefreshToken('configId');
 
       expect(result).toBe(returnValue);
       expect(spy).toHaveBeenCalledWith(keyToRead);
@@ -144,7 +144,7 @@ describe('Storage Persistence Service', () => {
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
       const keyToRead = `${storagePrefix}_authnResult`;
       const spy = spyOn(securityStorage, 'read').withArgs(keyToRead).and.returnValue({ NO_refresh_token: '' });
-      const result = service.getRefreshToken();
+      const result = service.getRefreshToken('configId');
 
       expect(result).toBeUndefined();
       expect(spy).toHaveBeenCalledWith(keyToRead);
@@ -153,7 +153,7 @@ describe('Storage Persistence Service', () => {
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
       const keyToRead = `${storagePrefix}_authnResult`;
       const spy = spyOn(securityStorage, 'read').withArgs(keyToRead).and.returnValue(null);
-      const result = service.getRefreshToken();
+      const result = service.getRefreshToken('configId');
 
       expect(result).toBeUndefined();
       expect(spy).toHaveBeenCalledWith(keyToRead);

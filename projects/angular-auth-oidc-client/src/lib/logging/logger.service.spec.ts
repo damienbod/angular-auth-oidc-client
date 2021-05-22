@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ConfigurationProvider } from '../config/config.provider';
+import { ConfigurationProvider } from '../config/provider/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
@@ -28,13 +28,13 @@ describe('Logger Service', () => {
     it('should not log error if loglevel is None', () => {
       const spy = spyOn(console, 'error');
       configProvider.setConfig({ logLevel: LogLevel.None });
-      loggerService.logError('some message');
+      loggerService.logError('configId', 'some message');
       expect(spy).not.toHaveBeenCalled();
     });
 
     it('should log error as default', () => {
       const spy = spyOn(console, 'error');
-      loggerService.logError('some message');
+      loggerService.logError('configId', 'some message');
       expect(spy).toHaveBeenCalledWith('some message');
     });
 
@@ -51,14 +51,14 @@ describe('Logger Service', () => {
 
       configProvider.setConfig({ logLevel: null });
 
-      loggerService.logWarning('some message');
+      loggerService.logWarning('configId', 'some message');
       expect(spy).not.toHaveBeenCalled();
     });
 
     it('should not log if no log level is set (undefined)', () => {
       const spy = spyOn(console, 'warn');
 
-      loggerService.logWarning('some message');
+      loggerService.logWarning('configId', 'some message');
       expect(spy).not.toHaveBeenCalled();
     });
 
@@ -67,7 +67,7 @@ describe('Logger Service', () => {
 
       configProvider.setConfig({ logLevel: LogLevel.None });
 
-      loggerService.logWarning('some message');
+      loggerService.logWarning('configId', 'some message');
       expect(spy).not.toHaveBeenCalled();
     });
 
@@ -75,7 +75,7 @@ describe('Logger Service', () => {
       const spy = spyOn(console, 'warn');
 
       configProvider.setConfig({ logLevel: LogLevel.Warn });
-      loggerService.logWarning('some message');
+      loggerService.logWarning('configId', 'some message');
       expect(spy).toHaveBeenCalledWith('some message');
     });
 
@@ -91,7 +91,7 @@ describe('Logger Service', () => {
       const spy = spyOn(console, 'warn');
 
       configProvider.setConfig({ logLevel: LogLevel.Debug });
-      loggerService.logWarning('some message');
+      loggerService.logWarning('configId', 'some message');
       expect(spy).toHaveBeenCalledWith('some message');
     });
 
@@ -99,7 +99,7 @@ describe('Logger Service', () => {
       const spy = spyOn(console, 'warn');
 
       configProvider.setConfig({ logLevel: LogLevel.Error });
-      loggerService.logWarning('some message');
+      loggerService.logWarning('configId', 'some message');
       expect(spy).not.toHaveBeenCalled();
     });
   });
@@ -110,14 +110,14 @@ describe('Logger Service', () => {
 
       configProvider.setConfig({ logLevel: null });
 
-      loggerService.logDebug('some message');
+      loggerService.logDebug('configId', 'some message');
       expect(spy).not.toHaveBeenCalled();
     });
 
     it('should not log if no log level is set (undefined)', () => {
       const spy = spyOn(console, 'log');
 
-      loggerService.logDebug('some message');
+      loggerService.logDebug('configId', 'some message');
       expect(spy).not.toHaveBeenCalled();
     });
 
@@ -125,7 +125,7 @@ describe('Logger Service', () => {
       const spy = spyOn(console, 'log');
 
       configProvider.setConfig({ logLevel: LogLevel.None });
-      loggerService.logDebug('some message');
+      loggerService.logDebug('configId', 'some message');
       expect(spy).not.toHaveBeenCalled();
     });
 
@@ -133,7 +133,7 @@ describe('Logger Service', () => {
       const spy = spyOn(console, 'log');
 
       configProvider.setConfig({ logLevel: LogLevel.Debug });
-      loggerService.logDebug('some message');
+      loggerService.logDebug('configId', 'some message');
       expect(spy).toHaveBeenCalledWith('some message');
     });
 
@@ -149,7 +149,7 @@ describe('Logger Service', () => {
       const spy = spyOn(console, 'log');
 
       configProvider.setConfig({ logLevel: LogLevel.Warn });
-      loggerService.logDebug('some message');
+      loggerService.logDebug('configId', 'some message');
       expect(spy).not.toHaveBeenCalled();
     });
 
@@ -157,7 +157,7 @@ describe('Logger Service', () => {
       const spy = spyOn(console, 'log');
 
       configProvider.setConfig({ logLevel: LogLevel.Error });
-      loggerService.logDebug('some message');
+      loggerService.logDebug('configId', 'some message');
       expect(spy).not.toHaveBeenCalled();
     });
   });
