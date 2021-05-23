@@ -209,7 +209,7 @@ export class OidcSecurityService {
   forceRefreshSession(customParams?: { [key: string]: string | number | boolean }, configId?: string): Observable<LoginResponse> {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
 
-    return this.refreshSessionService.forceRefreshSession(configId, customParams);
+    return this.refreshSessionService.userForceRefreshSession(configId, customParams);
   }
 
   /**
