@@ -143,7 +143,7 @@ export class PeriodicallyTokenCheckService {
 
     // Retrieve Dynamically Set Custom Params
     const customParams: { [key: string]: string | number | boolean } = this.storagePersistenceService.read(
-      'storageCustomRequestParams',
+      'storageCustomParamsAuthRequest',
       configId
     );
 
