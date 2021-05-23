@@ -31,12 +31,11 @@ export class RefreshSessionService {
   ) {}
 
   userForceRefreshSession(configId: string, extraCustomParams?: { [key: string]: string | number | boolean }): Observable<LoginResponse> {
-      this.persistCustomParams(extraCustomParams, configId);
-      return this.forceRefreshSession(configId, extraCustomParams)
+    this.persistCustomParams(extraCustomParams, configId);
+    return this.forceRefreshSession(configId, extraCustomParams);
   }
 
   forceRefreshSession(configId: string, extraCustomParams?: { [key: string]: string | number | boolean }): Observable<LoginResponse> {
-
     const { customParamsRefreshTokenRequest } = this.configurationProvider.getOpenIDConfiguration();
 
     const mergedParams = { ...customParamsRefreshTokenRequest, ...extraCustomParams };
