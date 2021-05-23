@@ -174,7 +174,7 @@ describe('OidcSecurityService', () => {
         const writeSpy = spyOn(storagePersistenceService, 'write');
         oidcSecurityService.forceRefreshSession({ my: 'custom', params: 1 }).subscribe(() => {
           expect(spy).toHaveBeenCalled();
-          expect(writeSpy).toHaveBeenCalledWith('storageCustomRequestParams', { my: 'custom', params: 1 }, 'configId');
+          expect(writeSpy).toHaveBeenCalledWith('storagecustomParamsAuthRequest', { my: 'custom', params: 1 }, 'configId');
         });
       })
     );

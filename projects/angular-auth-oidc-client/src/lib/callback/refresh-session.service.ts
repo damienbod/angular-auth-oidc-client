@@ -88,7 +88,7 @@ export class RefreshSessionService {
       if (useRefreshToken) {
         this.storagePersistenceService.write('storageCustomParamsRefresh', extraCustomParams, configId);
       } else {
-        this.storagePersistenceService.write('storageCustomRequestParams', extraCustomParams, configId);
+        this.storagePersistenceService.write('storagecustomParamsAuthRequest', extraCustomParams, configId);
       }
     }
   }

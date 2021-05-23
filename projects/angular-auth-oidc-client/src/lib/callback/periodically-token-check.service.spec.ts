@@ -172,7 +172,7 @@ describe('PeriodicallyTokenCheckService', () => {
       const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
 
       spyOn(authStateService, 'hasIdTokenExpired').and.returnValue(true);
-      spyOn(storagePersistenceService, 'read').withArgs('storageCustomRequestParams', 'configId').and.returnValue(undefined);
+      spyOn(storagePersistenceService, 'read').withArgs('storagecustomParamsAuthRequest', 'configId').and.returnValue(undefined);
       spyOn(authStateService, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(true);
 
       spyOn(refreshSessionIframeService, 'refreshSessionWithIframe').and.returnValue(of(true));
@@ -193,7 +193,7 @@ describe('PeriodicallyTokenCheckService', () => {
       spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
       spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
-      spyOn(storagePersistenceService, 'read').withArgs('storageCustomRequestParams', 'configId').and.returnValue(undefined);
+      spyOn(storagePersistenceService, 'read').withArgs('storagecustomParamsAuthRequest', 'configId').and.returnValue(undefined);
       spyOn(resetAuthDataService, 'resetAuthorizationData');
 
       spyOn(authStateService, 'hasIdTokenExpired').and.returnValue(true);

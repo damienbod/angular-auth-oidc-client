@@ -9,7 +9,7 @@ export type StorageKeys =
   | 'authStateControl'
   | 'session_state'
   | 'storageSilentRenewRunning'
-  | 'storageCustomRequestParams'
+  | 'storagecustomParamsAuthRequest'
   | 'storageCustomParamsRefresh'
   | 'storageCustomParamsEndSession'
   | 'redirect'
@@ -30,7 +30,7 @@ export class StoragePersistenceServiceMock {
     this.remove('storageSilentRenewRunning', configId);
     this.remove('codeVerifier', configId);
     this.remove('userData', configId);
-    this.remove('storageCustomRequestParams', configId);
+    this.remove('storagecustomParamsAuthRequest', configId);
     this.remove('access_token_expires_at', configId);
     this.remove('storageCustomParamsRefresh', configId);
     this.remove('storageCustomParamsEndSession', configId);
