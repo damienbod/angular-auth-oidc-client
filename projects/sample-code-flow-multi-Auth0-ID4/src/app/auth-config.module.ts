@@ -26,7 +26,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
           silentRenew: true,
           useRefreshToken: true,
           logLevel: LogLevel.Debug,
-          customParams: {
+          customParamsAuthRequest: {
             audience: 'https://auth0-api-spa',
           },
         },

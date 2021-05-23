@@ -13,7 +13,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
       silentRenew: true,
       useRefreshToken: true,
       logLevel: LogLevel.Debug,
-      customParams: {
+      customParamsAuthRequest: {
         audience: 'https://auth0-api-spa',
       },
       customParamsRefreshTokenRequest: {
