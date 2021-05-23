@@ -7,7 +7,7 @@ To be documents:
 - AutoUserinfo --> AutoUserInfo
 - authwellknown is now part of the config
 
-custom params have been renamed:
+### custom params have been renamed:
 
 old:
 ```ts
