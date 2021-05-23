@@ -18,7 +18,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
         // silentRenewUrl: window.location.origin + '/silent-renew.html',
         useRefreshToken: true,
         logLevel: LogLevel.Debug,
-        customParams: {
+        customParamsAuthRequest: {
           prompt: 'select_account', // login, consent
         },
       },
