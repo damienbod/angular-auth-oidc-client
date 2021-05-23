@@ -74,7 +74,7 @@ describe('Storage Persistence Service', () => {
       expect(spy.calls.argsFor(1)).toEqual(['storagePrefix_storageSilentRenewRunning']);
       expect(spy.calls.argsFor(2)).toEqual(['storagePrefix_codeVerifier']);
       expect(spy.calls.argsFor(3)).toEqual(['storagePrefix_userData']);
-      expect(spy.calls.argsFor(4)).toEqual(['storagePrefix_storageCustomRequestParams']);
+      expect(spy.calls.argsFor(4)).toEqual(['storagePrefix_storageCustomParamsAuthRequest']);
     });
   });
 

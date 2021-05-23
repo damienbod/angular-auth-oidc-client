@@ -21,7 +21,7 @@ export class LoginService {
 
   login(configId: string, authOptions?: AuthOptions): void {
     if (authOptions?.customParams) {
-      this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams, configId);
+      this.storagePersistenceService.write('storageCustomParamsAuthRequest', authOptions.customParams, configId);
     }
 
     const { usePushedAuthorisationRequests } = this.configurationProvider.getOpenIDConfiguration(configId);
@@ -35,7 +35,7 @@ export class LoginService {
 
   loginWithPopUp(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
     if (authOptions?.customParams) {
-      this.storagePersistenceService.write('storageCustomRequestParams', authOptions.customParams, configId);
+      this.storagePersistenceService.write('storageCustomParamsAuthRequest', authOptions.customParams, configId);
     }
 
     const { usePushedAuthorisationRequests } = this.configurationProvider.getOpenIDConfiguration(configId);
