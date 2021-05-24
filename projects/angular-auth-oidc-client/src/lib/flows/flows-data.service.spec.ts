@@ -213,10 +213,10 @@ describe('Flows Data Service', () => {
   });
 
   describe('resetSilentRenewRunning', () => {
-    it('set resetSilentRenewRunning to null when called', () => {
+    it('set resetSilentRenewRunning to empty string when called', () => {
       const spy = spyOn(storagePersistenceService, 'write');
       service.resetSilentRenewRunning('configId');
-      expect(spy).toHaveBeenCalledWith('storageSilentRenewRunning', null, 'configId');
+      expect(spy).toHaveBeenCalledWith('storageSilentRenewRunning', '', 'configId');
     });
   });
 });

@@ -73,8 +73,8 @@ describe('RefreshTokenCallbackHandlerService', () => {
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
-        (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
-          expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
+        (service as any).refreshTokensRequestTokens({} as CallbackContext, 'configId').subscribe((callbackContext) => {
+          expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', 'configId', jasmine.any(HttpHeaders));
           const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
           expect(httpHeaders.has('Content-Type')).toBeTrue();
           expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
@@ -90,7 +90,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
-        (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
+        (service as any).refreshTokensRequestTokens({} as CallbackContext, 'configId').subscribe((callbackContext) => {
           const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
           expect(httpHeaders.has('Content-Type')).toBeTrue();
           expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
@@ -107,7 +107,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
 
-        (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
+        (service as any).refreshTokensRequestTokens({} as CallbackContext, 'configId').subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },
@@ -124,7 +124,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
 
-        (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
+        (service as any).refreshTokensRequestTokens({} as CallbackContext, 'configId').subscribe({
           next: (res) => {
             expect(res).toBeTruthy();
             expect(postSpy).toHaveBeenCalledTimes(1);
@@ -148,7 +148,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
 
-        (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
+        (service as any).refreshTokensRequestTokens({} as CallbackContext, 'configId').subscribe({
           next: (res) => {
             // fails if there should be a result
             expect(res).toBeFalsy();

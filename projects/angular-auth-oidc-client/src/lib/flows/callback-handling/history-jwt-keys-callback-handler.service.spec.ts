@@ -159,7 +159,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
 
         service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe({
           error: (err) => {
-            expect(err).toEqual(`authorizedCallbackProcedure came with error: someError`);
+            expect(err).toEqual(`AuthCallback AuthResult came with error: someError`);
           },
         });
       })

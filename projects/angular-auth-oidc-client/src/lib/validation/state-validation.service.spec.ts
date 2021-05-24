@@ -17,7 +17,7 @@ import { TokenValidationService } from './token-validation.service';
 import { TokenValidationServiceMock } from './token-validation.service-mock';
 import { ValidationResult } from './validation-result';
 
-fdescribe('State Validation Service', () => {
+describe('State Validation Service', () => {
   let stateValidationService: StateValidationService;
   let oidcSecurityValidation: TokenValidationService;
   let tokenHelperService: TokenHelperService;

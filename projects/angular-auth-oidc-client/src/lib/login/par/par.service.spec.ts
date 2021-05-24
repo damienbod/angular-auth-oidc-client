@@ -91,7 +91,7 @@ describe('ParService', () => {
           .and.returnValue({ parEndpoint: 'parEndpoint' });
         const dataServiceSpy = spyOn(dataService, 'post').and.returnValue(of({}));
         service.postParRequest('configId').subscribe(() => {
-          expect(dataServiceSpy).toHaveBeenCalledOnceWith('parEndpoint', 'some-url123', jasmine.any(HttpHeaders));
+          expect(dataServiceSpy).toHaveBeenCalledOnceWith('parEndpoint', 'some-url123', 'configId', jasmine.any(HttpHeaders));
         });
       })
     );

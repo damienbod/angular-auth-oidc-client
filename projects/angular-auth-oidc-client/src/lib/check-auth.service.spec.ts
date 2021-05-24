@@ -98,11 +98,12 @@ describe('CheckAuthService', () => {
       'returns isAuthenticated: false with error message when config is not valid',
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasConfig').and.returnValue(false);
-        checkAuthService
-          .checkAuth('configId')
-          .subscribe((result) =>
-            expect(result).toEqual({ isAuthenticated: false, errorMessage: 'Please provide a configuration before setting up the module' })
-          );
+        checkAuthService.checkAuth('configId').subscribe((result) =>
+          expect(result).toEqual({
+            isAuthenticated: false,
+            errorMessage: 'Please provide at least one configuration before setting up the module',
+          })
+        );
       })
     );
 

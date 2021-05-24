@@ -208,7 +208,7 @@ describe('UserCallbackHandlerService', () => {
         );
 
         service.callbackUser(callbackContext, 'configId').subscribe((resultCallbackContext) => {
-          expect(getAndPersistUserDataInStoreSpy).toHaveBeenCalledOnceWith(false, 'idtoken', 'decoded');
+          expect(getAndPersistUserDataInStoreSpy).toHaveBeenCalledOnceWith('configId', false, 'idtoken', 'decoded');
           expect(resultCallbackContext).toEqual(callbackContext);
         });
       })

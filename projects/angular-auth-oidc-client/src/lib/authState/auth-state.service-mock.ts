@@ -11,9 +11,9 @@ export class AuthStateServiceMock {
     return this.authorizedInternal$.asObservable();
   }
 
-  setAuthorizedAndFireEvent(): void {}
+  setAuthenticatedAndFireEvent(): void {}
 
-  setUnauthorizedAndFireEvent(): void {}
+  setUnauthenticatedAndFireEvent(): void {}
 
   initStateFromStorage(): void {}
 

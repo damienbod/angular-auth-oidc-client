@@ -93,7 +93,7 @@ export class CheckAuthService {
     );
   }
 
-  checkAuthWithConfig(config: OpenIdConfiguration, url?: string): Observable<LoginResponse> {
+  private checkAuthWithConfig(config: OpenIdConfiguration, url?: string): Observable<LoginResponse> {
     const { configId, stsServer } = config;
 
     if (!this.configurationProvider.hasConfig()) {
@@ -142,6 +142,7 @@ export class CheckAuthService {
       }),
       tap(() => {
         const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute(configId);
+
         if (savedRouteForRedirect) {
           this.autoLoginService.deleteStoredRedirectRoute(configId);
           this.router.navigateByUrl(savedRouteForRedirect);

@@ -86,7 +86,10 @@ describe('StateValidationCallbackHandlerService', () => {
 
         service.callbackStateValidation({} as CallbackContext, 'configId').subscribe({
           error: (err) => {
-            expect(loggerSpy).toHaveBeenCalledOnceWith('authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash');
+            expect(loggerSpy).toHaveBeenCalledOnceWith(
+              'configId',
+              'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
+            );
           },
         });
       })

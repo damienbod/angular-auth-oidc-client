@@ -44,7 +44,7 @@ describe('AuthWellKnownDataService', () => {
         });
         const urlWithoutSuffix = 'myUrl';
         const urlWithSuffix = `${urlWithoutSuffix}/.well-known/openid-configuration`;
-        (service as any).getWellKnownDocument(urlWithoutSuffix).subscribe(() => {
+        (service as any).getWellKnownDocument(urlWithoutSuffix, 'configId').subscribe(() => {
           expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix, 'configId');
         });
       })
@@ -57,7 +57,7 @@ describe('AuthWellKnownDataService', () => {
           return of(null);
         });
         const urlWithSuffix = `myUrl/.well-known/openid-configuration`;
-        (service as any).getWellKnownDocument(urlWithSuffix).subscribe(() => {
+        (service as any).getWellKnownDocument(urlWithSuffix, 'configId').subscribe(() => {
           expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix, 'configId');
         });
       })
@@ -70,7 +70,7 @@ describe('AuthWellKnownDataService', () => {
           return of(null);
         });
         const urlWithSuffix = `myUrl/.well-known/openid-configuration/and/some/more/stuff`;
-        (service as any).getWellKnownDocument(urlWithSuffix).subscribe(() => {
+        (service as any).getWellKnownDocument(urlWithSuffix, 'configId').subscribe(() => {
           expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix, 'configId');
         });
       })
@@ -81,7 +81,7 @@ describe('AuthWellKnownDataService', () => {
       waitForAsync(() => {
         spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), of(DUMMY_WELL_KNOWN_DOCUMENT)));
 
-        (service as any).getWellKnownDocument('anyurl').subscribe({
+        (service as any).getWellKnownDocument('anyurl', 'configId').subscribe({
           next: (res) => {
             expect(res).toBeTruthy();
             expect(res).toEqual(DUMMY_WELL_KNOWN_DOCUMENT);
@@ -95,7 +95,7 @@ describe('AuthWellKnownDataService', () => {
       waitForAsync(() => {
         spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), of(DUMMY_WELL_KNOWN_DOCUMENT)));
 
-        (service as any).getWellKnownDocument('anyurl').subscribe({
+        (service as any).getWellKnownDocument('anyurl', 'configId').subscribe({
           next: (res) => {
             expect(res).toBeTruthy();
             expect(res).toEqual(DUMMY_WELL_KNOWN_DOCUMENT);
@@ -111,7 +111,7 @@ describe('AuthWellKnownDataService', () => {
           createRetriableStream(throwError({}), throwError({}), throwError({}), of(DUMMY_WELL_KNOWN_DOCUMENT))
         );
 
-        (service as any).getWellKnownDocument('anyurl').subscribe({
+        (service as any).getWellKnownDocument('anyurl', 'configId').subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },
