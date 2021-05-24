@@ -23,7 +23,7 @@ import { PeriodicallyTokenCheckService } from './periodically-token-check.servic
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 import { RefreshSessionRefreshTokenServiceMock } from './refresh-session-refresh-token.service-mock';
 
-fdescribe('PeriodicallyTokenCheckService', () => {
+describe('PeriodicallyTokenCheckService', () => {
   let periodicallyTokenCheckService: PeriodicallyTokenCheckService;
   let intervalService: IntervalService;
   let configurationProvider: ConfigurationProvider;

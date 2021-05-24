@@ -24,7 +24,7 @@ export class OidcConfigService {
     private platformProvider: PlatformProvider
   ) {}
 
-  withConfigs(passedConfigs: OpenIdConfiguration[]): Promise<any> {
+  withConfigs(passedConfigs: OpenIdConfiguration[]): Promise<OpenIdConfiguration[]> {
     this.createUniqueIds(passedConfigs);
     const allHandleConfigPromises = passedConfigs.map((x) => this.handleConfig(x));
 
@@ -39,7 +39,7 @@ export class OidcConfigService {
     });
   }
 
-  private handleConfig(passedConfig: OpenIdConfiguration): Promise<any> {
+  private handleConfig(passedConfig: OpenIdConfiguration): Promise<OpenIdConfiguration> {
     return new Promise((resolve, reject) => {
       if (!this.configValidationService.validateConfig(passedConfig)) {
         this.loggerService.logError(passedConfig.configId, 'Validation of config rejected with errors. Config is NOT set.');
@@ -67,7 +67,7 @@ export class OidcConfigService {
 
       if (!!passedAuthWellKnownEndpoints) {
         this.authWellKnownService.storeWellKnownEndpoints(usedConfig.configId, passedAuthWellKnownEndpoints);
-        usedConfig.authWellknownEndpoints = alreadyExistingAuthWellKnownEndpoints;
+        usedConfig.authWellknownEndpoints = passedAuthWellKnownEndpoints;
         this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
 
         resolve(usedConfig);
@@ -83,12 +83,14 @@ export class OidcConfigService {
               return throwError(error);
             }),
             tap((wellknownEndPoints) => {
+              console.log('@@@@@@');
               usedConfig.authWellknownEndpoints = wellknownEndPoints;
               this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
             })
           )
           .subscribe(
             () => resolve(usedConfig),
+
             () => reject()
           );
       } else {
