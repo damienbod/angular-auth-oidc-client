@@ -6,7 +6,7 @@ import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
 import { LogLevel } from './log-level';
 
-fdescribe('Logger Service', () => {
+describe('Logger Service', () => {
   let configProvider: ConfigurationProvider;
   let loggerService: LoggerService;
 
