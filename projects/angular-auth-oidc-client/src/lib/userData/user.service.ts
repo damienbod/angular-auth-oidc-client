@@ -71,7 +71,10 @@ export class UserService {
 
   publishUserDataIfExists(configId: string) {
     const userData = this.getUserDataFromStore(configId);
-    this.fireUserDataEvent(configId, userData);
+
+    if (userData) {
+      this.fireUserDataEvent(configId, userData);
+    }
   }
 
   setUserDataToStore(userData: any, configId: string): void {
@@ -141,17 +144,9 @@ export class UserService {
   }
 
   private fireUserDataEvent(configId: string, passedUserData: any): void {
-    if (!passedUserData) {
-      return;
-    }
-
     if (this.configurationProvider.hasManyConfigs()) {
       const configs = this.configurationProvider.getAllConfigurations();
-      const result = configs.map((config) => {
-        const userDataFromStore = this.getUserDataFromStore(config.configId);
-
-        return { configId: config.configId, userData: userDataFromStore };
-      });
+      const result = configs.map((config) => ({ configId: config.configId, userData: passedUserData }));
 
       this.userDataInternal$.next(result);
     } else {

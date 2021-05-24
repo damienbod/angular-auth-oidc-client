@@ -228,7 +228,7 @@ describe('User Service', () => {
 
         userService.getAndPersistUserDataInStore('configId', isRenewProcess, idToken, decodedIdToken).subscribe({
           error: (err) => {
-            expect(err).toEqual('no user data, request failed');
+            expect(err).toEqual('Received no user data, request failed');
             expect(err).not.toEqual('some other message');
           },
         });
@@ -322,7 +322,7 @@ describe('User Service', () => {
       spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
       const spy = spyOn(eventsService, 'fireEvent');
       userService.resetUserDataInStore('configId');
-      expect(spy).toHaveBeenCalledWith(EventTypes.UserDataChanged, null);
+      expect(spy).toHaveBeenCalledWith(EventTypes.UserDataChanged, { configId: 'configId', userData: null });
     });
   });
 
@@ -347,7 +347,7 @@ describe('User Service', () => {
       spyOn(userService, 'getUserDataFromStore').and.returnValue('something');
       const eventSpy = spyOn(eventsService, 'fireEvent');
       userService.publishUserDataIfExists('configId');
-      expect(eventSpy).toHaveBeenCalledWith(EventTypes.UserDataChanged, 'something');
+      expect(eventSpy).toHaveBeenCalledWith(EventTypes.UserDataChanged, { configId: 'configId', userData: 'something' });
     });
   });
 
@@ -381,7 +381,7 @@ describe('User Service', () => {
         const serviceAsAny = userService as any;
         spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
-        serviceAsAny.getIdentityUserData().subscribe({
+        serviceAsAny.getIdentityUserData('configId').subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },
@@ -396,7 +396,7 @@ describe('User Service', () => {
         const serviceAsAny = userService as any;
         spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ userinfoEndpoint: null });
-        serviceAsAny.getIdentityUserData().subscribe({
+        serviceAsAny.getIdentityUserData('configId').subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },
@@ -414,8 +414,8 @@ describe('User Service', () => {
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
-        serviceAsAny.getIdentityUserData().subscribe(() => {
-          expect(spy).toHaveBeenCalledWith('userinfoEndpoint', 'accessToken');
+        serviceAsAny.getIdentityUserData('configId').subscribe(() => {
+          expect(spy).toHaveBeenCalledWith('userinfoEndpoint', 'configId', 'accessToken');
         });
       })
     );
@@ -430,7 +430,7 @@ describe('User Service', () => {
         .and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
       spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), of(DUMMY_USER_DATA)));
 
-      (userService as any).getIdentityUserData().subscribe({
+      (userService as any).getIdentityUserData('configId').subscribe({
         next: (res) => {
           expect(res).toBeTruthy();
           expect(res).toEqual(DUMMY_USER_DATA);
@@ -449,7 +449,7 @@ describe('User Service', () => {
         .and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
       spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), of(DUMMY_USER_DATA)));
 
-      (userService as any).getIdentityUserData().subscribe({
+      (userService as any).getIdentityUserData('configId').subscribe({
         next: (res) => {
           expect(res).toBeTruthy();
           expect(res).toEqual(DUMMY_USER_DATA);
@@ -467,7 +467,7 @@ describe('User Service', () => {
         .and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
       spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), throwError({}), of(DUMMY_USER_DATA)));
 
-      (userService as any).getIdentityUserData().subscribe({
+      (userService as any).getIdentityUserData('configId').subscribe({
         error: (err) => {
           expect(err).toBeTruthy();
         },
