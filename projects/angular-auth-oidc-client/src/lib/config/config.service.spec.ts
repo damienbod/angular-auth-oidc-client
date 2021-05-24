@@ -20,7 +20,7 @@ import { ConfigurationProvider } from './provider/config.provider';
 import { ConfigurationProviderMock } from './provider/config.provider-mock';
 import { ConfigValidationService } from './validation/config-validation.service';
 
-describe('Configuration Service', () => {
+fdescribe('Configuration Service', () => {
   let oidcConfigService: OidcConfigService;
   let loggerService: LoggerService;
   let eventsService: PublicEventsService;
@@ -98,50 +98,23 @@ describe('Configuration Service', () => {
       })
     );
 
-    it(
+    fit(
       'setup defines default openIDConfiguration',
       waitForAsync(() => {
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        const promise = oidcConfigService.withConfigs([{ stsServer: 'https://please_set' }]);
+        const promise = oidcConfigService.withConfigs([{ stsServer: 'https://please_set', clientId: 'clientId' }]);
 
         promise.then((result) => {
-          expect(result).toEqual({
-            stsServer: 'https://please_set',
-            authWellknownEndpoint: 'https://please_set',
-            redirectUrl: 'https://please_set',
-            clientId: 'please_set',
-            responseType: 'code',
-            scope: 'openid email profile',
-            hdParam: '',
-            postLogoutRedirectUri: 'https://please_set',
-            startCheckSession: false,
-            silentRenew: false,
-            silentRenewUrl: 'https://please_set',
-            silentRenewTimeoutInSeconds: 20,
-            renewTimeBeforeTokenExpiresInSeconds: 0,
-            useRefreshToken: false,
-            usePushedAuthorisationRequests: false,
-            ignoreNonceAfterRefresh: false,
-            postLoginRoute: '/',
-            forbiddenRoute: '/forbidden',
-            unauthorizedRoute: '/unauthorized',
-            autoUserInfo: true,
-            autoCleanStateAfterAuthentication: true,
-            triggerAuthorizationResultEvent: false,
-            logLevel: 2,
-            issValidationOff: false,
-            historyCleanupOff: false,
-            maxIdTokenIatOffsetAllowedInSeconds: 120,
-            disableIatOffsetValidation: false,
-            storage: sessionStorage,
-            customParams: {},
-            eagerLoadAuthWellKnownEndpoints: true,
-            disableRefreshIdTokenAuthTimeValidation: false,
-            tokenRefreshInSeconds: 4,
-            refreshTokenRetryInSeconds: 3,
-            ngswBypass: false,
-          });
+          expect(result).toEqual([
+            {
+              ...DEFAULT_CONFIG,
+              stsServer: 'https://please_set',
+              clientId: 'clientId',
+              configId: '0-clientId',
+              authWellKnownEndpoints: null,
+            },
+          ]);
         });
       })
     );
@@ -149,19 +122,25 @@ describe('Configuration Service', () => {
     it(
       'if authWellKnownEndPointsAlreadyStored the events are fired and resolve',
       waitForAsync(() => {
-        const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: null };
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ any: 'thing' });
+        const config = {
+          stsServer: 'stsServerForTesting',
+          clientId: 'clientId',
+        };
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue({ any: 'thing' });
         const eventServiceSpy = spyOn(eventsService, 'fireEvent');
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         const promise = oidcConfigService.withConfigs([config]);
-        promise.then(() => {
+
+        promise.then((result) => {
           expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
-            configuration: {
-              ...DEFAULT_CONFIG,
-              stsServer: 'stsServerForTesting',
-              authWellknownEndpoint: 'stsServerForTesting',
+            ...DEFAULT_CONFIG,
+            stsServer: 'stsServerForTesting',
+            authWellknownEndpointUrl: 'stsServerForTesting',
+            clientId: 'clientId',
+            configId: '0-clientId',
+            authWellknownEndpoints: {
+              any: 'thing',
             },
-            wellknown: { any: 'thing' },
           });
         });
       })
@@ -171,12 +150,13 @@ describe('Configuration Service', () => {
       'if passedAuthWellKnownEndpoints are passed, set these, fire event and resolve',
       waitForAsync(() => {
         const authWellKnown = { issuer: 'issuerForTesting' };
-        const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: authWellKnown };
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
+        const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: authWellKnown, clientId: 'clientId' };
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue(null);
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         const eventServiceSpy = spyOn(eventsService, 'fireEvent');
         const storeWellKnownEndpointsSpy = spyOn(authWellKnownService, 'storeWellKnownEndpoints');
         const promise = oidcConfigService.withConfigs([config]);
+
         promise.then(() => {
           expect(storeWellKnownEndpointsSpy).toHaveBeenCalledWith('configId', authWellKnown);
           expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
@@ -413,3 +393,116 @@ describe('Configuration Service', () => {
     );
   });
 });
+
+var diff = function (obj1, obj2) {
+  // Make sure an object to compare is provided
+  if (!obj2 || Object.prototype.toString.call(obj2) !== '[object Object]') {
+    return obj1;
+  }
+
+  //
+  // Variables
+  //
+
+  var diffs = {};
+  var key;
+
+  //
+  // Methods
+  //
+
+  /**
+   * Check if two arrays are equal
+   * @param  {Array}   arr1 The first array
+   * @param  {Array}   arr2 The second array
+   * @return {Boolean}      If true, both arrays are equal
+   */
+  var arraysMatch = function (arr1, arr2) {
+    // Check if the arrays are the same length
+    if (arr1.length !== arr2.length) return false;
+
+    // Check if all items exist and are in the same order
+    for (var i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) return false;
+    }
+
+    // Otherwise, return true
+    return true;
+  };
+
+  /**
+   * Compare two items and push non-matches to object
+   * @param  {*}      item1 The first item
+   * @param  {*}      item2 The second item
+   * @param  {String} key   The key in our object
+   */
+  var compare = function (item1, item2, key) {
+    // Get the object type
+    var type1 = Object.prototype.toString.call(item1);
+    var type2 = Object.prototype.toString.call(item2);
+
+    // If type2 is undefined it has been removed
+    if (type2 === '[object Undefined]') {
+      diffs[key] = null;
+      return;
+    }
+
+    // If items are different types
+    if (type1 !== type2) {
+      diffs[key] = item2;
+      return;
+    }
+
+    // If an object, compare recursively
+    if (type1 === '[object Object]') {
+      var objDiff = diff(item1, item2);
+      if (Object.keys(objDiff).length > 0) {
+        diffs[key] = objDiff;
+      }
+      return;
+    }
+
+    // If an array, compare
+    if (type1 === '[object Array]') {
+      if (!arraysMatch(item1, item2)) {
+        diffs[key] = item2;
+      }
+      return;
+    }
+
+    // Else if it's a function, convert to a string and compare
+    // Otherwise, just compare
+    if (type1 === '[object Function]') {
+      if (item1.toString() !== item2.toString()) {
+        diffs[key] = item2;
+      }
+    } else {
+      if (item1 !== item2) {
+        diffs[key] = item2;
+      }
+    }
+  };
+
+  //
+  // Compare our objects
+  //
+
+  // Loop through the first object
+  for (key in obj1) {
+    if (obj1.hasOwnProperty(key)) {
+      compare(obj1[key], obj2[key], key);
+    }
+  }
+
+  // Loop through the second object and find missing items
+  for (key in obj2) {
+    if (obj2.hasOwnProperty(key)) {
+      if (!obj1[key] && obj1[key] !== obj2[key]) {
+        diffs[key] = obj2[key];
+      }
+    }
+  }
+
+  // Return the object of differences
+  return diffs;
+};

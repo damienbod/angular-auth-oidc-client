@@ -23,7 +23,7 @@ export class ConfigurationProvider {
       return this.configsInternal[configId] || null;
     }
 
-    const [, value] = Object.entries(this.configsInternal)[0];
+    const [, value] = Object.entries(this.configsInternal)[0] || [[null, null]];
 
     return value || null;
   }
