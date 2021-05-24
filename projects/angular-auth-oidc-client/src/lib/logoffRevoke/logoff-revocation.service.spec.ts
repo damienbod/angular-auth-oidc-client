@@ -66,7 +66,7 @@ describe('Logout and Revoke Service', () => {
       const paramToken = 'passedTokenAsParam';
       const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
       // Act
-      service.revokeAccessToken(paramToken);
+      service.revokeAccessToken('configId', paramToken);
       // Assert
       expect(revocationSpy).toHaveBeenCalledWith(paramToken, 'configId');
     });
@@ -204,7 +204,7 @@ describe('Logout and Revoke Service', () => {
       const paramToken = 'passedTokenAsParam';
       const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyRefreshToken');
       // Act
-      service.revokeRefreshToken(paramToken);
+      service.revokeRefreshToken('configId', paramToken);
       // Assert
       expect(revocationSpy).toHaveBeenCalledWith(paramToken, 'configId');
     });
@@ -345,7 +345,7 @@ describe('Logout and Revoke Service', () => {
       // Act
       service.getEndSessionUrl('configId');
       // Assert
-      expect(revocationSpy).toHaveBeenCalledWith(paramToken, undefined);
+      expect(revocationSpy).toHaveBeenCalledWith(paramToken, 'configId', {});
     });
   });
 
