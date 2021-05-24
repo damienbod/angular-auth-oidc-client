@@ -32,6 +32,7 @@ export class RefreshSessionService {
 
   userForceRefreshSession(configId: string, extraCustomParams?: { [key: string]: string | number | boolean }): Observable<LoginResponse> {
     this.persistCustomParams(extraCustomParams, configId);
+
     return this.forceRefreshSession(configId, extraCustomParams);
   }
 

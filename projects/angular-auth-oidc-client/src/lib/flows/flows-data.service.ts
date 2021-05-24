@@ -59,26 +59,26 @@ export class FlowsDataService {
   }
 
   isSilentRenewRunning(configId: string) {
-    const storageObject = JSON.parse(this.storagePersistenceService.read('storageSilentRenewRunning', configId));
+    const storageObject = this.getSilentRenewRunningStorageEntry(configId);
 
-    if (storageObject) {
-      const { silentRenewTimeoutInSeconds } = this.configurationProvider.getOpenIDConfiguration(configId);
-      const timeOutInMilliseconds = silentRenewTimeoutInSeconds * 1000;
-      const dateOfLaunchedProcessUtc = Date.parse(storageObject.dateOfLaunchedProcessUtc);
-      const currentDateUtc = Date.parse(new Date().toISOString());
-      const elapsedTimeInMilliseconds = Math.abs(currentDateUtc - dateOfLaunchedProcessUtc);
-      const isProbablyStuck = elapsedTimeInMilliseconds > timeOutInMilliseconds;
-
-      if (isProbablyStuck) {
-        this.loggerService.logDebug('silent renew process is probably stuck, state will be reset.', configId);
-        this.resetSilentRenewRunning(configId);
-        return false;
-      }
-
-      return storageObject.state === 'running';
+    if (!storageObject) {
+      return false;
     }
 
-    return false;
+    const { silentRenewTimeoutInSeconds } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const timeOutInMilliseconds = silentRenewTimeoutInSeconds * 1000;
+    const dateOfLaunchedProcessUtc = Date.parse(storageObject.dateOfLaunchedProcessUtc);
+    const currentDateUtc = Date.parse(new Date().toISOString());
+    const elapsedTimeInMilliseconds = Math.abs(currentDateUtc - dateOfLaunchedProcessUtc);
+    const isProbablyStuck = elapsedTimeInMilliseconds > timeOutInMilliseconds;
+
+    if (isProbablyStuck) {
+      this.loggerService.logDebug('silent renew process is probably stuck, state will be reset.', configId);
+      this.resetSilentRenewRunning(configId);
+      return false;
+    }
+
+    return storageObject.state === 'running';
   }
 
   setSilentRenewRunning(configId: string) {
@@ -92,5 +92,15 @@ export class FlowsDataService {
 
   resetSilentRenewRunning(configId: string) {
     this.storagePersistenceService.write('storageSilentRenewRunning', '', configId);
+  }
+
+  private getSilentRenewRunningStorageEntry(configId: string): any {
+    const storageEntry = this.storagePersistenceService.read('storageSilentRenewRunning', configId);
+
+    if (!storageEntry) {
+      return null;
+    }
+
+    return JSON.parse(storageEntry);
   }
 }
