@@ -252,7 +252,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
             expect(err).toBeTruthy();
 
             // storagePersistenceService.write() should not have been called with jwtKeys
-            expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith('authnResult', 'authResultToStore');
+            expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith('authnResult', 'authResultToStore', 'configId');
           },
         });
       })
@@ -269,7 +269,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
 
         service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe({
           next: (callbackContext: CallbackContext) => {
-            expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith('jwtKeys');
+            expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith('jwtKeys', 'configId');
             expect(callbackContext.jwtKeys).toEqual(DUMMY_JWT_KEYS);
           },
           error: (err) => {

@@ -8,14 +8,14 @@ import { ConfigurationProvider } from '../config/provider/config.provider';
 import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsDataServiceMock } from '../flows/flows-data.service-mock';
-import { FlowsService } from '../flows/flows.service';
-import { FlowsServiceMock } from '../flows/flows.service-mock';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { RefreshSessionIframeServiceMock } from '../iframe/refresh-session-iframe.service-mock';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { SilentRenewServiceMock } from '../iframe/silent-renew.service-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 import { RefreshSessionRefreshTokenServiceMock } from './refresh-session-refresh-token.service-mock';
@@ -44,7 +44,6 @@ describe('RefreshSessionService ', () => {
         { provide: SilentRenewService, useClass: SilentRenewServiceMock },
         { provide: AuthStateService, useClass: AuthStateServiceMock },
         { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
-        { provide: FlowsService, useClass: FlowsServiceMock },
         {
           provide: RefreshSessionIframeService,
           useClass: RefreshSessionIframeServiceMock,
@@ -53,6 +52,7 @@ describe('RefreshSessionService ', () => {
           provide: RefreshSessionRefreshTokenService,
           useClass: RefreshSessionRefreshTokenServiceMock,
         },
+        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
       ],
     });
   });
@@ -219,12 +219,10 @@ describe('RefreshSessionService ', () => {
           spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ silentRenewTimeoutInSeconds: 10 });
           const spyInsideMap = spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
-          // TODO FIX THIS TEST TO OBSERVABLES
-          refreshSessionService
-            .forceRefreshSession('configId')
-            .toPromise()
-            .then((result) => expect(result).toContain({ idToken: 'id_token', accessToken: 'access_token' }))
-            .then(() => expect(spyInsideMap).toHaveBeenCalledTimes(1));
+          refreshSessionService.forceRefreshSession('configId').subscribe((result) => {
+            expect(result).toEqual({ idToken: 'id_token', accessToken: 'access_token', isAuthenticated: true });
+            expect(spyInsideMap).toHaveBeenCalledTimes(1);
+          });
 
           (silentRenewService as any).fireRefreshWithIframeCompleted({
             authResult: { id_token: 'id_token', access_token: 'access_token' },
