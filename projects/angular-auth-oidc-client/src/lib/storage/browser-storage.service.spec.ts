@@ -138,6 +138,37 @@ describe('Browser Service', () => {
     });
   });
 
+  describe('clear', () => {
+    it('returns false if there is no storage', () => {
+      spyOn(service as any, 'hasStorage').and.returnValue(false);
+      expect(service.clear('configId')).toBeFalse();
+    });
+
+    it('returns false if getStorage returns null', () => {
+      spyOn(service as any, 'hasStorage').and.returnValue(true);
+      spyOn(service as any, 'getStorage').and.returnValue(null);
+
+      expect(service.clear('configId')).toBeFalsy();
+    });
+
+    it('returns true if clear is called', () => {
+      spyOn(service as any, 'hasStorage').and.returnValue(true);
+
+      const serviceObject = {
+        clear: () => {},
+      };
+
+      const setItemSpy = spyOn(serviceObject, 'clear').and.callThrough();
+
+      spyOn(service as any, 'getStorage').and.returnValue(serviceObject);
+
+      const result = service.clear('configId');
+
+      expect(result).toBe(true);
+      expect(setItemSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('getStorage', () => {
     it('returns null if there is no storage', () => {
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ storage: null });

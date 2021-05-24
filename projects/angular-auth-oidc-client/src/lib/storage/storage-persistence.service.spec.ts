@@ -64,6 +64,16 @@ describe('Storage Persistence Service', () => {
       expect(readSpy).toHaveBeenCalledWith('configId');
       expect(writeSpy).toHaveBeenCalledWith('configId', {});
     });
+
+    it('does not crash when read with configId returns null', () => {
+      const readSpy = spyOn(securityStorage, 'read').and.returnValue(null);
+      const writeSpy = spyOn(securityStorage, 'write');
+
+      service.remove('authNonce', 'configId');
+
+      expect(readSpy).toHaveBeenCalledWith('configId');
+      expect(writeSpy).toHaveBeenCalledWith('configId', {});
+    });
   });
 
   describe('clear', () => {
