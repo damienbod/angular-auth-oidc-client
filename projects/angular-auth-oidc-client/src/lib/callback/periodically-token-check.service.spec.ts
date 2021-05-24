@@ -1,4 +1,4 @@
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Subscription } from 'rxjs';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
@@ -23,12 +23,12 @@ import { PeriodicallyTokenCheckService } from './periodically-token-check.servic
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 import { RefreshSessionRefreshTokenServiceMock } from './refresh-session-refresh-token.service-mock';
 
-fdescribe('PeriodicallyTokenCheckService', () => {
+describe('PeriodicallyTokenCheckService', () => {
   let periodicallyTokenCheckService: PeriodicallyTokenCheckService;
   let intervalService: IntervalService;
   let configurationProvider: ConfigurationProvider;
-  let flowsDataService: FlowsDataService;
-  let flowHelper: FlowHelper;
+  // let flowsDataService: FlowsDataService;
+  // let flowHelper: FlowHelper;
   // let authStateService: AuthStateService;
   // let refreshSessionIframeService: RefreshSessionIframeService;
   // let refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService;
@@ -64,8 +64,8 @@ fdescribe('PeriodicallyTokenCheckService', () => {
     periodicallyTokenCheckService = TestBed.inject(PeriodicallyTokenCheckService);
     intervalService = TestBed.inject(IntervalService);
     configurationProvider = TestBed.inject(ConfigurationProvider);
-    flowsDataService = TestBed.inject(FlowsDataService);
-    flowHelper = TestBed.inject(FlowHelper);
+    // flowsDataService = TestBed.inject(FlowsDataService);
+    // flowHelper = TestBed.inject(FlowHelper);
     // authStateService = TestBed.inject(AuthStateService);
     // refreshSessionIframeService = TestBed.inject(RefreshSessionIframeService);
     // refreshSessionRefreshTokenService = TestBed.inject(RefreshSessionRefreshTokenService);
@@ -97,17 +97,17 @@ fdescribe('PeriodicallyTokenCheckService', () => {
       expect(result).toBeUndefined();
     });
 
-    it('interval calls resetSilentRenewRunning when current flow is CodeFlowWithRefeshTokens', fakeAsync(() => {
-      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ silentRenew: true }]);
-      const isCurrentFlowCodeFlowWithRefreshTokensSpy = spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
-      const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
-      periodicallyTokenCheckService.startTokenValidationPeriodically();
-      tick(1000);
-      intervalService.runTokenValidationRunning.unsubscribe();
-      intervalService.runTokenValidationRunning = null;
-      expect(isCurrentFlowCodeFlowWithRefreshTokensSpy).toHaveBeenCalled();
-      expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-    }));
+    // it('interval calls resetSilentRenewRunning when current flow is CodeFlowWithRefeshTokens', fakeAsync(() => {
+    //   spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ silentRenew: true }]);
+    //   const isCurrentFlowCodeFlowWithRefreshTokensSpy = spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
+    //   const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
+    //   periodicallyTokenCheckService.startTokenValidationPeriodically();
+    //   tick(1000);
+    //   intervalService.runTokenValidationRunning.unsubscribe();
+    //   intervalService.runTokenValidationRunning = null;
+    //   expect(isCurrentFlowCodeFlowWithRefreshTokensSpy).toHaveBeenCalled();
+    //   expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+    // }));
 
     // it('interval calls resetSilentRenewRunning in case of error', fakeAsync(() => {
     //   spyOn(intervalService, 'startPeriodicTokenCheck').and.returnValue(throwError('any-error'));
