@@ -12,13 +12,12 @@ import { StoragePersistenceServiceMock } from '../storage/storage-persistence.se
 import { EqualityService } from '../utils/equality/equality.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
-import { TokenHelperServiceMock } from '../utils/tokenHelper/token-helper.service-mock';
 import { StateValidationService } from './state-validation.service';
 import { TokenValidationService } from './token-validation.service';
 import { TokenValidationServiceMock } from './token-validation.service-mock';
 import { ValidationResult } from './validation-result';
 
-describe('State Validation Service', () => {
+fdescribe('State Validation Service', () => {
   let stateValidationService: StateValidationService;
   let oidcSecurityValidation: TokenValidationService;
   let tokenHelperService: TokenHelperService;
@@ -32,6 +31,7 @@ describe('State Validation Service', () => {
     TestBed.configureTestingModule({
       imports: [],
       providers: [
+        StateValidationService,
         {
           provide: StoragePersistenceService,
           useClass: StoragePersistenceServiceMock,
@@ -41,10 +41,6 @@ describe('State Validation Service', () => {
           useClass: TokenValidationServiceMock,
         },
         {
-          provide: TokenHelperService,
-          useClass: TokenHelperServiceMock,
-        },
-        {
           provide: LoggerService,
           useClass: LoggerServiceMock,
         },
@@ -52,6 +48,7 @@ describe('State Validation Service', () => {
           provide: ConfigurationProvider,
           useClass: ConfigurationProviderMock,
         },
+        TokenHelperService,
         EqualityService,
         FlowHelper,
       ],
@@ -131,7 +128,7 @@ describe('State Validation Service', () => {
 
     expect(oidcSecurityValidation.validateStateFromHashCallback).toHaveBeenCalled();
 
-    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authorizedCallback incorrect state');
+    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect state');
 
     expect(state.accessToken).toBe('');
     expect(state.authResponseIsValid).toBe(false);
@@ -224,7 +221,7 @@ describe('State Validation Service', () => {
 
     const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authorizedCallback Signature validation failed id_token');
+    expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback Signature validation failed id_token');
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('id_tokenTEST');
@@ -262,7 +259,7 @@ describe('State Validation Service', () => {
     };
     const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authorizedCallback incorrect nonce');
+    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect nonce');
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('id_tokenTEST');
@@ -305,10 +302,7 @@ describe('State Validation Service', () => {
     };
     const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logDebugSpy).toHaveBeenCalledWith(
-      'configId',
-      'authorizedCallback Validation, one of the REQUIRED properties missing from id_token'
-    );
+    expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback Validation, one of the REQUIRED properties missing from id_token');
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('id_tokenTEST');
@@ -357,7 +351,7 @@ describe('State Validation Service', () => {
 
     expect(logWarningSpy).toHaveBeenCalledWith(
       'configId',
-      'authorizedCallback Validation, iat rejected id_token was issued too far away from the current time'
+      'authCallback Validation, iat rejected id_token was issued too far away from the current time'
     );
 
     expect(state.accessToken).toBe('access_tokenTEST');
@@ -406,7 +400,7 @@ describe('State Validation Service', () => {
     };
     const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer');
+    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect iss does not match authWellKnownEndpoints issuer');
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('id_tokenTEST');
@@ -458,7 +452,7 @@ describe('State Validation Service', () => {
     };
     const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authorizedCallback incorrect aud');
+    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect aud');
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('id_tokenTEST');
@@ -512,7 +506,7 @@ describe('State Validation Service', () => {
     };
     const state = stateValidationService.getValidatedStateResult(callbackContext, 'configId');
 
-    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authorizedCallback id token expired');
+    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback id token expired');
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('id_tokenTEST');
@@ -559,7 +553,7 @@ describe('State Validation Service', () => {
 
     const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logDebugSpy).toHaveBeenCalledWith('configId', 'AuthorizedCallback token(s) validated, continue');
+    expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback token(s) validated, continue');
 
     // CAN THIS BE DONE VIA IF/ELSE IN THE BEGINNING?
     expect(state.accessToken).toBe('');
@@ -607,7 +601,7 @@ describe('State Validation Service', () => {
     };
     const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authorizedCallback incorrect at_hash');
+    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect at_hash');
 
     // CAN THIS BE DONE VIA IF/ELSE IN THE BEGINNING?
     expect(state.accessToken).toBe('access_tokenTEST');

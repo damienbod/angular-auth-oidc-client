@@ -211,6 +211,7 @@ export class StateValidationService {
     if (!callbackContext.existingIdToken) {
       return true;
     }
+
     const decodedIdToken = this.tokenHelperService.getPayloadFromToken(callbackContext.existingIdToken, false, configId);
 
     // Upon successful validation of the Refresh Token, the response body is the Token Response of Section 3.1.3.3
