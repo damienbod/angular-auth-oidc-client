@@ -1,10 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../../config/provider/config.provider';
 import { ConfigurationProviderMock } from '../../config/provider/config.provider-mock';
-import { PlatformProvider } from '../platform-provider/platform.provider';
-import { PlatformProviderMock } from '../platform-provider/platform.provider-mock';
 import { FlowHelper } from './flow-helper.service';
-import { FlowHelperMock } from './flow-helper.service.mock';
 
 describe('Flow Helper Service', () => {
   let configProvider: ConfigurationProvider;
@@ -12,11 +9,7 @@ describe('Flow Helper Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
-        { provide: FlowHelper, useClass: FlowHelperMock },
-        { provide: PlatformProvider, useClass: PlatformProviderMock },
-      ],
+      providers: [FlowHelper, { provide: ConfigurationProvider, useClass: ConfigurationProviderMock }],
     });
   });
 

@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { ConfigurationProvider } from '../config/provider/config.provider';
 import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { LoginService } from './login.service';
 import { ParLoginService } from './par/par-login.service';
 import { ParLoginServiceMock } from './par/par-login.service-mock';
@@ -26,6 +28,7 @@ describe('LoginService', () => {
         { provide: ParLoginService, useClass: ParLoginServiceMock },
         { provide: PopUpLoginService, useClass: PopUpLoginServiceMock },
         { provide: StandardLoginService, useClass: StandardLoginServiceMock },
+        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
       ],
     });
   });

@@ -74,7 +74,7 @@ describe('Flows Service', () => {
 
         service.processCodeFlowCallback('some-url1234', 'configId').subscribe((value) => {
           expect(value).toBeNull();
-          expect(codeFlowCallbackSpy).toHaveBeenCalledOnceWith('some-url1234');
+          expect(codeFlowCallbackSpy).toHaveBeenCalledOnceWith('some-url1234', 'configId');
           expect(codeFlowCodeRequestSpy).toHaveBeenCalledTimes(1);
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalledTimes(1);
           expect(callbackStateValidationSpy).toHaveBeenCalledTimes(1);
