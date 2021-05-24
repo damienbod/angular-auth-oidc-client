@@ -45,8 +45,8 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
           clientId: 'ad6b0351-92b4-4ee9-ac8d-3e76e5fd1c67',
           scope: 'openid profile User.ReadBasic.All',
           responseType: 'code',
-          silentRenew: false,
-          useRefreshToken: false,
+          silentRenew: true,
+          useRefreshToken: true,
           ignoreNonceAfterRefresh: true,
           maxIdTokenIatOffsetAllowedInSeconds: 600,
           issValidationOff: false, // this needs to be true if using a common endpoint in Azure
