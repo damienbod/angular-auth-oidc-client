@@ -17,7 +17,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
         useRefreshToken: true,
         logLevel: LogLevel.Debug,
         ignoreNonceAfterRefresh: true,
-        customParams: {
+        customParamsAuthRequest: {
           prompt: 'consent', // login, consent
         },
       },

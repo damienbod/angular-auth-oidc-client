@@ -21,7 +21,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
         // useRefreshToken: true, // for refresh renew, but revocation and one time usage is missing from server impl.
         // ignoreNonceAfterRefresh: true,
         // disableRefreshIdTokenAuthTimeValidation: true,
-        customParams: {
+        customParamsAuthRequest: {
           prompt: 'select_account', // login, consent
         },
       },

@@ -158,7 +158,7 @@ export class AppComponent implements OnInit {
 Custom parameters can be added to the auth request by adding them to the config. They are provided by
 
 ```typescript
-customParams?: {
+customParamsAuthRequest?: {
     [key: string]: string | number | boolean;
 };
 ```
@@ -169,7 +169,7 @@ so you can pass them as an object like this:
 AuthModule.forRoot({
       config: {
         stsServer: '<your sts address here>',
-         customParams: {
+         customParamsAuthRequest: {
           response_mode: 'fragment',
           prompt: 'consent',
          },

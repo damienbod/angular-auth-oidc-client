@@ -7,6 +7,37 @@ To be documents:
 - AutoUserinfo --> AutoUserInfo
 - authwellknown is now part of the config
 
+### custom params have been renamed:
+
+old:
+```ts
+customParams: {
+	// yourParam: 'your_value',
+},
+customParamsRefreshToken: {
+	// yourParam: 'your_value',
+},
+customParamsEndSession: {
+	// yourParam: 'your_value',
+},
+```
+
+new:
+```ts
+customParamsAuthRequest: {
+	// yourParam: 'your_value',
+},
+customParamsRefreshTokenRequest: {
+	// yourParam: 'your_value',
+},
+customParamsEndSessionRequest: {
+	// yourParam: 'your_value',
+},
+customParamsCodeRequest: {
+	// yourParam: 'your_value',
+},
+```
+  
 ### Configuration in App Module
 
 #### Old:
