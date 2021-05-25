@@ -83,7 +83,6 @@ export class OidcConfigService {
               return throwError(error);
             }),
             tap((wellknownEndPoints) => {
-              console.log('@@@@@@');
               usedConfig.authWellknownEndpoints = wellknownEndPoints;
               this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
             })

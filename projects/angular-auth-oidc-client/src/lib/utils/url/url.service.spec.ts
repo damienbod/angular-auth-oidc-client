@@ -15,7 +15,7 @@ import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { FlowHelperMock } from '../flowHelper/flow-helper.service.mock';
 import { UrlService } from './url.service';
 
-describe('UrlService Tests', () => {
+fdescribe('UrlService Tests', () => {
   let service: UrlService;
   let configurationProvider: ConfigurationProvider;
   let flowHelper: FlowHelper;
@@ -269,6 +269,7 @@ describe('UrlService Tests', () => {
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
       config.scope = 'openid email profile';
+      config.configId = 'configId';
 
       configurationProvider.setConfig(config);
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({
@@ -280,6 +281,7 @@ describe('UrlService Tests', () => {
         config.redirectUrl,
         'nonce',
         'state',
+        config.configId,
         'myprompt'
       );
 
@@ -301,6 +303,7 @@ describe('UrlService Tests', () => {
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
       config.scope = 'openid email profile';
+      config.configId = 'configId';
 
       configurationProvider.setConfig(config);
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({
@@ -312,6 +315,7 @@ describe('UrlService Tests', () => {
         config.redirectUrl,
         'nonce',
         'state',
+        config.configId,
         'myprompt',
         { to: 'add', as: 'well' }
       );
@@ -336,6 +340,7 @@ describe('UrlService Tests', () => {
       config.responseType = 'id_token token';
       config.scope = 'openid email profile';
       config.hdParam = 'myHdParam';
+      config.configId = 'configId';
 
       configurationProvider.setConfig(config);
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({
@@ -346,7 +351,8 @@ describe('UrlService Tests', () => {
         '', // Implicit Flow
         config.redirectUrl,
         'nonce',
-        'state'
+        'state',
+        config.configId
       );
 
       const expectValue =
@@ -367,6 +373,7 @@ describe('UrlService Tests', () => {
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
       config.scope = 'openid email profile';
+      config.configId = 'configId';
 
       config.customParamsAuthRequest = {
         testcustom: 'customvalue',
@@ -381,7 +388,8 @@ describe('UrlService Tests', () => {
         '', // Implicit Flow
         config.redirectUrl,
         'nonce',
-        'state'
+        'state',
+        config.configId
       );
 
       const expectValue =
@@ -402,6 +410,7 @@ describe('UrlService Tests', () => {
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
       config.scope = 'openid email profile';
+      config.configId = 'configId';
 
       config.customParamsAuthRequest = {
         t4: 'ABC abc 123',
@@ -419,7 +428,8 @@ describe('UrlService Tests', () => {
         '', // Implicit Flow
         config.redirectUrl,
         'nonce',
-        'state'
+        'state',
+        config.configId
       );
 
       const expectValue =
@@ -440,6 +450,7 @@ describe('UrlService Tests', () => {
         clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         responseType: 'id_token token',
         scope: 'openid email profile',
+        configId: 'configId',
         customParams: {
           t4: 'ABC abc 123',
           t3: '#',
@@ -458,6 +469,7 @@ describe('UrlService Tests', () => {
         config.redirectUrl,
         'nonce',
         'state',
+        config.configId,
         null,
         { to: 'add', as: 'well' }
       );
@@ -518,6 +530,7 @@ describe('UrlService Tests', () => {
         clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         responseType: 'id_token token',
         scope: 'openid email profile',
+        configId: 'configId',
       };
 
       configurationProvider.setConfig(config);
@@ -530,6 +543,7 @@ describe('UrlService Tests', () => {
         config.redirectUrl,
         'nonce',
         'state',
+        config.configId,
         null,
         { to: 'add', as: 'well' }
       );
@@ -994,11 +1008,12 @@ describe('UrlService Tests', () => {
       const clientId = 'clientId';
       const responseType = 'responseType';
       const scope = 'testScope';
+      const configId = 'configId';
 
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
       spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
 
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', configId).and.returnValue({
         authorizationEndpoint,
       });
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
@@ -1006,11 +1021,12 @@ describe('UrlService Tests', () => {
         clientId,
         responseType,
         scope,
+        configId,
       });
 
       const serviceAsAny = service as any;
 
-      const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew();
+      const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew(configId);
       expect(result).toBe(
         `authorizationEndpoint?client_id=${clientId}&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&prompt=none`
       );
@@ -1073,6 +1089,7 @@ describe('UrlService Tests', () => {
       const codeVerifier = 'codeVerifier';
       const codeChallenge = 'codeChallenge ';
       const scope = 'testScope';
+      const configId = 'configId';
 
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
       spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
@@ -1085,11 +1102,12 @@ describe('UrlService Tests', () => {
         clientId,
         responseType,
         scope,
+        configId,
       });
 
       const serviceAsAny = service as any;
 
-      const result = serviceAsAny.createUrlCodeFlowWithSilentRenew();
+      const result = serviceAsAny.createUrlCodeFlowWithSilentRenew('configId');
       expect(result).toBe(
         `authorizationEndpoint?client_id=${clientId}&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&prompt=none`
       );
@@ -1114,7 +1132,7 @@ describe('UrlService Tests', () => {
 
       const serviceAsAny = service as any;
 
-      const result = serviceAsAny.createUrlCodeFlowWithSilentRenew();
+      const result = serviceAsAny.createUrlCodeFlowWithSilentRenew('configId');
       expect(result).toBe(null);
     });
   });
@@ -1163,7 +1181,7 @@ describe('UrlService Tests', () => {
 
       const serviceAsAny = service as any;
 
-      const result = serviceAsAny.createUrlImplicitFlowAuthorize();
+      const result = serviceAsAny.createUrlImplicitFlowAuthorize('configId');
       expect(result).toBe(null);
     });
 
@@ -1182,7 +1200,7 @@ describe('UrlService Tests', () => {
 
       const serviceAsAny = service as any;
 
-      const result = serviceAsAny.createUrlImplicitFlowAuthorize();
+      const result = serviceAsAny.createUrlImplicitFlowAuthorize('configId');
       expect(result).toBe(null);
     });
   });
@@ -1202,7 +1220,7 @@ describe('UrlService Tests', () => {
 
       const serviceAsAny = service as any;
 
-      const result = serviceAsAny.createUrlCodeFlowAuthorize();
+      const result = serviceAsAny.createUrlCodeFlowAuthorize('configId');
       expect(result).toBeNull();
     });
 
@@ -1232,7 +1250,7 @@ describe('UrlService Tests', () => {
 
       const serviceAsAny = service as any;
 
-      const result = serviceAsAny.createUrlCodeFlowAuthorize();
+      const result = serviceAsAny.createUrlCodeFlowAuthorize('configId');
       expect(result).toBe(
         `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}`
       );
@@ -1247,7 +1265,8 @@ describe('UrlService Tests', () => {
       const clientId = 'clientId';
       const responseType = 'responseType';
       const codeVerifier = 'codeVerifier';
-      const codeChallenge = 'codeChallenge ';
+      const codeChallenge = 'codeChallenge';
+      const configId = 'configId';
 
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
       spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
@@ -1260,11 +1279,12 @@ describe('UrlService Tests', () => {
         clientId,
         responseType,
         scope,
+        configId,
       });
 
       const serviceAsAny = service as any;
 
-      const result = serviceAsAny.createUrlCodeFlowAuthorize({ to: 'add', as: 'well' });
+      const result = serviceAsAny.createUrlCodeFlowAuthorize(configId, { to: 'add', as: 'well' });
       expect(result).toBe(
         `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com` +
           `&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&to=add&as=well`
@@ -1290,7 +1310,7 @@ describe('UrlService Tests', () => {
 
       const serviceAsAny = service as any;
 
-      const result = serviceAsAny.createUrlCodeFlowAuthorize();
+      const result = serviceAsAny.createUrlCodeFlowAuthorize('configId');
       expect(result).toBe(null);
     });
   });
@@ -1369,6 +1389,7 @@ describe('UrlService Tests', () => {
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
       config.scope = 'openid email profile';
+      config.configId = 'configId';
 
       configurationProvider.setConfig(config);
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({
@@ -1379,7 +1400,8 @@ describe('UrlService Tests', () => {
         '', // Implicit Flow
         config.redirectUrl,
         'nonce',
-        'state'
+        'state',
+        config.configId
       );
 
       const expectValue =
