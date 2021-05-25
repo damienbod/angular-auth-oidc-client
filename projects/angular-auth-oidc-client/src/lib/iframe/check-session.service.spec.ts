@@ -15,7 +15,7 @@ import { PlatformProviderMock } from '../utils/platform-provider/platform.provid
 import { CheckSessionService } from './check-session.service';
 import { IFrameService } from './existing-iframe.service';
 
-fdescribe('CheckSessionService', () => {
+describe('CheckSessionService', () => {
   let checkSessionService: CheckSessionService;
   let loggerService: LoggerService;
   let configurationProvider: ConfigurationProvider;

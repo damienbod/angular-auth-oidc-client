@@ -45,7 +45,7 @@ describe('RefreshSessionIframeService ', () => {
         ).and.returnValue(of(null));
 
         refreshSessionIframeService.refreshSessionWithIframe('configId').subscribe(() => {
-          expect(sendAuthorizeRequestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url');
+          expect(sendAuthorizeRequestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url', 'configId');
         });
       })
     );

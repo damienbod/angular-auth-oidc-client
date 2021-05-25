@@ -155,36 +155,36 @@ describe('Signin Key Data Service', () => {
     );
 
     it(
-      'loggs error if error is response',
+      'logs error if error is response',
       waitForAsync(() => {
         const logSpy = spyOn(loggerService, 'logError');
-        (service as any).handleErrorGetSigningKeys(new HttpResponse({ status: 400, statusText: 'nono' })).subscribe({
+        (service as any).handleErrorGetSigningKeys(new HttpResponse({ status: 400, statusText: 'nono' }), 'configId').subscribe({
           error: () => {
-            expect(logSpy).toHaveBeenCalledWith('400 - nono {}', 'configId');
+            expect(logSpy).toHaveBeenCalledWith('configId', '400 - nono {}');
           },
         });
       })
     );
 
     it(
-      'loggs error if error is not a response',
+      'logs error if error is not a response',
       waitForAsync(() => {
         const logSpy = spyOn(loggerService, 'logError');
-        (service as any).handleErrorGetSigningKeys('Just some Error').subscribe({
+        (service as any).handleErrorGetSigningKeys('Just some Error', 'configId').subscribe({
           error: () => {
-            expect(logSpy).toHaveBeenCalledWith('Just some Error', 'configId');
+            expect(logSpy).toHaveBeenCalledWith('configId', 'Just some Error');
           },
         });
       })
     );
 
     it(
-      'loggs error if error with message property is not a response',
+      'logs error if error with message property is not a response',
       waitForAsync(() => {
         const logSpy = spyOn(loggerService, 'logError');
-        (service as any).handleErrorGetSigningKeys({ message: 'Just some Error' }).subscribe({
+        (service as any).handleErrorGetSigningKeys({ message: 'Just some Error' }, 'configId').subscribe({
           error: () => {
-            expect(logSpy).toHaveBeenCalledWith('Just some Error', 'configId');
+            expect(logSpy).toHaveBeenCalledWith('configId', 'Just some Error');
           },
         });
       })

@@ -72,7 +72,7 @@ describe('UserCallbackHandlerService', () => {
         const spy = spyOn(flowsDataService, 'setSessionState');
 
         service.callbackUser(callbackContext, 'configId').subscribe((resultCallbackContext) => {
-          expect(spy).toHaveBeenCalledOnceWith('mystate');
+          expect(spy).toHaveBeenCalledOnceWith('mystate', 'configId');
           expect(resultCallbackContext).toEqual(callbackContext);
         });
       })
@@ -266,7 +266,7 @@ describe('UserCallbackHandlerService', () => {
         const setSessionStateSpy = spyOn(flowsDataService, 'setSessionState');
 
         service.callbackUser(callbackContext, 'configId').subscribe((resultCallbackContext) => {
-          expect(setSessionStateSpy).toHaveBeenCalledOnceWith('mystate');
+          expect(setSessionStateSpy).toHaveBeenCalledOnceWith('mystate', 'configId');
           expect(resultCallbackContext).toEqual(callbackContext);
         });
       })

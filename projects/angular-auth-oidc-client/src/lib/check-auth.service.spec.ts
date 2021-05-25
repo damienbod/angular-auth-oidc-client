@@ -140,12 +140,12 @@ describe('CheckAuthService', () => {
       'calls callbackService.handlePossibleStsCallback with current url when callback is true',
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer', configId: 'configId' });
         spyOn(callBackService, 'isCallback').and.returnValue(true);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         checkAuthService.checkAuth('configId').subscribe((result) => {
-          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null });
+          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null, configId: 'configId' });
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -155,11 +155,11 @@ describe('CheckAuthService', () => {
       'does NOT call handleCallbackAndFireEvents with current url when callback is false',
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer', configId: 'configId' });
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         checkAuthService.checkAuth('configId').subscribe((result) => {
-          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null });
+          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null, configId: 'configId' });
           expect(spy).not.toHaveBeenCalled();
         });
       })
@@ -169,7 +169,7 @@ describe('CheckAuthService', () => {
       'does fire the auth and user data events when it is not a callback from the sts and is authenticated',
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer', configId: 'configId' });
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
@@ -177,7 +177,7 @@ describe('CheckAuthService', () => {
         const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthenticatedAndFireEvent');
         const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
         checkAuthService.checkAuth('configId').subscribe((result) => {
-          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null });
+          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null, configId: 'configId' });
           expect(setAuthorizedAndFireEventSpy).toHaveBeenCalled();
           expect(userServiceSpy).toHaveBeenCalled();
         });
@@ -188,7 +188,7 @@ describe('CheckAuthService', () => {
       'does NOT fire the auth and user data events when it is not a callback from the sts and is NOT authenticated',
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer', configId: 'configId' });
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
@@ -196,7 +196,7 @@ describe('CheckAuthService', () => {
         const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthenticatedAndFireEvent');
         const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
         checkAuthService.checkAuth('configId').subscribe((result) => {
-          expect(result).toEqual({ isAuthenticated: false, userData: null, accessToken: null });
+          expect(result).toEqual({ isAuthenticated: false, userData: null, accessToken: null, configId: 'configId' });
           expect(setAuthorizedAndFireEventSpy).not.toHaveBeenCalled();
           expect(userServiceSpy).not.toHaveBeenCalled();
         });
@@ -207,12 +207,12 @@ describe('CheckAuthService', () => {
       'if authenticated return true',
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer', configId: 'configId' });
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
         checkAuthService.checkAuth('configId').subscribe((result) => {
-          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null });
+          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null, configId: 'configId' });
         });
       })
     );
