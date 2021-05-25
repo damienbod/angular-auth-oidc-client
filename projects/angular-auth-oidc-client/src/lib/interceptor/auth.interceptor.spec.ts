@@ -46,7 +46,7 @@ describe(`AuthHttpInterceptor`, () => {
     httpTestingController.verify();
   });
 
-  it(
+  fit(
     'should add an Authorization header when route matches and token is present',
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;

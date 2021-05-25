@@ -150,7 +150,7 @@ describe('CodeFlowCallbackHandlerService', () => {
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
         service.codeFlowCodeRequest({} as CallbackContext, 'configId').subscribe((callbackContext) => {
-          expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
+          expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', 'configId', jasmine.any(HttpHeaders));
         });
       })
     );

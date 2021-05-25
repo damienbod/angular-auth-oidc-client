@@ -208,7 +208,7 @@ describe('Flows Data Service', () => {
 
       const spy = spyOn(storagePersistenceService, 'write');
       service.setSilentRenewRunning('configId');
-      expect(spy).toHaveBeenCalledWith('storageSilentRenewRunning', storageObject, 'configId');
+      expect(spy).toHaveBeenCalledWith('storageSilentRenewRunning', JSON.stringify(storageObject), 'configId');
     });
   });
 

@@ -1,14 +1,17 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { AuthStateService } from '../authState/auth-state.service';
+import { ConfigurationProvider } from '../config/provider/config.provider';
+import { LoggerService } from '../logging/logger.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  // constructor(
-  //   private authStateService: AuthStateService,
-  //   private configurationProvider: ConfigurationProvider,
-  //   private loggerService: LoggerService
-  // ) {}
+  constructor(
+    private authStateService: AuthStateService,
+    private configurationProvider: ConfigurationProvider,
+    private loggerService: LoggerService
+  ) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Ensure we send the token only to routes which are secured

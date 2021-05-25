@@ -12,10 +12,9 @@ import { StoragePersistenceServiceMock } from '../../storage/storage-persistence
 import { JsrsAsignReducedService } from '../../validation/jsrsasign-reduced.service';
 import { JsrsAsignReducedServiceMock } from '../../validation/jsrsasign-reduced.service-mock';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
-import { FlowHelperMock } from '../flowHelper/flow-helper.service.mock';
 import { UrlService } from './url.service';
 
-fdescribe('UrlService Tests', () => {
+describe('UrlService Tests', () => {
   let service: UrlService;
   let configurationProvider: ConfigurationProvider;
   let flowHelper: FlowHelper;
@@ -37,10 +36,7 @@ fdescribe('UrlService Tests', () => {
           provide: FlowsDataService,
           useClass: FlowsDataServiceMock,
         },
-        {
-          provide: FlowHelper,
-          useClass: FlowHelperMock,
-        },
+        FlowHelper,
         { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
         { provide: JsrsAsignReducedService, useClass: JsrsAsignReducedServiceMock },
       ],
@@ -180,7 +176,8 @@ fdescribe('UrlService Tests', () => {
         '', // Implicit Flow
         'https://localhost:44386',
         'nonce',
-        'state'
+        'state',
+        'configId'
       );
 
       const expectValue = null;
@@ -199,7 +196,8 @@ fdescribe('UrlService Tests', () => {
         '', // Implicit Flow
         'https://localhost:44386',
         'nonce',
-        'state'
+        'state',
+        'configId'
       );
 
       const expectValue = null;
@@ -207,7 +205,7 @@ fdescribe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('returns null when responseType is null', () => {
+    it('returns null when scope is null', () => {
       const clientId = 'something';
       const responseType = 'responsetype';
       const scope = null;
@@ -219,7 +217,8 @@ fdescribe('UrlService Tests', () => {
         '', // Implicit Flow
         'https://localhost:44386',
         'nonce',
-        'state'
+        'state',
+        'configId'
       );
 
       const expectValue = null;
@@ -247,7 +246,8 @@ fdescribe('UrlService Tests', () => {
         '', // Implicit Flow
         config.redirectUrl,
         'nonce',
-        'state'
+        'state',
+        'configId'
       );
 
       const expectValue =
@@ -451,7 +451,7 @@ fdescribe('UrlService Tests', () => {
         responseType: 'id_token token',
         scope: 'openid email profile',
         configId: 'configId',
-        customParams: {
+        customParamsAuthRequest: {
           t4: 'ABC abc 123',
           t3: '#',
           t2: '-_.!~*()',
@@ -494,7 +494,8 @@ fdescribe('UrlService Tests', () => {
         clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         responseType: 'id_token token',
         scope: 'openid email profile',
-        customParams: null,
+        customParamsAuthRequest: null,
+        configId: 'configId',
       };
 
       configurationProvider.setConfig(config);
@@ -507,6 +508,7 @@ fdescribe('UrlService Tests', () => {
         config.redirectUrl,
         'nonce',
         'state',
+        config.configId,
         null,
         { to: 'add', as: 'well' }
       );
@@ -577,7 +579,8 @@ fdescribe('UrlService Tests', () => {
         '', // Implicit Flow
         config.redirectUrl,
         'nonce',
-        'state'
+        'state',
+        'configId'
       );
 
       const expectValue =
@@ -1032,17 +1035,18 @@ fdescribe('UrlService Tests', () => {
       );
     });
 
-    it('returns correct url if wellknownendpoints are given', () => {
+    it('returns correct url if wellknownendpoints are not given', () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const silentRenewUrl = 'http://any-url.com';
       const clientId = 'clientId';
       const responseType = 'responseType';
+      const configId = 'configId';
 
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
       spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
 
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', configId).and.returnValue(null);
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         silentRenewUrl,
         clientId,
@@ -1051,7 +1055,7 @@ fdescribe('UrlService Tests', () => {
 
       const serviceAsAny = service as any;
 
-      const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew();
+      const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew(configId);
       expect(result).toBe(null);
     });
   });
@@ -1160,7 +1164,7 @@ fdescribe('UrlService Tests', () => {
 
       const serviceAsAny = service as any;
 
-      const result = serviceAsAny.createUrlImplicitFlowAuthorize();
+      const result = serviceAsAny.createUrlImplicitFlowAuthorize('configId');
       expect(result).toBe(
         `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}`
       );

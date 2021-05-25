@@ -158,7 +158,7 @@ describe('ParLoginService', () => {
         const result = service.loginPar('configId', { customParams: { some: 'thing' } });
 
         expect(result).toBeUndefined();
-        expect(spy).toHaveBeenCalledOnceWith({ some: 'thing' });
+        expect(spy).toHaveBeenCalledOnceWith('configId', { some: 'thing' });
       })
     );
 
@@ -301,7 +301,7 @@ describe('ParLoginService', () => {
 
         service.loginWithPopUpPar('configId', { customParams: { some: 'thing' } }).subscribe({
           error: (err) => {
-            expect(spy).toHaveBeenCalledOnceWith({ some: 'thing' });
+            expect(spy).toHaveBeenCalledOnceWith('configId', { some: 'thing' });
             expect(err).toBe("Could not create url with param requestUri: 'url'");
           },
         });
