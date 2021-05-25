@@ -9,7 +9,7 @@ import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { AuthInterceptor } from './auth.interceptor';
 
-describe(`AuthHttpInterceptor`, () => {
+xdescribe(`AuthHttpInterceptor`, () => {
   let httpTestingController: HttpTestingController;
   let configurationProvider: ConfigurationProvider;
   let httpClient: HttpClient;
@@ -46,7 +46,7 @@ describe(`AuthHttpInterceptor`, () => {
     httpTestingController.verify();
   });
 
-  fit(
+  it(
     'should add an Authorization header when route matches and token is present',
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;

@@ -1,6 +1,7 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { ConfigurationProvider } from '../config/provider/config.provider';
+import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { OidcSecurityService } from '../oidc.security.service';
@@ -14,7 +15,7 @@ import { PlatformProviderMock } from '../utils/platform-provider/platform.provid
 import { CheckSessionService } from './check-session.service';
 import { IFrameService } from './existing-iframe.service';
 
-describe('SecurityCheckSessionTests', () => {
+fdescribe('CheckSessionService', () => {
   let checkSessionService: CheckSessionService;
   let loggerService: LoggerService;
   let configurationProvider: ConfigurationProvider;
@@ -25,13 +26,16 @@ describe('SecurityCheckSessionTests', () => {
     TestBed.configureTestingModule({
       providers: [
         CheckSessionService,
-        ConfigurationProvider,
         OidcSecurityService,
         IFrameService,
         PublicEventsService,
         {
           provide: StoragePersistenceService,
           useClass: StoragePersistenceServiceMock,
+        },
+        {
+          provide: ConfigurationProvider,
+          useClass: ConfigurationProviderMock,
         },
         { provide: LoggerService, useClass: LoggerServiceMock },
         { provide: AbstractSecurityStorage, useClass: BrowserStorageMock },
@@ -57,9 +61,6 @@ describe('SecurityCheckSessionTests', () => {
     if (myiFrameForCheckSession) {
       myiFrameForCheckSession.parentNode.removeChild(myiFrameForCheckSession);
     }
-
-    // reset config after each test
-    configurationProvider.setConfig(null);
   });
 
   it('should create', () => {
@@ -116,24 +117,27 @@ describe('SecurityCheckSessionTests', () => {
   });
 
   it('log warning if authWellKnownEndpoints.check_session_iframe is not existing', () => {
+    spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
     const spyLogWarning = spyOn<any>(loggerService, 'logWarning');
     spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
     spyOn(storagePersistenceService, 'read')
       .withArgs('authWellKnownEndPoints', 'configId')
       .and.returnValue({ checkSessionIframe: undefined });
-    (checkSessionService as any).init();
+    (checkSessionService as any).init('configId');
 
-    expect(spyLogWarning).toHaveBeenCalledWith('init check session: checkSessionIframe is not configured to run');
+    expect(spyLogWarning).toHaveBeenCalledWith('configId', 'init check session: checkSessionIframe is not configured to run');
   });
 
   it('start() calls pollserversession() with clientId if no scheduledheartbeat is set', () => {
     const spy = spyOn<any>(checkSessionService, 'pollServerSession');
-    configurationProvider.setConfig({ clientId: 'clientId' });
+    spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId: 'clientId', configId: 'configId' });
+
     checkSessionService.start('configId');
-    expect(spy).toHaveBeenCalledWith('clientId');
+    expect(spy).toHaveBeenCalledWith('clientId', 'configId');
   });
 
   it('start() does not call pollServerSession() if scheduledHeartBeatRunning is set', () => {
+    spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
     const spy = spyOn<any>(checkSessionService, 'pollServerSession');
     (checkSessionService as any).scheduledHeartBeatRunning = () => {};
     checkSessionService.start('configId');
@@ -192,7 +196,7 @@ describe('SecurityCheckSessionTests', () => {
         .withArgs('session_state', 'configId')
         .and.returnValue('session_state');
       spyOn(loggerService, 'logDebug').and.callFake(() => {});
-      (checkSessionService as any).pollServerSession('clientId');
+      (checkSessionService as any).pollServerSession('clientId', 'configId');
       expect((checkSessionService as any).outstandingMessages).toBe(1);
     });
 
@@ -204,7 +208,7 @@ describe('SecurityCheckSessionTests', () => {
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
       const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => {});
       spyOn(loggerService, 'logDebug').and.callFake(() => {});
-      (checkSessionService as any).pollServerSession('clientId');
+      (checkSessionService as any).pollServerSession('clientId', 'configId');
       expect(spyLogWarning).toHaveBeenCalledWith(
         'configId',
         'OidcSecurityCheckSession pollServerSession checkSession IFrame does not exist'
@@ -219,7 +223,7 @@ describe('SecurityCheckSessionTests', () => {
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
       const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => {});
       spyOn(loggerService, 'logDebug').and.callFake(() => {});
-      (checkSessionService as any).pollServerSession('');
+      (checkSessionService as any).pollServerSession('', 'configId');
       expect(spyLogWarning).toHaveBeenCalledWith(
         'configId',
         'OidcSecurityCheckSession pollServerSession checkSession IFrame does not exist'
@@ -239,8 +243,8 @@ describe('SecurityCheckSessionTests', () => {
         .and.returnValue(null);
 
       const spyLogDebug = spyOn(loggerService, 'logDebug').and.callFake(() => {});
-      (checkSessionService as any).pollServerSession('clientId');
-      expect(spyLogDebug).toHaveBeenCalledTimes(3);
+      (checkSessionService as any).pollServerSession('clientId', 'configId');
+      expect(spyLogDebug).toHaveBeenCalledTimes(2);
     });
 
     it('logs debug if session_state is set but authWellKnownEndpoints are not set', () => {
@@ -253,8 +257,8 @@ describe('SecurityCheckSessionTests', () => {
         .withArgs('session_state', 'configId')
         .and.returnValue('some_session_state');
       const spyLogDebug = spyOn(loggerService, 'logDebug').and.callFake(() => {});
-      (checkSessionService as any).pollServerSession('clientId');
-      expect(spyLogDebug).toHaveBeenCalledTimes(3);
+      (checkSessionService as any).pollServerSession('clientId', 'configId');
+      expect(spyLogDebug).toHaveBeenCalledTimes(2);
     });
   });
 

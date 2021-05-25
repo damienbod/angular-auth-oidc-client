@@ -46,7 +46,7 @@ export class CheckSessionService {
     }
 
     const { clientId } = this.configurationProvider.getOpenIDConfiguration(configId);
-    this.pollServerSession(configId, clientId);
+    this.pollServerSession(clientId, configId);
   }
 
   stop(): void {
