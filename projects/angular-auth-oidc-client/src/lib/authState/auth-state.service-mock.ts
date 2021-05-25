@@ -5,10 +5,10 @@ import { AuthenticatedResult } from './auth-result';
 @Injectable()
 export class AuthStateServiceMock {
   // event which contains the state
-  private authorizedInternal$ = new BehaviorSubject<boolean>(false);
+  private authenticatedInternal$ = new BehaviorSubject<boolean>(false);
 
-  get authorized$() {
-    return this.authorizedInternal$.asObservable();
+  get authenticated$() {
+    return this.authenticatedInternal$.asObservable();
   }
 
   setAuthenticatedAndFireEvent(): void {}
