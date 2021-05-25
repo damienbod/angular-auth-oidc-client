@@ -150,14 +150,16 @@ describe('Flows Data Service', () => {
         dateOfLaunchedProcessUtc: baseTime.toISOString(),
       };
 
-      spyOn(storagePersistenceService, 'read').withArgs('storageSilentRenewRunning', 'configId').and.returnValue(storageObject);
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('storageSilentRenewRunning', 'configId')
+        .and.returnValue(JSON.stringify(storageObject));
       const spyWrite = spyOn(storagePersistenceService, 'write');
 
       jasmine.clock().tick((openIDConfiguration.silentRenewTimeoutInSeconds + 1) * 1000);
 
       const isSilentRenewRunningResult = service.isSilentRenewRunning('configId');
 
-      expect(spyWrite).toHaveBeenCalledWith('storageSilentRenewRunning', null, 'configId');
+      expect(spyWrite).toHaveBeenCalledWith('storageSilentRenewRunning', '', 'configId');
       expect(isSilentRenewRunningResult).toBeFalse();
     });
 
@@ -177,7 +179,9 @@ describe('Flows Data Service', () => {
         dateOfLaunchedProcessUtc: baseTime.toISOString(),
       };
 
-      spyOn(storagePersistenceService, 'read').withArgs('storageSilentRenewRunning', 'configId').and.returnValue(storageObject);
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('storageSilentRenewRunning', 'configId')
+        .and.returnValue(JSON.stringify(storageObject));
       const spyWrite = spyOn(storagePersistenceService, 'write');
 
       const isSilentRenewRunningResult = service.isSilentRenewRunning('configId');

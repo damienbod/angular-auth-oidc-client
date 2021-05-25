@@ -73,7 +73,7 @@ export class FlowsDataService {
     const isProbablyStuck = elapsedTimeInMilliseconds > timeOutInMilliseconds;
 
     if (isProbablyStuck) {
-      this.loggerService.logDebug('silent renew process is probably stuck, state will be reset.', configId);
+      this.loggerService.logDebug(configId, 'silent renew process is probably stuck, state will be reset.', configId);
       this.resetSilentRenewRunning(configId);
       return false;
     }

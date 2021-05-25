@@ -53,7 +53,7 @@ describe('ImplicitFlowCallbackHandlerService', () => {
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
 
-        service.implicitFlowCallback('any-hash').subscribe(() => {
+        service.implicitFlowCallback('configId', 'any-hash').subscribe(() => {
           expect(resetAuthorizationDataSpy).toHaveBeenCalled();
         });
       })
@@ -65,7 +65,7 @@ describe('ImplicitFlowCallbackHandlerService', () => {
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
 
-        service.implicitFlowCallback('any-hash').subscribe(() => {
+        service.implicitFlowCallback('configId', 'any-hash').subscribe(() => {
           expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
         });
       })
@@ -87,7 +87,7 @@ describe('ImplicitFlowCallbackHandlerService', () => {
           existingIdToken: null,
         } as CallbackContext;
 
-        service.implicitFlowCallback('anyHash').subscribe((callbackContext) => {
+        service.implicitFlowCallback('configId', 'anyHash').subscribe((callbackContext) => {
           expect(callbackContext).toEqual(expectedCallbackContext);
         });
       })
