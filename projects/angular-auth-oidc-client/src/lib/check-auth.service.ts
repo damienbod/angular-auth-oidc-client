@@ -73,10 +73,17 @@ export class CheckAuthService {
         return isAuthenticated;
       }),
       tap(() => {
-        const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute();
-        if (savedRouteForRedirect) {
-          this.autoLoginService.deleteStoredRedirectRoute();
-          this.router.navigateByUrl(savedRouteForRedirect);
+
+        const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
+
+        if(isAuthenticated){
+
+          const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute();
+
+          if (savedRouteForRedirect) {
+            this.autoLoginService.deleteStoredRedirectRoute();
+            this.router.navigateByUrl(savedRouteForRedirect);
+          }
         }
       }),
       catchError((error) => {
