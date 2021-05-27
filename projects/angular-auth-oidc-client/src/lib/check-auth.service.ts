@@ -142,10 +142,10 @@ export class CheckAuthService {
       }),
       tap(({ isAuthenticated }) => {
         if (isAuthenticated) {
-          const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute();
+          const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute(configId);
 
           if (savedRouteForRedirect) {
-            this.autoLoginService.deleteStoredRedirectRoute();
+            this.autoLoginService.deleteStoredRedirectRoute(configId);
             this.router.navigateByUrl(savedRouteForRedirect);
           }
         }

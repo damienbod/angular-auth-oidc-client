@@ -324,7 +324,7 @@ describe('CheckAuthService', () => {
     it(
       'does not redirect when user is not authenticated',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
@@ -332,7 +332,7 @@ describe('CheckAuthService', () => {
         const deleteSpy = spyOn(autoLoginService, 'deleteStoredRedirectRoute');
         const routeSpy = spyOn(router, 'navigateByUrl');
 
-        checkAuthService.checkAuth().subscribe((result) => {
+        checkAuthService.checkAuth('configId').subscribe((result) => {
           expect(deleteSpy).toHaveBeenCalledTimes(0);
           expect(routeSpy).toHaveBeenCalledTimes(0);
         });

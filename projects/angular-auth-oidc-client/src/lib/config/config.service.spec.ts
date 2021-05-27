@@ -105,7 +105,6 @@ describe('Configuration Service', () => {
         const promise = oidcConfigService.withConfigs([{ stsServer: 'https://please_set', clientId: 'clientId' }]);
 
         promise.then((result) => {
-          console.log('authWellknownEndpointUrl', result[0].authWellknownEndpointUrl);
           expect(result).toEqual([
             {
               ...DEFAULT_CONFIG,

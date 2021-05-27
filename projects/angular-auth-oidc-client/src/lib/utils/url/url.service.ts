@@ -325,8 +325,7 @@ export class UrlService {
     }
 
     const mergedParams = { ...customParamsAuthRequest, ...customRequestParams };
-    console.log(customParamsAuthRequest);
-    console.log(customRequestParams);
+
     if (mergedParams) {
       params = this.appendCustomParams({ ...mergedParams }, params);
     }
