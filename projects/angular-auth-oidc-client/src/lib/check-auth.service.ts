@@ -140,12 +140,14 @@ export class CheckAuthService {
           configId,
         };
       }),
-      tap(() => {
-        const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute(configId);
+      tap(({ isAuthenticated }) => {
+        if (isAuthenticated) {
+          const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute();
 
-        if (savedRouteForRedirect) {
-          this.autoLoginService.deleteStoredRedirectRoute(configId);
-          this.router.navigateByUrl(savedRouteForRedirect);
+          if (savedRouteForRedirect) {
+            this.autoLoginService.deleteStoredRedirectRoute();
+            this.router.navigateByUrl(savedRouteForRedirect);
+          }
         }
       }),
       catchError((errorMessage) => {

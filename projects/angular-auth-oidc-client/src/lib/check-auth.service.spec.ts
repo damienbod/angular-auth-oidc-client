@@ -304,7 +304,7 @@ describe('CheckAuthService', () => {
     );
 
     it(
-      'deletes route and navigates if a route for redirect was saved',
+      'deletes route and navigates if a route for redirect was saved and user is authenticated',
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
@@ -317,6 +317,24 @@ describe('CheckAuthService', () => {
         checkAuthService.checkAuth('configId').subscribe((result) => {
           expect(deleteSpy).toHaveBeenCalledTimes(1);
           expect(routeSpy).toHaveBeenCalledOnceWith('some-saved-route');
+        });
+      })
+    );
+
+    it(
+      'does not redirect when user is not authenticated',
+      waitForAsync(() => {
+        spyOn(configurationProvider, 'hasValidConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
+        spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
+        spyOn(autoLoginService, 'getStoredRedirectRoute').and.returnValue('some-saved-route');
+        const deleteSpy = spyOn(autoLoginService, 'deleteStoredRedirectRoute');
+        const routeSpy = spyOn(router, 'navigateByUrl');
+
+        checkAuthService.checkAuth().subscribe((result) => {
+          expect(deleteSpy).toHaveBeenCalledTimes(0);
+          expect(routeSpy).toHaveBeenCalledTimes(0);
         });
       })
     );
