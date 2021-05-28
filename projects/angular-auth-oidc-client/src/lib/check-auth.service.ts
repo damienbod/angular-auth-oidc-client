@@ -73,11 +73,9 @@ export class CheckAuthService {
         return isAuthenticated;
       }),
       tap(() => {
-
         const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
 
-        if(isAuthenticated){
-
+        if (isAuthenticated) {
           const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute();
 
           if (savedRouteForRedirect) {
