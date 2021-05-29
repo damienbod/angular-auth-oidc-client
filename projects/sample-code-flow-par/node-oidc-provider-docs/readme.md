@@ -8,13 +8,13 @@ code flow with refresh tokens node-oidc-provider:
 module.exports = {
 clients: [
 {
-client_id: 'angularPar',
-token_endpoint_auth_method: 'none',
-application_type: 'web',
-grant_types: ['refresh_token', 'authorization_code'],
-response_types: ['code'],
-redirect_uris: ['https://localhost:4207'],
-scope: 'openid offline_access profile email'
+    client_id: 'angularPar',
+    token_endpoint_auth_method: 'none',
+    application_type: 'web',
+    grant_types: ['refresh_token', 'authorization_code'],
+    response_types: ['code'],
+    redirect_uris: ['https://localhost:4207'],
+    scope: 'openid offline_access profile email'
 },
 ```
 
