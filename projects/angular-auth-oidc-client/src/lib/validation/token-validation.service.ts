@@ -81,7 +81,11 @@ export class TokenValidationService {
     const nowWithOffset = new Date(new Date().toUTCString()).valueOf() + offsetSeconds * 1000;
     const tokenNotExpired = tokenExpirationValue > nowWithOffset;
 
-    this.loggerService.logDebug(configId, `Has idToken expired: ${!tokenNotExpired}, ${tokenExpirationValue} > ${nowWithOffset}`);
+    this.loggerService.logDebug(
+      configId,
+      `Has idToken expired: ${!tokenNotExpired} --> expires in ${this.millisToMinutesAndSeconds(tokenExpirationValue - nowWithOffset)}
+      , ${new Date(tokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}: `
+    );
 
     // Token not expired?
     return tokenNotExpired;
@@ -98,7 +102,12 @@ export class TokenValidationService {
     const nowWithOffset = new Date(new Date().toUTCString()).valueOf() + offsetSeconds * 1000;
     const tokenNotExpired = accessTokenExpirationValue > nowWithOffset;
 
-    this.loggerService.logDebug(configId, `Has accessToken expired: ${!tokenNotExpired}, ${accessTokenExpirationValue} > ${nowWithOffset}`);
+    this.loggerService.logDebug(
+      configId,
+      `Has accessToken expired: ${!tokenNotExpired}, ${new Date(accessTokenExpirationValue).toLocaleTimeString()} > ${new Date(
+        nowWithOffset
+      ).toLocaleTimeString()}: ${this.millisToMinutesAndSeconds(accessTokenExpirationValue - nowWithOffset)}`
+    );
 
     // access token not expired?
     return tokenNotExpired;
@@ -422,5 +431,11 @@ export class TokenValidationService {
     }
 
     return false;
+  }
+
+  private millisToMinutesAndSeconds(millis: number): string {
+    const minutes = Math.floor(millis / 60000);
+    const seconds = ((millis % 60000) / 1000).toFixed(0);
+    return minutes + ':' + (+seconds < 10 ? '0' : '') + seconds;
   }
 }
