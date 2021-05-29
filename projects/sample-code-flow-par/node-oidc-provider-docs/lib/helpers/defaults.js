@@ -48,7 +48,10 @@ function certificateAuthorized(ctx) {
 }
 
 function certificateSubjectMatches(ctx, property, expected) {
-  mustChange('features.mTLS.certificateSubjectMatches', 'verify that the tls_client_auth_* registered client property value matches the certificate one');
+  mustChange(
+    'features.mTLS.certificateSubjectMatches',
+    'verify that the tls_client_auth_* registered client property value matches the certificate one'
+  );
   throw new Error('features.mTLS.certificateSubjectMatches function not configured');
 }
 
@@ -106,9 +109,7 @@ async function userCodeConfirmSource(ctx, form, client, deviceInfo, userCode) {
   // @param deviceInfo - device information from the device_authorization_endpoint call
   // @param userCode - formatted user code by the configured mask
   shouldChange('features.deviceFlow.userCodeConfirmSource', 'customize the look of the user code confirmation page');
-  const {
-    clientId, clientName, clientUri, logoUri, policyUri, tosUri,
-  } = ctx.oidc.client;
+  const { clientId, clientName, clientUri, logoUri, policyUri, tosUri } = ctx.oidc.client;
   ctx.body = `<!DOCTYPE html>
     <head>
       <meta charset="utf-8">
@@ -143,9 +144,7 @@ async function userCodeConfirmSource(ctx, form, client, deviceInfo, userCode) {
 async function successSource(ctx) {
   // @param ctx - koa request context
   shouldChange('features.deviceFlow.successSource', 'customize the look of the device code success page');
-  const {
-    clientId, clientName, clientUri, initiateLoginUri, logoUri, policyUri, tosUri,
-  } = ctx.oidc.client;
+  const { clientId, clientName, clientUri, initiateLoginUri, logoUri, policyUri, tosUri } = ctx.oidc.client;
   ctx.body = `<!DOCTYPE html>
     <head>
       <meta charset="utf-8">
@@ -208,7 +207,10 @@ async function getResourceServerInfo(ctx, resourceIndicator, client) {
   // @param ctx - koa request context
   // @param resourceIndicator - resource indicator value either requested or resolved by the defaultResource helper.
   // @param client - client making the request
-  mustChange('features.resourceIndicators.getResourceServerInfo', 'to provide details about the Resource Server identified by the Resource Indicator');
+  mustChange(
+    'features.resourceIndicators.getResourceServerInfo',
+    'to provide details about the Resource Server identified by the Resource Indicator'
+  );
   throw new errors.InvalidTarget();
 }
 
@@ -237,8 +239,12 @@ function pkceRequired(ctx, client) {
 }
 
 async function pairwiseIdentifier(ctx, accountId, client) {
-  mustChange('pairwiseIdentifier', 'provide an implementation for pairwise identifiers, the default one uses `os.hostname()` as salt and is therefore not fit for anything else than development');
-  return crypto.createHash('sha256')
+  mustChange(
+    'pairwiseIdentifier',
+    'provide an implementation for pairwise identifiers, the default one uses `os.hostname()` as salt and is therefore not fit for anything else than development'
+  );
+  return crypto
+    .createHash('sha256')
     .update(client.sectorIdentifier)
     .update(accountId)
     .update(os.hostname()) // put your own unique salt here, or implement other mechanism
@@ -301,10 +307,11 @@ function IdTokenTTL(ctx, token, client) {
 function RefreshTokenTTL(ctx, token, client) {
   shouldChange('ttl.RefreshToken', 'define the expiration for RefreshToken artifacts');
   if (
-    ctx && ctx.oidc.entities.RotatedRefreshToken
-    && client.applicationType === 'web'
-    && client.tokenEndpointAuthMethod === 'none'
-    && !token.isSenderConstrained()
+    ctx &&
+    ctx.oidc.entities.RotatedRefreshToken &&
+    client.applicationType === 'web' &&
+    client.tokenEndpointAuthMethod === 'none' &&
+    !token.isSenderConstrained()
   ) {
     // Non-Sender Constrained SPA RefreshTokens do not have infinite expiration through rotation
     return ctx.oidc.entities.RotatedRefreshToken.remainingTTL;
@@ -336,22 +343,16 @@ function extraClientMetadataValidator(ctx, key, value, metadata) {
   // @param metadata - the current accumulated client metadata
   // @param ctx - koa request context (only provided when a client is being constructed during
   //              Client Registration Request or Client Update Request
-
   // validations for key, value, other related metadata
-
   // throw new Provider.errors.InvalidClientMetadata() to reject the client metadata
-
   // metadata[key] = value; to (re)assign metadata values
-
   // return not necessary, metadata is already a reference
 }
 
 async function postLogoutSuccessSource(ctx) {
   // @param ctx - koa request context
   shouldChange('features.rpInitiatedLogout.postLogoutSuccessSource', 'customize the look of the default post logout success page');
-  const {
-    clientId, clientName, clientUri, initiateLoginUri, logoUri, policyUri, tosUri,
-  } = ctx.oidc.client || {}; // client is defined if the user chose to stay logged in with the OP
+  const { clientId, clientName, clientUri, initiateLoginUri, logoUri, policyUri, tosUri } = ctx.oidc.client || {}; // client is defined if the user chose to stay logged in with the OP
   const display = clientName || clientId;
   ctx.body = `<!DOCTYPE html>
     <head>
@@ -414,7 +415,9 @@ async function renderError(ctx, out, error) {
     <body>
       <div class="container">
         <h1>oops! something went wrong</h1>
-        ${Object.entries(out).map(([key, value]) => `<pre><strong>${key}</strong>: ${htmlSafe(value)}</pre>`).join('')}
+        ${Object.entries(out)
+          .map(([key, value]) => `<pre><strong>${key}</strong>: ${htmlSafe(value)}</pre>`)
+          .join('')}
       </div>
     </body>
     </html>`;
@@ -467,9 +470,9 @@ function rotateRefreshToken(ctx) {
 }
 
 async function loadExistingGrant(ctx) {
-  const grantId = (ctx.oidc.result
-    && ctx.oidc.result.consent
-    && ctx.oidc.result.consent.grantId) || ctx.oidc.session.grantIdFor(ctx.oidc.client.clientId);
+  const grantId =
+    (ctx.oidc.result && ctx.oidc.result.consent && ctx.oidc.result.consent.grantId) ||
+    ctx.oidc.session.grantIdFor(ctx.oidc.client.clientId);
 
   if (grantId) {
     return ctx.oidc.provider.Grant.find(grantId);
@@ -489,14 +492,20 @@ function sectorIdentifierUriValidate(client) {
 async function processLoginHintToken(ctx, loginHintToken) {
   // @param ctx - koa request context
   // @param loginHintToken - string value of the login_hint_token parameter
-  mustChange('features.ciba.processLoginHintToken', 'process the login_hint_token parameter and return the accountId value to use for processsing the request');
+  mustChange(
+    'features.ciba.processLoginHintToken',
+    'process the login_hint_token parameter and return the accountId value to use for processsing the request'
+  );
   throw new Error('features.ciba.processLoginHintToken not implemented');
 }
 
 async function processLoginHint(ctx, loginHint) {
   // @param ctx - koa request context
   // @param loginHint - string value of the login_hint parameter
-  mustChange('features.ciba.processLoginHint', 'process the login_hint parameter and return the accountId value to use for processsing the request');
+  mustChange(
+    'features.ciba.processLoginHint',
+    'process the login_hint parameter and return the accountId value to use for processsing the request'
+  );
   throw new Error('features.ciba.processLoginHint not implemented');
 }
 
@@ -511,9 +520,14 @@ async function verifyUserCode(ctx, account, userCode) {
 async function validateBindingMessage(ctx, bindingMessage) {
   // @param ctx - koa request context
   // @param bindingMessage - string value of the binding_message parameter, when not provided it is undefined
-  shouldChange('features.ciba.validateBindingMessage', 'verify the binding_message parameter is present when required and verify its value');
+  shouldChange(
+    'features.ciba.validateBindingMessage',
+    'verify the binding_message parameter is present when required and verify its value'
+  );
   if (bindingMessage && !/^[a-zA-Z0-9-._+/!?#]{1,20}$/.exec(bindingMessage)) {
-    throw new errors.InvalidBindingMessage('the binding_message value, when provided, needs to be 1 - 20 characters in length and use only a basic set of characters (matching the regex: ^[a-zA-Z0-9-._+/!?#]{1,20}$ )');
+    throw new errors.InvalidBindingMessage(
+      'the binding_message value, when provided, needs to be 1 - 20 characters in length and use only a basic set of characters (matching the regex: ^[a-zA-Z0-9-._+/!?#]{1,20}$ )'
+    );
   }
 }
 
@@ -529,13 +543,15 @@ async function triggerAuthenticationDevice(ctx, request, account, client) {
   // @param request - the BackchannelAuthenticationRequest instance
   // @param account - the account object retrieved by findAccount
   // @param client - the Client instance
-  mustChange('features.ciba.triggerAuthenticationDevice', "to trigger the authentication and authorization process on end-user's Authentication Device");
+  mustChange(
+    'features.ciba.triggerAuthenticationDevice',
+    "to trigger the authentication and authorization process on end-user's Authentication Device"
+  );
   throw new Error('features.ciba.triggerAuthenticationDevice not implemented');
 }
 
 function getDefaults() {
   const defaults = {
-
     /*
      * acrValues
      *
@@ -590,7 +606,11 @@ function getDefaults() {
      *
      */
     claims: {
-      acr: null, sid: null, auth_time: null, iss: null, openid: ['sub'],
+      acr: null,
+      sid: null,
+      auth_time: null,
+      iss: null,
+      openid: ['sub'],
     },
 
     /*
@@ -1740,7 +1760,6 @@ function getDefaults() {
        *   parameters.
        */
       requestObjects: {
-
         /*
          * features.requestObjects.request
          *
@@ -2067,12 +2086,7 @@ function getDefaults() {
      * ]
      * ```
      */
-    responseTypes: [
-      'code id_token',
-      'code',
-      'id_token',
-      'none',
-    ],
+    responseTypes: ['code id_token', 'code', 'id_token', 'none'],
 
     /*
      * pkce
@@ -2168,13 +2182,7 @@ function getDefaults() {
      * ]
      * ```
      */
-    tokenEndpointAuthMethods: [
-      'client_secret_basic',
-      'client_secret_jwt',
-      'client_secret_post',
-      'private_key_jwt',
-      'none',
-    ],
+    tokenEndpointAuthMethods: ['client_secret_basic', 'client_secret_jwt', 'client_secret_post', 'private_key_jwt', 'none'],
 
     /*
      * ttl
@@ -2399,7 +2407,6 @@ function getDefaults() {
      * @nodefault
      */
     enabledJWA: {
-
       /*
        * enabledJWA.tokenEndpointAuthSigningAlgValues
        *
@@ -2416,9 +2423,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      tokenEndpointAuthSigningAlgValues: [
-        'HS256', 'RS256', 'PS256', 'ES256', 'EdDSA',
-      ],
+      tokenEndpointAuthSigningAlgValues: ['HS256', 'RS256', 'PS256', 'ES256', 'EdDSA'],
 
       /*
        * enabledJWA.introspectionEndpointAuthSigningAlgValues
@@ -2438,9 +2443,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      introspectionEndpointAuthSigningAlgValues: [
-        'HS256', 'RS256', 'PS256', 'ES256', 'EdDSA',
-      ],
+      introspectionEndpointAuthSigningAlgValues: ['HS256', 'RS256', 'PS256', 'ES256', 'EdDSA'],
 
       /*
        * enabledJWA.revocationEndpointAuthSigningAlgValues
@@ -2460,9 +2463,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      revocationEndpointAuthSigningAlgValues: [
-        'HS256', 'RS256', 'PS256', 'ES256', 'EdDSA',
-      ],
+      revocationEndpointAuthSigningAlgValues: ['HS256', 'RS256', 'PS256', 'ES256', 'EdDSA'],
 
       /*
        * enabledJWA.idTokenSigningAlgValues
@@ -2481,9 +2482,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      idTokenSigningAlgValues: [
-        'RS256', 'PS256', 'ES256', 'EdDSA',
-      ],
+      idTokenSigningAlgValues: ['RS256', 'PS256', 'ES256', 'EdDSA'],
 
       /*
        * enabledJWA.requestObjectSigningAlgValues
@@ -2502,9 +2501,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      requestObjectSigningAlgValues: [
-        'HS256', 'RS256', 'PS256', 'ES256', 'EdDSA',
-      ],
+      requestObjectSigningAlgValues: ['HS256', 'RS256', 'PS256', 'ES256', 'EdDSA'],
 
       /*
        * enabledJWA.userinfoSigningAlgValues
@@ -2523,9 +2520,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      userinfoSigningAlgValues: [
-        'RS256', 'PS256', 'ES256', 'EdDSA',
-      ],
+      userinfoSigningAlgValues: ['RS256', 'PS256', 'ES256', 'EdDSA'],
 
       /*
        * enabledJWA.introspectionSigningAlgValues
@@ -2544,9 +2539,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      introspectionSigningAlgValues: [
-        'RS256', 'PS256', 'ES256', 'EdDSA',
-      ],
+      introspectionSigningAlgValues: ['RS256', 'PS256', 'ES256', 'EdDSA'],
 
       /*
        * enabledJWA.authorizationSigningAlgValues
@@ -2564,9 +2557,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      authorizationSigningAlgValues: [
-        'RS256', 'PS256', 'ES256', 'EdDSA',
-      ],
+      authorizationSigningAlgValues: ['RS256', 'PS256', 'ES256', 'EdDSA'],
 
       /*
        * enabledJWA.idTokenEncryptionAlgValues
@@ -2589,9 +2580,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      idTokenEncryptionAlgValues: [
-        'A128KW', 'A256KW', 'ECDH-ES', 'RSA-OAEP', 'dir',
-      ],
+      idTokenEncryptionAlgValues: ['A128KW', 'A256KW', 'ECDH-ES', 'RSA-OAEP', 'dir'],
 
       /*
        * enabledJWA.requestObjectEncryptionAlgValues
@@ -2614,9 +2603,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      requestObjectEncryptionAlgValues: [
-        'A128KW', 'A256KW', 'ECDH-ES', 'RSA-OAEP', 'dir',
-      ],
+      requestObjectEncryptionAlgValues: ['A128KW', 'A256KW', 'ECDH-ES', 'RSA-OAEP', 'dir'],
 
       /*
        * enabledJWA.userinfoEncryptionAlgValues
@@ -2639,9 +2626,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      userinfoEncryptionAlgValues: [
-        'A128KW', 'A256KW', 'ECDH-ES', 'RSA-OAEP', 'dir',
-      ],
+      userinfoEncryptionAlgValues: ['A128KW', 'A256KW', 'ECDH-ES', 'RSA-OAEP', 'dir'],
 
       /*
        * enabledJWA.introspectionEncryptionAlgValues
@@ -2665,9 +2650,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      introspectionEncryptionAlgValues: [
-        'A128KW', 'A256KW', 'ECDH-ES', 'RSA-OAEP', 'dir',
-      ],
+      introspectionEncryptionAlgValues: ['A128KW', 'A256KW', 'ECDH-ES', 'RSA-OAEP', 'dir'],
 
       /*
        * enabledJWA.authorizationEncryptionAlgValues
@@ -2691,9 +2674,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      authorizationEncryptionAlgValues: [
-        'A128KW', 'A256KW', 'ECDH-ES', 'RSA-OAEP', 'dir',
-      ],
+      authorizationEncryptionAlgValues: ['A128KW', 'A256KW', 'ECDH-ES', 'RSA-OAEP', 'dir'],
 
       /*
        * enabledJWA.idTokenEncryptionEncValues
@@ -2707,9 +2688,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      idTokenEncryptionEncValues: [
-        'A128CBC-HS256', 'A128GCM', 'A256CBC-HS512', 'A256GCM',
-      ],
+      idTokenEncryptionEncValues: ['A128CBC-HS256', 'A128GCM', 'A256CBC-HS512', 'A256GCM'],
 
       /*
        * enabledJWA.requestObjectEncryptionEncValues
@@ -2723,9 +2702,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      requestObjectEncryptionEncValues: [
-        'A128CBC-HS256', 'A128GCM', 'A256CBC-HS512', 'A256GCM',
-      ],
+      requestObjectEncryptionEncValues: ['A128CBC-HS256', 'A128GCM', 'A256CBC-HS512', 'A256GCM'],
 
       /*
        * enabledJWA.userinfoEncryptionEncValues
@@ -2739,9 +2716,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      userinfoEncryptionEncValues: [
-        'A128CBC-HS256', 'A128GCM', 'A256CBC-HS512', 'A256GCM',
-      ],
+      userinfoEncryptionEncValues: ['A128CBC-HS256', 'A128GCM', 'A256CBC-HS512', 'A256GCM'],
 
       /*
        * enabledJWA.introspectionEncryptionEncValues
@@ -2755,9 +2730,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      introspectionEncryptionEncValues: [
-        'A128CBC-HS256', 'A128GCM', 'A256CBC-HS512', 'A256GCM',
-      ],
+      introspectionEncryptionEncValues: ['A128CBC-HS256', 'A128GCM', 'A256CBC-HS512', 'A256GCM'],
 
       /*
        * enabledJWA.authorizationEncryptionEncValues
@@ -2771,9 +2744,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      authorizationEncryptionEncValues: [
-        'A128CBC-HS256', 'A128GCM', 'A256CBC-HS512', 'A256GCM',
-      ],
+      authorizationEncryptionEncValues: ['A128CBC-HS256', 'A128GCM', 'A256CBC-HS512', 'A256GCM'],
 
       /*
        * enabledJWA.dPoPSigningAlgValues
@@ -2790,9 +2761,7 @@ function getDefaults() {
        * ]
        * ```
        */
-      dPoPSigningAlgValues: [
-        'RS256', 'PS256', 'ES256', 'EdDSA',
-      ],
+      dPoPSigningAlgValues: ['RS256', 'PS256', 'ES256', 'EdDSA'],
     },
   };
 

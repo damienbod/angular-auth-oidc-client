@@ -36,7 +36,7 @@
     "start-sample-code-flow-http-config": "ng serve sample-code-flow-http-config --ssl -o",
     "start-sample-code-flow-refresh-tokens": "ng serve sample-code-flow-refresh-tokens --ssl -o",
     "start-sample-code-flow-auth0": "ng serve sample-code-flow-auth0 --ssl -o",
-    "start-sample-code-flow-par": "ng serve sample-code-flow-par --ssl -o",
+    "start-sample-code-flow-par": "ng serve sample-code-flow-par -o",
     "start-sample-code-flow-azure-b2c": "ng serve sample-code-flow-azure-b2c --ssl -o",
     "start-sample-code-flow-azuread": "ng serve  sample-code-flow-azuread --ssl -o",
     "start-sample-code-flow-multi-Auth0-ID4": "ng serve sample-code-flow-multi-Auth0-ID4 --ssl -o",
