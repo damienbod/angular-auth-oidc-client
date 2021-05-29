@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { CheckAuthService } from '../check-auth.service';
+import { ConfigurationProvider } from '../config/provider/config.provider';
 import { LoginService } from '../login/login.service';
 import { AutoLoginService } from './auto-login.service';
 
@@ -14,7 +15,8 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
     private authStateService: AuthStateService,
     private checkAuthService: CheckAuthService,
     private loginService: LoginService,
-    private router: Router
+    private router: Router,
+    private configurationProvider: ConfigurationProvider
   ) {}
 
   canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> {
@@ -26,26 +28,31 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
   }
 
   private checkAuth(url: string) {
+    const configId = this.getId();
     return this.authStateService.authenticated$.pipe(
       concatMap((isAuthenticatedAlready) =>
-        isAuthenticatedAlready ? of(isAuthenticatedAlready) : this.checkAuthService.checkAuth('configId')
+        isAuthenticatedAlready ? of(isAuthenticatedAlready) : this.checkAuthService.checkAuth(configId)
       ),
 
       map((isAuthorized) => {
-        const storedRoute = this.autoLoginService.getStoredRedirectRoute('configId');
+        const storedRoute = this.autoLoginService.getStoredRedirectRoute(configId);
 
         if (isAuthorized) {
           if (storedRoute) {
-            this.autoLoginService.deleteStoredRedirectRoute('configId');
+            this.autoLoginService.deleteStoredRedirectRoute(configId);
             this.router.navigateByUrl(storedRoute);
           }
           return true;
         }
 
-        this.autoLoginService.saveStoredRedirectRoute('configId', url);
-        this.loginService.login('configId');
+        this.autoLoginService.saveStoredRedirectRoute(configId, url);
+        this.loginService.login(configId);
         return false;
       })
     );
+  }
+
+  private getId() {
+    return this.configurationProvider.getAllConfigurations()[0]?.configId;
   }
 }

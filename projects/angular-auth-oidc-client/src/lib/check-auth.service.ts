@@ -96,7 +96,7 @@ export class CheckAuthService {
   private checkAuthWithConfig(config: OpenIdConfiguration, url?: string): Observable<LoginResponse> {
     const { configId, stsServer } = config;
 
-    if (!this.configurationProvider.hasConfig()) {
+    if (!this.configurationProvider.hasAsLeastOneConfig()) {
       const errorMessage = 'Please provide at least one configuration before setting up the module';
       this.loggerService.logError(configId, errorMessage);
 

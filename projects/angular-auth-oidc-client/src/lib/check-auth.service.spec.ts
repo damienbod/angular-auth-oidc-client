@@ -97,7 +97,7 @@ describe('CheckAuthService', () => {
     it(
       'returns isAuthenticated: false with error message when config is not valid',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'hasConfig').and.returnValue(false);
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(false);
         checkAuthService.checkAuth('configId').subscribe((result) =>
           expect(result).toEqual({
             isAuthenticated: false,
@@ -110,7 +110,7 @@ describe('CheckAuthService', () => {
     it(
       'returns null and sendMessageToMainWindow if currently in a popup',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
         spyOn(popUpService, 'isCurrentlyInPopup').and.returnValue(true);
         const popupSpy = spyOn(popUpService, 'sendMessageToMainWindow');
@@ -124,7 +124,7 @@ describe('CheckAuthService', () => {
     it(
       'returns isAuthenticated: false with error message in case handleCallbackAndFireEvents throws an error',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
         spyOn(callBackService, 'isCallback').and.returnValue(true);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
@@ -139,7 +139,7 @@ describe('CheckAuthService', () => {
     it(
       'calls callbackService.handlePossibleStsCallback with current url when callback is true',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer', configId: 'configId' });
         spyOn(callBackService, 'isCallback').and.returnValue(true);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
@@ -154,7 +154,7 @@ describe('CheckAuthService', () => {
     it(
       'does NOT call handleCallbackAndFireEvents with current url when callback is false',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer', configId: 'configId' });
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
@@ -168,7 +168,7 @@ describe('CheckAuthService', () => {
     it(
       'does fire the auth and user data events when it is not a callback from the sts and is authenticated',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer', configId: 'configId' });
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
@@ -187,7 +187,7 @@ describe('CheckAuthService', () => {
     it(
       'does NOT fire the auth and user data events when it is not a callback from the sts and is NOT authenticated',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer', configId: 'configId' });
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
@@ -206,7 +206,7 @@ describe('CheckAuthService', () => {
     it(
       'if authenticated return true',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer', configId: 'configId' });
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
@@ -220,7 +220,7 @@ describe('CheckAuthService', () => {
     it(
       'if authenticated set auth and fires event ',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
@@ -236,7 +236,7 @@ describe('CheckAuthService', () => {
     it(
       'if authenticated publishUserdataIfExists ',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
@@ -256,7 +256,7 @@ describe('CheckAuthService', () => {
           stsServer: 'stsServer',
           tokenRefreshInSeconds: 7,
         };
-        spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue(config);
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
@@ -272,7 +272,7 @@ describe('CheckAuthService', () => {
     it(
       'if isCheckSessionConfigured call checkSessionService.start()',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
@@ -289,7 +289,7 @@ describe('CheckAuthService', () => {
     it(
       'if isSilentRenewConfigured call getOrCreateIframe()',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
@@ -306,7 +306,7 @@ describe('CheckAuthService', () => {
     it(
       'deletes route and navigates if a route for redirect was saved and user is authenticated',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
@@ -324,7 +324,7 @@ describe('CheckAuthService', () => {
     it(
       'does not redirect when user is not authenticated',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
@@ -344,7 +344,7 @@ describe('CheckAuthService', () => {
     it(
       'if isSilentRenewConfigured call getOrCreateIframe()',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
@@ -361,7 +361,7 @@ describe('CheckAuthService', () => {
     it(
       'does forceRefreshSession get called and is NOT authenticated',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'hasConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);

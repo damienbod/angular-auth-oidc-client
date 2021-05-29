@@ -27,7 +27,7 @@ describe('ConfigurationProviderTests', () => {
   it('hasConfig is true if config is set', () => {
     configurationProvider.setConfig({ stsServer: 'hello' });
 
-    expect(configurationProvider.hasConfig()).toBeTrue();
+    expect(configurationProvider.hasAsLeastOneConfig()).toBeTrue();
   });
 
   it('get openIDConfiguration returns null when openIdConfigurationInternal is falsy', () => {

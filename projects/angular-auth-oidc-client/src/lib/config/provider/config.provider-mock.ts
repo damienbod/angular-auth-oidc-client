@@ -8,7 +8,7 @@ export class ConfigurationProviderMock {
     return this.configInternal || DEFAULT_CONFIG;
   }
 
-  hasConfig() {
+  hasAsLeastOneConfig() {
     return true;
   }
 
