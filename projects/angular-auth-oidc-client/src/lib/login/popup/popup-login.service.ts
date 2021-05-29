@@ -59,7 +59,7 @@ export class PopUpLoginService {
               return of({ isAuthenticated: false, errorMessage: 'User closed popup' });
             }
 
-            return this.checkAuthService.checkAuth(receivedUrl);
+            return this.checkAuthService.checkAuth(configId, receivedUrl);
           })
         );
       })

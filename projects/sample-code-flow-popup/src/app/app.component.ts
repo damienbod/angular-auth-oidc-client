@@ -21,7 +21,7 @@ export class AppComponent {
   ngOnInit() {
     this.configuration = this.oidcSecurityService.getConfiguration();
     this.userData$ = this.oidcSecurityService.userData$;
-    this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
+    this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$ as Observable<boolean>;
 
     this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
       console.log(isAuthenticated);
