@@ -1,10 +1,10 @@
-´´´
+```
 node standalone.js
-´´´
+```
 
-code flow with refrech tokens node-oidc-provider:
+code flow with refresh tokens node-oidc-provider:
 
-´´´
+```
 module.exports = {
 clients: [
 {
@@ -16,7 +16,7 @@ response_types: ['code'],
 redirect_uris: ['https://localhost:4207'],
 scope: 'openid offline_access profile email'
 },
-´´´
+```
 
 # Links
 
