@@ -8,8 +8,9 @@ import { ConfigurationProviderMock } from '../config/provider/config.provider-mo
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { AuthInterceptor } from './auth.interceptor';
+import { ClosestMatchingRouteService } from './closest-matching-route.service';
 
-xdescribe(`AuthHttpInterceptor`, () => {
+describe(`AuthHttpInterceptor`, () => {
   let httpTestingController: HttpTestingController;
   let configurationProvider: ConfigurationProvider;
   let httpClient: HttpClient;
@@ -19,6 +20,7 @@ xdescribe(`AuthHttpInterceptor`, () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
+        ClosestMatchingRouteService,
         {
           provide: HTTP_INTERCEPTORS,
           useClass: AuthInterceptor,

@@ -4,44 +4,53 @@ import { Observable } from 'rxjs';
 import { AuthStateService } from '../authState/auth-state.service';
 import { ConfigurationProvider } from '../config/provider/config.provider';
 import { LoggerService } from '../logging/logger.service';
+import { ClosestMatchingRouteService } from './closest-matching-route.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   constructor(
     private authStateService: AuthStateService,
     private configurationProvider: ConfigurationProvider,
-    private loggerService: LoggerService
+    private loggerService: LoggerService,
+    private closestMatchingRouteService: ClosestMatchingRouteService
   ) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Ensure we send the token only to routes which are secured
-    // const { secureRoutes } = this.configurationProvider.getOpenIDConfiguration();
 
-    // if (!secureRoutes) {
-    //   this.loggerService.logDebug(`No routes to check configured`);
-    //   return next.handle(req);
-    // }
+    if (!this.configurationProvider.hasAsLeastOneConfig()) {
+      return next.handle(req);
+    }
 
-    // const matchingRoute = secureRoutes.find((x) => req.url.startsWith(x));
+    const allConfigurations = this.configurationProvider.getAllConfigurations();
+    const { configId } = allConfigurations[0];
+    const allRoutesConfigured = allConfigurations.map((x) => x.secureRoutes);
 
-    // if (!matchingRoute) {
-    //   this.loggerService.logDebug(`Did not find matching route for ${req.url}`);
-    //   return next.handle(req);
-    // }
+    if (!allRoutesConfigured || allRoutesConfigured.length === 0) {
+      this.loggerService.logDebug(configId, `No routes to check configured`);
+      return next.handle(req);
+    }
 
-    // this.loggerService.logDebug(`'${req.url}' matches configured route '${matchingRoute}'`);
+    const { matchingConfigId, matchingRoute } = this.closestMatchingRouteService.getConfigIdForClosestMatchingRoute(req.url);
 
-    // const token = this.authStateService.getAccessToken();
+    if (!matchingConfigId) {
+      this.loggerService.logDebug(configId, `Did not find any configured route for route ${req.url}`);
+      return next.handle(req);
+    }
 
-    // if (!token) {
-    //   this.loggerService.logDebug(`Wanted to add token to ${req.url} but found no token: '${token}'`);
-    //   return next.handle(req);
-    // }
+    this.loggerService.logDebug(matchingConfigId, `'${req.url}' matches configured route '${matchingRoute}'`);
 
-    // this.loggerService.logDebug(`'${req.url}' matches configured route '${matchingRoute}', adding token`);
-    // req = req.clone({
-    //   headers: req.headers.set('Authorization', 'Bearer ' + token),
-    // });
+    const token = this.authStateService.getAccessToken(matchingConfigId);
+
+    if (!token) {
+      this.loggerService.logDebug(matchingConfigId, `Wanted to add token to ${req.url} but found no token: '${token}'`);
+      return next.handle(req);
+    }
+
+    this.loggerService.logDebug(matchingConfigId, `'${req.url}' matches configured route '${matchingRoute}', adding token`);
+    req = req.clone({
+      headers: req.headers.set('Authorization', 'Bearer ' + token),
+    });
 
     return next.handle(req);
   }
