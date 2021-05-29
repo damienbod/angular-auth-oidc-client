@@ -1,5 +1,5 @@
 ```
-node standalone.js
+node ./example/standalone.js
 ```
 
 code flow with refresh tokens node-oidc-provider:
