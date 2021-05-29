@@ -17,7 +17,7 @@ export class HomeComponent implements OnInit {
     this.configuration = this.oidcSecurityService.getConfiguration();
     this.userData$ = this.oidcSecurityService.userData$;
 
-    this.oidcSecurityService.isAuthenticated$.subscribe((authenticated) => {
+    this.oidcSecurityService.isAuthenticated$.subscribe((authenticated: boolean) => {
       this.isAuthenticated = authenticated;
 
       console.warn('authenticated: ', authenticated);
