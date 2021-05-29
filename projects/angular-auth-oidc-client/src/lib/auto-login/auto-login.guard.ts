@@ -53,6 +53,6 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
   }
 
   private getId() {
-    return this.configurationProvider.getAllConfigurations()[0]?.configId;
+    return this.configurationProvider.getAllConfigurations()[0].configId;
   }
 }

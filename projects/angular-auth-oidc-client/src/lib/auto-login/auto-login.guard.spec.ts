@@ -6,6 +6,8 @@ import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
 import { CheckAuthService } from '../check-auth.service';
 import { CheckAuthServiceMock } from '../check-auth.service-mock';
+import { ConfigurationProvider } from '../config/provider/config.provider';
+import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { LoginService } from '../login/login.service';
 import { LoginServiceMock } from '../login/login.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -13,13 +15,14 @@ import { StoragePersistenceServiceMock } from '../storage/storage-persistence.se
 import { AutoLoginGuard } from './auto-login.guard';
 import { AutoLoginService } from './auto-login.service';
 
-xdescribe(`AutoLoginGuard`, () => {
+describe(`AutoLoginGuard`, () => {
   let autoLoginGuard: AutoLoginGuard;
   let checkAuthService: CheckAuthService;
   let loginService: LoginService;
   let authStateService: AuthStateService;
   let router: Router;
   let storagePersistenceService: StoragePersistenceService;
+  let configurationProvider: ConfigurationProvider;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -39,17 +42,25 @@ xdescribe(`AutoLoginGuard`, () => {
           provide: CheckAuthService,
           useClass: CheckAuthServiceMock,
         },
+        {
+          provide: ConfigurationProvider,
+          useClass: ConfigurationProviderMock,
+        },
       ],
     });
   });
 
   beforeEach(() => {
-    autoLoginGuard = TestBed.inject(AutoLoginGuard);
     checkAuthService = TestBed.inject(CheckAuthService);
     authStateService = TestBed.inject(AuthStateService);
     router = TestBed.inject(Router);
     loginService = TestBed.inject(LoginService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
+    configurationProvider = TestBed.inject(ConfigurationProvider);
+
+    spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ configId: 'configId' }]);
+
+    autoLoginGuard = TestBed.inject(AutoLoginGuard);
   });
 
   afterEach(() => {
@@ -114,7 +125,7 @@ xdescribe(`AutoLoginGuard`, () => {
         const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
         autoLoginGuard.canActivate(null, { url: 'some-url5' } as RouterStateSnapshot).subscribe((result) => {
-          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'some-url5');
+          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'some-url5', 'configId');
         });
       })
     );
@@ -143,7 +154,7 @@ xdescribe(`AutoLoginGuard`, () => {
 
         autoLoginGuard.canActivate(null, { url: 'some-url7' } as RouterStateSnapshot).subscribe((result) => {
           expect(result).toBe(true);
-          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect');
+          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'configId');
           expect(routerSpy).toHaveBeenCalledOnceWith('stored-route');
           expect(loginSpy).not.toHaveBeenCalled();
         });
@@ -205,7 +216,7 @@ xdescribe(`AutoLoginGuard`, () => {
         const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
         autoLoginGuard.canLoad({ path: 'some-url12' }, []).subscribe((result) => {
-          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'some-url12');
+          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'some-url12', 'configId');
         });
       })
     );
@@ -234,7 +245,7 @@ xdescribe(`AutoLoginGuard`, () => {
 
         autoLoginGuard.canLoad({ path: 'some-url14' }, []).subscribe((result) => {
           expect(result).toBe(true);
-          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect');
+          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'configId');
           expect(routerSpy).toHaveBeenCalledOnceWith('stored-route');
           expect(loginSpy).not.toHaveBeenCalled();
         });
