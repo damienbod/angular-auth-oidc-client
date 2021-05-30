@@ -2,7 +2,7 @@
 
 <button *ngIf="checkSessionChanged$ | async" (click)="login()">checkSessionChanged Login</button>
 
-<div *ngIf="isAuthenticated$ | async as isAuthenticated; else noAuth">
+<div *ngIf="isAuthenticated; else noAuth">
   <button (click)="logout()">Logout</button>
   <button (click)="logoffLocal()">Logoff Local</button>
   <button (click)="refreshSession()">refreshSession</button>
