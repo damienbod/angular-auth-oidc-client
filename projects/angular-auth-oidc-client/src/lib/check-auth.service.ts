@@ -115,7 +115,7 @@ export class CheckAuthService {
 
     const isCallback = this.callbackService.isCallback(currentUrl);
 
-    this.loggerService.logDebug('currentUrl to check auth with: ', currentUrl);
+    this.loggerService.logDebug(configId, 'currentUrl to check auth with: ', currentUrl);
 
     const callback$ = isCallback ? this.callbackService.handleCallbackAndFireEvents(currentUrl, configId) : of(null);
 

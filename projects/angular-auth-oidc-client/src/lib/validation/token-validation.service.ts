@@ -322,7 +322,7 @@ export class TokenValidationService {
     const alg = headerData.alg;
 
     if (!this.keyAlgorithms.includes(alg as string)) {
-      this.loggerService.logWarning('alg not supported', alg);
+      this.loggerService.logWarning(configId, 'alg not supported', alg);
       return false;
     }
 

@@ -24,9 +24,10 @@ export class AuthInterceptor implements HttpInterceptor {
 
     const allConfigurations = this.configurationProvider.getAllConfigurations();
     const { configId } = allConfigurations[0];
-    const allRoutesConfigured = allConfigurations.map((x) => x.secureRoutes);
+    const allRoutesConfigured = allConfigurations.map((x) => x.secureRoutes || []);
+    const allRoutesConfiguredFlat = [].concat.apply([], allRoutesConfigured);
 
-    if (!allRoutesConfigured || allRoutesConfigured.length === 0) {
+    if (allRoutesConfiguredFlat.length === 0) {
       this.loggerService.logDebug(configId, `No routes to check configured`);
       return next.handle(req);
     }

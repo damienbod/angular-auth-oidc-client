@@ -39,7 +39,7 @@ export class StandardLoginService {
       const url = this.urlService.getAuthorizeUrl(configId, customParams);
 
       if (!url) {
-        this.loggerService.logError('Could not create url', url);
+        this.loggerService.logError(configId, 'Could not create url', url);
         return;
       }
 

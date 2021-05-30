@@ -51,11 +51,11 @@ export class ParLoginService {
       .getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId)
       .pipe(switchMap(() => this.parService.postParRequest(configId, customParams)))
       .subscribe((response) => {
-        this.loggerService.logDebug('par response: ', response);
+        this.loggerService.logDebug(configId, 'par response: ', response);
 
         const url = this.urlService.getAuthorizeParUrl(response.requestUri, configId);
 
-        this.loggerService.logDebug('par request url: ', url);
+        this.loggerService.logDebug(configId, 'par request url: ', url);
 
         if (!url) {
           this.loggerService.logError(configId, `Could not create url with param ${response.requestUri}: '${url}'`);
@@ -92,11 +92,11 @@ export class ParLoginService {
     return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).pipe(
       switchMap(() => this.parService.postParRequest(configId, customParams)),
       switchMap((response: ParResponse) => {
-        this.loggerService.logDebug('par response: ', response);
+        this.loggerService.logDebug(configId, 'par response: ', response);
 
         const url = this.urlService.getAuthorizeParUrl(response.requestUri, configId);
 
-        this.loggerService.logDebug('par request url: ', url);
+        this.loggerService.logDebug(configId, 'par request url: ', url);
 
         if (!url) {
           const errorMessage = `Could not create url with param ${response.requestUri}: 'url'`;

@@ -38,7 +38,7 @@ export class RefreshTokenCallbackHandlerService {
 
     return this.dataService.post(tokenEndpoint, data, configId, headers).pipe(
       switchMap((response: any) => {
-        this.loggerService.logDebug('token refresh response: ', response);
+        this.loggerService.logDebug(configId, 'token refresh response: ', response);
         let authResult: any = new Object();
         authResult = response;
         authResult.state = callbackContext.state;
@@ -50,7 +50,7 @@ export class RefreshTokenCallbackHandlerService {
       catchError((error) => {
         const { stsServer } = this.configurationProvider.getOpenIDConfiguration(configId);
         const errorMessage = `OidcService code request ${stsServer}`;
-        this.loggerService.logError(errorMessage, error);
+        this.loggerService.logError(configId, errorMessage, error);
         return throwError(errorMessage);
       })
     );
@@ -63,7 +63,7 @@ export class RefreshTokenCallbackHandlerService {
         if (error && error instanceof HttpErrorResponse && error.error instanceof ProgressEvent && error.error.type === 'error') {
           const { stsServer, refreshTokenRetryInSeconds } = this.configurationProvider.getOpenIDConfiguration(configId);
           const errorMessage = `OidcService code request ${stsServer} - no internet connection`;
-          this.loggerService.logWarning(errorMessage, error);
+          this.loggerService.logWarning(configId, errorMessage, error);
           return timer(refreshTokenRetryInSeconds * 1000);
         }
         return throwError(error);

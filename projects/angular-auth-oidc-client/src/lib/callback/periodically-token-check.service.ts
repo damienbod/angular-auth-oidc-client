@@ -76,7 +76,7 @@ export class PeriodicallyTokenCheckService {
           }
         }
       },
-      (err) => this.loggerService.logError('silent renew failed!', err)
+      (err) => /*TODO USE CONFIG ID HERE*/ this.loggerService.logError('silent renew failed!', err)
     );
   }
 

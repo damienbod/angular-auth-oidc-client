@@ -51,9 +51,9 @@ export class UserService {
     if (!isRenewProcess || renewUserInfoAfterTokenRenew || !haveUserData) {
       return this.getUserDataOidcFlowAndSave(decodedIdToken.sub, configId).pipe(
         switchMap((userData) => {
-          this.loggerService.logDebug('Received user data: ', userData);
+          this.loggerService.logDebug(configId, 'Received user data: ', userData);
           if (!!userData) {
-            this.loggerService.logDebug('accessToken: ', accessToken);
+            this.loggerService.logDebug(configId, 'accessToken: ', accessToken);
             return of(userData);
           } else {
             return throwError('Received no user data, request failed');

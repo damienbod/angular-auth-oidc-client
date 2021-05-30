@@ -39,7 +39,7 @@ export class CodeFlowCallbackHandlerService {
       return throwError('no code in url');
     }
 
-    this.loggerService.logDebug('running validation for callback', urlToCheck);
+    this.loggerService.logDebug(configId, 'running validation for callback', urlToCheck);
 
     const initialCallbackContext = {
       code,
@@ -97,7 +97,7 @@ export class CodeFlowCallbackHandlerService {
       catchError((error) => {
         const { stsServer } = this.configurationProvider.getOpenIDConfiguration(configId);
         const errorMessage = `OidcService code request ${stsServer}`;
-        this.loggerService.logError(errorMessage, error);
+        this.loggerService.logError(configId, errorMessage, error);
         return throwError(errorMessage);
       })
     );
@@ -110,7 +110,7 @@ export class CodeFlowCallbackHandlerService {
         if (error && error instanceof HttpErrorResponse && error.error instanceof ProgressEvent && error.error.type === 'error') {
           const { stsServer, refreshTokenRetryInSeconds } = this.configurationProvider.getOpenIDConfiguration(configId);
           const errorMessage = `OidcService code request ${stsServer} - no internet connection`;
-          this.loggerService.logWarning(errorMessage, error);
+          this.loggerService.logWarning(configId, errorMessage, error);
           return timer(refreshTokenRetryInSeconds * 1000);
         }
         return throwError(error);

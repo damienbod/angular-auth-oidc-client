@@ -75,7 +75,7 @@ export class CheckSessionService {
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
 
     if (!authWellKnownEndPoints) {
-      this.loggerService.logWarning(configId, 'init check session: authWellKnownEndpoints is undefined. Returning.');
+      this.loggerService.logWarning(configId, 'CheckSession - init check session: authWellKnownEndpoints is undefined. Returning.');
       return of();
     }
 
@@ -85,7 +85,7 @@ export class CheckSessionService {
     if (checkSessionIframe) {
       existingIframe.contentWindow.location.replace(checkSessionIframe);
     } else {
-      this.loggerService.logWarning(configId, 'init check session: checkSessionIframe is not configured to run');
+      this.loggerService.logWarning(configId, 'CheckSession - init check session: checkSessionIframe is not configured to run');
     }
 
     return new Observable((observer) => {
@@ -105,7 +105,7 @@ export class CheckSessionService {
         .subscribe(() => {
           const existingIframe = this.getExistingIframe();
           if (existingIframe && clientId) {
-            this.loggerService.logDebug(configId, `clientId : '${clientId}' - existingIframe: '${existingIframe}'`);
+            this.loggerService.logDebug(configId, `CheckSession - clientId : '${clientId}' - existingIframe: '${existingIframe}'`);
             const sessionState = this.storagePersistenceService.read('session_state', configId);
             const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
 
@@ -116,20 +116,27 @@ export class CheckSessionService {
             } else {
               this.loggerService.logDebug(
                 configId,
-                `session_state is '${sessionState}' - AuthWellKnownEndPoints is '${JSON.stringify(authWellKnownEndPoints)}'`
+                `CheckSession - session_state is '${sessionState}' - AuthWellKnownEndPoints is '${JSON.stringify(
+                  authWellKnownEndPoints,
+                  null,
+                  2
+                )}'`
               );
               this.checkSessionChangedInternal$.next(true);
             }
           } else {
-            this.loggerService.logWarning(configId, 'OidcSecurityCheckSession pollServerSession checkSession IFrame does not exist');
-            this.loggerService.logDebug(configId, `clientId : '${clientId}' - existingIframe: '${existingIframe}'`);
+            this.loggerService.logWarning(
+              configId,
+              `CheckSession - OidcSecurityCheckSession pollServerSession checkSession IFrame does not exist:
+               clientId : '${clientId}' - existingIframe: '${existingIframe}'`
+            );
           }
 
           // after sending three messages with no response, fail.
           if (this.outstandingMessages > 3) {
             this.loggerService.logError(
               configId,
-              `OidcSecurityCheckSession not receiving check session response messages.
+              `CheckSession - OidcSecurityCheckSession not receiving check session response messages.
                             Outstanding messages: '${this.outstandingMessages}'. Server unreachable?`
             );
           }
@@ -148,22 +155,24 @@ export class CheckSessionService {
     this.scheduledHeartBeatRunning = null;
   }
 
-  private messageHandler(e: any, configId: string) {
+  private messageHandler(configId: string, e: any) {
     const existingIFrame = this.getExistingIframe();
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
     const startsWith = !!authWellKnownEndPoints?.checkSessionIframe?.startsWith(e.origin);
+
     this.outstandingMessages = 0;
+
     if (existingIFrame && startsWith && e.source === existingIFrame.contentWindow) {
       if (e.data === 'error') {
-        this.loggerService.logWarning(configId, 'error from check session messageHandler');
+        this.loggerService.logWarning(configId, 'CheckSession - error from check session messageHandler');
       } else if (e.data === 'changed') {
-        this.loggerService.logDebug(configId, e + ' from check session messageHandler');
+        this.loggerService.logDebug(configId, `CheckSession - ${e} from check session messageHandler`);
         this.checkSessionReceived = true;
         this.eventService.fireEvent(EventTypes.CheckSessionReceived, e.data);
         this.checkSessionChangedInternal$.next(true);
       } else {
         this.eventService.fireEvent(EventTypes.CheckSessionReceived, e.data);
-        this.loggerService.logDebug(configId, e.data + ' from checksession messageHandler');
+        this.loggerService.logDebug(configId, `CheckSession - ${e.data} from check session messageHandler`);
       }
     }
   }
