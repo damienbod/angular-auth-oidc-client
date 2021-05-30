@@ -62,15 +62,15 @@ The example logins the user in directly without a login click using the Code Flo
 
 The is the basic example of the Code Flow with PKCE.
 
-### [src code](../projects/sample-code-flow)
+### [src code](../projects/sample-code-flow-multi-iframe)
 
-[auth-config.module.ts](../projects/sample-code-flow/src/app/auth-config.module.ts)
+[auth-config.module.ts](../projects/sample-code-flow-multi-iframe/src/app/auth-config.module.ts)
 
-[app.module.ts](../projects/sample-code-flow/src/app/app.module.ts)
+[app.module.ts](../projects/sample-code-flow-multi-iframe/src/app/app.module.ts)
 
-[app.component.ts](../projects/sample-code-flow/src/app/app.component.ts)
+[app.component.ts](../projects/sample-code-flow-multi-iframe/src/app/app.component.ts)
 
-[app.component.html](../projects/sample-code-flow/src/app/app.component.html)
+[app.component.html](../projects/sample-code-flow-multi-iframe/src/app/app.component.html)
 
 ## Popup Code Flow with PKCE
 

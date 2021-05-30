@@ -1,31 +1,11 @@
-const {
-  interactionPolicy: { Prompt, base: policy },
-} = require('../../lib'); // require('oidc-provider');
-
-// copies the default policy, already has login and consent prompt policies
-const interactions = policy();
-
-// create a requestable prompt with no implicit checks
-const selectAccount = new Prompt({
-  name: 'select_account',
-  requestable: true,
-});
-
-// add to index 0, order goes select_account > login > consent
-interactions.add(selectAccount, 0);
-
 module.exports = {
   clients: [
-    {
-      client_id: 'client-par-required',
-      token_endpoint_auth_method: 'none',
-      application_type: 'web',
-      grant_types: ['refresh_token', 'authorization_code'],
-      redirect_uris: ['https://localhost:4207'],
-      require_pushed_authorization_requests: true,
-      scope: 'openid offline_access profile email',
-      post_logout_redirect_uris: ['https://localhost:4207'],
-    },
+    // {
+    //   client_id: 'oidcCLIENT',
+    //   client_secret: '...',
+    //   grant_types: ['refresh_token', 'authorization_code'],
+    //   redirect_uris: ['http://sso-client.dev/providers/7/open_id', 'http://sso-client.dev/providers/8/open_id'],
+    // }
     {
       client_id: 'angularCodeRefreshTokens',
       token_endpoint_auth_method: 'none',
@@ -34,19 +14,25 @@ module.exports = {
       response_types: ['code'],
       redirect_uris: ['https://localhost:4207'],
       scope: 'openid offline_access profile email',
-      post_logout_redirect_uris: ['https://localhost:4207'],
+      post_logout_redirect_uris: ['http://localhost:4207'],
+    },
+    {
+      client_id: 'client-par-required',
+      token_endpoint_auth_method: 'none',
+      application_type: 'web',
+      grant_types: ['refresh_token', 'authorization_code'],
+      response_types: ['code'],
+      redirect_uris: ['http://localhost:4207'],
+      scope: 'openid offline_access profile email',
     },
   ],
   interactions: {
-    policy: interactions,
     url(ctx, interaction) {
       // eslint-disable-line no-unused-vars
-      return `/interaction/${ctx.oidc.uid}`;
+      return `/interaction/${interaction.uid}`;
     },
   },
   cookies: {
-    long: { signed: true, maxAge: 1 * 24 * 60 * 60 * 1000 }, // 1 day in ms
-    short: { signed: true },
     keys: ['some secret key', 'and also the old rotated away some time ago', 'and one more'],
   },
   claims: {
@@ -74,12 +60,9 @@ module.exports = {
     devInteractions: { enabled: false }, // defaults to true
 
     deviceFlow: { enabled: true }, // defaults to false
-    introspection: { enabled: true }, // defaults to false
     revocation: { enabled: true }, // defaults to false
-
+    introspection: { enabled: true },
     pushedAuthorizationRequests: { enabled: true },
-
-    fapiRW: { enabled: false },
   },
   jwks: {
     keys: [
@@ -111,12 +94,5 @@ module.exports = {
         y: '_n8G69C-A2Xl4xUW2lF0i8ZGZnk_KPYrhv4GbTGu5G4',
       },
     ],
-  },
-  ttl: {
-    AccessToken: 1 * 60 * 60, // 1 hour in seconds
-    AuthorizationCode: 10 * 60, // 10 minutes in seconds
-    IdToken: 1 * 60 * 60, // 1 hour in seconds
-    DeviceCode: 10 * 60, // 10 minutes in seconds
-    RefreshToken: 1 * 24 * 60 * 60, // 1 day in seconds
   },
 };
