@@ -19,6 +19,7 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.configuration = this.oidcSecurityService.getConfiguration();
     this.userData$ = this.oidcSecurityService.userData$;
+    this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 
     this.oidcSecurityService.isAuthenticated$.subscribe((authenticated: boolean) => {
       this.isAuthenticated = authenticated;
