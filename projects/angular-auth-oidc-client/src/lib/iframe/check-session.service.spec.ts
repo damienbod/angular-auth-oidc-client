@@ -125,7 +125,7 @@ describe('CheckSessionService', () => {
       .and.returnValue({ checkSessionIframe: undefined });
     (checkSessionService as any).init('configId');
 
-    expect(spyLogWarning).toHaveBeenCalledWith('configId', 'init check session: checkSessionIframe is not configured to run');
+    expect(spyLogWarning).toHaveBeenCalledWith('configId', jasmine.any(String));
   });
 
   it('start() calls pollserversession() with clientId if no scheduledheartbeat is set', () => {
@@ -209,10 +209,7 @@ describe('CheckSessionService', () => {
       const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => {});
       spyOn(loggerService, 'logDebug').and.callFake(() => {});
       (checkSessionService as any).pollServerSession('clientId', 'configId');
-      expect(spyLogWarning).toHaveBeenCalledWith(
-        'configId',
-        'OidcSecurityCheckSession pollServerSession checkSession IFrame does not exist'
-      );
+      expect(spyLogWarning).toHaveBeenCalledWith('configId', jasmine.any(String));
     });
 
     it('logs warning if clientId is not set', () => {
@@ -224,10 +221,7 @@ describe('CheckSessionService', () => {
       const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => {});
       spyOn(loggerService, 'logDebug').and.callFake(() => {});
       (checkSessionService as any).pollServerSession('', 'configId');
-      expect(spyLogWarning).toHaveBeenCalledWith(
-        'configId',
-        'OidcSecurityCheckSession pollServerSession checkSession IFrame does not exist'
-      );
+      expect(spyLogWarning).toHaveBeenCalledWith('configId', jasmine.any(String));
     });
 
     it('logs debug if session_state is not set', () => {
