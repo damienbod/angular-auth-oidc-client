@@ -23,7 +23,7 @@ export class ImplicitFlowCallbackService {
       configId
     );
 
-    return this.flowsService.processImplicitFlowCallback(hash).pipe(
+    return this.flowsService.processImplicitFlowCallback(configId, hash).pipe(
       tap((callbackContext) => {
         if (!triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
           this.router.navigateByUrl(postLoginRoute);

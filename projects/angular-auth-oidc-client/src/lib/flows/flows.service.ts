@@ -40,7 +40,7 @@ export class FlowsService {
   }
 
   processImplicitFlowCallback(configId: string, hash?: string): Observable<CallbackContext> {
-    return this.implicitFlowCallbackHandlerService.implicitFlowCallback(hash).pipe(
+    return this.implicitFlowCallbackHandlerService.implicitFlowCallback(configId, hash).pipe(
       switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext, configId)),
       switchMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext, configId)),
       switchMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext, configId))

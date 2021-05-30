@@ -84,7 +84,7 @@ export class CheckAuthService {
 
         return this.refreshSessionService.forceRefreshSession(configId).pipe(
           tap((loginResponseAfterRefreshSession) => {
-            if (loginResponseAfterRefreshSession.isAuthenticated) {
+            if (loginResponseAfterRefreshSession?.isAuthenticated) {
               this.startCheckSessionAndValidation(configId);
             }
           })
