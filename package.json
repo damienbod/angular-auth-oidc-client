@@ -31,7 +31,7 @@
     "coveralls": "cat ./coverage/angular-auth-oidc-client/lcov.info | coveralls",
     "start": "ng serve start-sample-code-flow-refresh-tokens --ssl -o",
     "start-sample-code-flow-auto-login": "ng serve sample-code-flow-auto-login --ssl -o",
-    "start-sample-code-flow": "ng serve sample-code-flow --ssl -o",
+    "start-sample-code-flow-multi-iframe": "ng serve sample-code-flow-multi-iframe --ssl -o",
     "start-sample-code-flow-popup": "ng serve sample-code-flow-popup --ssl -o",
     "start-sample-code-flow-http-config": "ng serve sample-code-flow-http-config --ssl -o",
     "start-sample-code-flow-refresh-tokens": "ng serve sample-code-flow-refresh-tokens --ssl -o",
