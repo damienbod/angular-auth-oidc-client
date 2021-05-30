@@ -155,11 +155,16 @@ export class CheckSessionService {
     this.scheduledHeartBeatRunning = null;
   }
 
-  private messageHandler(e: any, configId: string) {
+  private messageHandler(configId: string, e: any) {
     const existingIFrame = this.getExistingIframe();
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
     const startsWith = !!authWellKnownEndPoints?.checkSessionIframe?.startsWith(e.origin);
     this.outstandingMessages = 0;
+    this.loggerService.logDebug(
+      configId,
+      `CheckSession - e.origin : '${e.origin}' - checkSessionIframe: '${authWellKnownEndPoints?.checkSessionIframe}'
+       - e.source ${e.source} - contentWindow ${existingIFrame.contentWindow}`
+    );
     if (existingIFrame && startsWith && e.source === existingIFrame.contentWindow) {
       if (e.data === 'error') {
         this.loggerService.logWarning(configId, 'CheckSession - error from check session messageHandler');
