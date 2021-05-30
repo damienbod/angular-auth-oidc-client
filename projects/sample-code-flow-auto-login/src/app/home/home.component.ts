@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class HomeComponent implements OnInit {
   userData$: Observable<any>;
-  isAuthenticated: false;
+  isAuthenticated = false;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 

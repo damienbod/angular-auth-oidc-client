@@ -10,7 +10,7 @@ export class HomeComponent implements OnInit {
   configuration: OpenIdConfiguration;
   userDataChanged$: Observable<OidcClientNotification<any>>;
   userData$: Observable<any>;
-  isAuthenticated: false;
+  isAuthenticated = false;
   checkSessionChanged$: Observable<boolean>;
   checkSessionChanged: any;
 
