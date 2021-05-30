@@ -93,6 +93,31 @@ export class LogoffRevocationService {
   revokeAccessToken(configId: string, accessToken?: any): Observable<any> {
     const accessTok = accessToken || this.storagePersistenceService.getAccessToken(configId);
     const body = this.urlService.createRevocationEndpointBodyAccessToken(accessTok, configId);
+
+    return this.sendRevokeRequest(configId, body);
+  }
+
+  // https://tools.ietf.org/html/rfc7009
+  // revokes an refresh token on the STS. This is only required in the code flow with refresh tokens.
+  // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
+  // This makes it possible to manage your own tokens.
+  revokeRefreshToken(configId: string, refreshToken?: any): Observable<any> {
+    const refreshTok = refreshToken || this.storagePersistenceService.getRefreshToken(configId);
+    const body = this.urlService.createRevocationEndpointBodyRefreshToken(refreshTok, configId);
+
+    return this.sendRevokeRequest(configId, body);
+  }
+
+  getEndSessionUrl(configId: string, customParams?: { [p: string]: string | number | boolean }): string | null {
+    const idToken = this.storagePersistenceService.getIdToken(configId);
+    const { customParamsEndSessionRequest } = this.configurationProvider.getOpenIDConfiguration();
+
+    const mergedParams = { ...customParamsEndSessionRequest, ...customParams };
+
+    return this.urlService.createEndSessionUrl(idToken, configId, mergedParams);
+  }
+
+  private sendRevokeRequest(configId: string, body: string) {
     const url = this.urlService.getRevocationEndpointUrl(configId);
 
     let headers: HttpHeaders = new HttpHeaders();
@@ -110,40 +135,5 @@ export class LogoffRevocationService {
         return throwError(errorMessage);
       })
     );
-  }
-
-  // https://tools.ietf.org/html/rfc7009
-  // revokes an refresh token on the STS. This is only required in the code flow with refresh tokens.
-  // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
-  // This makes it possible to manage your own tokens.
-  revokeRefreshToken(configId: string, refreshToken?: any): Observable<any> {
-    const refreshTok = refreshToken || this.storagePersistenceService.getRefreshToken(configId);
-    const body = this.urlService.createRevocationEndpointBodyRefreshToken(refreshTok, configId);
-    const url = this.urlService.getRevocationEndpointUrl(configId);
-
-    let headers: HttpHeaders = new HttpHeaders();
-    headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
-
-    return this.dataService.post(url, body, configId, headers).pipe(
-      retry(2),
-      switchMap((response: any) => {
-        this.loggerService.logDebug(configId, 'revocation endpoint post response: ', response);
-        return of(response);
-      }),
-      catchError((error) => {
-        const errorMessage = `Revocation request failed`;
-        this.loggerService.logError(errorMessage, error);
-        return throwError(errorMessage);
-      })
-    );
-  }
-
-  getEndSessionUrl(configId: string, customParams?: { [p: string]: string | number | boolean }): string | null {
-    const idToken = this.storagePersistenceService.getIdToken(configId);
-    const { customParamsEndSessionRequest } = this.configurationProvider.getOpenIDConfiguration();
-
-    const mergedParams = { ...customParamsEndSessionRequest, ...customParams };
-
-    return this.urlService.createEndSessionUrl(idToken, configId, mergedParams);
   }
 }
