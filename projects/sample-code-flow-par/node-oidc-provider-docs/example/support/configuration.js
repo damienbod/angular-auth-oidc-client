@@ -23,7 +23,7 @@ module.exports = {
       grant_types: ['refresh_token', 'authorization_code'],
       response_types: ['code'],
       redirect_uris: ['http://localhost:4207'],
-	  post_logout_redirect_uris: [ 'http://localhost:4207' ],
+      post_logout_redirect_uris: ['http://localhost:4207'],
       scope: 'openid offline_access profile email',
     },
   ],
