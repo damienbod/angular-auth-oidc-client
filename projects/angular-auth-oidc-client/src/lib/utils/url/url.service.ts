@@ -65,7 +65,7 @@ export class UrlService {
     const { clientId } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!clientId) {
-      this.loggerService.logError(`getAuthorizeParUrl could not add clientId because it was: `, clientId);
+      this.loggerService.logError(configId, `getAuthorizeParUrl could not add clientId because it was: `, clientId);
       return null;
     }
 
@@ -163,7 +163,7 @@ export class UrlService {
   createBodyForCodeFlowCodeRequest(code: string, configId: string, customTokenParams?: { [p: string]: string | number | boolean }): string {
     const codeVerifier = this.flowsDataService.getCodeVerifier(configId);
     if (!codeVerifier) {
-      this.loggerService.logError(`CodeVerifier is not set `, codeVerifier);
+      this.loggerService.logError(configId, `CodeVerifier is not set `, codeVerifier);
       return null;
     }
 
@@ -343,7 +343,7 @@ export class UrlService {
       return null;
     }
 
-    this.loggerService.logDebug('RefreshSession created. adding myautostate: ', state);
+    this.loggerService.logDebug(configId, 'RefreshSession created. adding myautostate: ', state);
 
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
     if (authWellKnownEndPoints) {
@@ -427,7 +427,7 @@ export class UrlService {
     const { redirectUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!redirectUrl) {
-      this.loggerService.logError(`could not get redirectUrl, was: `, redirectUrl);
+      this.loggerService.logError(configId, `could not get redirectUrl, was: `, redirectUrl);
       return null;
     }
 
@@ -438,7 +438,7 @@ export class UrlService {
     const { silentRenewUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!silentRenewUrl) {
-      this.loggerService.logError(`could not get silentRenewUrl, was: `, silentRenewUrl);
+      this.loggerService.logError(configId, `could not get silentRenewUrl, was: `, silentRenewUrl);
       return null;
     }
 
@@ -449,7 +449,7 @@ export class UrlService {
     const { postLogoutRedirectUri } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!postLogoutRedirectUri) {
-      this.loggerService.logError(`could not get postLogoutRedirectUri, was: `, postLogoutRedirectUri);
+      this.loggerService.logError(configId, `could not get postLogoutRedirectUri, was: `, postLogoutRedirectUri);
       return null;
     }
 
@@ -460,7 +460,7 @@ export class UrlService {
     const { clientId } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!clientId) {
-      this.loggerService.logError(`could not get clientId, was: `, clientId);
+      this.loggerService.logError(configId, `could not get clientId, was: `, clientId);
       return null;
     }
 

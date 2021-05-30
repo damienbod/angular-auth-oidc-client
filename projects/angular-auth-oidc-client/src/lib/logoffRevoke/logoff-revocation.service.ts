@@ -69,7 +69,7 @@ export class LogoffRevocationService {
         switchMap((result) => this.revokeAccessToken(configId, result)),
         catchError((error) => {
           const errorMessage = `revoke token failed`;
-          this.loggerService.logError(errorMessage, error);
+          this.loggerService.logError(configId, errorMessage, error);
           return throwError(errorMessage);
         }),
         tap(() => this.logoff(configId, urlHandler))
@@ -78,7 +78,7 @@ export class LogoffRevocationService {
       return this.revokeAccessToken(configId).pipe(
         catchError((error) => {
           const errorMessage = `revoke accessToken failed`;
-          this.loggerService.logError(errorMessage, error);
+          this.loggerService.logError(configId, errorMessage, error);
           return throwError(errorMessage);
         }),
         tap(() => this.logoff(configId, urlHandler))

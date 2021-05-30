@@ -123,7 +123,7 @@ describe('ParService', () => {
         service.postParRequest('configId').subscribe({
           error: (err) => {
             expect(err).toBe('There was an error on ParService postParRequest');
-            expect(loggerSpy).toHaveBeenCalledOnceWith('There was an error on ParService postParRequest', 'AN ERROR');
+            expect(loggerSpy).toHaveBeenCalledOnceWith('configId', 'There was an error on ParService postParRequest', 'AN ERROR');
           },
         });
       })

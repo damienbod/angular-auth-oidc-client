@@ -37,7 +37,7 @@ export class ParService {
     return this.dataService.post(parEndpoint, data, configId, headers).pipe(
       retry(2),
       map((response: any) => {
-        this.loggerService.logDebug('par response: ', response);
+        this.loggerService.logDebug(configId, 'par response: ', response);
 
         return {
           expiresIn: response.expires_in,
@@ -46,7 +46,7 @@ export class ParService {
       }),
       catchError((error) => {
         const errorMessage = `There was an error on ParService postParRequest`;
-        this.loggerService.logError(errorMessage, error);
+        this.loggerService.logError(configId, errorMessage, error);
         return throwError(errorMessage);
       })
     );
