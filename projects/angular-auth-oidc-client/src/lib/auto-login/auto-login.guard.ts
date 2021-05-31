@@ -29,15 +29,16 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
 
   private checkAuth(url: string) {
     const configId = this.getId();
-    return this.authStateService.authenticated$.pipe(
-      concatMap((isAuthenticatedAlready) =>
-        isAuthenticatedAlready ? of(isAuthenticatedAlready) : this.checkAuthService.checkAuth(configId)
-      ),
 
-      map((isAuthorized) => {
+    const isAuthenticated$ = this.authStateService.authenticated$ as Observable<boolean>;
+
+    return isAuthenticated$.pipe(
+      concatMap((isAuthenticated) => (isAuthenticated ? of({ isAuthenticated }) : this.checkAuthService.checkAuth(configId))),
+
+      map(({ isAuthenticated }) => {
         const storedRoute = this.autoLoginService.getStoredRedirectRoute(configId);
 
-        if (isAuthorized) {
+        if (isAuthenticated) {
           if (storedRoute) {
             this.autoLoginService.deleteStoredRedirectRoute(configId);
             this.router.navigateByUrl(storedRoute);
