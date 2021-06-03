@@ -1,5 +1,5 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { Subscription } from 'rxjs';
+import { of, Subscription, throwError } from 'rxjs';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
 import { ConfigurationProvider } from '../config/provider/config.provider';
@@ -29,10 +29,10 @@ describe('PeriodicallyTokenCheckService', () => {
   let configurationProvider: ConfigurationProvider;
   let flowsDataService: FlowsDataService;
   let flowHelper: FlowHelper;
-  // let authStateService: AuthStateService;
-  // let refreshSessionIframeService: RefreshSessionIframeService;
-  // let refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService;
-  // let userService: UserService;
+  let authStateService: AuthStateService;
+  let refreshSessionIframeService: RefreshSessionIframeService;
+  let refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService;
+  let userService: UserService;
   // let storagePersistenceService: StoragePersistenceService;
   // let resetAuthDataService: ResetAuthDataService;
 
@@ -65,10 +65,10 @@ describe('PeriodicallyTokenCheckService', () => {
     configurationProvider = TestBed.inject(ConfigurationProvider);
     flowsDataService = TestBed.inject(FlowsDataService);
     flowHelper = TestBed.inject(FlowHelper);
-    // authStateService = TestBed.inject(AuthStateService);
-    // refreshSessionIframeService = TestBed.inject(RefreshSessionIframeService);
-    // refreshSessionRefreshTokenService = TestBed.inject(RefreshSessionRefreshTokenService);
-    // userService = TestBed.inject(UserService);
+    authStateService = TestBed.inject(AuthStateService);
+    refreshSessionIframeService = TestBed.inject(RefreshSessionIframeService);
+    refreshSessionRefreshTokenService = TestBed.inject(RefreshSessionRefreshTokenService);
+    userService = TestBed.inject(UserService);
     // storagePersistenceService = TestBed.inject(StoragePersistenceService);
     // resetAuthDataService = TestBed.inject(ResetAuthDataService);
   });
@@ -108,39 +108,60 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
     }));
 
-    // fit('interval calls resetSilentRenewRunning in case of error', fakeAsync(() => {
-    //   spyOn(intervalService, 'startPeriodicTokenCheck').and.returnValue(throwError('any-error'));
-    //   const resetSilentRenewRunning = spyOn(flowsDataService, 'resetSilentRenewRunning');
+    it('interval calls resetSilentRenewRunning in case of error when current flow is CodeFlowWithRefreshTokens', fakeAsync(() => {
+      spyOn(intervalService, 'startPeriodicTokenCheck').and.returnValue(of(null));
+      const resetSilentRenewRunning = spyOn(flowsDataService, 'resetSilentRenewRunning');
+      spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
+      spyOn(refreshSessionRefreshTokenService, 'refreshSessionWithRefreshTokens').and.returnValue(throwError('some error'));
 
-    //   spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ silentRenew: true, tokenRefreshInSeconds: 1 }]);
+      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([
+        { configId: 'configId', silentRenew: true, tokenRefreshInSeconds: 1 },
+      ]);
+
+      periodicallyTokenCheckService.startTokenValidationPeriodically();
+      expect(periodicallyTokenCheckService.startTokenValidationPeriodically).toThrow();
+      tick(1000);
+
+      expect(resetSilentRenewRunning).toHaveBeenCalledOnceWith('configId');
+    }));
+
+    it('interval calls resetSilentRenewRunning in case of error when current flow is NOT CodeFlowWithRefreshTokens', fakeAsync(() => {
+      spyOn(intervalService, 'startPeriodicTokenCheck').and.returnValue(of(null));
+      const resetSilentRenewRunning = spyOn(flowsDataService, 'resetSilentRenewRunning');
+      spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
+      spyOn(refreshSessionIframeService, 'refreshSessionWithIframe').and.returnValue(throwError('some error'));
+
+      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([
+        { configId: 'configId', silentRenew: true, tokenRefreshInSeconds: 1 },
+      ]);
+
+      periodicallyTokenCheckService.startTokenValidationPeriodically();
+      expect(periodicallyTokenCheckService.startTokenValidationPeriodically).toThrow();
+      tick(1000);
+
+      expect(resetSilentRenewRunning).toHaveBeenCalledOnceWith('configId');
+    }));
+
+    // it('calls hasIdTokenExpired and hasAccessTokenExpiredIfExpiryExists only when it should be executed', fakeAsync(() => {
+    //   spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ silentRenew: true }]);
+    //   spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens');
+    //   spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
+    //   spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
+    //   spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
+
+    //   const hasIdTokenExpiredSpy = spyOn(authStateService, 'hasIdTokenExpired');
+    //   const hasAccessTokenExpiredIfExpiryExistsSpy = spyOn(authStateService, 'hasAccessTokenExpiredIfExpiryExists');
+
+    //   spyOn(refreshSessionIframeService, 'refreshSessionWithIframe').and.returnValue(of(true));
 
     //   periodicallyTokenCheckService.startTokenValidationPeriodically();
-    //   expect(periodicallyTokenCheckService.startTokenValidationPeriodically).toThrow();
     //   tick(1000);
+    //   intervalService.runTokenValidationRunning.unsubscribe();
+    //   intervalService.runTokenValidationRunning = null;
 
-    //   expect(resetSilentRenewRunning).toHaveBeenCalled();
+    //   expect(hasIdTokenExpiredSpy).toHaveBeenCalled();
+    //   expect(hasAccessTokenExpiredIfExpiryExistsSpy).toHaveBeenCalled();
     // }));
-
-    //   it('calls hasIdTokenExpired and hasAccessTokenExpiredIfExpiryExists only when it should be executed', fakeAsync(() => {
-    //     spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ silentRenew: true }]);
-    //     spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens');
-    //     spyOn(authStateService, 'getIdToken').and.returnValue('some-id-token');
-    //     spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-    //     spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
-
-    //     const hasIdTokenExpiredSpy = spyOn(authStateService, 'hasIdTokenExpired');
-    //     const hasAccessTokenExpiredIfExpiryExistsSpy = spyOn(authStateService, 'hasAccessTokenExpiredIfExpiryExists');
-
-    //     spyOn(refreshSessionIframeService, 'refreshSessionWithIframe').and.returnValue(of(true));
-
-    //     periodicallyTokenCheckService.startTokenValidationPeriodically();
-    //     tick(1000);
-    //     intervalService.runTokenValidationRunning.unsubscribe();
-    //     intervalService.runTokenValidationRunning = null;
-
-    //     expect(hasIdTokenExpiredSpy).toHaveBeenCalled();
-    //     expect(hasAccessTokenExpiredIfExpiryExistsSpy).toHaveBeenCalled();
-    //   }));
 
     //   it('returns if tokens are not expired', fakeAsync(() => {
     //     spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ silentRenew: true }]);
