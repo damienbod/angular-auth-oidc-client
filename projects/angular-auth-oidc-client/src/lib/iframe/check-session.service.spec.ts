@@ -1,5 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { skip } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config/provider/config.provider';
 import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { LoggerService } from '../logging/logger.service';
@@ -295,7 +296,7 @@ describe('CheckSessionService', () => {
     it(
       'emits when internal event is thrown',
       waitForAsync(() => {
-        checkSessionService.checkSessionChanged$.subscribe((result) => {
+        checkSessionService.checkSessionChanged$.pipe(skip(1)).subscribe((result) => {
           expect(result).toBe(true);
         });
 
