@@ -1,9 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { LoginResponse } from './login/login-response';
 
 @Injectable()
 export class CheckAuthServiceMock {
-  checkAuth(url?: string): Observable<boolean> {
+  checkAuth(passedConfigId: string, url?: string): Observable<LoginResponse> {
+    return of(null);
+  }
+
+  checkAuthMultiple(passedConfigId: string, url?: string): Observable<LoginResponse[]> {
     return of(null);
   }
 
