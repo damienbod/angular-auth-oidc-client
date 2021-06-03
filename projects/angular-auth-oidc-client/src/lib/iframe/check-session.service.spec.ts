@@ -272,4 +272,36 @@ describe('CheckSessionService', () => {
       })
     );
   });
+
+  describe('isCheckSessionConfigured', () => {
+    it('returns true if startCheckSession on config is true', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ startCheckSession: true });
+
+      const result = checkSessionService.isCheckSessionConfigured('configId');
+
+      expect(result).toBe(true);
+    });
+
+    it('returns true if startCheckSession on config is true', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ startCheckSession: false });
+
+      const result = checkSessionService.isCheckSessionConfigured('configId');
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('checkSessionChanged$', () => {
+    it(
+      'emits when internal event is thrown',
+      waitForAsync(() => {
+        checkSessionService.checkSessionChanged$.subscribe((result) => {
+          expect(result).toBe(true);
+        });
+
+        const serviceAsAny = checkSessionService as any;
+        serviceAsAny.checkSessionChangedInternal$.next(true);
+      })
+    );
+  });
 });
