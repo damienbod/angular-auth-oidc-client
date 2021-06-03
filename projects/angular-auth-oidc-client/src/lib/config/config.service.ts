@@ -25,6 +25,10 @@ export class OidcConfigService {
   ) {}
 
   withConfigs(passedConfigs: OpenIdConfiguration[]): Promise<OpenIdConfiguration[]> {
+    if (!this.configValidationService.validateConfigs(passedConfigs)) {
+      return Promise.resolve(null);
+    }
+
     this.createUniqueIds(passedConfigs);
     const allHandleConfigPromises = passedConfigs.map((x) => this.handleConfig(x));
 

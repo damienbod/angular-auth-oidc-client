@@ -10,13 +10,23 @@ export class ConfigValidationService {
   constructor(private loggerService: LoggerService) {}
 
   validateConfigs(passedConfigs: OpenIdConfiguration[]): boolean {
-    const result = passedConfigs.map((passedConfig) => this.validateConfigInternal(passedConfig, allMultipleConfigRules));
-
-    return result.every((x) => x === true);
+    return this.validateConfigsInternal(passedConfigs, allMultipleConfigRules);
   }
 
   validateConfig(passedConfig: OpenIdConfiguration): boolean {
     return this.validateConfigInternal(passedConfig, allRules);
+  }
+
+  private validateConfigsInternal(passedConfigs: OpenIdConfiguration[], allRulesToUse: any[]): boolean {
+    const allValidationResults = allRulesToUse.map((rule) => rule(passedConfigs));
+
+    let overallErrorCount = 0;
+    passedConfigs.forEach((passedConfig) => {
+      const errorCount = this.processValidationResultsAndGetErrorCount(allValidationResults, passedConfig.configId);
+      overallErrorCount += errorCount;
+    });
+
+    return overallErrorCount === 0;
   }
 
   private validateConfigInternal(passedConfig: OpenIdConfiguration, allRulesToUse: any[]): boolean {
