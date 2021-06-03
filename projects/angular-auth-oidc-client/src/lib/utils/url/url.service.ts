@@ -326,7 +326,7 @@ export class UrlService {
 
     const mergedParams = { ...customParamsAuthRequest, ...customRequestParams };
 
-    if (mergedParams) {
+    if (Object.keys(mergedParams).length > 0) {
       params = this.appendCustomParams({ ...mergedParams }, params);
     }
 

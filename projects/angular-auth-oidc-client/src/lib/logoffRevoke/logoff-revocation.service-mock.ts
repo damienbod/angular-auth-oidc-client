@@ -3,6 +3,8 @@ export class LogoffRevocationServiceMock {
 
   logoffLocal() {}
 
+  logoffLocalMultiple() {}
+
   logoffAndRevokeTokens(urlHandler?: (url: string) => any) {}
 
   revokeAccessToken(accessToken?: any) {}

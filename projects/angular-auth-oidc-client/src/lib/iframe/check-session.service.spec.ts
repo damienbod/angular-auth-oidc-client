@@ -1,5 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { skip } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config/provider/config.provider';
 import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { LoggerService } from '../logging/logger.service';
@@ -269,6 +270,38 @@ describe('CheckSessionService', () => {
         serviceAsAny.init().subscribe((result) => {
           expect(result).toBeUndefined();
         });
+      })
+    );
+  });
+
+  describe('isCheckSessionConfigured', () => {
+    it('returns true if startCheckSession on config is true', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ startCheckSession: true });
+
+      const result = checkSessionService.isCheckSessionConfigured('configId');
+
+      expect(result).toBe(true);
+    });
+
+    it('returns true if startCheckSession on config is true', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ startCheckSession: false });
+
+      const result = checkSessionService.isCheckSessionConfigured('configId');
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('checkSessionChanged$', () => {
+    it(
+      'emits when internal event is thrown',
+      waitForAsync(() => {
+        checkSessionService.checkSessionChanged$.pipe(skip(1)).subscribe((result) => {
+          expect(result).toBe(true);
+        });
+
+        const serviceAsAny = checkSessionService as any;
+        serviceAsAny.checkSessionChangedInternal$.next(true);
       })
     );
   });

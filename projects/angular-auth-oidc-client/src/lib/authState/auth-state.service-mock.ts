@@ -46,4 +46,8 @@ export class AuthStateServiceMock {
   hasAccessTokenExpiredIfExpiryExists() {
     return true;
   }
+
+  isAuthenticated(configId: string): boolean {
+    return true;
+  }
 }
