@@ -28,7 +28,6 @@ describe('OidcSecurityService', () => {
   let oidcSecurityService: OidcSecurityService;
   let configurationProvider: ConfigurationProvider;
   let authStateService: AuthStateService;
-  let userService: UserService;
   let checkSessionService: CheckSessionService;
   let tokenHelperService: TokenHelperService;
   let flowsDataService: FlowsDataService;
@@ -78,7 +77,6 @@ describe('OidcSecurityService', () => {
   beforeEach(() => {
     oidcSecurityService = TestBed.inject(OidcSecurityService);
     checkSessionService = TestBed.inject(CheckSessionService);
-    userService = TestBed.inject(UserService);
     tokenHelperService = TestBed.inject(TokenHelperService);
     configurationProvider = TestBed.inject(ConfigurationProvider);
     authStateService = TestBed.inject(AuthStateService);
@@ -135,9 +133,41 @@ describe('OidcSecurityService', () => {
     );
   });
 
-  describe('configuration', () => {
+  describe('getConfigurations', () => {
     it('is not of type observable', () => {
       expect(oidcSecurityService.getConfigurations).not.toEqual(jasmine.any(Observable));
+    });
+
+    it('calls configurationProvider.getAllConfigurations', () => {
+      const spy = spyOn(configurationProvider, 'getAllConfigurations');
+
+      oidcSecurityService.getConfigurations();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getConfiguration', () => {
+    it('is not of type observable', () => {
+      expect(oidcSecurityService.getConfiguration).not.toEqual(jasmine.any(Observable));
+    });
+
+    it('calls configurationProvider.getOpenIDConfiguration with passed configId when configId is passed', () => {
+      const spy = spyOn(configurationProvider, 'getOpenIDConfiguration');
+
+      oidcSecurityService.getConfiguration('configId');
+
+      expect(spy).toHaveBeenCalledOnceWith('configId');
+    });
+
+    it('calls configurationProvider.getOpenIDConfiguration when NO configId is passed', () => {
+      const spy = spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+
+      oidcSecurityService.getConfiguration();
+
+      expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy.calls.argsFor(0)).toEqual([]);
+      expect(spy.calls.argsFor(1)).toEqual(['configId']);
     });
   });
 

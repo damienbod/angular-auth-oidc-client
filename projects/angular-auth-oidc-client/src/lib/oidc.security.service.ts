@@ -80,7 +80,7 @@ export class OidcSecurityService {
    * @returns OpenIdConfiguration if only one is active, an array otherwise
    */
   getConfiguration(configId?: string): OpenIdConfiguration {
-    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId)?.configId;
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration().configId;
 
     return this.configurationProvider.getOpenIDConfiguration(configId);
   }
