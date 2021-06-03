@@ -13,7 +13,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.oidcSecurityService
       .checkAuth()
 
-      .subscribe((isAuthenticated) => {
+      .subscribe(({ isAuthenticated }) => {
         if (!isAuthenticated) {
           if ('/autologin' !== window.location.pathname) {
             this.write('redirect', window.location.pathname);
