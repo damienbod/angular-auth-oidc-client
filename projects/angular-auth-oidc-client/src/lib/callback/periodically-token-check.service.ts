@@ -35,7 +35,6 @@ export class PeriodicallyTokenCheckService {
 
   startTokenValidationPeriodically(): void {
     const configsWithSilentRenewEnabled = this.getConfigsWithSilentRenewEnabled();
-
     if (configsWithSilentRenewEnabled.length <= 0) {
       return;
     }
@@ -50,11 +49,11 @@ export class PeriodicallyTokenCheckService {
     const periodicallyCheck$ = this.intervalService.startPeriodicTokenCheck(refreshTimeInSeconds).pipe(
       switchMap(() => {
         const objectWithConfigIdsAndRefreshEvent = {};
-
         configsWithSilentRenewEnabled.forEach(({ configId }) => {
           const refreshEvent$ = this.createRefreshEventForConfig(configId);
           const refreshEventWithErrorHandler$ = refreshEvent$.pipe(
             catchError((error) => {
+              this.loggerService.logError(configId, 'silent renew failed!', error);
               this.flowsDataService.resetSilentRenewRunning(configId);
               return throwError(error);
             })
@@ -67,17 +66,15 @@ export class PeriodicallyTokenCheckService {
       })
     );
 
-    this.intervalService.runTokenValidationRunning = periodicallyCheck$.subscribe(
-      (objectWithConfigIds) => {
-        for (const [key, _] of Object.entries(objectWithConfigIds)) {
-          this.loggerService.logDebug(key, 'silent renew, periodic check finished!');
-          if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(key)) {
-            this.flowsDataService.resetSilentRenewRunning(key);
-          }
+    this.intervalService.runTokenValidationRunning = periodicallyCheck$.subscribe((objectWithConfigIds) => {
+      for (const [key, _] of Object.entries(objectWithConfigIds)) {
+        this.loggerService.logDebug(key, 'silent renew, periodic check finished!');
+
+        if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(key)) {
+          this.flowsDataService.resetSilentRenewRunning(key);
         }
-      },
-      (err) => /*TODO USE CONFIG ID HERE*/ this.loggerService.logError('silent renew failed!', err)
-    );
+      }
+    });
   }
 
   private getSmallestRefreshTimeFromConfigs(configsWithSilentRenewEnabled: OpenIdConfiguration[]): number {
