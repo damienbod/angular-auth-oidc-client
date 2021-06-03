@@ -1,4 +1,3 @@
-import { DOCUMENT } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { ConfigurationProvider } from '../../config/provider/config.provider';
@@ -21,7 +20,6 @@ describe('UrlService Tests', () => {
   let flowsDataService: FlowsDataService;
   let jsrsAsignReducedService: JsrsAsignReducedService;
   let storagePersistenceService: StoragePersistenceService;
-  let mywindow: any;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -50,7 +48,6 @@ describe('UrlService Tests', () => {
     flowsDataService = TestBed.inject(FlowsDataService);
     jsrsAsignReducedService = TestBed.inject(JsrsAsignReducedService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
-    mywindow = TestBed.inject(DOCUMENT).defaultView;
   });
 
   afterEach(() => {
@@ -59,7 +56,6 @@ describe('UrlService Tests', () => {
 
   it('should create', () => {
     expect(service).toBeTruthy();
-    expect(mywindow).toBeTruthy();
   });
 
   describe('isCallbackFromSts', () => {
@@ -595,25 +591,34 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createEndSessionUrl with azure-ad-b2c policy parameter', () => {
+    it('createAuthorizeUrl default', () => {
       const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
-      config.clientId = 'myid';
+      config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
       config.scope = 'openid email profile';
-      config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+      config.configId = 'configId';
 
-      const endSessionEndpoint = 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in';
       configurationProvider.setConfig(config);
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({
-        endSessionEndpoint,
+        authorizationEndpoint: 'http://example',
       });
-      const value = service.createEndSessionUrl('UzI1NiIsImtpZCI6Il', 'configId');
+
+      const value = (service as any).createAuthorizeUrl(
+        '', // Implicit Flow
+        config.redirectUrl,
+        'nonce',
+        'state',
+        config.configId
+      );
 
       const expectValue =
-        'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in' +
-        '&id_token_hint=UzI1NiIsImtpZCI6Il' +
-        '&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
+        'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
+        '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
+        '&response_type=id_token%20token' +
+        '&scope=openid%20email%20profile' +
+        '&nonce=nonce' +
+        '&state=state';
 
       expect(value).toEqual(expectValue);
     });
@@ -1342,6 +1347,52 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
+    it('createEndSessionUrl create url when all parameters and customParamsEndSession given', () => {
+      const config = {
+        stsServer: 'https://localhost:5001',
+        redirectUrl: 'https://localhost:44386',
+        clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
+        responseType: 'id_token token',
+        scope: 'openid email profile',
+        postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
+      };
+
+      configurationProvider.setConfig(config);
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({
+        endSessionEndpoint: 'http://example',
+      });
+
+      const value = service.createEndSessionUrl('mytoken', 'configId', { param: 'to-add' });
+
+      const expectValue =
+        'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized&param=to-add';
+
+      expect(value).toEqual(expectValue);
+    });
+
+    it('createEndSessionUrl with azure-ad-b2c policy parameter', () => {
+      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      config.redirectUrl = 'https://localhost:44386';
+      config.clientId = 'myid';
+      config.responseType = 'id_token token';
+      config.scope = 'openid email profile';
+      config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+
+      const endSessionEndpoint = 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in';
+      configurationProvider.setConfig(config);
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({
+        endSessionEndpoint,
+      });
+      const value = service.createEndSessionUrl('UzI1NiIsImtpZCI6Il', 'configId');
+
+      const expectValue =
+        'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in' +
+        '&id_token_hint=UzI1NiIsImtpZCI6Il' +
+        '&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
+
+      expect(value).toEqual(expectValue);
+    });
+
     it('createEndSessionUrl create url without postLogoutRedirectUri when not given', () => {
       const config = {
         stsServer: 'https://localhost:5001',
@@ -1383,38 +1434,6 @@ describe('UrlService Tests', () => {
       const value = service.createEndSessionUrl('mytoken', 'configId');
 
       const expectValue = null;
-
-      expect(value).toEqual(expectValue);
-    });
-
-    it('createAuthorizeUrl default', () => {
-      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
-      config.redirectUrl = 'https://localhost:44386';
-      config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
-      config.responseType = 'id_token token';
-      config.scope = 'openid email profile';
-      config.configId = 'configId';
-
-      configurationProvider.setConfig(config);
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({
-        authorizationEndpoint: 'http://example',
-      });
-
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        config.redirectUrl,
-        'nonce',
-        'state',
-        config.configId
-      );
-
-      const expectValue =
-        'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
-        '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
-        '&response_type=id_token%20token' +
-        '&scope=openid%20email%20profile' +
-        '&nonce=nonce' +
-        '&state=state';
 
       expect(value).toEqual(expectValue);
     });
