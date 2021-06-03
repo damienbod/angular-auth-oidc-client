@@ -28,7 +28,7 @@ export class StsConfigStaticLoader implements StsConfigLoader {
 export class StsConfigHttpLoader implements StsConfigLoader {
   constructor(private configs$: Promise<OpenIdConfiguration> | Promise<OpenIdConfiguration>[]) {}
 
-  loadConfigs(): Promise<any>[] {
+  loadConfigs(): Promise<OpenIdConfiguration>[] {
     return Array.isArray(this.configs$) ? this.configs$ : [this.configs$];
   }
 }
