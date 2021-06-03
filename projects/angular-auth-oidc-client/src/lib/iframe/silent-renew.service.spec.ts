@@ -136,7 +136,7 @@ describe('SilentRenewService  ', () => {
       silentRenewService.silentRenewEventHandler(eventData, 'configId');
       tick(1000);
       expect(isCurrentFlowCodeFlowSpy).toHaveBeenCalled();
-      expect(authorizedImplicitFlowCallbackSpy).toHaveBeenCalledWith('detail');
+      expect(authorizedImplicitFlowCallbackSpy).toHaveBeenCalledWith('configId', 'detail');
     }));
 
     it('calls codeFlowCallbackSilentRenewIframe if current flow is code flow', fakeAsync(() => {
