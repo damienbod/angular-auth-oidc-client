@@ -12,6 +12,7 @@ import { LoginService } from '../login/login.service';
 import { LoginServiceMock } from '../login/login.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
+import { LoginResponse } from './../login/login-response';
 import { AutoLoginGuard } from './auto-login.guard';
 import { AutoLoginService } from './auto-login.service';
 
@@ -75,7 +76,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should call checkAuth() if not authenticated already',
       waitForAsync(() => {
-        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
 
         autoLoginGuard.canActivate(null, { url: 'some-url1' } as RouterStateSnapshot).subscribe(() => {
           expect(checkAuthServiceSpy).toHaveBeenCalledTimes(1);
@@ -86,7 +87,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should NOT call checkAuth() if authenticated already',
       waitForAsync(() => {
-        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
         spyOnProperty(authStateService, 'authenticated$', 'get').and.returnValue(of(true));
 
         autoLoginGuard.canActivate(null, { url: 'some-url2' } as RouterStateSnapshot).subscribe(() => {
@@ -98,7 +99,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should call loginService.login() when not authorized',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
         const loginSpy = spyOn(loginService, 'login');
 
         autoLoginGuard.canActivate(null, { url: 'some-url3' } as RouterStateSnapshot).subscribe(() => {
@@ -110,7 +111,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should return false when not authorized',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
 
         autoLoginGuard.canActivate(null, { url: 'some-url4' } as RouterStateSnapshot).subscribe((result) => {
           expect(result).toBe(false);
@@ -121,7 +122,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'if no route is stored, write on StoragePersistenceService is called',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
         const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
         autoLoginGuard.canActivate(null, { url: 'some-url5' } as RouterStateSnapshot).subscribe((result) => {
@@ -166,7 +167,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should call checkAuth() if not authenticated already',
       waitForAsync(() => {
-        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
 
         autoLoginGuard.canLoad({ path: 'some-url8' }, []).subscribe(() => {
           expect(checkAuthServiceSpy).toHaveBeenCalledTimes(1);
@@ -177,7 +178,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should NOT call checkAuth() if authenticated already',
       waitForAsync(() => {
-        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
         spyOnProperty(authStateService, 'authenticated$', 'get').and.returnValue(of(true));
 
         autoLoginGuard.canLoad({ path: 'some-url9' }, []).subscribe(() => {
@@ -189,7 +190,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should call loginService.login() when not authorized',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
         const loginSpy = spyOn(loginService, 'login');
 
         autoLoginGuard.canLoad({ path: 'some-url10' }, []).subscribe(() => {
@@ -201,7 +202,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should return false when not authorized',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
 
         autoLoginGuard.canLoad({ path: 'some-url11' }, []).subscribe((result) => {
           expect(result).toBe(false);
@@ -212,7 +213,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'if no route is stored, write on StoragePersistenceService is called',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
         const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
         autoLoginGuard.canLoad({ path: 'some-url12' }, []).subscribe((result) => {

@@ -52,7 +52,7 @@ describe('ImplicitFlowCallbackService ', () => {
 
       implicitFlowCallbackService.authenticatedImplicitFlowCallback('configId', 'some-hash');
 
-      expect(spy).toHaveBeenCalledWith('some-hash');
+      expect(spy).toHaveBeenCalledWith('configId', 'some-hash');
     });
 
     it(
@@ -73,7 +73,7 @@ describe('ImplicitFlowCallbackService ', () => {
         const routerSpy = spyOn(router, 'navigateByUrl');
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
         implicitFlowCallbackService.authenticatedImplicitFlowCallback('configId', 'some-hash').subscribe(() => {
-          expect(spy).toHaveBeenCalledWith('some-hash');
+          expect(spy).toHaveBeenCalledWith('configId', 'some-hash');
           expect(routerSpy).not.toHaveBeenCalled();
         });
       })
@@ -100,7 +100,7 @@ describe('ImplicitFlowCallbackService ', () => {
           postLoginRoute: 'postLoginRoute',
         });
         implicitFlowCallbackService.authenticatedImplicitFlowCallback('configId', 'some-hash').subscribe(() => {
-          expect(spy).toHaveBeenCalledWith('some-hash');
+          expect(spy).toHaveBeenCalledWith('configId', 'some-hash');
           expect(routerSpy).toHaveBeenCalledWith('postLoginRoute');
         });
       })
