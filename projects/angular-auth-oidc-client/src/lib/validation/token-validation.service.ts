@@ -83,8 +83,9 @@ export class TokenValidationService {
 
     this.loggerService.logDebug(
       configId,
-      `Has idToken expired: ${!tokenNotExpired} --> expires in ${this.millisToMinutesAndSeconds(tokenExpirationValue - nowWithOffset)}
-      , ${new Date(tokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}: `
+      `Has idToken expired: ${!tokenNotExpired} --> expires in ${this.millisToMinutesAndSeconds(
+        tokenExpirationValue - nowWithOffset
+      )} , ${new Date(tokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`
     );
 
     // Token not expired?

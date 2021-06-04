@@ -66,6 +66,8 @@ export class PeriodicallyTokenCheckService {
             );
 
             objectWithConfigIdsAndRefreshEvent[configId] = refreshEventWithErrorHandler$;
+          } else {
+            objectWithConfigIdsAndRefreshEvent[configId] = of(null);
           }
         });
 
