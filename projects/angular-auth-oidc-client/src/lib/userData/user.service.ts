@@ -144,24 +144,32 @@ export class UserService {
   }
 
   private fireUserDataEvent(configId: string, passedUserData: any): void {
-    if (this.configurationProvider.hasManyConfigs()) {
-      const configs = this.configurationProvider.getAllConfigurations();
+    const userData = this.composeSingleOrMultipleUserDataObject(configId, passedUserData);
 
-      const result = configs.map((config) => {
-        if (config.configId === configId) {
-          return { configId: config.configId, userData: passedUserData };
-        }
-
-        const alreadySavedUserData = this.storagePersistenceService.read('userData', config.configId) || null;
-
-        return { configId: config.configId, userData: alreadySavedUserData };
-      });
-
-      this.userDataInternal$.next(result);
-    } else {
-      this.userDataInternal$.next(passedUserData);
-    }
+    this.userDataInternal$.next(userData);
 
     this.eventService.fireEvent(EventTypes.UserDataChanged, { configId, userData: passedUserData });
+  }
+
+  private composeSingleOrMultipleUserDataObject(configId: string, passedUserData: any): any {
+    const hasManyConfigs = this.configurationProvider.hasManyConfigs();
+
+    if (!hasManyConfigs) {
+      return passedUserData;
+    }
+
+    const configs = this.configurationProvider.getAllConfigurations();
+
+    const result = configs.map((config) => {
+      if (config.configId === configId) {
+        return { configId: config.configId, userData: passedUserData };
+      }
+
+      const alreadySavedUserData = this.storagePersistenceService.read('userData', config.configId) || null;
+
+      return { configId: config.configId, userData: alreadySavedUserData };
+    });
+
+    return result;
   }
 }
