@@ -50,25 +50,7 @@ export class PeriodicallyTokenCheckService {
       switchMap(() => {
         const objectWithConfigIdsAndRefreshEvent = {};
         configsWithSilentRenewEnabled.forEach(({ configId }) => {
-          const shouldStartRefreshEvent = this.shouldStartPeriodicallyCheckForConfig(configId);
-
-          if (shouldStartRefreshEvent) {
-            const refreshEvent$ = this.createRefreshEventForConfig(configId);
-
-            this.publicEventsService.fireEvent(EventTypes.SilentRenewStarted);
-
-            const refreshEventWithErrorHandler$ = refreshEvent$.pipe(
-              catchError((error) => {
-                this.loggerService.logError(configId, 'silent renew failed!', error);
-                this.flowsDataService.resetSilentRenewRunning(configId);
-                return throwError(error);
-              })
-            );
-
-            objectWithConfigIdsAndRefreshEvent[configId] = refreshEventWithErrorHandler$;
-          } else {
-            objectWithConfigIdsAndRefreshEvent[configId] = of(null);
-          }
+          objectWithConfigIdsAndRefreshEvent[configId] = this.getRefreshEvent(configId);
         });
 
         return forkJoin(objectWithConfigIdsAndRefreshEvent);
@@ -84,6 +66,28 @@ export class PeriodicallyTokenCheckService {
         }
       }
     });
+  }
+
+  private getRefreshEvent(configId: string) {
+    const shouldStartRefreshEvent = this.shouldStartPeriodicallyCheckForConfig(configId);
+
+    if (!shouldStartRefreshEvent) {
+      return of(null);
+    }
+
+    const refreshEvent$ = this.createRefreshEventForConfig(configId);
+
+    this.publicEventsService.fireEvent(EventTypes.SilentRenewStarted);
+
+    const refreshEventWithErrorHandler$ = refreshEvent$.pipe(
+      catchError((error) => {
+        this.loggerService.logError(configId, 'silent renew failed!', error);
+        this.flowsDataService.resetSilentRenewRunning(configId);
+        return throwError(error);
+      })
+    );
+
+    return refreshEventWithErrorHandler$;
   }
 
   private getSmallestRefreshTimeFromConfigs(configsWithSilentRenewEnabled: OpenIdConfiguration[]): number {

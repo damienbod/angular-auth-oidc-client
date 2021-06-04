@@ -105,9 +105,9 @@ export class TokenValidationService {
 
     this.loggerService.logDebug(
       configId,
-      `Has accessToken expired: ${!tokenNotExpired}, ${new Date(accessTokenExpirationValue).toLocaleTimeString()} > ${new Date(
-        nowWithOffset
-      ).toLocaleTimeString()}: ${this.millisToMinutesAndSeconds(accessTokenExpirationValue - nowWithOffset)}`
+      `Has accessToken expired: ${!tokenNotExpired} --> expires in ${this.millisToMinutesAndSeconds(
+        accessTokenExpirationValue - nowWithOffset
+      )} , ${new Date(accessTokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`
     );
 
     // access token not expired?
