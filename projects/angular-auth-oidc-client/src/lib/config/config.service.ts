@@ -99,7 +99,6 @@ export class OidcConfigService {
       } else {
         this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
         resolve(usedConfig);
-        return;
       }
     });
   }
