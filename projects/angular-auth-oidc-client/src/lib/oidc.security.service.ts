@@ -22,13 +22,18 @@ import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
 export class OidcSecurityService {
   /**
    * Provides information about the user after they have logged in.
+   * Returns an array of objects with a configId and userData if you have multiple configs running or
+   * a single object without the configId containing the userData if you only run with a single config
    */
   get userData$(): Observable<ConfigUserDataResult[] | any> {
     return this.userService.userData$;
   }
 
   /**
-   * Emits each time an authorization event occurs. Returns true if the user is authenticated and false if they are not.
+   * Emits each time an authorization event occurs.
+   * In case of a single config it returns true if the user is authenticated and false if they are not.
+   * If you are running multiple configs it returns an array with the configId and a boolean
+   * if you are authenticated or not for this config
    */
   get isAuthenticated$(): Observable<ConfigAuthenticatedResult[] | boolean> {
     return this.authStateService.authenticated$;
