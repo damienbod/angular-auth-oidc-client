@@ -1,6 +1,6 @@
 # Public API
 
-The most public accessible observables, properties and methods are placed in the `OidcSecurityService`. Below you can find the descirption of everys single one of them.
+The most public accessible observables, properties and methods are placed in the `OidcSecurityService`. Below you can find the description of everys single one of them.
 
 ```
    this.configuration = this.oidcSecurityService.configuration;
