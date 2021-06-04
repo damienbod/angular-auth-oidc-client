@@ -1096,6 +1096,117 @@
       }
     },
 
+    "sample-code-flow-multi-Auth0-ID4-popup": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "projects/sample-code-flow-multi-Auth0-ID4-popup",
+      "sourceRoot": "projects/sample-code-flow-multi-Auth0-ID4-popup/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/sample-code-flow-multi-Auth0-ID4-popup",
+            "index": "projects/sample-code-flow-multi-Auth0-ID4-popup/src/index.html",
+            "main": "projects/sample-code-flow-multi-Auth0-ID4-popup/src/main.ts",
+            "polyfills": "projects/sample-code-flow-multi-Auth0-ID4-popup/src/polyfills.ts",
+            "tsConfig": "projects/sample-code-flow-multi-Auth0-ID4-popup/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "projects/sample-code-flow-multi-Auth0-ID4-popup/src/favicon.ico",
+              "projects/sample-code-flow-multi-Auth0-ID4-popup/src/assets"
+            ],
+            "styles": ["projects/sample-code-flow-multi-Auth0-ID4-popup/src/styles.css"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-multi-Auth0-ID4-popup/src/environments/environment.ts",
+                  "with": "projects/sample-code-flow-multi-Auth0-ID4-popup/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "sample-code-flow-multi-Auth0-ID4-popup:build",
+            "sslKey": "certs/dev_localhost.key",
+            "sslCert": "certs/dev_localhost.pem",
+            "port": 4204
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "sample-code-flow-multi-Auth0-ID4-popup:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "sample-code-flow-multi-Auth0-ID4-popup:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sample-code-flow-multi-Auth0-ID4-popup/src/test.ts",
+            "polyfills": "projects/sample-code-flow-multi-Auth0-ID4-popup/src/polyfills.ts",
+            "tsConfig": "projects/sample-code-flow-multi-Auth0-ID4-popup/tsconfig.spec.json",
+            "karmaConfig": "projects/sample-code-flow-multi-Auth0-ID4-popup/karma.conf.js",
+            "assets": [
+              "projects/sample-code-flow-multi-Auth0-ID4-popup/src/favicon.ico",
+              "projects/sample-code-flow-multi-Auth0-ID4-popup/src/assets"
+            ],
+            "styles": ["projects/sample-code-flow-multi-Auth0-ID4-popup/src/styles.css"],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/sample-code-flow-multi-Auth0-ID4-popup/**/*.ts",
+              "projects/sample-code-flow-multi-Auth0-ID4-popup/**/*.html"
+            ]
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "projects/sample-code-flow-multi-Auth0-ID4-popup/e2e/protractor.conf.js",
+            "devServerTarget": "sample-code-flow-multi-Auth0-ID4-popup:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-multi-Auth0-ID4-popup:serve:production"
+            }
+          }
+        }
+      }
+    },
     "sample-code-flow-multi-Auth0-ID4": {
       "projectType": "application",
       "schematics": {},
