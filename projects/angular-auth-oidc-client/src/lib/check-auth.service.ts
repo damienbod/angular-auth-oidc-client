@@ -1,7 +1,6 @@
-import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { forkJoin, Observable, of } from 'rxjs';
+import { forkJoin, Observable, of, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
 import { AutoLoginService } from './auto-login/auto-login.service';
@@ -17,12 +16,13 @@ import { LoginResponse } from './login/login-response';
 import { PopUpService } from './login/popup/popup.service';
 import { StoragePersistenceService } from './storage/storage-persistence.service';
 import { UserService } from './userData/user.service';
+import { CurrentUrlService } from './utils/url/current-url.service';
 
 @Injectable()
 export class CheckAuthService {
   constructor(
-    @Inject(DOCUMENT) private readonly doc: any,
     private checkSessionService: CheckSessionService,
+    private currentUrlService: CurrentUrlService,
     private silentRenewService: SilentRenewService,
     private userService: UserService,
     private loggerService: LoggerService,
@@ -37,10 +37,14 @@ export class CheckAuthService {
     private storagePersistenceService: StoragePersistenceService
   ) {}
 
-  checkAuth(passedConfigId: string, url?: string): Observable<LoginResponse> {
-    if (this.currentUrlHasStateParam()) {
-      const stateParamFromUrl = this.getStateParamFromCurrentUrl();
+  checkAuth(passedConfigId?: string, url?: string): Observable<LoginResponse> {
+    if (this.currentUrlService.currentUrlHasStateParam()) {
+      const stateParamFromUrl = this.currentUrlService.getStateParamFromCurrentUrl();
       const config = this.getConfigurationWithUrlState(stateParamFromUrl);
+
+      if (!config) {
+        return throwError(`could not find matching config for state ${stateParamFromUrl}`);
+      }
 
       return this.checkAuthWithConfig(config, url);
     }
@@ -54,9 +58,9 @@ export class CheckAuthService {
     return this.checkAuthWithConfig(onlyExistingConfig, url);
   }
 
-  checkAuthMultiple(passedConfigId: string, url?: string): Observable<LoginResponse[]> {
-    if (this.currentUrlHasStateParam()) {
-      const stateParamFromUrl = this.getStateParamFromCurrentUrl();
+  checkAuthMultiple(passedConfigId?: string, url?: string): Observable<LoginResponse[]> {
+    if (this.currentUrlService.currentUrlHasStateParam()) {
+      const stateParamFromUrl = this.currentUrlService.getStateParamFromCurrentUrl();
       const config = this.getConfigurationWithUrlState(stateParamFromUrl);
       return this.checkAuthWithConfig(config, url).pipe(map((x) => [x]));
     }
@@ -73,8 +77,8 @@ export class CheckAuthService {
   }
 
   checkAuthIncludingServer(configId: string): Observable<LoginResponse> {
-    const onlyExistingConfig = this.configurationProvider.getOpenIDConfiguration();
-    return this.checkAuthWithConfig(onlyExistingConfig).pipe(
+    const config = this.configurationProvider.getOpenIDConfiguration(configId);
+    return this.checkAuthWithConfig(config).pipe(
       switchMap((loginResponse) => {
         const { isAuthenticated } = loginResponse;
 
@@ -103,7 +107,7 @@ export class CheckAuthService {
       return of({ isAuthenticated: false, errorMessage });
     }
 
-    const currentUrl = url || this.doc.defaultView.location.toString();
+    const currentUrl = url || this.currentUrlService.getCurrentUrl();
 
     this.loggerService.logDebug(configId, `Working with config '${configId}' using ${stsServer}`);
 
@@ -181,20 +185,5 @@ export class CheckAuthService {
     }
 
     return null;
-  }
-
-  private getStateParamFromCurrentUrl(): string {
-    const currentUrl = this.getCurrentUrl();
-    const urlParams = new URLSearchParams(currentUrl);
-    const stateFromUrl = urlParams.get('state');
-    return stateFromUrl;
-  }
-
-  private currentUrlHasStateParam(): boolean {
-    return !!this.getStateParamFromCurrentUrl();
-  }
-
-  private getCurrentUrl(): string {
-    return this.doc.defaultView.location.toString();
   }
 }

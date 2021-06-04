@@ -102,4 +102,19 @@ describe('Config Validation Service', () => {
       expect(loggerWarningSpy).toHaveBeenCalled();
     });
   });
+
+  describe('ensure-no-duplicated-configs.rule', () => {
+    it('return true but warning when silent renew is used with useRefreshToken but no offline_access scope is given', () => {
+      const config1 = { ...VALID_CONFIG, silentRenew: true, useRefreshToken: true, scopes: 'scope1 scope2 but_no_offline_access' };
+      const config2 = { ...VALID_CONFIG, silentRenew: true, useRefreshToken: true, scopes: 'scope1 scope2 but_no_offline_access' };
+
+      const loggerErrorSpy = spyOn(loggerService, 'logError');
+      const loggerWarningSpy = spyOn(loggerService, 'logWarning');
+
+      const result = configValidationService.validateConfigs([config1, config2]);
+      expect(result).toBeTrue();
+      expect(loggerErrorSpy).not.toHaveBeenCalled();
+      expect(loggerWarningSpy).toHaveBeenCalledTimes(2);
+    });
+  });
 });

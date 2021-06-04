@@ -1,9 +1,9 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { OpenIdConfiguration } from 'angular-auth-oidc-client';
 import { Observable, of, throwError } from 'rxjs';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { ConfigurationProvider } from '../config/provider/config.provider';
 import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { LoggerService } from '../logging/logger.service';

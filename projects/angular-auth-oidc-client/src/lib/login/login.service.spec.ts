@@ -18,6 +18,7 @@ describe('LoginService', () => {
   let parLoginService: ParLoginService;
   let popUpLoginService: PopUpLoginService;
   let standardLoginService: StandardLoginService;
+  let storagePersistenceService: StoragePersistenceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -39,6 +40,7 @@ describe('LoginService', () => {
     parLoginService = TestBed.inject(ParLoginService);
     popUpLoginService = TestBed.inject(PopUpLoginService);
     standardLoginService = TestBed.inject(StandardLoginService);
+    storagePersistenceService = TestBed.inject(StoragePersistenceService);
   });
 
   it('should create', () => {
@@ -46,7 +48,7 @@ describe('LoginService', () => {
   });
 
   describe('login', () => {
-    it('calls parLoginService loginpar if usePushedAuthorisationRequests is true', () => {
+    it('calls parLoginService loginPar if usePushedAuthorisationRequests is true', () => {
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ usePushedAuthorisationRequests: true });
       const loginParSpy = spyOn(parLoginService, 'loginPar');
       const standardLoginSpy = spyOn(standardLoginService, 'loginStandard');
@@ -57,7 +59,7 @@ describe('LoginService', () => {
       expect(standardLoginSpy).not.toHaveBeenCalled();
     });
 
-    it('calls standardLoginService loginstandard if usePushedAuthorisationRequests is false', () => {
+    it('calls standardLoginService loginStandard if usePushedAuthorisationRequests is false', () => {
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ usePushedAuthorisationRequests: false });
       const loginParSpy = spyOn(parLoginService, 'loginPar');
       const standardLoginSpy = spyOn(standardLoginService, 'loginStandard');
@@ -66,6 +68,16 @@ describe('LoginService', () => {
 
       expect(loginParSpy).not.toHaveBeenCalled();
       expect(standardLoginSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('stores the customParams to the storage if customParams are given', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ usePushedAuthorisationRequests: false });
+      const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'write');
+      const authOptions = { customParams: { custom: 'params' } };
+
+      service.login('configId', authOptions);
+
+      expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith('storageCustomParamsAuthRequest', { custom: 'params' }, 'configId');
     });
   });
 
@@ -90,6 +102,16 @@ describe('LoginService', () => {
 
       expect(loginParSpy).not.toHaveBeenCalled();
       expect(loginWithPopUpStandardSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('stores the customParams to the storage if customParams are given', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ usePushedAuthorisationRequests: false });
+      const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'write');
+      const authOptions = { customParams: { custom: 'params' } };
+
+      service.loginWithPopUp('configId', authOptions);
+
+      expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith('storageCustomParamsAuthRequest', { custom: 'params' }, 'configId');
     });
   });
 });

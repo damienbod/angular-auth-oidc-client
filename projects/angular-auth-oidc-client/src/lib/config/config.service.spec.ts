@@ -81,7 +81,21 @@ describe('Configuration Service', () => {
     expect(oidcConfigService.withConfigs([])).toEqual(jasmine.any(Promise));
   });
 
-  describe('withConfig', () => {
+  describe('withConfigs', () => {
+    it(
+      'not valid configs does nothing and logs error',
+      waitForAsync(() => {
+        const config = {};
+        spyOn(configValidationService, 'validateConfigs').and.returnValue(false);
+
+        const promise = oidcConfigService.withConfigs([config]);
+
+        promise.then((result) => {
+          expect(result).toBeNull();
+        });
+      })
+    );
+
     it(
       'not valid config does nothing and logs error',
       waitForAsync(() => {
@@ -93,6 +107,47 @@ describe('Configuration Service', () => {
 
         promise.then(() => {
           expect(loggerService.logError).toHaveBeenCalled();
+        });
+      })
+    );
+
+    it(
+      'configId is being generated with index and clientId',
+      waitForAsync(() => {
+        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
+        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+        const promise = oidcConfigService.withConfigs([{ stsServer: 'https://please_set', clientId: 'clientId' }]);
+
+        promise.then((result) => {
+          expect(result[0].configId).toEqual('0-clientId');
+        });
+      })
+    );
+
+    it(
+      'configId is not being generated (overwritten) when present already',
+      waitForAsync(() => {
+        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
+        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+        const promise = oidcConfigService.withConfigs([{ stsServer: 'https://please_set', clientId: 'clientId', configId: 'myConfigId' }]);
+
+        promise.then((result) => {
+          expect(result[0].configId).toEqual('myConfigId');
+        });
+      })
+    );
+
+    it(
+      'authWellknownEndpointUrl is not being overwritten with stsServer when present already',
+      waitForAsync(() => {
+        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
+        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+        const promise = oidcConfigService.withConfigs([
+          { stsServer: 'https://please_set', clientId: 'clientId', authWellknownEndpointUrl: 'my-auth-url' },
+        ]);
+
+        promise.then((result) => {
+          expect(result[0].authWellknownEndpointUrl).toEqual('my-auth-url');
         });
       })
     );

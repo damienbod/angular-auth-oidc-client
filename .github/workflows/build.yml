@@ -8,6 +8,7 @@ on:
     types: [opened, synchronize, reopened, closed]
     branches:
       - main
+      - releaseV12-WIP
 
 jobs:
   build_job:

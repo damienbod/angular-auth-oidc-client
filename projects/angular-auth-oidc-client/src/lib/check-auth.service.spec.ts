@@ -28,6 +28,8 @@ import { StoragePersistenceService } from './storage/storage-persistence.service
 import { StoragePersistenceServiceMock } from './storage/storage-persistence.service-mock';
 import { UserServiceMock } from './userData/user-service-mock';
 import { UserService } from './userData/user.service';
+import { CurrentUrlService } from './utils/url/current-url.service';
+import { CurrentUrlServiceMock } from './utils/url/current-url.service-mock';
 
 describe('CheckAuthService', () => {
   let checkAuthService: CheckAuthService;
@@ -43,6 +45,7 @@ describe('CheckAuthService', () => {
   let autoLoginService: AutoLoginService;
   let router: Router;
   let storagePersistenceService: StoragePersistenceService;
+  let currentUrlService: CurrentUrlService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -65,6 +68,10 @@ describe('CheckAuthService', () => {
         },
         AutoLoginService,
         CheckAuthService,
+        {
+          provide: CurrentUrlService,
+          useClass: CurrentUrlServiceMock,
+        },
       ],
     });
   });
@@ -83,6 +90,7 @@ describe('CheckAuthService', () => {
     autoLoginService = TestBed.inject(AutoLoginService);
     router = TestBed.inject(Router);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
+    currentUrlService = TestBed.inject(CurrentUrlService);
   });
 
   afterEach(() => {
@@ -94,6 +102,49 @@ describe('CheckAuthService', () => {
   });
 
   describe('checkAuth', () => {
+    it('uses config with matching state when url has state param and config with state param is stored', () => {
+      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
+      spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
+
+      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ configId: 'configId', stsServer: 'some-stsserver' }]);
+      spyOn(storagePersistenceService, 'read').withArgs('authStateControl', 'configId').and.returnValue('the-state-param');
+
+      const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
+
+      checkAuthService.checkAuth().subscribe(() => {
+        expect(spy).toHaveBeenCalledOnceWith({ configId: 'configId', stsServer: 'some-stsserver' }, undefined);
+      });
+    });
+
+    it('throws error when url has state param and stored config with matching state param is not found', () => {
+      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
+      spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
+
+      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ configId: 'configId', stsServer: 'some-stsserver' }]);
+      spyOn(storagePersistenceService, 'read').withArgs('authStateControl', 'configId').and.returnValue('not-matching-state-param');
+
+      const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
+
+      checkAuthService.checkAuth().subscribe({
+        error: (err) => {
+          expect(err).toBeTruthy();
+          expect(spy).not.toHaveBeenCalled();
+        },
+      });
+    });
+
+    it('uses first/default config when no param is passed', () => {
+      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(false);
+
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId', stsServer: 'some-stsserver' });
+
+      const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
+
+      checkAuthService.checkAuth().subscribe(() => {
+        expect(spy).toHaveBeenCalledOnceWith({ configId: 'configId', stsServer: 'some-stsserver' }, undefined);
+      });
+    });
+
     it(
       'returns isAuthenticated: false with error message when config is not valid',
       waitForAsync(() => {
@@ -234,7 +285,7 @@ describe('CheckAuthService', () => {
     );
 
     it(
-      'if authenticated publishUserdataIfExists ',
+      'if authenticated publishUserdataIfExists',
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
