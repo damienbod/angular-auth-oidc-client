@@ -90,6 +90,11 @@ export class OidcSecurityService {
     return this.configurationProvider.getOpenIDConfiguration(configId);
   }
 
+  /**
+   * Returns the userData for a configuration
+   *
+   * @param configId The configId to identify the config. If not passed, the first one is being returned
+   */
   getUserData(configId?: string): any {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration().configId;
 
@@ -97,15 +102,28 @@ export class OidcSecurityService {
   }
 
   /**
-   * Starts the complete setup flow. Calling will start the entire authentication flow, and the returned observable
-   * will denote whether the user was successfully authenticated including the user data and the access token
+   * Starts the complete setup flow for one configuration. Calling will start the entire authentication flow, and the returned observable
+   * will denote whether the user was successfully authenticated including the user data, the access token, the configId and
+   * an error message in case an error happened
    *
    * @param url The url to perform the authorization on the behalf of.
+   * @param configId The configId to perform the authorization on the behalf of. If not passed, the first one
+   * of passed configs will be taken
    */
   checkAuth(url?: string, configId?: string): Observable<LoginResponse> {
     return this.checkAuthService.checkAuth(configId, url);
   }
 
+  /**
+   * Starts the complete setup flow for multiple configurations.
+   * Calling will start the entire authentication flow, and the returned observable
+   * will denote whether the user was successfully authenticated including the user data, the access token, the configId and
+   * an error message in case an error happened in an array for each config which was provided
+   *
+   * @param url The url to perform the authorization on the behalf of.
+   * @param configId The configId to perform the authorization on the behalf of. If not passed, the first one
+   * of passed configs will be taken
+   */
   checkAuthMultiple(url?: string, configId?: string): Observable<LoginResponse[]> {
     return this.checkAuthService.checkAuthMultiple(configId, url);
   }
