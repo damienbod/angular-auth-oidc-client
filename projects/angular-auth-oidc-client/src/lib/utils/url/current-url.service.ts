@@ -7,7 +7,8 @@ export class CurrentUrlService {
 
   getStateParamFromCurrentUrl(): string {
     const currentUrl = this.getCurrentUrl();
-    const urlParams = new URLSearchParams(currentUrl);
+    const parsedUrl = new URL(currentUrl);
+    const urlParams = new URLSearchParams(parsedUrl.search);
     const stateFromUrl = urlParams.get('state');
     return stateFromUrl;
   }
