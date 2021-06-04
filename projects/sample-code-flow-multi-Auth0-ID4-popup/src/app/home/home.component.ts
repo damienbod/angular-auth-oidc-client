@@ -24,6 +24,21 @@ export class HomeComponent implements OnInit {
     this.oidcSecurityService.authorize(configId);
   }
 
+  loginWithPopup(configId: string) {
+    this.oidcSecurityService
+      .authorizeWithPopUp(null, null, configId)
+      .subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
+        console.log(isAuthenticated);
+        console.log(userData);
+        console.log(accessToken);
+        console.log(errorMessage);
+      });
+  }
+
+  openWindow() {
+    window.open('/', '_blank');
+  }
+
   forceRefreshSession() {
     this.oidcSecurityService.forceRefreshSession().subscribe((result) => console.warn(result));
   }

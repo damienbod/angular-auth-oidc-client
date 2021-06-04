@@ -6,6 +6,7 @@ UserData
 
 <div>
   <h3>{{ configurations[0].configId }}</h3>
+  <button (click)="loginWithPopup(configurations[0].configId)">Login using popup</button>
   <button (click)="login(configurations[0].configId)">Login with {{ configurations[0].configId }}</button>
   <button (click)="logout(configurations[0].configId)">Logout</button>
   <button (click)="logoffAndRevokeTokens(configurations[0].configId)">Logout and revoke tokens</button>
@@ -16,6 +17,7 @@ UserData
 
 <div>
   <h3>{{ configurations[1].configId }}</h3>
+  <button (click)="loginWithPopup(configurations[1].configId)">Login using popup</button>
   <button (click)="login(configurations[1].configId)">Login with {{ configurations[1].configId }}</button>
   <button (click)="logout(configurations[1].configId)">Logout</button>
   <button (click)="logoffAndRevokeTokens(configurations[1].configId)">Logout and revoke tokens</button>
