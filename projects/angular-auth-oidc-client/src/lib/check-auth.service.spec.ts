@@ -445,4 +445,52 @@ describe('CheckAuthService', () => {
       })
     );
   });
+
+  describe('checkAuthMultiple', () => {
+    it('uses config with matching state when url has state param and config with state param is stored', () => {
+      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
+      spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
+
+      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ configId: 'configId', stsServer: 'some-stsserver' }]);
+      spyOn(storagePersistenceService, 'read').withArgs('authStateControl', 'configId').and.returnValue('the-state-param');
+
+      const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
+
+      checkAuthService.checkAuthMultiple().subscribe((result) => {
+        expect(Array.isArray(result)).toBe(true);
+        expect(spy).toHaveBeenCalledOnceWith({ configId: 'configId', stsServer: 'some-stsserver' }, undefined);
+      });
+    });
+
+    it('uses config from passed configId if configId was passed', () => {
+      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(false);
+
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId', stsServer: 'some-stsserver' });
+
+      const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
+
+      checkAuthService.checkAuthMultiple('configId').subscribe((result) => {
+        expect(Array.isArray(result)).toBe(true);
+        expect(spy).toHaveBeenCalledOnceWith({ configId: 'configId', stsServer: 'some-stsserver' }, undefined);
+      });
+    });
+
+    it('runs through all configs if no parameter is passed and has no state in url', () => {
+      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(false);
+
+      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([
+        { configId: 'configId1', stsServer: 'some-stsserver1' },
+        { configId: 'configId2', stsServer: 'some-stsserver2' },
+      ]);
+
+      const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
+
+      checkAuthService.checkAuthMultiple().subscribe((result) => {
+        expect(Array.isArray(result)).toBe(true);
+        expect(spy).toHaveBeenCalledTimes(2);
+        expect(spy).toHaveBeenCalledWith({ configId: 'configId1', stsServer: 'some-stsserver1' }, undefined);
+        expect(spy).toHaveBeenCalledWith({ configId: 'configId2', stsServer: 'some-stsserver2' }, undefined);
+      });
+    });
+  });
 });
