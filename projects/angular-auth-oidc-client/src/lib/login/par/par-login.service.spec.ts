@@ -375,7 +375,7 @@ describe('ParLoginService', () => {
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
         service.loginWithPopUpPar('configId').subscribe((result) => {
-          expect(checkAuthSpy).toHaveBeenCalledWith('someUrl');
+          expect(checkAuthSpy).toHaveBeenCalledWith('configId', 'someUrl');
 
           expect(result).toEqual({
             isAuthenticated: true,
