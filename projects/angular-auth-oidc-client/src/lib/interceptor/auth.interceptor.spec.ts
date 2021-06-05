@@ -15,6 +15,7 @@ describe(`AuthHttpInterceptor`, () => {
   let configurationProvider: ConfigurationProvider;
   let httpClient: HttpClient;
   let authStateService: AuthStateService;
+  let closestMatchingRouteService: ClosestMatchingRouteService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -42,6 +43,7 @@ describe(`AuthHttpInterceptor`, () => {
     httpTestingController = TestBed.inject(HttpTestingController);
     configurationProvider = TestBed.inject(ConfigurationProvider);
     authStateService = TestBed.inject(AuthStateService);
+    closestMatchingRouteService = TestBed.inject(ClosestMatchingRouteService);
   });
 
   afterEach(() => {
@@ -145,6 +147,49 @@ describe(`AuthHttpInterceptor`, () => {
       spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ secureRoutes: [actionUrl], configId: 'configId' }]);
 
       spyOn(authStateService, 'getAccessToken').and.returnValue('');
+
+      httpClient.get(actionUrl).subscribe((response) => {
+        expect(response).toBeTruthy();
+      });
+
+      const httpRequest = httpTestingController.expectOne(actionUrl);
+      expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
+
+      httpRequest.flush('something');
+      httpTestingController.verify();
+    })
+  );
+
+  it(
+    'should not add an Authorization header when no config is present',
+    waitForAsync(() => {
+      const actionUrl = `https://jsonplaceholder.typicode.com/`;
+
+      spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(false);
+
+      httpClient.get(actionUrl).subscribe((response) => {
+        expect(response).toBeTruthy();
+      });
+
+      const httpRequest = httpTestingController.expectOne(actionUrl);
+      expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
+
+      httpRequest.flush('something');
+      httpTestingController.verify();
+    })
+  );
+
+  it(
+    'should not add an Authorization header when no configured route is matching the request',
+    waitForAsync(() => {
+      spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
+      const actionUrl = `https://jsonplaceholder.typicode.com/`;
+
+      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ secureRoutes: [actionUrl], configId: 'configId' }]);
+      spyOn(closestMatchingRouteService, 'getConfigIdForClosestMatchingRoute').and.returnValue({
+        matchingRoute: null,
+        matchingConfigId: null,
+      });
 
       httpClient.get(actionUrl).subscribe((response) => {
         expect(response).toBeTruthy();

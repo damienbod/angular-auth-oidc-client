@@ -54,24 +54,102 @@ describe('Auth State Service', () => {
   });
 
   describe('setAuthorizedAndFireEvent', () => {
-    it('throws event when state is being set to `true`', () => {
+    it('throws event with boolean (single config)', () => {
       const spy = spyOn((authStateService as any).authenticatedInternal$, 'next');
       authStateService.setAuthenticatedAndFireEvent();
       expect(spy).toHaveBeenCalledWith(true);
+    });
+
+    it('throws event with ConfigAuthenticatedResult (multiple configs)', () => {
+      spyOn(configurationProvider, 'hasManyConfigs').and.returnValue(true);
+      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ configId: 'configId1' }, { configId: 'configId2' }]);
+
+      const spy = spyOn((authStateService as any).authenticatedInternal$, 'next');
+
+      authStateService.setAuthenticatedAndFireEvent();
+
+      expect(spy).toHaveBeenCalledWith([
+        { configId: 'configId1', isAuthenticated: false },
+        { configId: 'configId2', isAuthenticated: false },
+      ]);
+    });
+
+    it('throws event with ConfigAuthenticatedResult (multiple configs), one is authenticated', () => {
+      spyOn(configurationProvider, 'hasManyConfigs').and.returnValue(true);
+      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ configId: 'configId1' }, { configId: 'configId2' }]);
+      spyOn(storagePersistenceService, 'getAccessToken')
+        .withArgs('configId1')
+        .and.returnValue('someAccessToken')
+        .withArgs('configId2')
+        .and.returnValue(null);
+
+      spyOn(storagePersistenceService, 'getIdToken')
+        .withArgs('configId1')
+        .and.returnValue('someIdToken')
+        .withArgs('configId2')
+        .and.returnValue(null);
+
+      const spy = spyOn((authStateService as any).authenticatedInternal$, 'next');
+
+      authStateService.setAuthenticatedAndFireEvent();
+
+      expect(spy).toHaveBeenCalledWith([
+        { configId: 'configId1', isAuthenticated: true },
+        { configId: 'configId2', isAuthenticated: false },
+      ]);
     });
   });
 
   describe('setUnauthorizedAndFireEvent', () => {
     it('persist AuthState In Storage', () => {
       const spy = spyOn(storagePersistenceService, 'resetAuthStateInStorage');
-      authStateService.setUnauthenticatedAndFireEvent('configId');
-      expect(spy).toHaveBeenCalled();
+      authStateService.setUnauthenticatedAndFireEvent('configIdToReset');
+      expect(spy).toHaveBeenCalledWith('configIdToReset');
     });
 
-    it('throws event when state is being set to `false`', () => {
+    it('throws event with boolean (single config)', () => {
       const spy = spyOn((authStateService as any).authenticatedInternal$, 'next');
       authStateService.setUnauthenticatedAndFireEvent('configId');
       expect(spy).toHaveBeenCalledWith(false);
+    });
+
+    it('throws event with ConfigAuthenticatedResult (multiple configs)', () => {
+      spyOn(configurationProvider, 'hasManyConfigs').and.returnValue(true);
+      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ configId: 'configId1' }, { configId: 'configId2' }]);
+
+      const spy = spyOn((authStateService as any).authenticatedInternal$, 'next');
+
+      authStateService.setUnauthenticatedAndFireEvent('configIdToReset');
+
+      expect(spy).toHaveBeenCalledWith([
+        { configId: 'configId1', isAuthenticated: false },
+        { configId: 'configId2', isAuthenticated: false },
+      ]);
+    });
+
+    it('throws event with ConfigAuthenticatedResult (multiple configs), one is authenticated', () => {
+      spyOn(configurationProvider, 'hasManyConfigs').and.returnValue(true);
+      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ configId: 'configId1' }, { configId: 'configId2' }]);
+      spyOn(storagePersistenceService, 'getAccessToken')
+        .withArgs('configId1')
+        .and.returnValue('someAccessToken')
+        .withArgs('configId2')
+        .and.returnValue(null);
+
+      spyOn(storagePersistenceService, 'getIdToken')
+        .withArgs('configId1')
+        .and.returnValue('someIdToken')
+        .withArgs('configId2')
+        .and.returnValue(null);
+
+      const spy = spyOn((authStateService as any).authenticatedInternal$, 'next');
+
+      authStateService.setUnauthenticatedAndFireEvent('configIdToReset');
+
+      expect(spy).toHaveBeenCalledWith([
+        { configId: 'configId1', isAuthenticated: true },
+        { configId: 'configId2', isAuthenticated: false },
+      ]);
     });
   });
 
@@ -96,8 +174,20 @@ describe('Auth State Service', () => {
         state: '7bad349c97cd7391abb6dfc41ec8c8e8ee8yeprJL',
         session_state: 'gjNckdb8h4HS5us_3oz68oqsAhvNMOMpgsJNqrhy7kM.rBe66j0WPYpSx_c4vLM-5w',
       };
+
       authStateService.setAuthorizationData('accesstoken', authResult, 'configId');
+
       expect(spy).toHaveBeenCalledWith('authzData', 'accesstoken', 'configId');
+      expect(spy).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not crash and store accessToken when authResult is null', () => {
+      const spy = spyOn(storagePersistenceService, 'write');
+      const authResult = null;
+
+      authStateService.setAuthorizationData('accesstoken', authResult, 'configId');
+
+      expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it('calls setAuthenticatedAndFireEvent() method', () => {

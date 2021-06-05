@@ -1,3 +1,3 @@
 export class ResetAuthDataServiceMock {
-  resetAuthorizationData(): void {}
+  resetAuthorizationData(configId: string): void {}
 }

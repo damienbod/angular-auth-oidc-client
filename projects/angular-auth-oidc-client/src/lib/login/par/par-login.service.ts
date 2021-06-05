@@ -122,7 +122,7 @@ export class ParLoginService {
               });
             }
 
-            return this.checkAuthService.checkAuth(receivedUrl);
+            return this.checkAuthService.checkAuth(configId, receivedUrl);
           })
         );
       })

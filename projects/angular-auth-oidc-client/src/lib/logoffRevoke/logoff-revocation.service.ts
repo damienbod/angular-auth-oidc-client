@@ -59,7 +59,9 @@ export class LogoffRevocationService {
   // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
   // only the access token is revoked. Then the logout run.
   logoffAndRevokeTokens(configId: string, urlHandler?: (url: string) => any): Observable<any> {
-    if (!this.storagePersistenceService.read('authWellKnownEndPoints', configId)?.revocationEndpoint) {
+    const { revocationEndpoint } = this.storagePersistenceService.read('authWellKnownEndPoints', configId) || {};
+
+    if (!revocationEndpoint) {
       this.loggerService.logDebug(configId, 'revocation endpoint not supported');
       this.logoff(configId, urlHandler);
     }
