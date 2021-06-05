@@ -27,33 +27,15 @@ export class AuthStateService {
   ) {}
 
   setAuthenticatedAndFireEvent(): void {
-    if (this.configurationProvider.hasManyConfigs()) {
-      const configs = this.configurationProvider.getAllConfigurations();
-      const result: ConfigAuthenticatedResult[] = configs.map(({ configId }) => ({
-        configId,
-        isAuthenticated: this.isAuthenticated(configId),
-      }));
-
-      this.authenticatedInternal$.next(result);
-    } else {
-      this.authenticatedInternal$.next(true);
-    }
+    const result = this.composeAuthenticatedResult();
+    this.authenticatedInternal$.next(result);
   }
 
   setUnauthenticatedAndFireEvent(configIdToReset: string): void {
     this.storagePersistenceService.resetAuthStateInStorage(configIdToReset);
 
-    if (this.configurationProvider.hasManyConfigs()) {
-      const configs = this.configurationProvider.getAllConfigurations();
-      const result: ConfigAuthenticatedResult[] = configs.map(({ configId }) => ({
-        configId,
-        isAuthenticated: this.isAuthenticated(configId),
-      }));
-
-      this.authenticatedInternal$.next(result);
-    } else {
-      this.authenticatedInternal$.next(false);
-    }
+    const result = this.composeUnAuthenticatedResult();
+    this.authenticatedInternal$.next(result);
   }
 
   updateAndPublishAuthState(authorizationResult: AuthenticatedResult): void {
@@ -162,5 +144,29 @@ export class AuthStateService {
       const accessTokenExpiryTime = new Date(new Date().toUTCString()).valueOf() + authResult.expires_in * 1000;
       this.storagePersistenceService.write('access_token_expires_at', accessTokenExpiryTime, configId);
     }
+  }
+
+  private composeAuthenticatedResult(): true | ConfigAuthenticatedResult[] {
+    if (!this.configurationProvider.hasManyConfigs()) {
+      return true;
+    }
+
+    return this.checkAllConfigsIfTheyAreAuthenticated();
+  }
+
+  private composeUnAuthenticatedResult(): false | ConfigAuthenticatedResult[] {
+    if (!this.configurationProvider.hasManyConfigs()) {
+      return false;
+    }
+
+    return this.checkAllConfigsIfTheyAreAuthenticated();
+  }
+
+  private checkAllConfigsIfTheyAreAuthenticated(): ConfigAuthenticatedResult[] {
+    const configs = this.configurationProvider.getAllConfigurations();
+    return configs.map(({ configId }) => ({
+      configId,
+      isAuthenticated: this.isAuthenticated(configId),
+    }));
   }
 }
