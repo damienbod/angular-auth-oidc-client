@@ -142,7 +142,7 @@ describe('PopUpLoginService', () => {
         spyOn(urlService, 'getAuthorizeUrl');
         spyOn(popupService, 'openPopUp');
         const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(
-          of({ isAuthenticated: true, userData: { any: 'userData' }, accessToken: 'anyAccessToken' })
+          of({ isAuthenticated: true, configId: 'configId', idToken: null, userData: { any: 'userData' }, accessToken: 'anyAccessToken' })
         );
         const popupResult: PopupResult = { userClosed: false, receivedUrl: 'someUrl' };
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
@@ -150,7 +150,13 @@ describe('PopUpLoginService', () => {
         popUpLoginService.loginWithPopUpStandard('configId').subscribe((result) => {
           expect(checkAuthSpy).toHaveBeenCalledWith('configId', 'someUrl');
 
-          expect(result).toEqual({ isAuthenticated: true, userData: { any: 'userData' }, accessToken: 'anyAccessToken' });
+          expect(result).toEqual({
+            isAuthenticated: true,
+            configId: 'configId',
+            idToken: null,
+            userData: { any: 'userData' },
+            accessToken: 'anyAccessToken',
+          });
         });
       })
     );
@@ -172,8 +178,14 @@ describe('PopUpLoginService', () => {
 
         popUpLoginService.loginWithPopUpStandard('configId').subscribe((result) => {
           expect(checkAuthSpy).not.toHaveBeenCalled();
-
-          expect(result).toEqual({ isAuthenticated: false, errorMessage: 'User closed popup' });
+          expect(result).toEqual({
+            isAuthenticated: false,
+            errorMessage: 'User closed popup',
+            configId: 'configId',
+            idToken: null,
+            userData: null,
+            accessToken: null,
+          });
         });
       })
     );

@@ -16,6 +16,8 @@ import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
+import { UserServiceMock } from '../userData/user-service-mock';
+import { UserService } from '../userData/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 import { RefreshSessionRefreshTokenServiceMock } from './refresh-session-refresh-token.service-mock';
@@ -53,6 +55,7 @@ describe('RefreshSessionService ', () => {
           useClass: RefreshSessionRefreshTokenServiceMock,
         },
         { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
+        { provide: UserService, useClass: UserServiceMock },
       ],
     });
   });
@@ -220,7 +223,13 @@ describe('RefreshSessionService ', () => {
           const spyInsideMap = spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
           refreshSessionService.forceRefreshSession('configId').subscribe((result) => {
-            expect(result).toEqual({ idToken: 'id_token', accessToken: 'access_token', isAuthenticated: true });
+            expect(result).toEqual({
+              idToken: 'id_token',
+              accessToken: 'access_token',
+              isAuthenticated: true,
+              userData: null,
+              configId: 'configId',
+            });
             expect(spyInsideMap).toHaveBeenCalledTimes(1);
           });
 

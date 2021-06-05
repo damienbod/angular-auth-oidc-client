@@ -104,7 +104,7 @@ export class CheckAuthService {
       const errorMessage = 'Please provide at least one configuration before setting up the module';
       this.loggerService.logError(configId, errorMessage);
 
-      return of({ isAuthenticated: false, errorMessage });
+      return of({ isAuthenticated: false, errorMessage, userData: null, idToken: null, accessToken: null, configId });
     }
 
     const currentUrl = url || this.currentUrlService.getCurrentUrl();
@@ -141,6 +141,7 @@ export class CheckAuthService {
           isAuthenticated,
           userData: this.userService.getUserDataFromStore(configId),
           accessToken: this.authStateService.getAccessToken(configId),
+          idToken: this.authStateService.getIdToken(configId),
           configId,
         };
       }),
@@ -156,7 +157,7 @@ export class CheckAuthService {
       }),
       catchError((errorMessage) => {
         this.loggerService.logError(configId, errorMessage);
-        return of({ isAuthenticated: false, errorMessage });
+        return of({ isAuthenticated: false, errorMessage, userData: null, idToken: null, accessToken: null, configId });
       })
     );
   }
