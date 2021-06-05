@@ -3,8 +3,8 @@ import { Observable, of, throwError } from 'rxjs';
 import { switchMap, take } from 'rxjs/operators';
 import { AuthOptions } from '../../auth-options';
 import { CheckAuthService } from '../../check-auth.service';
-import { AuthWellKnownService } from '../../config/auth-well-known.service';
-import { ConfigurationProvider } from '../../config/config.provider';
+import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
+import { ConfigurationProvider } from '../../config/provider/config.provider';
 import { LoggerService } from '../../logging/logger.service';
 import { UrlService } from '../../utils/url/url.service';
 import { LoginResponse } from '../login-response';
@@ -25,28 +25,28 @@ export class PopUpLoginService {
     private checkAuthService: CheckAuthService
   ) {}
 
-  loginWithPopUpStandard(authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
-    if (!this.responseTypeValidationService.hasConfigValidResponseType()) {
+  loginWithPopUpStandard(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
+    if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
       const errorMessage = 'Invalid response type!';
-      this.loggerService.logError(errorMessage);
+      this.loggerService.logError(configId, errorMessage);
       return throwError(errorMessage);
     }
 
-    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration();
+    const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
 
-    if (!authWellknownEndpoint) {
+    if (!authWellknownEndpointUrl) {
       const errorMessage = 'no authWellknownEndpoint given!';
-      this.loggerService.logError(errorMessage);
+      this.loggerService.logError(configId, errorMessage);
       return throwError(errorMessage);
     }
 
-    this.loggerService.logDebug('BEGIN Authorize OIDC Flow with popup, no auth data');
+    this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow with popup, no auth data');
 
-    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint).pipe(
+    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).pipe(
       switchMap(() => {
         const { customParams } = authOptions || {};
 
-        const authUrl = this.urlService.getAuthorizeUrl(customParams);
+        const authUrl = this.urlService.getAuthorizeUrl(configId, customParams);
 
         this.popupService.openPopUp(authUrl, popupOptions);
 
@@ -56,10 +56,17 @@ export class PopUpLoginService {
             const { userClosed, receivedUrl } = result;
 
             if (userClosed) {
-              return of({ isAuthenticated: false, errorMessage: 'User closed popup' });
+              return of({
+                isAuthenticated: false,
+                errorMessage: 'User closed popup',
+                userData: null,
+                idToken: null,
+                accessToken: null,
+                configId,
+              });
             }
 
-            return this.checkAuthService.checkAuth(receivedUrl);
+            return this.checkAuthService.checkAuth(configId, receivedUrl);
           })
         );
       })

@@ -15,11 +15,11 @@ export class RefreshSessionCallbackHandlerService {
   ) {}
 
   // STEP 1 Refresh session
-  refreshSessionWithRefreshTokens(): Observable<CallbackContext> {
-    const stateData = this.flowsDataService.getExistingOrCreateAuthStateControl();
-    this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + stateData);
-    const refreshToken = this.authStateService.getRefreshToken();
-    const idToken = this.authStateService.getIdToken();
+  refreshSessionWithRefreshTokens(configId: string): Observable<CallbackContext> {
+    const stateData = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
+    this.loggerService.logDebug(configId, 'RefreshSession created. Adding myautostate: ' + stateData);
+    const refreshToken = this.authStateService.getRefreshToken(configId);
+    const idToken = this.authStateService.getIdToken(configId);
 
     if (refreshToken) {
       const callbackContext = {
@@ -34,14 +34,14 @@ export class RefreshSessionCallbackHandlerService {
         existingIdToken: idToken,
       };
 
-      this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
-      // Nonce is not used with refresh tokens; but Keycloak may send it anyway
-      this.flowsDataService.setNonce(TokenValidationService.refreshTokenNoncePlaceholder);
+      this.loggerService.logDebug(configId, 'found refresh code, obtaining new credentials with refresh code');
+      // Nonce is not used with refresh tokens; but Key cloak may send it anyway
+      this.flowsDataService.setNonce(TokenValidationService.refreshTokenNoncePlaceholder, configId);
 
       return of(callbackContext);
     } else {
       const errorMessage = 'no refresh token found, please login';
-      this.loggerService.logError(errorMessage);
+      this.loggerService.logError(configId, errorMessage);
       return throwError(errorMessage);
     }
   }

@@ -1,23 +1,23 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { AuthorizationResult } from './authorization-result';
+import { AuthenticatedResult } from './auth-result';
 
 @Injectable()
 export class AuthStateServiceMock {
   // event which contains the state
-  private authorizedInternal$ = new BehaviorSubject<boolean>(false);
+  private authenticatedInternal$ = new BehaviorSubject<boolean>(false);
 
-  get authorized$() {
-    return this.authorizedInternal$.asObservable();
+  get authenticated$() {
+    return this.authenticatedInternal$.asObservable();
   }
 
-  setAuthorizedAndFireEvent(): void {}
+  setAuthenticatedAndFireEvent(): void {}
 
-  setUnauthorizedAndFireEvent(): void {}
+  setUnauthenticatedAndFireEvent(): void {}
 
   initStateFromStorage(): void {}
 
-  updateAndPublishAuthState(authorizationResult: AuthorizationResult) {}
+  updateAndPublishAuthState(authorizationResult: AuthenticatedResult) {}
 
   setAuthorizationData(accessToken: any, idToken: any) {}
 
@@ -44,6 +44,10 @@ export class AuthStateServiceMock {
   }
 
   hasAccessTokenExpiredIfExpiryExists() {
+    return true;
+  }
+
+  isAuthenticated(configId: string): boolean {
     return true;
   }
 }

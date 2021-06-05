@@ -2,29 +2,27 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
-import { ConfigValidationService } from '../config-validation/config-validation.service';
-import { LogLevel } from '../logging/log-level';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { PlatformProviderMock } from './../utils/platform-provider/platform.provider-mock';
-import { AuthWellKnownService } from './auth-well-known.service';
-import { AuthWellKnownServiceMock } from './auth-well-known.service-mock';
-import { ConfigurationProvider } from './config.provider';
-import { ConfigurationProviderMock } from './config.provider-mock';
+import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
+import { AuthWellKnownServiceMock } from './auth-well-known/auth-well-known.service-mock';
 import { OidcConfigService } from './config.service';
 import { DEFAULT_CONFIG } from './default-config';
 import { OpenIdConfiguration } from './openid-configuration';
+import { ConfigurationProvider } from './provider/config.provider';
+import { ConfigurationProviderMock } from './provider/config.provider-mock';
+import { ConfigValidationService } from './validation/config-validation.service';
 
 describe('Configuration Service', () => {
   let oidcConfigService: OidcConfigService;
   let loggerService: LoggerService;
   let eventsService: PublicEventsService;
-  let configurationProvider: ConfigurationProvider;
   let authWellKnownService: AuthWellKnownService;
   let storagePersistenceService: StoragePersistenceService;
   let configValidationService: ConfigValidationService;
@@ -69,7 +67,6 @@ describe('Configuration Service', () => {
     oidcConfigService = TestBed.inject(OidcConfigService);
     loggerService = TestBed.inject(LoggerService);
     eventsService = TestBed.inject(PublicEventsService);
-    configurationProvider = TestBed.inject(ConfigurationProvider);
     authWellKnownService = TestBed.inject(AuthWellKnownService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
     configValidationService = TestBed.inject(ConfigValidationService);
@@ -81,10 +78,24 @@ describe('Configuration Service', () => {
   });
 
   it('should return a promise', () => {
-    expect(oidcConfigService.withConfig({})).toEqual(jasmine.any(Promise));
+    expect(oidcConfigService.withConfigs([])).toEqual(jasmine.any(Promise));
   });
 
-  describe('withConfig', () => {
+  describe('withConfigs', () => {
+    it(
+      'not valid configs does nothing and logs error',
+      waitForAsync(() => {
+        const config = {};
+        spyOn(configValidationService, 'validateConfigs').and.returnValue(false);
+
+        const promise = oidcConfigService.withConfigs([config]);
+
+        promise.then((result) => {
+          expect(result).toBeNull();
+        });
+      })
+    );
+
     it(
       'not valid config does nothing and logs error',
       waitForAsync(() => {
@@ -92,10 +103,51 @@ describe('Configuration Service', () => {
         spyOn(loggerService, 'logError');
         spyOn(configValidationService, 'validateConfig').and.returnValue(false);
 
-        const promise = oidcConfigService.withConfig(config);
+        const promise = oidcConfigService.withConfigs([config]);
 
         promise.then(() => {
           expect(loggerService.logError).toHaveBeenCalled();
+        });
+      })
+    );
+
+    it(
+      'configId is being generated with index and clientId',
+      waitForAsync(() => {
+        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
+        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+        const promise = oidcConfigService.withConfigs([{ stsServer: 'https://please_set', clientId: 'clientId' }]);
+
+        promise.then((result) => {
+          expect(result[0].configId).toEqual('0-clientId');
+        });
+      })
+    );
+
+    it(
+      'configId is not being generated (overwritten) when present already',
+      waitForAsync(() => {
+        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
+        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+        const promise = oidcConfigService.withConfigs([{ stsServer: 'https://please_set', clientId: 'clientId', configId: 'myConfigId' }]);
+
+        promise.then((result) => {
+          expect(result[0].configId).toEqual('myConfigId');
+        });
+      })
+    );
+
+    it(
+      'authWellknownEndpointUrl is not being overwritten with stsServer when present already',
+      waitForAsync(() => {
+        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
+        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+        const promise = oidcConfigService.withConfigs([
+          { stsServer: 'https://please_set', clientId: 'clientId', authWellknownEndpointUrl: 'my-auth-url' },
+        ]);
+
+        promise.then((result) => {
+          expect(result[0].authWellknownEndpointUrl).toEqual('my-auth-url');
         });
       })
     );
@@ -105,45 +157,18 @@ describe('Configuration Service', () => {
       waitForAsync(() => {
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        const promise = oidcConfigService.withConfig({ stsServer: 'https://please_set' });
+        const promise = oidcConfigService.withConfigs([{ stsServer: 'https://please_set', clientId: 'clientId' }]);
 
         promise.then((result) => {
-          expect(result).toEqual({
-            stsServer: 'https://please_set',
-            authWellknownEndpoint: 'https://please_set',
-            redirectUrl: 'https://please_set',
-            clientId: 'please_set',
-            responseType: 'code',
-            scope: 'openid email profile',
-            hdParam: '',
-            postLogoutRedirectUri: 'https://please_set',
-            startCheckSession: false,
-            silentRenew: false,
-            silentRenewUrl: 'https://please_set',
-            silentRenewTimeoutInSeconds: 20,
-            renewTimeBeforeTokenExpiresInSeconds: 0,
-            useRefreshToken: false,
-            usePushedAuthorisationRequests: false,
-            ignoreNonceAfterRefresh: false,
-            postLoginRoute: '/',
-            forbiddenRoute: '/forbidden',
-            unauthorizedRoute: '/unauthorized',
-            autoUserinfo: true,
-            autoCleanStateAfterAuthentication: true,
-            triggerAuthorizationResultEvent: false,
-            logLevel: 2,
-            issValidationOff: false,
-            historyCleanupOff: false,
-            maxIdTokenIatOffsetAllowedInSeconds: 120,
-            disableIatOffsetValidation: false,
-            storage: sessionStorage,
-            customParams: {},
-            eagerLoadAuthWellKnownEndpoints: true,
-            disableRefreshIdTokenAuthTimeValidation: false,
-            tokenRefreshInSeconds: 4,
-            refreshTokenRetryInSeconds: 3,
-            ngswBypass: false,
-          });
+          expect(result).toEqual([
+            {
+              ...DEFAULT_CONFIG,
+              stsServer: 'https://please_set',
+              authWellknownEndpointUrl: 'https://please_set',
+              clientId: 'clientId',
+              configId: '0-clientId',
+            },
+          ]);
         });
       })
     );
@@ -151,19 +176,25 @@ describe('Configuration Service', () => {
     it(
       'if authWellKnownEndPointsAlreadyStored the events are fired and resolve',
       waitForAsync(() => {
-        const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: null };
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ any: 'thing' });
+        const config = {
+          stsServer: 'stsServerForTesting',
+          clientId: 'clientId',
+        };
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue({ any: 'thing' });
         const eventServiceSpy = spyOn(eventsService, 'fireEvent');
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        const promise = oidcConfigService.withConfig(config);
-        promise.then(() => {
+        const promise = oidcConfigService.withConfigs([config]);
+
+        promise.then((result) => {
           expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
-            configuration: {
-              ...DEFAULT_CONFIG,
-              stsServer: 'stsServerForTesting',
-              authWellknownEndpoint: 'stsServerForTesting',
+            ...DEFAULT_CONFIG,
+            stsServer: 'stsServerForTesting',
+            authWellknownEndpointUrl: 'stsServerForTesting',
+            clientId: 'clientId',
+            configId: '0-clientId',
+            authWellknownEndpoints: {
+              any: 'thing',
             },
-            wellknown: { any: 'thing' },
           });
         });
       })
@@ -172,22 +203,24 @@ describe('Configuration Service', () => {
     it(
       'if passedAuthWellKnownEndpoints are passed, set these, fire event and resolve',
       waitForAsync(() => {
-        const config = { stsServer: 'stsServerForTesting', authWellknownEndpoint: null };
         const authWellKnown = { issuer: 'issuerForTesting' };
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+        const config = { stsServer: 'stsServerForTesting', authWellknownEndpoints: authWellKnown, clientId: 'clientId' };
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue(null);
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         const eventServiceSpy = spyOn(eventsService, 'fireEvent');
         const storeWellKnownEndpointsSpy = spyOn(authWellKnownService, 'storeWellKnownEndpoints');
-        const promise = oidcConfigService.withConfig(config, authWellKnown);
+
+        const promise = oidcConfigService.withConfigs([config]);
+
         promise.then(() => {
-          expect(storeWellKnownEndpointsSpy).toHaveBeenCalledWith(authWellKnown);
+          expect(storeWellKnownEndpointsSpy).toHaveBeenCalledWith('0-clientId', authWellKnown);
           expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
-            configuration: {
-              ...DEFAULT_CONFIG,
-              stsServer: 'stsServerForTesting',
-              authWellknownEndpoint: 'stsServerForTesting',
-            },
-            wellknown: authWellKnown,
+            ...DEFAULT_CONFIG,
+            stsServer: 'stsServerForTesting',
+            configId: '0-clientId',
+            clientId: 'clientId',
+            authWellknownEndpointUrl: 'stsServerForTesting',
+            authWellknownEndpoints: { issuer: 'issuerForTesting' },
           });
         });
       })
@@ -196,14 +229,13 @@ describe('Configuration Service', () => {
     it(
       'if eagerLoadAuthWellKnownEndpoints is true: call getAuthWellKnownEndPoints',
       waitForAsync(() => {
-        const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
-        spyOn(configurationProvider, 'setConfig').and.returnValue(config);
+        const config = { stsServer: 'stsServerForTesting', clientId: 'clientId', eagerLoadAuthWellKnownEndpoints: true };
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue(null);
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         const getWellKnownEndPointsFromUrlSpy = spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
-        const promise = oidcConfigService.withConfig(config);
+        const promise = oidcConfigService.withConfigs([config]);
         promise.then(() => {
-          expect(getWellKnownEndPointsFromUrlSpy).toHaveBeenCalledWith('stsServerForTesting');
+          expect(getWellKnownEndPointsFromUrlSpy).toHaveBeenCalledWith('stsServerForTesting', '0-clientId');
         });
       })
     );
@@ -211,12 +243,11 @@ describe('Configuration Service', () => {
     it(
       'if eagerLoadAuthWellKnownEndpoints is false: DO NOT call getAuthWellKnownEndPoints',
       waitForAsync(() => {
-        const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: false };
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
+        const config = { stsServer: 'stsServerForTesting', clientId: 'clientId', eagerLoadAuthWellKnownEndpoints: false };
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue(null);
         const storeWellKnownEndpointsSpy = spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
-        spyOn(configurationProvider, 'setConfig').and.returnValue(config);
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        const promise = oidcConfigService.withConfig(config);
+        const promise = oidcConfigService.withConfigs([config]);
         promise.then(() => {
           expect(storeWellKnownEndpointsSpy).not.toHaveBeenCalled();
         });
@@ -238,9 +269,9 @@ describe('Configuration Service', () => {
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
 
-        oidcConfigService.withConfig(config).then(({ silentRenew, startCheckSession }) => {
-          expect(silentRenew).toEqual(false);
-          expect(startCheckSession).toEqual(false);
+        oidcConfigService.withConfigs([config]).then((result) => {
+          expect(result[0].silentRenew).toEqual(false);
+          expect(result[0].startCheckSession).toEqual(false);
         });
       })
     );
@@ -260,7 +291,7 @@ describe('Configuration Service', () => {
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
 
-        oidcConfigService.withConfig(config).then(({ silentRenew, startCheckSession }) => {
+        oidcConfigService.withConfigs([config]).then(([{ silentRenew, startCheckSession }]) => {
           expect(silentRenew).toEqual(true);
           expect(startCheckSession).toEqual(true);
         });
@@ -282,7 +313,7 @@ describe('Configuration Service', () => {
         const spy = spyOn(oidcConfigService as any, 'setSpecialCases');
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
 
-        oidcConfigService.withConfig(config).then(() => {
+        oidcConfigService.withConfigs([config]).then(() => {
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -291,17 +322,18 @@ describe('Configuration Service', () => {
     it(
       'if eagerLoadAuthWellKnownEndpoints is true: fire event',
       waitForAsync(() => {
-        const config = { stsServer: 'stsServerForTesting', eagerLoadAuthWellKnownEndpoints: true };
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue(null);
-        spyOn(configurationProvider, 'setConfig').and.returnValue(config);
+        const config = { stsServer: 'stsServerForTesting', clientId: 'clientId', eagerLoadAuthWellKnownEndpoints: true };
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue(null);
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
         const eventServiceSpy = spyOn(eventsService, 'fireEvent');
-        const promise = oidcConfigService.withConfig(config);
+        const promise = oidcConfigService.withConfigs([config]);
         promise.then(() => {
           expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
-            configuration: { ...DEFAULT_CONFIG, ...config, authWellknownEndpoint: 'stsServerForTesting' },
-            wellknown: { issuer: 'issuerForTesting' },
+            ...DEFAULT_CONFIG,
+            ...config,
+            authWellknownEndpointUrl: 'stsServerForTesting',
+            authWellknownEndpoints: { issuer: 'issuerForTesting' },
           });
         });
       })
@@ -312,50 +344,22 @@ describe('Configuration Service', () => {
       waitForAsync(() => {
         const config = {
           stsServer: 'stsServer',
+          clientId: 'clientId',
         };
 
         const expected = {
-          stsServer: config.stsServer,
-          authWellknownEndpoint: 'stsServer',
-          redirectUrl: 'https://please_set',
-          clientId: 'please_set',
-          responseType: 'code',
-          scope: 'openid email profile',
-          hdParam: '',
-          postLogoutRedirectUri: 'https://please_set',
-          startCheckSession: false,
-          silentRenew: false,
-          silentRenewUrl: 'https://please_set',
-          silentRenewTimeoutInSeconds: 20,
-          renewTimeBeforeTokenExpiresInSeconds: 0,
-          useRefreshToken: false,
-          usePushedAuthorisationRequests: false,
-          ignoreNonceAfterRefresh: false,
-          postLoginRoute: '/',
-          forbiddenRoute: '/forbidden',
-          unauthorizedRoute: '/unauthorized',
-          autoUserinfo: true,
-          autoCleanStateAfterAuthentication: true,
-          triggerAuthorizationResultEvent: false,
-          logLevel: LogLevel.Warn,
-          issValidationOff: false,
-          historyCleanupOff: false,
-          maxIdTokenIatOffsetAllowedInSeconds: 120,
-          disableIatOffsetValidation: false,
-          storage: sessionStorage,
-          customParams: {},
-          eagerLoadAuthWellKnownEndpoints: true,
-          disableRefreshIdTokenAuthTimeValidation: false,
-          tokenRefreshInSeconds: 4,
-          refreshTokenRetryInSeconds: 3,
-          ngswBypass: false,
+          ...DEFAULT_CONFIG,
+          ...config,
+          configId: '0-clientId',
+          authWellknownEndpointUrl: 'stsServer',
+          authWellknownEndpoints: { issuer: 'issuerForTesting' },
         };
 
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
 
-        oidcConfigService.withConfig(config).then((result) => {
-          expect(result).toEqual(expected);
+        oidcConfigService.withConfigs([config]).then((result) => {
+          expect(result).toEqual([expected]);
         });
       })
     );
@@ -367,52 +371,29 @@ describe('Configuration Service', () => {
           stsServer: 'stsServer',
           startCheckSession: true,
           silentRenew: true,
+          clientId: 'clientId',
         };
 
         const expected = {
-          stsServer: config.stsServer,
-          authWellknownEndpoint: 'stsServer',
-          redirectUrl: 'https://please_set',
-          clientId: 'please_set',
-          responseType: 'code',
-          scope: 'openid email profile',
-          hdParam: '',
-          postLogoutRedirectUri: 'https://please_set',
+          ...DEFAULT_CONFIG,
+          ...config,
+          configId: '0-clientId',
+          authWellknownEndpointUrl: 'stsServer',
+          authWellknownEndpoints: { issuer: 'issuerForTesting' },
+
           startCheckSession: false,
           silentRenew: false,
-          silentRenewUrl: 'https://please_set',
-          silentRenewTimeoutInSeconds: 20,
-          renewTimeBeforeTokenExpiresInSeconds: 0,
           useRefreshToken: false,
           usePushedAuthorisationRequests: false,
-          ignoreNonceAfterRefresh: false,
-          postLoginRoute: '/',
-          forbiddenRoute: '/forbidden',
-          unauthorizedRoute: '/unauthorized',
-          autoUserinfo: true,
-          autoCleanStateAfterAuthentication: true,
-          triggerAuthorizationResultEvent: false,
-          logLevel: LogLevel.Warn,
-          issValidationOff: false,
-          historyCleanupOff: false,
-          maxIdTokenIatOffsetAllowedInSeconds: 120,
-          disableIatOffsetValidation: false,
-          storage: sessionStorage,
-          customParams: {},
-          eagerLoadAuthWellKnownEndpoints: true,
-          disableRefreshIdTokenAuthTimeValidation: false,
-          tokenRefreshInSeconds: 4,
-          refreshTokenRetryInSeconds: 3,
-          ngswBypass: false,
-        };
+        } as OpenIdConfiguration;
 
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
 
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
 
-        oidcConfigService.withConfig(config).then((result) => {
-          expect(result).toEqual(expected);
+        oidcConfigService.withConfigs([config]).then((result) => {
+          expect(result[0]).toEqual(expected);
         });
       })
     );

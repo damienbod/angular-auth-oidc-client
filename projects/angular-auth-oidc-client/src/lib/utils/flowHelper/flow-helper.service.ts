@@ -1,43 +1,42 @@
 import { Injectable } from '@angular/core';
-import { ConfigurationProvider } from '../../config/config.provider';
+import { ConfigurationProvider } from '../../config/provider/config.provider';
 
 @Injectable()
 export class FlowHelper {
   constructor(private configurationProvider: ConfigurationProvider) {}
 
-  isCurrentFlowCodeFlow() {
-    return this.currentFlowIs('code');
+  isCurrentFlowCodeFlow(configId: string) {
+    return this.currentFlowIs('code', configId);
   }
 
-  isCurrentFlowAnyImplicitFlow() {
-    return this.isCurrentFlowImplicitFlowWithAccessToken() || this.isCurrentFlowImplicitFlowWithoutAccessToken();
+  isCurrentFlowAnyImplicitFlow(configId: string) {
+    return this.isCurrentFlowImplicitFlowWithAccessToken(configId) || this.isCurrentFlowImplicitFlowWithoutAccessToken(configId);
   }
 
-  isCurrentFlowCodeFlowWithRefreshTokens() {
-    const { useRefreshToken } = this.configurationProvider.getOpenIDConfiguration();
-
-    if (this.isCurrentFlowCodeFlow() && useRefreshToken) {
+  isCurrentFlowCodeFlowWithRefreshTokens(configId: string) {
+    const { useRefreshToken } = this.configurationProvider.getOpenIDConfiguration(configId);
+    if (this.isCurrentFlowCodeFlow(configId) && useRefreshToken) {
       return true;
     }
 
     return false;
   }
 
-  isCurrentFlowImplicitFlowWithAccessToken() {
-    return this.currentFlowIs('id_token token');
+  isCurrentFlowImplicitFlowWithAccessToken(configId: string) {
+    return this.currentFlowIs('id_token token', configId);
   }
 
-  isCurrentFlowImplicitFlowWithoutAccessToken() {
-    return this.currentFlowIs('id_token');
-  }
-
-  currentFlowIs(flowTypes: string[] | string) {
-    const { responseType } = this.configurationProvider.getOpenIDConfiguration();
+  currentFlowIs(flowTypes: string[] | string, configId: string) {
+    const { responseType } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (Array.isArray(flowTypes)) {
       return flowTypes.some((x) => responseType === x);
     }
 
     return responseType === flowTypes;
+  }
+
+  private isCurrentFlowImplicitFlowWithoutAccessToken(configId: string) {
+    return this.currentFlowIs('id_token', configId);
   }
 }

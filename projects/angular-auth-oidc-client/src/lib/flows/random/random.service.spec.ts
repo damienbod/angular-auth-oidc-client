@@ -21,25 +21,25 @@ describe('RandomService Tests', () => {
   });
 
   it('should be not equal', () => {
-    const r1 = randomService.createRandom(45);
-    const r2 = randomService.createRandom(45);
+    const r1 = randomService.createRandom(45, 'configId');
+    const r2 = randomService.createRandom(45, 'configId');
     expect(r1).not.toEqual(r2);
   });
 
   it('correct length with high number', () => {
-    const r1 = randomService.createRandom(79);
+    const r1 = randomService.createRandom(79, 'configId');
     const result = r1.length;
     expect(result).toBe(79);
   });
 
   it('correct length with small number', () => {
-    const r1 = randomService.createRandom(7);
+    const r1 = randomService.createRandom(7, 'configId');
     const result = r1.length;
     expect(result).toBe(7);
   });
 
   it('correct length with 0', () => {
-    const r1 = randomService.createRandom(0);
+    const r1 = randomService.createRandom(0, 'configId');
     const result = r1.length;
     expect(result).toBe(0);
     expect(r1).toBe('');
@@ -49,7 +49,7 @@ describe('RandomService Tests', () => {
     it('Giving back 10 or more characters when called with numbers less than 7', () => {
       const requiredLengthSmallerThenSeven = index;
       const fallbackLength = 10;
-      const r1 = randomService.createRandom(requiredLengthSmallerThenSeven);
+      const r1 = randomService.createRandom(requiredLengthSmallerThenSeven, 'configId');
       expect(r1.length).toBeGreaterThanOrEqual(fallbackLength);
     });
   }

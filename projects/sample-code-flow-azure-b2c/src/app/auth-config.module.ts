@@ -6,7 +6,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
     AuthModule.forRoot({
       config: {
         stsServer: 'https://login.microsoftonline.com/damienbod.onmicrosoft.com/v2.0',
-        authWellknownEndpoint:
+        authWellknownEndpointUrl:
           'https://damienbod.b2clogin.com/damienbod.onmicrosoft.com/B2C_1_b2cpolicydamien/v2.0/.well-known/openid-configuration',
         redirectUrl: window.location.origin,
         postLogoutRedirectUri: window.location.origin,
@@ -14,14 +14,14 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
         scope: 'openid https://damienbod.onmicrosoft.com/testapi/demo.read',
         responseType: 'code',
         silentRenew: true,
-        autoUserinfo: false,
+        autoUserInfo: false,
         silentRenewUrl: window.location.origin + '/silent-renew.html',
         logLevel: LogLevel.Debug,
         renewTimeBeforeTokenExpiresInSeconds: 60,
         // useRefreshToken: true, // for refresh renew, but revocation and one time usage is missing from server impl.
         // ignoreNonceAfterRefresh: true,
         // disableRefreshIdTokenAuthTimeValidation: true,
-        customParams: {
+        customParamsAuthRequest: {
           prompt: 'select_account', // login, consent
         },
       },

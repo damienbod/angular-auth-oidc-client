@@ -1,70 +1,70 @@
 import { Injectable } from '@angular/core';
-import { ConfigurationProvider } from '../config/config.provider';
+import { ConfigurationProvider } from '../config/provider/config.provider';
 import { LogLevel } from './log-level';
 
 @Injectable()
 export class LoggerService {
   constructor(private configurationProvider: ConfigurationProvider) {}
 
-  logError(message: any, ...args: any[]) {
-    if (this.loggingIsTurnedOff()) {
+  logError(configId: string, message: any, ...args: any[]) {
+    if (this.loggingIsTurnedOff(configId)) {
       return;
     }
 
     if (!!args && args.length) {
-      console.error(message, ...args);
+      console.error(`[ERROR] ${configId} - ${message}`, ...args);
     } else {
-      console.error(message);
+      console.error(`[ERROR] ${configId} - ${message}`);
     }
   }
 
-  logWarning(message: any, ...args: any[]) {
-    if (!this.logLevelIsSet()) {
+  logWarning(configId: string, message: any, ...args: any[]) {
+    if (!this.logLevelIsSet(configId)) {
       return;
     }
 
-    if (this.loggingIsTurnedOff()) {
+    if (this.loggingIsTurnedOff(configId)) {
       return;
     }
 
-    if (!this.currentLogLevelIsEqualOrSmallerThan(LogLevel.Warn)) {
+    if (!this.currentLogLevelIsEqualOrSmallerThan(configId, LogLevel.Warn)) {
       return;
     }
 
     if (!!args && args.length) {
-      console.warn(message, ...args);
+      console.warn(`[WARN] ${configId} - ${message}`, ...args);
     } else {
-      console.warn(message);
+      console.warn(`[WARN] ${configId} - ${message}`);
     }
   }
 
-  logDebug(message: any, ...args: any[]) {
-    if (!this.logLevelIsSet()) {
+  logDebug(configId: string, message: any, ...args: any[]) {
+    if (!this.logLevelIsSet(configId)) {
       return;
     }
 
-    if (this.loggingIsTurnedOff()) {
+    if (this.loggingIsTurnedOff(configId)) {
       return;
     }
 
-    if (!this.currentLogLevelIsEqualOrSmallerThan(LogLevel.Debug)) {
+    if (!this.currentLogLevelIsEqualOrSmallerThan(configId, LogLevel.Debug)) {
       return;
     }
 
     if (!!args && args.length) {
-      console.log(message, ...args);
+      console.log(`[DEBUG] ${configId} - ${message}`, ...args);
     } else {
-      console.log(message);
+      console.log(`[DEBUG] ${configId} - ${message}`);
     }
   }
 
-  private currentLogLevelIsEqualOrSmallerThan(logLevelToCompare: LogLevel) {
-    const { logLevel } = this.configurationProvider.getOpenIDConfiguration() || {};
+  private currentLogLevelIsEqualOrSmallerThan(configId: string, logLevelToCompare: LogLevel) {
+    const { logLevel } = this.configurationProvider.getOpenIDConfiguration(configId) || {};
     return logLevel <= logLevelToCompare;
   }
 
-  private logLevelIsSet() {
-    const { logLevel } = this.configurationProvider.getOpenIDConfiguration() || {};
+  private logLevelIsSet(configId: string) {
+    const { logLevel } = this.configurationProvider.getOpenIDConfiguration(configId) || {};
 
     if (logLevel === null) {
       return false;
@@ -77,8 +77,8 @@ export class LoggerService {
     return true;
   }
 
-  private loggingIsTurnedOff() {
-    const { logLevel } = this.configurationProvider.getOpenIDConfiguration() || {};
+  private loggingIsTurnedOff(configId: string) {
+    const { logLevel } = this.configurationProvider.getOpenIDConfiguration(configId) || {};
 
     return logLevel === LogLevel.None;
   }

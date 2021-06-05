@@ -1,7 +1,7 @@
 /* eslint-disable arrow-body-style */
 import { HttpClient } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { AuthModule, StsConfigHttpLoader, StsConfigLoader } from 'angular-auth-oidc-client';
+import { AuthModule, LogLevel, StsConfigHttpLoader, StsConfigLoader } from 'angular-auth-oidc-client';
 import { map } from 'rxjs/operators';
 
 export const httpLoaderFactory = (httpClient: HttpClient) => {
@@ -22,10 +22,10 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
           postLoginRoute: customConfig.startup_route,
           forbiddenRoute: customConfig.forbidden_route,
           unauthorizedRoute: customConfig.unauthorized_route,
-          logLevel: customConfig.logLevel, // LogLevel.Debug,
+          logLevel: LogLevel.Debug,
           maxIdTokenIatOffsetAllowedInSeconds: customConfig.max_id_token_iat_offset_allowed_in_seconds,
           historyCleanupOff: true,
-          // autoUserinfo: false,
+          // autoUserInfo: false,
         };
       })
     )

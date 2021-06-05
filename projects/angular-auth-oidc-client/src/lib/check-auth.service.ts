@@ -1,26 +1,28 @@
-import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { forkJoin, Observable, of, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
-import { AutoLoginService } from './auto-login/auto-login-service';
+import { AutoLoginService } from './auto-login/auto-login.service';
 import { CallbackService } from './callback/callback.service';
 import { PeriodicallyTokenCheckService } from './callback/periodically-token-check.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
-import { ConfigurationProvider } from './config/config.provider';
+import { OpenIdConfiguration } from './config/openid-configuration';
+import { ConfigurationProvider } from './config/provider/config.provider';
 import { CheckSessionService } from './iframe/check-session.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
 import { LoggerService } from './logging/logger.service';
 import { LoginResponse } from './login/login-response';
 import { PopUpService } from './login/popup/popup.service';
-import { UserService } from './userData/user-service';
+import { StoragePersistenceService } from './storage/storage-persistence.service';
+import { UserService } from './userData/user.service';
+import { CurrentUrlService } from './utils/url/current-url.service';
 
 @Injectable()
 export class CheckAuthService {
   constructor(
-    @Inject(DOCUMENT) private readonly doc: any,
     private checkSessionService: CheckSessionService,
+    private currentUrlService: CurrentUrlService,
     private silentRenewService: SilentRenewService,
     private userService: UserService,
     private loggerService: LoggerService,
@@ -31,22 +33,83 @@ export class CheckAuthService {
     private periodicallyTokenCheckService: PeriodicallyTokenCheckService,
     private popupService: PopUpService,
     private autoLoginService: AutoLoginService,
-    private router: Router
+    private router: Router,
+    private storagePersistenceService: StoragePersistenceService
   ) {}
 
-  checkAuth(url?: string): Observable<LoginResponse> {
-    if (!this.configurationProvider.hasValidConfig()) {
-      const errorMessage = 'Please provide a configuration before setting up the module';
-      this.loggerService.logError(errorMessage);
+  checkAuth(passedConfigId?: string, url?: string): Observable<LoginResponse> {
+    if (this.currentUrlService.currentUrlHasStateParam()) {
+      const stateParamFromUrl = this.currentUrlService.getStateParamFromCurrentUrl();
+      const config = this.getConfigurationWithUrlState(stateParamFromUrl);
 
-      return of({ isAuthenticated: false, errorMessage });
+      if (!config) {
+        return throwError(`could not find matching config for state ${stateParamFromUrl}`);
+      }
+
+      return this.checkAuthWithConfig(config, url);
     }
 
-    const { stsServer } = this.configurationProvider.getOpenIDConfiguration();
+    if (!!passedConfigId) {
+      const config = this.configurationProvider.getOpenIDConfiguration(passedConfigId);
+      return this.checkAuthWithConfig(config, url);
+    }
 
-    this.loggerService.logDebug('STS server: ', stsServer);
+    const onlyExistingConfig = this.configurationProvider.getOpenIDConfiguration();
+    return this.checkAuthWithConfig(onlyExistingConfig, url);
+  }
 
-    const currentUrl = url || this.doc.defaultView.location.toString();
+  checkAuthMultiple(passedConfigId?: string, url?: string): Observable<LoginResponse[]> {
+    if (this.currentUrlService.currentUrlHasStateParam()) {
+      const stateParamFromUrl = this.currentUrlService.getStateParamFromCurrentUrl();
+      const config = this.getConfigurationWithUrlState(stateParamFromUrl);
+      return this.checkAuthWithConfig(config, url).pipe(map((x) => [x]));
+    }
+
+    if (!!passedConfigId) {
+      const config = this.configurationProvider.getOpenIDConfiguration(passedConfigId);
+      return this.checkAuthWithConfig(config, url).pipe(map((x) => [x]));
+    }
+
+    const allConfigs = this.configurationProvider.getAllConfigurations();
+    const allChecks$ = allConfigs.map((x) => this.checkAuthWithConfig(x, url));
+
+    return forkJoin(allChecks$);
+  }
+
+  checkAuthIncludingServer(configId: string): Observable<LoginResponse> {
+    const config = this.configurationProvider.getOpenIDConfiguration(configId);
+    return this.checkAuthWithConfig(config).pipe(
+      switchMap((loginResponse) => {
+        const { isAuthenticated } = loginResponse;
+
+        if (isAuthenticated) {
+          return of(loginResponse);
+        }
+
+        return this.refreshSessionService.forceRefreshSession(configId).pipe(
+          tap((loginResponseAfterRefreshSession) => {
+            if (loginResponseAfterRefreshSession?.isAuthenticated) {
+              this.startCheckSessionAndValidation(configId);
+            }
+          })
+        );
+      })
+    );
+  }
+
+  private checkAuthWithConfig(config: OpenIdConfiguration, url?: string): Observable<LoginResponse> {
+    const { configId, stsServer } = config;
+
+    if (!this.configurationProvider.hasAsLeastOneConfig()) {
+      const errorMessage = 'Please provide at least one configuration before setting up the module';
+      this.loggerService.logError(configId, errorMessage);
+
+      return of({ isAuthenticated: false, errorMessage, userData: null, idToken: null, accessToken: null, configId });
+    }
+
+    const currentUrl = url || this.currentUrlService.getCurrentUrl();
+
+    this.loggerService.logDebug(configId, `Working with config '${configId}' using ${stsServer}`);
 
     if (this.popupService.isCurrentlyInPopup()) {
       this.popupService.sendMessageToMainWindow(currentUrl);
@@ -56,78 +119,72 @@ export class CheckAuthService {
 
     const isCallback = this.callbackService.isCallback(currentUrl);
 
-    this.loggerService.logDebug('currentUrl to check auth with: ', currentUrl);
+    this.loggerService.logDebug(configId, 'currentUrl to check auth with: ', currentUrl);
 
-    const callback$ = isCallback ? this.callbackService.handleCallbackAndFireEvents(currentUrl) : of(null);
+    const callback$ = isCallback ? this.callbackService.handleCallbackAndFireEvents(currentUrl, configId) : of(null);
 
     return callback$.pipe(
       map(() => {
-        const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
+        const isAuthenticated = this.authStateService.areAuthStorageTokensValid(configId);
         if (isAuthenticated) {
-          this.startCheckSessionAndValidation();
+          this.startCheckSessionAndValidation(configId);
 
           if (!isCallback) {
-            this.authStateService.setAuthorizedAndFireEvent();
-            this.userService.publishUserDataIfExists();
+            this.authStateService.setAuthenticatedAndFireEvent();
+            this.userService.publishUserDataIfExists(configId);
           }
         }
 
-        this.loggerService.logDebug('checkAuth completed fired events, auth: ' + isAuthenticated);
+        this.loggerService.logDebug(configId, 'checkAuth completed - firing events now. isAuthenticated: ' + isAuthenticated);
 
         return {
           isAuthenticated,
-          userData: this.userService.getUserDataFromStore(),
-          accessToken: this.authStateService.getAccessToken(),
+          userData: this.userService.getUserDataFromStore(configId),
+          accessToken: this.authStateService.getAccessToken(configId),
+          idToken: this.authStateService.getIdToken(configId),
+          configId,
         };
       }),
-      tap(() => {
-        const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute();
-        if (savedRouteForRedirect) {
-          this.autoLoginService.deleteStoredRedirectRoute();
-          this.router.navigateByUrl(savedRouteForRedirect);
+      tap(({ isAuthenticated }) => {
+        if (isAuthenticated) {
+          const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute(configId);
+
+          if (savedRouteForRedirect) {
+            this.autoLoginService.deleteStoredRedirectRoute(configId);
+            this.router.navigateByUrl(savedRouteForRedirect);
+          }
         }
       }),
       catchError((errorMessage) => {
-        this.loggerService.logError(errorMessage);
-        return of({ isAuthenticated: false, errorMessage });
+        this.loggerService.logError(configId, errorMessage);
+        return of({ isAuthenticated: false, errorMessage, userData: null, idToken: null, accessToken: null, configId });
       })
     );
   }
 
-  checkAuthIncludingServer(): Observable<LoginResponse> {
-    return this.checkAuth().pipe(
-      switchMap((loginResponse) => {
-        const { isAuthenticated } = loginResponse;
+  private startCheckSessionAndValidation(configId: string) {
+    if (this.checkSessionService.isCheckSessionConfigured(configId)) {
+      this.checkSessionService.start(configId);
+    }
 
-        if (isAuthenticated) {
-          return of(loginResponse);
-        }
+    this.periodicallyTokenCheckService.startTokenValidationPeriodically();
 
-        return this.refreshSessionService.forceRefreshSession().pipe(
-          map((result) => !!result?.idToken && !!result?.accessToken),
-          switchMap((authenticated) => {
-            if (authenticated) {
-              this.startCheckSessionAndValidation();
-            }
-
-            return of({ ...loginResponse, isAuthenticated: authenticated });
-          })
-        );
-      })
-    );
+    if (this.silentRenewService.isSilentRenewConfigured(configId)) {
+      this.silentRenewService.getOrCreateIframe(configId);
+    }
   }
 
-  private startCheckSessionAndValidation() {
-    if (this.checkSessionService.isCheckSessionConfigured()) {
-      this.checkSessionService.start();
+  private getConfigurationWithUrlState(stateFromUrl: string): OpenIdConfiguration {
+    const allConfigs = this.configurationProvider.getAllConfigurations();
+
+    for (const config of allConfigs) {
+      const storedState = this.storagePersistenceService.read('authStateControl', config.configId);
+
+      if (storedState === stateFromUrl) {
+        return config;
+      }
     }
 
-    const { tokenRefreshInSeconds } = this.configurationProvider.getOpenIDConfiguration();
-
-    this.periodicallyTokenCheckService.startTokenValidationPeriodically(tokenRefreshInSeconds);
-
-    if (this.silentRenewService.isSilentRenewConfigured()) {
-      this.silentRenewService.getOrCreateIframe();
-    }
+    return null;
   }
 }

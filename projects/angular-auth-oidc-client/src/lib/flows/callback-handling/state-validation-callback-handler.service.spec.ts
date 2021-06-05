@@ -64,7 +64,7 @@ describe('StateValidationCallbackHandlerService', () => {
           authResponseIsValid: true,
         } as StateValidationResult);
 
-        service.callbackStateValidation({} as CallbackContext).subscribe((newCallbackContext) => {
+        service.callbackStateValidation({} as CallbackContext, 'configId').subscribe((newCallbackContext) => {
           expect(newCallbackContext).toEqual({
             validationResult: {
               idToken: 'idTokenJustForTesting',
@@ -84,9 +84,12 @@ describe('StateValidationCallbackHandlerService', () => {
 
         const loggerSpy = spyOn(loggerService, 'logWarning');
 
-        service.callbackStateValidation({} as CallbackContext).subscribe({
+        service.callbackStateValidation({} as CallbackContext, 'configId').subscribe({
           error: (err) => {
-            expect(loggerSpy).toHaveBeenCalledOnceWith('authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash');
+            expect(loggerSpy).toHaveBeenCalledOnceWith(
+              'configId',
+              'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
+            );
           },
         });
       })
@@ -103,7 +106,7 @@ describe('StateValidationCallbackHandlerService', () => {
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
 
-        service.callbackStateValidation({ isRenewProcess: true } as CallbackContext).subscribe({
+        service.callbackStateValidation({ isRenewProcess: true } as CallbackContext, 'configId').subscribe({
           error: (err) => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({

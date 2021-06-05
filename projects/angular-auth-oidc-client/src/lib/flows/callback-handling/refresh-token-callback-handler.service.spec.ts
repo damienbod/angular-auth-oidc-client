@@ -4,12 +4,12 @@ import { of, throwError } from 'rxjs';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
 import { DataServiceMock } from '../../api/data.service-mock';
-import { ConfigurationProvider } from '../../config/config.provider';
-import { ConfigurationProviderMock } from '../../config/config.provider-mock';
+import { ConfigurationProvider } from '../../config/provider/config.provider';
+import { ConfigurationProviderMock } from '../../config/provider/config.provider-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../../storage/storage-persistence-service-mock.service';
+import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { UrlService } from '../../utils/url/url.service';
 import { UrlServiceMock } from '../../utils/url/url.service-mock';
 import { CallbackContext } from '../callback-context';
@@ -69,11 +69,13 @@ describe('RefreshTokenCallbackHandlerService', () => {
       'calls data service if all params are good',
       waitForAsync(() => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(storagePersistenceService, 'read')
+          .withArgs('authWellKnownEndPoints', 'configId')
+          .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
-        (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
-          expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', jasmine.any(HttpHeaders));
-          const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
+        (service as any).refreshTokensRequestTokens({} as CallbackContext, 'configId').subscribe((callbackContext) => {
+          expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', 'configId', jasmine.any(HttpHeaders));
+          const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
           expect(httpHeaders.has('Content-Type')).toBeTrue();
           expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
         });
@@ -84,10 +86,12 @@ describe('RefreshTokenCallbackHandlerService', () => {
       'calls data service with correct headers if all params are good',
       waitForAsync(() => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(storagePersistenceService, 'read')
+          .withArgs('authWellKnownEndPoints', 'configId')
+          .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
-        (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe((callbackContext) => {
-          const httpHeaders = postSpy.calls.mostRecent().args[2] as HttpHeaders;
+        (service as any).refreshTokensRequestTokens({} as CallbackContext, 'configId').subscribe((callbackContext) => {
+          const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
           expect(httpHeaders.has('Content-Type')).toBeTrue();
           expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
         });
@@ -98,10 +102,12 @@ describe('RefreshTokenCallbackHandlerService', () => {
       'returns error in case of http error',
       waitForAsync(() => {
         spyOn(dataService, 'post').and.returnValue(throwError(HTTP_ERROR));
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(storagePersistenceService, 'read')
+          .withArgs('authWellKnownEndPoints', 'configId')
+          .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
 
-        (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
+        (service as any).refreshTokensRequestTokens({} as CallbackContext, 'configId').subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },
@@ -113,10 +119,12 @@ describe('RefreshTokenCallbackHandlerService', () => {
       'retries request in case of no connection http error and succeeds',
       waitForAsync(() => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(createRetriableStream(throwError(CONNECTION_ERROR), of({})));
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(storagePersistenceService, 'read')
+          .withArgs('authWellKnownEndPoints', 'configId')
+          .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
 
-        (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
+        (service as any).refreshTokensRequestTokens({} as CallbackContext, 'configId').subscribe({
           next: (res) => {
             expect(res).toBeTruthy();
             expect(postSpy).toHaveBeenCalledTimes(1);
@@ -135,10 +143,12 @@ describe('RefreshTokenCallbackHandlerService', () => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(
           createRetriableStream(throwError(CONNECTION_ERROR), throwError(HTTP_ERROR))
         );
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints').and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+        spyOn(storagePersistenceService, 'read')
+          .withArgs('authWellKnownEndPoints', 'configId')
+          .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
 
-        (service as any).refreshTokensRequestTokens({} as CallbackContext).subscribe({
+        (service as any).refreshTokensRequestTokens({} as CallbackContext, 'configId').subscribe({
           next: (res) => {
             // fails if there should be a result
             expect(res).toBeFalsy();

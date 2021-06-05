@@ -1,24 +1,21 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
-import { ConfigurationProvider } from '../config/config.provider';
+import { ConfigurationProvider } from '../config/provider/config.provider';
+import { AuthResult } from '../flows/callback-context';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { TokenValidationService } from '../validation/token-validation.service';
-import { AuthorizationResult } from './authorization-result';
+import { AuthenticatedResult, ConfigAuthenticatedResult } from './auth-result';
 
 @Injectable()
 export class AuthStateService {
-  private authorizedInternal$ = new BehaviorSubject<boolean>(false);
+  private authenticatedInternal$ = new BehaviorSubject<ConfigAuthenticatedResult[] | boolean>(null);
 
-  get authorized$() {
-    return this.authorizedInternal$.asObservable().pipe(distinctUntilChanged());
-  }
-
-  private get isAuthorized() {
-    return !!this.storagePersistenceService.getAccessToken() && !!this.storagePersistenceService.getIdToken();
+  get authenticated$() {
+    return this.authenticatedInternal$.asObservable().pipe(distinctUntilChanged());
   }
 
   constructor(
@@ -29,79 +26,81 @@ export class AuthStateService {
     private tokenValidationService: TokenValidationService
   ) {}
 
-  setAuthorizedAndFireEvent(): void {
-    this.authorizedInternal$.next(true);
+  setAuthenticatedAndFireEvent(): void {
+    const result = this.composeAuthenticatedResult();
+    this.authenticatedInternal$.next(result);
   }
 
-  setUnauthorizedAndFireEvent(): void {
-    this.storagePersistenceService.resetAuthStateInStorage();
-    this.authorizedInternal$.next(false);
+  setUnauthenticatedAndFireEvent(configIdToReset: string): void {
+    this.storagePersistenceService.resetAuthStateInStorage(configIdToReset);
+
+    const result = this.composeUnAuthenticatedResult();
+    this.authenticatedInternal$.next(result);
   }
 
-  updateAndPublishAuthState(authorizationResult: AuthorizationResult) {
-    this.publicEventsService.fireEvent<AuthorizationResult>(EventTypes.NewAuthorizationResult, authorizationResult);
+  updateAndPublishAuthState(authorizationResult: AuthenticatedResult): void {
+    this.publicEventsService.fireEvent<AuthenticatedResult>(EventTypes.NewAuthorizationResult, authorizationResult);
   }
 
-  setAuthorizationData(accessToken: any, authResult: any) {
-    this.loggerService.logDebug(accessToken);
-    this.loggerService.logDebug('storing the accessToken');
+  setAuthorizationData(accessToken: string, authResult: AuthResult, configId: string): void {
+    this.loggerService.logDebug(configId, `storing the accessToken '${accessToken}'`);
 
-    this.storagePersistenceService.write('authzData', accessToken);
-    this.persistAccessTokenExpirationTime(authResult);
-    this.setAuthorizedAndFireEvent();
+    this.storagePersistenceService.write('authzData', accessToken, configId);
+    this.persistAccessTokenExpirationTime(authResult, configId);
+    this.setAuthenticatedAndFireEvent();
   }
 
-  getAccessToken(): string {
-    if (!this.isAuthorized) {
+  getAccessToken(configId: string): string {
+    if (!this.isAuthenticated(configId)) {
       return null;
     }
 
-    const token = this.storagePersistenceService.getAccessToken();
+    const token = this.storagePersistenceService.getAccessToken(configId);
     return this.decodeURIComponentSafely(token);
   }
 
-  getIdToken(): string {
-    if (!this.isAuthorized) {
+  getIdToken(configId: string): string {
+    if (!this.isAuthenticated(configId)) {
       return null;
     }
 
-    const token = this.storagePersistenceService.getIdToken();
+    const token = this.storagePersistenceService.getIdToken(configId);
     return this.decodeURIComponentSafely(token);
   }
 
-  getRefreshToken(): string {
-    if (!this.isAuthorized) {
+  getRefreshToken(configId: string): string {
+    if (!this.isAuthenticated(configId)) {
       return null;
     }
 
-    const token = this.storagePersistenceService.getRefreshToken();
+    const token = this.storagePersistenceService.getRefreshToken(configId);
     return this.decodeURIComponentSafely(token);
   }
 
-  areAuthStorageTokensValid() {
-    if (!this.isAuthorized) {
+  areAuthStorageTokensValid(configId: string): boolean {
+    if (!this.isAuthenticated(configId)) {
       return false;
     }
 
-    if (this.hasIdTokenExpired()) {
-      this.loggerService.logDebug('persisted id_token is expired');
+    if (this.hasIdTokenExpired(configId)) {
+      this.loggerService.logDebug(configId, 'persisted idToken is expired');
       return false;
     }
 
-    if (this.hasAccessTokenExpiredIfExpiryExists()) {
-      this.loggerService.logDebug('persisted access_token is expired');
+    if (this.hasAccessTokenExpiredIfExpiryExists(configId)) {
+      this.loggerService.logDebug(configId, 'persisted accessToken is expired');
       return false;
     }
 
-    this.loggerService.logDebug('persisted id_token and access token are valid');
+    this.loggerService.logDebug(configId, 'persisted idToken and accessToken are valid');
     return true;
   }
 
-  hasIdTokenExpired() {
-    const tokenToCheck = this.storagePersistenceService.getIdToken();
-    const { renewTimeBeforeTokenExpiresInSeconds } = this.configurationProvider.getOpenIDConfiguration();
+  hasIdTokenExpired(configId: string): boolean {
+    const tokenToCheck = this.storagePersistenceService.getIdToken(configId);
+    const { renewTimeBeforeTokenExpiresInSeconds } = this.configurationProvider.getOpenIDConfiguration(configId);
 
-    const idTokenExpired = this.tokenValidationService.hasIdTokenExpired(tokenToCheck, renewTimeBeforeTokenExpiresInSeconds);
+    const idTokenExpired = this.tokenValidationService.hasIdTokenExpired(tokenToCheck, configId, renewTimeBeforeTokenExpiresInSeconds);
 
     if (idTokenExpired) {
       this.publicEventsService.fireEvent<boolean>(EventTypes.IdTokenExpired, idTokenExpired);
@@ -110,11 +109,12 @@ export class AuthStateService {
     return idTokenExpired;
   }
 
-  hasAccessTokenExpiredIfExpiryExists() {
-    const { renewTimeBeforeTokenExpiresInSeconds } = this.configurationProvider.getOpenIDConfiguration();
-    const accessTokenExpiresIn = this.storagePersistenceService.read('access_token_expires_at');
+  hasAccessTokenExpiredIfExpiryExists(configId: string): boolean {
+    const { renewTimeBeforeTokenExpiresInSeconds } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const accessTokenExpiresIn = this.storagePersistenceService.read('access_token_expires_at', configId);
     const accessTokenHasNotExpired = this.tokenValidationService.validateAccessTokenNotExpired(
       accessTokenExpiresIn,
+      configId,
       renewTimeBeforeTokenExpiresInSeconds
     );
 
@@ -127,7 +127,11 @@ export class AuthStateService {
     return hasExpired;
   }
 
-  private decodeURIComponentSafely(token: string) {
+  isAuthenticated(configId: string): boolean {
+    return !!this.storagePersistenceService.getAccessToken(configId) && !!this.storagePersistenceService.getIdToken(configId);
+  }
+
+  private decodeURIComponentSafely(token: string): string {
     if (token) {
       return decodeURIComponent(token);
     } else {
@@ -135,10 +139,34 @@ export class AuthStateService {
     }
   }
 
-  private persistAccessTokenExpirationTime(authResult: any) {
+  private persistAccessTokenExpirationTime(authResult: any, configId: string): void {
     if (authResult?.expires_in) {
       const accessTokenExpiryTime = new Date(new Date().toUTCString()).valueOf() + authResult.expires_in * 1000;
-      this.storagePersistenceService.write('access_token_expires_at', accessTokenExpiryTime);
+      this.storagePersistenceService.write('access_token_expires_at', accessTokenExpiryTime, configId);
     }
+  }
+
+  private composeAuthenticatedResult(): true | ConfigAuthenticatedResult[] {
+    if (!this.configurationProvider.hasManyConfigs()) {
+      return true;
+    }
+
+    return this.checkAllConfigsIfTheyAreAuthenticated();
+  }
+
+  private composeUnAuthenticatedResult(): false | ConfigAuthenticatedResult[] {
+    if (!this.configurationProvider.hasManyConfigs()) {
+      return false;
+    }
+
+    return this.checkAllConfigsIfTheyAreAuthenticated();
+  }
+
+  private checkAllConfigsIfTheyAreAuthenticated(): ConfigAuthenticatedResult[] {
+    const configs = this.configurationProvider.getAllConfigurations();
+    return configs.map(({ configId }) => ({
+      configId,
+      isAuthenticated: this.isAuthenticated(configId),
+    }));
   }
 }

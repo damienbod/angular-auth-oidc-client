@@ -6,12 +6,15 @@ import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
 import { CheckAuthService } from '../check-auth.service';
 import { CheckAuthServiceMock } from '../check-auth.service-mock';
+import { ConfigurationProvider } from '../config/provider/config.provider';
+import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { LoginService } from '../login/login.service';
 import { LoginServiceMock } from '../login/login.service-mock';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { AutoLoginService } from './auto-login-service';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
+import { LoginResponse } from './../login/login-response';
 import { AutoLoginGuard } from './auto-login.guard';
+import { AutoLoginService } from './auto-login.service';
 
 describe(`AutoLoginGuard`, () => {
   let autoLoginGuard: AutoLoginGuard;
@@ -20,6 +23,7 @@ describe(`AutoLoginGuard`, () => {
   let authStateService: AuthStateService;
   let router: Router;
   let storagePersistenceService: StoragePersistenceService;
+  let configurationProvider: ConfigurationProvider;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -39,17 +43,25 @@ describe(`AutoLoginGuard`, () => {
           provide: CheckAuthService,
           useClass: CheckAuthServiceMock,
         },
+        {
+          provide: ConfigurationProvider,
+          useClass: ConfigurationProviderMock,
+        },
       ],
     });
   });
 
   beforeEach(() => {
-    autoLoginGuard = TestBed.inject(AutoLoginGuard);
     checkAuthService = TestBed.inject(CheckAuthService);
     authStateService = TestBed.inject(AuthStateService);
     router = TestBed.inject(Router);
     loginService = TestBed.inject(LoginService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
+    configurationProvider = TestBed.inject(ConfigurationProvider);
+
+    spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ configId: 'configId' }]);
+
+    autoLoginGuard = TestBed.inject(AutoLoginGuard);
   });
 
   afterEach(() => {
@@ -64,7 +76,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should call checkAuth() if not authenticated already',
       waitForAsync(() => {
-        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
 
         autoLoginGuard.canActivate(null, { url: 'some-url1' } as RouterStateSnapshot).subscribe(() => {
           expect(checkAuthServiceSpy).toHaveBeenCalledTimes(1);
@@ -75,8 +87,8 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should NOT call checkAuth() if authenticated already',
       waitForAsync(() => {
-        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
-        spyOnProperty(authStateService, 'authorized$', 'get').and.returnValue(of(true));
+        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
+        spyOnProperty(authStateService, 'authenticated$', 'get').and.returnValue(of(true));
 
         autoLoginGuard.canActivate(null, { url: 'some-url2' } as RouterStateSnapshot).subscribe(() => {
           expect(checkAuthServiceSpy).not.toHaveBeenCalled();
@@ -87,7 +99,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should call loginService.login() when not authorized',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
         const loginSpy = spyOn(loginService, 'login');
 
         autoLoginGuard.canActivate(null, { url: 'some-url3' } as RouterStateSnapshot).subscribe(() => {
@@ -99,7 +111,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should return false when not authorized',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
 
         autoLoginGuard.canActivate(null, { url: 'some-url4' } as RouterStateSnapshot).subscribe((result) => {
           expect(result).toBe(false);
@@ -110,11 +122,11 @@ describe(`AutoLoginGuard`, () => {
     it(
       'if no route is stored, write on StoragePersistenceService is called',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
         const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
         autoLoginGuard.canActivate(null, { url: 'some-url5' } as RouterStateSnapshot).subscribe((result) => {
-          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'some-url5');
+          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'some-url5', 'configId');
         });
       })
     );
@@ -122,7 +134,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'returns true if authorized',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true } as LoginResponse));
         const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
         autoLoginGuard.canActivate(null, { url: 'some-url6' } as RouterStateSnapshot).subscribe((result) => {
@@ -135,7 +147,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'if authorized and stored route exists: remove item, navigate to route and return true',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true } as LoginResponse));
         spyOn(storagePersistenceService, 'read').and.returnValue('stored-route');
         const storageServiceSpy = spyOn(storagePersistenceService, 'remove');
         const routerSpy = spyOn(router, 'navigateByUrl');
@@ -143,7 +155,7 @@ describe(`AutoLoginGuard`, () => {
 
         autoLoginGuard.canActivate(null, { url: 'some-url7' } as RouterStateSnapshot).subscribe((result) => {
           expect(result).toBe(true);
-          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect');
+          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'configId');
           expect(routerSpy).toHaveBeenCalledOnceWith('stored-route');
           expect(loginSpy).not.toHaveBeenCalled();
         });
@@ -155,7 +167,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should call checkAuth() if not authenticated already',
       waitForAsync(() => {
-        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
 
         autoLoginGuard.canLoad({ path: 'some-url8' }, []).subscribe(() => {
           expect(checkAuthServiceSpy).toHaveBeenCalledTimes(1);
@@ -166,8 +178,8 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should NOT call checkAuth() if authenticated already',
       waitForAsync(() => {
-        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
-        spyOnProperty(authStateService, 'authorized$', 'get').and.returnValue(of(true));
+        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
+        spyOnProperty(authStateService, 'authenticated$', 'get').and.returnValue(of(true));
 
         autoLoginGuard.canLoad({ path: 'some-url9' }, []).subscribe(() => {
           expect(checkAuthServiceSpy).not.toHaveBeenCalled();
@@ -178,7 +190,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should call loginService.login() when not authorized',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
         const loginSpy = spyOn(loginService, 'login');
 
         autoLoginGuard.canLoad({ path: 'some-url10' }, []).subscribe(() => {
@@ -190,7 +202,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should return false when not authorized',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
 
         autoLoginGuard.canLoad({ path: 'some-url11' }, []).subscribe((result) => {
           expect(result).toBe(false);
@@ -201,11 +213,11 @@ describe(`AutoLoginGuard`, () => {
     it(
       'if no route is stored, write on StoragePersistenceService is called',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
         const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
         autoLoginGuard.canLoad({ path: 'some-url12' }, []).subscribe((result) => {
-          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'some-url12');
+          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'some-url12', 'configId');
         });
       })
     );
@@ -213,7 +225,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'returns true if authorized',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true } as LoginResponse));
         const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
         autoLoginGuard.canLoad({ path: 'some-url13' }, []).subscribe((result) => {
@@ -226,7 +238,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'if authorized and stored route exists: remove item, navigate to route and return true',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true } as LoginResponse));
         spyOn(storagePersistenceService, 'read').and.returnValue('stored-route');
         const storageServiceSpy = spyOn(storagePersistenceService, 'remove');
         const routerSpy = spyOn(router, 'navigateByUrl');
@@ -234,7 +246,7 @@ describe(`AutoLoginGuard`, () => {
 
         autoLoginGuard.canLoad({ path: 'some-url14' }, []).subscribe((result) => {
           expect(result).toBe(true);
-          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect');
+          expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'configId');
           expect(routerSpy).toHaveBeenCalledOnceWith('stored-route');
           expect(loginSpy).not.toHaveBeenCalled();
         });

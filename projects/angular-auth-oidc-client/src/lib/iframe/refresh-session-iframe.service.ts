@@ -19,21 +19,21 @@ export class RefreshSessionIframeService {
     this.renderer = rendererFactory.createRenderer(null, null);
   }
 
-  refreshSessionWithIframe(customParams?: { [key: string]: string | number | boolean }): Observable<boolean> {
-    this.loggerService.logDebug('BEGIN refresh session Authorize Iframe renew');
-    const url = this.urlService.getRefreshSessionSilentRenewUrl(customParams);
-    return this.sendAuthorizeRequestUsingSilentRenew(url);
+  refreshSessionWithIframe(configId: string, customParams?: { [key: string]: string | number | boolean }): Observable<boolean> {
+    this.loggerService.logDebug(configId, 'BEGIN refresh session Authorize Iframe renew');
+    const url = this.urlService.getRefreshSessionSilentRenewUrl(configId, customParams);
+    return this.sendAuthorizeRequestUsingSilentRenew(url, configId);
   }
 
-  private sendAuthorizeRequestUsingSilentRenew(url: string): Observable<boolean> {
-    const sessionIframe = this.silentRenewService.getOrCreateIframe();
-    this.initSilentRenewRequest();
-    this.loggerService.logDebug('sendAuthorizeRequestUsingSilentRenew for URL:' + url);
+  private sendAuthorizeRequestUsingSilentRenew(url: string, configId: string): Observable<boolean> {
+    const sessionIframe = this.silentRenewService.getOrCreateIframe(configId);
+    this.initSilentRenewRequest(configId);
+    this.loggerService.logDebug(configId, 'sendAuthorizeRequestUsingSilentRenew for URL:' + url);
 
     return new Observable((observer) => {
       const onLoadHandler = () => {
         sessionIframe.removeEventListener('load', onLoadHandler);
-        this.loggerService.logDebug('removed event listener from IFrame');
+        this.loggerService.logDebug(configId, 'removed event listener from IFrame');
         observer.next(true);
         observer.complete();
       };
@@ -42,7 +42,7 @@ export class RefreshSessionIframeService {
     });
   }
 
-  private initSilentRenewRequest(): void {
+  private initSilentRenewRequest(configId: string): void {
     const instanceId = Math.random();
 
     const initDestroyHandler = this.renderer.listen('window', 'oidc-silent-renew-init', (e: CustomEvent) => {
@@ -52,7 +52,7 @@ export class RefreshSessionIframeService {
       }
     });
     const renewDestroyHandler = this.renderer.listen('window', 'oidc-silent-renew-message', (e) =>
-      this.silentRenewService.silentRenewEventHandler(e)
+      this.silentRenewService.silentRenewEventHandler(e, configId)
     );
 
     this.doc.defaultView.dispatchEvent(

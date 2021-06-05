@@ -4,17 +4,16 @@ import { APP_INITIALIZER, InjectionToken, ModuleWithProviders, NgModule, Provide
 import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './authState/auth-state.service';
-import { AutoLoginService } from './auto-login/auto-login-service';
+import { AutoLoginService } from './auto-login/auto-login.service';
 import { ImplicitFlowCallbackService } from './callback/implicit-flow-callback.service';
 import { CheckAuthService } from './check-auth.service';
-import { ConfigValidationService } from './config-validation/config-validation.service';
-import { AuthWellKnownDataService } from './config/auth-well-known-data.service';
-import { AuthWellKnownEndpoints } from './config/auth-well-known-endpoints';
-import { AuthWellKnownService } from './config/auth-well-known.service';
-import { StsConfigLoader, StsConfigStaticLoader } from './config/config-loader';
-import { ConfigurationProvider } from './config/config.provider';
+import { AuthWellKnownDataService } from './config/auth-well-known/auth-well-known-data.service';
+import { AuthWellKnownService } from './config/auth-well-known/auth-well-known.service';
 import { OidcConfigService } from './config/config.service';
+import { StsConfigLoader, StsConfigStaticLoader } from './config/loader/config-loader';
 import { OpenIdConfiguration } from './config/openid-configuration';
+import { ConfigurationProvider } from './config/provider/config.provider';
+import { ConfigValidationService } from './config/validation/config-validation.service';
 import { CodeFlowCallbackHandlerService } from './flows/callback-handling/code-flow-callback-handler.service';
 import { HistoryJwtKeysCallbackHandlerService } from './flows/callback-handling/history-jwt-keys-callback-handler.service';
 import { ImplicitFlowCallbackHandlerService } from './flows/callback-handling/implicit-flow-callback-handler.service';
@@ -43,19 +42,21 @@ import { PublicEventsService } from './public-events/public-events.service';
 import { AbstractSecurityStorage } from './storage/abstract-security-storage';
 import { BrowserStorageService } from './storage/browser-storage.service';
 import { StoragePersistenceService } from './storage/storage-persistence.service';
-import { UserService } from './userData/user-service';
+import { UserService } from './userData/user.service';
 import { EqualityService } from './utils/equality/equality.service';
 import { FlowHelper } from './utils/flowHelper/flow-helper.service';
 import { PlatformProvider } from './utils/platform-provider/platform.provider';
-import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
+import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
+import { CurrentUrlService } from './utils/url/current-url.service';
 import { UrlService } from './utils/url/url.service';
+import { JsrsAsignReducedService } from './validation/jsrsasign-reduced.service';
 import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';
 
 export interface PassedInitialConfig {
-  authWellKnown?: AuthWellKnownEndpoints;
-  config?: OpenIdConfiguration;
+  config?: OpenIdConfiguration | OpenIdConfiguration[];
   loader?: Provider;
+  storage?: any;
 }
 
 // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
@@ -64,12 +65,9 @@ export function createStaticLoader(passedConfig: PassedInitialConfig) {
 }
 
 // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-export function configurationProviderFactory(
-  oidcConfigService: OidcConfigService,
-  loader: StsConfigLoader,
-  passedConfig: PassedInitialConfig
-) {
-  const fn = () => loader.loadConfig().then((loadedConfig) => oidcConfigService.withConfig(loadedConfig, passedConfig.authWellKnown));
+export function configurationProviderFactory(oidcConfigService: OidcConfigService, loader: StsConfigLoader) {
+  const allLoadPromises = Promise.all(loader.loadConfigs());
+  const fn = () => allLoadPromises.then((configs) => oidcConfigService.withConfigs(configs));
 
   return fn;
 }
@@ -89,7 +87,7 @@ export class AuthModule {
         // Make the PASSED_CONFIG available through injection
         { provide: PASSED_CONFIG, useValue: passedConfig },
 
-        //Create the loader: Either the one getting passed or a static one
+        // Create the loader: Either the one getting passed or a static one
         passedConfig?.loader || { provide: StsConfigLoader, useFactory: createStaticLoader, deps: [PASSED_CONFIG] },
 
         // Load the config when the app starts
@@ -99,9 +97,10 @@ export class AuthModule {
           deps: [OidcConfigService, StsConfigLoader, PASSED_CONFIG],
           useFactory: configurationProviderFactory,
         },
+
         {
           provide: AbstractSecurityStorage,
-          useClass: (passedConfig?.config as OpenIdConfiguration)?.storage || BrowserStorageService,
+          useClass: passedConfig?.storage || BrowserStorageService,
         },
         OidcConfigService,
         PublicEventsService,
@@ -148,6 +147,8 @@ export class AuthModule {
         PopUpLoginService,
         StandardLoginService,
         AutoLoginService,
+        JsrsAsignReducedService,
+        CurrentUrlService,
       ],
     };
   }

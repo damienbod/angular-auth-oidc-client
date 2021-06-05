@@ -2,6 +2,42 @@
 
 ## Version 11 to Version 12
 
+To be documents:
+
+- AutoUserinfo --> AutoUserInfo
+- authwellknown is now part of the config
+
+### custom params have been renamed:
+
+old:
+```ts
+customParams: {
+	// yourParam: 'your_value',
+},
+customParamsRefreshToken: {
+	// yourParam: 'your_value',
+},
+customParamsEndSession: {
+	// yourParam: 'your_value',
+},
+```
+
+new:
+```ts
+customParamsAuthRequest: {
+	// yourParam: 'your_value',
+},
+customParamsRefreshTokenRequest: {
+	// yourParam: 'your_value',
+},
+customParamsEndSessionRequest: {
+	// yourParam: 'your_value',
+},
+customParamsCodeRequest: {
+	// yourParam: 'your_value',
+},
+```
+  
 ### Configuration in App Module
 
 #### Old:
@@ -489,7 +525,6 @@ export function configureAuth(oidcConfigService: OidcConfigService, httpClient: 
         logLevel: 0, // LogLevel.Debug, // customConfig.logLevel
         maxIdTokenIatOffsetAllowedInSeconds: customConfig.max_id_token_iat_offset_allowed_in_seconds,
         historyCleanupOff: true,
-        // autoUserinfo: false,
       };
     }),
     switchMap((config) => oidcConfigService.withConfig(config))

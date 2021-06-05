@@ -74,7 +74,7 @@ export class CustomStorage implements AbstractSecurityStorage {
     public remove(key: string): void {
         ...
     }
-    
+
     public clear(): void {
         ...
     }
@@ -96,6 +96,8 @@ Then provide the class in the module:
 ## Auto Login
 
 If you want to have your app being redirected to the sts automatically without the user clicking any login button only by accessing a specific you can use the `AutoLoginGuard` provided by the lib. Use it for all the routes you want automatic login to be enabled.
+
+In case you are using multiple configs the guard currently uses the first config fix to perform a login!
 
 The guard handles `canActivate` and `canLoad` for you.
 
@@ -158,7 +160,7 @@ export class AppComponent implements OnInit {
 Custom parameters can be added to the auth request by adding them to the config. They are provided by
 
 ```typescript
-customParams?: {
+customParamsAuthRequest?: {
     [key: string]: string | number | boolean;
 };
 ```
@@ -169,7 +171,7 @@ so you can pass them as an object like this:
 AuthModule.forRoot({
       config: {
         stsServer: '<your sts address here>',
-         customParams: {
+         customParamsAuthRequest: {
           response_mode: 'fragment',
           prompt: 'consent',
          },

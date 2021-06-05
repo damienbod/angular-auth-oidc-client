@@ -4,8 +4,8 @@ import { of, Subject, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
-import { IntervallService } from '../callback/intervall.service';
-import { ConfigurationProvider } from '../config/config.provider';
+import { IntervalService } from '../callback/interval.service';
+import { ConfigurationProvider } from '../config/provider/config.provider';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
@@ -35,25 +35,25 @@ export class SilentRenewService {
     private loggerService: LoggerService,
     private flowHelper: FlowHelper,
     private implicitFlowCallbackService: ImplicitFlowCallbackService,
-    private intervalService: IntervallService
+    private intervalService: IntervalService
   ) {}
 
-  getOrCreateIframe(): HTMLIFrameElement {
+  getOrCreateIframe(configId: string): HTMLIFrameElement {
     const existingIframe = this.getExistingIframe();
 
     if (!existingIframe) {
-      return this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_SILENT_RENEW_IDENTIFIER);
+      return this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_SILENT_RENEW_IDENTIFIER, configId);
     }
 
     return existingIframe;
   }
 
-  isSilentRenewConfigured() {
-    const { useRefreshToken, silentRenew } = this.configurationProvider.getOpenIDConfiguration();
+  isSilentRenewConfigured(configId: string) {
+    const { useRefreshToken, silentRenew } = this.configurationProvider.getOpenIDConfiguration(configId);
     return !useRefreshToken && silentRenew;
   }
 
-  codeFlowCallbackSilentRenewIframe(urlParts) {
+  codeFlowCallbackSilentRenewIframe(urlParts: any, configId: string) {
     const params = new HttpParams({
       fromString: urlParts[1],
     });
@@ -66,9 +66,9 @@ export class SilentRenewService {
         validationResult: ValidationResult.LoginRequired,
         isRenewProcess: true,
       });
-      this.resetAuthDataService.resetAuthorizationData();
-      this.flowsDataService.setNonce('');
-      this.intervalService.stopPeriodicallTokenCheck();
+      this.resetAuthDataService.resetAuthorizationData(configId);
+      this.flowsDataService.setNonce('', configId);
+      this.intervalService.stopPeriodicTokenCheck();
       return throwError(error);
     }
 
@@ -88,41 +88,41 @@ export class SilentRenewService {
       existingIdToken: null,
     };
 
-    return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext).pipe(
+    return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext, configId).pipe(
       catchError((errorFromFlow) => {
-        this.intervalService.stopPeriodicallTokenCheck();
-        this.resetAuthDataService.resetAuthorizationData();
+        this.intervalService.stopPeriodicTokenCheck();
+        this.resetAuthDataService.resetAuthorizationData(configId);
         return throwError(errorFromFlow);
       })
     );
   }
 
-  silentRenewEventHandler(e: CustomEvent) {
-    this.loggerService.logDebug('silentRenewEventHandler');
+  silentRenewEventHandler(e: CustomEvent, configId: string) {
+    this.loggerService.logDebug(configId, 'silentRenewEventHandler');
     if (!e.detail) {
       return;
     }
 
     let callback$ = of(null);
 
-    const isCodeFlow = this.flowHelper.isCurrentFlowCodeFlow();
+    const isCodeFlow = this.flowHelper.isCurrentFlowCodeFlow(configId);
 
     if (isCodeFlow) {
       const urlParts = e.detail.toString().split('?');
-      callback$ = this.codeFlowCallbackSilentRenewIframe(urlParts);
+      callback$ = this.codeFlowCallbackSilentRenewIframe(urlParts, configId);
     } else {
-      callback$ = this.implicitFlowCallbackService.authorizedImplicitFlowCallback(e.detail);
+      callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(configId, e.detail);
     }
 
     callback$.subscribe(
       (callbackContext) => {
         this.refreshSessionWithIFrameCompletedInternal$.next(callbackContext);
-        this.flowsDataService.resetSilentRenewRunning();
+        this.flowsDataService.resetSilentRenewRunning(configId);
       },
       (err: any) => {
-        this.loggerService.logError('Error: ' + err);
+        this.loggerService.logError(configId, 'Error: ' + err);
         this.refreshSessionWithIFrameCompletedInternal$.next(null);
-        this.flowsDataService.resetSilentRenewRunning();
+        this.flowsDataService.resetSilentRenewRunning(configId);
       }
     );
   }

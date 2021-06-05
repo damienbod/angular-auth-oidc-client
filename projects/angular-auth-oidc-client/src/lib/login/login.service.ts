@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthOptions } from '../auth-options';
-import { ConfigurationProvider } from '../config/config.provider';
+import { ConfigurationProvider } from '../config/provider/config.provider';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { LoginResponse } from './login-response';
 import { ParLoginService } from './par/par-login.service';
 import { PopUpLoginService } from './popup/popup-login.service';
@@ -14,26 +15,35 @@ export class LoginService {
     private configurationProvider: ConfigurationProvider,
     private parLoginService: ParLoginService,
     private popUpLoginService: PopUpLoginService,
-    private standardLoginService: StandardLoginService
+    private standardLoginService: StandardLoginService,
+    private storagePersistenceService: StoragePersistenceService
   ) {}
 
-  login(authOptions?: AuthOptions): void {
-    const { usePushedAuthorisationRequests } = this.configurationProvider.getOpenIDConfiguration();
+  login(configId: string, authOptions?: AuthOptions): void {
+    if (authOptions?.customParams) {
+      this.storagePersistenceService.write('storageCustomParamsAuthRequest', authOptions.customParams, configId);
+    }
+
+    const { usePushedAuthorisationRequests } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (usePushedAuthorisationRequests) {
-      return this.parLoginService.loginPar(authOptions);
+      return this.parLoginService.loginPar(configId, authOptions);
     } else {
-      return this.standardLoginService.loginStandard(authOptions);
+      return this.standardLoginService.loginStandard(configId, authOptions);
     }
   }
 
-  loginWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
-    const { usePushedAuthorisationRequests } = this.configurationProvider.getOpenIDConfiguration();
+  loginWithPopUp(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
+    if (authOptions?.customParams) {
+      this.storagePersistenceService.write('storageCustomParamsAuthRequest', authOptions.customParams, configId);
+    }
+
+    const { usePushedAuthorisationRequests } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (usePushedAuthorisationRequests) {
-      return this.parLoginService.loginWithPopUpPar(authOptions, popupOptions);
+      return this.parLoginService.loginWithPopUpPar(configId, authOptions, popupOptions);
     } else {
-      return this.popUpLoginService.loginWithPopUpStandard(authOptions, popupOptions);
+      return this.popUpLoginService.loginWithPopUpStandard(configId, authOptions, popupOptions);
     }
   }
 }

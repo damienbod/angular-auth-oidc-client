@@ -8,8 +8,8 @@ import { RefreshSessionService } from './callback/refresh-session.service';
 import { RefreshSessionServiceMock } from './callback/refresh-session.service.mock';
 import { CheckAuthService } from './check-auth.service';
 import { CheckAuthServiceMock } from './check-auth.service-mock';
-import { ConfigurationProvider } from './config/config.provider';
-import { ConfigurationProviderMock } from './config/config.provider-mock';
+import { ConfigurationProvider } from './config/provider/config.provider';
+import { ConfigurationProviderMock } from './config/provider/config.provider-mock';
 import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsDataServiceMock } from './flows/flows-data.service-mock';
 import { CheckSessionService } from './iframe/check-session.service';
@@ -19,26 +19,23 @@ import { LoginServiceMock } from './login/login.service-mock';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
 import { LogoffRevocationServiceMock } from './logoffRevoke/logoff-revocation.service-mock';
 import { OidcSecurityService } from './oidc.security.service';
-import { StoragePersistenceServiceMock } from './storage/storage-persistence-service-mock.service';
-import { StoragePersistenceService } from './storage/storage-persistence.service';
-import { UserService } from './userData/user-service';
 import { UserServiceMock } from './userData/user-service-mock';
-import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
-import { TokenHelperServiceMock } from './utils/tokenHelper/oidc-token-helper.service-mock';
+import { UserService } from './userData/user.service';
+import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
+import { TokenHelperServiceMock } from './utils/tokenHelper/token-helper.service-mock';
 
 describe('OidcSecurityService', () => {
   let oidcSecurityService: OidcSecurityService;
   let configurationProvider: ConfigurationProvider;
   let authStateService: AuthStateService;
-  let userService: UserService;
   let checkSessionService: CheckSessionService;
   let tokenHelperService: TokenHelperService;
   let flowsDataService: FlowsDataService;
   let logoffRevocationService: LogoffRevocationService;
   let loginService: LoginService;
   let refreshSessionService: RefreshSessionService;
-  let storagePersistenceService: StoragePersistenceService;
   let checkAuthService: CheckAuthService;
+  let userService: UserService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -73,10 +70,6 @@ describe('OidcSecurityService', () => {
         { provide: CallbackService, useClass: CallbackServiceMock },
         { provide: LogoffRevocationService, useClass: LogoffRevocationServiceMock },
         { provide: LoginService, useClass: LoginServiceMock },
-        {
-          provide: StoragePersistenceService,
-          useClass: StoragePersistenceServiceMock,
-        },
         { provide: RefreshSessionService, useClass: RefreshSessionServiceMock },
       ],
     });
@@ -85,16 +78,15 @@ describe('OidcSecurityService', () => {
   beforeEach(() => {
     oidcSecurityService = TestBed.inject(OidcSecurityService);
     checkSessionService = TestBed.inject(CheckSessionService);
-    userService = TestBed.inject(UserService);
     tokenHelperService = TestBed.inject(TokenHelperService);
     configurationProvider = TestBed.inject(ConfigurationProvider);
     authStateService = TestBed.inject(AuthStateService);
     flowsDataService = TestBed.inject(FlowsDataService);
     logoffRevocationService = TestBed.inject(LogoffRevocationService);
     loginService = TestBed.inject(LoginService);
-    storagePersistenceService = TestBed.inject(StoragePersistenceService);
     refreshSessionService = TestBed.inject(RefreshSessionService);
     checkAuthService = TestBed.inject(CheckAuthService);
+    userService = TestBed.inject(UserService);
   });
 
   it('should create', () => {
@@ -107,15 +99,56 @@ describe('OidcSecurityService', () => {
       waitForAsync(() => {
         const spy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
         oidcSecurityService.checkAuth().subscribe(() => {
-          expect(spy).toHaveBeenCalledOnceWith(undefined);
+          expect(spy).toHaveBeenCalledOnceWith(undefined, undefined);
+        });
+      })
+    );
+
+    it(
+      'calls checkAuthService.checkAuth() without configId if one is passed',
+      waitForAsync(() => {
+        const spy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        oidcSecurityService.checkAuth(null, 'configId').subscribe(() => {
+          expect(spy).toHaveBeenCalledOnceWith('configId', null);
         });
       })
     );
 
     it('calls checkAuthService.checkAuth() with url if is passed', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
       const spy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
-      oidcSecurityService.checkAuth('any-thing-url-like').subscribe(() => {
-        expect(spy).toHaveBeenCalledOnceWith('any-thing-url-like');
+      oidcSecurityService.checkAuth('any-thing-url-like', 'configId').subscribe(() => {
+        expect(spy).toHaveBeenCalledOnceWith('configId', 'any-thing-url-like');
+      });
+    });
+  });
+
+  describe('checkAuthMultiple', () => {
+    it(
+      'calls checkAuthService.checkAuthMultiple() without url if none is passed',
+      waitForAsync(() => {
+        const spy = spyOn(checkAuthService, 'checkAuthMultiple').and.returnValue(of(null));
+        oidcSecurityService.checkAuthMultiple().subscribe(() => {
+          expect(spy).toHaveBeenCalledOnceWith(undefined, undefined);
+        });
+      })
+    );
+
+    it(
+      'calls checkAuthService.checkAuthMultiple() without configId if one is passed',
+      waitForAsync(() => {
+        const spy = spyOn(checkAuthService, 'checkAuthMultiple').and.returnValue(of(null));
+        oidcSecurityService.checkAuthMultiple(null, 'configId').subscribe(() => {
+          expect(spy).toHaveBeenCalledOnceWith('configId', null);
+        });
+      })
+    );
+
+    it('calls checkAuthService.checkAuthMultiple() with url if is passed', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+      const spy = spyOn(checkAuthService, 'checkAuthMultiple').and.returnValue(of(null));
+      oidcSecurityService.checkAuthMultiple('any-thing-url-like', 'configId').subscribe(() => {
+        expect(spy).toHaveBeenCalledOnceWith('configId', 'any-thing-url-like');
       });
     });
   });
@@ -130,51 +163,121 @@ describe('OidcSecurityService', () => {
         });
       })
     );
-  });
 
-  describe('configuration', () => {
-    it('is not of type observable', () => {
-      expect(oidcSecurityService.configuration).not.toEqual(jasmine.any(Observable));
-    });
-
-    it('returns configProvider.configuration', () => {
-      const spy = spyOn(configurationProvider, 'getOpenIDConfiguration');
-      oidcSecurityService.configuration;
-      expect(spy).toHaveBeenCalled();
-    });
-  });
-
-  describe('userData', () => {
-    it('is of type observable', () => {
-      expect(oidcSecurityService.userData$).toEqual(jasmine.any(Observable));
-    });
-
-    it('returns userService.userData$', () => {
-      const spy = spyOnProperty(userService, 'userData$', 'get');
-      oidcSecurityService.userData$;
-      expect(spy).toHaveBeenCalled();
-    });
-  });
-
-  describe('forceRefreshSession', () => {
     it(
-      'calls refreshSessionService forceRefreshSession',
+      'calls checkAuthService.checkAuthIncludingServer() with passed configId',
       waitForAsync(() => {
-        const spy = spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(of(null));
-        oidcSecurityService.forceRefreshSession().subscribe(() => {
-          expect(spy).toHaveBeenCalled();
+        const spy = spyOn(checkAuthService, 'checkAuthIncludingServer').and.returnValue(of(null));
+        oidcSecurityService.checkAuthIncludingServer('configId').subscribe(() => {
+          expect(spy).toHaveBeenCalledOnceWith('configId');
         });
       })
     );
 
     it(
-      'calls storagePersistenceService.write when customParams are given',
+      'calls checkAuthService.checkAuthIncludingServer() with passed configId',
       waitForAsync(() => {
-        const spy = spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(of(null));
-        const writeSpy = spyOn(storagePersistenceService, 'write');
-        oidcSecurityService.forceRefreshSession({ my: 'custom', params: 1 }).subscribe(() => {
-          expect(spy).toHaveBeenCalled();
-          expect(writeSpy).toHaveBeenCalledWith('storageCustomRequestParams', { my: 'custom', params: 1 });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+        const spy = spyOn(checkAuthService, 'checkAuthIncludingServer').and.returnValue(of(null));
+        oidcSecurityService.checkAuthIncludingServer().subscribe(() => {
+          expect(spy).toHaveBeenCalledOnceWith('configId');
+        });
+      })
+    );
+  });
+
+  describe('getConfigurations', () => {
+    it('is not of type observable', () => {
+      expect(oidcSecurityService.getConfigurations).not.toEqual(jasmine.any(Observable));
+    });
+
+    it('calls configurationProvider.getAllConfigurations', () => {
+      const spy = spyOn(configurationProvider, 'getAllConfigurations');
+
+      oidcSecurityService.getConfigurations();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getConfiguration', () => {
+    it('is not of type observable', () => {
+      expect(oidcSecurityService.getConfiguration).not.toEqual(jasmine.any(Observable));
+    });
+
+    it('calls configurationProvider.getOpenIDConfiguration with passed configId when configId is passed', () => {
+      const spy = spyOn(configurationProvider, 'getOpenIDConfiguration');
+
+      oidcSecurityService.getConfiguration('configId');
+
+      expect(spy).toHaveBeenCalledOnceWith('configId');
+    });
+
+    it('calls configurationProvider.getOpenIDConfiguration when NO configId is passed', () => {
+      const spy = spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+
+      oidcSecurityService.getConfiguration();
+
+      expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy.calls.argsFor(0)).toEqual([]);
+      expect(spy.calls.argsFor(1)).toEqual(['configId']);
+    });
+  });
+
+  describe('userData$', () => {
+    it('is of type observable', () => {
+      expect(oidcSecurityService.userData$).toEqual(jasmine.any(Observable));
+    });
+  });
+
+  describe('getUserData', () => {
+    it('calls configurationProvider.getOpenIDConfiguration with passed configId when configId is passed', () => {
+      const spy = spyOn(userService, 'getUserDataFromStore');
+
+      oidcSecurityService.getUserData('configId');
+
+      expect(spy).toHaveBeenCalledOnceWith('configId');
+    });
+
+    it('calls userService.getUserDataFromStore with id from config when NO configId is passed', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+      const spy = spyOn(userService, 'getUserDataFromStore');
+
+      oidcSecurityService.getUserData();
+
+      expect(spy).toHaveBeenCalledOnceWith('configId');
+    });
+  });
+
+  describe('forceRefreshSession', () => {
+    it(
+      'calls refreshSessionService userForceRefreshSession with configId from config when none is passed',
+      waitForAsync(() => {
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+
+        const spy = spyOn(refreshSessionService, 'userForceRefreshSession').and.returnValue(of(null));
+        oidcSecurityService.forceRefreshSession().subscribe(() => {
+          expect(spy).toHaveBeenCalledOnceWith('configId', undefined);
+        });
+      })
+    );
+
+    it(
+      'calls refreshSessionService userForceRefreshSession with configId when configId is passed',
+      waitForAsync(() => {
+        const spy = spyOn(refreshSessionService, 'userForceRefreshSession').and.returnValue(of(null));
+        oidcSecurityService.forceRefreshSession(undefined, 'configId').subscribe(() => {
+          expect(spy).toHaveBeenCalledOnceWith('configId', undefined);
+        });
+      })
+    );
+
+    it(
+      'calls refreshSessionService userForceRefreshSession with configId and customparams when configId is passed',
+      waitForAsync(() => {
+        const spy = spyOn(refreshSessionService, 'userForceRefreshSession').and.returnValue(of(null));
+        oidcSecurityService.forceRefreshSession({ custom: 'params' }, 'configId').subscribe(() => {
+          expect(spy).toHaveBeenCalledOnceWith('configId', { custom: 'params' });
         });
       })
     );
@@ -189,8 +292,8 @@ describe('OidcSecurityService', () => {
 
     it('calls login service login with params if given', () => {
       const spy = spyOn(loginService, 'login');
-      oidcSecurityService.authorize({ customParams: { any: 'thing' } });
-      expect(spy).toHaveBeenCalledWith({ customParams: { any: 'thing' } });
+      oidcSecurityService.authorize('configId', { customParams: { any: 'thing' } });
+      expect(spy).toHaveBeenCalledWith('configId', { customParams: { any: 'thing' } });
     });
   });
 
@@ -209,8 +312,8 @@ describe('OidcSecurityService', () => {
       'calls login service loginWithPopUp with params if given',
       waitForAsync(() => {
         const spy = spyOn(loginService, 'loginWithPopUp').and.callFake(() => of(null));
-        oidcSecurityService.authorizeWithPopUp({ customParams: { any: 'thing' } }).subscribe(() => {
-          expect(spy).toHaveBeenCalledWith({ customParams: { any: 'thing' } }, undefined);
+        oidcSecurityService.authorizeWithPopUp({ customParams: { any: 'thing' } }, null, 'configId').subscribe(() => {
+          expect(spy).toHaveBeenCalledWith('configId', { customParams: { any: 'thing' } }, null);
         });
       })
     );
@@ -219,28 +322,48 @@ describe('OidcSecurityService', () => {
       'calls login service loginWithPopUp with params and popupparams if given',
       waitForAsync(() => {
         const somePopupOptions = { width: 500, height: 500, left: 50, top: 50 };
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
         const spy = spyOn(loginService, 'loginWithPopUp').and.callFake(() => of(null));
         oidcSecurityService.authorizeWithPopUp({ customParams: { any: 'thing' } }, somePopupOptions).subscribe(() => {
-          expect(spy).toHaveBeenCalledWith({ customParams: { any: 'thing' } }, somePopupOptions);
+          expect(spy).toHaveBeenCalledWith('configId', { customParams: { any: 'thing' } }, somePopupOptions);
         });
       })
     );
   });
 
-  describe('isAuthenticated', () => {
+  describe('isAuthenticated$', () => {
     it('is of type observable', () => {
       expect(oidcSecurityService.isAuthenticated$).toEqual(jasmine.any(Observable));
     });
 
     it(
-      'returns authStateService.authorized$',
+      'returns authStateService.authenticated$',
       waitForAsync(() => {
-        const spy = spyOnProperty(authStateService, 'authorized$', 'get').and.returnValue(of(null));
+        const spy = spyOnProperty(authStateService, 'authenticated$', 'get').and.returnValue(of(null));
         oidcSecurityService.isAuthenticated$.subscribe(() => {
           expect(spy).toHaveBeenCalled();
         });
       })
     );
+  });
+
+  describe('isAuthenticated()', () => {
+    it('calls authStateService.isAuthenticated with passed configId when configId is passed', () => {
+      const spy = spyOn(authStateService, 'isAuthenticated');
+
+      oidcSecurityService.isAuthenticated('configId');
+
+      expect(spy).toHaveBeenCalledOnceWith('configId');
+    });
+
+    it('calls authStateService.isAuthenticated with id from config when NO configId is passed', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+      const spy = spyOn(authStateService, 'isAuthenticated');
+
+      oidcSecurityService.isAuthenticated();
+
+      expect(spy).toHaveBeenCalledOnceWith('configId');
+    });
   });
 
   describe('checkSessionChanged', () => {
@@ -279,16 +402,33 @@ describe('OidcSecurityService', () => {
     });
   });
 
-  describe('getToken', () => {
+  describe('getAccessToken', () => {
     it(
       'calls authStateService.getAccessToken()',
       waitForAsync(() => {
         const spy = spyOn(authStateService, 'getAccessToken');
 
-        oidcSecurityService.getToken();
+        oidcSecurityService.getAccessToken();
         expect(spy).toHaveBeenCalled();
       })
     );
+
+    it('calls authStateService.getAccessToken() with passed configId when configId is passed', () => {
+      const spy = spyOn(authStateService, 'getAccessToken');
+
+      oidcSecurityService.getAccessToken('configId');
+
+      expect(spy).toHaveBeenCalledOnceWith('configId');
+    });
+
+    it('calls authStateService.getAccessToken() with id from config when NO configId is passed', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+      const spy = spyOn(authStateService, 'getAccessToken');
+
+      oidcSecurityService.getAccessToken();
+
+      expect(spy).toHaveBeenCalledOnceWith('configId');
+    });
   });
 
   describe('getIdToken', () => {
@@ -301,6 +441,23 @@ describe('OidcSecurityService', () => {
         expect(spy).toHaveBeenCalled();
       })
     );
+
+    it('calls authStateService.getIdToken() with passed configId when configId is passed', () => {
+      const spy = spyOn(authStateService, 'getIdToken');
+
+      oidcSecurityService.getIdToken('configId');
+
+      expect(spy).toHaveBeenCalledOnceWith('configId');
+    });
+
+    it('calls authStateService.getIdToken() with id from config when NO configId is passed', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+      const spy = spyOn(authStateService, 'getIdToken');
+
+      oidcSecurityService.getIdToken();
+
+      expect(spy).toHaveBeenCalledOnceWith('configId');
+    });
   });
 
   describe('getRefreshToken', () => {
@@ -313,13 +470,30 @@ describe('OidcSecurityService', () => {
         expect(spy).toHaveBeenCalled();
       })
     );
+
+    it('calls authStateService.getRefreshToken() with passed configId when configId is passed', () => {
+      const spy = spyOn(authStateService, 'getRefreshToken');
+
+      oidcSecurityService.getRefreshToken('configId');
+
+      expect(spy).toHaveBeenCalledOnceWith('configId');
+    });
+
+    it('calls authStateService.getRefreshToken() with id from config when NO configId is passed', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+      const spy = spyOn(authStateService, 'getRefreshToken');
+
+      oidcSecurityService.getRefreshToken();
+
+      expect(spy).toHaveBeenCalledOnceWith('configId');
+    });
   });
 
   describe('getPayloadFromIdToken', () => {
     it(
-      'calls `getIdToken` method',
+      'calls `authStateService.getIdToken` method',
       waitForAsync(() => {
-        const spy = spyOn(oidcSecurityService, 'getIdToken');
+        const spy = spyOn(authStateService, 'getIdToken');
 
         oidcSecurityService.getPayloadFromIdToken();
         expect(spy).toHaveBeenCalled();
@@ -327,24 +501,36 @@ describe('OidcSecurityService', () => {
     );
 
     it(
+      'calls `authStateService.getIdToken` with configId when passed',
+      waitForAsync(() => {
+        const spy = spyOn(authStateService, 'getIdToken');
+
+        oidcSecurityService.getPayloadFromIdToken(true, 'configId');
+        expect(spy).toHaveBeenCalledOnceWith('configId');
+      })
+    );
+
+    it(
       'without parameters calls with encode = false (default)',
       waitForAsync(() => {
-        spyOn(oidcSecurityService, 'getIdToken').and.returnValue('aaa');
+        spyOn(authStateService, 'getIdToken').and.returnValue('aaa');
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
         const spy = spyOn(tokenHelperService, 'getPayloadFromToken');
 
         oidcSecurityService.getPayloadFromIdToken();
-        expect(spy).toHaveBeenCalledWith('aaa', false);
+        expect(spy).toHaveBeenCalledWith('aaa', false, 'configId');
       })
     );
 
     it(
       'with parameters calls with encode = true',
       waitForAsync(() => {
-        spyOn(oidcSecurityService, 'getIdToken').and.returnValue('aaa');
+        spyOn(authStateService, 'getIdToken').and.returnValue('aaa');
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
         const spy = spyOn(tokenHelperService, 'getPayloadFromToken');
 
         oidcSecurityService.getPayloadFromIdToken(true);
-        expect(spy).toHaveBeenCalledWith('aaa', true);
+        expect(spy).toHaveBeenCalledWith('aaa', true, 'configId');
       })
     );
   });
@@ -353,22 +539,45 @@ describe('OidcSecurityService', () => {
     it(
       'calls flowsDataService.setAuthStateControl with param',
       waitForAsync(() => {
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
         const spy = spyOn(flowsDataService, 'setAuthStateControl');
 
         oidcSecurityService.setState('anyString');
-        expect(spy).toHaveBeenCalledWith('anyString');
+        expect(spy).toHaveBeenCalledWith('anyString', 'configId');
+      })
+    );
+
+    it(
+      'calls flowsDataService.setAuthStateControl with param and passed configId when passed',
+      waitForAsync(() => {
+        const spy = spyOn(flowsDataService, 'setAuthStateControl');
+
+        oidcSecurityService.setState('anyString', 'someConfigId');
+        expect(spy).toHaveBeenCalledWith('anyString', 'someConfigId');
       })
     );
   });
 
-  describe('setState', () => {
+  describe('getState', () => {
     it(
       'calls flowsDataService.getAuthStateControl',
       waitForAsync(() => {
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+
         const spy = spyOn(flowsDataService, 'getAuthStateControl');
 
         oidcSecurityService.getState();
-        expect(spy).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalledOnceWith('configId');
+      })
+    );
+
+    it(
+      'calls flowsDataService.setAuthStateControl with param and passed configId when passed',
+      waitForAsync(() => {
+        const spy = spyOn(flowsDataService, 'getAuthStateControl');
+
+        oidcSecurityService.getState('someConfigId');
+        expect(spy).toHaveBeenCalledWith('someConfigId');
       })
     );
   });
@@ -380,7 +589,7 @@ describe('OidcSecurityService', () => {
         const spy = spyOn(logoffRevocationService, 'logoffAndRevokeTokens');
 
         oidcSecurityService.logoffAndRevokeTokens();
-        expect(spy).toHaveBeenCalledWith(undefined);
+        expect(spy).toHaveBeenCalledWith(undefined, undefined);
       })
     );
 
@@ -391,8 +600,8 @@ describe('OidcSecurityService', () => {
 
         const urlHandler = () => {};
 
-        oidcSecurityService.logoffAndRevokeTokens(urlHandler);
-        expect(spy).toHaveBeenCalledWith(urlHandler);
+        oidcSecurityService.logoffAndRevokeTokens('configId', urlHandler);
+        expect(spy).toHaveBeenCalledWith('configId', urlHandler);
       })
     );
   });
@@ -404,7 +613,7 @@ describe('OidcSecurityService', () => {
         const spy = spyOn(logoffRevocationService, 'logoff');
 
         oidcSecurityService.logoff();
-        expect(spy).toHaveBeenCalledWith(undefined, undefined);
+        expect(spy).toHaveBeenCalledWith(undefined, undefined, undefined);
       })
     );
 
@@ -415,8 +624,8 @@ describe('OidcSecurityService', () => {
 
         const urlHandler = () => {};
 
-        oidcSecurityService.logoff({ urlHandler });
-        expect(spy).toHaveBeenCalledWith(urlHandler, undefined);
+        oidcSecurityService.logoff('configId', { urlHandler });
+        expect(spy).toHaveBeenCalledWith('configId', urlHandler, undefined);
       })
     );
 
@@ -428,20 +637,49 @@ describe('OidcSecurityService', () => {
         const urlHandler = () => {};
         const customParams = { my: 'custom', params: 1 };
 
-        oidcSecurityService.logoff({ urlHandler, customParams });
-        expect(spy).toHaveBeenCalledWith(urlHandler, customParams);
+        oidcSecurityService.logoff('configId', { urlHandler, customParams });
+        expect(spy).toHaveBeenCalledWith('configId', urlHandler, customParams);
       })
     );
   });
 
   describe('logoffLocal', () => {
     it(
-      'calls logoffRevocationService.logoffLocal ',
+      'calls logoffRevocationService.logoffLocal',
       waitForAsync(() => {
         const spy = spyOn(logoffRevocationService, 'logoffLocal');
 
         oidcSecurityService.logoffLocal();
         expect(spy).toHaveBeenCalled();
+      })
+    );
+
+    it('calls logoffRevocationService.logoffLocal with passed configId when configId is passed', () => {
+      const spy = spyOn(logoffRevocationService, 'logoffLocal');
+
+      oidcSecurityService.logoffLocal('configId');
+
+      expect(spy).toHaveBeenCalledOnceWith('configId');
+    });
+
+    it('calls logoffRevocationService.logoffLocal with id from config when NO configId is passed', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+      const spy = spyOn(logoffRevocationService, 'logoffLocal');
+
+      oidcSecurityService.logoffLocal();
+
+      expect(spy).toHaveBeenCalledOnceWith('configId');
+    });
+  });
+
+  describe('logoffLocalMultiple', () => {
+    it(
+      'calls logoffRevocationService.logoffLocalMultiple',
+      waitForAsync(() => {
+        const spy = spyOn(logoffRevocationService, 'logoffLocalMultiple');
+
+        oidcSecurityService.logoffLocalMultiple();
+        expect(spy).toHaveBeenCalledTimes(1);
       })
     );
   });
@@ -453,17 +691,29 @@ describe('OidcSecurityService', () => {
         const spy = spyOn(logoffRevocationService, 'revokeAccessToken');
 
         oidcSecurityService.revokeAccessToken();
-        expect(spy).toHaveBeenCalledWith(undefined);
+        expect(spy).toHaveBeenCalledWith(undefined, undefined);
       })
     );
 
     it(
-      'calls logoffRevocationService.revokeAccessToken without param if non is given',
+      'calls logoffRevocationService.revokeAccessToken with param if param is given',
       waitForAsync(() => {
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+
         const spy = spyOn(logoffRevocationService, 'revokeAccessToken');
 
         oidcSecurityService.revokeAccessToken('aParam');
-        expect(spy).toHaveBeenCalledWith('aParam');
+        expect(spy).toHaveBeenCalledWith('configId', 'aParam');
+      })
+    );
+
+    it(
+      'calls logoffRevocationService.revokeAccessToken with configId if configId is given',
+      waitForAsync(() => {
+        const spy = spyOn(logoffRevocationService, 'revokeAccessToken');
+
+        oidcSecurityService.revokeAccessToken('aParam', 'configId');
+        expect(spy).toHaveBeenCalledWith('configId', 'aParam');
       })
     );
   });
@@ -475,27 +725,56 @@ describe('OidcSecurityService', () => {
         const spy = spyOn(logoffRevocationService, 'revokeRefreshToken');
 
         oidcSecurityService.revokeRefreshToken();
-        expect(spy).toHaveBeenCalledWith(undefined);
+        expect(spy).toHaveBeenCalledWith(undefined, undefined);
       })
     );
 
     it(
-      'calls logoffRevocationService.revokeRefreshToken without param if non is given',
+      'calls logoffRevocationService.revokeRefreshToken with param if param is given',
+      waitForAsync(() => {
+        const spy = spyOn(logoffRevocationService, 'revokeRefreshToken');
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+
+        oidcSecurityService.revokeRefreshToken('aParam');
+        expect(spy).toHaveBeenCalledWith('configId', 'aParam');
+      })
+    );
+
+    it(
+      'calls logoffRevocationService.revokeRefreshToken with configId if configId is given',
       waitForAsync(() => {
         const spy = spyOn(logoffRevocationService, 'revokeRefreshToken');
 
-        oidcSecurityService.revokeRefreshToken('aParam');
-        expect(spy).toHaveBeenCalledWith('aParam');
+        oidcSecurityService.revokeRefreshToken('aParam', 'configId');
+        expect(spy).toHaveBeenCalledWith('configId', 'aParam');
       })
     );
   });
 
   describe('getEndSessionUrl', () => {
     it('calls logoffRevocationService.getEndSessionUrl ', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+
       const spy = spyOn(logoffRevocationService, 'getEndSessionUrl');
 
       oidcSecurityService.getEndSessionUrl();
-      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledOnceWith('configId', undefined);
+    });
+
+    it('calls logoffRevocationService.getEndSessionUrl with customparams', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+
+      const spy = spyOn(logoffRevocationService, 'getEndSessionUrl');
+
+      oidcSecurityService.getEndSessionUrl({ custom: 'params' });
+      expect(spy).toHaveBeenCalledOnceWith('configId', { custom: 'params' });
+    });
+
+    it('calls logoffRevocationService.getEndSessionUrl with customparams and configId', () => {
+      const spy = spyOn(logoffRevocationService, 'getEndSessionUrl');
+
+      oidcSecurityService.getEndSessionUrl({ custom: 'params' }, 'configId');
+      expect(spy).toHaveBeenCalledOnceWith('configId', { custom: 'params' });
     });
   });
 });

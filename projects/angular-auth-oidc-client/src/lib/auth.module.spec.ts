@@ -1,9 +1,9 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { AuthModule, PASSED_CONFIG } from './auth.module';
-import { StsConfigHttpLoader, StsConfigLoader, StsConfigStaticLoader } from './config/config-loader';
 import { OidcConfigService } from './config/config.service';
 import { OidcConfigServiceMock } from './config/config.service.mock';
+import { StsConfigHttpLoader, StsConfigLoader, StsConfigStaticLoader } from './config/loader/config-loader';
 
 describe('AuthModule', () => {
   describe('APP_CONFIG', () => {

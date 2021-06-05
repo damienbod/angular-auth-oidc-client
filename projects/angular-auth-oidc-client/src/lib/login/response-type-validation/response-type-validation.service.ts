@@ -6,16 +6,16 @@ import { FlowHelper } from '../../utils/flowHelper/flow-helper.service';
 export class ResponseTypeValidationService {
   constructor(private loggerService: LoggerService, private flowHelper: FlowHelper) {}
 
-  hasConfigValidResponseType(): boolean {
-    if (this.flowHelper.isCurrentFlowAnyImplicitFlow()) {
+  hasConfigValidResponseType(configId: string): boolean {
+    if (this.flowHelper.isCurrentFlowAnyImplicitFlow(configId)) {
       return true;
     }
 
-    if (this.flowHelper.isCurrentFlowCodeFlow()) {
+    if (this.flowHelper.isCurrentFlowCodeFlow(configId)) {
       return true;
     }
 
-    this.loggerService.logWarning('module configured incorrectly, invalid response_type. Check the responseType in the config');
+    this.loggerService.logWarning(configId, 'module configured incorrectly, invalid response_type. Check the responseType in the config');
     return false;
   }
 }

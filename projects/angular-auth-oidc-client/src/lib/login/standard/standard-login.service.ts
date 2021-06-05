@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AuthOptions } from '../../auth-options';
-import { AuthWellKnownService } from '../../config/auth-well-known.service';
-import { ConfigurationProvider } from '../../config/config.provider';
+import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
+import { ConfigurationProvider } from '../../config/provider/config.provider';
 import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
@@ -18,28 +18,28 @@ export class StandardLoginService {
     private authWellKnownService: AuthWellKnownService
   ) {}
 
-  loginStandard(authOptions?: AuthOptions): void {
-    if (!this.responseTypeValidationService.hasConfigValidResponseType()) {
-      this.loggerService.logError('Invalid response type!');
+  loginStandard(configId: string, authOptions?: AuthOptions): void {
+    if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
+      this.loggerService.logError(configId, 'Invalid response type!');
       return;
     }
 
-    const { authWellknownEndpoint } = this.configurationProvider.getOpenIDConfiguration();
+    const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
 
-    if (!authWellknownEndpoint) {
-      this.loggerService.logError('no authWellknownEndpoint given!');
+    if (!authWellknownEndpointUrl) {
+      this.loggerService.logError(configId, 'no authWellknownEndpoint given!');
       return;
     }
 
-    this.loggerService.logDebug('BEGIN Authorize OIDC Flow, no auth data');
+    this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow, no auth data');
 
-    this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpoint).subscribe(() => {
+    this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).subscribe(() => {
       const { urlHandler, customParams } = authOptions || {};
 
-      const url = this.urlService.getAuthorizeUrl(customParams);
+      const url = this.urlService.getAuthorizeUrl(configId, customParams);
 
       if (!url) {
-        this.loggerService.logError('Could not create url', url);
+        this.loggerService.logError(configId, 'Could not create url', url);
         return;
       }
 

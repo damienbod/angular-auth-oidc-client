@@ -3,9 +3,10 @@ import { ActivatedRouteSnapshot, CanActivate, CanLoad, Route, Router, RouterStat
 import { Observable, of } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
-import { AutoLoginService } from '../auto-login/auto-login-service';
 import { CheckAuthService } from '../check-auth.service';
+import { ConfigurationProvider } from '../config/provider/config.provider';
 import { LoginService } from '../login/login.service';
+import { AutoLoginService } from './auto-login.service';
 
 @Injectable({ providedIn: 'root' })
 export class AutoLoginGuard implements CanActivate, CanLoad {
@@ -14,7 +15,8 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
     private authStateService: AuthStateService,
     private checkAuthService: CheckAuthService,
     private loginService: LoginService,
-    private router: Router
+    private router: Router,
+    private configurationProvider: ConfigurationProvider
   ) {}
 
   canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> {
@@ -26,24 +28,32 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
   }
 
   private checkAuth(url: string) {
-    return this.authStateService.authorized$.pipe(
-      concatMap((isAuthenticatedAlready) => (isAuthenticatedAlready ? of(isAuthenticatedAlready) : this.checkAuthService.checkAuth())),
+    const configId = this.getId();
 
-      map((isAuthorized) => {
-        const storedRoute = this.autoLoginService.getStoredRedirectRoute();
+    const isAuthenticated$ = this.authStateService.authenticated$ as Observable<boolean>;
 
-        if (isAuthorized) {
+    return isAuthenticated$.pipe(
+      concatMap((isAuthenticated) => (isAuthenticated ? of({ isAuthenticated }) : this.checkAuthService.checkAuth(configId))),
+
+      map(({ isAuthenticated }) => {
+        const storedRoute = this.autoLoginService.getStoredRedirectRoute(configId);
+
+        if (isAuthenticated) {
           if (storedRoute) {
-            this.autoLoginService.deleteStoredRedirectRoute();
+            this.autoLoginService.deleteStoredRedirectRoute(configId);
             this.router.navigateByUrl(storedRoute);
           }
           return true;
         }
 
-        this.autoLoginService.saveStoredRedirectRoute(url);
-        this.loginService.login();
+        this.autoLoginService.saveStoredRedirectRoute(configId, url);
+        this.loginService.login(configId);
         return false;
       })
     );
+  }
+
+  private getId() {
+    return this.configurationProvider.getAllConfigurations()[0].configId;
   }
 }
