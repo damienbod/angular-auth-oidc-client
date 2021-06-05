@@ -28,6 +28,7 @@ describe('Logout and Revoke Service', () => {
   let checkSessionService: CheckSessionService;
   let resetAuthDataService: ResetAuthDataService;
   let redirectService: RedirectService;
+  let configurationProvider: ConfigurationProvider;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -54,6 +55,7 @@ describe('Logout and Revoke Service', () => {
     checkSessionService = TestBed.inject(CheckSessionService);
     resetAuthDataService = TestBed.inject(ResetAuthDataService);
     redirectService = TestBed.inject(RedirectService);
+    configurationProvider = TestBed.inject(ConfigurationProvider);
   });
 
   it('should create', () => {
@@ -520,5 +522,23 @@ describe('Logout and Revoke Service', () => {
         });
       })
     );
+  });
+
+  describe('logoffLocalMultiple', () => {
+    it('calls logoffLocal for every config which is present', () => {
+      // Arrange
+      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ configId: 'configId1' }, { configId: 'configId2' }]);
+      const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
+      const checkSessionServiceSpy = spyOn(checkSessionService, 'stop');
+
+      // Act
+      service.logoffLocalMultiple();
+
+      // Assert
+      expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(2);
+      expect(checkSessionServiceSpy).toHaveBeenCalledTimes(2);
+      expect(resetAuthorizationDataSpy).toHaveBeenCalledWith('configId1');
+      expect(resetAuthorizationDataSpy).toHaveBeenCalledWith('configId2');
+    });
   });
 });
