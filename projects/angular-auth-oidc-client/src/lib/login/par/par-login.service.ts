@@ -112,7 +112,14 @@ export class ParLoginService {
             const { userClosed, receivedUrl } = result;
 
             if (userClosed) {
-              return of({ isAuthenticated: false, errorMessage: 'User closed popup' });
+              return of({
+                isAuthenticated: false,
+                errorMessage: 'User closed popup',
+                userData: null,
+                idToken: null,
+                accessToken: null,
+                configId,
+              });
             }
 
             return this.checkAuthService.checkAuth(receivedUrl);

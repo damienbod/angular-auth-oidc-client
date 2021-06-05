@@ -153,6 +153,10 @@ describe('CheckAuthService', () => {
           expect(result).toEqual({
             isAuthenticated: false,
             errorMessage: 'Please provide at least one configuration before setting up the module',
+            configId: undefined,
+            idToken: null,
+            userData: null,
+            accessToken: null,
           })
         );
       })
@@ -176,12 +180,19 @@ describe('CheckAuthService', () => {
       'returns isAuthenticated: false with error message in case handleCallbackAndFireEvents throws an error',
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer', configId: 'configId' });
         spyOn(callBackService, 'isCallback').and.returnValue(true);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(throwError('ERROR'));
         checkAuthService.checkAuth('configId').subscribe((result) => {
-          expect(result).toEqual({ isAuthenticated: false, errorMessage: 'ERROR' });
+          expect(result).toEqual({
+            isAuthenticated: false,
+            errorMessage: 'ERROR',
+            configId: 'configId',
+            idToken: null,
+            userData: null,
+            accessToken: null,
+          });
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -196,7 +207,7 @@ describe('CheckAuthService', () => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         checkAuthService.checkAuth('configId').subscribe((result) => {
-          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null, configId: 'configId' });
+          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null, configId: 'configId', idToken: null });
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -210,7 +221,7 @@ describe('CheckAuthService', () => {
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         checkAuthService.checkAuth('configId').subscribe((result) => {
-          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null, configId: 'configId' });
+          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null, configId: 'configId', idToken: null });
           expect(spy).not.toHaveBeenCalled();
         });
       })
@@ -228,7 +239,7 @@ describe('CheckAuthService', () => {
         const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthenticatedAndFireEvent');
         const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
         checkAuthService.checkAuth('configId').subscribe((result) => {
-          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null, configId: 'configId' });
+          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null, configId: 'configId', idToken: null });
           expect(setAuthorizedAndFireEventSpy).toHaveBeenCalled();
           expect(userServiceSpy).toHaveBeenCalled();
         });
@@ -247,7 +258,7 @@ describe('CheckAuthService', () => {
         const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthenticatedAndFireEvent');
         const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
         checkAuthService.checkAuth('configId').subscribe((result) => {
-          expect(result).toEqual({ isAuthenticated: false, userData: null, accessToken: null, configId: 'configId' });
+          expect(result).toEqual({ isAuthenticated: false, userData: null, accessToken: null, configId: 'configId', idToken: null });
           expect(setAuthorizedAndFireEventSpy).not.toHaveBeenCalled();
           expect(userServiceSpy).not.toHaveBeenCalled();
         });
@@ -263,7 +274,7 @@ describe('CheckAuthService', () => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
         checkAuthService.checkAuth('configId').subscribe((result) => {
-          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null, configId: 'configId' });
+          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null, configId: 'configId', idToken: null });
         });
       })
     );
@@ -423,6 +434,8 @@ describe('CheckAuthService', () => {
             idToken: 'idToken',
             accessToken: 'access_token',
             isAuthenticated: false,
+            userData: null,
+            configId: 'configId',
           })
         );
 

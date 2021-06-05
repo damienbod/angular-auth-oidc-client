@@ -11,6 +11,7 @@ import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
 import { LoginResponse } from '../login/login-response';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { UserService } from '../userData/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 
@@ -27,7 +28,8 @@ export class RefreshSessionService {
     private authWellKnownService: AuthWellKnownService,
     private refreshSessionIframeService: RefreshSessionIframeService,
     private storagePersistenceService: StoragePersistenceService,
-    private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService
+    private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService,
+    private userService: UserService
   ) {}
 
   userForceRefreshSession(configId: string, extraCustomParams?: { [key: string]: string | number | boolean }): Observable<LoginResponse> {
@@ -49,7 +51,9 @@ export class RefreshSessionService {
             return {
               idToken: this.authStateService.getIdToken(configId),
               accessToken: this.authStateService.getAccessToken(configId),
+              userData: this.userService.getUserDataFromStore(configId),
               isAuthenticated,
+              configId,
             } as LoginResponse;
           }
 
@@ -73,7 +77,9 @@ export class RefreshSessionService {
           return {
             idToken: callbackContext?.authResult?.id_token,
             accessToken: callbackContext?.authResult?.access_token,
+            userData: this.userService.getUserDataFromStore(configId),
             isAuthenticated,
+            configId,
           };
         }
 

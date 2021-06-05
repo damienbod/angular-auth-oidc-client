@@ -134,7 +134,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'returns true if authorized',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true } as LoginResponse));
         const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
         autoLoginGuard.canActivate(null, { url: 'some-url6' } as RouterStateSnapshot).subscribe((result) => {
@@ -147,7 +147,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'if authorized and stored route exists: remove item, navigate to route and return true',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true } as LoginResponse));
         spyOn(storagePersistenceService, 'read').and.returnValue('stored-route');
         const storageServiceSpy = spyOn(storagePersistenceService, 'remove');
         const routerSpy = spyOn(router, 'navigateByUrl');
@@ -225,7 +225,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'returns true if authorized',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true } as LoginResponse));
         const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
         autoLoginGuard.canLoad({ path: 'some-url13' }, []).subscribe((result) => {
@@ -238,7 +238,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'if authorized and stored route exists: remove item, navigate to route and return true',
       waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true }));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true } as LoginResponse));
         spyOn(storagePersistenceService, 'read').and.returnValue('stored-route');
         const storageServiceSpy = spyOn(storagePersistenceService, 'remove');
         const routerSpy = spyOn(router, 'navigateByUrl');
