@@ -28,6 +28,10 @@ jobs:
       - name: Installing Dependencies
         run: sudo npm install
 
+      - name: Installing Dependencies for docs - in docs folder
+        run: sudo npm install
+        working-directory: docs/site/angular-auth-oidc-client
+
       - name: Building Documentation
         run: sudo npm run build-docs
 
