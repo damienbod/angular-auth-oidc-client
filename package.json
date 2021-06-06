@@ -15,7 +15,7 @@
     "build-app": "ng build sample-code-flow",
     "watch-lib": "ng build angular-auth-oidc-client --watch",
     "build-lib": "ng build angular-auth-oidc-client && npm run schematics-build && npm run copy",
-    "build-lib-prod": "ng build angular-auth-oidc-client --prod && npm run schematics-build && npm run copy",
+    "build-lib-prod": "ng build angular-auth-oidc-client --configuration production && npm run schematics-build && npm run copy",
     "test-lib": "ng test angular-auth-oidc-client --code-coverage",
     "test-lib-ci": "ng test angular-auth-oidc-client --watch=false --browsers=ChromeHeadlessNoSandbox --code-coverage",
     "lint-lib": "ng lint angular-auth-oidc-client",
@@ -62,13 +62,16 @@
     "@angular/platform-browser": "~12.0.0",
     "@angular/platform-browser-dynamic": "~12.0.0",
     "@angular/router": "~12.0.0",
+    "@schematics/angular": "^12.0.0",
+    "jsrsasign-reduced": "^8.0.15",
     "rxjs": "~6.6.0",
     "tslib": "^2.1.0",
-    "zone.js": "~0.11.4",
-    "jsrsasign-reduced": "^8.0.15"
+    "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~12.0.3",
+    "@angular-devkit/build-angular": "~12.0.0",
+    "@angular-devkit/core": "^12.0.0",
+    "@angular-devkit/schematics": "^12.0.0",
     "@angular/cli": "~12.0.0",
     "@angular/compiler-cli": "~12.0.0",
     "@types/jasmine": "~3.6.0",
