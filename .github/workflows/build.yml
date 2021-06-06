@@ -54,7 +54,7 @@ jobs:
           cd ..
           echo '=== Current Directory ==='
           ls
-          sudo npm install -g @angular/cli@11.2.13
+          sudo npm install -g @angular/cli
           echo 'Creating new angular project'
           sudo ng new testProject --skip-git
           cd testProject
@@ -69,7 +69,7 @@ jobs:
           cd ..
           echo '=== Current Directory ==='
           ls
-          sudo npm install -g @angular/cli@11.2.13
+          sudo npm install -g @angular/cli
           echo 'Creating new angular project'
           sudo ng new testProjectSchematic --skip-git
           cd testProjectSchematic
