@@ -19,9 +19,8 @@ export class CodeFlowCallbackService {
 
   authenticatedCallbackWithCode(urlToCheck: string, configId: string) {
     const isRenewProcess = this.flowsDataService.isSilentRenewRunning(configId);
-    const { triggerAuthorizationResultEvent, postLoginRoute, unauthorizedRoute } = this.configurationProvider.getOpenIDConfiguration(
-      configId
-    );
+    const { triggerAuthorizationResultEvent, postLoginRoute, unauthorizedRoute } =
+      this.configurationProvider.getOpenIDConfiguration(configId);
 
     return this.flowsService.processCodeFlowCallback(urlToCheck, configId).pipe(
       tap((callbackContext) => {
