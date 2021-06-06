@@ -59,7 +59,7 @@ Example:
 this.checkSessionChanged$ = this.oidcSecurityService.stsCallback$;
 ```
 
-## checkAuth(): Observable<boolean>
+## checkAuth(): `Observable<boolean>`
 
 The `checkAuth()` method kicks off the complete setup flow, you can call it to start the whole authentication flow and get back if you are authenticated or not as an observable.
 
