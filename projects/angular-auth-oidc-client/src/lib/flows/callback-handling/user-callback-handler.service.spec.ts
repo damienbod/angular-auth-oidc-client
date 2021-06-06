@@ -178,7 +178,7 @@ describe('UserCallbackHandlerService', () => {
         service.callbackUser(callbackContext, 'configId').subscribe((resultCallbackContext) => {
           expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
             isAuthenticated: true,
-            validationResult: 'NotSet',
+            validationResult: ValidationResult.NotSet,
             isRenewProcess: false,
           });
           expect(resultCallbackContext).toEqual(callbackContext);
@@ -237,7 +237,7 @@ describe('UserCallbackHandlerService', () => {
         service.callbackUser(callbackContext, 'configId').subscribe((resultCallbackContext) => {
           expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
             isAuthenticated: true,
-            validationResult: 'MaxOffsetExpired',
+            validationResult: ValidationResult.MaxOffsetExpired,
             isRenewProcess: false,
           });
           expect(resultCallbackContext).toEqual(callbackContext);
@@ -296,7 +296,7 @@ describe('UserCallbackHandlerService', () => {
           error: (err) => {
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
               isAuthenticated: false,
-              validationResult: 'MaxOffsetExpired',
+              validationResult: ValidationResult.MaxOffsetExpired,
               isRenewProcess: false,
             });
             expect(err).toEqual('Failed to retrieve user info with error:  Called for userData but they were null');

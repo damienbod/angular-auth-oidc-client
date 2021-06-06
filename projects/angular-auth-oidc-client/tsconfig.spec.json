@@ -3,7 +3,6 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "../../out-tsc/spec",
-    "noUnusedLocals": false,
     "types": ["jasmine", "node"]
   },
   "files": ["src/test.ts"],
