@@ -5,12 +5,15 @@ The most public accessible observables, properties and methods are placed in the
 ## userData$
 
 The `userData$` observable provides the information about the user after he has logged in. In case you are running with one configuration it returns the user data as an object depending on what you get back from the sts as user data.
+In case you have multiple configs running it returns a `ConfigUserDataResult[]` which holds the `configId` as well as the `userData` in an array.
 
 Example:
 
 ```ts
 this.userData$ = this.oidcSecurityService.userData$;
 ```
+
+Single Config:
 
 ```json
 {
@@ -25,7 +28,7 @@ this.userData$ = this.oidcSecurityService.userData$;
 }
 ```
 
-In case you have multiple configs running it returns a `ConfigUserDataResult[]` which holds the `configId` as well as the `userData` in an array.
+Multiple Configs:
 
 ```json
 [
@@ -49,15 +52,38 @@ In case you have multiple configs running it returns a `ConfigUserDataResult[]` 
 ]
 ```
 
-## IsAuthenticated
+## isAuthenticated$
 
-Is an `Observable<boolean>` to receive authenticated events, either true or false.
+This property returns an `Observable<boolean>` to receive authenticated events, either true or false if you run in a single config. If you run with multiple configs it returns an `ConfigAuthenticatedResult[]` holding the `configId` as well as a boolean to tell you if you are authenticated or not.
 
 ```ts
-this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
+this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$; // true/false or...
+```
+
+Single Config
+
+```json
+true / false;
+```
+
+Multiple Configs
+
+```json
+[
+  {
+    "configId": "...",
+    "isAuthenticated": true
+  },
+  {
+    "configId": "...",
+    "isAuthenticated": false
+  }
+]
 ```
 
 ## CheckSessionChanged
+
+The `checkSessionChanged$` observable gets emitted values every time the server comes back with a check session and the value `changed`. If you want to get an information about when the CheckSession Event has been received generally take a look at the [public events](features.md#public-events).
 
 Example:
 
@@ -65,16 +91,14 @@ Example:
 this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 ```
 
-The `checkSessionChanged$` observable gets emitted values everytime the server comes back with a checksession and the value `changed`. If you want to get an information about when the CheckSession Event has been received generally take a look at the [public events](features.md#public-events).
-
 ## StsCallback
 
-The `stsCallback$` observable gets emitted _after_ the library has handles the possible sts callback. You can perform initial setups and custom workflows inside your application when the STS redirects you back to your app.
+The `stsCallback$` observable gets emitted _after_ the library has handled the possible sts callback. You can perform initial setups and custom workflows inside your application when the STS redirects you back to your app.
 
 Example:
 
 ```ts
-this.checkSessionChanged$ = this.oidcSecurityService.stsCallback$;
+this.stsCallback$ = this.oidcSecurityService.stsCallback$;
 ```
 
 ## checkAuth(): `Observable<boolean>`
