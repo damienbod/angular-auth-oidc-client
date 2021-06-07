@@ -2,7 +2,7 @@
 module.exports = {
   title: 'Angular Auth OIDC Client Docs',
   tagline: 'Dinosaurs are cool',
-  url: 'https://your-docusaurus-test-site.com',
+  url: 'https://lively-sand-02e04b010.azurestaticapps.net/',
   baseUrl: '/',
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
