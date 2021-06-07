@@ -229,7 +229,9 @@ const isAuthenticated = this.oidcSecurityService.isAuthenticated('configId');
 
 ## checkAuthIncludingServer(configId?: string)
 
-This method provides information if a config is authenticated or not and is including the server checking for an authenticated session as an `Observable<LoginResponse>` return value.
+This method can be used to check the server for an authenticated session using the iframe silent renew if not locally authenticated. This is useful when opening an app in a new tab and you are already authenticated. This method ONLY works with iframe silent renew. It will not work with refresh tokens. With refresh tokens, you cannot do this, as consent is required.
+
+Returns an `Observable<LoginResponse>`.
 
 ```ts
 {
@@ -421,9 +423,11 @@ this.oidcSecurityService
 
 ## forceRefreshSession(customParams?: { ... }, configId?: string)
 
-This method provides the functionality to manually refresh the session. If a current process is running this method will do nothing. After the run is finished the method forces to refresh again.
+This method provides the functionality to manually refresh the session at any time you require. If a current process is running this method will do nothing. After the run is finished the method forces to refresh again.
 
 This method takes `customParams` for this request as well as a `configId` as parameter if you want to use a specific config. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+
+See also [Custom parameters](features.md/#custom-parameters)
 
 The method returns an `Observable<LoginResponse>` containing
 
@@ -456,57 +460,111 @@ this.oidcSecurityService
   .subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
 ```
 
-## logoffAndRevokeTokens(urlHandler?: (url: string) => any)
+## logoffAndRevokeTokens(configId?: string, urlHandler?: (url: string) => any)
 
-The refresh token and and the access token are revoked on the server. If the refresh token does not exist only the access token is revoked. Then the logout run.
+With this method the user is being logged out and the refresh token and and the access token are revoked on the server. If the refresh token does not exist only the access token is revoked. Then the logout runs normally.
 
-## logoff(urlHandler?: (url: string) => any)
+This method takes a `configId` and an custom `urlHandler` as parameter and returns an observable. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
 
-Logs out on the server and the local client. If the server state has changed, check session, then only a local logout.
-
-## logoffLocal()
-
-The `logoffLocal()` function is used to reset you local session in the browser, but not sending anything to the server.
-
-## revokeAccessToken(accessToken?: any)
-
-https://tools.ietf.org/html/rfc7009
-revokes an access token on the STS. This is only required in the code flow with refresh tokens. If no token is provided, then the token from the storage is revoked. You can pass any token to revoke. This makes it possible to manage your own tokens.
-
-## revokeRefreshToken(refreshToken?: any)
-
-https://tools.ietf.org/html/rfc7009
-revokes a refresh token on the STS. This is only required in the code flow with refresh tokens.
-If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
-This makes it possible to manage your own tokens.
-
-## getEndSessionUrl(customParams?: { [key: string]: string | number | boolean }): string | null
-
-Creates the ens session URL which can be used to implement your own custom server logout. You can pass custom params directly into the method.
-
-## forceRefreshSession(customParams?: { [key: string]: string | number | boolean }): Observable
-
-Makes it possible to refresh the tokens at any time you require. You can pass custom parameters which can maybe change every time you want to refresh session. See also [Custom parameters](features.md/#custom-parameters)
-
-```typescript
-refreshSession() {
-        this.oidcSecurityService.forceRefreshSession()
-          .subscribe((result) => console.log(result));
-    }
+```ts
+this.oidcSecurityService.logoffAndRevokeTokens().subscribe(/* ... */);
 ```
 
-## checkAuthIncludingServer(): Observable
+```ts
+const urlHandler: () => {
+  /* ... */
+};
 
-The `checkAuthIncludingServer` can be used to check the server for an authenticated session using the iframe silent renew if not locally authenticated. This is useful when opening an APP in a new tab and you are already authenticated. This method ONLY works with iframe silent renew. It will not work with refresh tokens. With refresh tokens, you cannot do this, as consent is required.
+this.oidcSecurityService.logoffAndRevokeTokens('configId', urlHandler).subscribe(/* ... */);
+```
 
-```typescript
-export class AppComponent implements OnInit {
-  constructor(public oidcSecurityService: OidcSecurityService) {}
+## logoff(configId?: string, authOptions?: AuthOptions)
 
-  ngOnInit() {
-    this.oidcSecurityService.checkAuthIncludingServer().subscribe((isAuthenticated) => {
-      console.log('app authenticated', isAuthenticated);
-    });
-  }
-}
+This method logs out on the server and the local client. If the server state has changed, check session, then only a local logout. The method takes a `configId` and `authOptions` as parameter. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+
+Examples:
+
+```ts
+this.oidcSecurityService.logoff();
+```
+
+```ts
+const authOptions = {
+  customParams: {
+    some: 'params',
+  },
+  urlHandler: () => {
+    /* ... */
+  },
+};
+
+this.oidcSecurityService.logoff('configId', authOptions);
+```
+
+## logoffLocal(configId?: string)
+
+This method is used to reset your local session in the browser, but not sending anything to the server. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+
+```ts
+this.oidcSecurityService.logoffLocal();
+```
+
+```ts
+this.oidcSecurityService.logoffLocal('configId');
+```
+
+## logoffLocalMultiple()
+
+This method is used to reset your local session in the browser for multiple configs, but not sending anything to the server.
+
+```ts
+this.oidcSecurityService.logoffLocalMultiple();
+```
+
+## revokeAccessToken(accessToken?: any, configId?: string)
+
+This method revokes an access token on the Security Token Service. This is only required in the code flow with refresh tokens. If no token is provided, then the token from the storage is revoked. You can pass any token to revoke. This makes it possible to manage your own tokens.
+
+This method also takes a `configId`. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+
+```ts
+this.oidcSecurityService.revokeAccessToken().subscribe(/* ... */);
+```
+
+```ts
+this.oidcSecurityService.revokeAccessToken('accessToken', 'configId').subscribe(/* ... */);
+```
+
+More info: [https://tools.ietf.org/html/rfc7009](https://tools.ietf.org/html/rfc7009)
+
+## revokeRefreshToken(refreshToken?: any, configId?: string)
+
+This method revokes a refresh token on the STS. This is only required in the code flow with refresh tokens. If no token is provided, then the token from the storage is revoked. You can pass any token to revoke. This makes it possible to manage your own tokens.
+
+This method also takes a `configId`. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+
+```ts
+this.oidcSecurityService.revokeRefreshToken().subscribe(/* ... */);
+```
+
+```ts
+this.oidcSecurityService.revokeRefreshToken('refreshToken', 'configId').subscribe(/* ... */);
+```
+
+More info: [https://tools.ietf.org/html/rfc7009](https://tools.ietf.org/html/rfc7009)
+
+## getEndSessionUrl(customParams?: { ... }, configId?: string)
+
+Creates the ens session URL which can be used to implement your own custom server logout. You can pass custom params directly into the method. This method also takes a `configId`. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+
+```ts
+const endSessionUrl = this.oidcSecurityService.getEndSessionUrl();
+```
+
+```ts
+const customParams: {
+  some: 'params';
+};
+
+const endSessionUrl = this.oidcSecurityService.getEndSessionUrl(customParams, 'configId');
 ```
