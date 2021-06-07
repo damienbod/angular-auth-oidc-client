@@ -1,16 +1,10 @@
 # Public API
 
-The most public accessible observables, properties and methods are placed in the `OidcSecurityService`. Below you can find the description of everys single one of them.
+The most public accessible observables, properties and methods are placed in the `OidcSecurityService`. Below you can find the description of every single one of them.
 
-```
-   this.configuration = this.oidcSecurityService.configuration;
-```
+## userData$
 
-## get configuration()
-
-## Userdata
-
-The `userData$` observable provides the information about the user after he has logged in.
+The `userData$` observable provides the information about the user after he has logged in. In case you are running with one configuration it returns the user data as an object depending on what you get back from the sts as user data.
 
 Example:
 
@@ -29,6 +23,30 @@ this.userData$ = this.oidcSecurityService.userData$;
   "role": "user",
   "amr": "pwd"
 }
+```
+
+In case you have multiple configs running it returns a `ConfigUserDataResult[]` which holds the `configId` as well as the `userData` in an array.
+
+```json
+[
+  {
+    "configId": "...",
+    "userData": {
+      "sub": "...",
+      "preferred_username": "john@doe.org",
+      "name": "john@doe.org",
+      "email": "john@doe.org",
+      "email_verified": false,
+      "given_name": "john@doe.org",
+      "role": "user",
+      "amr": "pwd"
+    }
+  },
+  {
+    "configId": "...",
+    "userData": { ... }
+  }
+]
 ```
 
 ## IsAuthenticated
