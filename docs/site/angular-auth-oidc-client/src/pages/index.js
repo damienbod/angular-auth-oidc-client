@@ -1,6 +1,8 @@
 import { Redirect } from '@docusaurus/router';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import React from 'react';
 
 export default function Home() {
-  return <Redirect to="/docs/intro" />;
+  const { siteConfig } = useDocusaurusContext();
+  return <Redirect to={siteConfig.customFields.redirectOnStart} />;
 }

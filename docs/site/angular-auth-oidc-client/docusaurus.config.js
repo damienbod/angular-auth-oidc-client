@@ -4,6 +4,9 @@ module.exports = {
   tagline: 'Dinosaurs are cool',
   url: 'https://lively-sand-02e04b010.azurestaticapps.net/',
   baseUrl: '/',
+  customFields: {
+    redirectOnStart: '/docs/intro',
+  },
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
