@@ -101,6 +101,38 @@ Example:
 this.stsCallback$ = this.oidcSecurityService.stsCallback$;
 ```
 
+## getConfigurations()
+
+This method returns all configurations you have configured as an `OpenIdConfiguration[]`. The config includes all your values merged with the ones the library created.
+
+```ts
+const allConfigs = this.oidcSecurityService.getConfigurations();
+```
+
+## getConfiguration(configId?: string)
+
+This method returns one single configuration. If you pass the `configId` the specific config is being returned. If you do not pass it, the first one in case there are multiple or the only one in case you only have one configured is returned. Returns `null` otherwise.
+
+```ts
+// one config or the first one in case of multiple or null
+const singleConfig = this.oidcSecurityService.getConfiguration();
+
+// one config or null
+const singleConfig = this.oidcSecurityService.getConfiguration('configId');
+```
+
+## getUserData(configId?: string)
+
+This method returns the user data being used. If you pass the `configId` the specific user data for this config is being returned. If you do not pass it, the first one in case there are multiple or the only one in case you only have one configured is returned. Returns `null` otherwise.
+
+```ts
+// one config or the first one in case of multiple or null
+const userData = this.oidcSecurityService.getUserData();
+
+// user data for this specific config
+const userData = this.oidcSecurityService.getUserData('configId');
+```
+
 ## checkAuth
 
 The `checkAuth()` method kicks off the complete setup flow, you can call it to start the whole authentication flow and get back if you are authenticated or not as an observable.
