@@ -3,6 +3,17 @@ sidebar_label: Configuration
 sidebar_position: 2
 ---
 
+### New Param `configId`
+
+To identify a configuration a new parameter called `configId` was introduced. This is being filled from the lib when the user does not set it explicitly in the config. If set, the configured value is taken. It is optional. For a single config this param is not really important. For multiple configs this param is important.
+
+```ts
+export interface OpenIdConfiguration {
+  configId?: string;
+  // ...
+}
+```
+
 # Configuration
 
 You can pass three properties into the `AuthModule.forRoot(...)` method to configure the lib.
