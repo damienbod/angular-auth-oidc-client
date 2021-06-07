@@ -1,3 +1,8 @@
+---
+sidebar_label: Public API
+sidebar_position: 1
+---
+
 # Public API
 
 The most public accessible observables, properties and methods are placed in the `OidcSecurityService`. Below you can find the description of every single one of them.
@@ -214,7 +219,7 @@ this.oidcSecurityService.checkAuthIncludingServer('configId').subscribe(/*...*/)
 ## getAccessToken(configId?: string):
 
 Returns the access token for your login scenario as a `string`.
-If you are running with multiple configs and pass the `configId` the access token for this config is checked. If you are running with multiple configs and do not pass the `configId` the access token for the first config is returned. If you are running with a single config the access token for this config returned.
+If you are running with multiple configs and pass the `configId` the access token for this config is returned. If you are running with multiple configs and do not pass the `configId` the access token for the first config is returned. If you are running with a single config the access token for this config returned.
 
 ```ts
 const accessToken = this.oidcSecurityService.getAccessToken();
@@ -227,7 +232,7 @@ const accessToken = this.oidcSecurityService.getAccessToken('configId');
 ## getIdToken(configId?: string):
 
 Returns the id token for your login scenario as a `string`.
-If you are running with multiple configs and pass the `configId` the id token for this config is checked. If you are running with multiple configs and do not pass the `configId` the id token for the first config is returned. If you are running with a single config the id token for this config returned.
+If you are running with multiple configs and pass the `configId` the id token for this config is returned. If you are running with multiple configs and do not pass the `configId` the id token for the first config is returned. If you are running with a single config the id token for this config returned.
 
 ```ts
 const idToken = this.oidcSecurityService.getIdToken();
@@ -240,7 +245,7 @@ const idToken = this.oidcSecurityService.getIdToken('configId');
 ## getRefreshToken(configId?: string)
 
 Returns the refresh token for you login scenario if there is one.
-If you are running with multiple configs and pass the `configId` the refresh token for this config is checked. If you are running with multiple configs and do not pass the `configId` the refresh token for the first config is returned. If you are running with a single config the refresh token for this config returned.
+If you are running with multiple configs and pass the `configId` the refresh token for this config is returned. If you are running with multiple configs and do not pass the `configId` the refresh token for the first config is returned. If you are running with a single config the refresh token for this config returned.
 
 ```ts
 const refreshToken = this.oidcSecurityService.getRefreshToken();
@@ -250,9 +255,20 @@ const refreshToken = this.oidcSecurityService.getRefreshToken();
 const refreshToken = this.oidcSecurityService.getRefreshToken('configId');
 ```
 
-## getPayloadFromIdToken(encode = false): any
+## getPayloadFromIdToken(encode = false, configId?: string)
 
-returns the payload from the id_token. This can be used to get claims from the token.
+Returns the payload from the id_token. This can be used to get claims from the token.
+If you are running with multiple configs and pass the `configId` the payload for this config is returned. If you are running with multiple configs and do not pass the `configId` the refresh token for the first config is returned. If you are running with a single config the refresh token for this config returned.
+
+The `encode` param has to be set to `true` if the payload is base64 encoded.
+
+```ts
+const payload = this.oidcSecurityService.getPayloadFromIdToken();
+```
+
+```ts
+const payload = this.oidcSecurityService.getRefreshToken(true, 'configId');
+```
 
 ## setState(state: string): void
 
