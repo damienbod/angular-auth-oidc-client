@@ -81,7 +81,7 @@ Multiple Configs
 ]
 ```
 
-## CheckSessionChanged
+## checkSessionChanged$
 
 The `checkSessionChanged$` observable gets emitted values every time the server comes back with a check session and the value `changed`. If you want to get an information about when the CheckSession Event has been received generally take a look at the [public events](features.md#public-events).
 
@@ -91,7 +91,7 @@ Example:
 this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 ```
 
-## StsCallback
+## stsCallback$
 
 The `stsCallback$` observable gets emitted _after_ the library has handled the possible sts callback. You can perform initial setups and custom workflows inside your application when the STS redirects you back to your app.
 
@@ -101,7 +101,7 @@ Example:
 this.stsCallback$ = this.oidcSecurityService.stsCallback$;
 ```
 
-## checkAuth(): `Observable<boolean>`
+## checkAuth
 
 The `checkAuth()` method kicks off the complete setup flow, you can call it to start the whole authentication flow and get back if you are authenticated or not as an observable.
 
