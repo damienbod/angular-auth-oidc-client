@@ -309,7 +309,7 @@ const payload = this.oidcSecurityService.getPayloadFromIdToken(true, 'configId')
 ## setState(state: string, configId?: string)
 
 You can set the state value used for the authorize request, if you have the `autoCleanStateAfterAuthentication` in the configuration set to `false`. Can be used for custom state logic handling, the state is not automatically reset when set to `false`.
-If you are running with multiple configs and pass the `configId` the passe config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
 
 ```ts
 this.oidcSecurityService.setState('some-state');
@@ -322,7 +322,7 @@ this.oidcSecurityService.setState('some-state', 'configId');
 ## getState(configId?: string)
 
 Returns the state value used for the authorize request.
-If you are running with multiple configs and pass the `configId` the passe config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
 
 ```ts
 const state = this.oidcSecurityService.getState();
@@ -365,7 +365,7 @@ this.oidcSecurityService.authorize('configId', authOptions);
 
 This method is being called when you want to redirect to the sts in a popup and login your user. This method takes a `configId` as parameter if you want to use a specific config and it also takes `authOptions` adding `customParams` which can change every time you want to login and an `urlHandler` which is getting called instead of the redirect. You can also pass `PopupOptions` to define where and how the popup should open.
 
-The method returns a `Observable<LoginResponse>` containing
+The method returns an `Observable<LoginResponse>` containing
 
 ```ts
 {
@@ -417,6 +417,43 @@ this.oidcSecurityService
   .subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
     // ...use data
   });
+```
+
+## forceRefreshSession(customParams?: { ... }, configId?: string)
+
+This method provides the functionality to manually refresh the session. If a current process is running this method will do nothing. After the run is finished the method forces to refresh again.
+
+This method takes `customParams` for this request as well as a `configId` as parameter if you want to use a specific config. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+
+The method returns an `Observable<LoginResponse>` containing
+
+```ts
+{
+  isAuthenticated: boolean;
+  userData: any;
+  accessToken: string;
+  idToken: string;
+  configId: string;
+  errorMessage?: string;
+}
+```
+
+Examples:
+
+```ts
+this.oidcSecurityService.forceRefreshSession().subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
+  // ...use data
+});
+```
+
+```ts
+const customParams: {
+  some: 'params',
+}
+
+this.oidcSecurityService
+  .forceRefreshSession(customParams, 'configId')
+  .subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
 ```
 
 ## logoffAndRevokeTokens(urlHandler?: (url: string) => any)
