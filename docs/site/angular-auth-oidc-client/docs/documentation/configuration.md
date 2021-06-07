@@ -3,42 +3,32 @@ sidebar_label: Configuration
 sidebar_position: 2
 ---
 
-### New Param `configId`
-
-To identify a configuration a new parameter called `configId` was introduced. This is being filled from the lib when the user does not set it explicitly in the config. If set, the configured value is taken. It is optional. For a single config this param is not really important. For multiple configs this param is important.
-
-```ts
-export interface OpenIdConfiguration {
-  configId?: string;
-  // ...
-}
-```
-
 # Configuration
 
-You can pass three properties into the `AuthModule.forRoot(...)` method to configure the lib.
-
-```
-AuthModule.forRoot({
-  authWellKnown?: AuthWellKnownEndpoints;
-  config?: OpenIdConfiguration;
-  loader?: Provider;
-})
-```
+The lib has to be configured with the values of your choice. You can to that either with a static config or loading the config from an HTTP endpoint and map the values to the format the library expects.
 
 ## Configure with static config
 
 You can pass the static config with the `config` property into the `forRoot()` method like this
 
 ```ts
-AuthModule.forRoot({
+import { NgModule } from '@angular/core';
+import { AuthModule } from 'angular-auth-oidc-client';
+
+@NgModule({
+  imports: [
+    AuthModule.forRoot({
       config: {
-        /* YOUR CONFIG VALUES HERE */
+        /* Your config here */
       },
     }),
+  ],
+  exports: [AuthModule],
+})
+export class AuthConfigModule {}
 ```
 
-## Configure with HTTP Config
+## Load config from HTTP
 
 If you want to load the config from HTTP and then map it to the interface the library provides you can use the `StsConfigHttpLoader` and pass it with the `loader` property
 
@@ -52,7 +42,7 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
       map((customConfig: any) => {
         return {
           stsServer: customConfig.stsServer,
-          /* YOUR CONFIG VALUES HERE */
+          /* Your config mapping here */
         };
       })
     )
@@ -76,60 +66,214 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
 export class AuthConfigModule {}
 ```
 
-## Passing AuthWellKnown
-
-The third property is `authWellKnown` where you can pass the AuthWellKnownEndpoint if you have it already, otherwise it will be loaded automatically for you with the values from the config you provide.
-
-```ts
-AuthModule.forRoot({
-      authWellKnown: {
-        /* YOUR AUTHWELLKNOWN VALUES HERE */
-      },
-    }),
-```
-
 ## Config Values
 
-In this document are all the values which can be set to configure this library.
+### `configId`
 
-| Name                                      | Type                                         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Required |
-| ----------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
-| `stsServer`                               | `string`                                     | This is the redirect_url which was configured on the security token service (STS) server.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Yes      |
-| `authWellknownEndpoint`                   | `string`                                     | A different well known endpoint can be defined instead of the used STS domain, with the <br/> standard postfix.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | No       |
-| `redirectUrl`                             | `string`                                     | This is the redirect_url which was configured on the security token service (STS) server.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | No       |
-| `clientId`                                | `string`                                     | The Client MUST validate that the aud (audience) Claim contains its client_id value <br/>registered at the Issuer identified by the iss (issuer) Claim as an audience. <br/> The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, <br/> or if it contains additional audiences not trusted by the Client.                                                                                                                                                                                                                                                                                                                                                                                     | No       |
-| `responseType`                            | `string`                                     | 'code', 'id_token token' or 'id_token' Name of the flow which can be configured. <br/> You must use the 'id_token token' flow, if you want to access an API or get user data from the server. <br/> The `access_token` is required for this, and only returned with this flow.                                                                                                                                                                                                                                                                                                                                                                                                                                                       | No       |
-| `scope`                                   | `string`                                     | This is this scopes which are requested from the server from this client. This must match the STS server configuration.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | No       |
-| `hdParam`                                 | `string`                                     | Optional hd parameter for Google Auth with particular G Suite domain, see https://developers.google.com/identity/protocols/OpenIDConnect#hd-param                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | No       |
-| `postLogoutRedirectUri`                   | `string`                                     | URL after a server logout if using the end session API.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | No       |
-| `startCheckSession`                       | `boolean`                                    | Starts the OpenID session management for this client.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | No       |
-| `silentRenew`                             | `boolean`                                    | Renews the client tokens, once the token_id expires. Can use the iframes, or the refresh tokens                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | No       |
-| `silentRenewUrl`                          | `string`                                     | URL which can be used for a lightweight renew callback. See silent renew.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | No       |
-| `silentRenewTimeoutInSeconds`             | `number`                                     | Sets the maximum waiting time for silent renew process. If this time is exceeded, the silent renew state will be reset. Default = <em>20</em>.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | No       |
-| `renewTimeBeforeTokenExpiresInSeconds`    | `number`                                     | Makes it possible to add an offset to the silent renew check in seconds. By entering a value, you can renew the tokens, before the tokens expire.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | No       |
-| `useRefreshToken`                         | `boolean`                                    | boolean property set to false. Standard silent renew mode used per default. Refresh tokens can be activated.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | No       |
-| `ignoreNonceAfterRefresh`                 | `boolean`                                    | A token obtained by using a refresh token normally doesn't contain a nonce value. The library checks it is not there. <br/> However some oidc endpoint implementations do send one. Setting ignore_nonce_after_refresh to true disables the check if a nonce is present. <br/> Please note that the nonce value, if present, will not be verified. Default is false.                                                                                                                                                                                                                                                                                                                                                                 | No       |
-| `postLoginRoute`                          | `string`                                     | The default Angular route which is used after a successful login, if not using the <em>trigger_authorization_result_event</em>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | No       |
-| `forbiddenRoute`                          | `string`                                     | Route, if the server returns a 403. This is an Angular route. HTTP 403                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | No       |
-| `unauthorizedRoute`                       | `string`                                     | Route, if the server returns a 401. This is an Angular route. HTTP 401                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | No       |
-| `autoUserInfo`                            | `boolean`                                    | Automatically get user info after authentication.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | No       |
-| `renewUserInfoAfterTokenRenew`            | `boolean`                                    | Automatically get user info after token renew.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | No       |
-| `autoCleanStateAfterAuthentication`       | `boolean`                                    | can be used for custom state logic handling, the state is not automatically reset, when set to false.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | No       |
-| `triggerAuthorizationResultEvent`         | `boolean`                                    | This can be set to `true` which emits an event instead of an angular route change. Instead of forcing the application consuming this library to automatically redirect to one of the 3 <br/> hard-configured routes (start, unauthorized, forbidden), this modification will add an extra configuration option to override such behavior and trigger an event that <br/> will allow to subscribe to it and let the application perform other actions. This would be useful to allow the application to save an initial return url so that the user is redirected <br/> to it after a successful login on the STS (ie: saving the return url previously on sessionStorage and then retrieving it during the triggering of the event). | No       |
-| `logLevel`                                | `LogLevel`                                   | 0, 1, 2 can be used to set the log level displayed in the console.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | No       |
-| `issValidationOff`                        | `boolean`                                    | Make it possible to turn the iss validation off per configuration. You should not turn this off!                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | No       |
-| `historyCleanupOff`                       | `boolean`                                    | If this is active, the history is not cleaned up at an authorize callback. This can be used, when the application needs to preserve the history.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | No       |
-| `maxIdTokenIatOffsetAllowedInSeconds`     | `number`                                     | Amount of offset allowed between the server creating the token, and the client app receiving the id_token. <br/> The diff in time between the server time and client time is also important in validating this value. <br/>All times are in UTC.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | No       |
-| `disableIatOffsetValidation`              | `boolean`                                    | This allows the application to disable the iat offset validation check. The iat Claim can be used to reject <br/>tokens that were issued too far away from the current time, limiting the amount of time that nonces need <br/> to be stored to prevent attacks.The acceptable range is client specific.                                                                                                                                                                                                                                                                                                                                                                                                                             | No       |
-| `storage`                                 | `any`                                        | You can set the storage to `localStorage`, or implement a custom storage (see [Custom Storage](features.md/#custom-storage)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | No       |
-| `customParamsAuthRequest`                 | `{ [key: string]: string, number, boolean }` | extra parameters can be added to the authorization URL request.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | No       |
-| `disableRefreshIdTokenAuthTimeValidation` | `boolean`                                    | disables the auth_time validation for id_tokens in a refresh due to Azure incorrect implementation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | No       |
-| `eagerLoadAuthWellKnownEndpoints`         | `boolean`                                    | Tells if the AuthWellKnownEndpoints should be loaded on start or when the user <br/> calls the `authorize` method                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | No       |
-| `tokenRefreshInSeconds`                   | `number`                                     | Controls the periodic check time interval in seconds, default = 3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | No       |
-| `secureRoutes`                            | `string[]`                                   | Array of secure urls on which the token should be send if the interceptor is added to the HTTP_INTERCEPTORS see [Http Interceptor](./using-access-tokens.md/#http-interceptor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | No       |
-| `usePushedAuthorisationRequests`          | `boolean`                                    | activates Pushed Authorisation Requests for login and popup login (Iframe renew not supported)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | No       |
-| `customTokenParams`                       | `{ [key: string]: string, number, boolean }` | extra parameters can be added to the token URL request.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | No       |
-| `refreshTokenRetryInSeconds`              | `number`                                     | Controls the periodic retry time interval for retrieving new tokens in seconds, default = 3. `silentRenewTimeoutInSeconds` and `tokenRefreshInSeconds` are upper bounds for this value.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | No       |
-| `ngswBypass`                              | `boolean`                                    | Adds the `ngsw-bypass` param to all requests ([Angular Docu](https://angular.io/guide/service-worker-devops#bypassing-the-service-worker)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | No       |
-| `customParamsRefreshToken`                | `{ [key: string]: string, number, boolean }` | Extra parameters to add to the refresh token request body.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | No       |
-| `customParamsEndSession`                  | `{ [key: string]: string, number, boolean }` | Extra parameters to add to the endsession request body.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | No       |
+- Type: string
+- Required: false
+
+To identify a configuration a new parameter called `configId` was introduced. This is being filled from the lib when the user does not set it explicitly in the config. If set, the configured value is taken. It is optional. For a single config this param is not really important. For multiple configs this param is important.
+
+### `stsServer`
+
+- Type: string
+- Required: true
+
+This is the redirect_url which was configured on the security token service (STS) server.
+
+### `authWellknownEndpointUrl`
+
+- Type: string
+- Required: false
+
+A different well known endpoint can be defined instead of the used STS domain, with the standard postfix.
+
+### `authWellknownEndpoints`
+
+- Type: object
+- Required: false
+
+TBD
+
+### `redirectUrl`
+
+- Type: string
+- Required: false
+
+This is the redirect_url which was configured on the security token service (STS)
+
+### `clientId`
+
+- Type: string
+- Required: false
+
+The client MUST validate that the aud (audience) claim contains its client_id value registered at the Issuer identified by the iss (issuer) Claim as an audience. The id token MUST be rejected if the id token does not list the Client as a valid audience, or if it contains additional audiences not trusted by the Client.
+
+### `responseType`
+
+- Type: string
+- Required: false
+
+'code', 'id_token token' or 'id_token' Name of the flow which can be configured. <br/> You must use the 'id_token token' flow, if you want to access an API or get user data from the server. <br/> The `access_token` is required for this, and only returned with this flow.
+
+### `scope`
+
+- Type: string
+- Required: false
+
+This is this scopes which are requested from the server from this client. This must match the STS server configuration.
+
+### `hdParam`
+
+- Type: string
+- Required: false
+
+Optional hd parameter for Google Auth with particular G Suite domain, see https://developers.google.com/identity/protocols/OpenIDConnect#hd-param
+
+### `postLogoutRedirectUri`
+
+- Type: string
+- Required: false
+
+URL after a server logout if using the end session API.
+
+### `startCheckSession`
+
+- Type: boolean
+- Required: false
+
+Starts the OpenID session management for this client.
+
+### `silentRenew`
+
+- Type: boolean
+- Required: false
+
+Renews the client tokens, once the token_id expires. Can use the iframes, or the refresh tokens.
+
+### `silentRenewUrl`
+
+- Type: string
+- Required: false
+
+URL which can be used for a lightweight renew callback. See silent renew.
+
+### `silentRenewTimeoutInSeconds`
+
+- Type: number
+- Required: false
+
+Sets the maximum waiting time for silent renew process. If this time is exceeded, the silent renew state will be reset. Default = <em>20</em>
+
+### `renewTimeBeforeTokenExpiresInSeconds`
+
+- Type: number
+- Required: false
+
+Makes it possible to add an offset to the silent renew check in seconds. By entering a value, you can renew the tokens, before the tokens expire.
+
+### `useRefreshToken`
+
+- Type: boolean
+- Required: false
+
+Default set to false. Standard silent renew mode used per default. Refresh tokens can be activated.
+
+### `ignoreNonceAfterRefresh`
+
+- Type: boolean
+- Required: false
+
+A token obtained by using a refresh token normally doesn't contain a nonce value. The library checks it is not there. However some oidc endpoint implementations do send one. Setting ignoreNonceAfterRefresh to true disables the check if a nonce is present. Please note that the nonce value, if present, will not be verified. Default is false.
+
+### `postLoginRoute`
+
+- Type: string
+- Required: false
+
+The default Angular route which is used after a successful login, if not using the `triggerAuthorizationResultEvent`.
+
+### `forbiddenRoute`
+
+- Type: string
+- Required: false
+
+Route, if the server returns a 403. This is an Angular route. HTTP 403.
+
+### `unauthorizedRoute`
+
+- Type: string
+- Required: false
+
+Route, if the server returns a 401. This is an Angular route. HTTP 401.
+
+### `autoUserInfo`
+
+- Type: boolean
+- Required: false
+
+Automatically get user info after authentication.
+
+### `renewUserInfoAfterTokenRenew`
+
+- Type: boolean
+- Required: false
+
+Automatically get user info after token renew.
+
+### `autoCleanStateAfterAuthentication`
+
+- Type: boolean
+- Required: false
+
+Can be used for custom state logic handling, the state is not automatically reset, when set to false.
+
+### `triggerAuthorizationResultEvent`
+
+- Type: boolean
+- Required: false
+
+This can be set to `true` which emits an event instead of an angular route change. Instead of forcing the application consuming this library to automatically redirect to one of the 3 hard-configured routes (start, unauthorized, forbidden), this modification will add an extra configuration option to override such behavior and trigger an event that will allow to subscribe to it and let the application perform other actions. This would be useful to allow the application to save an initial return url so that the user is redirected to it after a successful login on the STS (ie: saving the return url previously on sessionStorage and then retrieving it during the triggering of the event).
+
+### `logLevel`
+
+- Type: `LogLevel`
+- Required: false
+
+Can be used to set the log level displayed in the console.
+
+### `issValidationOff`
+
+- Type: boolean
+- Required: false
+
+Make it possible to turn the iss validation off per configuration. You should not turn this off!
+
+### `historyCleanupOff`
+
+- Type: boolean
+- Required: false
+
+If this is active, the history is not cleaned up at an authorize callback. This can be used, when the application needs to preserve the history.
+
+### `maxIdTokenIatOffsetAllowedInSeconds`
+
+- Type: number
+- Required: false
+
+Amount of offset allowed between the server creating the token, and the client app receiving the id_token. The diff in time between the server time and client time is also important in validating this value. All times are in UTC.
+
+### `disableIatOffsetValidation`
+
+- Type: boolean
+- Required: false
+
+This allows the application to disable the iat offset validation check. The iat Claim can be used to reject tokens that were issued too far away from the current time, limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is client specific.
+
+### `customParamsAuthRequest`
+
+- Type: Object
+- Required: false
+
+Extra parameters can be added to the authorization URL request.
