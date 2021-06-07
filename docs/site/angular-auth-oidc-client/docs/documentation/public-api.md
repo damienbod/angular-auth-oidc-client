@@ -267,16 +267,34 @@ const payload = this.oidcSecurityService.getPayloadFromIdToken();
 ```
 
 ```ts
-const payload = this.oidcSecurityService.getRefreshToken(true, 'configId');
+const payload = this.oidcSecurityService.getPayloadFromIdToken(true, 'configId');
 ```
 
-## setState(state: string): void
+## setState(state: string, configId?: string)
 
-You can set the state value used for the authorize request, if you have the | `autoCleanStateAfterAuthentication` set to false. Can be used for custom state logic handling, the state is not automatically reset, when set to false.
+You can set the state value used for the authorize request, if you have the `autoCleanStateAfterAuthentication` in the configuration set to `false`. Can be used for custom state logic handling, the state is not automatically reset when set to `false`.
+If you are running with multiple configs and pass the `configId` the passe config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
 
-## getState(): string
+```ts
+this.oidcSecurityService.setState('some-state');
+```
 
-read to set state, helpful when implementing custom state logic.
+```ts
+this.oidcSecurityService.setState('some-state', 'configId');
+```
+
+## getState(configId?: string)
+
+Returns the state value used for the authorize request.
+If you are running with multiple configs and pass the `configId` the passe config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+
+```ts
+const state = this.oidcSecurityService.getState();
+```
+
+```ts
+const state = this.oidcSecurityService.getState('configId');
+```
 
 ## authorize(authOptions?: AuthOptions)
 
