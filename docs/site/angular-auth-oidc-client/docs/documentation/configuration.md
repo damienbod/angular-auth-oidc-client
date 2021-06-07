@@ -1,3 +1,8 @@
+---
+sidebar_label: Configuration
+sidebar_position: 2
+---
+
 # Configuration
 
 You can pass three properties into the `AuthModule.forRoot(...)` method to configure the lib.
