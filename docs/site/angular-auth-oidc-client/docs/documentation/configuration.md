@@ -277,3 +277,73 @@ This allows the application to disable the iat offset validation check. The iat 
 - Required: false
 
 Extra parameters can be added to the authorization URL request.
+
+### `customParamsRefreshTokenRequest`
+
+- Type: Object
+- Required: false
+
+Extra parameters to add to the refresh token request body.
+
+### `customParamsEndSessionRequest`
+
+- Type: Object
+- Required: false
+
+Extra parameters to add to the end session request body.
+
+### `customParamsCodeRequest`
+
+- Type: Object
+- Required: false
+
+Extra parameters can be added to the token URL request.
+
+### `disableRefreshIdTokenAuthTimeValidation`
+
+- Type: boolean
+- Required: false
+
+disables the auth_time validation for id_tokens in a refresh due to Azure incorrect implementation
+
+### `eagerLoadAuthWellKnownEndpoints`
+
+- Type: boolean
+- Required: false
+
+Tells if the AuthWellKnownEndpoints should be loaded on start or when the user calls the `authorize` method
+
+### `tokenRefreshInSeconds`
+
+- Type: number
+- Required: false
+
+Controls the periodic check time interval in seconds, default = 3
+
+### `secureRoutes`
+
+- Type: `string[]`
+- Required: false
+
+Array of secure urls on which the token should be send if the interceptor is added to the HTTP_INTERCEPTORS see [Http Interceptor](./using-access-tokens.md/#http-interceptor)
+
+### `usePushedAuthorisationRequests`
+
+- Type: boolean
+- Required: false
+
+activates Pushed Authorisation Requests for login and popup login (Iframe renew not supported)
+
+### `refreshTokenRetryInSeconds`
+
+- Type: number
+- Required: false
+
+Controls the periodic retry time interval for retrieving new tokens in seconds, default = 3. `silentRenewTimeoutInSeconds` and `tokenRefreshInSeconds` are upper bounds for this value.
+
+### `ngswBypass`
+
+- Type: boolean
+- Required: false
+
+Adds the `ngsw-bypass` param to all requests ([Angular Docu](https://angular.io/guide/service-worker-devops#bypassing-the-service-worker)).
