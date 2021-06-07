@@ -149,6 +149,17 @@ This method parses the url when you come back from the Security Token Service (S
 It returns an `Observable<LoginResponse>` containing all information you need in one object.
 
 ```ts
+{
+  isAuthenticated: boolean;
+  userData: any;
+  accessToken: string;
+  idToken: string;
+  configId: string;
+  errorMessage?: string;
+}
+```
+
+```ts
 this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
   // ...use data
 });
@@ -172,6 +183,19 @@ This method starts the complete authentication flow for multiple configs. Use th
 This method parses the url when you come back from the Security Token Service (STS) and sets all values.
 
 It returns an `Observable<LoginResponse[]>` containing all information you need in the `LoginResponse` object as array so that you can see which config has which values.
+
+```ts
+[
+  {
+    isAuthenticated: boolean;
+    userData: any;
+    accessToken: string;
+    idToken: string;
+    configId: string;
+    errorMessage?: string;
+  }
+]
+```
 
 ```ts
 this.oidcSecurityService.checkAuthMultiple().subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
@@ -206,6 +230,18 @@ const isAuthenticated = this.oidcSecurityService.isAuthenticated('configId');
 ## checkAuthIncludingServer(configId?: string)
 
 This method provides information if a config is authenticated or not and is including the server checking for an authenticated session as an `Observable<LoginResponse>` return value.
+
+```ts
+{
+  isAuthenticated: boolean;
+  userData: any;
+  accessToken: string;
+  idToken: string;
+  configId: string;
+  errorMessage?: string;
+}
+```
+
 If you are running with multiple configs and pass the `configId` the authentication for this config is checked. If you are running with multiple configs and do not pass the `configId` the authentication for the first config is checked. If you are running with a single config this configuration is checked if you are authenticated.
 
 ```ts
@@ -296,17 +332,11 @@ const state = this.oidcSecurityService.getState();
 const state = this.oidcSecurityService.getState('configId');
 ```
 
-## authorize(authOptions?: AuthOptions)
+## authorize(configId?: string, authOptions?: AuthOptions)
 
-This method is being called when you want to redirect to the sts and login your user.
+This method is being called when you want to redirect to the sts and login your user. This method takes a `configId` as parameter if you want to use a specific config and it also takes `authOptions` adding `customParams` which can change every time you want to login and an `urlHandler` which is getting called instead of the redirect.
 
-```typescript
-login() {
-    this.oidcSecurityService.authorize();
-}
-```
-
-You can pass optional `AuthOptions`
+See also [Custom parameters](features.md/#custom-parameters)
 
 ```ts
 export interface AuthOptions {
@@ -315,7 +345,79 @@ export interface AuthOptions {
 }
 ```
 
-where you can pass a custom `urlHandler` which is getting called instead of the redirect and you can pass custom parameters which can maybe change every time you want to login. See also [Custom parameters](features.md/#custom-parameters)
+```ts
+this.oidcSecurityService.authorize();
+```
+
+```ts
+const authOptions = {
+  customParams: {
+    some: 'params',
+  },
+  urlHandler: () => {
+    /* ... */
+  },
+};
+this.oidcSecurityService.authorize('configId', authOptions);
+```
+
+## authorizeWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions, configId?: string)
+
+This method is being called when you want to redirect to the sts in a popup and login your user. This method takes a `configId` as parameter if you want to use a specific config and it also takes `authOptions` adding `customParams` which can change every time you want to login and an `urlHandler` which is getting called instead of the redirect. You can also pass `PopupOptions` to define where and how the popup should open.
+
+The method returns a `Observable<LoginResponse>` containing
+
+```ts
+{
+  isAuthenticated: boolean;
+  userData: any;
+  accessToken: string;
+  idToken: string;
+  configId: string;
+  errorMessage?: string;
+}
+```
+
+```ts
+export interface PopupOptions {
+  width?: number;
+  height?: number;
+  left?: number;
+  top?: number;
+}
+```
+
+```ts
+export interface AuthOptions {
+  customParams?: { [key: string]: string | number | boolean };
+  urlHandler?(url: string): any;
+}
+```
+
+Examples:
+
+```ts
+this.oidcSecurityService.authorizeWithPopUp().subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
+  // ...use data
+});
+```
+
+```ts
+const authOptions = {
+  customParams: {
+    some: 'params',
+  },
+  urlHandler: () => {
+    /* ... */
+  },
+};
+
+this.oidcSecurityService
+  .authorizeWithPopUp(authOptions, null, 'configId')
+  .subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
+    // ...use data
+  });
+```
 
 ## logoffAndRevokeTokens(urlHandler?: (url: string) => any)
 
