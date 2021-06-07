@@ -2,9 +2,12 @@
 module.exports = {
   title: 'Angular Auth OIDC Client Docs',
   tagline: 'Dinosaurs are cool',
-  url: 'https://your-docusaurus-test-site.com',
+  url: 'https://lively-sand-02e04b010.azurestaticapps.net/',
   baseUrl: '/',
-  onBrokenLinks: 'throw',
+  customFields: {
+    redirectOnStart: '/docs/intro',
+  },
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   organizationName: 'damienbod', // Usually your GitHub org/user name.

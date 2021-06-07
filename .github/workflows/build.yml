@@ -1,4 +1,4 @@
-name: angular-auth-oidc-client-build
+name: Build, Lint and Test Lib
 
 on:
   push:
