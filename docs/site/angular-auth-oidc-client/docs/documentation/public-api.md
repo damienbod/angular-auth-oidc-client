@@ -111,7 +111,8 @@ const allConfigs = this.oidcSecurityService.getConfigurations();
 
 ## getConfiguration(configId?: string)
 
-This method returns one single configuration. If you pass the `configId` the specific config is being returned. If you do not pass it, the first one in case there are multiple or the only one in case you only have one configured is returned. Returns `null` otherwise.
+This method returns one single configuration.
+If you are running with multiple configs and pass the `configId` the configuration or `null` is returned. If you are running with multiple configs and do not pass the `configId` the first one is returned. If you are running with a single config this config is returned.
 
 ```ts
 // one config or the first one in case of multiple or null
@@ -123,7 +124,8 @@ const singleConfig = this.oidcSecurityService.getConfiguration('configId');
 
 ## getUserData(configId?: string)
 
-This method returns the user data being used. If you pass the `configId` the specific user data for this config is being returned. If you do not pass it, the first one in case there are multiple or the only one in case you only have one configured is returned. Returns `null` otherwise.
+This method returns the user data.
+If you are running with multiple configs and pass the `configId` the user data for this config or `null` is returned. If you are running with multiple configs and do not pass the `configId` the user data for the first config is returned. If you are running with a single config the user data for this is returned.
 
 ```ts
 // one config or the first one in case of multiple or null
@@ -133,21 +135,120 @@ const userData = this.oidcSecurityService.getUserData();
 const userData = this.oidcSecurityService.getUserData('configId');
 ```
 
-## checkAuth
+## checkAuth(url?: string, configId?: string)
 
-The `checkAuth()` method kicks off the complete setup flow, you can call it to start the whole authentication flow and get back if you are authenticated or not as an observable.
+This method starts the complete authentication flow. Use this method if you are running with a single config or want to check a single config.
 
-## getToken(): string
+This method parses the url when you come back from the Security Token Service (STS) and sets all values.
 
-Returns the `accesstoken` for you login scenario.
+It returns an `Observable<LoginResponse>` containing all information you need in one object.
 
-## getIdToken(): string
+```ts
+this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
+  // ...use data
+});
+```
 
-Returns the `id_token` for you login scenario.
+You can also pass a `configId` to check for as well as a url in case you want to overwrite the one in the address bar from the browser. This is useful for mobile or desktop cases like Electron or Cordova/Ionic.
 
-## getRefreshToken(): string
+```ts
+const url = '...';
+const configId = '...';
 
-Returns the `refresh token` for you login scenario if there is one.
+this.oidcSecurityService.checkAuth(url, configId).subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
+  // ...use data
+});
+```
+
+## checkAuthMultiple(url?: string, configId?: string)
+
+This method starts the complete authentication flow for multiple configs. Use this method if you are running with multiple configs to check which one is authenticated or not.
+
+This method parses the url when you come back from the Security Token Service (STS) and sets all values.
+
+It returns an `Observable<LoginResponse[]>` containing all information you need in the `LoginResponse` object as array so that you can see which config has which values.
+
+```ts
+this.oidcSecurityService.checkAuthMultiple().subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
+  // ...use data
+});
+```
+
+You can also pass a `configId` to check for as well as a url in case you want to overwrite the one in the address bar from the browser. This is useful for mobile or desktop cases like Electron or Cordova/Ionic.
+
+```ts
+const url = '...';
+const configId = '...';
+
+this.oidcSecurityService.checkAuthMultiple(url, configId).subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
+  // ...use data
+});
+```
+
+## isAuthenticated(configId?: string)
+
+This method provides information if a config is authenticated or not as a `boolean` return value.
+If you are running with multiple configs and pass the `configId` the authentication for this config is checked. If you are running with multiple configs and do not pass the `configId` the authentication for the first config is checked. If you are running with a single config this configuration is checked if you are authenticated.
+
+```ts
+const isAuthenticated = this.oidcSecurityService.isAuthenticated();
+```
+
+```ts
+const isAuthenticated = this.oidcSecurityService.isAuthenticated('configId');
+```
+
+## checkAuthIncludingServer(configId?: string)
+
+This method provides information if a config is authenticated or not and is including the server checking for an authenticated session as an `Observable<LoginResponse>` return value.
+If you are running with multiple configs and pass the `configId` the authentication for this config is checked. If you are running with multiple configs and do not pass the `configId` the authentication for the first config is checked. If you are running with a single config this configuration is checked if you are authenticated.
+
+```ts
+this.oidcSecurityService.checkAuthIncludingServer().subscribe(/*...*/);
+```
+
+```ts
+this.oidcSecurityService.checkAuthIncludingServer('configId').subscribe(/*...*/);
+```
+
+## getAccessToken(configId?: string):
+
+Returns the access token for your login scenario as a `string`.
+If you are running with multiple configs and pass the `configId` the access token for this config is checked. If you are running with multiple configs and do not pass the `configId` the access token for the first config is returned. If you are running with a single config the access token for this config returned.
+
+```ts
+const accessToken = this.oidcSecurityService.getAccessToken();
+```
+
+```ts
+const accessToken = this.oidcSecurityService.getAccessToken('configId');
+```
+
+## getIdToken(configId?: string):
+
+Returns the id token for your login scenario as a `string`.
+If you are running with multiple configs and pass the `configId` the id token for this config is checked. If you are running with multiple configs and do not pass the `configId` the id token for the first config is returned. If you are running with a single config the id token for this config returned.
+
+```ts
+const idToken = this.oidcSecurityService.getIdToken();
+```
+
+```ts
+const idToken = this.oidcSecurityService.getIdToken('configId');
+```
+
+## getRefreshToken(configId?: string)
+
+Returns the refresh token for you login scenario if there is one.
+If you are running with multiple configs and pass the `configId` the refresh token for this config is checked. If you are running with multiple configs and do not pass the `configId` the refresh token for the first config is returned. If you are running with a single config the refresh token for this config returned.
+
+```ts
+const refreshToken = this.oidcSecurityService.getRefreshToken();
+```
+
+```ts
+const refreshToken = this.oidcSecurityService.getRefreshToken('configId');
+```
 
 ## getPayloadFromIdToken(encode = false): any
 
