@@ -48,13 +48,13 @@ And answer the questions. A module will be created which encapsulates your confi
 
 Navigate to the level of your `package.json` and type
 
-```typescript
+```ts
  npm install angular-auth-oidc-client
 ```
 
 or with yarn
 
-```typescript
+```ts
  yarn add angular-auth-oidc-client
 ```
 
@@ -109,7 +109,7 @@ or with yarn
 
 If the schematics did not do this already: Import the `AuthModule` in your module.
 
-```typescript
+```ts
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
@@ -140,7 +140,7 @@ export class AppModule {}
 
 And call the method `checkAuth()` from your `app.component.ts`. The method `checkAuth()` is needed to process the redirect from your sts and set the correct states. This method must be used to ensure the correct functioning of the library.
 
-```typescript
+```ts
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
@@ -171,13 +171,13 @@ export class AppComponent implements OnInit {
 
 You can get the access token by calling the method `getToken()` on the `OidcSecurityService`
 
-```typescript
+```ts
 const token = this.oidcSecurityService.getToken();
 ```
 
 And then you can use it in the HttpHeaders
 
-```typescript
+```ts
 import { HttpHeaders } from '@angular/common/http';
 
 const token = this.oidcSecurityServices.getToken();

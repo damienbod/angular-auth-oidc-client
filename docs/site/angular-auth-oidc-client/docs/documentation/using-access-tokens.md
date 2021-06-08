@@ -11,13 +11,19 @@ The access token can be used by calling the `getToken()` function.
 
 You can get the access token by calling the method `getToken()` on the `OidcSecurityService`
 
-```typescript
+```ts
 const token = this.oidcSecurityService.getToken();
+```
+
+or
+
+```ts
+const token = this.oidcSecurityService.getToken('configId');
 ```
 
 And then you can use it in the HttpHeaders
 
-```typescript
+```ts
 import { HttpHeaders } from '@angular/common/http';
 
 const token = this.oidcSecurityServices.getToken();
@@ -37,7 +43,7 @@ The `HttpClient` allows you to write [interceptors](https://angular.io/guide/htt
 
 You can configure the routes you want to send a token with in the configuration
 
-```typescript
+```ts
 AuthModule.forRoot({
   config: {
     // ...
@@ -48,7 +54,7 @@ AuthModule.forRoot({
 
 and use the interceptor the lib provides you
 
-```typescript
+```ts
 import { AuthInterceptor /*, ... */ } from 'angular-auth-oidc-client';
 
 @NgModule({
@@ -71,7 +77,7 @@ export class AppModule { }
 
 Access tokens can be revoked using the `revokeAccessToken()` function. If you provide the access token in the param, any access token from the same STS can be revoked, if the STS supports the revocation endpoint.
 
-```typescript
+```ts
 revokeAccessToken() {
     this.oidcSecurityService.revokeAccessToken()
         .subscribe((result) => console.log(result));

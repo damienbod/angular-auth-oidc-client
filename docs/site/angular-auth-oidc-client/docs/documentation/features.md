@@ -5,20 +5,13 @@ sidebar_position: 6
 
 # Useful Features of this library
 
-- [Public Events](#public-events)
-- [Custom Storage](#custom-storage)
-- [Custom parameters](#custom-parameters)
-- [Auto Login](#auto-login)
-- [Using the OIDC package in a module or a Angular lib](#using-the-oidc-package-in-a-module-or-a-angular-lib)
-- [Delay the loading or pass an existing AuthWellKnownEndpoints config](#delay-the-loading-or-pass-an-existing-well-knownopenid-configuration-configuration)
-
 ## Public Events
 
 The library exposes several events which are happening during the runtime. You can subscribe to those events by using the `PublicEventsService`.
 
 Currently the events
 
-```typescript
+```ts
 {
     ConfigLoaded,
     CheckSessionReceived,
@@ -35,7 +28,7 @@ are supported.
 
 You can inject the service and use the events like this:
 
-```typescript
+```ts
 import { PublicEventsService } from 'angular-auth-oidc-client';
 
 constructor(private eventService: PublicEventsService) {
@@ -63,7 +56,7 @@ If you need, you can create a custom storage (for example to use cookies).
 
 Implement `AbstractSecurityStorage` and the `read`, `write` and `remove` methods:
 
-```typescript
+```ts
 @Injectable()
 export class CustomStorage implements AbstractSecurityStorage {
 
@@ -88,7 +81,7 @@ export class CustomStorage implements AbstractSecurityStorage {
 
 Then provide the class in the module:
 
-```typescript
+```ts
 @NgModule({
     imports: [
         ...
@@ -115,7 +108,7 @@ Here are two use cases to distinguish:
 
 If your redirect route from the Security Token Server to your app has the `AutoLoginGuard` activated already, like this:
 
-```typescript
+```ts
 import { AutoLoginGuard } from 'angular-auth-oidc-client';
 
 const appRoutes: Routes = [
@@ -131,7 +124,7 @@ Then _make sure_ to _*not*_ call the `checkAuth()` method in your `app.component
 
 If the redirect route from the STS is publicly available, you _have to_ call the `checkAuth()` by yourself in the `app.component.ts` to proceed the url when getting redirected. The lib redirects you to the route the user entered before he was sent to the login page on the sts automatically for you.
 
-```typescript
+```ts
 import { AutoLoginGuard } from 'angular-auth-oidc-client';
 
 const appRoutes: Routes = [
@@ -164,7 +157,7 @@ export class AppComponent implements OnInit {
 
 Custom parameters can be added to the auth request by adding them to the config. They are provided by
 
-```typescript
+```ts
 customParamsAuthRequest?: {
     [key: string]: string | number | boolean;
 };
@@ -172,14 +165,14 @@ customParamsAuthRequest?: {
 
 so you can pass them as an object like this:
 
-```typescript
+```ts
 AuthModule.forRoot({
       config: {
         stsServer: '<your sts address here>',
-         customParamsAuthRequest: {
+        customParamsAuthRequest: {
           response_mode: 'fragment',
           prompt: 'consent',
-         },
+        },
       },
     }),
 ```
@@ -188,14 +181,14 @@ AuthModule.forRoot({
 
 If you want to pass dynamic custom parameters with the request url to the sts you can do that by passing the parameters into the `authorize` method.
 
-```typescript
+```ts
 login() {
-    this.oidcSecurityService.authorize({ customParams: { ui_locales: 'de-CH' }});
+    this.oidcSecurityService.authorize(null, { customParams: { ui_locales: 'de-CH' }});
 }
 
 ```
 
-> If you want to pass staitc parameters to the sts everytime please use the custom parameters in the [Configuration](configuration.md) instead!
+> If you want to pass static parameters to the sts every time please use the custom parameters in the [Configuration](configuration.md) instead!
 
 ## Using the OIDC package in a module or a Angular lib
 
@@ -203,7 +196,7 @@ This example shows how you could set the configuration when loading a child modu
 
 > This is not recommended. Please use the initialization on root level.
 
-```typescript
+```ts
 import { NgModule } from '@angular/core';
 import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
 import { HttpClientModule } from '@angular/common/http';
@@ -250,14 +243,14 @@ The property `eagerLoadAuthWellKnownEndpoints` in the configuration sets exactly
 
 You also have the option to pass the already existing `.well-known/openid-configuration` into the module as a second parameter. In this case no HTTPS call to load the `.well-known/openid-configuration` will be made.
 
-```typescript
+```ts
  AuthModule.forRoot({
     config: {
       // ...
       eagerLoadAuthWellKnownEndpoints: true | false
     },
 
-    authWellKnown: {
+    authWellknownEndpoints: {
       // ...
     }
   }),

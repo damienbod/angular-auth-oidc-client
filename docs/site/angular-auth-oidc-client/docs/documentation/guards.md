@@ -7,7 +7,7 @@ sidebar_position: 7
 
 > The guard should only be applied to protected URLs. The guard should not be active on the default route, where the authorization request is processed.
 
-```typescript
+```ts
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
@@ -37,7 +37,7 @@ export class AuthorizationGuard implements CanActivate {
 
 Do not forget to add the guard to your routes with `canActivate`, `canLoad`, etc.
 
-```typescript
+```ts
 const appRoutes: Routes = [
   // ...
   { path: 'protected', component: <yourComponent>, canActivate: [AuthorizationGuard] }
