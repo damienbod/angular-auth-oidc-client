@@ -1,4 +1,9 @@
-# X-Frame-Options / CSP ancestor / different domains
+---
+sidebar_label: Deploying to different domains
+sidebar_position: 5
+---
+
+# Deploying to different domains
 
 If deploying the client application and the STS server application with 2 different domains,
 the X-Frame-Options HTTPS header needs to allow all iframes. Then use the CSP HTTPS header to only allow the required domains.
