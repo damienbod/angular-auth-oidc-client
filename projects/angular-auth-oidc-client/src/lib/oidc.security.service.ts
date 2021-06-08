@@ -279,14 +279,14 @@ export class OidcSecurityService {
    * only the access token is revoked. Then the logout run.
    *
    * @param configId The configId to perform the action in behalf of. If not passed, the first configs will be taken
-   * @param urlHandler An optional url handler for the logoff request.
+   * @param authOptions The custom options for the request.
    *
    * @returns An observable when the action is finished
    */
-  logoffAndRevokeTokens(configId?: string, urlHandler?: (url: string) => any): Observable<any> {
+  logoffAndRevokeTokens(configId?: string, authOptions?: AuthOptions): Observable<any> {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId).configId;
 
-    return this.logoffRevocationService.logoffAndRevokeTokens(configId, urlHandler);
+    return this.logoffRevocationService.logoffAndRevokeTokens(configId, authOptions);
   }
 
   /**
@@ -297,10 +297,9 @@ export class OidcSecurityService {
    * @param authOptions with custom parameters and/or an custom url handler
    */
   logoff(configId?: string, authOptions?: AuthOptions): void {
-    const { urlHandler, customParams } = authOptions || {};
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId).configId;
 
-    return this.logoffRevocationService.logoff(configId, urlHandler, customParams);
+    return this.logoffRevocationService.logoff(configId, authOptions);
   }
 
   /**
