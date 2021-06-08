@@ -166,7 +166,7 @@ logoffAndRevokeTokens() {
 }
 ```
 
-The method also takes a `configId` and a `urlHandler` in case you want to pass this.
+The method also takes a `configId` and a `authOptions` in case you want to pass this.
 
 ### `logoffLocal()`
 

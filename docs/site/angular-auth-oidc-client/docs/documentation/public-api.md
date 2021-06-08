@@ -460,22 +460,27 @@ this.oidcSecurityService
   .subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
 ```
 
-## logoffAndRevokeTokens(configId?: string, urlHandler?: (url: string) => any)
+## logoffAndRevokeTokens(configId?: string, authOptions?: AuthOptions)
 
 With this method the user is being logged out and the refresh token and and the access token are revoked on the server. If the refresh token does not exist only the access token is revoked. Then the logout runs normally.
 
-This method takes a `configId` and an custom `urlHandler` as parameter and returns an observable. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+This method takes a `configId` and and `authOptions` as parameter and returns an observable. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
 
 ```ts
 this.oidcSecurityService.logoffAndRevokeTokens().subscribe(/* ... */);
 ```
 
 ```ts
-const urlHandler: () => {
-  /* ... */
+const authOptions = {
+  customParams: {
+    some: 'params',
+  },
+  urlHandler: () => {
+    /* ... */
+  },
 };
 
-this.oidcSecurityService.logoffAndRevokeTokens('configId', urlHandler).subscribe(/* ... */);
+this.oidcSecurityService.logoffAndRevokeTokens('configId', authOptions).subscribe(/* ... */);
 ```
 
 ## logoff(configId?: string, authOptions?: AuthOptions)
