@@ -1,5 +1,5 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { Router, RouterStateSnapshot } from '@angular/router';
+import { Router, RouterStateSnapshot, UrlSegment } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { AuthStateService } from '../authState/auth-state.service';
@@ -149,7 +149,7 @@ describe(`AutoLoginGuard`, () => {
       waitForAsync(() => {
         const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
 
-        autoLoginGuard.canLoad({ path: 'some-url8' }, []).subscribe(() => {
+        autoLoginGuard.canLoad(null, []).subscribe(() => {
           expect(checkAuthServiceSpy).toHaveBeenCalledTimes(1);
         });
       })
@@ -161,7 +161,7 @@ describe(`AutoLoginGuard`, () => {
         const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
         spyOnProperty(authStateService, 'authorized$', 'get').and.returnValue(of(true));
 
-        autoLoginGuard.canLoad({ path: 'some-url9' }, []).subscribe(() => {
+        autoLoginGuard.canLoad(null, []).subscribe(() => {
           expect(checkAuthServiceSpy).not.toHaveBeenCalled();
         });
       })
@@ -173,7 +173,7 @@ describe(`AutoLoginGuard`, () => {
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
         const loginSpy = spyOn(loginService, 'login');
 
-        autoLoginGuard.canLoad({ path: 'some-url10' }, []).subscribe(() => {
+        autoLoginGuard.canLoad(null, []).subscribe(() => {
           expect(loginSpy).toHaveBeenCalledTimes(1);
         });
       })
@@ -184,7 +184,7 @@ describe(`AutoLoginGuard`, () => {
       waitForAsync(() => {
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
 
-        autoLoginGuard.canLoad({ path: 'some-url11' }, []).subscribe((result) => {
+        autoLoginGuard.canLoad(null, []).subscribe((result) => {
           expect(result).toBe(false);
         });
       })
@@ -196,9 +196,23 @@ describe(`AutoLoginGuard`, () => {
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
         const localStorageSpy = spyOn(localStorage, 'setItem');
 
-        autoLoginGuard.canLoad({ path: 'some-url12' }, []).subscribe((result) => {
+        autoLoginGuard.canLoad(null, [new UrlSegment('some-url12', {})]).subscribe((result) => {
           expect(localStorageSpy).toHaveBeenCalledOnceWith('redirect', 'some-url12');
         });
+      })
+    );
+
+    it(
+      'if no route is stored, setItem on localStorage is called, multiple params',
+      waitForAsync(() => {
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+        const localStorageSpy = spyOn(localStorage, 'setItem');
+
+        autoLoginGuard
+          .canLoad(null, [new UrlSegment('some-url12', {}), new UrlSegment('with', {}), new UrlSegment('some-param', {})])
+          .subscribe((result) => {
+            expect(localStorageSpy).toHaveBeenCalledOnceWith('redirect', 'some-url12/with/some-param');
+          });
       })
     );
 
@@ -208,7 +222,7 @@ describe(`AutoLoginGuard`, () => {
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of(true));
         const localStorageSpy = spyOn(localStorage, 'setItem');
 
-        autoLoginGuard.canLoad({ path: 'some-url13' }, []).subscribe((result) => {
+        autoLoginGuard.canLoad(null, []).subscribe((result) => {
           expect(result).toBe(true);
           expect(localStorageSpy).not.toHaveBeenCalled();
         });
@@ -224,7 +238,7 @@ describe(`AutoLoginGuard`, () => {
         const routerSpy = spyOn(router, 'navigateByUrl');
         const loginSpy = spyOn(loginService, 'login');
 
-        autoLoginGuard.canLoad({ path: 'some-url14' }, []).subscribe((result) => {
+        autoLoginGuard.canLoad(null, []).subscribe((result) => {
           expect(result).toBe(true);
           expect(localStorageSpy).toHaveBeenCalledOnceWith('redirect');
           expect(routerSpy).toHaveBeenCalledOnceWith('stored-route');
