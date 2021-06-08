@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, retry, switchMap, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
+import { AuthOptions } from '../auth-options';
 import { ConfigurationProvider } from '../config/provider/config.provider';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
@@ -26,9 +27,13 @@ export class LogoffRevocationService {
 
   // Logs out on the server and the local client.
   // If the server state has changed, check session, then only a local logout.
-  logoff(configId: string, urlHandler?: (url: string) => any, customParams?: { [p: string]: string | number | boolean }): void {
+  logoff(configId: string, authOptions?: AuthOptions): void {
+    const { urlHandler, customParams } = authOptions || {};
+
     this.loggerService.logDebug(configId, 'logoff, remove auth ');
+
     const endSessionUrl = this.getEndSessionUrl(configId, customParams);
+
     this.resetAuthDataService.resetAuthorizationData(configId);
 
     if (!endSessionUrl) {
@@ -58,12 +63,12 @@ export class LogoffRevocationService {
 
   // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
   // only the access token is revoked. Then the logout run.
-  logoffAndRevokeTokens(configId: string, urlHandler?: (url: string) => any): Observable<any> {
+  logoffAndRevokeTokens(configId: string, authOptions?: AuthOptions): Observable<any> {
     const { revocationEndpoint } = this.storagePersistenceService.read('authWellKnownEndPoints', configId) || {};
 
     if (!revocationEndpoint) {
       this.loggerService.logDebug(configId, 'revocation endpoint not supported');
-      this.logoff(configId, urlHandler);
+      this.logoff(configId, authOptions);
     }
 
     if (this.storagePersistenceService.getRefreshToken(configId)) {
@@ -74,7 +79,7 @@ export class LogoffRevocationService {
           this.loggerService.logError(configId, errorMessage, error);
           return throwError(errorMessage);
         }),
-        tap(() => this.logoff(configId, urlHandler))
+        tap(() => this.logoff(configId, authOptions))
       );
     } else {
       return this.revokeAccessToken(configId).pipe(
@@ -83,7 +88,7 @@ export class LogoffRevocationService {
           this.loggerService.logError(configId, errorMessage, error);
           return throwError(errorMessage);
         }),
-        tap(() => this.logoff(configId, urlHandler))
+        tap(() => this.logoff(configId, authOptions))
       );
     }
   }

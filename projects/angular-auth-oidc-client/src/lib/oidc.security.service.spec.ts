@@ -584,7 +584,7 @@ describe('OidcSecurityService', () => {
 
   describe('logoffAndRevokeTokens', () => {
     it(
-      'calls logoffRevocationService.logoffAndRevokeTokens if no urlHandler is given',
+      'calls logoffRevocationService.logoffAndRevokeTokens if no authOptions are given',
       waitForAsync(() => {
         const spy = spyOn(logoffRevocationService, 'logoffAndRevokeTokens');
 
@@ -594,26 +594,42 @@ describe('OidcSecurityService', () => {
     );
 
     it(
-      'calls logoffRevocationService.logoffAndRevokeTokens with urlHandler if it is given',
+      'calls logoffRevocationService.logoffAndRevokeTokens with authOptions if given',
       waitForAsync(() => {
         const spy = spyOn(logoffRevocationService, 'logoffAndRevokeTokens');
 
-        const urlHandler = () => {};
+        const authOptions = {
+          urlHandler: () => {},
+        };
 
-        oidcSecurityService.logoffAndRevokeTokens('configId', urlHandler);
-        expect(spy).toHaveBeenCalledWith('configId', urlHandler);
+        oidcSecurityService.logoffAndRevokeTokens('configId', authOptions);
+        expect(spy).toHaveBeenCalledWith('configId', authOptions);
       })
     );
   });
 
   describe('logoff', () => {
     it(
-      'calls logoffRevocationService.logoff if no urlHandler is given',
+      'calls logoffRevocationService.logoff if no authOptions are given',
       waitForAsync(() => {
         const spy = spyOn(logoffRevocationService, 'logoff');
 
         oidcSecurityService.logoff();
-        expect(spy).toHaveBeenCalledWith(undefined, undefined, undefined);
+        expect(spy).toHaveBeenCalledWith(undefined, undefined);
+      })
+    );
+
+    it(
+      'calls logoffRevocationService.logoff with authOptions if  given',
+      waitForAsync(() => {
+        const spy = spyOn(logoffRevocationService, 'logoff');
+
+        const authOptions = {
+          urlHandler: () => {},
+        };
+
+        oidcSecurityService.logoff('configId', authOptions);
+        expect(spy).toHaveBeenCalledWith('configId', authOptions);
       })
     );
 
@@ -622,23 +638,13 @@ describe('OidcSecurityService', () => {
       waitForAsync(() => {
         const spy = spyOn(logoffRevocationService, 'logoff');
 
-        const urlHandler = () => {};
+        const authOptions = {
+          urlHandler: () => {},
+          customParams: { my: 'custom', params: 1 },
+        };
 
-        oidcSecurityService.logoff('configId', { urlHandler });
-        expect(spy).toHaveBeenCalledWith('configId', urlHandler, undefined);
-      })
-    );
-
-    it(
-      'calls logoffRevocationService.logoff with urlHandler if it is given',
-      waitForAsync(() => {
-        const spy = spyOn(logoffRevocationService, 'logoff');
-
-        const urlHandler = () => {};
-        const customParams = { my: 'custom', params: 1 };
-
-        oidcSecurityService.logoff('configId', { urlHandler, customParams });
-        expect(spy).toHaveBeenCalledWith('configId', urlHandler, customParams);
+        oidcSecurityService.logoff('configId', authOptions);
+        expect(spy).toHaveBeenCalledWith('configId', authOptions);
       })
     );
   });
