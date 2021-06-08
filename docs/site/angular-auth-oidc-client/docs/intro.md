@@ -23,13 +23,13 @@ Step through the wizard and select the appropriate configuration options for you
 
 Navigate to the level of your `package.json` and type
 
-```typescript
+```ts
  npm install angular-auth-oidc-client
 ```
 
 or with yarn
 
-```typescript
+```ts
  yarn add angular-auth-oidc-client
 ```
 
@@ -51,7 +51,7 @@ Make sure you add the `silent-renew.html` file to the `angular.json` assets conf
 
 Import the module and services in your module.
 
-```typescript
+```ts
 import { NgModule } from '@angular/core';
 import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
 // ...
