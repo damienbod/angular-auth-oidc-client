@@ -1,4 +1,9 @@
-# Authentication using a Popup
+---
+sidebar_label: Login using a popup
+sidebar_position: 4
+---
+
+# Login using a Popup
 
 You can authenticate with any Open ID Connect identity provider using a popup.
 

@@ -1,3 +1,8 @@
+---
+sidebar_label: Using Guards
+sidebar_position: 7
+---
+
 # Using Guards
 
 > The guard should only be applied to protected URLs. The guard should not be active on the default route, where the authorization request is processed.

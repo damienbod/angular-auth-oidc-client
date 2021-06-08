@@ -1,4 +1,9 @@
-# Using the access token
+---
+sidebar_label: Using Access Tokens
+sidebar_position: 8
+---
+
+# Using Access Tokens
 
 The access token can be used by calling the `getToken()` function.
 

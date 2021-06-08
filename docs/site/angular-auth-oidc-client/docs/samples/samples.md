@@ -1,5 +1,13 @@
 # Samples using this library
 
+## Examples using:
+
+https://github.com/damienbod/AspNetCoreAngularSignalRSecurity
+
+## Using src code directly:
+
+https://github.com/damienbod/AspNet5IdentityServerAngularImplicitFlow
+
 - [Code Flow with PKCE Using a configuration from an http source and silent renew](#code-flow-with-pkce-using-a-configuration-from-an-http-source-and-silent-renew)
 - [Code Flow PKCE with Refresh tokens](#code-flow-pkce-with-refresh-tokens)
 - [Code Flow PKCE Auto login](#code-flow-pkce-auto-login)

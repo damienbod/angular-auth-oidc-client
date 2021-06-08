@@ -1,3 +1,8 @@
+---
+sidebar_label: Useful Features of this library
+sidebar_position: 6
+---
+
 # Useful Features of this library
 
 - [Public Events](#public-events)

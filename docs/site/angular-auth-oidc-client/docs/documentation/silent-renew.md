@@ -1,3 +1,8 @@
+---
+sidebar_label: Working with Silent Renew
+sidebar_position: 9
+---
+
 # Silent Renew
 
 - [Silent Renew Code Flow with PKCE](#silent-renew-code-flow-with-pkce)

@@ -1,4 +1,15 @@
-# Logout
+---
+sidebar_label: Login & Logout
+sidebar_position: 3
+---
+
+# Login & Logout
+
+In this section the Login and Logout mechanisms should be briefly described.
+
+## Login
+
+## Logout
 
 The `logoff()` function sends an end session request to the OIDC server, if it is available, or the check session has not sent a changed event.
 
