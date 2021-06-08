@@ -79,8 +79,7 @@ This allows you to have the provider's consent prompt display in a popup window 
 
 You can pass options to control the dimension of the popup with the `PopupOptions` interface as a second parameter
 
-```typescript
-
+```ts
 loginWithPopup() {
   const somePopupOptions = { width: 500, height: 500, left: 50, top: 50 };
 
@@ -91,7 +90,23 @@ loginWithPopup() {
     /* ... */
     });
 }
+```
 
+### `ConfigId` Parameter
+
+In case you have multiple configs you can pass the `configId` parameter as the last argument.
+
+```ts
+loginWithPopup() {
+  const somePopupOptionsOrNull = /* ... */;
+
+  const authOptionsOrNull = /* ... */
+
+  this.oidcSecurityService.authorizeWithPopUp(authOptions, somePopupOptions, 'configId')
+    .subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
+    /* ... */
+    });
+}
 ```
 
 ### Popup Sample
