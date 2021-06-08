@@ -352,7 +352,7 @@ describe('Logout and Revoke Service', () => {
   });
 
   describe('logoff', () => {
-    it('logs and retuns if `endSessionUrl` is false', () => {
+    it('logs and returns if `endSessionUrl` is false', () => {
       // Arrange
       spyOn(service, 'getEndSessionUrl').and.returnValue('');
       const serverStateChangedSpy = spyOn(checkSessionService, 'serverStateChanged');
@@ -362,7 +362,7 @@ describe('Logout and Revoke Service', () => {
       expect(serverStateChangedSpy).not.toHaveBeenCalled();
     });
 
-    it('logs and retuns if `serverStateChanged` is true', () => {
+    it('logs and returns if `serverStateChanged` is true', () => {
       // Arrange
       spyOn(service, 'getEndSessionUrl').and.returnValue('someValue');
       const redirectSpy = spyOn(redirectService, 'redirectTo');
@@ -383,13 +383,13 @@ describe('Logout and Revoke Service', () => {
       const redirectSpy = spyOn(redirectService, 'redirectTo');
       spyOn(checkSessionService, 'serverStateChanged').and.returnValue(false);
       // Act
-      service.logoff('configId', urlHandler);
+      service.logoff('configId', { urlHandler });
       // Assert
       expect(redirectSpy).not.toHaveBeenCalled();
       expect(spy).toHaveBeenCalledWith('someValue');
     });
 
-    it('calls reidrect service if no urlhandler is passed', () => {
+    it('calls redirect service if no urlhandler is passed', () => {
       // Arrange
       spyOn(service, 'getEndSessionUrl').and.returnValue('someValue');
 
@@ -481,9 +481,9 @@ describe('Logout and Revoke Service', () => {
         const logoffSpy = spyOn(service, 'logoff');
         const urlHandler = (url) => {};
         // Act
-        service.logoffAndRevokeTokens('configId', urlHandler).subscribe(() => {
+        service.logoffAndRevokeTokens('configId', { urlHandler }).subscribe(() => {
           // Assert
-          expect(logoffSpy).toHaveBeenCalledWith('configId', urlHandler);
+          expect(logoffSpy).toHaveBeenCalledWith('configId', { urlHandler });
         });
       })
     );
