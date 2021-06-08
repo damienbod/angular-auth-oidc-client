@@ -18,7 +18,9 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
   ) {}
 
   canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> {
-    return this.checkAuth(route.path);
+    const routeToRedirect = segments.join('/');
+
+    return this.checkAuth(routeToRedirect);
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
