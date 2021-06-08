@@ -5,7 +5,7 @@ sidebar_position: 2
 
 # Configuration
 
-The lib has to be configured with the values of your choice. You can to that either with a static config or loading the config from an HTTP endpoint and map the values to the format the library expects.
+Prior to using the library, you must configure it with the appropriate values for your environment. You can either configure the application statically, by providing the configuration values at design-time, or you can fetch the configuration from an HTTP endpoint. Configurations loaded from an HTTP endpoint must be mapped to the format the library expects.
 
 ## Configure with static config
 
@@ -73,7 +73,7 @@ export class AuthConfigModule {}
 - Type: string
 - Required: false
 
-To identify a configuration a new parameter called `configId` was introduced. This is being filled from the lib when the user does not set it explicitly in the config. If set, the configured value is taken. It is optional. For a single config this param is not really important. For multiple configs this param is important.
+To identify a configuration a new parameter called `configId` was introduced. If you do not explicitly set this value, the library will generate and assign the value for you. If set, the configured value is used. The value is optional.
 
 ### `stsServer`
 

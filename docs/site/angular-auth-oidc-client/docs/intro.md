@@ -17,7 +17,7 @@ You can use the schematics and `ng add` the library.
 ng add angular-auth-oidc-client
 ```
 
-And answer the questions. A module will be created which encapsulates your configuration. Check the values being configured and replace them by your needs. Then you are ready to use the library.
+Step through the wizard and select the appropriate configuration options for you environment. Once the wizard is complete, a module will be created to encapsulate your OIDC configuration. Many of the configured values are placeholders and will need to be adjusted for your individual use case. Once you've confirmed your configuration, the library is ready to use.
 
 ### Npm / Yarn
 
