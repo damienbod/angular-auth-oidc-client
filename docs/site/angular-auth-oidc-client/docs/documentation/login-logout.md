@@ -102,34 +102,62 @@ loginWithPopup() {
 
 The `logoff()` function sends an end session request to the OIDC server, if it is available, or the check session has not sent a changed event.
 
-```typescript
+```ts
 logout() {
    this.oidcSecurityService.logoff();
 }
 ```
 
-You can pass a `urlHandler` and custom parameters if you want.
+### `ConfigId` Parameter
 
-Example:
+In case you have multiple configs you can pass the `configId` parameter as the first argument.
 
-```typescript
-logout() {
-   this.oidcSecurityService.logoff({ customParams : { foo:"bar", baz: "Henlo" }});
+```ts
+login() {
+  this.oidcSecurityService.logoff('configId')
+    .subscribe(({ isAuthenticated, userData, idToken, accessToken, errorMessage }) => {
+    /* ... */
+    });
 }
 ```
 
+### AuthOptions Parameter
+
+You can pass an `authOptions` parameter if you want to control the behavior more.
+
+```ts
+logout() {
+  const authOptions = {
+    customParams: {
+      some: 'params',
+    },
+    urlHandler: () => {
+      /* ... */
+    },
+  };
+
+  this.oidcSecurityService.logoff('configId', authOptions);
+}
+```
+
+### `logoffAndRevokeTokens()`
+
 The `logoffAndRevokeTokens()` function revokes the access token and the refresh token if using a refresh flow, and then logoff like above.
 
-```typescript
+```ts
 logoffAndRevokeTokens() {
    this.oidcSecurityService.logoffAndRevokeTokens()
       .subscribe((result) => console.log(result));
 }
 ```
 
-The `logoffLocal()` function is used to reset you local session in the browser, but not sending anything to the server.
+The method also takes a `configId` and a `urlHandler` in case you want to pass this.
 
-```typescript
+### `logoffLocal()`
+
+The `logoffLocal()` function is used to reset you local session in the browser, but not sending anything to the server. It also supports the `configId` parameter.
+
+```ts
 logoutLocal() {
    this.oidcSecurityService.logoffLocal();
 }
