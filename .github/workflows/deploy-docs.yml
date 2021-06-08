@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node.js 14
         uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 14.15.1
 
       - name: Installing Dependencies
         run: sudo npm install
