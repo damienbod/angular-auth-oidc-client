@@ -15,11 +15,6 @@ export class AppComponent implements OnInit {
       console.log(`Current access token is '${accessToken}'`);
     });
 
-    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
-      console.log('app authenticated', isAuthenticated);
-      console.log(`Current access token is '${accessToken}'`);
-    });
-
     this.eventService
       .registerForEvents()
       .pipe(filter((notification) => notification.type === EventTypes.CheckSessionReceived))
