@@ -20,7 +20,9 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
   ) {}
 
   canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> {
-    return this.checkAuth(route.path);
+    const routeToRedirect = segments.join('/');
+
+    return this.checkAuth(routeToRedirect);
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
@@ -37,7 +39,6 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
 
       map(({ isAuthenticated }) => {
         const storedRoute = this.autoLoginService.getStoredRedirectRoute(configId);
-
         if (isAuthenticated) {
           if (storedRoute) {
             this.autoLoginService.deleteStoredRedirectRoute(configId);
@@ -54,6 +55,6 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
   }
 
   private getId() {
-    return this.configurationProvider.getAllConfigurations()[0].configId;
+    return this.configurationProvider.getOpenIDConfiguration().configId;
   }
 }

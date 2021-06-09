@@ -18,6 +18,7 @@
       <li class="nav-item"><a class="nav-link" *ngIf="isAuthenticated" [routerLink]="['home']">home</a></li>
       <li class="nav-item"><a class="nav-link" *ngIf="isAuthenticated" [routerLink]="['protected']">protected</a></li>
       <li class="nav-item"><a class="nav-link" *ngIf="isAuthenticated" [routerLink]="['forbidden']">forbidden</a></li>
+      <li class="nav-item"><a class="nav-link" *ngIf="isAuthenticated" [routerLink]="['customers']">lazy customers</a></li>
       <li class="nav-item">
         <a class="nav-link" *ngIf="!isAuthenticated" [routerLink]="['protected']">Route to 'protected' Route & Auto Login</a>
       </li>
