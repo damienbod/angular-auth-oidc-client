@@ -8,7 +8,7 @@ module.exports = {
     redirectOnStart: '/docs/intro',
   },
   onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenMarkdownLinks: 'throw',
   favicon: 'img/favicon.ico',
   organizationName: 'damienbod', // Usually your GitHub org/user name.
   projectName: 'Angular Auth OIDC Client', // Usually your repo name.
