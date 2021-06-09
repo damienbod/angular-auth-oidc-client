@@ -62,6 +62,11 @@ export class CheckAuthService {
     if (this.currentUrlService.currentUrlHasStateParam()) {
       const stateParamFromUrl = this.currentUrlService.getStateParamFromCurrentUrl();
       const config = this.getConfigurationWithUrlState(stateParamFromUrl);
+
+      if (!config) {
+        return throwError(`could not find matching config for state ${stateParamFromUrl}`);
+      }
+
       return this.checkAuthWithConfig(config, url).pipe(map((x) => [x]));
     }
 
