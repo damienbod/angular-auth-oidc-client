@@ -23,8 +23,6 @@ export class HomeComponent implements OnInit {
 
     this.oidcSecurityService.isAuthenticated$.subscribe((authenticated: boolean) => {
       this.isAuthenticated = authenticated;
-
-      console.warn('authenticated: ', authenticated);
     });
   }
 
