@@ -88,7 +88,7 @@ export class RefreshSessionService {
     );
   }
 
-  private persistCustomParams(extraCustomParams: { [key: string]: string | number | boolean }, configId: string) {
+  private persistCustomParams(extraCustomParams: { [key: string]: string | number | boolean }, configId: string): void {
     const { useRefreshToken } = this.configurationProvider.getOpenIDConfiguration();
 
     if (extraCustomParams) {
@@ -116,6 +116,7 @@ export class RefreshSessionService {
 
     if (!authWellknownEndpointUrl) {
       this.loggerService.logError(configId, 'no authWellKnownEndpoint given!');
+
       return of(null);
     }
 
@@ -146,6 +147,7 @@ export class RefreshSessionService {
         this.loggerService.logDebug(configId, `forceRefreshSession timeout. Attempt #${currentAttempt}`);
 
         this.flowsDataService.resetSilentRenewRunning(configId);
+
         return timer(currentAttempt * scalingDuration);
       })
     );

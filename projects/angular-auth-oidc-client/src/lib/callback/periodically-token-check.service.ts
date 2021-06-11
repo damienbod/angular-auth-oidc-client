@@ -68,7 +68,7 @@ export class PeriodicallyTokenCheckService {
     });
   }
 
-  private getRefreshEvent(configId: string) {
+  private getRefreshEvent(configId: string): Observable<any> {
     const shouldStartRefreshEvent = this.shouldStartPeriodicallyCheckForConfig(configId);
 
     if (!shouldStartRefreshEvent) {
@@ -83,6 +83,7 @@ export class PeriodicallyTokenCheckService {
       catchError((error) => {
         this.loggerService.logError(configId, 'silent renew failed!', error);
         this.flowsDataService.resetSilentRenewRunning(configId);
+
         return throwError(error);
       })
     );
@@ -109,6 +110,7 @@ export class PeriodicallyTokenCheckService {
 
     if (!config?.silentRenew) {
       this.resetAuthDataService.resetAuthorizationData(configId);
+
       return of(null);
     }
 

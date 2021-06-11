@@ -6,7 +6,7 @@ import { LogLevel } from './log-level';
 export class LoggerService {
   constructor(private configurationProvider: ConfigurationProvider) {}
 
-  logError(configId: string, message: any, ...args: any[]) {
+  logError(configId: string, message: any, ...args: any[]): void {
     if (this.loggingIsTurnedOff(configId)) {
       return;
     }
@@ -18,7 +18,7 @@ export class LoggerService {
     }
   }
 
-  logWarning(configId: string, message: any, ...args: any[]) {
+  logWarning(configId: string, message: any, ...args: any[]): void {
     if (!this.logLevelIsSet(configId)) {
       return;
     }
@@ -38,7 +38,7 @@ export class LoggerService {
     }
   }
 
-  logDebug(configId: string, message: any, ...args: any[]) {
+  logDebug(configId: string, message: any, ...args: any[]): void {
     if (!this.logLevelIsSet(configId)) {
       return;
     }
@@ -58,12 +58,13 @@ export class LoggerService {
     }
   }
 
-  private currentLogLevelIsEqualOrSmallerThan(configId: string, logLevelToCompare: LogLevel) {
+  private currentLogLevelIsEqualOrSmallerThan(configId: string, logLevelToCompare: LogLevel): boolean {
     const { logLevel } = this.configurationProvider.getOpenIDConfiguration(configId) || {};
+
     return logLevel <= logLevelToCompare;
   }
 
-  private logLevelIsSet(configId: string) {
+  private logLevelIsSet(configId: string): boolean {
     const { logLevel } = this.configurationProvider.getOpenIDConfiguration(configId) || {};
 
     if (logLevel === null) {
@@ -77,7 +78,7 @@ export class LoggerService {
     return true;
   }
 
-  private loggingIsTurnedOff(configId: string) {
+  private loggingIsTurnedOff(configId: string): boolean {
     const { logLevel } = this.configurationProvider.getOpenIDConfiguration(configId) || {};
 
     return logLevel === LogLevel.None;

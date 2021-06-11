@@ -42,6 +42,7 @@ export class StateValidationService {
       this.loggerService.logWarning(configId, 'authCallback incorrect state');
       toReturn.state = ValidationResult.StatesDoNotMatch;
       this.handleUnsuccessfulValidation(configId);
+
       return toReturn;
     }
 
@@ -64,6 +65,7 @@ export class StateValidationService {
         this.loggerService.logDebug(configId, 'authCallback Signature validation failed id_token');
         toReturn.state = ValidationResult.SignatureFailed;
         this.handleUnsuccessfulValidation(configId);
+
         return toReturn;
       }
 
@@ -73,6 +75,7 @@ export class StateValidationService {
         this.loggerService.logWarning(configId, 'authCallback incorrect nonce');
         toReturn.state = ValidationResult.IncorrectNonce;
         this.handleUnsuccessfulValidation(configId);
+
         return toReturn;
       }
 
@@ -80,6 +83,7 @@ export class StateValidationService {
         this.loggerService.logDebug(configId, 'authCallback Validation, one of the REQUIRED properties missing from id_token');
         toReturn.state = ValidationResult.RequiredPropertyMissing;
         this.handleUnsuccessfulValidation(configId);
+
         return toReturn;
       }
 
@@ -97,6 +101,7 @@ export class StateValidationService {
         );
         toReturn.state = ValidationResult.MaxOffsetExpired;
         this.handleUnsuccessfulValidation(configId);
+
         return toReturn;
       }
 
@@ -112,12 +117,14 @@ export class StateValidationService {
           this.loggerService.logWarning(configId, 'authCallback incorrect iss does not match authWellKnownEndpoints issuer');
           toReturn.state = ValidationResult.IssDoesNotMatchIssuer;
           this.handleUnsuccessfulValidation(configId);
+
           return toReturn;
         }
       } else {
         this.loggerService.logWarning(configId, 'authWellKnownEndpoints is undefined');
         toReturn.state = ValidationResult.NoAuthWellKnownEndPoints;
         this.handleUnsuccessfulValidation(configId);
+
         return toReturn;
       }
 
@@ -125,6 +132,7 @@ export class StateValidationService {
         this.loggerService.logWarning(configId, 'authCallback incorrect aud');
         toReturn.state = ValidationResult.IncorrectAud;
         this.handleUnsuccessfulValidation(configId);
+
         return toReturn;
       }
 
@@ -132,6 +140,7 @@ export class StateValidationService {
         this.loggerService.logWarning(configId, 'authCallback missing azp');
         toReturn.state = ValidationResult.IncorrectAzp;
         this.handleUnsuccessfulValidation(configId);
+
         return toReturn;
       }
 
@@ -139,6 +148,7 @@ export class StateValidationService {
         this.loggerService.logWarning(configId, 'authCallback incorrect azp');
         toReturn.state = ValidationResult.IncorrectAzp;
         this.handleUnsuccessfulValidation(configId);
+
         return toReturn;
       }
 
@@ -146,6 +156,7 @@ export class StateValidationService {
         this.loggerService.logWarning(configId, 'authCallback pre, post id_token claims do not match in refresh');
         toReturn.state = ValidationResult.IncorrectIdTokenClaimsAfterRefresh;
         this.handleUnsuccessfulValidation(configId);
+
         return toReturn;
       }
 
@@ -153,6 +164,7 @@ export class StateValidationService {
         this.loggerService.logWarning(configId, 'authCallback id token expired');
         toReturn.state = ValidationResult.TokenExpired;
         this.handleUnsuccessfulValidation(configId);
+
         return toReturn;
       }
     } else {
@@ -165,6 +177,7 @@ export class StateValidationService {
       toReturn.state = ValidationResult.Ok;
       this.handleSuccessfulValidation(configId);
       this.handleUnsuccessfulValidation(configId);
+
       return toReturn;
     }
 
@@ -187,6 +200,7 @@ export class StateValidationService {
         this.loggerService.logWarning(configId, 'authCallback incorrect at_hash');
         toReturn.state = ValidationResult.IncorrectAtHash;
         this.handleUnsuccessfulValidation(configId);
+
         return toReturn;
       }
     }
@@ -194,6 +208,7 @@ export class StateValidationService {
     toReturn.authResponseIsValid = true;
     toReturn.state = ValidationResult.Ok;
     this.handleSuccessfulValidation(configId);
+
     return toReturn;
   }
 
@@ -217,6 +232,7 @@ export class StateValidationService {
     // its iss Claim Value MUST be the same as in the ID Token issued when the original authentication occurred,
     if (decodedIdToken.iss !== newIdToken.iss) {
       this.loggerService.logDebug(configId, `iss do not match: ${decodedIdToken.iss} ${newIdToken.iss}`);
+
       return false;
     }
     // its azp Claim Value MUST be the same as in the ID Token issued when the original authentication occurred;
@@ -224,17 +240,20 @@ export class StateValidationService {
     // otherwise, the same rules apply as apply when issuing an ID Token at the time of the original authentication.
     if (decodedIdToken.azp !== newIdToken.azp) {
       this.loggerService.logDebug(configId, `azp do not match: ${decodedIdToken.azp} ${newIdToken.azp}`);
+
       return false;
     }
     // its sub Claim Value MUST be the same as in the ID Token issued when the original authentication occurred,
     if (decodedIdToken.sub !== newIdToken.sub) {
       this.loggerService.logDebug(configId, `sub do not match: ${decodedIdToken.sub} ${newIdToken.sub}`);
+
       return false;
     }
 
     // its aud Claim Value MUST be the same as in the ID Token issued when the original authentication occurred,
     if (!this.equalityService.isStringEqualOrNonOrderedArrayEqual(decodedIdToken?.aud, newIdToken?.aud)) {
       this.loggerService.logDebug(configId, `aud in new id_token is not valid: '${decodedIdToken?.aud}' '${newIdToken.aud}'`);
+
       return false;
     }
 
@@ -247,6 +266,7 @@ export class StateValidationService {
     // - not the time that the new ID token is issued,
     if (decodedIdToken.auth_time !== newIdToken.auth_time) {
       this.loggerService.logDebug(configId, `auth_time do not match: ${decodedIdToken.auth_time} ${newIdToken.auth_time}`);
+
       return false;
     }
 

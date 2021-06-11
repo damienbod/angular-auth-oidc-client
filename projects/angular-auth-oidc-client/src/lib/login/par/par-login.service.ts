@@ -33,6 +33,7 @@ export class ParLoginService {
   loginPar(configId: string, authOptions?: AuthOptions): void {
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
       this.loggerService.logError(configId, 'Invalid response type!');
+
       return;
     }
 
@@ -40,6 +41,7 @@ export class ParLoginService {
 
     if (!authWellknownEndpointUrl) {
       this.loggerService.logError(configId, 'no authWellknownEndpoint given!');
+
       return;
     }
 
@@ -59,6 +61,7 @@ export class ParLoginService {
 
         if (!url) {
           this.loggerService.logError(configId, `Could not create url with param ${response.requestUri}: '${url}'`);
+
           return;
         }
 
@@ -74,6 +77,7 @@ export class ParLoginService {
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
       const errorMessage = 'Invalid response type!';
       this.loggerService.logError(configId, errorMessage);
+
       return throwError(errorMessage);
     }
 
@@ -82,6 +86,7 @@ export class ParLoginService {
     if (!authWellknownEndpointUrl) {
       const errorMessage = 'no authWellknownEndpoint given!';
       this.loggerService.logError(configId, errorMessage);
+
       return throwError(errorMessage);
     }
 
@@ -101,6 +106,7 @@ export class ParLoginService {
         if (!url) {
           const errorMessage = `Could not create url with param ${response.requestUri}: 'url'`;
           this.loggerService.logError(configId, errorMessage);
+
           return throwError(errorMessage);
         }
 

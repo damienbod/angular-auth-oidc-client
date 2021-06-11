@@ -10,6 +10,7 @@ export class BrowserStorageService implements AbstractSecurityStorage {
   read(key: string, configId: string): any {
     if (!this.hasStorage()) {
       this.loggerService.logDebug(configId, `Wanted to read '${key}' but Storage was undefined`);
+
       return false;
     }
 
@@ -25,34 +26,40 @@ export class BrowserStorageService implements AbstractSecurityStorage {
   write(key: string, value: any, configId: string): boolean {
     if (!this.hasStorage()) {
       this.loggerService.logDebug(configId, `Wanted to write '${key}/${value}' but Storage was falsy`);
+
       return false;
     }
 
     const storage = this.getStorage(configId);
     if (!storage) {
       this.loggerService.logDebug(configId, `Wanted to write '${key}/${value}' but Storage was falsy`);
+
       return false;
     }
 
     value = value || null;
 
     storage.setItem(`${key}`, JSON.stringify(value));
+
     return true;
   }
 
   remove(key: string, configId: string): boolean {
     if (!this.hasStorage()) {
       this.loggerService.logDebug(configId, `Wanted to remove '${key}' but Storage was falsy`);
+
       return false;
     }
 
     const storage = this.getStorage(configId);
     if (!storage) {
       this.loggerService.logDebug(configId, `Wanted to write '${key}' but Storage was falsy`);
+
       return false;
     }
 
     storage.removeItem(`${key}`);
+
     return true;
   }
 
@@ -60,26 +67,29 @@ export class BrowserStorageService implements AbstractSecurityStorage {
   clear(configId: string): boolean {
     if (!this.hasStorage()) {
       this.loggerService.logDebug(configId, `Wanted to clear storage but Storage was falsy`);
+
       return false;
     }
 
     const storage = this.getStorage(configId);
     if (!storage) {
       this.loggerService.logDebug(configId, `Wanted to clear storage but Storage was falsy`);
+
       return false;
     }
 
     storage.clear();
+
     return true;
   }
 
-  private getStorage(configId: string) {
+  private getStorage(configId: string): any {
     const { storage } = this.configProvider.getOpenIDConfiguration(configId) || {};
 
     return storage;
   }
 
-  private hasStorage() {
+  private hasStorage(): boolean {
     return typeof Storage !== 'undefined';
   }
 }

@@ -38,6 +38,7 @@ export class LogoffRevocationService {
 
     if (!endSessionUrl) {
       this.loggerService.logDebug(configId, 'only local login cleaned up, no end_session_endpoint');
+
       return;
     }
 
@@ -55,7 +56,7 @@ export class LogoffRevocationService {
     this.checkSessionService.stop();
   }
 
-  logoffLocalMultiple() {
+  logoffLocalMultiple(): void {
     const allConfigs = this.configurationProvider.getAllConfigurations();
 
     allConfigs.forEach(({ configId }) => this.logoffLocal(configId));
@@ -77,6 +78,7 @@ export class LogoffRevocationService {
         catchError((error) => {
           const errorMessage = `revoke token failed`;
           this.loggerService.logError(configId, errorMessage, error);
+
           return throwError(errorMessage);
         }),
         tap(() => this.logoff(configId, authOptions))
@@ -86,6 +88,7 @@ export class LogoffRevocationService {
         catchError((error) => {
           const errorMessage = `revoke accessToken failed`;
           this.loggerService.logError(configId, errorMessage, error);
+
           return throwError(errorMessage);
         }),
         tap(() => this.logoff(configId, authOptions))
@@ -124,7 +127,7 @@ export class LogoffRevocationService {
     return this.urlService.createEndSessionUrl(idToken, configId, mergedParams);
   }
 
-  private sendRevokeRequest(configId: string, body: string) {
+  private sendRevokeRequest(configId: string, body: string): Observable<any> {
     const url = this.urlService.getRevocationEndpointUrl(configId);
 
     let headers: HttpHeaders = new HttpHeaders();
@@ -134,11 +137,13 @@ export class LogoffRevocationService {
       retry(2),
       switchMap((response: any) => {
         this.loggerService.logDebug(configId, 'revocation endpoint post response: ', response);
+
         return of(response);
       }),
       catchError((error) => {
         const errorMessage = `Revocation request failed`;
         this.loggerService.logError(configId, errorMessage, error);
+
         return throwError(errorMessage);
       })
     );

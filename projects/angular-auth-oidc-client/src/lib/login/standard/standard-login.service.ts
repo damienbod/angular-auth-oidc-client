@@ -21,6 +21,7 @@ export class StandardLoginService {
   loginStandard(configId: string, authOptions?: AuthOptions): void {
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
       this.loggerService.logError(configId, 'Invalid response type!');
+
       return;
     }
 
@@ -28,6 +29,7 @@ export class StandardLoginService {
 
     if (!authWellknownEndpointUrl) {
       this.loggerService.logError(configId, 'no authWellknownEndpoint given!');
+
       return;
     }
 
@@ -40,6 +42,7 @@ export class StandardLoginService {
 
       if (!url) {
         this.loggerService.logError(configId, 'Could not create url', url);
+
         return;
       }
 

@@ -37,7 +37,7 @@ export class ConfigValidationService {
     return errorCount === 0;
   }
 
-  private processValidationResultsAndGetErrorCount(allValidationResults: RuleValidationResult[], configId: string) {
+  private processValidationResultsAndGetErrorCount(allValidationResults: RuleValidationResult[], configId: string): number {
     const allMessages = allValidationResults.filter((x) => x.messages.length > 0);
 
     const allErrorMessages = this.getAllMessagesOfType('error', allMessages);
@@ -48,8 +48,9 @@ export class ConfigValidationService {
     return allErrorMessages.length;
   }
 
-  private getAllMessagesOfType(type: Level, results: RuleValidationResult[]) {
+  private getAllMessagesOfType(type: Level, results: RuleValidationResult[]): string[] {
     const allMessages = results.filter((x) => x.level === type).map((result) => result.messages);
+
     return allMessages.reduce((acc, val) => acc.concat(val), []);
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 import { EventTypes } from './event-types';
 import { OidcClientNotification } from './notification';
 
@@ -13,14 +13,14 @@ export class PublicEventsService {
    * @param type The event type.
    * @param value The event value.
    */
-  fireEvent<T>(type: EventTypes, value?: T) {
+  fireEvent<T>(type: EventTypes, value?: T): void {
     this.notify.next({ type, value });
   }
 
   /**
    * Wires up the event notification observable.
    */
-  registerForEvents() {
+  registerForEvents(): Observable<OidcClientNotification<any>> {
     return this.notify.asObservable();
   }
 }

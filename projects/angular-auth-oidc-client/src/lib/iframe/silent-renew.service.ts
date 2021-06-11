@@ -1,6 +1,6 @@
 ﻿import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { of, Subject, throwError } from 'rxjs';
+import { Observable, of, Subject, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
@@ -21,7 +21,7 @@ const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 export class SilentRenewService {
   private refreshSessionWithIFrameCompletedInternal$ = new Subject<CallbackContext>();
 
-  get refreshSessionWithIFrameCompleted$() {
+  get refreshSessionWithIFrameCompleted$(): Observable<CallbackContext> {
     return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
   }
 
@@ -48,12 +48,13 @@ export class SilentRenewService {
     return existingIframe;
   }
 
-  isSilentRenewConfigured(configId: string) {
+  isSilentRenewConfigured(configId: string): boolean {
     const { useRefreshToken, silentRenew } = this.configurationProvider.getOpenIDConfiguration(configId);
+
     return !useRefreshToken && silentRenew;
   }
 
-  codeFlowCallbackSilentRenewIframe(urlParts: any, configId: string) {
+  codeFlowCallbackSilentRenewIframe(urlParts: any, configId: string): Observable<CallbackContext> {
     const params = new HttpParams({
       fromString: urlParts[1],
     });
@@ -69,6 +70,7 @@ export class SilentRenewService {
       this.resetAuthDataService.resetAuthorizationData(configId);
       this.flowsDataService.setNonce('', configId);
       this.intervalService.stopPeriodicTokenCheck();
+
       return throwError(error);
     }
 
@@ -92,12 +94,13 @@ export class SilentRenewService {
       catchError((errorFromFlow) => {
         this.intervalService.stopPeriodicTokenCheck();
         this.resetAuthDataService.resetAuthorizationData(configId);
+
         return throwError(errorFromFlow);
       })
     );
   }
 
-  silentRenewEventHandler(e: CustomEvent, configId: string) {
+  silentRenewEventHandler(e: CustomEvent, configId: string): void {
     this.loggerService.logDebug(configId, 'silentRenewEventHandler');
     if (!e.detail) {
       return;
@@ -127,7 +130,7 @@ export class SilentRenewService {
     );
   }
 
-  private getExistingIframe() {
+  private getExistingIframe(): HTMLIFrameElement {
     return this.iFrameService.getExistingIFrame(IFRAME_FOR_SILENT_RENEW_IDENTIFIER);
   }
 }

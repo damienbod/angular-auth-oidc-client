@@ -29,6 +29,7 @@ export class ClosestMatchingRouteService {
 
   private getAllConfiguredRoutes(): ConfiguredRoutesWithConfig[] {
     const allConfigurations = this.configProvider.getAllConfigurations();
+
     return allConfigurations.map((x) => ({ routes: x.secureRoutes, configId: x.configId }));
   }
 }

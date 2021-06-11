@@ -202,8 +202,8 @@ export class OidcSecurityService {
    */
   getPayloadFromIdToken(encode = false, configId?: string): any {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId).configId;
-
     const token = this.authStateService.getIdToken(configId);
+
     return this.tokenHelperService.getPayloadFromToken(token, encode, configId);
   }
 

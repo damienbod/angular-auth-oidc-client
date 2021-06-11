@@ -20,14 +20,14 @@ export class DataService {
     });
   }
 
-  post<T>(url: string, body: any, configId: string, headersParams?: HttpHeaders) {
+  post<T>(url: string, body: any, configId: string, headersParams?: HttpHeaders): Observable<T> {
     const headers = headersParams || this.prepareHeaders();
     const params = this.prepareParams(configId);
 
     return this.httpClient.post<T>(url, body, { headers, params });
   }
 
-  private prepareHeaders(token?: string) {
+  private prepareHeaders(token?: string): HttpHeaders {
     let headers = new HttpHeaders();
     headers = headers.set('Accept', 'application/json');
 

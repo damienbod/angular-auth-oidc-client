@@ -17,7 +17,7 @@ export class TokenHelperService {
     return date;
   }
 
-  getHeaderFromToken(token: any, encoded: boolean, configId: string) {
+  getHeaderFromToken(token: any, encoded: boolean, configId: string): any {
     if (!this.tokenIsValid(token, configId)) {
       return {};
     }
@@ -25,7 +25,7 @@ export class TokenHelperService {
     return this.getPartOfToken(token, 0, encoded);
   }
 
-  getPayloadFromToken(token: any, encoded: boolean, configId: string) {
+  getPayloadFromToken(token: any, encoded: boolean, configId: string): any {
     if (!this.tokenIsValid(token, configId)) {
       return {};
     }
@@ -33,7 +33,7 @@ export class TokenHelperService {
     return this.getPartOfToken(token, 1, encoded);
   }
 
-  getSignatureFromToken(token: any, encoded: boolean, configId: string) {
+  getSignatureFromToken(token: any, encoded: boolean, configId: string): any {
     if (!this.tokenIsValid(token, configId)) {
       return {};
     }
@@ -41,7 +41,7 @@ export class TokenHelperService {
     return this.getPartOfToken(token, 2, encoded);
   }
 
-  private getPartOfToken(token: string, index: number, encoded: boolean) {
+  private getPartOfToken(token: string, index: number, encoded: boolean): any {
     const partOfToken = this.extractPartOfToken(token, index);
 
     if (encoded) {
@@ -49,10 +49,11 @@ export class TokenHelperService {
     }
 
     const result = this.urlBase64Decode(partOfToken);
+
     return JSON.parse(result);
   }
 
-  private urlBase64Decode(str: string) {
+  private urlBase64Decode(str: string): string {
     let output = str.replace(/-/g, '+').replace(/_/g, '/');
 
     switch (output.length % 4) {
@@ -83,14 +84,16 @@ export class TokenHelperService {
     }
   }
 
-  private tokenIsValid(token: string, configId: string) {
+  private tokenIsValid(token: string, configId: string): boolean {
     if (!token) {
       this.loggerService.logError(configId, `token '${token}' is not valid --> token falsy`);
+
       return false;
     }
 
     if (!(token as string).includes('.')) {
       this.loggerService.logError(configId, `token '${token}' is not valid --> no dots included`);
+
       return false;
     }
 
@@ -98,13 +101,14 @@ export class TokenHelperService {
 
     if (parts.length !== PARTS_OF_TOKEN) {
       this.loggerService.logError(configId, `token '${token}' is not valid --> token has to have exactly ${PARTS_OF_TOKEN - 1} dots`);
+
       return false;
     }
 
     return true;
   }
 
-  private extractPartOfToken(token: string, index: number) {
+  private extractPartOfToken(token: string, index: number): string {
     return token.split('.')[index];
   }
 }

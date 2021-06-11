@@ -26,17 +26,19 @@ export class StateValidationCallbackHandlerService {
 
     if (validationResult.authResponseIsValid) {
       this.authStateService.setAuthorizationData(validationResult.accessToken, callbackContext.authResult, configId);
+
       return of(callbackContext);
     } else {
       const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${this.doc.location.hash}`;
       this.loggerService.logWarning(configId, errorMessage);
       this.resetAuthDataService.resetAuthorizationData(configId);
       this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
+
       return throwError(errorMessage);
     }
   }
 
-  private publishUnauthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
+  private publishUnauthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean): void {
     this.authStateService.updateAndPublishAuthState({
       isAuthenticated: false,
       validationResult: stateValidationResult.state,

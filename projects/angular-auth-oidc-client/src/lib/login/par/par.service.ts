@@ -47,6 +47,7 @@ export class ParService {
       catchError((error) => {
         const errorMessage = `There was an error on ParService postParRequest`;
         this.loggerService.logError(configId, errorMessage, error);
+
         return throwError(errorMessage);
       })
     );

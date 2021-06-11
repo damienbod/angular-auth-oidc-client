@@ -19,7 +19,7 @@ export class AutoLoginService {
    *
    * @param url The redirect url to save.
    */
-  saveStoredRedirectRoute(configId: string, url: string) {
+  saveStoredRedirectRoute(configId: string, url: string): void {
     this.storageService.write(STORAGE_KEY, url, configId);
   }
 

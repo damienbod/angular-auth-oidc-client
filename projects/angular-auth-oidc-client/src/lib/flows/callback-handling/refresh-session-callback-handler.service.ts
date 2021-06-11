@@ -42,6 +42,7 @@ export class RefreshSessionCallbackHandlerService {
     } else {
       const errorMessage = 'no refresh token found, please login';
       this.loggerService.logError(configId, errorMessage);
+
       return throwError(errorMessage);
     }
   }

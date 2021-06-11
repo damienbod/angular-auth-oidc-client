@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config/provider/config.provider';
+import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { IntervalService } from './interval.service';
@@ -17,7 +18,7 @@ export class CodeFlowCallbackService {
     private router: Router
   ) {}
 
-  authenticatedCallbackWithCode(urlToCheck: string, configId: string) {
+  authenticatedCallbackWithCode(urlToCheck: string, configId: string): Observable<CallbackContext> {
     const isRenewProcess = this.flowsDataService.isSilentRenewRunning(configId);
     const { triggerAuthorizationResultEvent, postLoginRoute, unauthorizedRoute } =
       this.configurationProvider.getOpenIDConfiguration(configId);
@@ -34,6 +35,7 @@ export class CodeFlowCallbackService {
         if (!triggerAuthorizationResultEvent && !isRenewProcess) {
           this.router.navigateByUrl(unauthorizedRoute);
         }
+
         return throwError(error);
       })
     );

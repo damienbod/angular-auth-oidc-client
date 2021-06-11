@@ -22,7 +22,7 @@ export class CheckSessionService {
   private iframeRefreshInterval = 60000;
   private checkSessionChangedInternal$ = new BehaviorSubject<boolean>(false);
 
-  get checkSessionChanged$() {
+  get checkSessionChanged$(): Observable<boolean> {
     return this.checkSessionChangedInternal$.asObservable();
   }
 
@@ -35,8 +35,9 @@ export class CheckSessionService {
     private zone: NgZone
   ) {}
 
-  isCheckSessionConfigured(configId: string) {
+  isCheckSessionConfigured(configId: string): boolean {
     const { startCheckSession } = this.configurationProvider.getOpenIDConfiguration(configId);
+
     return startCheckSession;
   }
 
@@ -58,12 +59,13 @@ export class CheckSessionService {
     this.checkSessionReceived = false;
   }
 
-  serverStateChanged(configId: string) {
+  serverStateChanged(configId: string): boolean {
     const { startCheckSession } = this.configurationProvider.getOpenIDConfiguration(configId);
+
     return startCheckSession && this.checkSessionReceived;
   }
 
-  getExistingIframe() {
+  getExistingIframe(): HTMLIFrameElement {
     return this.iFrameService.getExistingIFrame(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
   }
 
@@ -76,6 +78,7 @@ export class CheckSessionService {
 
     if (!authWellKnownEndPoints) {
       this.loggerService.logWarning(configId, 'CheckSession - init check session: authWellKnownEndpoints is undefined. Returning.');
+
       return of();
     }
 
@@ -89,7 +92,7 @@ export class CheckSessionService {
     }
 
     return new Observable((observer) => {
-      existingIframe.onload = () => {
+      existingIframe.onload = (): void => {
         this.lastIFrameRefresh = Date.now();
         observer.next();
         observer.complete();
@@ -97,9 +100,9 @@ export class CheckSessionService {
     });
   }
 
-  private pollServerSession(clientId: string, configId: string) {
+  private pollServerSession(clientId: string, configId: string): void {
     this.outstandingMessages = 0;
-    const pollServerSessionRecur = () => {
+    const pollServerSessionRecur = (): void => {
       this.init(configId)
         .pipe(take(1))
         .subscribe(() => {
@@ -150,12 +153,12 @@ export class CheckSessionService {
     pollServerSessionRecur();
   }
 
-  private clearScheduledHeartBeat() {
+  private clearScheduledHeartBeat(): void {
     clearTimeout(this.scheduledHeartBeatRunning);
     this.scheduledHeartBeatRunning = null;
   }
 
-  private messageHandler(configId: string, e: any) {
+  private messageHandler(configId: string, e: any): void {
     const existingIFrame = this.getExistingIframe();
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
     const startsWith = !!authWellKnownEndPoints?.checkSessionIframe?.startsWith(e.origin);
@@ -177,17 +180,18 @@ export class CheckSessionService {
     }
   }
 
-  private bindMessageEventToIframe(configId: string) {
+  private bindMessageEventToIframe(configId: string): void {
     const iframeMessageEvent = this.messageHandler.bind(this, configId);
     window.addEventListener('message', iframeMessageEvent, false);
   }
 
-  private getOrCreateIframe(configId: string) {
+  private getOrCreateIframe(configId: string): HTMLIFrameElement {
     const existingIframe = this.getExistingIframe();
 
     if (!existingIframe) {
       const frame = this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_CHECK_SESSION_IDENTIFIER, configId);
       this.bindMessageEventToIframe(configId);
+
       return frame;
     }
 
