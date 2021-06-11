@@ -103,10 +103,8 @@ export class AuthStateService {
   }
 
   hasIdTokenExpiredAndRenewCheckIsEnabled(configId: string): boolean {
-    const {
-      renewTimeBeforeTokenExpiresInSeconds,
-      enableIdTokenExpiredValidationInRenew,
-    } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const { renewTimeBeforeTokenExpiresInSeconds, enableIdTokenExpiredValidationInRenew } =
+      this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!enableIdTokenExpiredValidationInRenew) {
       return false;

@@ -20,9 +20,8 @@ export class ImplicitFlowCallbackService {
 
   authenticatedImplicitFlowCallback(configId: string, hash?: string): Observable<CallbackContext> {
     const isRenewProcess = this.flowsDataService.isSilentRenewRunning(configId);
-    const { triggerAuthorizationResultEvent, postLoginRoute, unauthorizedRoute } = this.configurationProvider.getOpenIDConfiguration(
-      configId
-    );
+    const { triggerAuthorizationResultEvent, postLoginRoute, unauthorizedRoute } =
+      this.configurationProvider.getOpenIDConfiguration(configId);
 
     return this.flowsService.processImplicitFlowCallback(configId, hash).pipe(
       tap((callbackContext) => {
