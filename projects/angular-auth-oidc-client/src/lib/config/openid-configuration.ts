@@ -144,6 +144,10 @@ export interface OpenIdConfiguration {
   // Azure B2C have implemented this incorrectly. Add support for to disable this until fixed.
   /** disables the auth_time validation for id_tokens in a refresh due to Azure's incorrect implementation */
   disableRefreshIdTokenAuthTimeValidation?: boolean;
+
+  /** enables the id_token validation, default value is true. You can disable this validation if you would like to ignore the expired value in the renew process. If no id_token is returned in using refresh tokens, set this to false. */
+  enableIdTokenExpiredValidationInRenew?: boolean;
+
   /** Controls the periodic check time interval in sections.
    * Default value is 3
    */
