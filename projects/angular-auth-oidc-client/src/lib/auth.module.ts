@@ -59,15 +59,15 @@ export interface PassedInitialConfig {
   storage?: any;
 }
 
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function createStaticLoader(passedConfig: PassedInitialConfig) {
   return new StsConfigStaticLoader(passedConfig.config);
 }
 
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function configurationProviderFactory(oidcConfigService: OidcConfigService, loader: StsConfigLoader) {
   const allLoadPromises = Promise.all(loader.loadConfigs());
-  const fn = () => allLoadPromises.then((configs) => oidcConfigService.withConfigs(configs));
+  const fn: () => Promise<OpenIdConfiguration[]> = () => allLoadPromises.then((configs) => oidcConfigService.withConfigs(configs));
 
   return fn;
 }

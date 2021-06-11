@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config/provider/config.provider';
 import { AuthResult } from '../flows/callback-context';
@@ -14,7 +14,7 @@ import { AuthenticatedResult, ConfigAuthenticatedResult } from './auth-result';
 export class AuthStateService {
   private authenticatedInternal$ = new BehaviorSubject<ConfigAuthenticatedResult[] | boolean>(null);
 
-  get authenticated$() {
+  get authenticated$(): Observable<ConfigAuthenticatedResult[] | boolean> {
     return this.authenticatedInternal$.asObservable().pipe(distinctUntilChanged());
   }
 
@@ -56,6 +56,7 @@ export class AuthStateService {
     }
 
     const token = this.storagePersistenceService.getAccessToken(configId);
+
     return this.decodeURIComponentSafely(token);
   }
 
@@ -65,6 +66,7 @@ export class AuthStateService {
     }
 
     const token = this.storagePersistenceService.getIdToken(configId);
+
     return this.decodeURIComponentSafely(token);
   }
 
@@ -74,6 +76,7 @@ export class AuthStateService {
     }
 
     const token = this.storagePersistenceService.getRefreshToken(configId);
+
     return this.decodeURIComponentSafely(token);
   }
 
@@ -84,15 +87,18 @@ export class AuthStateService {
 
     if (this.hasIdTokenExpired(configId)) {
       this.loggerService.logDebug(configId, 'persisted idToken is expired');
+
       return false;
     }
 
     if (this.hasAccessTokenExpiredIfExpiryExists(configId)) {
       this.loggerService.logDebug(configId, 'persisted accessToken is expired');
+
       return false;
     }
 
     this.loggerService.logDebug(configId, 'persisted idToken and accessToken are valid');
+
     return true;
   }
 
@@ -164,6 +170,7 @@ export class AuthStateService {
 
   private checkAllConfigsIfTheyAreAuthenticated(): ConfigAuthenticatedResult[] {
     const configs = this.configurationProvider.getAllConfigurations();
+
     return configs.map(({ configId }) => ({
       configId,
       isAuthenticated: this.isAuthenticated(configId),

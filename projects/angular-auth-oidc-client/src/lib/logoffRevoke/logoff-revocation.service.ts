@@ -55,7 +55,7 @@ export class LogoffRevocationService {
     this.checkSessionService.stop();
   }
 
-  logoffLocalMultiple() {
+  logoffLocalMultiple(): void {
     const allConfigs = this.configurationProvider.getAllConfigurations();
 
     allConfigs.forEach(({ configId }) => this.logoffLocal(configId));
@@ -124,7 +124,7 @@ export class LogoffRevocationService {
     return this.urlService.createEndSessionUrl(idToken, configId, mergedParams);
   }
 
-  private sendRevokeRequest(configId: string, body: string) {
+  private sendRevokeRequest(configId: string, body: string): Observable<any> {
     const url = this.urlService.getRevocationEndpointUrl(configId);
 
     let headers: HttpHeaders = new HttpHeaders();

@@ -24,7 +24,10 @@
             "prefix": "lib",
             "style": "camelCase"
           }
-        ]
+        ],
+        "@typescript-eslint/typedef": ["error"],
+        "@typescript-eslint/explicit-function-return-type": ["error"],
+        "newline-before-return": ["error"]
       }
     },
     {

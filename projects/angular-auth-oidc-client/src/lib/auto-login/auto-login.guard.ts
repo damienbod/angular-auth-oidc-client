@@ -29,7 +29,7 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
     return this.checkAuth(state.url);
   }
 
-  private checkAuth(url: string) {
+  private checkAuth(url: string): Observable<boolean> {
     const configId = this.getId();
 
     const isAuthenticated$ = this.authStateService.authenticated$ as Observable<boolean>;
@@ -44,17 +44,19 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
             this.autoLoginService.deleteStoredRedirectRoute(configId);
             this.router.navigateByUrl(storedRoute);
           }
+
           return true;
         }
 
         this.autoLoginService.saveStoredRedirectRoute(configId, url);
         this.loginService.login(configId);
+
         return false;
       })
     );
   }
 
-  private getId() {
+  private getId(): string {
     return this.configurationProvider.getOpenIDConfiguration().configId;
   }
 }

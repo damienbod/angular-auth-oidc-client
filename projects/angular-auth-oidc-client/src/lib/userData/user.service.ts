@@ -15,7 +15,7 @@ import { ConfigUserDataResult } from './config-userdata-result';
 export class UserService {
   private userDataInternal$ = new BehaviorSubject<ConfigUserDataResult[] | any>(null);
 
-  get userData$() {
+  get userData$(): Observable<ConfigUserDataResult[] | any> {
     return this.userDataInternal$.asObservable();
   }
 
@@ -69,7 +69,7 @@ export class UserService {
     return this.storagePersistenceService.read('userData', configId) || null;
   }
 
-  publishUserDataIfExists(configId: string) {
+  publishUserDataIfExists(configId: string): void {
     const userData = this.getUserDataFromStore(configId);
 
     if (userData) {
