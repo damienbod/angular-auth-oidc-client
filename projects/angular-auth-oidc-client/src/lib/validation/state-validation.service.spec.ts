@@ -739,6 +739,7 @@ describe('State Validation Service', () => {
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
       disableRefreshIdTokenAuthTimeValidation: true,
+      enableIdTokenExpiredValidationInRenew: true,
     };
 
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
@@ -805,6 +806,7 @@ describe('State Validation Service', () => {
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
       disableRefreshIdTokenAuthTimeValidation: true,
+      enableIdTokenExpiredValidationInRenew: true,
     };
 
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
@@ -871,6 +873,7 @@ describe('State Validation Service', () => {
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
       disableRefreshIdTokenAuthTimeValidation: true,
+      enableIdTokenExpiredValidationInRenew: true,
     };
 
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
@@ -937,6 +940,7 @@ describe('State Validation Service', () => {
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
       disableRefreshIdTokenAuthTimeValidation: false,
+      enableIdTokenExpiredValidationInRenew: true,
     };
 
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
@@ -1003,6 +1007,7 @@ describe('State Validation Service', () => {
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
       disableRefreshIdTokenAuthTimeValidation: false,
+      enableIdTokenExpiredValidationInRenew: true,
     };
 
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
@@ -1069,6 +1074,7 @@ describe('State Validation Service', () => {
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
       disableRefreshIdTokenAuthTimeValidation: false,
+      enableIdTokenExpiredValidationInRenew: true,
     };
 
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
@@ -1135,6 +1141,7 @@ describe('State Validation Service', () => {
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
       disableRefreshIdTokenAuthTimeValidation: false,
+      enableIdTokenExpiredValidationInRenew: true,
     };
 
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
@@ -1201,6 +1208,7 @@ describe('State Validation Service', () => {
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
       disableRefreshIdTokenAuthTimeValidation: false,
+      enableIdTokenExpiredValidationInRenew: true,
     };
 
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);

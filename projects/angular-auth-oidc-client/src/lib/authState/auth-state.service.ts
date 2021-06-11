@@ -85,7 +85,7 @@ export class AuthStateService {
       return false;
     }
 
-    if (this.hasIdTokenExpired(configId)) {
+    if (this.hasIdTokenExpiredAndRenewCheckIsEnabled(configId)) {
       this.loggerService.logDebug(configId, 'persisted idToken is expired');
 
       return false;
@@ -102,9 +102,14 @@ export class AuthStateService {
     return true;
   }
 
-  hasIdTokenExpired(configId: string): boolean {
+  hasIdTokenExpiredAndRenewCheckIsEnabled(configId: string): boolean {
+    const { renewTimeBeforeTokenExpiresInSeconds, enableIdTokenExpiredValidationInRenew } =
+      this.configurationProvider.getOpenIDConfiguration(configId);
+
+    if (!enableIdTokenExpiredValidationInRenew) {
+      return false;
+    }
     const tokenToCheck = this.storagePersistenceService.getIdToken(configId);
-    const { renewTimeBeforeTokenExpiresInSeconds } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     const idTokenExpired = this.tokenValidationService.hasIdTokenExpired(tokenToCheck, configId, renewTimeBeforeTokenExpiresInSeconds);
 

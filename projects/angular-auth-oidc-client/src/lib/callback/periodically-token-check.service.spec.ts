@@ -235,7 +235,7 @@ describe('PeriodicallyTokenCheckService', () => {
       spyOn(authStateService, 'getIdToken').and.returnValue('idToken');
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
       spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
-      spyOn(authStateService, 'hasIdTokenExpired').and.returnValue(false);
+      spyOn(authStateService, 'hasIdTokenExpiredAndRenewCheckIsEnabled').and.returnValue(false);
       spyOn(authStateService, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(false);
 
       const result = (periodicallyTokenCheckService as any).shouldStartPeriodicallyCheckForConfig('configId');
@@ -248,7 +248,7 @@ describe('PeriodicallyTokenCheckService', () => {
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
       spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
 
-      spyOn(authStateService, 'hasIdTokenExpired').and.returnValue(true);
+      spyOn(authStateService, 'hasIdTokenExpiredAndRenewCheckIsEnabled').and.returnValue(true);
       spyOn(authStateService, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(true);
 
       const result = (periodicallyTokenCheckService as any).shouldStartPeriodicallyCheckForConfig('configId');

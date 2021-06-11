@@ -306,6 +306,13 @@ Extra parameters can be added to the token URL request.
 
 disables the auth_time validation for id_tokens in a refresh due to Azure incorrect implementation
 
+### `enableIdTokenExpiredValidationInRenew`
+
+- Type: boolean
+- Required: false
+
+enables the id_token validation, default value is true. You can disable this validation if you would like to ignore the expired value in the renew process. If no id_token is returned in using refresh tokens, set this to false.
+
 ### `eagerLoadAuthWellKnownEndpoints`
 
 - Type: boolean

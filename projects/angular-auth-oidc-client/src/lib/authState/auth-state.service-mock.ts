@@ -39,7 +39,7 @@ export class AuthStateServiceMock {
 
   setAuthResultInStorage(authResult: any) {}
 
-  hasIdTokenExpired() {
+  hasIdTokenExpiredAndRenewCheckIsEnabled() {
     return true;
   }
 
