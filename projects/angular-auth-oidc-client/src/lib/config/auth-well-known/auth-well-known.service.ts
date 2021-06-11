@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { of, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { EventTypes } from '../../public-events/event-types';
 import { PublicEventsService } from '../../public-events/public-events.service';
@@ -15,7 +15,7 @@ export class AuthWellKnownService {
     private storagePersistenceService: StoragePersistenceService
   ) {}
 
-  getAuthWellKnownEndPoints(authWellknownEndpointUrl: string, configId: string) {
+  getAuthWellKnownEndPoints(authWellknownEndpointUrl: string, configId: string): Observable<AuthWellKnownEndpoints> {
     const alreadySavedWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
     if (!!alreadySavedWellKnownEndpoints) {
       return of(alreadySavedWellKnownEndpoints);
@@ -25,16 +25,17 @@ export class AuthWellKnownService {
       tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(configId, mappedWellKnownEndpoints)),
       catchError((error) => {
         this.publicEventsService.fireEvent(EventTypes.ConfigLoadingFailed, null);
+
         return throwError(error);
       })
     );
   }
 
-  storeWellKnownEndpoints(configId: string, mappedWellKnownEndpoints: AuthWellKnownEndpoints) {
+  storeWellKnownEndpoints(configId: string, mappedWellKnownEndpoints: AuthWellKnownEndpoints): void {
     this.storagePersistenceService.write('authWellKnownEndPoints', mappedWellKnownEndpoints, configId);
   }
 
-  private getWellKnownEndPointsFromUrl(authWellknownEndpointUrl: string, configId: string) {
+  private getWellKnownEndPointsFromUrl(authWellknownEndpointUrl: string, configId: string): Observable<AuthWellKnownEndpoints> {
     return this.dataService.getWellKnownEndPointsFromUrl(authWellknownEndpointUrl, configId);
   }
 }

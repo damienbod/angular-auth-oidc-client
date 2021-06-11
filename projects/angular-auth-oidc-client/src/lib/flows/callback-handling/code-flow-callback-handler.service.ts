@@ -31,11 +31,13 @@ export class CodeFlowCallbackHandlerService {
 
     if (!state) {
       this.loggerService.logDebug(configId, 'no state in url');
+
       return throwError('no state in url');
     }
 
     if (!code) {
       this.loggerService.logDebug(configId, 'no code in url');
+
       return throwError('no code in url');
     }
 
@@ -91,6 +93,7 @@ export class CodeFlowCallbackHandlerService {
         authResult.session_state = callbackContext.sessionState;
 
         callbackContext.authResult = authResult;
+
         return of(callbackContext);
       }),
       retryWhen((error) => this.handleRefreshRetry(error, configId)),
@@ -98,6 +101,7 @@ export class CodeFlowCallbackHandlerService {
         const { stsServer } = this.configurationProvider.getOpenIDConfiguration(configId);
         const errorMessage = `OidcService code request ${stsServer}`;
         this.loggerService.logError(configId, errorMessage, error);
+
         return throwError(errorMessage);
       })
     );
@@ -111,8 +115,10 @@ export class CodeFlowCallbackHandlerService {
           const { stsServer, refreshTokenRetryInSeconds } = this.configurationProvider.getOpenIDConfiguration(configId);
           const errorMessage = `OidcService code request ${stsServer} - no internet connection`;
           this.loggerService.logWarning(configId, errorMessage, error);
+
           return timer(refreshTokenRetryInSeconds * 1000);
         }
+
         return throwError(error);
       })
     );

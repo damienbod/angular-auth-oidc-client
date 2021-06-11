@@ -14,7 +14,7 @@ export class IntervalService {
     }
   }
 
-  startPeriodicTokenCheck(repeatAfterSeconds: number) {
+  startPeriodicTokenCheck(repeatAfterSeconds: number): Observable<unknown> {
     const millisecondsDelayBetweenTokenCheck = repeatAfterSeconds * 1000;
 
     return new Observable((subscriber) => {
@@ -23,7 +23,7 @@ export class IntervalService {
         intervalId = setInterval(() => this.zone.run(() => subscriber.next()), millisecondsDelayBetweenTokenCheck);
       });
 
-      return () => {
+      return (): void => {
         clearInterval(intervalId);
       };
     });

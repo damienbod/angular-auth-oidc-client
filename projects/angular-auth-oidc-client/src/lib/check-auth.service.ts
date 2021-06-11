@@ -51,10 +51,12 @@ export class CheckAuthService {
 
     if (!!passedConfigId) {
       const config = this.configurationProvider.getOpenIDConfiguration(passedConfigId);
+
       return this.checkAuthWithConfig(config, url);
     }
 
     const onlyExistingConfig = this.configurationProvider.getOpenIDConfiguration();
+
     return this.checkAuthWithConfig(onlyExistingConfig, url);
   }
 
@@ -72,6 +74,7 @@ export class CheckAuthService {
 
     if (!!passedConfigId) {
       const config = this.configurationProvider.getOpenIDConfiguration(passedConfigId);
+
       return this.checkAuthWithConfig(config, url).pipe(map((x) => [x]));
     }
 
@@ -83,6 +86,7 @@ export class CheckAuthService {
 
   checkAuthIncludingServer(configId: string): Observable<LoginResponse> {
     const config = this.configurationProvider.getOpenIDConfiguration(configId);
+
     return this.checkAuthWithConfig(config).pipe(
       switchMap((loginResponse) => {
         const { isAuthenticated } = loginResponse;
@@ -162,12 +166,13 @@ export class CheckAuthService {
       }),
       catchError((errorMessage) => {
         this.loggerService.logError(configId, errorMessage);
+
         return of({ isAuthenticated: false, errorMessage, userData: null, idToken: null, accessToken: null, configId });
       })
     );
   }
 
-  private startCheckSessionAndValidation(configId: string) {
+  private startCheckSessionAndValidation(configId: string): void {
     if (this.checkSessionService.isCheckSessionConfigured(configId)) {
       this.checkSessionService.start(configId);
     }

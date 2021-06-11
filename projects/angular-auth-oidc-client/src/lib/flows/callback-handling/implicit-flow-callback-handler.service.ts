@@ -30,6 +30,7 @@ export class ImplicitFlowCallbackHandlerService {
     const authResult: any = hash.split('&').reduce((resultData: any, item: string) => {
       const parts = item.split('=');
       resultData[parts.shift() as string] = parts.join('=');
+
       return resultData;
     }, {});
 
