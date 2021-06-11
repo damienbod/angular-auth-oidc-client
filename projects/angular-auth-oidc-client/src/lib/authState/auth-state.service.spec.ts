@@ -275,7 +275,7 @@ describe('Auth State Service', () => {
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('HenloLegger');
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue('HenloFuriend');
 
-      spyOn(authStateService as any, 'hasIdTokenExpired').and.returnValue(true);
+      spyOn(authStateService as any, 'hasIdTokenExpiredAndRenewCheckIsEnabled').and.returnValue(true);
       spyOn(authStateService as any, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(false);
       const result = authStateService.areAuthStorageTokensValid('configId');
       expect(result).toBeFalse();
@@ -285,7 +285,7 @@ describe('Auth State Service', () => {
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('HenloLegger');
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue('HenloFuriend');
 
-      spyOn(authStateService as any, 'hasIdTokenExpired').and.returnValue(false);
+      spyOn(authStateService as any, 'hasIdTokenExpiredAndRenewCheckIsEnabled').and.returnValue(false);
       spyOn(authStateService as any, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(true);
       const result = authStateService.areAuthStorageTokensValid('configId');
       expect(result).toBeFalse();
@@ -295,7 +295,7 @@ describe('Auth State Service', () => {
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('HenloLegger');
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue('HenloFuriend');
 
-      spyOn(authStateService as any, 'hasIdTokenExpired').and.returnValue(false);
+      spyOn(authStateService as any, 'hasIdTokenExpiredAndRenewCheckIsEnabled').and.returnValue(false);
       spyOn(authStateService as any, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(false);
       const result = authStateService.areAuthStorageTokensValid('configId');
       expect(result).toBeTrue();
@@ -305,33 +305,33 @@ describe('Auth State Service', () => {
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('HenloLegger');
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue('HenloFuriend');
 
-      spyOn(authStateService as any, 'hasIdTokenExpired').and.returnValue(false);
+      spyOn(authStateService as any, 'hasIdTokenExpiredAndRenewCheckIsEnabled').and.returnValue(false);
       spyOn(authStateService as any, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(false);
       const result = authStateService.areAuthStorageTokensValid('configId');
       expect(result).toBeTrue();
     });
   });
 
-  describe('hasIdTokenExpired', () => {
+  describe('hasIdTokenExpiredAndRenewCheckIsEnabled', () => {
     it('tokenValidationService gets called with id token if id_token is set', () => {
       configurationProvider.setConfig({ renewTimeBeforeTokenExpiresInSeconds: 30 });
       spyOn(storagePersistenceService, 'getIdToken').withArgs('configId').and.returnValue('idToken');
-      const spy = spyOn(tokenValidationService, 'hasIdTokenExpired').and.callFake((a, b) => true);
+      const spy = spyOn(tokenValidationService, 'hasIdTokenExpiredAndRenewCheckIsEnabled').and.callFake((a, b) => true);
 
-      authStateService.hasIdTokenExpired('configId');
+      authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled('configId');
 
       expect(spy).toHaveBeenCalledWith('idToken', 'configId', 30);
     });
 
     it('fires event if idToken is expired', () => {
       configurationProvider.setConfig({ renewTimeBeforeTokenExpiresInSeconds: 30 });
-      spyOn(tokenValidationService, 'hasIdTokenExpired').and.callFake((a, b) => true);
+      spyOn(tokenValidationService, 'hasIdTokenExpiredAndRenewCheckIsEnabled').and.callFake((a, b) => true);
 
       const spy = spyOn(eventsService, 'fireEvent');
 
       spyOn(storagePersistenceService, 'read').withArgs('authnResult', 'configId').and.returnValue('idToken');
 
-      const result = authStateService.hasIdTokenExpired('configId');
+      const result = authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled('configId');
 
       expect(result).toBe(true);
       expect(spy).toHaveBeenCalledWith(EventTypes.IdTokenExpired, true);
@@ -339,12 +339,12 @@ describe('Auth State Service', () => {
 
     it('does NOT fire event if idToken is NOT expired', () => {
       configurationProvider.setConfig({ renewTimeBeforeTokenExpiresInSeconds: 30 });
-      spyOn(tokenValidationService, 'hasIdTokenExpired').and.callFake((a, b) => false);
+      spyOn(tokenValidationService, 'hasIdTokenExpiredAndRenewCheckIsEnabled').and.callFake((a, b) => false);
 
       const spy = spyOn(eventsService, 'fireEvent');
 
       spyOn(storagePersistenceService, 'read').withArgs('authnResult', 'configId').and.returnValue('idToken');
-      const result = authStateService.hasIdTokenExpired('configId');
+      const result = authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled('configId');
       expect(result).toBe(false);
       expect(spy).not.toHaveBeenCalled();
     });
