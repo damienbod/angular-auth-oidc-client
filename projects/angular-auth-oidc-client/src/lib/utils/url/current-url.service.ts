@@ -10,6 +10,7 @@ export class CurrentUrlService {
     const parsedUrl = new URL(currentUrl);
     const urlParams = new URLSearchParams(parsedUrl.search);
     const stateFromUrl = urlParams.get('state');
+
     return stateFromUrl;
   }
 

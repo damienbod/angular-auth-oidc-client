@@ -6,5 +6,6 @@ import { switchMap } from 'rxjs/operators';
 export const createRetriableStream = (...resp$: any): Observable<any> => {
   const fetchData: jasmine.Spy = jasmine.createSpy('fetchData');
   fetchData.and.returnValues(...resp$);
+
   return of(null).pipe(switchMap((_) => fetchData()));
 };

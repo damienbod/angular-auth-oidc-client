@@ -220,6 +220,7 @@ export class TokenValidationService {
         configId,
         'Validate_id_token_nonce failed, dataIdToken.nonce: ' + dataIdToken.nonce + ' local_nonce:' + localNonce
       );
+
       return false;
     }
 
@@ -237,6 +238,7 @@ export class TokenValidationService {
           ' authWellKnownEndpoints issuer:' +
           authWellKnownEndpointsIssuer
       );
+
       return false;
     }
 
@@ -256,6 +258,7 @@ export class TokenValidationService {
           configId,
           'Validate_id_token_aud array failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud
         );
+
         return false;
       }
 
@@ -297,6 +300,7 @@ export class TokenValidationService {
   validateStateFromHashCallback(state: any, localState: any, configId: string): boolean {
     if ((state as string) !== (localState as string)) {
       this.loggerService.logDebug(configId, 'ValidateStateFromHashCallback failed, state: ' + state + ' local_state:' + localState);
+
       return false;
     }
 
@@ -316,6 +320,7 @@ export class TokenValidationService {
 
     if (Object.keys(headerData).length === 0 && headerData.constructor === Object) {
       this.loggerService.logWarning(configId, 'id token has no header data');
+
       return false;
     }
 
@@ -324,6 +329,7 @@ export class TokenValidationService {
 
     if (!this.keyAlgorithms.includes(alg as string)) {
       this.loggerService.logWarning(configId, 'alg not supported', alg);
+
       return false;
     }
 
@@ -355,12 +361,14 @@ export class TokenValidationService {
 
         if (amountOfMatchingKeys > 1) {
           this.loggerService.logWarning(configId, 'no ID Token kid claim in JOSE header and multiple supplied in jwks_uri');
+
           return false;
         }
       }
 
       if (!keyToValidate) {
         this.loggerService.logWarning(configId, 'no keys found, incorrect Signature, validation failed for id_token');
+
         return false;
       }
 
@@ -380,6 +388,7 @@ export class TokenValidationService {
           if (!isValid) {
             this.loggerService.logWarning(configId, 'incorrect Signature, validation failed for id_token');
           }
+
           return isValid;
         }
       }
@@ -437,6 +446,7 @@ export class TokenValidationService {
   private millisToMinutesAndSeconds(millis: number): string {
     const minutes = Math.floor(millis / 60000);
     const seconds = ((millis % 60000) / 1000).toFixed(0);
+
     return minutes + ':' + (+seconds < 10 ? '0' : '') + seconds;
   }
 }

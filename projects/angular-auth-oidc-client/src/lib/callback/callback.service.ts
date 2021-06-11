@@ -11,7 +11,7 @@ import { ImplicitFlowCallbackService } from './implicit-flow-callback.service';
 export class CallbackService {
   private stsCallbackInternal$ = new Subject();
 
-  get stsCallback$() {
+  get stsCallback$(): Observable<unknown> {
     return this.stsCallbackInternal$.asObservable();
   }
 

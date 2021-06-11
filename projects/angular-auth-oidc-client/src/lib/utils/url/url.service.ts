@@ -32,6 +32,7 @@ export class UrlService {
     name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
     const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
     const results = regex.exec(urlToCheck);
+
     return results === null ? '' : decodeURIComponent(results[1]);
   }
 
@@ -52,6 +53,7 @@ export class UrlService {
 
     if (!authWellKnownEndPoints) {
       this.loggerService.logError(configId, 'authWellKnownEndpoints is undefined');
+
       return null;
     }
 
@@ -59,6 +61,7 @@ export class UrlService {
 
     if (!authorizationEndpoint) {
       this.loggerService.logError(configId, `Can not create an authorize url when authorizationEndpoint is '${authorizationEndpoint}'`);
+
       return null;
     }
 
@@ -66,6 +69,7 @@ export class UrlService {
 
     if (!clientId) {
       this.loggerService.logError(configId, `getAuthorizeParUrl could not add clientId because it was: `, clientId);
+
       return null;
     }
 
@@ -157,6 +161,7 @@ export class UrlService {
     const urlParts = revocationEndpoint.split('?');
 
     const revocationEndpointUrl = urlParts[0];
+
     return revocationEndpointUrl;
   }
 
@@ -164,6 +169,7 @@ export class UrlService {
     const codeVerifier = this.flowsDataService.getCodeVerifier(configId);
     if (!codeVerifier) {
       this.loggerService.logError(configId, `CodeVerifier is not set `, codeVerifier);
+
       return null;
     }
 
@@ -187,6 +193,7 @@ export class UrlService {
 
     if (this.flowsDataService.isSilentRenewRunning(configId) && silentRenewUrl) {
       params = params.set('redirect_uri', silentRenewUrl);
+
       return params.toString();
     }
 
@@ -197,6 +204,7 @@ export class UrlService {
     }
 
     params = params.set('redirect_uri', redirectUrl);
+
     return params.toString();
   }
 
@@ -279,6 +287,7 @@ export class UrlService {
 
     if (!authorizationEndpoint) {
       this.loggerService.logError(configId, `Can not create an authorize url when authorizationEndpoint is '${authorizationEndpoint}'`);
+
       return null;
     }
 
@@ -286,16 +295,19 @@ export class UrlService {
 
     if (!clientId) {
       this.loggerService.logError(configId, `createAuthorizeUrl could not add clientId because it was: `, clientId);
+
       return null;
     }
 
     if (!responseType) {
       this.loggerService.logError(configId, `createAuthorizeUrl could not add responseType because it was: `, responseType);
+
       return null;
     }
 
     if (!scope) {
       this.loggerService.logError(configId, `createAuthorizeUrl could not add scope because it was: `, scope);
+
       return null;
     }
 
@@ -351,6 +363,7 @@ export class UrlService {
     }
 
     this.loggerService.logError(configId, 'authWellKnownEndpoints is undefined');
+
     return null;
   }
 
@@ -376,6 +389,7 @@ export class UrlService {
     }
 
     this.loggerService.logWarning(configId, 'authWellKnownEndpoints is undefined');
+
     return null;
   }
 
@@ -396,6 +410,7 @@ export class UrlService {
     }
 
     this.loggerService.logError(configId, 'authWellKnownEndpoints is undefined');
+
     return null;
   }
 
@@ -420,6 +435,7 @@ export class UrlService {
     }
 
     this.loggerService.logError(configId, 'authWellKnownEndpoints is undefined');
+
     return null;
   }
 
@@ -428,7 +444,8 @@ export class UrlService {
 
     if (!redirectUrl) {
       this.loggerService.logError(configId, `could not get redirectUrl, was: `, redirectUrl);
-      return null;
+
+      null;
     }
 
     return redirectUrl;
@@ -439,6 +456,7 @@ export class UrlService {
 
     if (!silentRenewUrl) {
       this.loggerService.logError(configId, `could not get silentRenewUrl, was: `, silentRenewUrl);
+
       return null;
     }
 
@@ -450,6 +468,7 @@ export class UrlService {
 
     if (!postLogoutRedirectUri) {
       this.loggerService.logError(configId, `could not get postLogoutRedirectUri, was: `, postLogoutRedirectUri);
+
       return null;
     }
 
@@ -461,6 +480,7 @@ export class UrlService {
 
     if (!clientId) {
       this.loggerService.logError(configId, `could not get clientId, was: `, clientId);
+
       return null;
     }
 
