@@ -35,7 +35,7 @@ export class OidcConfigService {
     return Promise.all(allHandleConfigPromises);
   }
 
-  private createUniqueIds(passedConfigs: OpenIdConfiguration[]) {
+  private createUniqueIds(passedConfigs: OpenIdConfiguration[]): void {
     passedConfigs.forEach((config, index) => {
       if (!config.configId) {
         config.configId = `${index}-${config.clientId}`;
@@ -48,6 +48,7 @@ export class OidcConfigService {
       if (!this.configValidationService.validateConfig(passedConfig)) {
         this.loggerService.logError(passedConfig.configId, 'Validation of config rejected with errors. Config is NOT set.');
         resolve(null);
+
         return;
       }
 
@@ -64,6 +65,7 @@ export class OidcConfigService {
         this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
 
         resolve(usedConfig);
+
         return;
       }
 
@@ -75,6 +77,7 @@ export class OidcConfigService {
         this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
 
         resolve(usedConfig);
+
         return;
       }
 
@@ -84,6 +87,7 @@ export class OidcConfigService {
           .pipe(
             catchError((error) => {
               this.loggerService.logError(usedConfig.configId, 'Getting auth well known endpoints failed on start', error);
+
               return throwError(error);
             }),
             tap((wellknownEndPoints) => {
@@ -103,14 +107,14 @@ export class OidcConfigService {
     });
   }
 
-  private prepareConfig(configuration: OpenIdConfiguration) {
+  private prepareConfig(configuration: OpenIdConfiguration): OpenIdConfiguration {
     const openIdConfigurationInternal = { ...DEFAULT_CONFIG, ...configuration };
     this.setSpecialCases(openIdConfigurationInternal);
 
     return openIdConfigurationInternal;
   }
 
-  private setSpecialCases(currentConfig: OpenIdConfiguration) {
+  private setSpecialCases(currentConfig: OpenIdConfiguration): void {
     if (!this.platformProvider.isBrowser) {
       currentConfig.startCheckSession = false;
       currentConfig.silentRenew = false;

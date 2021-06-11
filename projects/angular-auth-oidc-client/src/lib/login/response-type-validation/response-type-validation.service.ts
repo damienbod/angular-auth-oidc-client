@@ -16,6 +16,7 @@ export class ResponseTypeValidationService {
     }
 
     this.loggerService.logWarning(configId, 'module configured incorrectly, invalid response_type. Check the responseType in the config');
+
     return false;
   }
 }

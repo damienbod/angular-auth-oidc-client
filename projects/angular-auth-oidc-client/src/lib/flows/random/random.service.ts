@@ -25,7 +25,7 @@ export class RandomService {
     return Array.from(arr, this.toHex).join('') + this.randomString(7);
   }
 
-  private toHex(dec) {
+  private toHex(dec): string {
     return ('0' + dec.toString(16)).substr(-2);
   }
 
@@ -44,7 +44,7 @@ export class RandomService {
     return result;
   }
 
-  private getCrypto() {
+  private getCrypto(): any {
     // support for IE,  (window.crypto || window.msCrypto)
     return this.doc.defaultView.crypto || (this.doc.defaultView as any).msCrypto;
   }

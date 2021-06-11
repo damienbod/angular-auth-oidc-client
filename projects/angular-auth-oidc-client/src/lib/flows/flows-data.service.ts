@@ -16,10 +16,11 @@ export class FlowsDataService {
   createNonce(configId: string): string {
     const nonce = this.randomService.createRandom(40, configId);
     this.setNonce(nonce, configId);
+
     return nonce;
   }
 
-  setNonce(nonce: string, configId: string) {
+  setNonce(nonce: string, configId: string): void {
     this.storagePersistenceService.write('authNonce', nonce, configId);
   }
 
@@ -27,7 +28,7 @@ export class FlowsDataService {
     return this.storagePersistenceService.read('authStateControl', configId);
   }
 
-  setAuthStateControl(authStateControl: string, configId: string) {
+  setAuthStateControl(authStateControl: string, configId: string): void {
     this.storagePersistenceService.write('authStateControl', authStateControl, configId);
   }
 
@@ -37,28 +38,30 @@ export class FlowsDataService {
       state = this.randomService.createRandom(40, configId);
       this.storagePersistenceService.write('authStateControl', state, configId);
     }
+
     return state;
   }
 
-  setSessionState(sessionState: any, configId: string) {
+  setSessionState(sessionState: any, configId: string): void {
     this.storagePersistenceService.write('session_state', sessionState, configId);
   }
 
-  resetStorageFlowData(configId: string) {
+  resetStorageFlowData(configId: string): void {
     this.storagePersistenceService.resetStorageFlowData(configId);
   }
 
-  getCodeVerifier(configId: string) {
+  getCodeVerifier(configId: string): any {
     return this.storagePersistenceService.read('codeVerifier', configId);
   }
 
-  createCodeVerifier(configId: string) {
+  createCodeVerifier(configId: string): string {
     const codeVerifier = this.randomService.createRandom(67, configId);
     this.storagePersistenceService.write('codeVerifier', codeVerifier, configId);
+
     return codeVerifier;
   }
 
-  isSilentRenewRunning(configId: string) {
+  isSilentRenewRunning(configId: string): boolean {
     const storageObject = this.getSilentRenewRunningStorageEntry(configId);
 
     if (!storageObject) {
@@ -75,13 +78,14 @@ export class FlowsDataService {
     if (isProbablyStuck) {
       this.loggerService.logDebug(configId, 'silent renew process is probably stuck, state will be reset.', configId);
       this.resetSilentRenewRunning(configId);
+
       return false;
     }
 
     return storageObject.state === 'running';
   }
 
-  setSilentRenewRunning(configId: string) {
+  setSilentRenewRunning(configId: string): void {
     const storageObject = {
       state: 'running',
       dateOfLaunchedProcessUtc: new Date().toISOString(),
@@ -90,7 +94,7 @@ export class FlowsDataService {
     this.storagePersistenceService.write('storageSilentRenewRunning', JSON.stringify(storageObject), configId);
   }
 
-  resetSilentRenewRunning(configId: string) {
+  resetSilentRenewRunning(configId: string): void {
     this.storagePersistenceService.write('storageSilentRenewRunning', '', configId);
   }
 

@@ -49,6 +49,7 @@ export class TokenHelperService {
     }
 
     const result = this.urlBase64Decode(partOfToken);
+
     return JSON.parse(result);
   }
 
@@ -86,11 +87,13 @@ export class TokenHelperService {
   private tokenIsValid(token: string, configId: string): boolean {
     if (!token) {
       this.loggerService.logError(configId, `token '${token}' is not valid --> token falsy`);
+
       return false;
     }
 
     if (!(token as string).includes('.')) {
       this.loggerService.logError(configId, `token '${token}' is not valid --> no dots included`);
+
       return false;
     }
 
@@ -98,6 +101,7 @@ export class TokenHelperService {
 
     if (parts.length !== PARTS_OF_TOKEN) {
       this.loggerService.logError(configId, `token '${token}' is not valid --> token has to have exactly ${PARTS_OF_TOKEN - 1} dots`);
+
       return false;
     }
 

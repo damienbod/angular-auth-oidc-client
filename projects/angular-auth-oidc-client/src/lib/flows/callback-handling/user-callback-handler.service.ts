@@ -39,6 +39,7 @@ export class UserCallbackHandlerService {
       }
 
       this.publishAuthState(validationResult, isRenewProcess);
+
       return of(callbackContext);
     }
 
@@ -59,18 +60,20 @@ export class UserCallbackHandlerService {
             this.publishUnauthenticatedState(validationResult, isRenewProcess);
             const errorMessage = `Called for userData but they were ${userData}`;
             this.loggerService.logWarning(configId, errorMessage);
+
             return throwError(errorMessage);
           }
         }),
         catchError((err) => {
           const errorMessage = `Failed to retrieve user info with error:  ${err}`;
           this.loggerService.logWarning(configId, errorMessage);
+
           return throwError(errorMessage);
         })
       );
   }
 
-  private publishAuthState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
+  private publishAuthState(stateValidationResult: StateValidationResult, isRenewProcess: boolean): void {
     this.authStateService.updateAndPublishAuthState({
       isAuthenticated: true,
       validationResult: stateValidationResult.state,
@@ -78,7 +81,7 @@ export class UserCallbackHandlerService {
     });
   }
 
-  private publishUnauthenticatedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
+  private publishUnauthenticatedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean): void {
     this.authStateService.updateAndPublishAuthState({
       isAuthenticated: false,
       validationResult: stateValidationResult.state,

@@ -26,6 +26,7 @@ export class RefreshSessionRefreshTokenService {
       catchError((error) => {
         this.intervalService.stopPeriodicTokenCheck();
         this.resetAuthDataService.resetAuthorizationData(configId);
+
         return throwError(error);
       })
     );

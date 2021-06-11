@@ -60,6 +60,7 @@ export class LoggerService {
 
   private currentLogLevelIsEqualOrSmallerThan(configId: string, logLevelToCompare: LogLevel): boolean {
     const { logLevel } = this.configurationProvider.getOpenIDConfiguration(configId) || {};
+
     return logLevel <= logLevelToCompare;
   }
 

@@ -16,6 +16,7 @@ export class IFrameService {
     if (this.isIFrameElement(iFrameOnSelf)) {
       return iFrameOnSelf;
     }
+
     return null;
   }
 
@@ -26,6 +27,7 @@ export class IFrameService {
     this.loggerService.logDebug(configId, sessionIframe);
     sessionIframe.style.display = 'none';
     this.doc.body.appendChild(sessionIframe);
+
     return sessionIframe;
   }
 
@@ -35,6 +37,7 @@ export class IFrameService {
       if (this.isIFrameElement(iFrameElement)) {
         return iFrameElement;
       }
+
       return null;
     } catch (e) {
       return null;
@@ -46,6 +49,7 @@ export class IFrameService {
     if (this.isIFrameElement(iFrameElement)) {
       return iFrameElement;
     }
+
     return null;
   }
 

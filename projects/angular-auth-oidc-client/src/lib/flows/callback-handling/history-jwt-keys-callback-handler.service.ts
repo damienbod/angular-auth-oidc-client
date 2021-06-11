@@ -42,6 +42,7 @@ export class HistoryJwtKeysCallbackHandlerService {
       this.resetAuthDataService.resetAuthorizationData(configId);
       this.flowsDataService.setNonce('', configId);
       this.handleResultErrorFromCallback(callbackContext.authResult, callbackContext.isRenewProcess);
+
       return throwError(errorMessage);
     }
 
@@ -58,6 +59,7 @@ export class HistoryJwtKeysCallbackHandlerService {
         const storedJwtKeys = this.readSigningKeys(configId);
         if (!!storedJwtKeys) {
           this.loggerService.logWarning(configId, `Failed to retrieve signing keys, fallback to stored keys`);
+
           return of(storedJwtKeys);
         }
 
@@ -72,17 +74,19 @@ export class HistoryJwtKeysCallbackHandlerService {
 
         const errorMessage = `Failed to retrieve signing key`;
         this.loggerService.logWarning(configId, errorMessage);
+
         return throwError(errorMessage);
       }),
       catchError((err) => {
         const errorMessage = `Failed to retrieve signing key with error: ${err}`;
         this.loggerService.logWarning(configId, errorMessage);
+
         return throwError(errorMessage);
       })
     );
   }
 
-  private handleResultErrorFromCallback(result: any, isRenewProcess: boolean) {
+  private handleResultErrorFromCallback(result: any, isRenewProcess: boolean): void {
     let validationResult = ValidationResult.SecureTokenServerError;
 
     if ((result.error as string) === 'login_required') {
@@ -96,20 +100,21 @@ export class HistoryJwtKeysCallbackHandlerService {
     });
   }
 
-  private historyCleanUpTurnedOn(configId: string) {
+  private historyCleanUpTurnedOn(configId: string): boolean {
     const { historyCleanupOff } = this.configurationProvider.getOpenIDConfiguration(configId);
+
     return !historyCleanupOff;
   }
 
-  private resetBrowserHistory() {
+  private resetBrowserHistory(): void {
     window.history.replaceState({}, window.document.title, window.location.origin + window.location.pathname);
   }
 
-  private storeSigningKeys(jwtKeys: JwtKeys, configId: string) {
+  private storeSigningKeys(jwtKeys: JwtKeys, configId: string): void {
     this.storagePersistenceService.write(JWT_KEYS, jwtKeys, configId);
   }
 
-  private readSigningKeys(configId: string) {
+  private readSigningKeys(configId: string): any {
     return this.storagePersistenceService.read(JWT_KEYS, configId);
   }
 }

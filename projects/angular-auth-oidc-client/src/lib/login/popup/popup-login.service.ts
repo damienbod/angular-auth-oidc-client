@@ -29,6 +29,7 @@ export class PopUpLoginService {
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
       const errorMessage = 'Invalid response type!';
       this.loggerService.logError(configId, errorMessage);
+
       return throwError(errorMessage);
     }
 
@@ -37,6 +38,7 @@ export class PopUpLoginService {
     if (!authWellknownEndpointUrl) {
       const errorMessage = 'no authWellknownEndpoint given!';
       this.loggerService.logError(configId, errorMessage);
+
       return throwError(errorMessage);
     }
 

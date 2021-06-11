@@ -29,6 +29,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     if (allRoutesConfiguredFlat.length === 0) {
       this.loggerService.logDebug(configId, `No routes to check configured`);
+
       return next.handle(req);
     }
 
@@ -36,6 +37,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     if (!matchingConfigId) {
       this.loggerService.logDebug(configId, `Did not find any configured route for route ${req.url}`);
+
       return next.handle(req);
     }
 
@@ -45,6 +47,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     if (!token) {
       this.loggerService.logDebug(matchingConfigId, `Wanted to add token to ${req.url} but found no token: '${token}'`);
+
       return next.handle(req);
     }
 

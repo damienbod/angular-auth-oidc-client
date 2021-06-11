@@ -22,6 +22,7 @@ export class RefreshSessionIframeService {
   refreshSessionWithIframe(configId: string, customParams?: { [key: string]: string | number | boolean }): Observable<boolean> {
     this.loggerService.logDebug(configId, 'BEGIN refresh session Authorize Iframe renew');
     const url = this.urlService.getRefreshSessionSilentRenewUrl(configId, customParams);
+
     return this.sendAuthorizeRequestUsingSilentRenew(url, configId);
   }
 
@@ -31,7 +32,7 @@ export class RefreshSessionIframeService {
     this.loggerService.logDebug(configId, 'sendAuthorizeRequestUsingSilentRenew for URL:' + url);
 
     return new Observable((observer) => {
-      const onLoadHandler = () => {
+      const onLoadHandler = (): void => {
         sessionIframe.removeEventListener('load', onLoadHandler);
         this.loggerService.logDebug(configId, 'removed event listener from IFrame');
         observer.next(true);
