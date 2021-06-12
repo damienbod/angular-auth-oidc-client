@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, CanLoad, Route, Router, RouterStateSnapshot, UrlSegment } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { concatMap, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { CheckAuthService } from '../check-auth.service';
 import { ConfigurationProvider } from '../config/provider/config.provider';
@@ -32,11 +32,13 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
   private checkAuth(url: string): Observable<boolean> {
     const configId = this.getId();
 
-    const isAuthenticated$ = this.authStateService.authenticated$ as Observable<boolean>;
+    const isAuthenticated = this.authStateService.areAuthStorageTokensValid(configId);
 
-    return isAuthenticated$.pipe(
-      concatMap((isAuthenticated) => (isAuthenticated ? of({ isAuthenticated }) : this.checkAuthService.checkAuth(configId))),
+    if (isAuthenticated) {
+      return of(true);
+    }
 
+    return this.checkAuthService.checkAuth().pipe(
       map(({ isAuthenticated }) => {
         const storedRoute = this.autoLoginService.getStoredRedirectRoute(configId);
         if (isAuthenticated) {
@@ -55,6 +57,7 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
       })
     );
   }
+
 
   private getId(): string {
     return this.configurationProvider.getOpenIDConfiguration().configId;
