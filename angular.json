@@ -993,6 +993,109 @@
       }
     },
 
+    "sample-code-flow-multi-Azure-B2C": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "projects/sample-code-flow-multi-Azure-B2C",
+      "sourceRoot": "projects/sample-code-flow-multi-Azure-B2C/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/sample-code-flow-multi-Azure-B2C",
+            "index": "projects/sample-code-flow-multi-Azure-B2C/src/index.html",
+            "main": "projects/sample-code-flow-multi-Azure-B2C/src/main.ts",
+            "polyfills": "projects/sample-code-flow-multi-Azure-B2C/src/polyfills.ts",
+            "tsConfig": "projects/sample-code-flow-multi-Azure-B2C/tsconfig.app.json",
+            "aot": true,
+            "assets": ["projects/sample-code-flow-multi-Azure-B2C/src/favicon.ico", "projects/sample-code-flow-multi-Azure-B2C/src/assets"],
+            "styles": ["projects/sample-code-flow-multi-Azure-B2C/src/styles.css"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-multi-Azure-B2C/src/environments/environment.ts",
+                  "with": "projects/sample-code-flow-multi-Azure-B2C/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "sample-code-flow-multi-Azure-B2C:build",
+            "sslKey": "certs/dev_localhost.key",
+            "sslCert": "certs/dev_localhost.pem",
+            "port": 4200
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "sample-code-flow-multi-Azure-B2C:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "sample-code-flow-multi-Azure-B2C:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sample-code-flow-multi-Azure-B2C/src/test.ts",
+            "polyfills": "projects/sample-code-flow-multi-Azure-B2C/src/polyfills.ts",
+            "tsConfig": "projects/sample-code-flow-multi-Azure-B2C/tsconfig.spec.json",
+            "karmaConfig": "projects/sample-code-flow-multi-Azure-B2C/karma.conf.js",
+            "assets": ["projects/sample-code-flow-multi-Azure-B2C/src/favicon.ico", "projects/sample-code-flow-multi-Azure-B2C/src/assets"],
+            "styles": ["projects/sample-code-flow-multi-Azure-B2C/src/styles.css"],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["projects/sample-code-flow-multi-Azure-B2C/**/*.ts", "projects/sample-code-flow-multi-Azure-B2C/**/*.html"]
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "projects/sample-code-flow-multi-Azure-B2C/e2e/protractor.conf.js",
+            "devServerTarget": "sample-code-flow-multi-Azure-B2C:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-multi-Azure-B2C:serve:production"
+            }
+          }
+        }
+      }
+    },
+
     "sample-code-flow-multi-AAD": {
       "projectType": "application",
       "schematics": {},
