@@ -54,8 +54,13 @@ export class StateValidationService {
     }
 
     if (callbackContext.authResult.id_token) {
-      const { clientId, issValidationOff, maxIdTokenIatOffsetAllowedInSeconds, disableIatOffsetValidation, ignoreNonceAfterRefresh } =
-        this.configurationProvider.getOpenIDConfiguration(configId);
+      const {
+        clientId,
+        issValidationOff,
+        maxIdTokenIatOffsetAllowedInSeconds,
+        disableIatOffsetValidation,
+        ignoreNonceAfterRefresh,
+      } = this.configurationProvider.getOpenIDConfiguration(configId);
 
       toReturn.idToken = callbackContext.authResult.id_token;
 
