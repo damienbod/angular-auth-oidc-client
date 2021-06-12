@@ -1,5 +1,10 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-06-12 Version 11.6.11
+
+- Silent renew does not always start
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1128)
+
 ### 2021-05-28 Version 11.6.10
 
 - AutoLoginGuard appears to cause some sort of infinite loop.

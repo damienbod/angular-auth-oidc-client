@@ -1,6 +1,6 @@
 {
   "name": "schematics",
-  "version": "11.6.10",
+  "version": "11.6.11",
   "description": "A schematic for the Angular Lib for OpenID Connect & OAuth2",
   "scripts": {
     "build": "tsc -p tsconfig.json",
