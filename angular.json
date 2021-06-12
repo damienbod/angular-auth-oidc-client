@@ -628,7 +628,7 @@
             "browserTarget": "sample-code-flow-azure-b2c:build",
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
-            "port": 65328
+            "port": 4200
           },
           "configurations": {
             "production": {
