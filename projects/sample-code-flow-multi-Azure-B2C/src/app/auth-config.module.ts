@@ -6,26 +6,13 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
     AuthModule.forRoot({
       config: [
         {
-          stsServer: 'https://login.microsoftonline.com/7ff95b15-dc21-4ba6-bc92-824856578fc1/v2.0',
-          authWellknownEndpointUrl: 'https://login.microsoftonline.com/7ff95b15-dc21-4ba6-bc92-824856578fc1/v2.0',
+          stsServer: 'https://b2cdamienbod.b2clogin.com/b2cdamienbod.onmicrosoft.com/B2C_1_sign_in/v2.0',
+          authWellknownEndpointUrl:
+            'https://b2cdamienbod.b2clogin.com/b2cdamienbod.onmicrosoft.com/B2C_1_sign_in/v2.0/.well-known/openid-configuration',
           redirectUrl: window.location.origin,
-          clientId: 'ad6b0351-92b4-4ee9-ac8d-3e76e5fd1c67',
-          scope: 'openid offline_access api://577ea995-2235-40d3-9c96-047afda4ab02/access_as_user',
-          responseType: 'code',
-          silentRenew: true,
-          maxIdTokenIatOffsetAllowedInSeconds: 600,
-          issValidationOff: false,
-          autoUserInfo: false,
-          useRefreshToken: true,
-          ignoreNonceAfterRefresh: true,
-          logLevel: LogLevel.Debug,
-        },
-        {
-          stsServer: 'https://login.microsoftonline.com/7ff95b15-dc21-4ba6-bc92-824856578fc1/v2.0',
-          authWellknownEndpointUrl: 'https://login.microsoftonline.com/7ff95b15-dc21-4ba6-bc92-824856578fc1/v2.0',
-          redirectUrl: window.location.origin,
-          clientId: 'ad6b0351-92b4-4ee9-ac8d-3e76e5fd1c67',
-          scope: 'openid profile offline_access email api://98328d53-55ec-4f14-8407-0ca5ff2f2d20/access_as_user',
+          postLogoutRedirectUri: window.location.origin,
+          clientId: 'dbbcae9e-4c14-4b05-a862-4e773699248a',
+          scope: 'openid profile https://b2cdamienbod.onmicrosoft.com/ac9b845d-96d3-4410-9923-50ec7bc80db9/access_as_user',
           responseType: 'code',
           silentRenew: true,
           useRefreshToken: true,
@@ -34,15 +21,13 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
           issValidationOff: false, // this needs to be true if using a common endpoint in Azure
           autoUserInfo: false,
           logLevel: LogLevel.Debug,
-          customParamsAuthRequest: {
-            prompt: 'select_account', // login, consent
-          },
         },
         {
-          stsServer: 'https://login.microsoftonline.com/7ff95b15-dc21-4ba6-bc92-824856578fc1/v2.0',
-          authWellknownEndpointUrl: 'https://login.microsoftonline.com/7ff95b15-dc21-4ba6-bc92-824856578fc1/v2.0',
+          stsServer: 'https://b2cdamienbod.b2clogin.com/b2cdamienbod.onmicrosoft.com/B2C_1_sign_in/v2.0',
+          authWellknownEndpointUrl:
+            'https://b2cdamienbod.b2clogin.com/b2cdamienbod.onmicrosoft.com/B2C_1_sign_in/v2.0/.well-known/openid-configuration',
           redirectUrl: window.location.origin,
-          clientId: 'ad6b0351-92b4-4ee9-ac8d-3e76e5fd1c67',
+          clientId: 'dbbcae9e-4c14-4b05-a862-4e773699248a',
           scope: 'openid profile User.ReadBasic.All',
           responseType: 'code',
           silentRenew: true,
