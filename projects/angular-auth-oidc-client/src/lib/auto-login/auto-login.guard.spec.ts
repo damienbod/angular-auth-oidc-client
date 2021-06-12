@@ -2,8 +2,6 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Router, RouterStateSnapshot, UrlSegment } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { AuthStateService } from '../authState/auth-state.service';
-import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
 import { CheckAuthService } from '../check-auth.service';
 import { CheckAuthServiceMock } from '../check-auth.service-mock';
 import { LoginService } from '../login/login.service';
@@ -15,7 +13,6 @@ describe(`AutoLoginGuard`, () => {
   let autoLoginGuard: AutoLoginGuard;
   let checkAuthService: CheckAuthService;
   let loginService: LoginService;
-  let authStateService: AuthStateService;
   let router: Router;
 
   beforeEach(() => {
@@ -23,7 +20,6 @@ describe(`AutoLoginGuard`, () => {
       imports: [RouterTestingModule],
       providers: [
         AutoLoginService,
-        { provide: AuthStateService, useClass: AuthStateServiceMock },
         {
           provide: LoginService,
           useClass: LoginServiceMock,
@@ -39,7 +35,6 @@ describe(`AutoLoginGuard`, () => {
   beforeEach(() => {
     autoLoginGuard = TestBed.inject(AutoLoginGuard);
     checkAuthService = TestBed.inject(CheckAuthService);
-    authStateService = TestBed.inject(AuthStateService);
     router = TestBed.inject(Router);
     loginService = TestBed.inject(LoginService);
   });
@@ -54,24 +49,12 @@ describe(`AutoLoginGuard`, () => {
 
   describe('canActivate', () => {
     it(
-      'should call checkAuth() if not authenticated already',
+      'should call checkAuth() ',
       waitForAsync(() => {
         const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
 
         autoLoginGuard.canActivate(null, { url: 'some-url1' } as RouterStateSnapshot).subscribe(() => {
           expect(checkAuthServiceSpy).toHaveBeenCalledTimes(1);
-        });
-      })
-    );
-
-    it(
-      'should NOT call checkAuth() if authenticated already',
-      waitForAsync(() => {
-        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
-        spyOnProperty(authStateService, 'authorized$', 'get').and.returnValue(of(true));
-
-        autoLoginGuard.canActivate(null, { url: 'some-url2' } as RouterStateSnapshot).subscribe(() => {
-          expect(checkAuthServiceSpy).not.toHaveBeenCalled();
         });
       })
     );
@@ -145,7 +128,7 @@ describe(`AutoLoginGuard`, () => {
 
   describe('canLoad', () => {
     it(
-      'should call checkAuth() if not authenticated already',
+      'should call checkAuth()',
       waitForAsync(() => {
         const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
 
@@ -154,19 +137,6 @@ describe(`AutoLoginGuard`, () => {
         });
       })
     );
-
-    it(
-      'should NOT call checkAuth() if authenticated already',
-      waitForAsync(() => {
-        const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
-        spyOnProperty(authStateService, 'authorized$', 'get').and.returnValue(of(true));
-
-        autoLoginGuard.canLoad(null, []).subscribe(() => {
-          expect(checkAuthServiceSpy).not.toHaveBeenCalled();
-        });
-      })
-    );
-
     it(
       'should call loginService.login() when not authorized',
       waitForAsync(() => {
