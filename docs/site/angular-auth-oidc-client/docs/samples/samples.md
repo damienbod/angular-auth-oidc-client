@@ -1,139 +1,93 @@
 # Samples using this library
 
-## Code Flow with PKCE Using a configuration from an http source and silent renew
+## Code flow PKCE with refresh tokens
 
-Sometimes it is required to load the configuration from an http address. You can load the config from your source and map it into the required format using the loader property on the `.forRoot` config.
+The OpenID Connect code flow with PKCE uses refresh tokens to refresh the session and at the end of the session, the user can logout and revoke the tokens. The demo is setup to use each refresh token only once.
+
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-refresh-tokens)
+
+## Code flow with PKCE using a configuration from an HTTP source and iframe renew
+
+Sometimes it is required to load the configuration from an HTTP address. You can load the configuration from your source and map it into the required format using the loader property on the `.forRoot` config.
 
 The properties used in this example are just for demo purposes, you can used any definitions.
 
-### [Code](../../../../../projects/sample-code-flow-http-config)
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-http-config)
 
-[AuthConfigModule](../../../../../projects/sample-code-flow-http-config/src/app/auth-config.module.ts)
+## Code flow PKCE auto-login
 
-[AppModule](../../../../../projects/sample-code-flow-http-config/src/app/app.module.ts)
+The example logins the user in directly without a login click using the code flow with PKCE and an auth-guard.
 
-[AppComponent](../../../../../projects/sample-code-flow-http-config/src/app/app.component.ts)
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-auto-login)
 
-## Code Flow PKCE with Refresh tokens
+## Code flow using popup with PKCE
 
-The Code flow with PKCE uses refresh tokens to refresh the session and a the end of the session, the user can logout and revoke the tokens. The demo is setup to use each refresh token only once.
+Popup OpenID Connect code flow with PKCE.
 
-### [Code](../../../../../projects/sample-code-flow-refresh-tokens)
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-popup)
 
-[AuthConfigModule](../../../../../projects/sample-code-flow-refresh-tokens/src/app/auth-config.module.ts)
+## Azure AD OIDC code flow with PKCE
 
-[AppModule](../../../../../projects/sample-code-flow-refresh-tokens/src/app/app.module.ts)
+Azure AD sample using OpenID Connect code flow with PKCE and refresh tokens. Please refer to the multiple configurations sample if you require Graph API in the UI, or a second API.
 
-[AppComponent](../../../../../projects/sample-code-flow-refresh-tokens/src/app/app.component.ts)
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-azuread)
 
-## Code Flow PKCE Auto login
+## Auth0 OpenID Connect code flow with PKCE and refresh tokens
 
-The example logins the user in directly without a login click using the Code Flow with PKCE and an Auth Guard.
+Auth0 sample using OpenID Connect code flow with PKCE and refresh tokens
 
-### [Code](../../../../../projects/sample-code-flow-auto-login)
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-auth0)
 
-[AuthConfigModule](../../../../../projects/sample-code-flow-auto-login/src/app/auth-config.module.ts)
+## Code flow with pushed authorization request (PAR) node-oidc-provider
 
-[AppModule](../../../../../projects/sample-code-flow-auto-login/src/app/app.module.ts)
+example using OAuth pushed authorization requests. Identity provider is implemented using node-oidc-provider
 
-[AppComponent](../../../../../projects/sample-code-flow-auto-login/src/app/app.component.ts)
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-par)
 
-[auto-login.component.ts](../../../../../projects/sample-code-flow-auto-login/src/app/auto-login/auto-login.component.ts)
+## Multiple configurations code flow with PKCE refresh tokens using Auth0, IdentityServer4
 
-## Code Flow with PKCE basic with silent renew
+The is a multiple configurations sample which uses Auth0 with refresh tokens for one configuration and IdentityServer4 for the second.
 
-The is the basic example of the Code Flow with PKCE.
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-multi-Auth0-ID4)
 
-### [Code](../../../../../projects/sample-code-flow-multi-iframe)
+## Multiple configurations code flow popup with PKCE refresh tokens using Auth0, IdentityServer4
 
-[AuthConfigModule](../../../../../projects/sample-code-flow-multi-iframe/src/app/auth-config.module.ts)
+The is the multiple configurations sample which uses Auth0 with refresh tokens for one configuration and IdentityServer4 for the second. Popups are used to authentication.
 
-[AppModule](../../../../../projects/sample-code-flow-multi-iframe/src/app/app.module.ts)
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-multi-Auth0-ID4-popup)
 
-[AppComponent](../../../../../projects/sample-code-flow-multi-iframe/src/app/app.component.ts)
+## Multiple configurations Azure AD OpenID Connect code flow with PKCE
 
-## Popup Code Flow with PKCE
+Multiple configurations Azure AD sample using OpenID Connect code flow with PKCE and refresh tokens. This can be used for implementations using Microsoft Graph API or multiple APIs
 
-Popup Code Flow with PKCE.
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/projects/sample-code-flow-multi-AAD)
 
-### [Code](../../../../../projects/sample-code-flow-popup)
+## Multiple configurations code flow with PKCE basic with iframe renew
 
-[AuthConfigModule](../../../../../projects/sample-code-flow-popup/src/app/auth-config.module.ts)
+The is a multiple configurations sample using code flow with PKCE and iframe renew.
 
-[AppModule](../../../../../projects/sample-code-flow-popup/src/app/app.module.ts)
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-multi-iframe)
 
-[AppComponent](../../../../../projects/sample-code-flow-popup/src/app/app.component.ts)
+## Azure B2C code flow PKCE with Silent renew
 
-## Azure B2C Code Flow PKCE with Silent renew
+The sample uses the code flow PKCE and iframe renew with Azure B2C as the STS.
 
-The example uses the Code Flow PKCE with Silent renew with Azure B2C as the STS.
+### [Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-azure-b2c)
 
-### [Code](../../../../../projects/sample-code-flow-azure-b2c)
+## Implicit flow with silent renew (Not recommended)
 
-[AuthConfigModule](../../../../../projects/sample-code-flow-azure-b2c/src/app/auth-config.module.ts)
+The example uses the Open ID Connect implicit flow with iframe renew. This flow is no longer recommended, but some servers support this flow only, and not the code flow with PKCE.
 
-[AppModule](../../../../../projects/sample-code-flow-azure-b2c/src/app/app.module.ts)
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-implicit-flow-silent-renew)
 
-[AppComponent](../../../../../projects/sample-code-flow-azure-b2c/src/app/app.component.ts)
+## Implicit flow google (Not recommended)
 
-## Azure AD OIDC Code Flow with PKCE
+The example uses the implicit flow with silent renew with google. This flow is no longer recommended, but some servers support this flow only, and not the code flow with PKCE.
 
-Azure AD sample using OpenID Connect Code Flow with PKCE and a iframe silent renew
-
-### [Code](../../../../../projects/sample-code-flow-azuread)
-
-[AuthConfigModule](../../../../../projects/sample-code-flow-azuread/src/app/auth-config.module.ts)
-
-[AppModule](../../../../../projects/sample-code-flow-azuread/src/app/app.module.ts)
-
-[AppComponent](../../../../../projects/sample-code-flow-azuread/src/app/app.component.ts)
-
-## Implicit Flow with silent renew (Not recommended)
-
-The example uses the Implicit Flow with silent renew. This flow is no longer recommended, but some servers support this flow only, and not the Code flow with PKCE.
-
-### [Code](../../../../../projects/sample-implicit-flow-silent-renew)
-
-[AuthConfigModule](../../../../../projects/sample-implicit-flow-silent-renew/src/app/auth-config.module.ts)
-
-[AppModule](../../../../../projects/sample-implicit-flow-silent-renew/src/app/app.module.ts)
-
-[AppComponent](../../../../../projects/sample-implicit-flow-silent-renew/src/app/app.component.ts)
-
-## Implicit Flow google (Not recommended)
-
-The example uses the Implicit Flow with silent renew with google. This flow is no longer recommended, but some servers support this flow only, and not the Code flow with PKCE.
-
-### [Code](../../../../../projects/sample-implicit-flow-google)
-
-[AppModule](../../../../../projects/sample-implicit-flow-google/src/app/app.module.ts)
-
-[AppComponent](../../../../../projects/sample-implicit-flow-google/src/app/app.component.ts)
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-implicit-flow-google)
 
 ## Code flow with a lazy loaded module
 
-The example uses the Code flow with silent renew but you authenticate in a lazy loaded module
+The example uses the code flow with silent renew but you authenticate in a lazy loaded module
 
-### [Code](../../../../../projects/sample-code-flow-lazy-loaded)
-
-[AppModule](../../../../../projects/sample-code-flow-lazy-loaded/src/app/app.module.ts)
-
-[AppComponent](../../../../../projects/sample-code-flow-lazy-loaded/src/app/app.component.ts)
-
-[AppComponent Template](../../../../../projects/sample-code-flow-lazy-loaded/src/app/app.component.html)
-
-[lazy.component.ts](../../../../../projects/sample-code-flow-lazy-loaded/src/app/lazy/lazy.component.ts)
-
-[lazy.component.html](../../../../../projects/sample-code-flow-lazy-loaded/src/app/lazy/lazy.component.html)
-
-## Code flow with pushed authorization request
-
-example using OAuth pushed authorization requests
-
-### [Code](../../../../../projects/sample-code-flow-par)
-
-[AuthConfigModule](../../../../../projects/sample-code-flow-par/src/app/auth-config.module.ts)
-
-[AppModule](../../../../../projects/sample-code-flow-par/src/app/app.module.ts)
-
-[AppComponent](../../../../../projects/sample-code-flow-par/src/app/app.component.ts)
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-lazy-loaded)
