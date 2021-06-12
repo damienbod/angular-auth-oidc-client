@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, CanLoad, Route, Router, RouterStateSnapshot, UrlSegment } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { concatMap, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AutoLoginService } from '../auto-login/auto-login-service';
 import { CheckAuthService } from '../check-auth.service';
@@ -28,9 +28,13 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
   }
 
   private checkAuth(url: string) {
-    return this.authStateService.authorized$.pipe(
-      concatMap((isAuthenticatedAlready) => (isAuthenticatedAlready ? of(isAuthenticatedAlready) : this.checkAuthService.checkAuth())),
+    const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
 
+    if (isAuthenticated) {
+      return of(true);
+    }
+
+    return this.checkAuthService.checkAuth().pipe(
       map((isAuthorized) => {
         const storedRoute = this.autoLoginService.getStoredRedirectRoute();
 

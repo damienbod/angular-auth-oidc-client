@@ -1,5 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { skip } from 'rxjs/operators';
 import { ConfigurationProvider } from '../config/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
@@ -7,8 +8,8 @@ import { OidcSecurityService } from '../oidc.security.service';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { AbstractSecurityStorage } from '../storage/abstract-security-storage';
 import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
-import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
 import { CheckSessionService } from './check-session.service';
@@ -263,6 +264,38 @@ describe('SecurityCheckSessionTests', () => {
         serviceAsAny.init().subscribe((result) => {
           expect(result).toBeUndefined();
         });
+      })
+    );
+  });
+
+  describe('isCheckSessionConfigured', () => {
+    it('returns true if startCheckSession on config is true', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ startCheckSession: true });
+
+      const result = checkSessionService.isCheckSessionConfigured();
+
+      expect(result).toBe(true);
+    });
+
+    it('returns true if startCheckSession on config is true', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ startCheckSession: false });
+
+      const result = checkSessionService.isCheckSessionConfigured();
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('checkSessionChanged$', () => {
+    it(
+      'emits when internal event is thrown',
+      waitForAsync(() => {
+        checkSessionService.checkSessionChanged$.pipe(skip(1)).subscribe((result) => {
+          expect(result).toBe(true);
+        });
+
+        const serviceAsAny = checkSessionService as any;
+        serviceAsAny.checkSessionChangedInternal$.next(true);
       })
     );
   });

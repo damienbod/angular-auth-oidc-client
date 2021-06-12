@@ -56,6 +56,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should call checkAuth() if not authenticated already',
       waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
 
         autoLoginGuard.canActivate(null, { url: 'some-url1' } as RouterStateSnapshot).subscribe(() => {
@@ -67,8 +68,8 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should NOT call checkAuth() if authenticated already',
       waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
-        spyOnProperty(authStateService, 'authorized$', 'get').and.returnValue(of(true));
 
         autoLoginGuard.canActivate(null, { url: 'some-url2' } as RouterStateSnapshot).subscribe(() => {
           expect(checkAuthServiceSpy).not.toHaveBeenCalled();
@@ -79,6 +80,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should call loginService.login() when not authorized',
       waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
         const loginSpy = spyOn(loginService, 'login');
 
@@ -91,6 +93,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should return false when not authorized',
       waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
 
         autoLoginGuard.canActivate(null, { url: 'some-url4' } as RouterStateSnapshot).subscribe((result) => {
@@ -102,6 +105,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'if no route is stored, setItem on localStorage is called',
       waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
         const localStorageSpy = spyOn(localStorage, 'setItem');
 
@@ -127,6 +131,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'if authorized and stored route exists: remove item, navigate to route and return true',
       waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of(true));
         spyOn(localStorage, 'getItem').and.returnValue('stored-route');
         const localStorageSpy = spyOn(localStorage, 'removeItem');
@@ -147,6 +152,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should call checkAuth() if not authenticated already',
       waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
 
         autoLoginGuard.canLoad(null, []).subscribe(() => {
@@ -159,7 +165,7 @@ describe(`AutoLoginGuard`, () => {
       'should NOT call checkAuth() if authenticated already',
       waitForAsync(() => {
         const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
-        spyOnProperty(authStateService, 'authorized$', 'get').and.returnValue(of(true));
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
         autoLoginGuard.canLoad(null, []).subscribe(() => {
           expect(checkAuthServiceSpy).not.toHaveBeenCalled();
@@ -170,6 +176,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should call loginService.login() when not authorized',
       waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
         const loginSpy = spyOn(loginService, 'login');
 
@@ -182,6 +189,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'should return false when not authorized',
       waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
 
         autoLoginGuard.canLoad(null, []).subscribe((result) => {
@@ -193,6 +201,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'if no route is stored, setItem on localStorage is called',
       waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
         const localStorageSpy = spyOn(localStorage, 'setItem');
 
@@ -205,6 +214,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'if no route is stored, setItem on localStorage is called, multiple params',
       waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
         const localStorageSpy = spyOn(localStorage, 'setItem');
 
@@ -232,6 +242,7 @@ describe(`AutoLoginGuard`, () => {
     it(
       'if authorized and stored route exists: remove item, navigate to route and return true',
       waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of(true));
         spyOn(localStorage, 'getItem').and.returnValue('stored-route');
         const localStorageSpy = spyOn(localStorage, 'removeItem');
