@@ -40,8 +40,8 @@ After installing the library you can get started with the lib like below.
 Make sure you add the `silent-renew.html` file to the `angular.json` assets configuration
 
 ```json
-"assets": [
-    "projects/sample-code-flow-multi-iframe/src/silent-renew.html",
+  "assets": [
+    "projects/<your-project-here>/src/silent-renew.html",
   ],
 ```
 

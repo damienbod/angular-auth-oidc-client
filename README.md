@@ -63,8 +63,8 @@ or with yarn
 
 [Read the docs here](https://nice-hill-002425310.azurestaticapps.net/)
 
-[Quickstart](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/quickstart.md) -
-[Samples](https://github.com/damienbod/angular-auth-oidc-client/tree/main/docs/samples.md)
+[Quickstart](https://nice-hill-002425310-1131.centralus.azurestaticapps.net/docs/intro) -
+[Samples](https://nice-hill-002425310.azurestaticapps.net/docs/samples/samples)
 
 ## Quickstart
 
