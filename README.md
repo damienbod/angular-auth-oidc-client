@@ -73,6 +73,7 @@ or with yarn
   - [Multiple configurations code flow with PKCE refresh tokens using Auth0, IdentityServer4](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-multi-Auth0-ID4)
   - [Multiple configurations code flow popup with PKCE refresh tokens using Auth0, IdentityServer4](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-multi-Auth0-ID4-popup)
   - [Multiple configurations Azure AD OpenID Connect code flow with PKCE](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/projects/sample-code-flow-multi-AAD)
+  - [Multiple configurations Azure B2C OpenID Connect code flow with PKCE](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/projects/sample-code-flow-multi-Azure-B2C)
   - [Multiple configurations code flow with PKCE basic with iframe renew](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-multi-iframe)
   - [Azure B2C code flow PKCE with Silent renew](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-azure-b2c)
   - [Implicit flow with silent renew (Not recommended)](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-implicit-flow-silent-renew)
