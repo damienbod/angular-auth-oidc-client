@@ -78,7 +78,7 @@ The is a multiple configurations sample using code flow with PKCE and iframe ren
 
 The sample uses the code flow PKCE and iframe renew with Azure B2C as the STS.
 
-### [Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-azure-b2c)
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-azure-b2c)
 
 ## Implicit flow with silent renew (Not recommended)
 
