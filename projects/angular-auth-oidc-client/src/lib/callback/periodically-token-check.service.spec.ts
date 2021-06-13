@@ -78,6 +78,14 @@ describe('PeriodicallyTokenCheckService', () => {
   });
 
   describe('startTokenValidationPeriodically', () => {
+    it('returns if no config has silentrenew enabled', () => {
+      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ silentRenew: false }, { silentRenew: false }]);
+
+      const result = periodicallyTokenCheckService.startTokenValidationPeriodically();
+
+      expect(result).toBeUndefined();
+    });
+
     it('returns if runTokenValidationRunning', () => {
       spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ silentRenew: true }]);
 

@@ -33,6 +33,7 @@ describe('RefreshSessionService ', () => {
   let refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService;
   let silentRenewService: SilentRenewService;
   let authWellKnownService: AuthWellKnownService;
+  let storagePersistenceService: StoragePersistenceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -70,10 +71,60 @@ describe('RefreshSessionService ', () => {
     refreshSessionRefreshTokenService = TestBed.inject(RefreshSessionRefreshTokenService);
     silentRenewService = TestBed.inject(SilentRenewService);
     authWellKnownService = TestBed.inject(AuthWellKnownService);
+    storagePersistenceService = TestBed.inject(StoragePersistenceService);
   });
 
   it('should create', () => {
     expect(refreshSessionService).toBeTruthy();
+  });
+
+  describe('userForceRefreshSession', () => {
+    it(
+      'should persist params refresh when extra custom params given and useRefreshToken is true',
+      waitForAsync(() => {
+        spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
+        spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ useRefreshToken: true, silentRenewTimeoutInSeconds: 10 });
+        const writeSpy = spyOn(storagePersistenceService, 'write');
+
+        const extraCustomParams = { extra: 'custom' };
+        refreshSessionService.userForceRefreshSession('configId', extraCustomParams).subscribe((result) => {
+          expect(writeSpy).toHaveBeenCalledOnceWith('storageCustomParamsRefresh', extraCustomParams, 'configId');
+        });
+      })
+    );
+
+    it(
+      'should persist storageCustomParamsAuthRequest when extra custom params given and useRefreshToken is false',
+      waitForAsync(() => {
+        spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
+        spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ useRefreshToken: false, silentRenewTimeoutInSeconds: 10 });
+        const writeSpy = spyOn(storagePersistenceService, 'write');
+
+        const extraCustomParams = { extra: 'custom' };
+        refreshSessionService.userForceRefreshSession('configId', extraCustomParams).subscribe((result) => {
+          expect(writeSpy).toHaveBeenCalledOnceWith('storageCustomParamsAuthRequest', extraCustomParams, 'configId');
+        });
+      })
+    );
+
+    it(
+      'should NOT persist customparams if no customparams are given',
+      waitForAsync(() => {
+        spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
+        spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ useRefreshToken: false, silentRenewTimeoutInSeconds: 10 });
+        const writeSpy = spyOn(storagePersistenceService, 'write');
+
+        refreshSessionService.userForceRefreshSession('configId').subscribe((result) => {
+          expect(writeSpy).not.toHaveBeenCalled();
+        });
+      })
+    );
   });
 
   describe('forceRefreshSession', () => {
