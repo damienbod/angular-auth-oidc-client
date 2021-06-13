@@ -5,20 +5,20 @@ sidebar_position: 8
 
 # Using Access Tokens
 
-The access token can be used by calling the `getToken()` function.
+The access token can be used by calling the `getAccessToken()` function.
 
 ## Accessing the access token
 
-You can get the access token by calling the method `getToken()` on the `OidcSecurityService`
+You can get the access token by calling the method `getAccessToken()` on the `OidcSecurityService`
 
 ```ts
-const token = this.oidcSecurityService.getToken();
+const token = this.oidcSecurityService.getAccessToken();
 ```
 
 or
 
 ```ts
-const token = this.oidcSecurityService.getToken('configId');
+const token = this.oidcSecurityService.getAccessToken('configId');
 ```
 
 And then you can use it in the HttpHeaders
@@ -26,7 +26,7 @@ And then you can use it in the HttpHeaders
 ```ts
 import { HttpHeaders } from '@angular/common/http';
 
-const token = this.oidcSecurityServices.getToken();
+const token = this.oidcSecurityServices.getAccessToken();
 
 const httpOptions = {
   headers: new HttpHeaders({
