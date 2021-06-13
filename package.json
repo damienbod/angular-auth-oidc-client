@@ -41,6 +41,7 @@
     "start-sample-code-flow-multi-Auth0-ID4": "ng serve sample-code-flow-multi-Auth0-ID4 --ssl -o",
     "start-sample-code-flow-multi-Auth0-ID4-popup": "ng serve sample-code-flow-multi-Auth0-ID4-popup --ssl -o",
     "start-sample-code-flow-multi-AAD": "ng serve sample-code-flow-multi-AAD --ssl -o",
+    "start-sample-code-flow-multi-Azure-B2C": "ng serve sample-code-flow-multi-Azure-B2C --ssl -o",
     "start-sample-code-flow-multi-iframe": "ng serve sample-code-flow-multi-iframe --ssl -o",
     "start-sample-implicit-flow-google": "ng serve sample-implicit-flow-google --ssl -o",
     "start-sample-implicit-flow-silent-renew": "ng serve sample-implicit-flow-silent-renew --ssl -o",

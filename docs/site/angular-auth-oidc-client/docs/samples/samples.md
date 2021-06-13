@@ -62,6 +62,12 @@ Multiple configurations Azure AD sample using OpenID Connect code flow with PKCE
 
 [Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/projects/sample-code-flow-multi-AAD)
 
+## Multiple configurations Azure B2C OpenID Connect code flow with PKCE
+
+Multiple configurations Azure B2C sample using OpenID Connect code flow with PKCE and refresh tokens. This can be used for implementations using Microsoft Graph API or multiple APIs
+
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/projects/sample-code-flow-multi-Azure-B2C)
+
 ## Multiple configurations code flow with PKCE basic with iframe renew
 
 The is a multiple configurations sample using code flow with PKCE and iframe renew.
