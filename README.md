@@ -63,7 +63,7 @@ or with yarn
 
 [Read the docs here](https://nice-hill-002425310.azurestaticapps.net/)
 
-[Quickstart](https://nice-hill-002425310-1131.centralus.azurestaticapps.net/docs/intro) -
+[Quickstart](https://nice-hill-002425310.azurestaticapps.net/docs/intro) -
 [Samples](https://nice-hill-002425310.azurestaticapps.net/docs/samples/samples)
 
 ## Quickstart
