@@ -31,6 +31,7 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
     const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
 
     if (isAuthenticated) {
+      this.checkAuthService.startCheckSessionAndValidation();
       return of(true);
     }
 

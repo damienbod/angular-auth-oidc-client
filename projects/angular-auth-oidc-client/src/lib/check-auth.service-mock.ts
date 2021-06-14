@@ -10,4 +10,6 @@ export class CheckAuthServiceMock {
   checkAuthIncludingServer(): Observable<boolean> {
     return of(null);
   }
+
+  startCheckSessionAndValidation() {}
 }

@@ -112,7 +112,7 @@ export class CheckAuthService {
     );
   }
 
-  private startCheckSessionAndValidation() {
+  startCheckSessionAndValidation() {
     if (this.checkSessionService.isCheckSessionConfigured()) {
       this.checkSessionService.start();
     }

@@ -78,6 +78,18 @@ describe(`AutoLoginGuard`, () => {
     );
 
     it(
+      'should call startCheckSessionAndValidation() if authenticated already',
+      waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+        const checkAuthServiceSpy = spyOn(checkAuthService, 'startCheckSessionAndValidation').and.returnValue();
+
+        autoLoginGuard.canActivate(null, { url: 'some-url2' } as RouterStateSnapshot).subscribe(() => {
+          expect(checkAuthServiceSpy).toHaveBeenCalled();
+        });
+      })
+    );
+
+    it(
       'should call loginService.login() when not authorized',
       waitForAsync(() => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
@@ -169,6 +181,18 @@ describe(`AutoLoginGuard`, () => {
 
         autoLoginGuard.canLoad(null, []).subscribe(() => {
           expect(checkAuthServiceSpy).not.toHaveBeenCalled();
+        });
+      })
+    );
+
+    it(
+      'should call startCheckSessionAndValidation() if authenticated already',
+      waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+        const checkAuthServiceSpy = spyOn(checkAuthService, 'startCheckSessionAndValidation').and.returnValue();
+
+        autoLoginGuard.canActivate(null, { url: 'some-url2' } as RouterStateSnapshot).subscribe(() => {
+          expect(checkAuthServiceSpy).toHaveBeenCalled();
         });
       })
     );
