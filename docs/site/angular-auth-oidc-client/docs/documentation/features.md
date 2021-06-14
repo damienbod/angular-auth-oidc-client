@@ -104,7 +104,7 @@ Here are two use cases to distinguish:
 1. Redirect route from Security Token Server has a guard in `canLoad` or `canActivate`
 2. Redirect route from Token server does _not_ have a guard.
 
-If you need to use a guard or implement a guard for a different business case, please refer to the autologin guard in this repo as a reference. It is important that the callback logic can be run on a route without the guard running.
+If you need to use a guard or implement a guard for a different business case, please refer to the auto-login guard in this repo as a reference. It is important that the callback logic can be run on a route without the guard running.
 
 ### Redirect route from Token server has a guard
 

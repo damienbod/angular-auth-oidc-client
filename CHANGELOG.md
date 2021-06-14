@@ -8,7 +8,7 @@ Gathering all Issues and PRs which will be done in V12 and maybe are breaking ch
 
 - Configuration via forRoot(...) method https://github.com/damienbod/angular-auth-oidc-client/issues/747 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1041
 - Remove the "AuthorizedState" enum in Version 12 https://github.com/damienbod/angular-auth-oidc-client/issues/755 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1062
-- Use a different key than redirect to store redirect route when using autologin https://github.com/damienbod/angular-auth-oidc-client/issues/1060 | PR #1067
+- Use a different key than redirect to store redirect route when using auto-login https://github.com/damienbod/angular-auth-oidc-client/issues/1060 | PR #1067
 - Return value of `loginWithPopup` and login should be the same https://github.com/damienbod/angular-auth-oidc-client/issues/1048 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1066
 - How to provide client id during logoff https://github.com/damienbod/angular-auth-oidc-client/issues/932 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1069
 - urlHandler callback function parameter in LogoffRevocationService.logoff does nothing https://github.com/damienbod/angular-auth-oidc-client/issues/966 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1069
