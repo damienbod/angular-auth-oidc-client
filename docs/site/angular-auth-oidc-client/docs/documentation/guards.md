@@ -7,6 +7,8 @@ sidebar_position: 7
 
 > The guard should only be applied to protected URLs. The guard should not be active on the default route, where the authorization request is processed.
 
+Please refer to the autologin guard in this repo as a reference. It is important that the callback logic can be run on a route without the guard running or run before the guard logic.
+
 ```ts
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
