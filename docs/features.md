@@ -91,7 +91,7 @@ Then provide the class in the module:
 
 ## Auto Login
 
-If you want to have your app being redirected to the sts automatically without the user clicking any login button only by accessing a specific you can use the `AutoLoginGuard` provided by the lib. Use it for all the routes you want automatic login to be enabled.
+If you want to have your app being redirected to the sts automatically without the user clicking any login button only by accessing a specific route, you can use the `AutoLoginGuard` provided by the lib. Use it for all the routes you want automatic login to be enabled.
 
 The guard handles `canActivate` and `canLoad` for you.
 
