@@ -1,5 +1,26 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-06-20 Version 12.0.0
+
+V12 will be developed on this branch: [ReleaseV12-WIP](https://github.com/damienbod/angular-auth-oidc-client/tree/releaseV12-WIP)
+
+Gathering all Issues and PRs which will be done in V12 and maybe are breaking changes
+
+- Configuration via forRoot(...) method https://github.com/damienbod/angular-auth-oidc-client/issues/747 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1041
+- Remove the "AuthorizedState" enum in Version 12 https://github.com/damienbod/angular-auth-oidc-client/issues/755 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1062
+- Use a different key than redirect to store redirect route when using auto-login https://github.com/damienbod/angular-auth-oidc-client/issues/1060 | PR #1067
+- Return value of `loginWithPopup` and login should be the same https://github.com/damienbod/angular-auth-oidc-client/issues/1048 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1066
+- How to provide client id during logoff https://github.com/damienbod/angular-auth-oidc-client/issues/932 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1069
+- urlHandler callback function parameter in LogoffRevocationService.logoff does nothing https://github.com/damienbod/angular-auth-oidc-client/issues/966 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1069
+- Convert all instances of "Authorized" to "Authenticated" https://github.com/damienbod/angular-auth-oidc-client/issues/1088 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1085
+- Support for multiple APIs with unique scopes https://github.com/damienbod/angular-auth-oidc-client/issues/885 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1085
+- Multiple access tokens for the same client_id but different scopes https://github.com/damienbod/angular-auth-oidc-client/issues/620 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1085
+- Is there a silent renew event？#1011 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1085
+- Angular 12 Support https://github.com/damienbod/angular-auth-oidc-client/issues/1096 | PR: https://github.com/damienbod/angular-auth-oidc-client/pull/1112
+- Testing & Coverage
+- Improve documentation
+- Add configuration to disable or enable id_token expired check https://github.com/damienbod/angular-auth-oidc-client/issues/1113
+
 ### 2021-06-12 Version 11.6.11
 
 - Silent renew does not always start

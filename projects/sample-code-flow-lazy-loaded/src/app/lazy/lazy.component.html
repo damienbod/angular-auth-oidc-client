@@ -1,11 +1,11 @@
 <p>lazy works! Inside the lazy loaded module the user can authenticate</p>
 
-user is authenticated: {{ isAuthenticated$ | async }}
+user is authenticated: {{ isAuthenticated }}
 
 <br />
 <button (click)="login()">Click here to login</button>
 <br />
 
-<div *ngIf="isAuthenticated$ | async">
+<div *ngIf="isAuthenticated">
   <button (click)="logout()">Click here to logout</button>
 </div>

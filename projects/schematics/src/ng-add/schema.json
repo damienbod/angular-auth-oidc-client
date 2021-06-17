@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/schema",
-  "id": "SchematicsMyService",
-  "title": "My Service Schema",
+  "$id": "AngularAuthOidcClientSchematics",
+  "title": "Angular Auth Oidc Client Schematics",
   "type": "object",
   "properties": {
     "flowType": {

@@ -16,6 +16,7 @@ export class PopUpService {
 
   isCurrentlyInPopup(): boolean {
     const popup = sessionStorage.getItem(this.STORAGE_IDENTIFIER);
+
     return !!window.opener && window.opener !== window && !!popup;
   }
 

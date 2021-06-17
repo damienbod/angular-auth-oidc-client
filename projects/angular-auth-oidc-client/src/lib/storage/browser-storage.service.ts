@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ConfigurationProvider } from '../config/config.provider';
+import { ConfigurationProvider } from '../config/provider/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 
@@ -7,66 +7,89 @@ import { AbstractSecurityStorage } from './abstract-security-storage';
 export class BrowserStorageService implements AbstractSecurityStorage {
   constructor(private configProvider: ConfigurationProvider, private loggerService: LoggerService) {}
 
-  read(key: string): any {
+  read(key: string, configId: string): any {
     if (!this.hasStorage()) {
-      this.loggerService.logDebug(`Wanted to read '${key}' but Storage was undefined`);
+      this.loggerService.logDebug(configId, `Wanted to read '${key}' but Storage was undefined`);
+
       return false;
     }
 
-    const item = this.getStorage()?.getItem(key);
+    const item = this.getStorage(configId)?.getItem(key);
 
     if (!item) {
-      this.loggerService.logDebug(`Wanted to read '${key}' but nothing was found`);
       return null;
     }
 
     return JSON.parse(item);
   }
 
-  write(key: string, value: any): boolean {
+  write(key: string, value: any, configId: string): boolean {
     if (!this.hasStorage()) {
-      this.loggerService.logDebug(`Wanted to write '${key}/${value}' but Storage was falsy`);
+      this.loggerService.logDebug(configId, `Wanted to write '${key}/${value}' but Storage was falsy`);
+
       return false;
     }
 
-    const storage = this.getStorage();
+    const storage = this.getStorage(configId);
     if (!storage) {
-      this.loggerService.logDebug(`Wanted to write '${key}/${value}' but Storage was falsy`);
+      this.loggerService.logDebug(configId, `Wanted to write '${key}/${value}' but Storage was falsy`);
+
       return false;
     }
 
     value = value || null;
 
     storage.setItem(`${key}`, JSON.stringify(value));
+
     return true;
   }
 
-  remove(key: string): boolean {
+  remove(key: string, configId: string): boolean {
     if (!this.hasStorage()) {
-      this.loggerService.logDebug(`Wanted to remove '${key}' but Storage was falsy`);
+      this.loggerService.logDebug(configId, `Wanted to remove '${key}' but Storage was falsy`);
+
       return false;
     }
 
-    const storage = this.getStorage();
+    const storage = this.getStorage(configId);
     if (!storage) {
-      this.loggerService.logDebug(`Wanted to write '${key}' but Storage was falsy`);
+      this.loggerService.logDebug(configId, `Wanted to write '${key}' but Storage was falsy`);
+
       return false;
     }
 
     storage.removeItem(`${key}`);
+
     return true;
   }
 
-  private getStorage() {
-    const config = this.configProvider.getOpenIDConfiguration();
-    if (!config) {
-      return null;
+  // TODO THIS STORAGE WANTS AN ID BUT CLEARS EVERYTHING
+  clear(configId: string): boolean {
+    if (!this.hasStorage()) {
+      this.loggerService.logDebug(configId, `Wanted to clear storage but Storage was falsy`);
+
+      return false;
     }
 
-    return config.storage;
+    const storage = this.getStorage(configId);
+    if (!storage) {
+      this.loggerService.logDebug(configId, `Wanted to clear storage but Storage was falsy`);
+
+      return false;
+    }
+
+    storage.clear();
+
+    return true;
   }
 
-  private hasStorage() {
+  private getStorage(configId: string): any {
+    const { storage } = this.configProvider.getOpenIDConfiguration(configId) || {};
+
+    return storage;
+  }
+
+  private hasStorage(): boolean {
     return typeof Storage !== 'undefined';
   }
 }

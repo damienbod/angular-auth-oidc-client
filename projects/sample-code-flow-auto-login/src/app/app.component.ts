@@ -10,10 +10,9 @@ export class AppComponent implements OnInit {
   constructor(private oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.oidcSecurityService.checkAuth().subscribe((isAuthenticated) => {
+    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken }) => {
       console.log('app authenticated', isAuthenticated);
-      const at = this.oidcSecurityService.getToken();
-      console.log(`Current access token is '${at}'`);
+      console.log(`Current access token is '${accessToken}'`);
     });
   }
 

@@ -32,7 +32,7 @@ describe('Events Service', () => {
   );
 
   it(
-    'registering to single event with mutliple same event emit works',
+    'registering to single event with multiple same event emit works',
     waitForAsync(() => {
       const spy = jasmine.createSpy('spy');
       eventsService.registerForEvents().subscribe((firedEvent) => {
@@ -49,7 +49,7 @@ describe('Events Service', () => {
   );
 
   it(
-    'registering to single event with mutliple emit works',
+    'registering to single event with multiple emit works',
     waitForAsync(() => {
       eventsService
         .registerForEvents()

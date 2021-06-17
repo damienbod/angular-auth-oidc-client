@@ -13,7 +13,7 @@
   >
     <span class="navbar-toggler-icon"></span>
   </button>
-  <div *ngIf="isAuthenticated$ | async as isAuthenticated; else noAuth">
+  <div *ngIf="isAuthenticated; else noAuth">
     <div class="collapse navbar-collapse" id="topNavbarCollapse">
       <ul class="mr-auto navbar-nav">
         <li class="nav-item"><a class="nav-link" (click)="logout()">Logout</a></li>

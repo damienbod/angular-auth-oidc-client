@@ -1,6 +1,6 @@
 import { HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { LoggerService } from '../logging/logger.service';
@@ -15,21 +15,25 @@ export class SigninKeyDataService {
     private dataService: DataService
   ) {}
 
-  getSigningKeys() {
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints');
+  getSigningKeys(configId: string): Observable<JwtKeys> {
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
     const jwksUri = authWellKnownEndPoints?.jwksUri;
     if (!jwksUri) {
       const error = `getSigningKeys: authWellKnownEndpoints.jwksUri is: '${jwksUri}'`;
-      this.loggerService.logWarning(error);
+      this.loggerService.logWarning(configId, error);
+
       return throwError(error);
     }
 
-    this.loggerService.logDebug('Getting signinkeys from ', jwksUri);
+    this.loggerService.logDebug(configId, 'Getting signinkeys from ', jwksUri);
 
-    return this.dataService.get<JwtKeys>(jwksUri).pipe(retry(2), catchError(this.handleErrorGetSigningKeys));
+    return this.dataService.get<JwtKeys>(jwksUri, configId).pipe(
+      retry(2),
+      catchError((e) => this.handleErrorGetSigningKeys(e, configId))
+    );
   }
 
-  private handleErrorGetSigningKeys(errorResponse: HttpResponse<any> | any) {
+  private handleErrorGetSigningKeys(errorResponse: HttpResponse<any> | any, configId: string): Observable<never> {
     let errMsg = '';
     if (errorResponse instanceof HttpResponse) {
       const body = errorResponse.body || {};
@@ -40,7 +44,8 @@ export class SigninKeyDataService {
       const { message } = errorResponse;
       errMsg = !!message ? message : `${errorResponse}`;
     }
-    this.loggerService.logError(errMsg);
-    return throwError(new Error(errMsg));
+    this.loggerService.logError(configId, errMsg);
+
+    return throwError(errMsg);
   }
 }

@@ -11,7 +11,7 @@ import { ImplicitFlowCallbackService } from './implicit-flow-callback.service';
 export class CallbackService {
   private stsCallbackInternal$ = new Subject();
 
-  get stsCallback$() {
+  get stsCallback$(): Observable<unknown> {
     return this.stsCallbackInternal$.asObservable();
   }
 
@@ -26,13 +26,13 @@ export class CallbackService {
     return this.urlService.isCallbackFromSts(currentUrl);
   }
 
-  handleCallbackAndFireEvents(currentCallbackUrl: string): Observable<CallbackContext> {
+  handleCallbackAndFireEvents(currentCallbackUrl: string, configId: string): Observable<CallbackContext> {
     let callback$: Observable<any>;
 
-    if (this.flowHelper.isCurrentFlowCodeFlow()) {
-      callback$ = this.codeFlowCallbackService.authorizedCallbackWithCode(currentCallbackUrl);
-    } else if (this.flowHelper.isCurrentFlowAnyImplicitFlow()) {
-      callback$ = this.implicitFlowCallbackService.authorizedImplicitFlowCallback();
+    if (this.flowHelper.isCurrentFlowCodeFlow(configId)) {
+      callback$ = this.codeFlowCallbackService.authenticatedCallbackWithCode(currentCallbackUrl, configId);
+    } else if (this.flowHelper.isCurrentFlowAnyImplicitFlow(configId)) {
+      callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(configId);
     }
 
     return callback$.pipe(tap(() => this.stsCallbackInternal$.next()));

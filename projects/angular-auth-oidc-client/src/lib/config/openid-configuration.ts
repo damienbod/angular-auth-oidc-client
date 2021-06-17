@@ -1,13 +1,17 @@
 import { LogLevel } from '../logging/log-level';
+import { AuthWellKnownEndpoints } from './auth-well-known/auth-well-known-endpoints';
 
 export interface OpenIdConfiguration {
+  configId?: string;
   /**
    * The url to the Security Token Service (STS) server.
    * This field is required.
    */
   stsServer?: string;
   /** Override the default STS wellknown endpoint postfix. */
-  authWellknownEndpoint?: string;
+  authWellknownEndpointUrl?: string;
+  authWellknownEndpoints?: AuthWellKnownEndpoints;
+
   /** The redirect URL defined on the STS. */
   redirectUrl?: string;
   /**
@@ -83,7 +87,7 @@ export interface OpenIdConfiguration {
   /** Route, if the server returns a 401. This is an Angular route. HTTP 401 */
   unauthorizedRoute?: string;
   /** When set to true, library automatically gets user info after authentication */
-  autoUserinfo?: boolean;
+  autoUserInfo?: boolean;
   /** When set to true, library automatically gets user info after token renew */
   renewUserInfoAfterTokenRenew?: boolean;
   /** Used for custom state logic handling. The state is not automatically reset when set to false */
@@ -123,22 +127,27 @@ export interface OpenIdConfiguration {
   /** The storage mechanism to use */
   storage?: any;
   /** Extra parameters to add to the authorization URL request */
-  customParams?: { [key: string]: string | number | boolean };
+  customParamsAuthRequest?: { [key: string]: string | number | boolean };
 
   /** Extra parameters to add to the refresh token request body */
-  customParamsRefreshToken?: { [key: string]: string | number | boolean };
+  customParamsRefreshTokenRequest?: { [key: string]: string | number | boolean };
 
   /** Extra parameters to add to the authorization EndSession request */
-  customParamsEndSession?: { [key: string]: string | number | boolean };
+  customParamsEndSessionRequest?: { [key: string]: string | number | boolean };
 
   /** Extra parameters to add to the token URL request */
-  customTokenParams?: { [key: string]: string | number | boolean };
+  customParamsCodeRequest?: { [key: string]: string | number | boolean };
+
   /** Denotes if the AuthWellKnownEndpoints should be loaded at startup or when the user calls the authorize method. */
   eagerLoadAuthWellKnownEndpoints?: boolean;
 
   // Azure B2C have implemented this incorrectly. Add support for to disable this until fixed.
   /** disables the auth_time validation for id_tokens in a refresh due to Azure's incorrect implementation */
   disableRefreshIdTokenAuthTimeValidation?: boolean;
+
+  /** enables the id_token validation, default value is true. You can disable this validation if you would like to ignore the expired value in the renew process. If no id_token is returned in using refresh tokens, set this to false. */
+  enableIdTokenExpiredValidationInRenew?: boolean;
+
   /** Controls the periodic check time interval in sections.
    * Default value is 3
    */

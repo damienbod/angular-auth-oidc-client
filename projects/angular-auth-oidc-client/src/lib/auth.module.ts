@@ -1,17 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, InjectionToken, ModuleWithProviders, NgModule, Provider } from '@angular/core';
 import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './authState/auth-state.service';
-import { AutoLoginService } from './auto-login/auto-login-service';
+import { AutoLoginService } from './auto-login/auto-login.service';
 import { ImplicitFlowCallbackService } from './callback/implicit-flow-callback.service';
 import { CheckAuthService } from './check-auth.service';
-import { ConfigValidationService } from './config-validation/config-validation.service';
-import { AuthWellKnownDataService } from './config/auth-well-known-data.service';
-import { AuthWellKnownService } from './config/auth-well-known.service';
-import { ConfigurationProvider } from './config/config.provider';
+import { AuthWellKnownDataService } from './config/auth-well-known/auth-well-known-data.service';
+import { AuthWellKnownService } from './config/auth-well-known/auth-well-known.service';
 import { OidcConfigService } from './config/config.service';
+import { StsConfigLoader, StsConfigStaticLoader } from './config/loader/config-loader';
+import { OpenIdConfiguration } from './config/openid-configuration';
+import { ConfigurationProvider } from './config/provider/config.provider';
+import { ConfigValidationService } from './config/validation/config-validation.service';
 import { CodeFlowCallbackHandlerService } from './flows/callback-handling/code-flow-callback-handler.service';
 import { HistoryJwtKeysCallbackHandlerService } from './flows/callback-handling/history-jwt-keys-callback-handler.service';
 import { ImplicitFlowCallbackHandlerService } from './flows/callback-handling/implicit-flow-callback-handler.service';
@@ -40,14 +42,37 @@ import { PublicEventsService } from './public-events/public-events.service';
 import { AbstractSecurityStorage } from './storage/abstract-security-storage';
 import { BrowserStorageService } from './storage/browser-storage.service';
 import { StoragePersistenceService } from './storage/storage-persistence.service';
-import { UserService } from './userData/user-service';
+import { UserService } from './userData/user.service';
 import { EqualityService } from './utils/equality/equality.service';
 import { FlowHelper } from './utils/flowHelper/flow-helper.service';
 import { PlatformProvider } from './utils/platform-provider/platform.provider';
-import { TokenHelperService } from './utils/tokenHelper/oidc-token-helper.service';
+import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
+import { CurrentUrlService } from './utils/url/current-url.service';
 import { UrlService } from './utils/url/url.service';
+import { JsrsAsignReducedService } from './validation/jsrsasign-reduced.service';
 import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';
+
+export interface PassedInitialConfig {
+  config?: OpenIdConfiguration | OpenIdConfiguration[];
+  loader?: Provider;
+  storage?: any;
+}
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export function createStaticLoader(passedConfig: PassedInitialConfig) {
+  return new StsConfigStaticLoader(passedConfig.config);
+}
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export function configurationProviderFactory(oidcConfigService: OidcConfigService, loader: StsConfigLoader) {
+  const allLoadPromises = Promise.all(loader.loadConfigs());
+  const fn: () => Promise<OpenIdConfiguration[]> = () => allLoadPromises.then((configs) => oidcConfigService.withConfigs(configs));
+
+  return fn;
+}
+
+export const PASSED_CONFIG = new InjectionToken<PassedInitialConfig>('PASSED_CONFIG');
 
 @NgModule({
   imports: [CommonModule, HttpClientModule],
@@ -55,13 +80,32 @@ import { TokenValidationService } from './validation/token-validation.service';
   exports: [],
 })
 export class AuthModule {
-  static forRoot(token: Token = {}) {
+  static forRoot(passedConfig: PassedInitialConfig): ModuleWithProviders<AuthModule> {
     return {
       ngModule: AuthModule,
       providers: [
+        // Make the PASSED_CONFIG available through injection
+        { provide: PASSED_CONFIG, useValue: passedConfig },
+
+        // Create the loader: Either the one getting passed or a static one
+        passedConfig?.loader || { provide: StsConfigLoader, useFactory: createStaticLoader, deps: [PASSED_CONFIG] },
+
+        // Load the config when the app starts
+        {
+          provide: APP_INITIALIZER,
+          multi: true,
+          deps: [OidcConfigService, StsConfigLoader, PASSED_CONFIG],
+          useFactory: configurationProviderFactory,
+        },
+
+        {
+          provide: AbstractSecurityStorage,
+          useClass: passedConfig?.storage || BrowserStorageService,
+        },
         OidcConfigService,
         PublicEventsService,
         FlowHelper,
+        ConfigurationProvider,
         OidcSecurityService,
         TokenValidationService,
         PlatformProvider,
@@ -69,7 +113,6 @@ export class AuthModule {
         FlowsDataService,
         FlowsService,
         SilentRenewService,
-        ConfigurationProvider,
         LogoffRevocationService,
         UserService,
         RandomService,
@@ -104,17 +147,9 @@ export class AuthModule {
         PopUpLoginService,
         StandardLoginService,
         AutoLoginService,
-        {
-          provide: AbstractSecurityStorage,
-          useClass: token.storage || BrowserStorageService,
-        },
+        JsrsAsignReducedService,
+        CurrentUrlService,
       ],
     };
   }
-}
-
-export type Type<T> = new (...args: any[]) => T;
-
-export interface Token {
-  storage?: Type<any>;
 }

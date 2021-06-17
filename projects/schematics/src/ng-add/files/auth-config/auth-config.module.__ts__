@@ -1,22 +1,11 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { AuthModule, OidcConfigService } from 'angular-auth-oidc-client';
+import { NgModule } from '@angular/core';
+import { AuthModule } from 'angular-auth-oidc-client';
 
-export function configureAuth(oidcConfigService: OidcConfigService): () => Promise<any> {
-    return () =>
-        oidcConfigService.withConfig(<%= authConfig %>);
-}
 
 @NgModule({
-    imports: [AuthModule.forRoot()],
+    imports: [AuthModule.forRoot({
+        config: <%= authConfig %>
+      })],
     exports: [AuthModule],
-    providers: [
-        OidcConfigService,
-        {
-            provide: APP_INITIALIZER,
-            useFactory: configureAuth,
-            deps: [OidcConfigService],
-            multi: true,
-        },
-    ],
 })
 export class AuthConfigModule {}

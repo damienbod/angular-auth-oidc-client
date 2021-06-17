@@ -2,18 +2,18 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
-import { ConfigurationProvider } from '../config/config.provider';
-import { ConfigurationProviderMock } from '../config/config.provider-mock';
+import { ConfigurationProvider } from '../config/provider/config.provider';
+import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsDataServiceMock } from '../flows/flows-data.service-mock';
 import { FlowsService } from '../flows/flows.service';
 import { FlowsServiceMock } from '../flows/flows.service-mock';
 import { ImplicitFlowCallbackService } from './implicit-flow-callback.service';
-import { IntervallService } from './intervall.service';
+import { IntervalService } from './interval.service';
 
 describe('ImplicitFlowCallbackService ', () => {
   let implicitFlowCallbackService: ImplicitFlowCallbackService;
-  let intervalService: IntervallService;
+  let intervalService: IntervalService;
   let flowsService: FlowsService;
   let configurationProvider: ConfigurationProvider;
   let flowsDataService: FlowsDataService;
@@ -26,7 +26,7 @@ describe('ImplicitFlowCallbackService ', () => {
         ImplicitFlowCallbackService,
         { provide: FlowsService, useClass: FlowsServiceMock },
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
-        IntervallService,
+        IntervalService,
         { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
       ],
     });
@@ -35,7 +35,7 @@ describe('ImplicitFlowCallbackService ', () => {
   beforeEach(() => {
     implicitFlowCallbackService = TestBed.inject(ImplicitFlowCallbackService);
     configurationProvider = TestBed.inject(ConfigurationProvider);
-    intervalService = TestBed.inject(IntervallService);
+    intervalService = TestBed.inject(IntervalService);
     flowsDataService = TestBed.inject(FlowsDataService);
     flowsService = TestBed.inject(FlowsService);
     router = TestBed.inject(Router);
@@ -46,13 +46,13 @@ describe('ImplicitFlowCallbackService ', () => {
   });
 
   describe('authorizedImplicitFlowCallback', () => {
-    it('calls flowsService.processImplicitFlowCallback with has if given', () => {
+    it('calls flowsService.processImplicitFlowCallback with hash if given', () => {
       const spy = spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(of(null));
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
 
-      implicitFlowCallbackService.authorizedImplicitFlowCallback('some-hash');
+      implicitFlowCallbackService.authenticatedImplicitFlowCallback('configId', 'some-hash');
 
-      expect(spy).toHaveBeenCalledWith('some-hash');
+      expect(spy).toHaveBeenCalledWith('configId', 'some-hash');
     });
 
     it(
@@ -72,8 +72,8 @@ describe('ImplicitFlowCallbackService ', () => {
         const spy = spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(of(callbackContext));
         const routerSpy = spyOn(router, 'navigateByUrl');
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
-        implicitFlowCallbackService.authorizedImplicitFlowCallback('some-hash').subscribe(() => {
-          expect(spy).toHaveBeenCalledWith('some-hash');
+        implicitFlowCallbackService.authenticatedImplicitFlowCallback('configId', 'some-hash').subscribe(() => {
+          expect(spy).toHaveBeenCalledWith('configId', 'some-hash');
           expect(routerSpy).not.toHaveBeenCalled();
         });
       })
@@ -99,8 +99,8 @@ describe('ImplicitFlowCallbackService ', () => {
           triggerAuthorizationResultEvent: false,
           postLoginRoute: 'postLoginRoute',
         });
-        implicitFlowCallbackService.authorizedImplicitFlowCallback('some-hash').subscribe(() => {
-          expect(spy).toHaveBeenCalledWith('some-hash');
+        implicitFlowCallbackService.authenticatedImplicitFlowCallback('configId', 'some-hash').subscribe(() => {
+          expect(spy).toHaveBeenCalledWith('configId', 'some-hash');
           expect(routerSpy).toHaveBeenCalledWith('postLoginRoute');
         });
       })
@@ -111,13 +111,13 @@ describe('ImplicitFlowCallbackService ', () => {
       waitForAsync(() => {
         spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(throwError('error'));
         const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
-        const stopPeriodicallyTokenCheckSpy = spyOn(intervalService, 'stopPeriodicallTokenCheck');
+        const stopPeriodicallyTokenCheckSpy = spyOn(intervalService, 'stopPeriodicTokenCheck');
 
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           triggerAuthorizationResultEvent: false,
           postLoginRoute: 'postLoginRoute',
         });
-        implicitFlowCallbackService.authorizedImplicitFlowCallback('some-hash').subscribe({
+        implicitFlowCallbackService.authenticatedImplicitFlowCallback('configId', 'some-hash').subscribe({
           error: (err) => {
             expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
             expect(stopPeriodicallyTokenCheckSpy).toHaveBeenCalled();
@@ -134,14 +134,14 @@ describe('ImplicitFlowCallbackService ', () => {
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
         spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(throwError('error'));
         const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
-        const stopPeriodicallTokenCheckSpy = spyOn(intervalService, 'stopPeriodicallTokenCheck');
+        const stopPeriodicallTokenCheckSpy = spyOn(intervalService, 'stopPeriodicTokenCheck');
         const routerSpy = spyOn(router, 'navigateByUrl');
 
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           triggerAuthorizationResultEvent: false,
           unauthorizedRoute: 'unauthorizedRoute',
         });
-        implicitFlowCallbackService.authorizedImplicitFlowCallback('some-hash').subscribe({
+        implicitFlowCallbackService.authenticatedImplicitFlowCallback('configId', 'some-hash').subscribe({
           error: (err) => {
             expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
             expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();

@@ -1,0 +1,25 @@
+<div>Welcome to home Route</div>
+
+<br />
+UserData
+<pre>{{ userData$ | async | json }}</pre>
+
+<div>
+  <h3>{{ configurations[0].configId }}</h3>
+  <button (click)="loginWithPopup(configurations[0].configId)">Login using popup</button>
+  <button (click)="logout(configurations[0].configId)">Logout</button>
+  <button (click)="logoffAndRevokeTokens(configurations[0].configId)">Logout and revoke tokens</button>
+  <button (click)="revokeRefreshToken(configurations[0].configId)">Revoke refresh token</button>
+  <button (click)="refreshSessionId4(configurations[0].configId)">Refresh session</button>
+  <pre>{{ configurations[0] | json }}</pre>
+</div>
+
+<div>
+  <h3>{{ configurations[1].configId }}</h3>
+  <button (click)="loginWithPopup(configurations[1].configId)">Login using popup</button>
+  <button (click)="logout(configurations[1].configId)">Logout</button>
+  <button (click)="logoffAndRevokeTokens(configurations[1].configId)">Logout and revoke tokens</button>
+  <button (click)="revokeRefreshToken(configurations[1].configId)">Revoke refresh token</button>
+  <button (click)="refreshSessionAuth0(configurations[1].configId)">Refresh session</button>
+  <pre>{{ configurations[1] | json }}</pre>
+</div>

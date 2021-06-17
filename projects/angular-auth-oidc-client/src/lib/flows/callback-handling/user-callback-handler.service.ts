@@ -2,10 +2,9 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AuthStateService } from '../../authState/auth-state.service';
-import { AuthorizedState } from '../../authState/authorized-state';
-import { ConfigurationProvider } from '../../config/config.provider';
+import { ConfigurationProvider } from '../../config/provider/config.provider';
 import { LoggerService } from '../../logging/logger.service';
-import { UserService } from '../../userData/user-service';
+import { UserService } from '../../userData/user.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
@@ -23,63 +22,68 @@ export class UserCallbackHandlerService {
   ) {}
 
   // STEP 5 userData
-  callbackUser(callbackContext: CallbackContext): Observable<CallbackContext> {
+  callbackUser(callbackContext: CallbackContext, configId: string): Observable<CallbackContext> {
     const { isRenewProcess, validationResult, authResult, refreshToken } = callbackContext;
-    const { autoUserinfo, renewUserInfoAfterTokenRenew } = this.configurationProvider.getOpenIDConfiguration();
+    const { autoUserInfo, renewUserInfoAfterTokenRenew } = this.configurationProvider.getOpenIDConfiguration(configId);
 
-    if (!autoUserinfo) {
+    if (!autoUserInfo) {
       if (!isRenewProcess || renewUserInfoAfterTokenRenew) {
         // userData is set to the id_token decoded, auto get user data set to false
         if (validationResult.decodedIdToken) {
-          this.userService.setUserDataToStore(validationResult.decodedIdToken);
+          this.userService.setUserDataToStore(validationResult.decodedIdToken, configId);
         }
       }
 
       if (!isRenewProcess && !refreshToken) {
-        this.flowsDataService.setSessionState(authResult.session_state);
+        this.flowsDataService.setSessionState(authResult.session_state, configId);
       }
 
-      this.publishAuthorizedState(validationResult, isRenewProcess);
+      this.publishAuthState(validationResult, isRenewProcess);
+
       return of(callbackContext);
     }
 
-    return this.userService.getAndPersistUserDataInStore(isRenewProcess, validationResult.idToken, validationResult.decodedIdToken).pipe(
-      switchMap((userData) => {
-        if (!!userData) {
-          if (!refreshToken) {
-            this.flowsDataService.setSessionState(authResult.session_state);
+    return this.userService
+      .getAndPersistUserDataInStore(configId, isRenewProcess, validationResult.idToken, validationResult.decodedIdToken)
+      .pipe(
+        switchMap((userData) => {
+          if (!!userData) {
+            if (!refreshToken) {
+              this.flowsDataService.setSessionState(authResult.session_state, configId);
+            }
+
+            this.publishAuthState(validationResult, isRenewProcess);
+
+            return of(callbackContext);
+          } else {
+            this.resetAuthDataService.resetAuthorizationData(configId);
+            this.publishUnauthenticatedState(validationResult, isRenewProcess);
+            const errorMessage = `Called for userData but they were ${userData}`;
+            this.loggerService.logWarning(configId, errorMessage);
+
+            return throwError(errorMessage);
           }
+        }),
+        catchError((err) => {
+          const errorMessage = `Failed to retrieve user info with error:  ${err}`;
+          this.loggerService.logWarning(configId, errorMessage);
 
-          this.publishAuthorizedState(validationResult, isRenewProcess);
-
-          return of(callbackContext);
-        } else {
-          this.resetAuthDataService.resetAuthorizationData();
-          this.publishUnauthorizedState(validationResult, isRenewProcess);
-          const errorMessage = `Called for userData but they were ${userData}`;
-          this.loggerService.logWarning(errorMessage);
           return throwError(errorMessage);
-        }
-      }),
-      catchError((err) => {
-        const errorMessage = `Failed to retrieve user info with error:  ${err}`;
-        this.loggerService.logWarning(errorMessage);
-        return throwError(errorMessage);
-      })
-    );
+        })
+      );
   }
 
-  private publishAuthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
+  private publishAuthState(stateValidationResult: StateValidationResult, isRenewProcess: boolean): void {
     this.authStateService.updateAndPublishAuthState({
-      authorizationState: AuthorizedState.Authorized,
+      isAuthenticated: true,
       validationResult: stateValidationResult.state,
       isRenewProcess,
     });
   }
 
-  private publishUnauthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean) {
+  private publishUnauthenticatedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean): void {
     this.authStateService.updateAndPublishAuthState({
-      authorizationState: AuthorizedState.Unauthorized,
+      isAuthenticated: false,
       validationResult: stateValidationResult.state,
       isRenewProcess,
     });

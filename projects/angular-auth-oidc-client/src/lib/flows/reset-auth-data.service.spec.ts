@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { AuthStateService } from '../authState/auth-state.service';
 import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
-import { UserService } from '../userData/user-service';
 import { UserServiceMock } from '../userData/user-service-mock';
+import { UserService } from '../userData/user.service';
 import { FlowsDataService } from './flows-data.service';
 import { FlowsDataServiceMock } from './flows-data.service-mock';
 import { ResetAuthDataService } from './reset-auth-data.service';
@@ -38,15 +38,15 @@ describe('ResetAuthDataService', () => {
   describe('resetAuthorizationData', () => {
     it('calls resetUserDataInStore when autoUserInfo is true', () => {
       const resetUserDataInStoreSpy = spyOn(userService, 'resetUserDataInStore');
-      service.resetAuthorizationData();
+      service.resetAuthorizationData('configId');
       expect(resetUserDataInStoreSpy).toHaveBeenCalled();
     });
 
     it('calls correct methods', () => {
       const resetStorageFlowDataSpy = spyOn(flowsDataService, 'resetStorageFlowData');
-      const setUnauthorizedAndFireEventSpy = spyOn(authStateService, 'setUnauthorizedAndFireEvent');
+      const setUnauthorizedAndFireEventSpy = spyOn(authStateService, 'setUnauthenticatedAndFireEvent');
 
-      service.resetAuthorizationData();
+      service.resetAuthorizationData('configId');
 
       expect(resetStorageFlowDataSpy).toHaveBeenCalled();
       expect(setUnauthorizedAndFireEventSpy).toHaveBeenCalled();

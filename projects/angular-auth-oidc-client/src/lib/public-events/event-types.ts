@@ -10,4 +10,5 @@ export enum EventTypes {
   NewAuthorizationResult,
   TokenExpired,
   IdTokenExpired,
+  SilentRenewStarted,
 }

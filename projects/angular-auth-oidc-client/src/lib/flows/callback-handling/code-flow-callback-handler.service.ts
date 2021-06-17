@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { catchError, mergeMap, retryWhen, switchMap } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
-import { ConfigurationProvider } from '../../config/config.provider';
+import { ConfigurationProvider } from '../../config/provider/config.provider';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
@@ -24,22 +24,24 @@ export class CodeFlowCallbackHandlerService {
   ) {}
 
   // STEP 1 Code Flow
-  codeFlowCallback(urlToCheck: string): Observable<CallbackContext> {
+  codeFlowCallback(urlToCheck: string, configId: string): Observable<CallbackContext> {
     const code = this.urlService.getUrlParameter(urlToCheck, 'code');
     const state = this.urlService.getUrlParameter(urlToCheck, 'state');
     const sessionState = this.urlService.getUrlParameter(urlToCheck, 'session_state') || null;
 
     if (!state) {
-      this.loggerService.logDebug('no state in url');
+      this.loggerService.logDebug(configId, 'no state in url');
+
       return throwError('no state in url');
     }
 
     if (!code) {
-      this.loggerService.logDebug('no code in url');
+      this.loggerService.logDebug(configId, 'no code in url');
+
       return throwError('no code in url');
     }
 
-    this.loggerService.logDebug('running validation for callback', urlToCheck);
+    this.loggerService.logDebug(configId, 'running validation for callback', urlToCheck);
 
     const initialCallbackContext = {
       code,
@@ -57,18 +59,17 @@ export class CodeFlowCallbackHandlerService {
   }
 
   // STEP 2 Code Flow //  Code Flow Silent Renew starts here
-  codeFlowCodeRequest(callbackContext: CallbackContext): Observable<CallbackContext> {
-    const authStateControl = this.flowsDataService.getAuthStateControl();
+  codeFlowCodeRequest(callbackContext: CallbackContext, configId: string): Observable<CallbackContext> {
+    const authStateControl = this.flowsDataService.getAuthStateControl(configId);
 
-    const isStateCorrect = this.tokenValidationService.validateStateFromHashCallback(callbackContext.state, authStateControl);
+    const isStateCorrect = this.tokenValidationService.validateStateFromHashCallback(callbackContext.state, authStateControl, configId);
 
     if (!isStateCorrect) {
-      this.loggerService.logWarning('codeFlowCodeRequest incorrect state');
       return throwError('codeFlowCodeRequest incorrect state');
     }
 
-    const authWellKnown = this.storagePersistenceService.read('authWellKnownEndPoints');
-    const tokenEndpoint = authWellKnown?.tokenEndpoint;
+    const authWellknownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+    const tokenEndpoint = authWellknownEndpoints?.tokenEndpoint;
     if (!tokenEndpoint) {
       return throwError('Token Endpoint not defined');
     }
@@ -76,11 +77,15 @@ export class CodeFlowCallbackHandlerService {
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-    const config = this.configurationProvider.getOpenIDConfiguration();
+    const config = this.configurationProvider.getOpenIDConfiguration(configId);
 
-    const bodyForCodeFlow = this.urlService.createBodyForCodeFlowCodeRequest(callbackContext.code, config?.customTokenParams);
+    const bodyForCodeFlow = this.urlService.createBodyForCodeFlowCodeRequest(
+      callbackContext.code,
+      configId,
+      config?.customParamsCodeRequest
+    );
 
-    return this.dataService.post(tokenEndpoint, bodyForCodeFlow, headers).pipe(
+    return this.dataService.post(tokenEndpoint, bodyForCodeFlow, configId, headers).pipe(
       switchMap((response) => {
         let authResult: any = new Object();
         authResult = response;
@@ -88,28 +93,32 @@ export class CodeFlowCallbackHandlerService {
         authResult.session_state = callbackContext.sessionState;
 
         callbackContext.authResult = authResult;
+
         return of(callbackContext);
       }),
-      retryWhen((error) => this.handleRefreshRetry(error)),
+      retryWhen((error) => this.handleRefreshRetry(error, configId)),
       catchError((error) => {
-        const { stsServer } = this.configurationProvider.getOpenIDConfiguration();
+        const { stsServer } = this.configurationProvider.getOpenIDConfiguration(configId);
         const errorMessage = `OidcService code request ${stsServer}`;
-        this.loggerService.logError(errorMessage, error);
+        this.loggerService.logError(configId, errorMessage, error);
+
         return throwError(errorMessage);
       })
     );
   }
 
-  private handleRefreshRetry(errors: Observable<any>): Observable<any> {
+  private handleRefreshRetry(errors: Observable<any>, configId: string): Observable<any> {
     return errors.pipe(
       mergeMap((error) => {
         // retry token refresh if there is no internet connection
         if (error && error instanceof HttpErrorResponse && error.error instanceof ProgressEvent && error.error.type === 'error') {
-          const { stsServer, refreshTokenRetryInSeconds } = this.configurationProvider.getOpenIDConfiguration();
+          const { stsServer, refreshTokenRetryInSeconds } = this.configurationProvider.getOpenIDConfiguration(configId);
           const errorMessage = `OidcService code request ${stsServer} - no internet connection`;
-          this.loggerService.logWarning(errorMessage, error);
+          this.loggerService.logWarning(configId, errorMessage, error);
+
           return timer(refreshTokenRetryInSeconds * 1000);
         }
+
         return throwError(error);
       })
     );

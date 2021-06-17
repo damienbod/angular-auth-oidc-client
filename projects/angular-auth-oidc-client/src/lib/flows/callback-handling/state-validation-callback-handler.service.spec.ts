@@ -2,7 +2,6 @@ import { DOCUMENT } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { AuthStateService } from '../../authState/auth-state.service';
 import { AuthStateServiceMock } from '../../authState/auth-state.service-mock';
-import { AuthorizedState } from '../../authState/authorized-state';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StateValidationResult } from '../../validation/state-validation-result';
@@ -65,7 +64,7 @@ describe('StateValidationCallbackHandlerService', () => {
           authResponseIsValid: true,
         } as StateValidationResult);
 
-        service.callbackStateValidation({} as CallbackContext).subscribe((newCallbackContext) => {
+        service.callbackStateValidation({} as CallbackContext, 'configId').subscribe((newCallbackContext) => {
           expect(newCallbackContext).toEqual({
             validationResult: {
               idToken: 'idTokenJustForTesting',
@@ -85,9 +84,12 @@ describe('StateValidationCallbackHandlerService', () => {
 
         const loggerSpy = spyOn(loggerService, 'logWarning');
 
-        service.callbackStateValidation({} as CallbackContext).subscribe({
+        service.callbackStateValidation({} as CallbackContext, 'configId').subscribe({
           error: (err) => {
-            expect(loggerSpy).toHaveBeenCalledOnceWith('authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash');
+            expect(loggerSpy).toHaveBeenCalledOnceWith(
+              'configId',
+              'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
+            );
           },
         });
       })
@@ -104,11 +106,11 @@ describe('StateValidationCallbackHandlerService', () => {
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
 
-        service.callbackStateValidation({ isRenewProcess: true } as CallbackContext).subscribe({
+        service.callbackStateValidation({ isRenewProcess: true } as CallbackContext, 'configId').subscribe({
           error: (err) => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
-              authorizationState: AuthorizedState.Unauthorized,
+              isAuthenticated: false,
               validationResult: ValidationResult.LoginRequired,
               isRenewProcess: true,
             });

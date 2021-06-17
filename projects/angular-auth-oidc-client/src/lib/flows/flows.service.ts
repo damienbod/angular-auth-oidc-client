@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { concatMap } from 'rxjs/operators';
 import { CallbackContext } from './callback-context';
 import { CodeFlowCallbackHandlerService } from './callback-handling/code-flow-callback-handler.service';
 import { HistoryJwtKeysCallbackHandlerService } from './callback-handling/history-jwt-keys-callback-handler.service';
@@ -22,39 +22,39 @@ export class FlowsService {
     private readonly refreshTokenCallbackHandlerService: RefreshTokenCallbackHandlerService
   ) {}
 
-  processCodeFlowCallback(urlToCheck: string): Observable<CallbackContext> {
-    return this.codeFlowCallbackHandlerService.codeFlowCallback(urlToCheck).pipe(
-      switchMap((callbackContext) => this.codeFlowCallbackHandlerService.codeFlowCodeRequest(callbackContext)),
-      switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
-      switchMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext)),
-      switchMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext))
+  processCodeFlowCallback(urlToCheck: string, configId: string): Observable<CallbackContext> {
+    return this.codeFlowCallbackHandlerService.codeFlowCallback(urlToCheck, configId).pipe(
+      concatMap((callbackContext) => this.codeFlowCallbackHandlerService.codeFlowCodeRequest(callbackContext, configId)),
+      concatMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext, configId)),
+      concatMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext, configId)),
+      concatMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext, configId))
     );
   }
 
-  processSilentRenewCodeFlowCallback(firstContext: CallbackContext): Observable<CallbackContext> {
-    return this.codeFlowCallbackHandlerService.codeFlowCodeRequest(firstContext).pipe(
-      switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
-      switchMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext)),
-      switchMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext))
+  processSilentRenewCodeFlowCallback(firstContext: CallbackContext, configId: string): Observable<CallbackContext> {
+    return this.codeFlowCallbackHandlerService.codeFlowCodeRequest(firstContext, configId).pipe(
+      concatMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext, configId)),
+      concatMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext, configId)),
+      concatMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext, configId))
     );
   }
 
-  processImplicitFlowCallback(hash?: string): Observable<CallbackContext> {
-    return this.implicitFlowCallbackHandlerService.implicitFlowCallback(hash).pipe(
-      switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
-      switchMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext)),
-      switchMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext))
+  processImplicitFlowCallback(configId: string, hash?: string): Observable<CallbackContext> {
+    return this.implicitFlowCallbackHandlerService.implicitFlowCallback(configId, hash).pipe(
+      concatMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext, configId)),
+      concatMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext, configId)),
+      concatMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext, configId))
     );
   }
 
-  processRefreshToken(customParamsRefresh?: { [key: string]: string | number | boolean }): Observable<CallbackContext> {
-    return this.refreshSessionCallbackHandlerService.refreshSessionWithRefreshTokens().pipe(
-      switchMap((callbackContext) =>
-        this.refreshTokenCallbackHandlerService.refreshTokensRequestTokens(callbackContext, customParamsRefresh)
+  processRefreshToken(configId: string, customParamsRefresh?: { [key: string]: string | number | boolean }): Observable<CallbackContext> {
+    return this.refreshSessionCallbackHandlerService.refreshSessionWithRefreshTokens(configId).pipe(
+      concatMap((callbackContext) =>
+        this.refreshTokenCallbackHandlerService.refreshTokensRequestTokens(callbackContext, configId, customParamsRefresh)
       ),
-      switchMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext)),
-      switchMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext)),
-      switchMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext))
+      concatMap((callbackContext) => this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext, configId)),
+      concatMap((callbackContext) => this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext, configId)),
+      concatMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext, configId))
     );
   }
 }

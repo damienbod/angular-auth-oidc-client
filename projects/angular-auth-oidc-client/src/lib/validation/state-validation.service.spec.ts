@@ -1,17 +1,17 @@
 /* eslint-disable max-len */
 import { TestBed } from '@angular/core/testing';
-import { AuthWellKnownEndpoints } from '../config/auth-well-known-endpoints';
-import { ConfigurationProvider } from '../config/config.provider';
-import { ConfigurationProviderMock } from '../config/config.provider-mock';
+import { AuthWellKnownEndpoints } from '../config/auth-well-known/auth-well-known-endpoints';
 import { OpenIdConfiguration } from '../config/openid-configuration';
+import { ConfigurationProvider } from '../config/provider/config.provider';
+import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { LogLevel } from '../logging/log-level';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence-service-mock.service';
+import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { EqualityService } from '../utils/equality/equality.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
-import { TokenHelperService } from '../utils/tokenHelper/oidc-token-helper.service';
+import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { StateValidationService } from './state-validation.service';
 import { TokenValidationService } from './token-validation.service';
 import { TokenValidationServiceMock } from './token-validation.service-mock';
@@ -31,6 +31,7 @@ describe('State Validation Service', () => {
     TestBed.configureTestingModule({
       imports: [],
       providers: [
+        StateValidationService,
         {
           provide: StoragePersistenceService,
           useClass: StoragePersistenceServiceMock,
@@ -39,7 +40,6 @@ describe('State Validation Service', () => {
           provide: TokenValidationService,
           useClass: TokenValidationServiceMock,
         },
-        TokenHelperService,
         {
           provide: LoggerService,
           useClass: LoggerServiceMock,
@@ -48,8 +48,8 @@ describe('State Validation Service', () => {
           provide: ConfigurationProvider,
           useClass: ConfigurationProviderMock,
         },
+        TokenHelperService,
         EqualityService,
-        StateValidationService,
         FlowHelper,
       ],
     });
@@ -87,7 +87,7 @@ describe('State Validation Service', () => {
       jwksUri: 'https://localhost:44363/well-known/openid-configuration/jwks',
       authorizationEndpoint: 'https://localhost:44363/connect/authorize',
       tokenEndpoint: 'https://localhost:44363/connect/token',
-      userinfoEndpoint: 'https://localhost:44363/connect/userinfo',
+      userInfoEndpoint: 'https://localhost:44363/connect/userinfo',
       endSessionEndpoint: 'https://localhost:44363/connect/endsession',
       checkSessionIframe: 'https://localhost:44363/connect/checksession',
       revocationEndpoint: 'https://localhost:44363/connect/revocation',
@@ -104,8 +104,8 @@ describe('State Validation Service', () => {
   it('should return invalid result if validateStateFromHashCallback is false', () => {
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
+    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
     const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
@@ -124,11 +124,11 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext);
+    const state = stateValidationService.validateState(callbackContext, 'configId');
 
     expect(oidcSecurityValidation.validateStateFromHashCallback).toHaveBeenCalled();
 
-    expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback incorrect state');
+    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect state');
 
     expect(state.accessToken).toBe('');
     expect(state.authResponseIsValid).toBe(false);
@@ -167,9 +167,9 @@ describe('State Validation Service', () => {
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
 
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
-    readSpy.withArgs('authNonce').and.returnValue('authNonce');
+    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
+    readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -185,7 +185,7 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext);
+    const state = stateValidationService.validateState(callbackContext, 'configId');
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('id_tokenTEST');
@@ -200,8 +200,8 @@ describe('State Validation Service', () => {
     spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(false);
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
+    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
     const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
     const callbackContext = {
@@ -219,9 +219,9 @@ describe('State Validation Service', () => {
       existingIdToken: null,
     };
 
-    const state = stateValidationService.validateState(callbackContext);
+    const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logDebugSpy).toHaveBeenCalledWith('authorizedCallback Signature validation failed id_token');
+    expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback Signature validation failed id_token');
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('id_tokenTEST');
@@ -237,9 +237,9 @@ describe('State Validation Service', () => {
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(false);
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
-    readSpy.withArgs('authNonce').and.returnValue('authNonce');
+    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
+    readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
 
     const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
@@ -257,9 +257,9 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext);
+    const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback incorrect nonce');
+    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect nonce');
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('id_tokenTEST');
@@ -281,9 +281,9 @@ describe('State Validation Service', () => {
     spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(false);
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
-    readSpy.withArgs('authNonce').and.returnValue('authNonce');
+    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
+    readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
     const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
     const callbackContext = {
@@ -300,9 +300,9 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext);
+    const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logDebugSpy).toHaveBeenCalledWith('authorizedCallback Validation, one of the REQUIRED properties missing from id_token');
+    expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback Validation, one of the REQUIRED properties missing from id_token');
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('id_tokenTEST');
@@ -328,9 +328,9 @@ describe('State Validation Service', () => {
     config.maxIdTokenIatOffsetAllowedInSeconds = 0;
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
-    readSpy.withArgs('authNonce').and.returnValue('authNonce');
+    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
+    readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
     const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
     const callbackContext = {
@@ -347,10 +347,11 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext);
+    const state = stateValidationService.validateState(callbackContext, 'configId');
 
     expect(logWarningSpy).toHaveBeenCalledWith(
-      'authorizedCallback Validation, iat rejected id_token was issued too far away from the current time'
+      'configId',
+      'authCallback Validation, iat rejected id_token was issued too far away from the current time'
     );
 
     expect(state.accessToken).toBe('access_tokenTEST');
@@ -378,9 +379,9 @@ describe('State Validation Service', () => {
     spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(false);
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
-    readSpy.withArgs('authNonce').and.returnValue('authNonce');
+    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
+    readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
     const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
     const callbackContext = {
@@ -397,9 +398,9 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext);
+    const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback incorrect iss does not match authWellKnownEndpoints issuer');
+    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect iss does not match authWellKnownEndpoints issuer');
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('id_tokenTEST');
@@ -430,9 +431,9 @@ describe('State Validation Service', () => {
     config.clientId = '';
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
-    readSpy.withArgs('authNonce').and.returnValue('authNonce');
+    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
+    readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
     const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
     const callbackContext = {
@@ -449,9 +450,9 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext);
+    const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback incorrect aud');
+    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect aud');
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('id_tokenTEST');
@@ -483,9 +484,9 @@ describe('State Validation Service', () => {
     spyOn(oidcSecurityValidation, 'validateIdTokenExpNotExpired').and.returnValue(false);
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
-    readSpy.withArgs('authNonce').and.returnValue('authNonce');
+    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
+    readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
 
     const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
@@ -503,9 +504,9 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.getValidatedStateResult(callbackContext);
+    const state = stateValidationService.getValidatedStateResult(callbackContext, 'configId');
 
-    expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback id token expired');
+    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback id token expired');
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('id_tokenTEST');
@@ -529,9 +530,9 @@ describe('State Validation Service', () => {
     config.autoCleanStateAfterAuthentication = false;
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
-    readSpy.withArgs('authNonce').and.returnValue('authNonce');
+    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
+    readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
 
     const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
@@ -550,9 +551,9 @@ describe('State Validation Service', () => {
       existingIdToken: null,
     };
 
-    const state = stateValidationService.validateState(callbackContext);
+    const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logDebugSpy).toHaveBeenCalledWith('AuthorizedCallback token(s) validated, continue');
+    expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback token(s) validated, continue');
 
     // CAN THIS BE DONE VIA IF/ELSE IN THE BEGINNING?
     expect(state.accessToken).toBe('');
@@ -578,9 +579,9 @@ describe('State Validation Service', () => {
     spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(false);
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
-    readSpy.withArgs('authNonce').and.returnValue('authNonce');
+    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
+    readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
 
     const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
@@ -598,9 +599,9 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext);
+    const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logWarningSpy).toHaveBeenCalledWith('authorizedCallback incorrect at_hash');
+    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect at_hash');
 
     // CAN THIS BE DONE VIA IF/ELSE IN THE BEGINNING?
     expect(state.accessToken).toBe('access_tokenTEST');
@@ -625,9 +626,9 @@ describe('State Validation Service', () => {
     config.responseType = 'id_token token';
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
-    readSpy.withArgs('authNonce').and.returnValue('authNonce');
+    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
+    readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
 
     const logDebugSpy = spyOn(loggerService, 'logDebug'); // .and.callFake(() => {});
 
@@ -645,9 +646,9 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext);
+    const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logDebugSpy).toHaveBeenCalledWith('iss validation is turned off, this is not recommended!');
+    expect(logDebugSpy).toHaveBeenCalledWith('configId', 'iss validation is turned off, this is not recommended!');
 
     expect(state.state).toBe(ValidationResult.Ok);
     expect(state.accessToken).toBe('access_tokenTEST');
@@ -686,9 +687,9 @@ describe('State Validation Service', () => {
 
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl').and.returnValue('authStateControl');
-    readSpy.withArgs('authNonce').and.returnValue('authNonce');
+    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
+    readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -704,7 +705,7 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext);
+    const state = stateValidationService.validateState(callbackContext, 'configId');
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('');
@@ -738,6 +739,7 @@ describe('State Validation Service', () => {
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
       disableRefreshIdTokenAuthTimeValidation: true,
+      enableIdTokenExpiredValidationInRenew: true,
     };
 
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
@@ -804,6 +806,7 @@ describe('State Validation Service', () => {
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
       disableRefreshIdTokenAuthTimeValidation: true,
+      enableIdTokenExpiredValidationInRenew: true,
     };
 
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
@@ -870,6 +873,7 @@ describe('State Validation Service', () => {
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
       disableRefreshIdTokenAuthTimeValidation: true,
+      enableIdTokenExpiredValidationInRenew: true,
     };
 
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
@@ -936,6 +940,7 @@ describe('State Validation Service', () => {
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
       disableRefreshIdTokenAuthTimeValidation: false,
+      enableIdTokenExpiredValidationInRenew: true,
     };
 
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
@@ -1002,6 +1007,7 @@ describe('State Validation Service', () => {
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
       disableRefreshIdTokenAuthTimeValidation: false,
+      enableIdTokenExpiredValidationInRenew: true,
     };
 
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
@@ -1068,6 +1074,7 @@ describe('State Validation Service', () => {
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
       disableRefreshIdTokenAuthTimeValidation: false,
+      enableIdTokenExpiredValidationInRenew: true,
     };
 
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
@@ -1134,6 +1141,7 @@ describe('State Validation Service', () => {
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
       disableRefreshIdTokenAuthTimeValidation: false,
+      enableIdTokenExpiredValidationInRenew: true,
     };
 
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
@@ -1200,6 +1208,7 @@ describe('State Validation Service', () => {
       useRefreshToken: true,
       ignoreNonceAfterRefresh: true,
       disableRefreshIdTokenAuthTimeValidation: false,
+      enableIdTokenExpiredValidationInRenew: true,
     };
 
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(configRefresh);
@@ -1264,13 +1273,13 @@ describe('State Validation Service', () => {
       validationResult: null,
     };
 
-    const isValid = stateValidationService.getValidatedStateResult(callbackContext);
+    const isValid = stateValidationService.getValidatedStateResult(callbackContext, 'configId');
 
     expect(isValid.authResponseIsValid).toBe(false);
   });
 
   it('should return authResponseIsValid false when null is passed', () => {
-    const isValid = stateValidationService.getValidatedStateResult(null);
+    const isValid = stateValidationService.getValidatedStateResult(null, 'configId');
 
     expect(isValid.authResponseIsValid).toBe(false);
   });
