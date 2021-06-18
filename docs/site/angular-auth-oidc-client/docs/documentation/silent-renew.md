@@ -35,9 +35,7 @@ Both the access token and the id_token are used to start this process.
 </script>
 ```
 
-### Silent Renew with the Angular CLI (iframe)
-
-Make sure you add the `silent-renew.html` file to the `angular.json` assets configuration
+If you are working with the (AngularCLI)[https://angular.io/cli] make sure you add the `silent-renew.html` file to the `angular.json` assets configuration. This has already been done for you if you used the schematics to set up the library.
 
 ```json
   "assets": [
@@ -45,7 +43,7 @@ Make sure you add the `silent-renew.html` file to the `angular.json` assets conf
   ],
 ```
 
-## Silent Renew Implicit Flow (iframe)
+### Silent Renew Implicit Flow (iframe)
 
 ```javascript
 <script>
