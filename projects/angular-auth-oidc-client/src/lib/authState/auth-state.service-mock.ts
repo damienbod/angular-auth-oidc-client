@@ -50,4 +50,8 @@ export class AuthStateServiceMock {
   isAuthenticated(configId: string): boolean {
     return true;
   }
+
+  getAuthenticationResult(configId?: string): any {
+    return null;
+  }
 }
