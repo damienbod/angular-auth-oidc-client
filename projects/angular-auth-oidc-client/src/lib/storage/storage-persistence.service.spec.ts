@@ -153,6 +153,25 @@ describe('Storage Persistence Service', () => {
     });
   });
 
+  describe('getAuthenticationResult', () => {
+    it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
+      const returnValue = { authnResult: { id_token: 'someValue' } };
+      const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
+      const result = service.getAuthenticationResult('configId');
+
+      expect(result.id_token).toBe('someValue');
+      expect(spy).toHaveBeenCalledWith('configId');
+    });
+
+    it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
+      const spy = spyOn(securityStorage, 'read').and.returnValue(null);
+      const result = service.getAuthenticationResult('configId');
+
+      expect(result).toBeFalsy();
+      expect(spy).toHaveBeenCalledWith('configId');
+    });
+  });
+
   describe('getRefreshToken', () => {
     it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
       const returnValue = { authnResult: { refresh_token: 'someValue' } };

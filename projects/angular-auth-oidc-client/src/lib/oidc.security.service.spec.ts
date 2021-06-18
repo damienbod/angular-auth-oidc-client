@@ -489,6 +489,35 @@ describe('OidcSecurityService', () => {
     });
   });
 
+  describe('getAuthenticationResult', () => {
+    it(
+      'calls authStateService.getAuthenticationResult()',
+      waitForAsync(() => {
+        const spy = spyOn(authStateService, 'getAuthenticationResult');
+
+        oidcSecurityService.getAuthenticationResult();
+        expect(spy).toHaveBeenCalled();
+      })
+    );
+
+    it('calls authStateService.getRefreshToken() with passed configId when configId is passed', () => {
+      const spy = spyOn(authStateService, 'getAuthenticationResult');
+
+      oidcSecurityService.getAuthenticationResult('configId');
+
+      expect(spy).toHaveBeenCalledOnceWith('configId');
+    });
+
+    it('calls authStateService.getAuthenticationResult() with id from config when NO configId is passed', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+      const spy = spyOn(authStateService, 'getAuthenticationResult');
+
+      oidcSecurityService.getAuthenticationResult();
+
+      expect(spy).toHaveBeenCalledOnceWith('configId');
+    });
+  });
+
   describe('getPayloadFromIdToken', () => {
     it(
       'calls `authStateService.getIdToken` method',

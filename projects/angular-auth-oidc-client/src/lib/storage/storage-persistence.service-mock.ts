@@ -49,4 +49,8 @@ export class StoragePersistenceServiceMock {
   getRefreshToken(configId: string): string {
     return '';
   }
+
+  getAuthenticationResult(configId: string): any {
+    return '';
+  }
 }
