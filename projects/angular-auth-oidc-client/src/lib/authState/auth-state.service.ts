@@ -84,6 +84,7 @@ export class AuthStateService {
     if (!this.isAuthenticated(configId)) {
       return null;
     }
+
     return this.storagePersistenceService.getAuthenticationResult(configId);
   }
 
