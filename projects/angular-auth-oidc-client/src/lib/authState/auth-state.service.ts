@@ -80,6 +80,13 @@ export class AuthStateService {
     return this.decodeURIComponentSafely(token);
   }
 
+  getAuthResult(configId?: string): string {
+    if (!this.isAuthenticated(configId)) {
+      return null;
+    }
+    return this.storagePersistenceService.getAuthResult(configId);
+  }
+
   areAuthStorageTokensValid(configId: string): boolean {
     if (!this.isAuthenticated(configId)) {
       return false;

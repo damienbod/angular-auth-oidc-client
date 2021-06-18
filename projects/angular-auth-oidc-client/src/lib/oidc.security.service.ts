@@ -192,6 +192,12 @@ export class OidcSecurityService {
     return this.authStateService.getRefreshToken(configId);
   }
 
+  getAuthResult(configId?: string): string {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId).configId;
+
+    return this.authStateService.getAuthResult(configId);
+  }
+
   /**
    * Returns the payload from the ID token.
    *
