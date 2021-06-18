@@ -246,7 +246,7 @@ describe('Auth State Service', () => {
       spyOn(storagePersistenceService, 'getAuthenticationResult').withArgs('configId').and.returnValue(null);
 
       const result = authStateService.getAuthenticationResult('configId');
-      expect(result).toBe('');
+      expect(result).toBe(null);
     });
 
     it('isAuthorized is true returns object', () => {
@@ -255,7 +255,7 @@ describe('Auth State Service', () => {
       spyOn(storagePersistenceService, 'getAuthenticationResult').withArgs('configId').and.returnValue({ test: 'HenloFuriend' });
 
       const result = authStateService.getAuthenticationResult('configId');
-      expect(result.test).toBe('HenloLegger');
+      expect(result.test).toBe('HenloFuriend');
     });
   });
 
