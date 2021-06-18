@@ -167,7 +167,7 @@ export class OidcSecurityService {
   }
 
   /**
-   * Returns the ID token for the login scenario.
+   * Returns the ID token for the sign-in.
    *
    * @param configId The configId to check the information for. If not passed, the first configs will be taken
    *
@@ -180,7 +180,7 @@ export class OidcSecurityService {
   }
 
   /**
-   * Returns the refresh token, if present, for the login scenario.
+   * Returns the refresh token, if present, for the sign-in.
    *
    * @param configId The configId to check the information for. If not passed, the first configs will be taken
    *
@@ -192,10 +192,17 @@ export class OidcSecurityService {
     return this.authStateService.getRefreshToken(configId);
   }
 
-  getAuthResult(configId?: string): string {
+  /**
+   * Returns the authentication result, if present, for the sign-in.
+   *
+   * @param configId The configId to check the information for. If not passed, the first configs will be taken
+   *
+   * @returns A object with the authentication result
+   */
+  getAuthenticationResult(configId?: string): string {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId).configId;
 
-    return this.authStateService.getAuthResult(configId);
+    return this.authStateService.getAuthenticationResult(configId);
   }
 
   /**

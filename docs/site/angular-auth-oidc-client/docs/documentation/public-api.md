@@ -293,6 +293,20 @@ const refreshToken = this.oidcSecurityService.getRefreshToken();
 const refreshToken = this.oidcSecurityService.getRefreshToken('configId');
 ```
 
+## getAuthenticationResult(configId?: string)
+
+Returns the authentication result, if present, for the sign-in.
+@param configId The configId to check the information for. If not passed, the first configs will be taken
+@returns A object with the authentication result
+
+```ts
+const authnResult = this.oidcSecurityService.getAuthenticationResult();
+```
+
+```ts
+const authnResult = this.oidcSecurityService.getAuthenticationResult('configId');
+```
+
 ## getPayloadFromIdToken(encode = false, configId?: string)
 
 Returns the payload from the id_token. This can be used to get claims from the token.

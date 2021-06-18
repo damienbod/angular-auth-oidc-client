@@ -76,7 +76,7 @@ export class StoragePersistenceService {
     return this.read('authnResult', configId)?.refresh_token;
   }
 
-  getAuthResult(configId: string): string {
+  getAuthenticationResult(configId: string): string {
     return this.read('authnResult', configId);
   }
 }
