@@ -199,7 +199,7 @@ export class OidcSecurityService {
    *
    * @returns A object with the authentication result
    */
-  getAuthenticationResult(configId?: string): string {
+  getAuthenticationResult(configId?: string): any {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId).configId;
 
     return this.authStateService.getAuthenticationResult(configId);

@@ -80,7 +80,7 @@ export class AuthStateService {
     return this.decodeURIComponentSafely(token);
   }
 
-  getAuthenticationResult(configId?: string): string {
+  getAuthenticationResult(configId?: string): any {
     if (!this.isAuthenticated(configId)) {
       return null;
     }
