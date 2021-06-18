@@ -35,16 +35,6 @@ or with yarn
 
 After installing the library you can get started with the lib like below.
 
-### Silent Renew with the Angular CLI
-
-Make sure you add the `silent-renew.html` file to the `angular.json` assets configuration
-
-```json
-  "assets": [
-    "projects/<your-project-here>/src/silent-renew.html",
-  ],
-```
-
 ## Using a local configuration
 
 Import the module and services in your module.
@@ -63,11 +53,11 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
         stsServer: '<your sts address here>',
         redirectUrl: window.location.origin,
         postLogoutRedirectUri: window.location.origin,
-        clientId: 'angularClient',
-        scope: 'openid profile email',
+        clientId: '<your clientId>',
+        scope: 'openid profile email offline_access',
         responseType: 'code',
         silentRenew: true,
-        silentRenewUrl: `${window.location.origin}/silent-renew.html`,
+        useRefreshToken: true,
         logLevel: LogLevel.Debug,
       },
     }),
