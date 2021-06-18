@@ -234,7 +234,7 @@ describe('Auth State Service', () => {
     it('isAuthorized is false returns null', () => {
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('');
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue('');
-      spyOn(storagePersistenceService, 'getAuthenticationResult').and.returnValue('');
+      spyOn(storagePersistenceService, 'getAuthenticationResult').and.returnValue(null);
       const result = authStateService.getAuthenticationResult('configId');
       expect(result).toBe(null);
     });
@@ -246,12 +246,12 @@ describe('Auth State Service', () => {
       expect(result).toBe('');
     });
 
-    it('isAuthorized is true returns decodeURIComponent(token)', () => {
+    it('isAuthorized is true returns object', () => {
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('HenloLegger');
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue('HenloFuriend');
-      spyOn(storagePersistenceService, 'getAuthenticationResult').and.returnValue('HenloFuriend');
+      spyOn(storagePersistenceService, 'getAuthenticationResult').and.returnValue({ test: 'HenloFuriend' });
       const result = authStateService.getAuthenticationResult('configId');
-      expect(result).toBe(decodeURIComponent('HenloLegger'));
+      expect(result.test).toBe('HenloLegger');
     });
   });
 
