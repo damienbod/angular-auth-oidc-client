@@ -1751,7 +1751,8 @@
             "tsConfig": "projects/sample-code-flow-auto-login-all-routes/tsconfig.app.json",
             "assets": [
               "projects/sample-code-flow-auto-login-all-routes/src/favicon.ico",
-              "projects/sample-code-flow-auto-login-all-routes/src/assets"
+              "projects/sample-code-flow-auto-login-all-routes/src/assets",
+              "projects/sample-code-flow-auto-login-all-routes/src/silent-renew.html"
             ],
             "styles": ["projects/sample-code-flow-auto-login-all-routes/src/styles.css"],
             "scripts": []

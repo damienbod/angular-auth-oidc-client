@@ -93,11 +93,7 @@ Then provide the class in the module:
 
 ## Auto Login
 
-If you want to have your app being redirected to the sts automatically without the user clicking any login button only by accessing a specific route, you can use the `AutoLoginGuard` provided by the lib.
-
-In case you are using multiple configs the guard currently uses the first config fix to perform a login!
-
-The guard handles `canActivate` and `canLoad` for you.
+If you want to have your app being redirected to the sts automatically without the user clicking any login button only by accessing a specific route, you can use the `AutoLoginGuard` provided by the lib. In case you are using multiple configs the guard currently uses the first config fix to perform a login! The guard handles `canActivate` and `canLoad` for you. It also saves the route you wanted to visit before the login and redirects you to that route after the successful login.
 
 Here are two use cases to distinguish:
 
