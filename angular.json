@@ -786,7 +786,6 @@
         }
       }
     },
-
     "sample-code-flow-auth0": {
       "projectType": "application",
       "schematics": {},
@@ -889,7 +888,6 @@
         }
       }
     },
-
     "sample-code-flow-refresh-tokens": {
       "projectType": "application",
       "schematics": {},
@@ -992,7 +990,6 @@
         }
       }
     },
-
     "sample-code-flow-multi-Azure-B2C": {
       "projectType": "application",
       "schematics": {},
@@ -1095,7 +1092,6 @@
         }
       }
     },
-
     "sample-code-flow-multi-AAD": {
       "projectType": "application",
       "schematics": {},
@@ -1198,7 +1194,6 @@
         }
       }
     },
-
     "sample-code-flow-multi-Auth0-ID4-popup": {
       "projectType": "application",
       "schematics": {},
@@ -1412,7 +1407,6 @@
         }
       }
     },
-
     "sample-code-flow-lazy-loaded": {
       "projectType": "application",
       "schematics": {},
@@ -1759,9 +1753,7 @@
               "projects/sample-code-flow-auto-login-all-routes/src/favicon.ico",
               "projects/sample-code-flow-auto-login-all-routes/src/assets"
             ],
-            "styles": [
-              "projects/sample-code-flow-auto-login-all-routes/src/styles.css"
-            ],
+            "styles": ["projects/sample-code-flow-auto-login-all-routes/src/styles.css"],
             "scripts": []
           },
           "configurations": {
@@ -1799,6 +1791,12 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "sample-code-flow-auto-login-all-routes:build",
+            "sslKey": "certs/dev_localhost.key",
+            "sslCert": "certs/dev_localhost.pem",
+            "port": 4203
+          },
           "configurations": {
             "production": {
               "browserTarget": "sample-code-flow-auto-login-all-routes:build:production"
@@ -1826,9 +1824,7 @@
               "projects/sample-code-flow-auto-login-all-routes/src/favicon.ico",
               "projects/sample-code-flow-auto-login-all-routes/src/assets"
             ],
-            "styles": [
-              "projects/sample-code-flow-auto-login-all-routes/src/styles.css"
-            ],
+            "styles": ["projects/sample-code-flow-auto-login-all-routes/src/styles.css"],
             "scripts": []
           }
         }

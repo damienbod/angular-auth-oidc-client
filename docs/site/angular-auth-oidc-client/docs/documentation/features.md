@@ -93,7 +93,7 @@ Then provide the class in the module:
 
 ## Auto Login
 
-If you want to have your app being redirected to the sts automatically without the user clicking any login button only by accessing a specific route, you can use the `AutoLoginGuard` provided by the lib. Use it for all the routes you want automatic login to be enabled.
+If you want to have your app being redirected to the sts automatically without the user clicking any login button only by accessing a specific route, you can use the `AutoLoginGuard` provided by the lib.
 
 In case you are using multiple configs the guard currently uses the first config fix to perform a login!
 
@@ -101,8 +101,48 @@ The guard handles `canActivate` and `canLoad` for you.
 
 Here are two use cases to distinguish:
 
-1. Redirect route from Security Token Server has a guard in `canLoad` or `canActivate`
-2. Redirect route from Token server does _not_ have a guard.
+### Auto Login when default route is not guarded
+
+You have this case when you have some routes in your configuration publicly accessible and some routes should be protected by a login. The login should start when the user enters the route.
+
+For example
+
+```ts
+const appRoutes: Routes = [
+  { path: '', pathMatch: 'full', redirectTo: 'home' },
+  { path: 'home', component: HomeComponent },
+  { path: 'protected', component: ProtectedComponent, canActivate: [AutoLoginGuard] },
+  {
+    path: 'customers',
+    loadChildren: () => import('./customers/customers.module').then((m) => m.CustomersModule),
+    canLoad: [AutoLoginGuard],
+  },
+  { path: 'unauthorized', component: UnauthorizedComponent },
+];
+```
+
+In this case the `/home` and the `/unauthorized` are not protected and accessible without a login.
+
+Please make sure to call `checkAuth()` like normal in your `app.component.ts`
+
+```ts
+export class AppComponent implements OnInit {
+  constructor(private oidcSecurityService: OidcSecurityService) {}
+
+  ngOnInit() {
+    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken }) => {
+      // ...
+    });
+  }
+}
+```
+
+### Auto Login when all routes are guarded
+
+The library needs a place to start and set all values as well as the callback of the server needs to be public to set up the authentication. So if you want all your routes to be protected you have to add a component for the callback of the sts.
+
+1. Auto Login when all routes are guarded
+2. Auto Login when default route is not guarded
 
 If you need to use a guard or implement a guard for a different business case, please refer to the auto-login guard in this repo as a reference. It is important that the callback logic can be run on a route without the guard running.
 
