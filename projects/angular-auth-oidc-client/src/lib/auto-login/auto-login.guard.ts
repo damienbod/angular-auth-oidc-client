@@ -30,7 +30,7 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
     const isAuthenticated = this.authStateService.areAuthStorageTokensValid(configId);
 
     if (isAuthenticated) {
-      this.autoLoginService.checkSavedRedirectRouteAndNavigate(isAuthenticated, configId);
+      this.autoLoginService.checkSavedRedirectRouteAndNavigate(configId);
 
       return true;
     }

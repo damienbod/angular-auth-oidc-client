@@ -8,11 +8,7 @@ const STORAGE_KEY = 'redirect';
 export class AutoLoginService {
   constructor(private readonly storageService: StoragePersistenceService, private readonly router: Router) {}
 
-  checkSavedRedirectRouteAndNavigate(isAuthenticated: boolean, configId: string): void {
-    if (!isAuthenticated) {
-      return;
-    }
-
+  checkSavedRedirectRouteAndNavigate(configId: string): void {
     const savedRouteForRedirect = this.getStoredRedirectRoute(configId);
 
     if (savedRouteForRedirect) {

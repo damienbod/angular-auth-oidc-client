@@ -153,7 +153,9 @@ export class CheckAuthService {
         };
       }),
       tap(({ isAuthenticated }) => {
-        this.autoLoginService.checkSavedRedirectRouteAndNavigate(isAuthenticated, configId);
+        if (isAuthenticated) {
+          this.autoLoginService.checkSavedRedirectRouteAndNavigate(configId);
+        }
       }),
       catchError((errorMessage) => {
         this.loggerService.logError(configId, errorMessage);

@@ -32,7 +32,9 @@ export class AutoLoginCompleteGuard implements CanActivate, CanLoad {
     return this.checkAuthService.checkAuth().pipe(
       take(1),
       map(({ isAuthenticated }) => {
-        this.autoLoginService.checkSavedRedirectRouteAndNavigate(isAuthenticated, configId);
+        if (isAuthenticated) {
+          this.autoLoginService.checkSavedRedirectRouteAndNavigate(configId);
+        }
 
         if (!isAuthenticated) {
           this.autoLoginService.saveRedirectRoute(configId, url);
