@@ -20,6 +20,12 @@ The example logins the user in directly without a login click using the code flo
 
 [Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-auto-login)
 
+## Code flow PKCE auto-login for all routes
+
+The example logins the user in directly without a login click using the code flow with PKCE and an auth-guard.
+
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-auto-login-all-routes)
+
 ## Code flow using popup with PKCE
 
 Popup OpenID Connect code flow with PKCE.

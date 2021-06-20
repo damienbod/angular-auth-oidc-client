@@ -93,64 +93,77 @@ Then provide the class in the module:
 
 ## Auto Login
 
-If you want to have your app being redirected to the sts automatically without the user clicking any login button only by accessing a specific route, you can use the `AutoLoginGuard` provided by the lib. Use it for all the routes you want automatic login to be enabled.
-
-In case you are using multiple configs the guard currently uses the first config fix to perform a login!
-
-The guard handles `canActivate` and `canLoad` for you.
+If you want to have your app being redirected to the sts automatically without the user clicking any login button only by accessing a specific route, you can use the `AutoLoginPartialRoutesGuard` or the `AutoLoginAllRoutesGuard` provided by the lib. In case you are using multiple configs the guard currently uses the first config fix to perform a login! The guard handles `canActivate` and `canLoad` for you. It also saves the route you wanted to visit before the login and redirects you to that route after the successful login.
 
 Here are two use cases to distinguish:
 
-1. Redirect route from Security Token Server has a guard in `canLoad` or `canActivate`
-2. Redirect route from Token server does _not_ have a guard.
+### Auto Login when default route is not guarded
 
-If you need to use a guard or implement a guard for a different business case, please refer to the auto-login guard in this repo as a reference. It is important that the callback logic can be run on a route without the guard running.
+You have this case when you have some routes in your configuration publicly accessible and some routes should be protected by a login. The login should start when the user enters the route.
 
-### Redirect route from Token server has a guard
-
-If your redirect route from the Security Token Server to your app has the `AutoLoginGuard` activated already, like this:
+For example
 
 ```ts
-import { AutoLoginGuard } from 'angular-auth-oidc-client';
-
-const appRoutes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'home' },
-  { path: 'home', component: HomeComponent, canActivate: [AutoLoginGuard] }, <<<< Redirect Route from STS has the guard
-  {...
-];
-```
-
-Then _make sure_ to _*not*_ call the `checkAuth()` method in your `app.component.ts`. This will be done by the guard automatically for you.
-
-### Redirect route from the Token server is public / Does not have a guard
-
-If the redirect route from the STS is publicly available, you _have to_ call the `checkAuth()` by yourself in the `app.component.ts` to proceed the url when getting redirected. The lib redirects you to the route the user entered before he was sent to the login page on the sts automatically for you.
-
-```ts
-import { AutoLoginGuard } from 'angular-auth-oidc-client';
+import { AutoLoginPartialRoutesGuard } from 'angular-auth-oidc-client';
 
 const appRoutes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
   { path: 'home', component: HomeComponent },
-  { path: 'protected', component: ProtectedComponent, canActivate: [AutoLoginGuard] },
-  { path: 'forbidden', component: ForbiddenComponent, canActivate: [AutoLoginGuard] },
+  { path: 'protected', component: ProtectedComponent, canActivate: [AutoLoginPartialRoutesGuard] },
+  {
+    path: 'customers',
+    loadChildren: () => import('./customers/customers.module').then((m) => m.CustomersModule),
+    canLoad: [AutoLoginPartialRoutesGuard],
+  },
   { path: 'unauthorized', component: UnauthorizedComponent },
 ];
 ```
 
+In this case the `/home` and the `/unauthorized` are not protected and accessible without a login.
+
+Please make sure to call `checkAuth()` like normal in your `app.component.ts`
+
 ```ts
 export class AppComponent implements OnInit {
-  constructor(public oidcSecurityService: OidcSecurityService) {}
+  constructor(private oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
-      console.log(isAuthenticated);
-      console.log(userData);
-      console.log(accessToken);
-      console.log(errorMessage);
+    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken }) => {
+      // ...
     });
   }
 }
+```
+
+### Auto Login when all routes are guarded
+
+If all your routes are guarded please use the `AutoLoginAllRoutesGuard` instead of the `AutoLoginPartialRoutesGuard`. This guard ensures that `checkAuth` is being called for you and you do not have to call it in your `app.component.ts` then.
+
+```ts
+export class AppComponent implements OnInit {
+  constructor(/* ... */) {}
+
+  ngOnInit() {
+    // No need to call checkAuth()
+  }
+}
+```
+
+```ts
+import { AutoLoginAllRoutesGuard } from 'angular-auth-oidc-client';
+
+const appRoutes: Routes = [
+  { path: '', pathMatch: 'full', redirectTo: 'home' },
+  { path: 'home', component: HomeComponent, canActivate: [AutoLoginAllRoutesGuard] },
+  { path: 'protected', component: ProtectedComponent, canActivate: [AutoLoginAllRoutesGuard] },
+  { path: 'forbidden', component: ForbiddenComponent, canActivate: [AutoLoginAllRoutesGuard] },
+  {
+    path: 'customers',
+    loadChildren: () => import('./customers/customers.module').then((m) => m.CustomersModule),
+    canLoad: [AutoLoginAllRoutesGuard],
+  },
+  { path: 'unauthorized', component: UnauthorizedComponent },
+];
 ```
 
 [src code](../projects/sample-code-flow-auto-login)

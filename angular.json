@@ -786,7 +786,6 @@
         }
       }
     },
-
     "sample-code-flow-auth0": {
       "projectType": "application",
       "schematics": {},
@@ -889,7 +888,6 @@
         }
       }
     },
-
     "sample-code-flow-refresh-tokens": {
       "projectType": "application",
       "schematics": {},
@@ -992,7 +990,6 @@
         }
       }
     },
-
     "sample-code-flow-multi-Azure-B2C": {
       "projectType": "application",
       "schematics": {},
@@ -1095,7 +1092,6 @@
         }
       }
     },
-
     "sample-code-flow-multi-AAD": {
       "projectType": "application",
       "schematics": {},
@@ -1198,7 +1194,6 @@
         }
       }
     },
-
     "sample-code-flow-multi-Auth0-ID4-popup": {
       "projectType": "application",
       "schematics": {},
@@ -1412,7 +1407,6 @@
         }
       }
     },
-
     "sample-code-flow-lazy-loaded": {
       "projectType": "application",
       "schematics": {},
@@ -1732,6 +1726,107 @@
             "production": {
               "devServerTarget": ":serve:production"
             }
+          }
+        }
+      }
+    },
+    "sample-code-flow-auto-login-all-routes": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:application": {
+          "strict": true
+        }
+      },
+      "root": "projects/sample-code-flow-auto-login-all-routes",
+      "sourceRoot": "projects/sample-code-flow-auto-login-all-routes/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/sample-code-flow-auto-login-all-routes",
+            "index": "projects/sample-code-flow-auto-login-all-routes/src/index.html",
+            "main": "projects/sample-code-flow-auto-login-all-routes/src/main.ts",
+            "polyfills": "projects/sample-code-flow-auto-login-all-routes/src/polyfills.ts",
+            "tsConfig": "projects/sample-code-flow-auto-login-all-routes/tsconfig.app.json",
+            "assets": [
+              "projects/sample-code-flow-auto-login-all-routes/src/favicon.ico",
+              "projects/sample-code-flow-auto-login-all-routes/src/assets",
+              "projects/sample-code-flow-auto-login-all-routes/src/silent-renew.html"
+            ],
+            "styles": ["projects/sample-code-flow-auto-login-all-routes/src/styles.css"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-auto-login-all-routes/src/environments/environment.ts",
+                  "with": "projects/sample-code-flow-auto-login-all-routes/src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "sample-code-flow-auto-login-all-routes:build",
+            "sslKey": "certs/dev_localhost.key",
+            "sslCert": "certs/dev_localhost.pem",
+            "port": 4203
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "sample-code-flow-auto-login-all-routes:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-code-flow-auto-login-all-routes:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "sample-code-flow-auto-login-all-routes:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sample-code-flow-auto-login-all-routes/src/test.ts",
+            "polyfills": "projects/sample-code-flow-auto-login-all-routes/src/polyfills.ts",
+            "tsConfig": "projects/sample-code-flow-auto-login-all-routes/tsconfig.spec.json",
+            "karmaConfig": "projects/sample-code-flow-auto-login-all-routes/karma.conf.js",
+            "assets": [
+              "projects/sample-code-flow-auto-login-all-routes/src/favicon.ico",
+              "projects/sample-code-flow-auto-login-all-routes/src/assets"
+            ],
+            "styles": ["projects/sample-code-flow-auto-login-all-routes/src/styles.css"],
+            "scripts": []
           }
         }
       }
