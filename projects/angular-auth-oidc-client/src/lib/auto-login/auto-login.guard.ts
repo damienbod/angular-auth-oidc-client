@@ -31,14 +31,14 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
 
     if (isAuthenticated) {
       this.autoLoginService.checkSavedRedirectRouteAndNavigate(configId);
-
-      return true;
     }
 
-    this.autoLoginService.saveRedirectRoute(configId, url);
-    this.loginService.login(configId);
+    if (!isAuthenticated) {
+      this.autoLoginService.saveRedirectRoute(configId, url);
+      this.loginService.login(configId);
+    }
 
-    return false;
+    return isAuthenticated;
   }
 
   private getId(): string {
