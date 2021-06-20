@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
   selector: 'app-root',
@@ -8,10 +7,4 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 })
 export class AppComponent {
   title = 'sample-code-flow-auto-login-all-routes';
-
-  constructor(private oidcSecurityService: OidcSecurityService) {}
-
-  ngOnInit() {
-    // this.oidcSecurityService.checkAuth().subscribe(() => {});
-  }
 }

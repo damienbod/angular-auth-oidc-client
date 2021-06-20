@@ -32,12 +32,6 @@ export class AutoLoginCompleteGuard implements CanActivate, CanLoad {
   private checkAuth(url: string): Observable<boolean> {
     const configId = this.getId();
 
-    // const isAuthenticatedAlready = this.authStateService.areAuthStorageTokensValid(configId);
-
-    // if (isAuthenticatedAlready) {
-    //   return of(true);
-    // }
-
     return this.checkAuthService.checkAuth().pipe(
       take(1),
       map(({ isAuthenticated }) => {
