@@ -8,7 +8,7 @@ import { LoginService } from '../login/login.service';
 import { AutoLoginService } from './auto-login.service';
 
 @Injectable({ providedIn: 'root' })
-export class AutoLoginCompleteGuard implements CanActivate, CanLoad {
+export class AutoLoginAllRoutesGuard implements CanActivate, CanLoad {
   constructor(
     private autoLoginService: AutoLoginService,
     private checkAuthService: CheckAuthService,

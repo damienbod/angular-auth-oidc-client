@@ -13,11 +13,11 @@ import { LoginServiceMock } from '../login/login.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { LoginResponse } from './../login/login-response';
-import { AutoLoginGuard } from './auto-login.guard';
+import { AutoLoginPartialRoutesGuard } from './auto-login-partial-routes.guard';
 import { AutoLoginService } from './auto-login.service';
 
-describe(`AutoLoginGuard`, () => {
-  let autoLoginGuard: AutoLoginGuard;
+describe(`AutoLoginPartialRoutesGuard`, () => {
+  let autoLoginPartialRoutesGuard: AutoLoginPartialRoutesGuard;
   let checkAuthService: CheckAuthService;
   let loginService: LoginService;
   let authStateService: AuthStateService;
@@ -61,7 +61,7 @@ describe(`AutoLoginGuard`, () => {
 
     spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
 
-    autoLoginGuard = TestBed.inject(AutoLoginGuard);
+    autoLoginPartialRoutesGuard = TestBed.inject(AutoLoginPartialRoutesGuard);
   });
 
   afterEach(() => {
@@ -69,7 +69,7 @@ describe(`AutoLoginGuard`, () => {
   });
 
   it('should create', () => {
-    expect(autoLoginGuard).toBeTruthy();
+    expect(autoLoginPartialRoutesGuard).toBeTruthy();
   });
 
   describe('canActivate', () => {
@@ -79,7 +79,7 @@ describe(`AutoLoginGuard`, () => {
         const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
 
-        autoLoginGuard.canActivate(null, { url: 'some-url1' } as RouterStateSnapshot).subscribe(() => {
+        autoLoginPartialRoutesGuard.canActivate(null, { url: 'some-url1' } as RouterStateSnapshot).subscribe(() => {
           expect(checkAuthServiceSpy).toHaveBeenCalledTimes(1);
         });
       })
@@ -91,7 +91,7 @@ describe(`AutoLoginGuard`, () => {
         const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
-        autoLoginGuard.canActivate(null, { url: 'some-url2' } as RouterStateSnapshot).subscribe(() => {
+        autoLoginPartialRoutesGuard.canActivate(null, { url: 'some-url2' } as RouterStateSnapshot).subscribe(() => {
           expect(checkAuthServiceSpy).not.toHaveBeenCalled();
         });
       })
@@ -104,7 +104,7 @@ describe(`AutoLoginGuard`, () => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         const loginSpy = spyOn(loginService, 'login');
 
-        autoLoginGuard.canActivate(null, { url: 'some-url3' } as RouterStateSnapshot).subscribe(() => {
+        autoLoginPartialRoutesGuard.canActivate(null, { url: 'some-url3' } as RouterStateSnapshot).subscribe(() => {
           expect(loginSpy).toHaveBeenCalledTimes(1);
         });
       })
@@ -116,7 +116,7 @@ describe(`AutoLoginGuard`, () => {
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
 
-        autoLoginGuard.canActivate(null, { url: 'some-url4' } as RouterStateSnapshot).subscribe((result) => {
+        autoLoginPartialRoutesGuard.canActivate(null, { url: 'some-url4' } as RouterStateSnapshot).subscribe((result) => {
           expect(result).toBe(false);
         });
       })
@@ -129,7 +129,7 @@ describe(`AutoLoginGuard`, () => {
         const storageServiceSpy = spyOn(storagePersistenceService, 'write');
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
 
-        autoLoginGuard.canActivate(null, { url: 'some-url5' } as RouterStateSnapshot).subscribe((result) => {
+        autoLoginPartialRoutesGuard.canActivate(null, { url: 'some-url5' } as RouterStateSnapshot).subscribe((result) => {
           expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'some-url5', 'configId');
         });
       })
@@ -141,7 +141,7 @@ describe(`AutoLoginGuard`, () => {
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true } as LoginResponse));
         const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
-        autoLoginGuard.canActivate(null, { url: 'some-url6' } as RouterStateSnapshot).subscribe((result) => {
+        autoLoginPartialRoutesGuard.canActivate(null, { url: 'some-url6' } as RouterStateSnapshot).subscribe((result) => {
           expect(result).toBe(true);
           expect(storageServiceSpy).not.toHaveBeenCalled();
         });
@@ -158,7 +158,7 @@ describe(`AutoLoginGuard`, () => {
         const routerSpy = spyOn(router, 'navigateByUrl');
         const loginSpy = spyOn(loginService, 'login');
 
-        autoLoginGuard.canActivate(null, { url: 'some-url7' } as RouterStateSnapshot).subscribe((result) => {
+        autoLoginPartialRoutesGuard.canActivate(null, { url: 'some-url7' } as RouterStateSnapshot).subscribe((result) => {
           expect(result).toBe(true);
           expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'configId');
           expect(routerSpy).toHaveBeenCalledOnceWith('stored-route');
@@ -175,7 +175,7 @@ describe(`AutoLoginGuard`, () => {
         const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
 
-        autoLoginGuard.canLoad(null, []).subscribe(() => {
+        autoLoginPartialRoutesGuard.canLoad(null, []).subscribe(() => {
           expect(checkAuthServiceSpy).toHaveBeenCalledTimes(1);
         });
       })
@@ -187,7 +187,7 @@ describe(`AutoLoginGuard`, () => {
         const checkAuthServiceSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
-        autoLoginGuard.canLoad(null, []).subscribe(() => {
+        autoLoginPartialRoutesGuard.canLoad(null, []).subscribe(() => {
           expect(checkAuthServiceSpy).not.toHaveBeenCalled();
         });
       })
@@ -200,7 +200,7 @@ describe(`AutoLoginGuard`, () => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         const loginSpy = spyOn(loginService, 'login');
 
-        autoLoginGuard.canLoad(null, []).subscribe(() => {
+        autoLoginPartialRoutesGuard.canLoad(null, []).subscribe(() => {
           expect(loginSpy).toHaveBeenCalledTimes(1);
         });
       })
@@ -212,7 +212,7 @@ describe(`AutoLoginGuard`, () => {
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of({} as LoginResponse));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
 
-        autoLoginGuard.canLoad(null, []).subscribe((result) => {
+        autoLoginPartialRoutesGuard.canLoad(null, []).subscribe((result) => {
           expect(result).toBe(false);
         });
       })
@@ -225,7 +225,7 @@ describe(`AutoLoginGuard`, () => {
         const storageServiceSpy = spyOn(storagePersistenceService, 'write');
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
 
-        autoLoginGuard.canLoad(null, [new UrlSegment('some-url12', {})]).subscribe((result) => {
+        autoLoginPartialRoutesGuard.canLoad(null, [new UrlSegment('some-url12', {})]).subscribe((result) => {
           expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'some-url12', 'configId');
         });
       })
@@ -238,7 +238,7 @@ describe(`AutoLoginGuard`, () => {
         const storageServiceSpy = spyOn(storagePersistenceService, 'write');
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
 
-        autoLoginGuard
+        autoLoginPartialRoutesGuard
           .canLoad(null, [new UrlSegment('some-url12', {}), new UrlSegment('with', {}), new UrlSegment('some-param', {})])
           .subscribe((result) => {
             expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'some-url12/with/some-param', 'configId');
@@ -252,7 +252,7 @@ describe(`AutoLoginGuard`, () => {
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: true } as LoginResponse));
         const storageServiceSpy = spyOn(storagePersistenceService, 'write');
 
-        autoLoginGuard.canLoad(null, []).subscribe((result) => {
+        autoLoginPartialRoutesGuard.canLoad(null, []).subscribe((result) => {
           expect(result).toBe(true);
           expect(storageServiceSpy).not.toHaveBeenCalled();
         });
@@ -269,7 +269,7 @@ describe(`AutoLoginGuard`, () => {
         const routerSpy = spyOn(router, 'navigateByUrl');
         const loginSpy = spyOn(loginService, 'login');
 
-        autoLoginGuard.canLoad(null, []).subscribe((result) => {
+        autoLoginPartialRoutesGuard.canLoad(null, []).subscribe((result) => {
           expect(result).toBe(true);
           expect(storageServiceSpy).toHaveBeenCalledOnceWith('redirect', 'configId');
           expect(routerSpy).toHaveBeenCalledOnceWith('stored-route');
