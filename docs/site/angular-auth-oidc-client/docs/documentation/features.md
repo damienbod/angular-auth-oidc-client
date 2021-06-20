@@ -135,12 +135,7 @@ export class AppComponent implements OnInit {
 
 ### Auto Login when all routes are guarded
 
-The library needs a place to start and set all values as well as the callback of the server needs to be public to set up the authentication. So if you want all your routes to be protected you have to add a component for the callback of the sts.
-
-1. Auto Login when all routes are guarded
-2. Auto Login when default route is not guarded
-
-If you need to use a guard or implement a guard for a different business case, please refer to the auto-login guard in this repo as a reference. It is important that the callback logic can be run on a route without the guard running.
+If all your routes are guarded the
 
 ### Redirect route from Token server has a guard
 
