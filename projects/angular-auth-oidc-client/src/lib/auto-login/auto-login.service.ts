@@ -1,17 +1,24 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 
 const STORAGE_KEY = 'redirect';
 
 @Injectable()
 export class AutoLoginService {
-  constructor(private readonly storageService: StoragePersistenceService) {}
+  constructor(private readonly storageService: StoragePersistenceService, private readonly router: Router) {}
 
-  /**
-   * Gets the stored redirect route from storage.
-   */
-  getStoredRedirectRoute(configId: string): string {
-    return this.storageService.read(STORAGE_KEY, configId);
+  checkSavedRedirectRouteAndNavigate(isAuthenticated: boolean, configId: string): void {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    const savedRouteForRedirect = this.getStoredRedirectRoute(configId);
+
+    if (savedRouteForRedirect) {
+      this.deleteStoredRedirectRoute(configId);
+      this.router.navigateByUrl(savedRouteForRedirect);
+    }
   }
 
   /**
@@ -19,14 +26,21 @@ export class AutoLoginService {
    *
    * @param url The redirect url to save.
    */
-  saveStoredRedirectRoute(configId: string, url: string): void {
+  saveRedirectRoute(configId: string, url: string): void {
     this.storageService.write(STORAGE_KEY, url, configId);
+  }
+
+  /**
+   * Gets the stored redirect route from storage.
+   */
+  private getStoredRedirectRoute(configId: string): string {
+    return this.storageService.read(STORAGE_KEY, configId);
   }
 
   /**
    * Removes the redirect url from storage.
    */
-  deleteStoredRedirectRoute(configId: string): void {
+  private deleteStoredRedirectRoute(configId: string): void {
     this.storageService.remove(STORAGE_KEY, configId);
   }
 }

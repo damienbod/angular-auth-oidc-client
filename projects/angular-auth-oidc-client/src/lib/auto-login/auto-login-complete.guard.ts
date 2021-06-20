@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, CanLoad, Route, Router, RouterStateSnapshot, UrlSegment } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, CanLoad, Route, RouterStateSnapshot, UrlSegment } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { AuthStateService } from '../authState/auth-state.service';
 import { CheckAuthService } from '../check-auth.service';
 import { ConfigurationProvider } from '../config/provider/config.provider';
 import { LoginService } from '../login/login.service';
@@ -12,10 +11,8 @@ import { AutoLoginService } from './auto-login.service';
 export class AutoLoginCompleteGuard implements CanActivate, CanLoad {
   constructor(
     private autoLoginService: AutoLoginService,
-    private authStateService: AuthStateService,
     private checkAuthService: CheckAuthService,
     private loginService: LoginService,
-    private router: Router,
     private configurationProvider: ConfigurationProvider
   ) {}
 
@@ -35,20 +32,14 @@ export class AutoLoginCompleteGuard implements CanActivate, CanLoad {
     return this.checkAuthService.checkAuth().pipe(
       take(1),
       map(({ isAuthenticated }) => {
-        const storedRoute = this.autoLoginService.getStoredRedirectRoute(configId);
-        if (isAuthenticated) {
-          if (storedRoute) {
-            this.autoLoginService.deleteStoredRedirectRoute(configId);
-            this.router.navigateByUrl(storedRoute);
-          }
+        this.autoLoginService.checkSavedRedirectRouteAndNavigate(isAuthenticated, configId);
 
-          return true;
+        if (!isAuthenticated) {
+          this.autoLoginService.saveRedirectRoute(configId, url);
+          this.loginService.login(configId);
         }
 
-        this.autoLoginService.saveStoredRedirectRoute(configId, url);
-        this.loginService.login(configId);
-
-        return false;
+        return isAuthenticated;
       })
     );
   }

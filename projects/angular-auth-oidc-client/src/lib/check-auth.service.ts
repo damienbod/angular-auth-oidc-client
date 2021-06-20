@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from './authState/auth-state.service';
@@ -33,7 +32,6 @@ export class CheckAuthService {
     private periodicallyTokenCheckService: PeriodicallyTokenCheckService,
     private popupService: PopUpService,
     private autoLoginService: AutoLoginService,
-    private router: Router,
     private storagePersistenceService: StoragePersistenceService
   ) {}
 
@@ -155,14 +153,7 @@ export class CheckAuthService {
         };
       }),
       tap(({ isAuthenticated }) => {
-        if (isAuthenticated) {
-          const savedRouteForRedirect = this.autoLoginService.getStoredRedirectRoute(configId);
-
-          if (savedRouteForRedirect) {
-            this.autoLoginService.deleteStoredRedirectRoute(configId);
-            this.router.navigateByUrl(savedRouteForRedirect);
-          }
-        }
+        this.autoLoginService.checkSavedRedirectRouteAndNavigate(isAuthenticated, configId);
       }),
       catchError((errorMessage) => {
         this.loggerService.logError(configId, errorMessage);
