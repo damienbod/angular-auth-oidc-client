@@ -1,21 +1,18 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, CanLoad, Route, Router, RouterStateSnapshot, UrlSegment } from '@angular/router';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { AuthStateService } from '../authState/auth-state.service';
+import { ActivatedRouteSnapshot, CanActivate, CanLoad, Route, RouterStateSnapshot, UrlSegment } from '@angular/router';
+import { Observable } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 import { CheckAuthService } from '../check-auth.service';
 import { ConfigurationProvider } from '../config/provider/config.provider';
 import { LoginService } from '../login/login.service';
 import { AutoLoginService } from './auto-login.service';
 
 @Injectable({ providedIn: 'root' })
-export class AutoLoginGuard implements CanActivate, CanLoad {
+export class AutoLoginAllRoutesGuard implements CanActivate, CanLoad {
   constructor(
     private autoLoginService: AutoLoginService,
-    private authStateService: AuthStateService,
     private checkAuthService: CheckAuthService,
     private loginService: LoginService,
-    private router: Router,
     private configurationProvider: ConfigurationProvider
   ) {}
 
@@ -32,28 +29,19 @@ export class AutoLoginGuard implements CanActivate, CanLoad {
   private checkAuth(url: string): Observable<boolean> {
     const configId = this.getId();
 
-    const isAuthenticated = this.authStateService.areAuthStorageTokensValid(configId);
-
-    if (isAuthenticated) {
-      return of(true);
-    }
-
     return this.checkAuthService.checkAuth().pipe(
+      take(1),
       map(({ isAuthenticated }) => {
-        const storedRoute = this.autoLoginService.getStoredRedirectRoute(configId);
         if (isAuthenticated) {
-          if (storedRoute) {
-            this.autoLoginService.deleteStoredRedirectRoute(configId);
-            this.router.navigateByUrl(storedRoute);
-          }
-
-          return true;
+          this.autoLoginService.checkSavedRedirectRouteAndNavigate(configId);
         }
 
-        this.autoLoginService.saveStoredRedirectRoute(configId, url);
-        this.loginService.login(configId);
+        if (!isAuthenticated) {
+          this.autoLoginService.saveRedirectRoute(configId, url);
+          this.loginService.login(configId);
+        }
 
-        return false;
+        return isAuthenticated;
       })
     );
   }

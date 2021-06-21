@@ -20,6 +20,10 @@ Gathering all Issues and PRs which will be done in V12 and maybe are breaking ch
 - Testing & Coverage
 - Improve documentation
 - Add configuration to disable or enable id_token expired check https://github.com/damienbod/angular-auth-oidc-client/issues/1113
+- Support for Azure B2C multiple policies https://github.com/damienbod/angular-auth-oidc-client/issues/802 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1085
+- Improve AutoLoginSample https://github.com/damienbod/angular-auth-oidc-client/issues/1138
+- Accessing AuthResult response object https://github.com/damienbod/angular-auth-oidc-client/issues/536
+- Improved Auto guards
 
 ### 2021-06-12 Version 11.6.11
 

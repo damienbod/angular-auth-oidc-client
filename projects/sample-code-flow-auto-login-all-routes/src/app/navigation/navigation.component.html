@@ -1,0 +1,29 @@
+<nav class="bg-dark mb-4 navbar navbar-dark navbar-expand-md">
+  <a [routerLink]="['/home']" class="navbar-brand">
+    <em>Code Flow Auto Login All Routes</em>
+  </a>
+  <button
+    aria-controls="navbarCollapse"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+    class="navbar-toggler"
+    data-target="#topNavbarCollapse"
+    data-toggle="collapse"
+    type="button"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="topNavbarCollapse">
+    <ul class="mr-auto navbar-nav">
+      <li class="nav-item"><a class="nav-link" *ngIf="isAuthenticated" [routerLink]="['home']">home</a></li>
+      <li class="nav-item"><a class="nav-link" *ngIf="isAuthenticated" [routerLink]="['protected']">protected</a></li>
+      <li class="nav-item"><a class="nav-link" *ngIf="isAuthenticated" [routerLink]="['forbidden']">forbidden</a></li>
+      <li class="nav-item"><a class="nav-link" *ngIf="isAuthenticated" [routerLink]="['customers']">lazy customers</a></li>
+      <li class="nav-item">
+        <a class="nav-link" *ngIf="!isAuthenticated" [routerLink]="['protected']">Route to 'protected' Route & Auto Login</a>
+      </li>
+      <li class="nav-item"><a class="nav-link" *ngIf="isAuthenticated" (click)="logout()">Logout</a></li>
+    </ul>
+    <ul class="navbar-nav"></ul>
+  </div>
+</nav>
