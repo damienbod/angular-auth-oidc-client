@@ -262,7 +262,7 @@ Starts the OpenID session management for this client.
 - Type: `boolean`
 - Required: `false`
 
-Indicates the library should renew the client's tokens after the `token_id` expires. It can be configured to use iframes or refresh tokens.
+Indicates that the library should renew the client's tokens after the `token_id` expires. It can be configured to use iframes or refresh tokens.
 
 ### `silentRenewUrl`
 
@@ -290,7 +290,8 @@ Makes it possible to add an offset to the silent renew check in seconds. By ente
 - Type: `boolean`
 - Required: `false`
 
-Default set to false. Standard silent renew mode used per default. Refresh tokens can be activated.
+If set to true, refresh tokens will be used for the silent renew process instead of the default iframes. <br/>
+Default = *false*
 
 ### `ignoreNonceAfterRefresh`
 
