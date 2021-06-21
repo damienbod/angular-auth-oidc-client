@@ -184,7 +184,7 @@ export class AuthConfigModule {}
 - Type: `string`
 - Required: `false`
 
-To identify a configuration, a new parameter called `configId` was introduced. If you do not explicitly set this value, the library will generate and assign the value for you. If set, the configured value is used. The value is optional.
+In multi-configuration use-cases, each configuration must be assigned a unique `configId`. By default, the library will generate and assign a unique `configId` to each provided configuration. You can override the library's default `configId` generation by providing a unique `configId` for each configuration entry.
 
 ### `authority`
 
@@ -205,7 +205,7 @@ A different well-known endpoint can be defined instead of the authority domain w
 - Type: `object`
 - Required: `false`
 
-TBD
+Allows you to set custom URLs for the Well-Known endpoints.
 
 ### `redirectUrl`
 
