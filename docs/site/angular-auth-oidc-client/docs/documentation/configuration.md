@@ -12,8 +12,8 @@ Prior to using the library, you must configure it with the appropriate values fo
 You can pass the static config with the `config` property into the `forRoot()` method like this
 
 ```ts
-import { NgModule } from '@Angular/core';
-import { AuthModule } from 'Angular-auth-oidc-client';
+import { NgModule } from '@angular/core';
+import { AuthModule } from 'angular-auth-oidc-client';
 
 @NgModule({
   imports: [
@@ -471,4 +471,4 @@ Default = *3*. <br/>
 - Type: `boolean`
 - Required: `false`
 
-Adds the `ngsw-bypass` param to all requests ([Angular Documentation](https://Angular.io/guide/service-worker-devops#bypassing-the-service-worker)).
+Adds the `ngsw-bypass` param to all requests ([Angular Documentation](https://angular.io/guide/service-worker-devops#bypassing-the-service-worker)).
