@@ -20,6 +20,7 @@ export class PopUpService {
 
       return !!window.opener && window.opener !== window && !!popup;
     }
+
     return false;
   }
 
@@ -82,6 +83,7 @@ export class PopUpService {
   }
 
   private canAccessSessionStorage(): boolean {
+    
     return typeof navigator !== 'undefined' && navigator.cookieEnabled && typeof Storage !== 'undefined';
   }
 }
