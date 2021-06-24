@@ -49,13 +49,13 @@ And answer the questions. A module will be created which encapsulates your confi
 
 Navigate to the level of your `package.json` and type
 
-```ts
+```shell
  npm install angular-auth-oidc-client
 ```
 
 or with yarn
 
-```ts
+```shell
  yarn add angular-auth-oidc-client
 ```
 
@@ -63,18 +63,19 @@ or with yarn
 
 [Read the docs here](https://nice-hill-002425310.azurestaticapps.net/)
 
-[Quickstart](https://nice-hill-002425310.azurestaticapps.net/docs/intro) -
-[Samples](https://nice-hill-002425310.azurestaticapps.net/docs/samples/samples)
+## Samples
+
+[Explore the Samples here](https://nice-hill-002425310.azurestaticapps.net/docs/samples/samples)
 
 ## Quickstart
 
-> For the example of the Code Flow. For further examples please check the [Samples](docs/samples.md) Section
+For the example of the Code Flow. For further examples please check the [Samples](https://nice-hill-002425310.azurestaticapps.net/docs/samples/samples) Section.
 
-> NOTE If you have done the installation with the schematics, these modules and files should be available already!!!
-
-If the schematics did not do this already: Import the `AuthModule` in your module.
+> If you have done the installation with the schematics, these modules and files should be available already!
 
 ### Configuration
+
+Import the `AuthModule` in your module.
 
 ```ts
 import { NgModule } from '@angular/core';
@@ -107,7 +108,7 @@ export class AppModule {}
 And call the method `checkAuth()` from your `app.component.ts`. The method `checkAuth()` is needed to process the redirect from your sts and set the correct states. This method must be used to ensure the correct functioning of the library.
 
 ```ts
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
@@ -158,9 +159,8 @@ const httpOptions = {
 
 Current Version is Version 12.0.0
 
-[Info about Version 11](https://github.com/damienbod/angular-auth-oidc-client/tree/version-11)
-
-[Info about Version 10](https://github.com/damienbod/angular-auth-oidc-client/tree/version-10)
+- [Info about Version 11](https://github.com/damienbod/angular-auth-oidc-client/tree/version-11)
+- [Info about Version 10](https://github.com/damienbod/angular-auth-oidc-client/tree/version-10)
 
 ## License
 
