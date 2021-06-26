@@ -15,9 +15,13 @@ export class PopUpService {
   }
 
   isCurrentlyInPopup(): boolean {
-    const popup = sessionStorage.getItem(this.STORAGE_IDENTIFIER);
+    if (this.canAccessSessionStorage()) {
+      const popup = sessionStorage.getItem(this.STORAGE_IDENTIFIER);
 
-    return !!window.opener && window.opener !== window && !!popup;
+      return !!window.opener && window.opener !== window && !!popup;
+    }
+
+    return false;
   }
 
   openPopUp(url: string, popupOptions?: PopupOptions): void {
@@ -76,5 +80,10 @@ export class PopUpService {
     return Object.entries(options)
       .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
       .join(',');
+  }
+
+  private canAccessSessionStorage(): boolean {
+    
+    return typeof navigator !== 'undefined' && navigator.cookieEnabled && typeof Storage !== 'undefined';
   }
 }
