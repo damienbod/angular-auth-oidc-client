@@ -83,7 +83,6 @@ export class PopUpService {
   }
 
   private canAccessSessionStorage(): boolean {
-    
     return typeof navigator !== 'undefined' && navigator.cookieEnabled && typeof Storage !== 'undefined';
   }
 }
