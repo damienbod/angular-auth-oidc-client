@@ -16,18 +16,16 @@ export class AuthInterceptor implements HttpInterceptor {
   ) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Ensure we send the token only to routes which are secured
-
     if (!this.configurationProvider.hasAsLeastOneConfig()) {
       return next.handle(req);
     }
 
     const allConfigurations = this.configurationProvider.getAllConfigurations();
-    const { configId } = allConfigurations[0];
     const allRoutesConfigured = allConfigurations.map((x) => x.secureRoutes || []);
     const allRoutesConfiguredFlat = [].concat.apply([], allRoutesConfigured);
 
     if (allRoutesConfiguredFlat.length === 0) {
+      const { configId } = allConfigurations[0];
       this.loggerService.logDebug(configId, `No routes to check configured`);
 
       return next.handle(req);
@@ -36,6 +34,7 @@ export class AuthInterceptor implements HttpInterceptor {
     const { matchingConfigId, matchingRoute } = this.closestMatchingRouteService.getConfigIdForClosestMatchingRoute(req.url);
 
     if (!matchingConfigId) {
+      const { configId } = allConfigurations[0];
       this.loggerService.logDebug(configId, `Did not find any configured route for route ${req.url}`);
 
       return next.handle(req);

@@ -12,7 +12,7 @@ export class ClosestMatchingRouteService {
       const allRoutesForConfig = routesWithConfig.routes;
 
       for (const configuredRoute of allRoutesForConfig) {
-        if (configuredRoute.startsWith(route)) {
+        if (route.startsWith(configuredRoute)) {
           return {
             matchingRoute: configuredRoute,
             matchingConfigId: routesWithConfig.configId,

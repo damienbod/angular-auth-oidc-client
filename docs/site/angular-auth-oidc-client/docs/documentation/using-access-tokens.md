@@ -73,6 +73,12 @@ import { AuthInterceptor /*, ... */ } from 'angular-auth-oidc-client';
 export class AppModule { }
 ```
 
+If you configured a route to be protected, every child route underneath is protected, too. So if you configure `https://first-route.com/` the token is also added to a request to the route `https://first-route.com/param...`.
+
+In case you are running multiple configurations all the configured routes over all configurations are collected and compared against the currently requested route. If a fit is made, the token for the configuration you added the secure route to is being taken and applied in the Authorization header.
+
+Keep in mind that you always can implement your own interceptor according to the Angular documentation.
+
 ## Revoke the access token
 
 Access tokens can be revoked using the `revokeAccessToken()` function. If you provide the access token in the param, any access token from the same STS can be revoked, if the STS supports the revocation endpoint.
