@@ -1796,7 +1796,7 @@
             "browserTarget": "sample-code-flow-auto-login-all-routes:build",
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
-            "port": 4203
+            "port": 4204
           },
           "configurations": {
             "production": {
