@@ -29,6 +29,7 @@ import { SigninKeyDataService } from './flows/signin-key-data.service';
 import { CheckSessionService } from './iframe/check-session.service';
 import { IFrameService } from './iframe/existing-iframe.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
+import { ClosestMatchingRouteService } from './interceptor/closest-matching-route.service';
 import { LoggerService } from './logging/logger.service';
 import { LoginService } from './login/login.service';
 import { ParLoginService } from './login/par/par-login.service';
@@ -149,6 +150,7 @@ export class AuthModule {
         AutoLoginService,
         JsrsAsignReducedService,
         CurrentUrlService,
+        ClosestMatchingRouteService,
       ],
     };
   }
