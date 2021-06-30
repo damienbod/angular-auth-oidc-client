@@ -493,5 +493,30 @@ describe('CheckAuthService', () => {
         expect(spy).toHaveBeenCalledWith({ configId: 'configId2', stsServer: 'some-stsserver2' }, undefined);
       });
     });
+
+    it('throws error if url has state param but no config could be found', () => {
+      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
+      spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
+
+      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([]);
+
+      checkAuthService.checkAuthMultiple().subscribe({
+        error: (message) => {
+          expect(message).toBe('could not find matching config for state the-state-param');
+        },
+      });
+    });
+
+    it('throws error if configId was passed and was not found', () => {
+      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(false);
+
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue(null);
+
+      checkAuthService.checkAuthMultiple('not-existing-config-id').subscribe({
+        error: (message) => {
+          expect(message).toBe('could not find matching config for id not-existing-config-id');
+        },
+      });
+    });
   });
 });
