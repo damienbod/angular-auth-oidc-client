@@ -67,13 +67,17 @@ export class CheckAuthService {
         return throwError(`could not find matching config for state ${stateParamFromUrl}`);
       }
 
-      return this.checkAuthWithConfig(config, url).pipe(map((x) => [x]));
+      return this.composeMultipleLoginResults(config, url);
     }
 
     if (!!passedConfigId) {
       const config = this.configurationProvider.getOpenIDConfiguration(passedConfigId);
 
-      return this.checkAuthWithConfig(config, url).pipe(map((x) => [x]));
+      if (!config) {
+        return throwError(`could not find matching config for id ${passedConfigId}`);
+      }
+
+      return this.composeMultipleLoginResults(config, url);
     }
 
     const allConfigs = this.configurationProvider.getAllConfigurations();
@@ -189,5 +193,19 @@ export class CheckAuthService {
     }
 
     return null;
+  }
+
+  private composeMultipleLoginResults(activeConfig: OpenIdConfiguration, url?: string): Observable<LoginResponse[]> {
+    const allOtherConfigs = this.configurationProvider.getAllConfigurations().filter((x) => x.configId !== activeConfig.configId);
+
+    const currentConfigResult = this.checkAuthWithConfig(activeConfig, url);
+
+    const allOtherConfigResults = allOtherConfigs.map((config) => {
+      const { redirectUrl } = config;
+
+      return this.checkAuthWithConfig(config, redirectUrl);
+    });
+
+    return forkJoin([currentConfigResult, ...allOtherConfigResults]);
   }
 }

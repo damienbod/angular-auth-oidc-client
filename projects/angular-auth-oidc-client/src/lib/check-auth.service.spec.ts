@@ -454,16 +454,25 @@ describe('CheckAuthService', () => {
       });
     });
 
-    it('uses config from passed configId if configId was passed', () => {
+    it('uses config from passed configId if configId was passed and returns all results', () => {
       spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(false);
 
-      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId', stsServer: 'some-stsserver' });
+      const configs = [
+        { configId: 'configId1', stsServer: 'some-stsserver1' },
+        { configId: 'configId2', stsServer: 'some-stsserver2' },
+      ];
+
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue(configs[0]);
+      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue(configs);
 
       const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
 
       checkAuthService.checkAuthMultiple('configId').subscribe((result) => {
         expect(Array.isArray(result)).toBe(true);
-        expect(spy).toHaveBeenCalledOnceWith({ configId: 'configId', stsServer: 'some-stsserver' }, undefined);
+        expect(spy.calls.allArgs()).toEqual([
+          [{ configId: 'configId1', stsServer: 'some-stsserver1' }, undefined],
+          [{ configId: 'configId2', stsServer: 'some-stsserver2' }, undefined],
+        ]);
       });
     });
 
@@ -482,6 +491,31 @@ describe('CheckAuthService', () => {
         expect(spy).toHaveBeenCalledTimes(2);
         expect(spy).toHaveBeenCalledWith({ configId: 'configId1', stsServer: 'some-stsserver1' }, undefined);
         expect(spy).toHaveBeenCalledWith({ configId: 'configId2', stsServer: 'some-stsserver2' }, undefined);
+      });
+    });
+
+    it('throws error if url has state param but no config could be found', () => {
+      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
+      spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
+
+      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([]);
+
+      checkAuthService.checkAuthMultiple().subscribe({
+        error: (message) => {
+          expect(message).toBe('could not find matching config for state the-state-param');
+        },
+      });
+    });
+
+    it('throws error if configId was passed and was not found', () => {
+      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(false);
+
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue(null);
+
+      checkAuthService.checkAuthMultiple('not-existing-config-id').subscribe({
+        error: (message) => {
+          expect(message).toBe('could not find matching config for id not-existing-config-id');
+        },
       });
     });
   });
