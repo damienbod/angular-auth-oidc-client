@@ -11,16 +11,17 @@ export class HomeComponent implements OnInit {
   userDataChanged$: Observable<OidcClientNotification<any>>;
   userData$: Observable<any>;
   isAuthenticated = false;
+
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
     this.configuration = this.oidcSecurityService.getConfiguration();
     this.userData$ = this.oidcSecurityService.userData$;
 
-    this.oidcSecurityService.isAuthenticated$.subscribe((authenticated: boolean) => {
-      this.isAuthenticated = authenticated;
+    this.oidcSecurityService.isAuthenticated$.subscribe(({ isAuthenticated }) => {
+      this.isAuthenticated = isAuthenticated;
 
-      console.warn('authenticated: ', authenticated);
+      console.warn('authenticated: ', isAuthenticated);
     });
   }
 
