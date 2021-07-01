@@ -9,13 +9,14 @@ import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
-import { ConfigUserDataResult } from './config-userdata-result';
+import { ConfigUserData, ConfigUserDataResult } from './config-userdata-result';
 
+const DEFAULT_USERRESULT = { userData: null, allUserData: [] };
 @Injectable()
 export class UserService {
-  private userDataInternal$ = new BehaviorSubject<ConfigUserDataResult[] | any>(null);
+  private userDataInternal$ = new BehaviorSubject<ConfigUserDataResult>(DEFAULT_USERRESULT);
 
-  get userData$(): Observable<ConfigUserDataResult[] | any> {
+  get userData$(): Observable<ConfigUserDataResult> {
     return this.userDataInternal$.asObservable();
   }
 
@@ -158,16 +159,19 @@ export class UserService {
     this.eventService.fireEvent(EventTypes.UserDataChanged, { configId, userData: passedUserData });
   }
 
-  private composeSingleOrMultipleUserDataObject(configId: string, passedUserData: any): any {
+  private composeSingleOrMultipleUserDataObject(configId: string, passedUserData: any): ConfigUserDataResult {
     const hasManyConfigs = this.configurationProvider.hasManyConfigs();
 
     if (!hasManyConfigs) {
-      return passedUserData;
+      return {
+        userData: passedUserData,
+        allUserData: [passedUserData],
+      };
     }
 
     const configs = this.configurationProvider.getAllConfigurations();
 
-    const result = configs.map((config) => {
+    const result: ConfigUserData[] = configs.map((config) => {
       if (config.configId === configId) {
         return { configId: config.configId, userData: passedUserData };
       }
@@ -177,6 +181,9 @@ export class UserService {
       return { configId: config.configId, userData: alreadySavedUserData };
     });
 
-    return result;
+    return {
+      userData: null,
+      allUserData: result,
+    };
   }
 }

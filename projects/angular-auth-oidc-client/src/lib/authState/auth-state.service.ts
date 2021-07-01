@@ -10,11 +10,13 @@ import { StoragePersistenceService } from '../storage/storage-persistence.servic
 import { TokenValidationService } from '../validation/token-validation.service';
 import { AuthenticatedResult, ConfigAuthenticatedResult } from './auth-result';
 
+const DEFAULT_AUTHRESULT = { isAuthenticated: false, allConfigsAuthenticated: [] };
+
 @Injectable()
 export class AuthStateService {
-  private authenticatedInternal$ = new BehaviorSubject<ConfigAuthenticatedResult[] | boolean>(null);
+  private authenticatedInternal$ = new BehaviorSubject<ConfigAuthenticatedResult>(DEFAULT_AUTHRESULT);
 
-  get authenticated$(): Observable<ConfigAuthenticatedResult[] | boolean> {
+  get authenticated$(): Observable<ConfigAuthenticatedResult> {
     return this.authenticatedInternal$.asObservable().pipe(distinctUntilChanged());
   }
 
@@ -165,28 +167,35 @@ export class AuthStateService {
     }
   }
 
-  private composeAuthenticatedResult(): true | ConfigAuthenticatedResult[] {
+  private composeAuthenticatedResult(): ConfigAuthenticatedResult {
     if (!this.configurationProvider.hasManyConfigs()) {
-      return true;
+      const { configId } = this.configurationProvider.getOpenIDConfiguration();
+
+      return { isAuthenticated: true, allConfigsAuthenticated: [{ configId, isAuthenticated: true }] };
     }
 
     return this.checkAllConfigsIfTheyAreAuthenticated();
   }
 
-  private composeUnAuthenticatedResult(): false | ConfigAuthenticatedResult[] {
+  private composeUnAuthenticatedResult(): ConfigAuthenticatedResult {
     if (!this.configurationProvider.hasManyConfigs()) {
-      return false;
+      const { configId } = this.configurationProvider.getOpenIDConfiguration();
+
+      return { isAuthenticated: true, allConfigsAuthenticated: [{ configId, isAuthenticated: true }] };
     }
 
     return this.checkAllConfigsIfTheyAreAuthenticated();
   }
 
-  private checkAllConfigsIfTheyAreAuthenticated(): ConfigAuthenticatedResult[] {
+  private checkAllConfigsIfTheyAreAuthenticated(): ConfigAuthenticatedResult {
     const configs = this.configurationProvider.getAllConfigurations();
 
-    return configs.map(({ configId }) => ({
+    const allConfigsAuthenticated = configs.map(({ configId }) => ({
       configId,
       isAuthenticated: this.isAuthenticated(configId),
     }));
+    const isAuthenticated = allConfigsAuthenticated.every((x) => !!x.isAuthenticated);
+
+    return { allConfigsAuthenticated, isAuthenticated };
   }
 }

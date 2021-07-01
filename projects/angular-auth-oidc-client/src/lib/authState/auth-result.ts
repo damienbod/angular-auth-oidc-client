@@ -7,6 +7,12 @@ export interface AuthenticatedResult {
 }
 
 export interface ConfigAuthenticatedResult {
+  isAuthenticated: boolean;
+
+  allConfigsAuthenticated: ConfigAuthenticated[];
+}
+
+export interface ConfigAuthenticated {
   configId: string;
   isAuthenticated: boolean;
 }
