@@ -7,7 +7,7 @@ export interface OpenIdConfiguration {
    * The url to the Security Token Service (STS) server.
    * This field is required.
    */
-  stsServer?: string;
+  authority?: string;
   /** Override the default STS wellknown endpoint postfix. */
   authWellknownEndpointUrl?: string;
   authWellknownEndpoints?: AuthWellKnownEndpoints;

@@ -6,7 +6,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
     AuthModule.forRoot({
       config: [
         {
-          stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+          authority: 'https://offeringsolutions-sts.azurewebsites.net',
           redirectUrl: window.location.origin,
           postLogoutRedirectUri: window.location.origin,
           clientId: 'angularCodeRefreshTokens',
@@ -17,7 +17,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
           logLevel: LogLevel.Debug,
         },
         {
-          stsServer: 'https://dev-damienbod.eu.auth0.com',
+          authority: 'https://dev-damienbod.eu.auth0.com',
           redirectUrl: window.location.origin,
           postLogoutRedirectUri: window.location.origin,
           clientId: 'Ujh5oSBAFr1BuilgkZPcMWEgnuREgrwU',

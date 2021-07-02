@@ -2,9 +2,9 @@ import { OpenIdConfiguration } from '../../openid-configuration';
 import { POSITIVE_VALIDATION_RESULT, RuleValidationResult } from '../rule';
 
 const createIdentifierToCheck = (passedConfig: OpenIdConfiguration): string => {
-  const { stsServer, clientId, scope } = passedConfig;
+  const { authority, clientId, scope } = passedConfig;
 
-  return `${stsServer}${clientId}${scope}`;
+  return `${authority}${clientId}${scope}`;
 };
 
 const arrayHasDuplicates = (array: string[]): boolean => new Set(array).size !== array.length;
@@ -17,7 +17,7 @@ export const ensureNoDuplicatedConfigsRule = (passedConfigs: OpenIdConfiguration
   if (hasDuplicates) {
     return {
       result: false,
-      messages: ['You added multiple configs with the same stsServer, clientId and scope'],
+      messages: ['You added multiple configs with the same authority, clientId and scope'],
       level: 'warning',
     };
   }

@@ -98,8 +98,8 @@ export class CodeFlowCallbackHandlerService {
       }),
       retryWhen((error) => this.handleRefreshRetry(error, configId)),
       catchError((error) => {
-        const { stsServer } = this.configurationProvider.getOpenIDConfiguration(configId);
-        const errorMessage = `OidcService code request ${stsServer}`;
+        const { authority } = this.configurationProvider.getOpenIDConfiguration(configId);
+        const errorMessage = `OidcService code request ${authority}`;
         this.loggerService.logError(configId, errorMessage, error);
 
         return throwError(errorMessage);
@@ -112,8 +112,8 @@ export class CodeFlowCallbackHandlerService {
       mergeMap((error) => {
         // retry token refresh if there is no internet connection
         if (error && error instanceof HttpErrorResponse && error.error instanceof ProgressEvent && error.error.type === 'error') {
-          const { stsServer, refreshTokenRetryInSeconds } = this.configurationProvider.getOpenIDConfiguration(configId);
-          const errorMessage = `OidcService code request ${stsServer} - no internet connection`;
+          const { authority, refreshTokenRetryInSeconds } = this.configurationProvider.getOpenIDConfiguration(configId);
+          const errorMessage = `OidcService code request ${authority} - no internet connection`;
           this.loggerService.logWarning(configId, errorMessage, error);
 
           return timer(refreshTokenRetryInSeconds * 1000);

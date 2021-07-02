@@ -183,7 +183,7 @@ so you can pass them as an object like this:
 ```ts
 AuthModule.forRoot({
       config: {
-        stsServer: '<your sts address here>',
+        authority: '<your authority address here>',
         customParamsAuthRequest: {
           response_mode: 'fragment',
           prompt: 'consent',
@@ -225,7 +225,7 @@ import { RouterModule } from '@angular/router';
   imports: [
     AuthModule.forRoot({
       config: {
-        stsServer: '<your sts address here>',
+        authority: '<your authority address here>',
         redirectUrl: window.location.origin,
         postLogoutRedirectUri: window.location.origin,
         clientId: 'angularClient',

@@ -223,7 +223,7 @@ describe('UrlService Tests', () => {
     });
 
     it('createAuthorizeUrl with code flow adds "code_challenge" and "code_challenge_method" param', () => {
-      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'code';
       config.scope = 'openid email profile';
@@ -260,7 +260,7 @@ describe('UrlService Tests', () => {
     });
 
     it('createAuthorizeUrl with prompt adds prompt value', () => {
-      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -294,7 +294,7 @@ describe('UrlService Tests', () => {
     });
 
     it('createAuthorizeUrl with prompt and custom values adds prompt value and custom values', () => {
-      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -330,7 +330,7 @@ describe('UrlService Tests', () => {
     });
 
     it('createAuthorizeUrl with hdParam adds hdparam value', () => {
-      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -364,7 +364,7 @@ describe('UrlService Tests', () => {
     });
 
     it('createAuthorizeUrl with custom value', () => {
-      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -401,7 +401,7 @@ describe('UrlService Tests', () => {
     });
 
     it('createAuthorizeUrl with custom values', () => {
-      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -441,7 +441,7 @@ describe('UrlService Tests', () => {
 
     it('createAuthorizeUrl creates url with with custom values and dynamic custom values', () => {
       const config = {
-        stsServer: 'https://localhost:5001',
+        authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
         clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         responseType: 'id_token token',
@@ -485,7 +485,7 @@ describe('UrlService Tests', () => {
 
     it('createAuthorizeUrl creates url with custom values equals null and dynamic custom values', () => {
       const config = {
-        stsServer: 'https://localhost:5001',
+        authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
         clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         responseType: 'id_token token',
@@ -523,7 +523,7 @@ describe('UrlService Tests', () => {
 
     it('createAuthorizeUrl creates url with custom values not given and dynamic custom values', () => {
       const config = {
-        stsServer: 'https://localhost:5001',
+        authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
         clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         responseType: 'id_token token',
@@ -560,7 +560,7 @@ describe('UrlService Tests', () => {
 
     // https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-reference-oidc
     it('createAuthorizeUrl with custom url like active-directory-b2c', () => {
-      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = 'myid';
       config.responseType = 'id_token token';
@@ -592,7 +592,7 @@ describe('UrlService Tests', () => {
     });
 
     it('createAuthorizeUrl default', () => {
-      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -624,7 +624,7 @@ describe('UrlService Tests', () => {
     });
 
     it('createRevocationBody access_token default', () => {
-      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -645,7 +645,7 @@ describe('UrlService Tests', () => {
     });
 
     it('createRevocationEndpointBodyAccessToken returns null when no clientId is given', () => {
-      const config = { stsServer: 'https://localhost:5001', clientId: null } as OpenIdConfiguration;
+      const config = { authority: 'https://localhost:5001', clientId: null } as OpenIdConfiguration;
 
       configurationProvider.setConfig(config);
 
@@ -655,7 +655,7 @@ describe('UrlService Tests', () => {
     });
 
     it('createRevocationBody refresh_token default', () => {
-      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -676,7 +676,7 @@ describe('UrlService Tests', () => {
     });
 
     it('createRevocationEndpointBodyRefreshToken returns null when no clientId is given', () => {
-      const config = { stsServer: 'https://localhost:5001', clientId: null } as OpenIdConfiguration;
+      const config = { authority: 'https://localhost:5001', clientId: null } as OpenIdConfiguration;
 
       configurationProvider.setConfig(config);
 
@@ -686,7 +686,7 @@ describe('UrlService Tests', () => {
     });
 
     it('getRevocationEndpointUrl with params', () => {
-      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -707,7 +707,7 @@ describe('UrlService Tests', () => {
     });
 
     it('getRevocationEndpointUrl default', () => {
-      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -1327,7 +1327,7 @@ describe('UrlService Tests', () => {
   describe('createEndSessionUrl', () => {
     it('createEndSessionUrl create url when all parameters given', () => {
       const config = {
-        stsServer: 'https://localhost:5001',
+        authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
         clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         responseType: 'id_token token',
@@ -1349,7 +1349,7 @@ describe('UrlService Tests', () => {
 
     it('createEndSessionUrl create url when all parameters and customParamsEndSession given', () => {
       const config = {
-        stsServer: 'https://localhost:5001',
+        authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
         clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         responseType: 'id_token token',
@@ -1371,7 +1371,7 @@ describe('UrlService Tests', () => {
     });
 
     it('createEndSessionUrl with azure-ad-b2c policy parameter', () => {
-      const config = { stsServer: 'https://localhost:5001' } as OpenIdConfiguration;
+      const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = 'myid';
       config.responseType = 'id_token token';
@@ -1395,7 +1395,7 @@ describe('UrlService Tests', () => {
 
     it('createEndSessionUrl create url without postLogoutRedirectUri when not given', () => {
       const config = {
-        stsServer: 'https://localhost:5001',
+        authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
         clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         responseType: 'id_token token',

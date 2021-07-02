@@ -53,7 +53,7 @@ export class OidcConfigService {
       }
 
       if (!passedConfig.authWellknownEndpointUrl) {
-        passedConfig.authWellknownEndpointUrl = passedConfig.stsServer;
+        passedConfig.authWellknownEndpointUrl = passedConfig.authority;
       }
 
       const usedConfig = this.prepareConfig(passedConfig);

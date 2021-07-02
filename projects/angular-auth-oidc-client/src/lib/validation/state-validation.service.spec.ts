@@ -66,7 +66,7 @@ describe('State Validation Service', () => {
 
   beforeEach(() => {
     config = {
-      stsServer: 'https://localhost:44363',
+      authority: 'https://localhost:44363',
       redirectUrl: 'https://localhost:44363',
       clientId: 'singleapp',
       responseType: 'id_token token',
@@ -722,7 +722,7 @@ describe('State Validation Service', () => {
       'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
 
     const configRefresh = {
-      stsServer: 'https://localhost:44363',
+      authority: 'https://localhost:44363',
       redirectUrl: 'https://localhost:44363',
       clientId: 'singleapp',
       responseType: 'icode',
@@ -789,7 +789,7 @@ describe('State Validation Service', () => {
       'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
 
     const configRefresh = {
-      stsServer: 'https://localhost:44363',
+      authority: 'https://localhost:44363',
       redirectUrl: 'https://localhost:44363',
       clientId: 'singleapp',
       responseType: 'icode',
@@ -856,7 +856,7 @@ describe('State Validation Service', () => {
       'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
 
     const configRefresh = {
-      stsServer: 'https://localhost:44363',
+      authority: 'https://localhost:44363',
       redirectUrl: 'https://localhost:44363',
       clientId: 'singleapp',
       responseType: 'icode',
@@ -923,7 +923,7 @@ describe('State Validation Service', () => {
       'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
 
     const configRefresh = {
-      stsServer: 'https://localhost:44363',
+      authority: 'https://localhost:44363',
       redirectUrl: 'https://localhost:44363',
       clientId: 'singleapp',
       responseType: 'icode',
@@ -990,7 +990,7 @@ describe('State Validation Service', () => {
       'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
 
     const configRefresh = {
-      stsServer: 'https://localhost:44363',
+      authority: 'https://localhost:44363',
       redirectUrl: 'https://localhost:44363',
       clientId: 'singleapp',
       responseType: 'icode',
@@ -1057,7 +1057,7 @@ describe('State Validation Service', () => {
       'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
 
     const configRefresh = {
-      stsServer: 'https://localhost:44363',
+      authority: 'https://localhost:44363',
       redirectUrl: 'https://localhost:44363',
       clientId: 'singleapp',
       responseType: 'icode',
@@ -1124,7 +1124,7 @@ describe('State Validation Service', () => {
       'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
 
     const configRefresh = {
-      stsServer: 'https://localhost:44363',
+      authority: 'https://localhost:44363',
       redirectUrl: 'https://localhost:44363',
       clientId: 'singleapp',
       responseType: 'icode',
@@ -1191,7 +1191,7 @@ describe('State Validation Service', () => {
       'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
 
     const configRefresh = {
-      stsServer: 'https://localhost:44363',
+      authority: 'https://localhost:44363',
       redirectUrl: 'https://localhost:44363',
       clientId: 'singleapp',
       responseType: 'icode',

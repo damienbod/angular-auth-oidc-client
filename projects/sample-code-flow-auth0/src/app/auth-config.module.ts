@@ -5,7 +5,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
   imports: [
     AuthModule.forRoot({
       config: {
-        stsServer: 'https://dev-damienbod.eu.auth0.com',
+        authority: 'https://dev-damienbod.eu.auth0.com',
         redirectUrl: window.location.origin,
         postLogoutRedirectUri: window.location.origin,
         clientId: 'Ujh5oSBAFr1BuilgkZPcMWEgnuREgrwU',

@@ -41,7 +41,7 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
     .pipe(
       map((customConfig: any) => {
         return {
-          stsServer: customConfig.stsServer,
+          authority: customConfig.authority,
           /* Your config mapping here */
         };
       })
@@ -75,12 +75,12 @@ export class AuthConfigModule {}
 
 To identify a configuration a new parameter called `configId` was introduced. If you do not explicitly set this value, the library will generate and assign the value for you. If set, the configured value is used. The value is optional.
 
-### `stsServer`
+### `authority`
 
 - Type: string
 - Required: true
 
-This is the redirect_url which was configured on the security token service (STS) server.
+This is the authority or secure token server which issues tokens. Sometimes this is named as the issuer.
 
 ### `authWellknownEndpointUrl`
 

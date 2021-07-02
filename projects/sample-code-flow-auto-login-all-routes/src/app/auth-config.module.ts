@@ -10,7 +10,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
         unauthorizedRoute: '/unauthorized',
         logLevel: LogLevel.Debug,
         historyCleanupOff: true,
-        stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+        authority: 'https://offeringsolutions-sts.azurewebsites.net',
         redirectUrl: window.location.origin,
         postLogoutRedirectUri: window.location.origin,
         clientId: 'angularCodeRefreshTokens',

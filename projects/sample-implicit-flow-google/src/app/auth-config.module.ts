@@ -5,7 +5,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
   imports: [
     AuthModule.forRoot({
       config: {
-        stsServer: 'https://accounts.google.com',
+        authority: 'https://accounts.google.com',
         redirectUrl: window.location.origin,
         clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         responseType: 'id_token token',

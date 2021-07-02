@@ -15,7 +15,7 @@ describe('Config Validation Service', () => {
   });
 
   const VALID_CONFIG = {
-    stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+    authority: 'https://offeringsolutions-sts.azurewebsites.net',
     redirectUrl: window.location.origin,
     postLogoutRedirectUri: window.location.origin,
     clientId: 'angularClient',
@@ -67,7 +67,7 @@ describe('Config Validation Service', () => {
 
   describe('ensure-sts-server.rule', () => {
     it('return false when no sts server is set', () => {
-      const config = { ...VALID_CONFIG, stsServer: null };
+      const config = { ...VALID_CONFIG, authority: null };
       const result = configValidationService.validateConfig(config);
       expect(result).toBeFalse();
     });
