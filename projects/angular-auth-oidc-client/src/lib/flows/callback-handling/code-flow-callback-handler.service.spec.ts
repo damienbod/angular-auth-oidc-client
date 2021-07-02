@@ -196,7 +196,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ authority: 'authority' });
 
         service.codeFlowCodeRequest({} as CallbackContext, 'configId').subscribe({
           error: (err) => {
@@ -213,7 +213,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ authority: 'authority' });
 
         service.codeFlowCodeRequest({} as CallbackContext, 'configId').subscribe({
           next: (res) => {
@@ -237,7 +237,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ stsServer: 'stsServer' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ authority: 'authority' });
 
         service.codeFlowCodeRequest({} as CallbackContext, 'configId').subscribe({
           next: (res) => {

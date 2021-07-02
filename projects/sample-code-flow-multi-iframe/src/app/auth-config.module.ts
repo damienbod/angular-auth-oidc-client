@@ -7,7 +7,7 @@ import { environment } from '../environments/environment';
     AuthModule.forRoot({
       config: [
         {
-          stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+          authority: 'https://offeringsolutions-sts.azurewebsites.net',
           redirectUrl: window.location.origin,
           postLogoutRedirectUri: window.location.origin,
           clientId: 'angularClient',
@@ -19,7 +19,7 @@ import { environment } from '../environments/environment';
           logLevel: environment.production ? LogLevel.None : LogLevel.Debug,
         },
         {
-          stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+          authority: 'https://offeringsolutions-sts.azurewebsites.net',
           redirectUrl: window.location.origin,
           postLogoutRedirectUri: window.location.origin,
           clientId: 'angularClient',

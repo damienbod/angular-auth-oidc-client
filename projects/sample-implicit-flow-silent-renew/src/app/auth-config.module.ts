@@ -5,7 +5,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
   imports: [
     AuthModule.forRoot({
       config: {
-        stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+        authority: 'https://offeringsolutions-sts.azurewebsites.net',
         redirectUrl: window.location.origin,
         postLogoutRedirectUri: window.location.origin,
         clientId: 'angularImplicitClient',

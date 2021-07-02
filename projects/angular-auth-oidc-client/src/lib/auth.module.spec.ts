@@ -12,7 +12,7 @@ describe('AuthModule', () => {
     beforeEach(
       waitForAsync(() => {
         TestBed.configureTestingModule({
-          imports: [AuthModule.forRoot({ config: { stsServer: 'something' } })],
+          imports: [AuthModule.forRoot({ config: { authority: 'something' } })],
           providers: [{ provide: OidcConfigService, useClass: OidcConfigServiceMock }],
         }).compileComponents();
       })
@@ -25,7 +25,7 @@ describe('AuthModule', () => {
 
     it('should provide config', () => {
       config = TestBed.inject(PASSED_CONFIG);
-      expect(config).toEqual({ config: { stsServer: 'something' } });
+      expect(config).toEqual({ config: { authority: 'something' } });
     });
 
     it('should create StsConfigStaticLoader if config is passed', () => {

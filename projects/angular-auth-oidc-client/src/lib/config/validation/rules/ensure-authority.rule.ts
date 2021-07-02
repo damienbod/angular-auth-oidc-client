@@ -1,11 +1,11 @@
 import { OpenIdConfiguration } from '../../openid-configuration';
 import { POSITIVE_VALIDATION_RESULT, RuleValidationResult } from '../rule';
 
-export const ensureStsServer = (passedConfig: OpenIdConfiguration): RuleValidationResult => {
-  if (!passedConfig.stsServer) {
+export const ensureAuthority = (passedConfig: OpenIdConfiguration): RuleValidationResult => {
+  if (!passedConfig.authority) {
     return {
       result: false,
-      messages: ['The STS URL MUST be provided in the configuration!'],
+      messages: ['The authority URL MUST be provided in the configuration! '],
       level: 'error',
     };
   }

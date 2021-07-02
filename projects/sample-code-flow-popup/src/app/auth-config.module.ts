@@ -6,7 +6,7 @@ import { environment } from '../environments/environment';
   imports: [
     AuthModule.forRoot({
       config: {
-        stsServer: 'https://offeringsolutions-sts.azurewebsites.net',
+        authority: 'https://offeringsolutions-sts.azurewebsites.net',
         redirectUrl: window.location.origin,
         postLogoutRedirectUri: window.location.origin,
         clientId: 'angularClient',

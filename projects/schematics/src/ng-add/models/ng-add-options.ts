@@ -7,7 +7,7 @@ export interface ModuleInfo {
 }
 
 export interface NgAddOptions {
-  stsUrlOrTenantId: string;
+  authorityUrlOrTenantId: string;
   flowType: FlowType;
   isHttpOption: boolean;
   needsSilentRenewHtml: boolean;

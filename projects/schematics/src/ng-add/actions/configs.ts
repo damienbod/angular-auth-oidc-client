@@ -1,5 +1,5 @@
 const DEFAULT_CONFIG = `{
-              stsServer: '<stsUrlOrTenantId>',
+              authority: '<authorityUrlOrTenantId>',
               redirectUrl: window.location.origin,
               postLogoutRedirectUri: window.location.origin,
               clientId: 'please-enter-clientId',
@@ -11,7 +11,7 @@ const DEFAULT_CONFIG = `{
           }`;
 
 const IFRAME_SILENT_RENEW = `{
-            stsServer: '<stsUrlOrTenantId>',
+            authority: '<authorityUrlOrTenantId>',
             redirectUrl: window.location.origin,
             postLogoutRedirectUri: window.location.origin,
             clientId: 'please-enter-clientId',
@@ -23,7 +23,7 @@ const IFRAME_SILENT_RENEW = `{
         }`;
 
 const AZURE_AD_SILENT_RENEW = `{
-            stsServer: 'https://login.microsoftonline.com/<stsUrlOrTenantId>/v2.0',
+            authority: 'https://login.microsoftonline.com/<authorityUrlOrTenantId>/v2.0',
             authWellknownEndpoint: 'https://login.microsoftonline.com/common/v2.0',
             redirectUrl: window.location.origin,
             clientId: 'please-enter-clientId',
@@ -40,7 +40,7 @@ const AZURE_AD_SILENT_RENEW = `{
         }`;
 
 const AZURE_AD_REFRESH_TOKENS = `{
-            stsServer: 'https://login.microsoftonline.com/<stsUrlOrTenantId>/v2.0',
+            authority: 'https://login.microsoftonline.com/<authorityUrlOrTenantId>/v2.0',
             authWellknownEndpoint: 'https://login.microsoftonline.com/common/v2.0',
             redirectUrl: window.location.origin,
             clientId: 'please-enter-clientId',
@@ -57,7 +57,7 @@ const AZURE_AD_REFRESH_TOKENS = `{
     }`;
 
     const OAUTH_PAR = `{
-            stsServer: '<stsUrlOrTenantId>',
+            authority: '<authorityUrlOrTenantId>',
             redirectUrl: window.location.origin,
             postLogoutRedirectUri: window.location.origin,
             clientId: 'please-enter-clientId',
@@ -73,7 +73,7 @@ const AZURE_AD_REFRESH_TOKENS = `{
     }`;
 
 const AUTH_0 = `{
-            stsServer: '<stsUrlOrTenantId>',
+            authority: '<authorityUrlOrTenantId>',
             redirectUrl: window.location.origin,
             clientId: 'please-enter-auth0-clientId',
             scope: 'openid profile offline_access',
@@ -83,7 +83,7 @@ const AUTH_0 = `{
         }`;
 
 const OIDC_PLAIN = `{
-            stsServer: '<stsUrlOrTenantId>',
+            authority: '<authorityUrlOrTenantId>',
             redirectUrl: window.location.origin,
             postLogoutRedirectUri: window.location.origin,
             clientId: 'please-enter-clientId',

@@ -5,11 +5,11 @@ import { map } from 'rxjs/operators';
 
 export const httpLoaderFactory = (httpClient: HttpClient) => {
   const config$ = httpClient
-    .get<any>(`<%= stsUrlOrTenantId %>`)
+    .get<any>(`<%= authorityUrlOrTenantId %>`)
     .pipe(
       map((customConfig: any) => {
         return {
-          stsServer: customConfig.stsServer,
+          authority: customConfig.authority,
           redirectUrl: customConfig.redirect_url,
           clientId: customConfig.client_id,
           responseType: customConfig.response_type,

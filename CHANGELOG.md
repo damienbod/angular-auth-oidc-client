@@ -24,6 +24,7 @@ Gathering all Issues and PRs which will be done in V12 and maybe are breaking ch
 - Improve AutoLoginSample https://github.com/damienbod/angular-auth-oidc-client/issues/1138
 - Accessing AuthResult response object https://github.com/damienbod/angular-auth-oidc-client/issues/536
 - Improved Auto guards
+- renamed stsServer configuration to authority
 
 ### 2021-06-12 Version 11.6.11
 
@@ -166,7 +167,7 @@ Gathering all Issues and PRs which will be done in V12 and maybe are breaking ch
 
 - Added event to throw when config could not be loaded
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/929)
-- Check session fails if sts server has a different origin than the check_session_iframe
+- Check session fails if secure token server has a different origin than the check_session_iframe
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/933)
 - Fix http config example and templates for HTTP config load
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/935)
@@ -240,7 +241,7 @@ Gathering all Issues and PRs which will be done in V12 and maybe are breaking ch
 
 ### 2020-05-24 Version 11.1.2
 
-- Added support to check the STS for an authenticated session if not locally logged in (iframe silent renew)
+- Added support to check the secure token server for an authenticated session if not locally logged in (iframe silent renew)
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/752) // Fixes [#744](https://github.com/damienbod/angular-auth-oidc-client/issues/744)
 - fix config bug with eager loading of the well known endpoints
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/748)
@@ -252,7 +253,7 @@ Gathering all Issues and PRs which will be done in V12 and maybe are breaking ch
 - Added validation for the lib configuration
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/731) // Fixes [#725](https://github.com/damienbod/angular-auth-oidc-client/issues/725)
 - fixed some doc typos
-- fixed bug 2 auth events emitter on STS callback
+- fixed bug 2 auth events emitter on secure token server callback
   - Fixes [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/731) // [#734](https://github.com/damienbod/angular-auth-oidc-client/issues/734)
 
 ### 2020-05-14 Version 11.1.0

@@ -2,7 +2,7 @@ import { LogLevel } from '../logging/log-level';
 import { OpenIdConfiguration } from './openid-configuration';
 
 export const DEFAULT_CONFIG: OpenIdConfiguration = {
-  stsServer: 'https://please_set',
+  authority: 'https://please_set',
   authWellknownEndpointUrl: '',
   authWellknownEndpoints: null,
   redirectUrl: 'https://please_set',
