@@ -194,7 +194,7 @@ AuthModule.forRoot({
 
 ## Dynamic custom parameters
 
-If you want to pass dynamic custom parameters with the request url to the secure token server you can do that by passing the parameters into the `authorize` method.
+If you want to pass dynamic custom parameters with the request url to the secure token server, you can do this by passing the parameters into the `authorize` method.
 
 ```ts
 login() {

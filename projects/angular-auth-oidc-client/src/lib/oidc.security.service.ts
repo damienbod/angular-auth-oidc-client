@@ -50,7 +50,7 @@ export class OidcSecurityService {
   }
 
   /**
-   * Emits on possible secure token server callback. The observable will never contain a value.
+   * Emits on a secure token server callback. The observable will never contain a value.
    */
   get stsCallback$(): Observable<any> {
     return this.callbackService.stsCallback$;

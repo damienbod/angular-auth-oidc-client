@@ -80,14 +80,14 @@ To identify a configuration a new parameter called `configId` was introduced. If
 - Type: string
 - Required: true
 
-This is the authority or secure token server (URL) which issues tokens. Sometimes this is named as the issuer. This must be set.
+This is the authority or the secure token server (URL) which issues tokens. Sometimes this is named as the issuer. This must be set.
 
 ### `authWellknownEndpointUrl`
 
 - Type: string
 - Required: false
 
-A different well known endpoint can be defined instead of the used secure token server domain, with the standard postfix. This is only required if the well known endpoint URL is not implemented in a standard way in the secure token service or authority or identity provider.
+A different well known endpoint can be defined instead of the authority domain, with the standard well known endpoints postfix. This is only required if the well known endpoint URL is not implemented in a standard way on the secure token service.
 
 ### `authWellknownEndpoints`
 
@@ -122,7 +122,7 @@ The client MUST validate that the aud (audience) claim contains its client_id va
 - Type: string
 - Required: false
 
-This is this scopes which are requested from the server from this client. This must match the secure token server configuration.
+This is this scopes which are requested from the server from this client. This must match the secure token server configuration for the client you use.
 
 ### `hdParam`
 

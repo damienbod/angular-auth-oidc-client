@@ -144,7 +144,7 @@ const userData = this.oidcSecurityService.getUserData('configId');
 
 This method starts the complete authentication flow. Use this method if you are running with a single config or want to check a single config.
 
-This method parses the url when you come back from the secure token server (STS) and sets all values.
+This method parses the url when redirected back from the secure token server (STS) and sets all values.
 
 It returns an `Observable<LoginResponse>` containing all information you need in one object.
 
@@ -348,7 +348,7 @@ const state = this.oidcSecurityService.getState('configId');
 
 ## authorize(configId?: string, authOptions?: AuthOptions)
 
-This method is being called when you want to redirect to the secure token server and login your user. This method takes a `configId` as parameter if you want to use a specific config and it also takes `authOptions` adding `customParams` which can change every time you want to login and an `urlHandler` which is getting called instead of the redirect.
+This method is being called when you want to redirect to the authority and sign in the identity. This method takes a `configId` as parameter if you want to use a specific config and it also takes `authOptions` adding `customParams` which can change every time you want to login and an `urlHandler` which is getting called instead of the redirect.
 
 See also [Custom parameters](features.md/#custom-parameters)
 
