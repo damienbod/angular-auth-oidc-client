@@ -24,6 +24,7 @@ Gathering all Issues and PRs which will be done in V12 and maybe are breaking ch
 - Improve AutoLoginSample https://github.com/damienbod/angular-auth-oidc-client/issues/1138
 - Accessing AuthResult response object https://github.com/damienbod/angular-auth-oidc-client/issues/536
 - Improved Auto guards
+- renamed stsServer configuration to authority
 
 ### 2021-06-12 Version 11.6.11
 
