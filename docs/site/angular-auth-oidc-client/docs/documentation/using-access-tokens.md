@@ -81,7 +81,7 @@ Keep in mind that you always can implement your own interceptor according to the
 
 ## Revoke the access token
 
-Access tokens can be revoked using the `revokeAccessToken()` function. If you provide the access token in the param, any access token from the same STS can be revoked, if the STS supports the revocation endpoint.
+Access tokens can be revoked using the `revokeAccessToken()` function. If you provide the access token in the param, any access token from the same secure token server can be revoked, if the secure token server supports the revocation endpoint.
 
 ```ts
 revokeAccessToken() {

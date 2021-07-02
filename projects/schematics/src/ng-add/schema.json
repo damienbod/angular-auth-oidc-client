@@ -19,11 +19,11 @@
         "Default config"
       ]
     },
-    "stsUrlOrTenantId": {
-      "description": "Please enter your STS URL or Azure tenant id or Http config URL",
+    "authorityUrlOrTenantId": {
+      "description": "Please enter your autority URL or Azure tenant id or Http config URL",
       "type": "string",
-      "x-prompt": "Please enter your STS URL or Azure tenant id or Http config URL"
+      "x-prompt": "Please enter your authority URL or Azure tenant id or Http config URL"
     }
   },
-  "required": ["stsUrlOrTenantId", "flowType"]
+  "required": ["authorityUrlOrTenantId", "flowType"]
 }

@@ -42,18 +42,18 @@ export function copyModuleFile(options: NgAddOptions): Rule {
 }
 
 function getTemplateConfig(options: NgAddOptions) {
-  const { stsUrlOrTenantId, flowType } = options;
+  const { authorityUrlOrTenantId, flowType } = options;
 
   if (options.isHttpOption) {
-    return { ts: 'ts', stsUrlOrTenantId };
+    return { ts: 'ts', authorityUrlOrTenantId };
   }
 
-  const authConfig = getConfig(flowType, stsUrlOrTenantId);
+  const authConfig = getConfig(flowType, authorityUrlOrTenantId);
 
   return { ts: 'ts', authConfig };
 }
 
-function getConfig(flowType: FlowType, stsUrlOrTenantId: string) {
+function getConfig(flowType: FlowType, authorityUrlOrTenantId: string) {
   let config = DEFAULT_CONFIG;
 
   switch (flowType) {
@@ -102,5 +102,5 @@ function getConfig(flowType: FlowType, stsUrlOrTenantId: string) {
     }
   }
 
-  return config.replace('<stsUrlOrTenantId>', stsUrlOrTenantId);
+  return config.replace('<authorityUrlOrTenantId>', authorityUrlOrTenantId);
 }

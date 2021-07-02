@@ -23,7 +23,7 @@ const IFRAME_SILENT_RENEW = `{
         }`;
 
 const AZURE_AD_SILENT_RENEW = `{
-            authority: 'https://login.microsoftonline.com/<stsUrlOrTenantId>/v2.0',
+            authority: 'https://login.microsoftonline.com/<authorityUrlOrTenantId>/v2.0',
             authWellknownEndpoint: 'https://login.microsoftonline.com/common/v2.0',
             redirectUrl: window.location.origin,
             clientId: 'please-enter-clientId',
@@ -40,7 +40,7 @@ const AZURE_AD_SILENT_RENEW = `{
         }`;
 
 const AZURE_AD_REFRESH_TOKENS = `{
-            authority: 'https://login.microsoftonline.com/<stsUrlOrTenantId>/v2.0',
+            authority: 'https://login.microsoftonline.com/<authorityUrlOrTenantId>/v2.0',
             authWellknownEndpoint: 'https://login.microsoftonline.com/common/v2.0',
             redirectUrl: window.location.origin,
             clientId: 'please-enter-clientId',

@@ -93,7 +93,7 @@ Then provide the class in the module:
 
 ## Auto Login
 
-If you want to have your app being redirected to the sts automatically without the user clicking any login button only by accessing a specific route, you can use the `AutoLoginPartialRoutesGuard` or the `AutoLoginAllRoutesGuard` provided by the lib. In case you are using multiple configs the guard currently uses the first config fix to perform a login! The guard handles `canActivate` and `canLoad` for you. It also saves the route you wanted to visit before the login and redirects you to that route after the successful login.
+If you want to have your app being redirected to the secure token server automatically without the user clicking any login button only by accessing a specific route, you can use the `AutoLoginPartialRoutesGuard` or the `AutoLoginAllRoutesGuard` provided by the lib. In case you are using multiple configs the guard currently uses the first config fix to perform a login! The guard handles `canActivate` and `canLoad` for you. It also saves the route you wanted to visit before the login and redirects you to that route after the successful login.
 
 Here are two use cases to distinguish:
 
@@ -194,7 +194,7 @@ AuthModule.forRoot({
 
 ## Dynamic custom parameters
 
-If you want to pass dynamic custom parameters with the request url to the sts you can do that by passing the parameters into the `authorize` method.
+If you want to pass dynamic custom parameters with the request url to the secure token server you can do that by passing the parameters into the `authorize` method.
 
 ```ts
 login() {
@@ -203,7 +203,7 @@ login() {
 
 ```
 
-> If you want to pass static parameters to the sts every time please use the custom parameters in the [Configuration](configuration.md) instead!
+> If you want to pass static parameters to the secure token server every time please use the custom parameters in the [Configuration](configuration.md) instead!
 
 ## Using the OIDC package in a module or a Angular lib
 

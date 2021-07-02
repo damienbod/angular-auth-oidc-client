@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 
 export const httpLoaderFactory = (httpClient: HttpClient) => {
   const config$ = httpClient
-    .get<any>(`<%= stsUrlOrTenantId %>`)
+    .get<any>(`<%= authorityUrlOrTenantId %>`)
     .pipe(
       map((customConfig: any) => {
         return {
