@@ -80,7 +80,7 @@ To identify a configuration a new parameter called `configId` was introduced. If
 - Type: string
 - Required: true
 
-This is the authority or secure token server which issues tokens. Sometimes this is named as the issuer. This must be set.
+This is the authority or secure token server (URL) which issues tokens. Sometimes this is named as the issuer. This must be set.
 
 ### `authWellknownEndpointUrl`
 

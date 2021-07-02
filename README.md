@@ -88,7 +88,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
     // ...
     AuthModule.forRoot({
       config: {
-        authority: '<your authority address here>',
+        authority: '<your authority/issuer address here>',
         redirectUrl: window.location.origin,
         postLogoutRedirectUri: window.location.origin,
         clientId: '<your clientId>',
