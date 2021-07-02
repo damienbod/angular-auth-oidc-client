@@ -65,7 +65,7 @@ describe('Config Validation Service', () => {
     });
   });
 
-  describe('ensure-sts-server.rule', () => {
+  describe('ensure-authority-server.rule', () => {
     it('return false when no secure token server is set', () => {
       const config = { ...VALID_CONFIG, authority: null };
       const result = configValidationService.validateConfig(config);
