@@ -1,5 +1,5 @@
 const DEFAULT_CONFIG = `{
-  authority: '<stsUrlOrTenantId>',
+              authority: '<authorityUrlOrTenantId>',
               redirectUrl: window.location.origin,
               postLogoutRedirectUri: window.location.origin,
               clientId: 'please-enter-clientId',
