@@ -20,7 +20,7 @@
       ]
     },
     "authorityUrlOrTenantId": {
-      "description": "Please enter your autority URL or Azure tenant id or Http config URL",
+      "description": "Please enter your authority URL or Azure tenant id or Http config URL",
       "type": "string",
       "x-prompt": "Please enter your authority URL or Azure tenant id or Http config URL"
     }
