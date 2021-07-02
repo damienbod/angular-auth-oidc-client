@@ -340,7 +340,7 @@ describe('User Service', () => {
       spyOn(userService, 'getUserDataFromStore').and.returnValue('something');
       const observableSpy = spyOn((userService as any).userDataInternal$, 'next');
       userService.publishUserDataIfExists('configId');
-      expect(observableSpy).toHaveBeenCalledWith('something');
+      expect(observableSpy).toHaveBeenCalledWith({ userData: 'something', allUserData: [{ configId: 'configId', userData: 'something' }] });
     });
 
     it('eventservice UserDataChanged is fired if userdata exists', () => {

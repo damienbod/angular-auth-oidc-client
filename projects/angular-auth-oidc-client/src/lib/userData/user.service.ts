@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map, retry, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { ConfigurationProvider } from '../config/provider/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
@@ -163,16 +164,13 @@ export class UserService {
     const hasManyConfigs = this.configurationProvider.hasManyConfigs();
 
     if (!hasManyConfigs) {
-      return {
-        userData: passedUserData,
-        allUserData: [passedUserData],
-      };
+      return this.composeSingleUserDataResult(configId, passedUserData);
     }
 
     const configs = this.configurationProvider.getAllConfigurations();
 
-    const result: ConfigUserData[] = configs.map((config) => {
-      if (config.configId === configId) {
+    const allUserData: ConfigUserData[] = configs.map((config) => {
+      if (this.currentConfigIsToUpdate(configId, config)) {
         return { configId: config.configId, userData: passedUserData };
       }
 
@@ -183,7 +181,18 @@ export class UserService {
 
     return {
       userData: null,
-      allUserData: result,
+      allUserData,
     };
+  }
+
+  private composeSingleUserDataResult(configId: string, userData: any): ConfigUserDataResult {
+    return {
+      userData,
+      allUserData: [{ configId, userData }],
+    };
+  }
+
+  private currentConfigIsToUpdate(configId: string, config: OpenIdConfiguration): boolean {
+    return config.configId === configId;
   }
 }
