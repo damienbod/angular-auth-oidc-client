@@ -292,7 +292,10 @@ describe('User Service', () => {
       spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
       const spy = spyOn((userService as any).userDataInternal$, 'next');
       userService.setUserDataToStore('userDataForTest', 'configId');
-      expect(spy).toHaveBeenCalledWith('userDataForTest');
+      expect(spy).toHaveBeenCalledWith({
+        userData: 'userDataForTest',
+        allUserData: [{ configId: 'configId', userData: 'userDataForTest' }],
+      });
     });
 
     it('eventService.fireEvent is called when userData is set', () => {
@@ -315,7 +318,10 @@ describe('User Service', () => {
       spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
       const spy = spyOn((userService as any).userDataInternal$, 'next');
       userService.resetUserDataInStore('configId');
-      expect(spy).toHaveBeenCalledWith(null);
+      expect(spy).toHaveBeenCalledWith({
+        userData: null,
+        allUserData: [{ configId: 'configId', userData: null }],
+      });
     });
 
     it('eventService.fireEvent is called with null when userdata is reset', () => {
