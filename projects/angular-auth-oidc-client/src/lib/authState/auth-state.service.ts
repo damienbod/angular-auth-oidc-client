@@ -113,8 +113,10 @@ export class AuthStateService {
   }
 
   hasIdTokenExpiredAndRenewCheckIsEnabled(configId: string): boolean {
-    const { renewTimeBeforeTokenExpiresInSeconds, enableIdTokenExpiredValidationInRenew } =
-      this.configurationProvider.getOpenIDConfiguration(configId);
+    const {
+      renewTimeBeforeTokenExpiresInSeconds,
+      enableIdTokenExpiredValidationInRenew,
+    } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!enableIdTokenExpiredValidationInRenew) {
       return false;
@@ -180,8 +182,7 @@ export class AuthStateService {
   private composeUnAuthenticatedResult(): ConfigAuthenticatedResult {
     if (!this.configurationProvider.hasManyConfigs()) {
       const { configId } = this.configurationProvider.getOpenIDConfiguration();
-
-      return { isAuthenticated: true, allConfigsAuthenticated: [{ configId, isAuthenticated: true }] };
+      return { isAuthenticated: false, allConfigsAuthenticated: [{ configId, isAuthenticated: false }] };
     }
 
     return this.checkAllConfigsIfTheyAreAuthenticated();
@@ -194,6 +195,7 @@ export class AuthStateService {
       configId,
       isAuthenticated: this.isAuthenticated(configId),
     }));
+
     const isAuthenticated = allConfigsAuthenticated.every((x) => !!x.isAuthenticated);
 
     return { allConfigsAuthenticated, isAuthenticated };
