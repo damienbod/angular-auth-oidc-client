@@ -20,10 +20,10 @@ export class HomeComponent implements OnInit {
     this.userData$ = this.oidcSecurityService.userData$;
     this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 
-    this.oidcSecurityService.isAuthenticated$.subscribe((authenticated: boolean) => {
-      this.isAuthenticated = authenticated;
+    this.oidcSecurityService.isAuthenticated$.subscribe(({ isAuthenticated }) => {
+      this.isAuthenticated = isAuthenticated;
 
-      console.warn('authenticated: ', authenticated);
+      console.warn('isAuthenticated: ', isAuthenticated);
     });
   }
   login() {

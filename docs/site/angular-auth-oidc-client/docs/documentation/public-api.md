@@ -59,31 +59,48 @@ Multiple Configs:
 
 ## isAuthenticated$
 
-This property returns an `Observable<boolean>` to receive authenticated events, either true or false if you run in a single config. If you run with multiple configs it returns an `ConfigAuthenticatedResult[]` holding the `configId` as well as a boolean to tell you if you are authenticated or not.
+This property returns an `Observable<ConfigAuthenticatedResult>`. This object is filled depending on with how many configurations you run. The `ConfigAuthenticatedResult` is built as following:
 
 ```ts
-this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$; // true/false or...
+export interface ConfigAuthenticatedResult {
+  isAuthenticated: boolean;
+
+  allConfigsAuthenticated: ConfigAuthenticated[];
+}
+
+export interface ConfigAuthenticated {
+  configId: string;
+  isAuthenticated: boolean;
+}
+```
+
+In case you have a single config the `isAuthenticated` on the `ConfigAuthenticatedResult` tells you if you are authenticated or not. The `ConfigAuthenticated[]` contains the single config result with it's `configId` and again if this config is authenticated or not.
+
+In case you have multiple configs the `isAuthenticated` on the `ConfigAuthenticatedResult` tells you if all configs are authenticated (`true`) or not (`false`). The `ConfigAuthenticated[]` contains the single config results with it's `configId` and again if this config is authenticated or not.
+
+```ts
+this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
 ```
 
 Single Config
 
 ```json
-true / false;
+{
+  "isAuthenticated": true,
+  "allConfigsAuthenticated": [{ "configId": "configId1", "isAuthenticated": true }]
+}
 ```
 
 Multiple Configs
 
 ```json
-[
-  {
-    "configId": "...",
-    "isAuthenticated": true
-  },
-  {
-    "configId": "...",
-    "isAuthenticated": false
-  }
-]
+{
+  "isAuthenticated": false,
+  "allConfigsAuthenticated": [
+    { "configId": "configId1", "isAuthenticated": true },
+    { "configId": "configId2", "isAuthenticated": false }
+  ]
+}
 ```
 
 ## checkSessionChanged$
