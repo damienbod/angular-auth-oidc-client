@@ -14,8 +14,8 @@ import { LoginResponse } from './login/login-response';
 import { LoginService } from './login/login.service';
 import { PopupOptions } from './login/popup/popup-options';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
-import { ConfigUserDataResult } from './userData/config-userdata-result';
 import { UserService } from './userData/user.service';
+import { UserDataResult } from './userData/userdata-result';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class OidcSecurityService {
    * @returns Returns an object containing either the user data directly (single config) or
    * the user data per config in case you are running with multiple configs
    */
-  get userData$(): Observable<ConfigUserDataResult> {
+  get userData$(): Observable<UserDataResult> {
     return this.userService.userData$;
   }
 

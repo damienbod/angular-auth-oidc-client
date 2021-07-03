@@ -9,15 +9,15 @@ The most public accessible observables, properties and methods are placed in the
 
 ## userData$
 
-The `userData$` observable provides the information about the user after he has logged in. It returns an `ConfigUserDataResult` in the following form.
+The `userData$` observable provides the information about the user after he has logged in. It returns an `UserDataResult` in the following form.
 
 ```ts
-export interface ConfigUserDataResult {
+export interface UserDataResult {
   userData: any;
-  allUserData: ConfigUserData[];
+  allUserData: ConfigUserDataResult[];
 }
 
-export interface ConfigUserData {
+export interface ConfigUserDataResult {
   configId: string;
   userData: any;
 }

@@ -10,14 +10,14 @@ import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
-import { ConfigUserData, ConfigUserDataResult } from './config-userdata-result';
+import { ConfigUserDataResult, UserDataResult } from './userdata-result';
 
 const DEFAULT_USERRESULT = { userData: null, allUserData: [] };
 @Injectable()
 export class UserService {
-  private userDataInternal$ = new BehaviorSubject<ConfigUserDataResult>(DEFAULT_USERRESULT);
+  private userDataInternal$ = new BehaviorSubject<UserDataResult>(DEFAULT_USERRESULT);
 
-  get userData$(): Observable<ConfigUserDataResult> {
+  get userData$(): Observable<UserDataResult> {
     return this.userDataInternal$.asObservable();
   }
 
@@ -160,7 +160,7 @@ export class UserService {
     this.eventService.fireEvent(EventTypes.UserDataChanged, { configId, userData: passedUserData });
   }
 
-  private composeSingleOrMultipleUserDataObject(configId: string, passedUserData: any): ConfigUserDataResult {
+  private composeSingleOrMultipleUserDataObject(configId: string, passedUserData: any): UserDataResult {
     const hasManyConfigs = this.configurationProvider.hasManyConfigs();
 
     if (!hasManyConfigs) {
@@ -169,7 +169,7 @@ export class UserService {
 
     const configs = this.configurationProvider.getAllConfigurations();
 
-    const allUserData: ConfigUserData[] = configs.map((config) => {
+    const allUserData: ConfigUserDataResult[] = configs.map((config) => {
       if (this.currentConfigIsToUpdate(configId, config)) {
         return { configId: config.configId, userData: passedUserData };
       }
@@ -185,7 +185,7 @@ export class UserService {
     };
   }
 
-  private composeSingleUserDataResult(configId: string, userData: any): ConfigUserDataResult {
+  private composeSingleUserDataResult(configId: string, userData: any): UserDataResult {
     return {
       userData,
       allUserData: [{ configId, userData }],
