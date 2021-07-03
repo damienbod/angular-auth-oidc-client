@@ -59,7 +59,7 @@ describe('Events Service', () => {
           expect(firedEvent).toEqual({ type: EventTypes.ConfigLoaded, value: { myKey: 'myValue' } });
         });
       eventsService.fireEvent(EventTypes.ConfigLoaded, { myKey: 'myValue' });
-      eventsService.fireEvent(EventTypes.NewAuthorizationResult, true);
+      eventsService.fireEvent(EventTypes.NewAuthenticationResult, true);
     })
   );
 });
