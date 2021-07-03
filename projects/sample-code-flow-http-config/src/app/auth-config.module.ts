@@ -10,7 +10,7 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
     .pipe(
       map((customConfig: any) => {
         return {
-          authority: customConfig.authority,
+          authority: customConfig.stsServer,
           redirectUrl: customConfig.redirect_url,
           clientId: customConfig.client_id,
           responseType: customConfig.response_type,
