@@ -3,6 +3,7 @@
 export * from './auth-options';
 export * from './auth.module';
 export * from './authState/auth-result';
+export * from './authState/auth-state';
 export * from './auto-login/auto-login-all-routes.guard';
 export * from './auto-login/auto-login-partial-routes.guard';
 export * from './config/auth-well-known/auth-well-known-endpoints';
