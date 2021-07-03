@@ -23,8 +23,8 @@ export class OidcSecurityService {
   /**
    * Provides information about the user after they have logged in.
    *
-   * @returns Returns an array of objects with a configId and userData if you have multiple configs running or
-   * a single object without the configId containing the userData if you only run with a single config
+   * @returns Returns an object containing either the user data directly (single config) or
+   * the user data per config in case you are running with multiple configs
    */
   get userData$(): Observable<ConfigUserDataResult> {
     return this.userService.userData$;
@@ -33,9 +33,11 @@ export class OidcSecurityService {
   /**
    * Emits each time an authorization event occurs.
    *
-   * @returns In case of a single config it returns true if the user is authenticated and false if they are not.
-   * If you are running multiple configs it returns an array with the configId and a boolean
-   * if you are authenticated or not for this config
+   * @returns Returns an object containing if you are authenticated or not.
+   * Single Config: true if config is authenticated, false if not.
+   * Multiple Configs: true is all configs are authenticated, false if only one of them is not
+   *
+   * The `allConfigsAuthenticated` property contains the auth information _per config_.
    */
   get isAuthenticated$(): Observable<ConfigAuthenticatedResult> {
     return this.authStateService.authenticated$;

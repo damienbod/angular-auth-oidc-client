@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { OidcSecurityService, OpenIdConfiguration } from 'angular-auth-oidc-client';
+import { ConfigAuthenticatedResult, ConfigUserDataResult, OidcSecurityService, OpenIdConfiguration } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -10,18 +10,18 @@ import { Observable } from 'rxjs';
 export class AppComponent {
   title = 'sample-code-flow-popup';
 
-  userData$: Observable<any>;
+  userData$: Observable<ConfigUserDataResult>;
 
   configuration: OpenIdConfiguration;
 
-  isAuthenticated$: Observable<boolean>;
+  isAuthenticated$: Observable<ConfigAuthenticatedResult>;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
     this.configuration = this.oidcSecurityService.getConfiguration();
     this.userData$ = this.oidcSecurityService.userData$;
-    this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$ as Observable<boolean>;
+    this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
 
     this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
       console.log(isAuthenticated);

@@ -14,10 +14,10 @@ export class NavMenuComponent implements OnInit {
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.oidcSecurityService.isAuthenticated$.subscribe((authenticated: boolean) => {
-      this.isAuthenticated = authenticated;
+    this.oidcSecurityService.isAuthenticated$.subscribe(({ isAuthenticated }) => {
+      this.isAuthenticated = isAuthenticated;
 
-      console.warn('authenticated: ', authenticated);
+      console.warn('authenticated: ', isAuthenticated);
     });
   }
 
