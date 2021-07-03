@@ -9,8 +9,23 @@ The most public accessible observables, properties and methods are placed in the
 
 ## userData$
 
-The `userData$` observable provides the information about the user after he has logged in. In case you are running with one configuration it returns the user data as an object depending on what you get back from the sts as user data.
-In case you have multiple configs running it returns a `ConfigUserDataResult[]` which holds the `configId` as well as the `userData` in an array.
+The `userData$` observable provides the information about the user after he has logged in. It returns an `ConfigUserDataResult` in the following form.
+
+```ts
+export interface ConfigUserDataResult {
+  userData: any;
+  allUserData: ConfigUserData[];
+}
+
+export interface ConfigUserData {
+  configId: string;
+  userData: any;
+}
+```
+
+In case you are running with one configuration the `ConfigUserDataResult` contains the user data in the `userData` property and the `ConfigUserData[]` returns the same user data with the `configId` filled in case you need it.
+
+In case you are running with multiple configs the `ConfigUserDataResult`s `userData` property is set to `null` and you find your user data per config in the `ConfigUserData[]`.
 
 Example:
 
@@ -22,39 +37,68 @@ Single Config:
 
 ```json
 {
-  "sub": "...",
-  "preferred_username": "john@doe.org",
-  "name": "john@doe.org",
-  "email": "john@doe.org",
-  "email_verified": false,
-  "given_name": "john@doe.org",
-  "role": "user",
-  "amr": "pwd"
+  "userData": {
+    "sub": "...",
+    "preferred_username": "john@doe.org",
+    "name": "john@doe.org",
+    "email": "john@doe.org",
+    "email_verified": false,
+    "given_name": "john@doe.org",
+    "role": "user",
+    "amr": "pwd"
+  },
+  "allUserData": [
+    {
+      "configId": "configId",
+      "userData": {
+        "sub": "...",
+        "preferred_username": "john@doe.org",
+        "name": "john@doe.org",
+        "email": "john@doe.org",
+        "email_verified": false,
+        "given_name": "john@doe.org",
+        "role": "user",
+        "amr": "pwd"
+      }
+    }
+  ]
 }
 ```
 
 Multiple Configs:
 
 ```json
-[
-  {
-    "configId": "...",
-    "userData": {
-      "sub": "...",
-      "preferred_username": "john@doe.org",
-      "name": "john@doe.org",
-      "email": "john@doe.org",
-      "email_verified": false,
-      "given_name": "john@doe.org",
-      "role": "user",
-      "amr": "pwd"
+{
+  "userData": null,
+  "allUserData": [
+    {
+      "configId": "configId1",
+      "userData": {
+        "sub": "...",
+        "preferred_username": "john@doe.org",
+        "name": "john@doe.org",
+        "email": "john@doe.org",
+        "email_verified": false,
+        "given_name": "john@doe.org",
+        "role": "user",
+        "amr": "pwd"
+      }
+    },
+    {
+      "configId": "configId2",
+      "userData": {
+        "sub": "...",
+        "preferred_username": "john@doe.org",
+        "name": "john@doe.org",
+        "email": "john@doe.org",
+        "email_verified": false,
+        "given_name": "john@doe.org",
+        "role": "user",
+        "amr": "pwd"
+      }
     }
-  },
-  {
-    "configId": "...",
-    "userData": { ... }
-  }
-]
+  ]
+}
 ```
 
 ## isAuthenticated$
