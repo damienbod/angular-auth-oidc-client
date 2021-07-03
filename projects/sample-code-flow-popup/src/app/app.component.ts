@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ConfigAuthenticatedResult, ConfigUserDataResult, OidcSecurityService, OpenIdConfiguration } from 'angular-auth-oidc-client';
+import { AuthenticatedResult, OidcSecurityService, OpenIdConfiguration, UserDataResult } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -10,11 +10,11 @@ import { Observable } from 'rxjs';
 export class AppComponent {
   title = 'sample-code-flow-popup';
 
-  userData$: Observable<ConfigUserDataResult>;
+  userData$: Observable<UserDataResult>;
 
   configuration: OpenIdConfiguration;
 
-  isAuthenticated$: Observable<ConfigAuthenticatedResult>;
+  isAuthenticated$: Observable<AuthenticatedResult>;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 

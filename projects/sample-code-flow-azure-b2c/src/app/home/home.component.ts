@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ConfigUserDataResult, OidcSecurityService } from 'angular-auth-oidc-client';
+import { OidcSecurityService, UserDataResult } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   templateUrl: 'home.component.html',
 })
 export class HomeComponent implements OnInit {
-  userData$: Observable<ConfigUserDataResult>;
+  userData$: Observable<UserDataResult>;
   isAuthenticated = false;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
