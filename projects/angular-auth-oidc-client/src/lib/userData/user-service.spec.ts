@@ -354,13 +354,34 @@ describe('User Service', () => {
       expect(eventSpy).not.toHaveBeenCalled();
     });
 
-    it('userDataInternal is fired if userData exists', () => {
+    it('userDataInternal is fired if userData exists with single config', () => {
       spyOn(userService, 'getUserDataFromStore').and.returnValue('something');
       const observableSpy = spyOn((userService as any).userDataInternal$, 'next');
 
       userService.publishUserDataIfExists('configId');
 
       expect(observableSpy).toHaveBeenCalledWith({ userData: 'something', allUserData: [{ configId: 'configId', userData: 'something' }] });
+    });
+
+    it('userDataInternal is fired if userData exists with multiple configs', () => {
+      spyOn(configProvider, 'hasManyConfigs').and.returnValue(true);
+      spyOn(configProvider, 'getAllConfigurations').and.returnValue([{ configId: 'configId1' }, { configId: 'configId2' }]);
+      const observableSpy = spyOn((userService as any).userDataInternal$, 'next');
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('userData', 'configId1')
+        .and.returnValue('somethingForConfig1')
+        .withArgs('userData', 'configId2')
+        .and.returnValue('somethingForConfig2');
+
+      userService.publishUserDataIfExists('configId1');
+
+      expect(observableSpy).toHaveBeenCalledWith({
+        userData: null,
+        allUserData: [
+          { configId: 'configId1', userData: 'somethingForConfig1' },
+          { configId: 'configId2', userData: 'somethingForConfig2' },
+        ],
+      });
     });
 
     it('event service UserDataChanged is fired if userData exists', () => {
