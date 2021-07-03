@@ -180,8 +180,10 @@ describe('Auth State Service', () => {
   describe('updateAndPublishAuthState', () => {
     it('calls eventsService', () => {
       spyOn(eventsService, 'fireEvent');
+
       authStateService.updateAndPublishAuthState({ isAuthenticated: false, isRenewProcess: false, validationResult: null });
-      expect(eventsService.fireEvent).toHaveBeenCalledWith(EventTypes.NewAuthorizationResult, jasmine.any(Object));
+
+      expect(eventsService.fireEvent).toHaveBeenCalledWith(EventTypes.NewAuthenticationResult, jasmine.any(Object));
     });
   });
 

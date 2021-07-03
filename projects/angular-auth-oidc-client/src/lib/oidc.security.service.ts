@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthOptions } from './auth-options';
-import { ConfigAuthenticatedResult } from './authState/auth-result';
+import { AuthenticatedResult } from './authState/auth-result';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
@@ -39,7 +39,7 @@ export class OidcSecurityService {
    *
    * The `allConfigsAuthenticated` property contains the auth information _per config_.
    */
-  get isAuthenticated$(): Observable<ConfigAuthenticatedResult> {
+  get isAuthenticated$(): Observable<AuthenticatedResult> {
     return this.authStateService.authenticated$;
   }
 

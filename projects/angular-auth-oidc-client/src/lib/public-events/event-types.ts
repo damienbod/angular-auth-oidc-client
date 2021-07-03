@@ -7,7 +7,7 @@ export enum EventTypes {
   ConfigLoadingFailed,
   CheckSessionReceived,
   UserDataChanged,
-  NewAuthorizationResult,
+  NewAuthenticationResult,
   TokenExpired,
   IdTokenExpired,
   SilentRenewStarted,

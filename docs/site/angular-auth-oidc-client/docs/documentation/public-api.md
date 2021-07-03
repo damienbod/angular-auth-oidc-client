@@ -103,24 +103,24 @@ Multiple Configs:
 
 ## isAuthenticated$
 
-This property returns an `Observable<ConfigAuthenticatedResult>`. This object is filled depending on with how many configurations you run. The `ConfigAuthenticatedResult` is built as following:
+This property returns an `Observable<AuthenticatedResult>`. This object is filled depending on with how many configurations you run. The `AuthenticatedResult` is built as following:
 
 ```ts
-export interface ConfigAuthenticatedResult {
+export interface AuthenticatedResult {
   isAuthenticated: boolean;
 
-  allConfigsAuthenticated: ConfigAuthenticated[];
+  allConfigsAuthenticated: ConfigAuthenticatedResult[];
 }
 
-export interface ConfigAuthenticated {
+export interface ConfigAuthenticatedResult {
   configId: string;
   isAuthenticated: boolean;
 }
 ```
 
-In case you have a single config the `isAuthenticated` on the `ConfigAuthenticatedResult` tells you if you are authenticated or not. The `ConfigAuthenticated[]` contains the single config result with it's `configId` and again if this config is authenticated or not.
+In case you have a single config the `isAuthenticated` on the `AuthenticatedResult` tells you if you are authenticated or not. The `ConfigAuthenticatedResult[]` contains the single config result with it's `configId` and again if this config is authenticated or not.
 
-In case you have multiple configs the `isAuthenticated` on the `ConfigAuthenticatedResult` tells you if all configs are authenticated (`true`) or not (`false`). The `ConfigAuthenticated[]` contains the single config results with it's `configId` and again if this config is authenticated or not.
+In case you have multiple configs the `isAuthenticated` on the `AuthenticatedResult` tells you if all configs are authenticated (`true`) or not (`false`). The `ConfigAuthenticatedResult[]` contains the single config results with it's `configId` and again if this config is authenticated or not.
 
 ```ts
 this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
