@@ -52,7 +52,7 @@ export class OidcSecurityService {
   }
 
   /**
-   * Emits on possible STS callback. The observable will never contain a value.
+   * Emits on a secure token server callback. The observable will never contain a value.
    */
   get stsCallback$(): Observable<any> {
     return this.callbackService.stsCallback$;
@@ -248,7 +248,7 @@ export class OidcSecurityService {
   }
 
   /**
-   * Redirects the user to the STS to begin the authentication process.
+   * Redirects the user to the secure token server to begin the authentication process.
    *
    * @param configId The configId to perform the action in behalf of. If not passed, the first configs will be taken
    * @param authOptions The custom options for the the authentication request.
@@ -260,7 +260,7 @@ export class OidcSecurityService {
   }
 
   /**
-   * Opens the STS in a new window to begin the authentication process.
+   * Opens the secure token server in a new window to begin the authentication process.
    *
    * @param authOptions The custom options for the authentication request.
    * @param popupOptions The configuration for the popup window.
@@ -338,7 +338,7 @@ export class OidcSecurityService {
   }
 
   /**
-   * Revokes an access token on the STS. This is only required in the code flow with refresh tokens. If no token is
+   * Revokes an access token on the secure token server. This is only required in the code flow with refresh tokens. If no token is
    * provided, then the token from the storage is revoked. You can pass any token to revoke.
    * https://tools.ietf.org/html/rfc7009
    *
@@ -354,7 +354,7 @@ export class OidcSecurityService {
   }
 
   /**
-   * Revokes a refresh token on the STS. This is only required in the code flow with refresh tokens. If no token is
+   * Revokes a refresh token on the secure token server. This is only required in the code flow with refresh tokens. If no token is
    * provided, then the token from the storage is revoked. You can pass any token to revoke.
    * https://tools.ietf.org/html/rfc7009
    *

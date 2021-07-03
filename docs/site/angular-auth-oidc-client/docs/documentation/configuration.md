@@ -41,7 +41,7 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
     .pipe(
       map((customConfig: any) => {
         return {
-          stsServer: customConfig.stsServer,
+          authority: customConfig.authority,
           /* Your config mapping here */
         };
       })
@@ -75,19 +75,19 @@ export class AuthConfigModule {}
 
 To identify a configuration a new parameter called `configId` was introduced. If you do not explicitly set this value, the library will generate and assign the value for you. If set, the configured value is used. The value is optional.
 
-### `stsServer`
+### `authority`
 
 - Type: string
 - Required: true
 
-This is the redirect_url which was configured on the security token service (STS) server.
+This is the authority or the secure token server (URL). This must be set.
 
 ### `authWellknownEndpointUrl`
 
 - Type: string
 - Required: false
 
-A different well known endpoint can be defined instead of the used STS domain, with the standard postfix.
+A different well known endpoint can be defined instead of the authority domain, with the standard well known endpoints postfix. This is only required if the well known endpoint URL is not implemented in a standard way on the secure token service.
 
 ### `authWellknownEndpoints`
 
@@ -122,7 +122,7 @@ The client MUST validate that the aud (audience) claim contains its client_id va
 - Type: string
 - Required: false
 
-This is this scopes which are requested from the server from this client. This must match the STS server configuration.
+This is this scopes which are requested from the server from this client. This must match the secure token server configuration for the client you use.
 
 ### `hdParam`
 
@@ -234,7 +234,7 @@ Can be used for custom state logic handling, the state is not automatically rese
 - Type: boolean
 - Required: false
 
-This can be set to `true` which emits an event instead of an angular route change. Instead of forcing the application consuming this library to automatically redirect to one of the 3 hard-configured routes (start, unauthorized, forbidden), this modification will add an extra configuration option to override such behavior and trigger an event that will allow to subscribe to it and let the application perform other actions. This would be useful to allow the application to save an initial return url so that the user is redirected to it after a successful login on the STS (ie: saving the return url previously on sessionStorage and then retrieving it during the triggering of the event).
+This can be set to `true` which emits an event instead of an angular route change. Instead of forcing the application consuming this library to automatically redirect to one of the 3 hard-configured routes (start, unauthorized, forbidden), this modification will add an extra configuration option to override such behavior and trigger an event that will allow to subscribe to it and let the application perform other actions. This would be useful to allow the application to save an initial return url so that the user is redirected to it after a successful login on the secure token server (ie: saving the return url previously on sessionStorage and then retrieving it during the triggering of the event).
 
 ### `logLevel`
 

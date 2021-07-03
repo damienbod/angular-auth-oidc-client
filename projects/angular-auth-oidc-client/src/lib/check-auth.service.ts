@@ -109,7 +109,7 @@ export class CheckAuthService {
   }
 
   private checkAuthWithConfig(config: OpenIdConfiguration, url?: string): Observable<LoginResponse> {
-    const { configId, stsServer } = config;
+    const { configId, authority } = config;
 
     if (!this.configurationProvider.hasAsLeastOneConfig()) {
       const errorMessage = 'Please provide at least one configuration before setting up the module';
@@ -120,7 +120,7 @@ export class CheckAuthService {
 
     const currentUrl = url || this.currentUrlService.getCurrentUrl();
 
-    this.loggerService.logDebug(configId, `Working with config '${configId}' using ${stsServer}`);
+    this.loggerService.logDebug(configId, `Working with config '${configId}' using ${authority}`);
 
     if (this.popupService.isCurrentlyInPopup()) {
       this.popupService.sendMessageToMainWindow(currentUrl);

@@ -20,7 +20,7 @@ describe('ConfigurationProviderTests', () => {
 
   describe('getOpenIDConfiguration', () => {
     it('returns only config when only one is stored and no param is passed', () => {
-      configurationProvider.setConfig({ stsServer: 'hello' });
+      configurationProvider.setConfig({ authority: 'hello' });
 
       expect(configurationProvider.getOpenIDConfiguration()).toBeDefined();
     });
@@ -62,7 +62,7 @@ describe('ConfigurationProviderTests', () => {
 
   describe('hasAsLeastOneConfig', () => {
     it('hasConfig is true if config is set', () => {
-      configurationProvider.setConfig({ stsServer: 'hello' });
+      configurationProvider.setConfig({ authority: 'hello' });
 
       expect(configurationProvider.hasAsLeastOneConfig()).toBeTrue();
     });

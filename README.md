@@ -88,7 +88,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
     // ...
     AuthModule.forRoot({
       config: {
-        stsServer: '<your sts address here>',
+        authority: '<your authority address here>',
         redirectUrl: window.location.origin,
         postLogoutRedirectUri: window.location.origin,
         clientId: '<your clientId>',
@@ -105,7 +105,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
 export class AppModule {}
 ```
 
-And call the method `checkAuth()` from your `app.component.ts`. The method `checkAuth()` is needed to process the redirect from your sts and set the correct states. This method must be used to ensure the correct functioning of the library.
+And call the method `checkAuth()` from your `app.component.ts`. The method `checkAuth()` is needed to process the redirect from your secure token server and set the correct states. This method must be used to ensure the correct functioning of the library.
 
 ```ts
 import { Component, OnInit } from '@angular/core';

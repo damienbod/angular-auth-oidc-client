@@ -5,7 +5,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
   imports: [
     AuthModule.forRoot({
       config: {
-        stsServer: 'https://b2cdamienbod.b2clogin.com/b2cdamienbod.onmicrosoft.com/B2C_1_sign_in/v2.0',
+        authority: 'https://b2cdamienbod.b2clogin.com/b2cdamienbod.onmicrosoft.com/B2C_1_sign_in/v2.0',
         authWellknownEndpointUrl:
           'https://b2cdamienbod.b2clogin.com/b2cdamienbod.onmicrosoft.com/B2C_1_sign_in/v2.0/.well-known/openid-configuration',
         redirectUrl: window.location.origin,

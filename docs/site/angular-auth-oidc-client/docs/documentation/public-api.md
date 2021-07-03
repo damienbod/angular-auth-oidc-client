@@ -159,7 +159,7 @@ this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 
 ## stsCallback$
 
-The `stsCallback$` observable gets emitted _after_ the library has handled the possible sts callback. You can perform initial setups and custom workflows inside your application when the STS redirects you back to your app.
+The `stsCallback$` observable gets emitted _after_ the library has handled the possible secure token server callback. You can perform initial setups and custom workflows inside your application when the secure token server redirects you back to your app.
 
 Example:
 
@@ -205,7 +205,7 @@ const userData = this.oidcSecurityService.getUserData('configId');
 
 This method starts the complete authentication flow. Use this method if you are running with a single config or want to check a single config.
 
-This method parses the url when you come back from the Security Token Service (STS) and sets all values.
+This method parses the url when redirected back from the secure token server (STS) and sets all values.
 
 It returns an `Observable<LoginResponse>` containing all information you need in one object.
 
@@ -241,7 +241,7 @@ this.oidcSecurityService.checkAuth(url, configId).subscribe(({ isAuthenticated, 
 
 This method starts the complete authentication flow for multiple configs. Use this method if you are running with multiple configs to check which one is authenticated or not.
 
-This method parses the url when you come back from the Security Token Service (STS) and sets all values.
+This method parses the url when you come back from the secure token server (STS) and sets all values.
 
 It returns an `Observable<LoginResponse[]>` containing all information you need in the `LoginResponse` object as array so that you can see which config has which values.
 
@@ -409,7 +409,7 @@ const state = this.oidcSecurityService.getState('configId');
 
 ## authorize(configId?: string, authOptions?: AuthOptions)
 
-This method is being called when you want to redirect to the sts and login your user. This method takes a `configId` as parameter if you want to use a specific config and it also takes `authOptions` adding `customParams` which can change every time you want to login and an `urlHandler` which is getting called instead of the redirect.
+This method is being called when you want to redirect to the authority and sign in the identity. This method takes a `configId` as parameter if you want to use a specific config and it also takes `authOptions` adding `customParams` which can change every time you want to login and an `urlHandler` which is getting called instead of the redirect.
 
 See also [Custom parameters](features.md/#custom-parameters)
 
@@ -438,7 +438,7 @@ this.oidcSecurityService.authorize('configId', authOptions);
 
 ## authorizeWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions, configId?: string)
 
-This method is being called when you want to redirect to the sts in a popup and login your user. This method takes a `configId` as parameter if you want to use a specific config and it also takes `authOptions` adding `customParams` which can change every time you want to login and an `urlHandler` which is getting called instead of the redirect. You can also pass `PopupOptions` to define where and how the popup should open.
+This method is being called when you want to redirect to the secure token server in a popup and login your user. This method takes a `configId` as parameter if you want to use a specific config and it also takes `authOptions` adding `customParams` which can change every time you want to login and an `urlHandler` which is getting called instead of the redirect. You can also pass `PopupOptions` to define where and how the popup should open.
 
 The method returns an `Observable<LoginResponse>` containing
 
@@ -617,7 +617,7 @@ More info: [https://tools.ietf.org/html/rfc7009](https://tools.ietf.org/html/rfc
 
 ## revokeRefreshToken(refreshToken?: any, configId?: string)
 
-This method revokes a refresh token on the STS. This is only required in the code flow with refresh tokens. If no token is provided, then the token from the storage is revoked. You can pass any token to revoke. This makes it possible to manage your own tokens.
+This method revokes a refresh token on the secure token server. This is only required in the code flow with refresh tokens. If no token is provided, then the token from the storage is revoked. You can pass any token to revoke. This makes it possible to manage your own tokens.
 
 This method also takes a `configId`. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
 

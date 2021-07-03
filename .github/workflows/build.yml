@@ -75,6 +75,6 @@ jobs:
           cd testProjectSchematic
           echo '=== Current Directory ==='
           ls
-          sudo ng add ../angular-auth-oidc-client/dist/angular-auth-oidc-client --sts-url-or-tenant-id "my-sts-url" --flow-type "OIDC Code Flow PKCE using iframe silent renew" --skip-confirmation
+          sudo ng add ../angular-auth-oidc-client/dist/angular-auth-oidc-client --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using iframe silent renew" --skip-confirmation
           npm test -- --watch=false --browsers=ChromeHeadless
           sudo npm run build -- --prod
