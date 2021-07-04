@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthenticatedResult, OidcSecurityService, OpenIdConfiguration, UserDataResult } from 'angular-auth-oidc-client';
+import { OidcSecurityService, OpenIdConfiguration, UserDataResult } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -14,14 +14,19 @@ export class AppComponent {
 
   configuration: OpenIdConfiguration;
 
-  isAuthenticated$: Observable<AuthenticatedResult>;
+  isAuthenticated = false;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
     this.configuration = this.oidcSecurityService.getConfiguration();
     this.userData$ = this.oidcSecurityService.userData$;
-    this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
+
+    this.oidcSecurityService.isAuthenticated$.subscribe(({ isAuthenticated }) => {
+      this.isAuthenticated = isAuthenticated;
+
+      console.info('authenticated: ', isAuthenticated);
+    });
 
     this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
       console.log(isAuthenticated);

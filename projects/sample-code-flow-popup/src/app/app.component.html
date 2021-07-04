@@ -1,4 +1,4 @@
-<div *ngIf="isAuthenticated$ | async as isAuthenticated; else noAuth">
+<div *ngIf="isAuthenticated; else noAuth">
   <button (click)="logout()">Logout</button>
   <button (click)="forceRefreshSession()">RefreshSession</button>
   <button (click)="openWindow()">Open normal popup</button>
