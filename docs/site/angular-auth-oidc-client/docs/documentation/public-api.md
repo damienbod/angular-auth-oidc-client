@@ -9,8 +9,23 @@ The most public accessible observables, properties and methods are placed in the
 
 ## userData$
 
-The `userData$` observable provides the information about the user after he has logged in. In case you are running with one configuration it returns the user data as an object depending on what you get back from the secure token server as user data.
-In case you have multiple configs running it returns a `ConfigUserDataResult[]` which holds the `configId` as well as the `userData` in an array.
+The `userData$` observable provides the information about the user after he has logged in. It returns an `UserDataResult` in the following form.
+
+```ts
+export interface UserDataResult {
+  userData: any;
+  allUserData: ConfigUserDataResult[];
+}
+
+export interface ConfigUserDataResult {
+  configId: string;
+  userData: any;
+}
+```
+
+In case you are running with one configuration the `ConfigUserDataResult` contains the user data in the `userData` property and the `ConfigUserData[]` returns the same user data with the `configId` filled in case you need it.
+
+In case you are running with multiple configs the `ConfigUserDataResult`s `userData` property is set to `null` and you find your user data per config in the `ConfigUserData[]`.
 
 Example:
 
@@ -22,68 +37,114 @@ Single Config:
 
 ```json
 {
-  "sub": "...",
-  "preferred_username": "john@doe.org",
-  "name": "john@doe.org",
-  "email": "john@doe.org",
-  "email_verified": false,
-  "given_name": "john@doe.org",
-  "role": "user",
-  "amr": "pwd"
+  "userData": {
+    "sub": "...",
+    "preferred_username": "john@doe.org",
+    "name": "john@doe.org",
+    "email": "john@doe.org",
+    "email_verified": false,
+    "given_name": "john@doe.org",
+    "role": "user",
+    "amr": "pwd"
+  },
+  "allUserData": [
+    {
+      "configId": "configId",
+      "userData": {
+        "sub": "...",
+        "preferred_username": "john@doe.org",
+        "name": "john@doe.org",
+        "email": "john@doe.org",
+        "email_verified": false,
+        "given_name": "john@doe.org",
+        "role": "user",
+        "amr": "pwd"
+      }
+    }
+  ]
 }
 ```
 
 Multiple Configs:
 
 ```json
-[
-  {
-    "configId": "...",
-    "userData": {
-      "sub": "...",
-      "preferred_username": "john@doe.org",
-      "name": "john@doe.org",
-      "email": "john@doe.org",
-      "email_verified": false,
-      "given_name": "john@doe.org",
-      "role": "user",
-      "amr": "pwd"
+{
+  "userData": null,
+  "allUserData": [
+    {
+      "configId": "configId1",
+      "userData": {
+        "sub": "...",
+        "preferred_username": "john@doe.org",
+        "name": "john@doe.org",
+        "email": "john@doe.org",
+        "email_verified": false,
+        "given_name": "john@doe.org",
+        "role": "user",
+        "amr": "pwd"
+      }
+    },
+    {
+      "configId": "configId2",
+      "userData": {
+        "sub": "...",
+        "preferred_username": "john@doe.org",
+        "name": "john@doe.org",
+        "email": "john@doe.org",
+        "email_verified": false,
+        "given_name": "john@doe.org",
+        "role": "user",
+        "amr": "pwd"
+      }
     }
-  },
-  {
-    "configId": "...",
-    "userData": { ... }
-  }
-]
+  ]
+}
 ```
 
 ## isAuthenticated$
 
-This property returns an `Observable<boolean>` to receive authenticated events, either true or false if you run in a single config. If you run with multiple configs it returns an `ConfigAuthenticatedResult[]` holding the `configId` as well as a boolean to tell you if you are authenticated or not.
+This property returns an `Observable<AuthenticatedResult>`. This object is filled depending on with how many configurations you run. The `AuthenticatedResult` is built as following:
 
 ```ts
-this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$; // true/false or...
+export interface AuthenticatedResult {
+  isAuthenticated: boolean;
+
+  allConfigsAuthenticated: ConfigAuthenticatedResult[];
+}
+
+export interface ConfigAuthenticatedResult {
+  configId: string;
+  isAuthenticated: boolean;
+}
+```
+
+In case you have a single config the `isAuthenticated` on the `AuthenticatedResult` tells you if you are authenticated or not. The `ConfigAuthenticatedResult[]` contains the single config result with it's `configId` and again if this config is authenticated or not.
+
+In case you have multiple configs the `isAuthenticated` on the `AuthenticatedResult` tells you if all configs are authenticated (`true`) or not (`false`). The `ConfigAuthenticatedResult[]` contains the single config results with it's `configId` and again if this config is authenticated or not.
+
+```ts
+this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
 ```
 
 Single Config
 
 ```json
-true / false;
+{
+  "isAuthenticated": true,
+  "allConfigsAuthenticated": [{ "configId": "configId1", "isAuthenticated": true }]
+}
 ```
 
 Multiple Configs
 
 ```json
-[
-  {
-    "configId": "...",
-    "isAuthenticated": true
-  },
-  {
-    "configId": "...",
-    "isAuthenticated": false
-  }
-]
+{
+  "isAuthenticated": false,
+  "allConfigsAuthenticated": [
+    { "configId": "configId1", "isAuthenticated": true },
+    { "configId": "configId2", "isAuthenticated": false }
+  ]
+}
 ```
 
 ## checkSessionChanged$

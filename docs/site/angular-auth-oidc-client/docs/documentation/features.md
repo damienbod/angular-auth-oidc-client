@@ -14,11 +14,13 @@ Currently the events
 ```ts
 {
     ConfigLoaded,
+    ConfigLoadingFailed,
     CheckSessionReceived,
     UserDataChanged,
-    NewAuthorizationResult,
+    NewAuthenticationResult,
     TokenExpired,
     IdTokenExpired,
+    SilentRenewStarted,
 }
 ```
 

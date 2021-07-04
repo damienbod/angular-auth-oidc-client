@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map, retry, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { ConfigurationProvider } from '../config/provider/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
@@ -9,13 +10,14 @@ import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
-import { ConfigUserDataResult } from './config-userdata-result';
+import { ConfigUserDataResult, UserDataResult } from './userdata-result';
 
+const DEFAULT_USERRESULT = { userData: null, allUserData: [] };
 @Injectable()
 export class UserService {
-  private userDataInternal$ = new BehaviorSubject<ConfigUserDataResult[] | any>(null);
+  private userDataInternal$ = new BehaviorSubject<UserDataResult>(DEFAULT_USERRESULT);
 
-  get userData$(): Observable<ConfigUserDataResult[] | any> {
+  get userData$(): Observable<UserDataResult> {
     return this.userDataInternal$.asObservable();
   }
 
@@ -158,17 +160,17 @@ export class UserService {
     this.eventService.fireEvent(EventTypes.UserDataChanged, { configId, userData: passedUserData });
   }
 
-  private composeSingleOrMultipleUserDataObject(configId: string, passedUserData: any): any {
+  private composeSingleOrMultipleUserDataObject(configId: string, passedUserData: any): UserDataResult {
     const hasManyConfigs = this.configurationProvider.hasManyConfigs();
 
     if (!hasManyConfigs) {
-      return passedUserData;
+      return this.composeSingleUserDataResult(configId, passedUserData);
     }
 
     const configs = this.configurationProvider.getAllConfigurations();
 
-    const result = configs.map((config) => {
-      if (config.configId === configId) {
+    const allUserData: ConfigUserDataResult[] = configs.map((config) => {
+      if (this.currentConfigIsToUpdate(configId, config)) {
         return { configId: config.configId, userData: passedUserData };
       }
 
@@ -177,6 +179,20 @@ export class UserService {
       return { configId: config.configId, userData: alreadySavedUserData };
     });
 
-    return result;
+    return {
+      userData: null,
+      allUserData,
+    };
+  }
+
+  private composeSingleUserDataResult(configId: string, userData: any): UserDataResult {
+    return {
+      userData,
+      allUserData: [{ configId, userData }],
+    };
+  }
+
+  private currentConfigIsToUpdate(configId: string, config: OpenIdConfiguration): boolean {
+    return config.configId === configId;
   }
 }

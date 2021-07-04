@@ -8,13 +8,16 @@ import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { TokenValidationService } from '../validation/token-validation.service';
-import { AuthenticatedResult, ConfigAuthenticatedResult } from './auth-result';
+import { AuthenticatedResult } from './auth-result';
+import { AuthStateResult } from './auth-state';
+
+const DEFAULT_AUTHRESULT = { isAuthenticated: false, allConfigsAuthenticated: [] };
 
 @Injectable()
 export class AuthStateService {
-  private authenticatedInternal$ = new BehaviorSubject<ConfigAuthenticatedResult[] | boolean>(null);
+  private authenticatedInternal$ = new BehaviorSubject<AuthenticatedResult>(DEFAULT_AUTHRESULT);
 
-  get authenticated$(): Observable<ConfigAuthenticatedResult[] | boolean> {
+  get authenticated$(): Observable<AuthenticatedResult> {
     return this.authenticatedInternal$.asObservable().pipe(distinctUntilChanged());
   }
 
@@ -38,8 +41,8 @@ export class AuthStateService {
     this.authenticatedInternal$.next(result);
   }
 
-  updateAndPublishAuthState(authorizationResult: AuthenticatedResult): void {
-    this.publicEventsService.fireEvent<AuthenticatedResult>(EventTypes.NewAuthorizationResult, authorizationResult);
+  updateAndPublishAuthState(authenticationResult: AuthStateResult): void {
+    this.publicEventsService.fireEvent<AuthStateResult>(EventTypes.NewAuthenticationResult, authenticationResult);
   }
 
   setAuthorizationData(accessToken: string, authResult: AuthResult, configId: string): void {
@@ -165,28 +168,36 @@ export class AuthStateService {
     }
   }
 
-  private composeAuthenticatedResult(): true | ConfigAuthenticatedResult[] {
+  private composeAuthenticatedResult(): AuthenticatedResult {
     if (!this.configurationProvider.hasManyConfigs()) {
-      return true;
+      const { configId } = this.configurationProvider.getOpenIDConfiguration();
+
+      return { isAuthenticated: true, allConfigsAuthenticated: [{ configId, isAuthenticated: true }] };
     }
 
     return this.checkAllConfigsIfTheyAreAuthenticated();
   }
 
-  private composeUnAuthenticatedResult(): false | ConfigAuthenticatedResult[] {
+  private composeUnAuthenticatedResult(): AuthenticatedResult {
     if (!this.configurationProvider.hasManyConfigs()) {
-      return false;
+      const { configId } = this.configurationProvider.getOpenIDConfiguration();
+
+      return { isAuthenticated: false, allConfigsAuthenticated: [{ configId, isAuthenticated: false }] };
     }
 
     return this.checkAllConfigsIfTheyAreAuthenticated();
   }
 
-  private checkAllConfigsIfTheyAreAuthenticated(): ConfigAuthenticatedResult[] {
+  private checkAllConfigsIfTheyAreAuthenticated(): AuthenticatedResult {
     const configs = this.configurationProvider.getAllConfigurations();
 
-    return configs.map(({ configId }) => ({
+    const allConfigsAuthenticated = configs.map(({ configId }) => ({
       configId,
       isAuthenticated: this.isAuthenticated(configId),
     }));
+
+    const isAuthenticated = allConfigsAuthenticated.every((x) => !!x.isAuthenticated);
+
+    return { allConfigsAuthenticated, isAuthenticated };
   }
 }

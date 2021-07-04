@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthOptions } from './auth-options';
-import { ConfigAuthenticatedResult } from './authState/auth-result';
+import { AuthenticatedResult } from './authState/auth-result';
 import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
@@ -14,8 +14,8 @@ import { LoginResponse } from './login/login-response';
 import { LoginService } from './login/login.service';
 import { PopupOptions } from './login/popup/popup-options';
 import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
-import { ConfigUserDataResult } from './userData/config-userdata-result';
 import { UserService } from './userData/user.service';
+import { UserDataResult } from './userData/userdata-result';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
 
 @Injectable()
@@ -23,21 +23,23 @@ export class OidcSecurityService {
   /**
    * Provides information about the user after they have logged in.
    *
-   * @returns Returns an array of objects with a configId and userData if you have multiple configs running or
-   * a single object without the configId containing the userData if you only run with a single config
+   * @returns Returns an object containing either the user data directly (single config) or
+   * the user data per config in case you are running with multiple configs
    */
-  get userData$(): Observable<ConfigUserDataResult[] | any> {
+  get userData$(): Observable<UserDataResult> {
     return this.userService.userData$;
   }
 
   /**
    * Emits each time an authorization event occurs.
    *
-   * @returns In case of a single config it returns true if the user is authenticated and false if they are not.
-   * If you are running multiple configs it returns an array with the configId and a boolean
-   * if you are authenticated or not for this config
+   * @returns Returns an object containing if you are authenticated or not.
+   * Single Config: true if config is authenticated, false if not.
+   * Multiple Configs: true is all configs are authenticated, false if only one of them is not
+   *
+   * The `allConfigsAuthenticated` property contains the auth information _per config_.
    */
-  get isAuthenticated$(): Observable<ConfigAuthenticatedResult[] | boolean> {
+  get isAuthenticated$(): Observable<AuthenticatedResult> {
     return this.authStateService.authenticated$;
   }
 

@@ -4,6 +4,10 @@
 UserData
 <pre>{{ userData$ | async | json }}</pre>
 
+<br />
+IsAuthenticated
+<pre>{{ isAuthenticated$ | async | json }}</pre>
+
 <div>
   <h3>{{ configurations[0].configId }}</h3>
   <button (click)="login(configurations[0].configId)">Login with {{ configurations[0].configId }}</button>

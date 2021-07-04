@@ -29,6 +29,9 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
           customParamsAuthRequest: {
             audience: 'https://auth0-api-spa',
           },
+          customParamsRefreshTokenRequest: {
+            scope: 'openid profile offline_access auth0-user-api-spa',
+          },
         },
       ],
     }),

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { OidcClientNotification, OidcSecurityService, OpenIdConfiguration } from 'angular-auth-oidc-client';
+import { OidcClientNotification, OidcSecurityService, OpenIdConfiguration, UserDataResult } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 export class HomeComponent implements OnInit {
   configuration: OpenIdConfiguration;
   userDataChanged$: Observable<OidcClientNotification<any>>;
-  userData$: Observable<any>;
+  userData$: Observable<UserDataResult>;
   isAuthenticated = false;
   checkSessionChanged$: Observable<boolean>;
   checkSessionChanged: any;
@@ -21,10 +21,10 @@ export class HomeComponent implements OnInit {
     this.userData$ = this.oidcSecurityService.userData$;
     this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 
-    this.oidcSecurityService.isAuthenticated$.subscribe((authenticated: boolean) => {
-      this.isAuthenticated = authenticated;
+    this.oidcSecurityService.isAuthenticated$.subscribe(({ isAuthenticated }) => {
+      this.isAuthenticated = isAuthenticated;
 
-      console.warn('authenticated: ', authenticated);
+      console.warn('authenticated: ', isAuthenticated);
     });
   }
 
