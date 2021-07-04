@@ -1,6 +1,6 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
-### 2021-06-20 Version 12.0.0
+### 2021-07-04 Version 12.0.0
 
 V12 will be developed on this branch: [ReleaseV12-WIP](https://github.com/damienbod/angular-auth-oidc-client/tree/releaseV12-WIP)
 
@@ -25,6 +25,7 @@ Gathering all Issues and PRs which will be done in V12 and maybe are breaking ch
 - Accessing AuthResult response object https://github.com/damienbod/angular-auth-oidc-client/issues/536
 - Improved Auto guards
 - renamed stsServer configuration to authority
+- Only one returntype (object) when subscribing to isAuthenticated and userdata to avoid confusion. #1164
 
 ### 2021-06-12 Version 11.6.11
 
