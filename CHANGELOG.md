@@ -2,10 +2,6 @@
 
 ### 2021-07-04 Version 12.0.0
 
-V12 will be developed on this branch: [ReleaseV12-WIP](https://github.com/damienbod/angular-auth-oidc-client/tree/releaseV12-WIP)
-
-Gathering all Issues and PRs which will be done in V12 and maybe are breaking changes
-
 - Configuration via forRoot(...) method https://github.com/damienbod/angular-auth-oidc-client/issues/747 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1041
 - Remove the "AuthorizedState" enum in Version 12 https://github.com/damienbod/angular-auth-oidc-client/issues/755 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1062
 - Use a different key than redirect to store redirect route when using auto-login https://github.com/damienbod/angular-auth-oidc-client/issues/1060 | PR #1067
