@@ -462,9 +462,9 @@ describe('User Service', () => {
         spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')
-          .and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
+          .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
         serviceAsAny.getIdentityUserData('configId').subscribe(() => {
-          expect(spy).toHaveBeenCalledWith('userinfoEndpoint', 'configId', 'accessToken');
+          expect(spy).toHaveBeenCalledWith('userInfoEndpoint', 'configId', 'accessToken');
         });
       })
     );
@@ -476,7 +476,7 @@ describe('User Service', () => {
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
       spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints', 'configId')
-        .and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
+        .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
       spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), of(DUMMY_USER_DATA)));
 
       (userService as any).getIdentityUserData('configId').subscribe({
@@ -495,7 +495,7 @@ describe('User Service', () => {
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
       spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints', 'configId')
-        .and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
+        .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
       spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), of(DUMMY_USER_DATA)));
 
       (userService as any).getIdentityUserData('configId').subscribe({
