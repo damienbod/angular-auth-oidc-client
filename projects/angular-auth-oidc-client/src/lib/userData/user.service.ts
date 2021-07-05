@@ -120,7 +120,7 @@ export class UserService {
       return throwError('authWellKnownEndpoints is undefined');
     }
 
-    const userInfoEndpoint = authWellKnownEndPoints.userinfoEndpoint;
+    const userInfoEndpoint = authWellKnownEndPoints.userInfoEndpoint;
 
     if (!userInfoEndpoint) {
       this.loggerService.logError(
