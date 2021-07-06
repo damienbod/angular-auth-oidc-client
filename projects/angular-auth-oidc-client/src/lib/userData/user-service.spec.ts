@@ -444,7 +444,7 @@ describe('User Service', () => {
         spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
         const serviceAsAny = userService as any;
         spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ userinfoEndpoint: null });
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ userInfoEndpoint: null });
         serviceAsAny.getIdentityUserData('configId').subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
@@ -454,7 +454,7 @@ describe('User Service', () => {
     );
 
     it(
-      'gets userData if authwell and userinfoEndpoint is set',
+      'gets userData if authwell and userInfoEndpoint is set',
       waitForAsync(() => {
         spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
         const serviceAsAny = userService as any;
@@ -462,9 +462,9 @@ describe('User Service', () => {
         spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')
-          .and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
+          .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
         serviceAsAny.getIdentityUserData('configId').subscribe(() => {
-          expect(spy).toHaveBeenCalledWith('userinfoEndpoint', 'configId', 'accessToken');
+          expect(spy).toHaveBeenCalledWith('userInfoEndpoint', 'configId', 'accessToken');
         });
       })
     );
@@ -476,7 +476,7 @@ describe('User Service', () => {
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
       spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints', 'configId')
-        .and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
+        .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
       spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), of(DUMMY_USER_DATA)));
 
       (userService as any).getIdentityUserData('configId').subscribe({
@@ -495,7 +495,7 @@ describe('User Service', () => {
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
       spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints', 'configId')
-        .and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
+        .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
       spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), of(DUMMY_USER_DATA)));
 
       (userService as any).getIdentityUserData('configId').subscribe({
@@ -513,7 +513,7 @@ describe('User Service', () => {
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
       spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints', 'configId')
-        .and.returnValue({ userinfoEndpoint: 'userinfoEndpoint' });
+        .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
       spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), throwError({}), of(DUMMY_USER_DATA)));
 
       (userService as any).getIdentityUserData('configId').subscribe({

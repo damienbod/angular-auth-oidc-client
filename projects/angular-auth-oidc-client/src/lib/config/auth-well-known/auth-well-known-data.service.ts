@@ -19,7 +19,7 @@ export class AuthWellKnownDataService {
             jwksUri: wellKnownEndpoints.jwks_uri,
             authorizationEndpoint: wellKnownEndpoints.authorization_endpoint,
             tokenEndpoint: wellKnownEndpoints.token_endpoint,
-            userinfoEndpoint: wellKnownEndpoints.userinfo_endpoint,
+            userInfoEndpoint: wellKnownEndpoints.userinfo_endpoint,
             endSessionEndpoint: wellKnownEndpoints.end_session_endpoint,
             checkSessionIframe: wellKnownEndpoints.check_session_iframe,
             revocationEndpoint: wellKnownEndpoints.revocation_endpoint,
