@@ -157,7 +157,7 @@ const httpOptions = {
 
 ## Versions
 
-Current Version is Version 12.0.0
+Current Version is Version 12.x
 
 - [Info about Version 11](https://github.com/damienbod/angular-auth-oidc-client/tree/version-11)
 - [Info about Version 10](https://github.com/damienbod/angular-auth-oidc-client/tree/version-10)

@@ -11,6 +11,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
         clientId: 'angularCodeRefreshTokens',
         scope: 'openid profile email taler_api offline_access',
         responseType: 'code',
+        // autoUserInfo: true,
         silentRenew: true,
         useRefreshToken: true,
         logLevel: LogLevel.Debug,

@@ -1,5 +1,9 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-07-06 12.0.1
+
+- Fix #1168 userInfoEndpoint Typo
+
 ### 2021-07-04 Version 12.0.0
 
 - Configuration via forRoot(...) method https://github.com/damienbod/angular-auth-oidc-client/issues/747 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1041
