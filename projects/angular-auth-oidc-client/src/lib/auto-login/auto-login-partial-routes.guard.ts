@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, CanLoad, Route, RouterStateSnapshot, UrlSegment } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, CanLoad, Route, RouterStateSnapshot, UrlSegment } from '@angular/router';
 import { AuthStateService } from '../authState/auth-state.service';
 import { ConfigurationProvider } from '../config/provider/config.provider';
 import { LoginService } from '../login/login.service';
 import { AutoLoginService } from './auto-login.service';
 
 @Injectable({ providedIn: 'root' })
-export class AutoLoginPartialRoutesGuard implements CanActivate, CanLoad {
+export class AutoLoginPartialRoutesGuard implements CanActivate, CanActivateChild, CanLoad {
   constructor(
     private autoLoginService: AutoLoginService,
     private authStateService: AuthStateService,
@@ -21,6 +21,10 @@ export class AutoLoginPartialRoutesGuard implements CanActivate, CanLoad {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    return this.checkAuth(state.url);
+  }
+
+  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     return this.checkAuth(state.url);
   }
 
