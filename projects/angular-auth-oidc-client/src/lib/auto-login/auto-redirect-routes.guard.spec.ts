@@ -1,8 +1,8 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterStateSnapshot, UrlSegment } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AuthStateService } from '../authState/auth-state.service';
-import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
+import { AuthStateService } from '../auth-state/auth-state.service';
+import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { CheckAuthService } from '../check-auth.service';
 import { CheckAuthServiceMock } from '../check-auth.service-mock';
 import { ConfigurationProvider } from '../config/provider/config.provider';

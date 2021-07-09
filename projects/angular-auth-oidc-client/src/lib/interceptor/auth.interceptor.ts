@@ -1,7 +1,7 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AuthStateService } from '../authState/auth-state.service';
+import { AuthStateService } from '../auth-state/auth-state.service';
 import { ConfigurationProvider } from '../config/provider/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { ClosestMatchingRouteService } from './closest-matching-route.service';
