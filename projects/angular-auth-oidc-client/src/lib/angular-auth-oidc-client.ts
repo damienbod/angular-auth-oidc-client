@@ -11,6 +11,7 @@ export * from './config/config.service';
 export * from './config/loader/config-loader';
 export * from './config/openid-configuration';
 export * from './interceptor/auth.interceptor';
+export * from './login/login-response';
 export * from './logging/log-level';
 export * from './logging/logger.service';
 export * from './oidc.security.service';
