@@ -9,6 +9,7 @@ export * from './auto-login/auto-login-partial-routes.guard';
 export * from './auto-login/auto-login.service';
 export * from './authState/auth-state.service';
 export * from './login/login.service';
+export * from './login/login-response';
 export * from './config/provider/config.provider';
 export * from './config/auth-well-known/auth-well-known-endpoints';
 export * from './config/config.service';
