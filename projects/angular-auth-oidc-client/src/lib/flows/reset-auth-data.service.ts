@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AuthStateService } from '../authState/auth-state.service';
-import { UserService } from '../userData/user.service';
+import { AuthStateService } from '../auth-state/auth-state.service';
+import { UserService } from '../user-data/user.service';
 import { FlowsDataService } from './flows-data.service';
 
 @Injectable()
