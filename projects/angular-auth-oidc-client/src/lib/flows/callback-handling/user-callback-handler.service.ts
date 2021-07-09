@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
-import { AuthStateService } from '../../auth-state/auth-state.service';
+import { AuthStateService } from '../../authState/auth-state.service';
 import { ConfigurationProvider } from '../../config/provider/config.provider';
 import { LoggerService } from '../../logging/logger.service';
-import { UserService } from '../../user-data/user.service';
+import { UserService } from '../../userData/user.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, throwError, TimeoutError, timer } from 'rxjs';
 import { map, mergeMap, retryWhen, switchMap, take, timeout } from 'rxjs/operators';
-import { AuthStateService } from '../auth-state/auth-state.service';
+import { AuthStateService } from '../authState/auth-state.service';
 import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.service';
 import { ConfigurationProvider } from '../config/provider/config.provider';
 import { CallbackContext } from '../flows/callback-context';
@@ -11,7 +11,7 @@ import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
 import { LoginResponse } from '../login/login-response';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { UserService } from '../user-data/user.service';
+import { UserService } from '../userData/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 

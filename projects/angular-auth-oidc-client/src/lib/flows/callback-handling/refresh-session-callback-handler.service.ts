@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { AuthStateService } from '../../auth-state/auth-state.service';
+import { AuthStateService } from '../../authState/auth-state.service';
 import { LoggerService } from '../../logging/logger.service';
 import { TokenValidationService } from '../../validation/token-validation.service';
 import { CallbackContext } from '../callback-context';

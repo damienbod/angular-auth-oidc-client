@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthOptions } from './auth-options';
-import { AuthenticatedResult } from './auth-state/auth-result';
-import { AuthStateService } from './auth-state/auth-state.service';
+import { AuthenticatedResult } from './authState/auth-result';
+import { AuthStateService } from './authState/auth-state.service';
 import { CallbackService } from './callback/callback.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
 import { CheckAuthService } from './check-auth.service';
@@ -13,9 +13,9 @@ import { CheckSessionService } from './iframe/check-session.service';
 import { LoginResponse } from './login/login-response';
 import { LoginService } from './login/login.service';
 import { PopupOptions } from './login/popup/popup-options';
-import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.service';
-import { UserService } from './user-data/user.service';
-import { UserDataResult } from './user-data/userdata-result';
+import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
+import { UserService } from './userData/user.service';
+import { UserDataResult } from './userData/userdata-result';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
 
 @Injectable()

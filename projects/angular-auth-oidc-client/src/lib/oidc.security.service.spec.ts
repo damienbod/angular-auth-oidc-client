@@ -1,7 +1,7 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
-import { AuthStateService } from './auth-state/auth-state.service';
-import { AuthStateServiceMock } from './auth-state/auth-state.service-mock';
+import { AuthStateService } from './authState/auth-state.service';
+import { AuthStateServiceMock } from './authState/auth-state.service-mock';
 import { CallbackService } from './callback/callback.service';
 import { CallbackServiceMock } from './callback/callback.service-mock';
 import { RefreshSessionService } from './callback/refresh-session.service';
@@ -16,11 +16,11 @@ import { CheckSessionService } from './iframe/check-session.service';
 import { CheckSessionServiceMock } from './iframe/check-session.service-mock';
 import { LoginService } from './login/login.service';
 import { LoginServiceMock } from './login/login.service-mock';
-import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.service';
-import { LogoffRevocationServiceMock } from './logoff-revoke/logoff-revocation.service-mock';
+import { LogoffRevocationService } from './logoffRevoke/logoff-revocation.service';
+import { LogoffRevocationServiceMock } from './logoffRevoke/logoff-revocation.service-mock';
 import { OidcSecurityService } from './oidc.security.service';
-import { UserServiceMock } from './user-data/user-service-mock';
-import { UserService } from './user-data/user.service';
+import { UserServiceMock } from './userData/user-service-mock';
+import { UserService } from './userData/user.service';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
 import { TokenHelperServiceMock } from './utils/tokenHelper/token-helper.service-mock';
 

@@ -1,7 +1,7 @@
 ﻿import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
-import { AuthStateService } from '../auth-state/auth-state.service';
-import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
+import { AuthStateService } from '../authState/auth-state.service';
+import { AuthStateServiceMock } from '../authState/auth-state.service-mock';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
 import { ImplicitFlowCallbackServiceMock } from '../callback/implicit-flow-callback.service-mock';
 import { IntervalService } from '../callback/interval.service';

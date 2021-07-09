@@ -2,7 +2,7 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Router, RouterStateSnapshot, UrlSegment } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { AuthStateService } from '../auth-state/auth-state.service';
+import { AuthStateService } from '../authState/auth-state.service';
 import { CheckAuthService } from '../check-auth.service';
 import { CheckAuthServiceMock } from '../check-auth.service-mock';
 import { ConfigurationProvider } from '../config/provider/config.provider';

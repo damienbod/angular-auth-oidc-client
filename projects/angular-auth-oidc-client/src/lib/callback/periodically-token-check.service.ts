@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
-import { AuthStateService } from '../auth-state/auth-state.service';
+import { AuthStateService } from '../authState/auth-state.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { ConfigurationProvider } from '../config/provider/config.provider';
 import { FlowsDataService } from '../flows/flows-data.service';
@@ -11,7 +11,7 @@ import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { UserService } from '../user-data/user.service';
+import { UserService } from '../userData/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { IntervalService } from './interval.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';

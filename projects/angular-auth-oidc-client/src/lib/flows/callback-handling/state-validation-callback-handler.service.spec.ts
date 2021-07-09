@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { AuthStateService } from '../../auth-state/auth-state.service';
-import { AuthStateServiceMock } from '../../auth-state/auth-state.service-mock';
+import { AuthStateService } from '../../authState/auth-state.service';
+import { AuthStateServiceMock } from '../../authState/auth-state.service-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StateValidationResult } from '../../validation/state-validation-result';
