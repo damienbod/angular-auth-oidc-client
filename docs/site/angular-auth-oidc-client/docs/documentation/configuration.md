@@ -28,6 +28,33 @@ import { AuthModule } from 'angular-auth-oidc-client';
 export class AuthConfigModule {}
 ```
 
+### Using multiple configs
+
+You can pass an array of configs into the `forRoot()` method. Each config will get an `configId` automatically if you do not set it for yourself.
+
+```ts
+@NgModule({
+  imports: [
+    AuthModule.forRoot({
+      config: [
+        {
+          // config1...
+        },
+        {
+          // config2...
+        },
+        {
+          // config3...
+        },
+        //...
+      ],
+    }),
+  ],
+  exports: [AuthModule],
+})
+export class AuthConfigModule {}
+```
+
 ## Load config from HTTP
 
 If you want to load the config from HTTP and then map it to the interface the library provides you can use the `StsConfigHttpLoader` and pass it with the `loader` property
@@ -49,6 +76,56 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
     .toPromise();
 
   return new StsConfigHttpLoader(config$);
+};
+
+@NgModule({
+  imports: [
+    AuthModule.forRoot({
+      loader: {
+        provide: StsConfigLoader,
+        useFactory: httpLoaderFactory,
+        deps: [HttpClient],
+      },
+    }),
+  ],
+  exports: [AuthModule],
+})
+export class AuthConfigModule {}
+```
+
+### Using multiple http configs
+
+Also the http loader supports multiple configs.
+
+```ts
+import { AuthModule, StsConfigHttpLoader, StsConfigLoader } from 'angular-auth-oidc-client';
+
+export const httpLoaderFactory = (httpClient: HttpClient) => {
+  const config1$ = httpClient
+    .get<any>(`https://...`)
+    .pipe(
+      map((customConfig: any) => {
+        return {
+          authority: customConfig.authority,
+          /* Your config mapping here */
+        };
+      })
+    )
+    .toPromise();
+
+  const config2$ = httpClient
+    .get<any>(`https://...`)
+    .pipe(
+      map((customConfig: any) => {
+        return {
+          authority: customConfig.authority,
+          /* Your config mapping here */
+        };
+      })
+    )
+    .toPromise();
+
+  return new StsConfigHttpLoader([config1$, config2$]);
 };
 
 @NgModule({
