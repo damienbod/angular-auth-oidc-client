@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, Subject, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AuthStateService } from '../authState/auth-state.service';
+import { AuthStateService } from '../auth-state/auth-state.service';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
 import { IntervalService } from '../callback/interval.service';
 import { ConfigurationProvider } from '../config/provider/config.provider';

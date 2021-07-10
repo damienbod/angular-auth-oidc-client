@@ -2,8 +2,8 @@
 
 export * from './auth-options';
 export * from './auth.module';
-export * from './authState/auth-result';
-export * from './authState/auth-state';
+export * from './auth-state/auth-result';
+export * from './auth-state/auth-state';
 export * from './auto-login/auto-login-all-routes.guard';
 export * from './auto-login/auto-login-partial-routes.guard';
 export * from './config/auth-well-known/auth-well-known-endpoints';
@@ -19,7 +19,7 @@ export * from './public-events/event-types';
 export * from './public-events/notification';
 export * from './public-events/public-events.service';
 export * from './storage/abstract-security-storage';
-export * from './userData/userdata-result';
+export * from './user-data/userdata-result';
 export * from './utils/tokenHelper/token-helper.service';
 export * from './validation/jwtkeys';
 export * from './validation/state-validation-result';
