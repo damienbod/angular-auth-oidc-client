@@ -22,7 +22,7 @@ export class ConfigValidationService {
 
     let overallErrorCount = 0;
     passedConfigs.forEach((passedConfig) => {
-      const errorCount = this.processValidationResultsAndGetErrorCount(allValidationResults, passedConfig.configId);
+      const errorCount = this.processValidationResultsAndGetErrorCount(allValidationResults, passedConfig?.configId);
       overallErrorCount += errorCount;
     });
 

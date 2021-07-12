@@ -50,6 +50,38 @@ describe('Logger Service', () => {
       loggerService.logError('configId', 'some message', 'arg1', 'arg2');
       expect(spy).toHaveBeenCalledWith('[ERROR] configId - some message', 'arg1', 'arg2');
     });
+
+    it('should log error also when configId is null', () => {
+      const spy = spyOn(console, 'error');
+
+      loggerService.logError(null, 'some message');
+
+      expect(spy).toHaveBeenCalledWith('[ERROR] - some message');
+    });
+
+    it('should log error also when configId is null and has args', () => {
+      const spy = spyOn(console, 'error');
+
+      loggerService.logError(null, 'some message', 'arg1', 'arg2');
+
+      expect(spy).toHaveBeenCalledWith('[ERROR] - some message', 'arg1', 'arg2');
+    });
+
+    it('should log error also when configId is undefined', () => {
+      const spy = spyOn(console, 'error');
+
+      loggerService.logError(undefined, 'some message');
+
+      expect(spy).toHaveBeenCalledWith('[ERROR] - some message');
+    });
+
+    it('should log error also when configId is undefined and has args', () => {
+      const spy = spyOn(console, 'error');
+
+      loggerService.logError(undefined, 'some message', 'arg1', 'arg2');
+
+      expect(spy).toHaveBeenCalledWith('[ERROR] - some message', 'arg1', 'arg2');
+    });
   });
 
   describe('logWarn', () => {
@@ -115,6 +147,46 @@ describe('Logger Service', () => {
 
       loggerService.logWarning('configId', 'some message');
       expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should log warning also when configId is null', () => {
+      const spy = spyOn(console, 'warn');
+
+      spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue({ logLevel: LogLevel.Error });
+
+      loggerService.logWarning(null, 'some message');
+
+      expect(spy).toHaveBeenCalledWith('[WARN] - some message');
+    });
+
+    it('should log warning also when configId is null and has args', () => {
+      const spy = spyOn(console, 'warn');
+
+      spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue({ logLevel: LogLevel.Error });
+
+      loggerService.logWarning(null, 'some message', 'arg1', 'arg2');
+
+      expect(spy).toHaveBeenCalledWith('[WARN] - some message', 'arg1', 'arg2');
+    });
+
+    it('should log warning also when configId is undefined', () => {
+      const spy = spyOn(console, 'warn');
+
+      spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue({ logLevel: LogLevel.Error });
+
+      loggerService.logWarning(undefined, 'some message');
+
+      expect(spy).toHaveBeenCalledWith('[WARN] - some message');
+    });
+
+    it('should log warning also when configId is undefined and has args', () => {
+      const spy = spyOn(console, 'warn');
+
+      spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue({ logLevel: LogLevel.Error });
+
+      loggerService.logWarning(undefined, 'some message', 'arg1', 'arg2');
+
+      expect(spy).toHaveBeenCalledWith('[WARN] - some message', 'arg1', 'arg2');
     });
   });
 

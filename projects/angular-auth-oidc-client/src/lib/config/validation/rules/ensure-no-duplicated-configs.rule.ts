@@ -2,6 +2,10 @@ import { OpenIdConfiguration } from '../../openid-configuration';
 import { POSITIVE_VALIDATION_RESULT, RuleValidationResult } from '../rule';
 
 const createIdentifierToCheck = (passedConfig: OpenIdConfiguration): string => {
+  if (!passedConfig) {
+    return null;
+  }
+
   const { authority, clientId, scope } = passedConfig;
 
   return `${authority}${clientId}${scope}`;
@@ -11,6 +15,16 @@ const arrayHasDuplicates = (array: string[]): boolean => new Set(array).size !==
 
 export const ensureNoDuplicatedConfigsRule = (passedConfigs: OpenIdConfiguration[]): RuleValidationResult => {
   const allIdentifiers = passedConfigs.map((x) => createIdentifierToCheck(x));
+
+  const someAreNull = allIdentifiers.some((x) => x === null);
+
+  if (someAreNull) {
+    return {
+      result: false,
+      messages: [`Please make sure you add an object with a 'config' property: ....({ config }) instead of ...(config)`],
+      level: 'error',
+    };
+  }
 
   const hasDuplicates = arrayHasDuplicates(allIdentifiers);
 

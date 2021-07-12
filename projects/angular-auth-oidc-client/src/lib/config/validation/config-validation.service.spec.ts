@@ -104,7 +104,7 @@ describe('Config Validation Service', () => {
   });
 
   describe('ensure-no-duplicated-configs.rule', () => {
-    it('return true but warning when silent renew is used with useRefreshToken but no offline_access scope is given', () => {
+    it('should print out correct error when mutiple configs with same properties are passed', () => {
       const config1 = { ...VALID_CONFIG, silentRenew: true, useRefreshToken: true, scopes: 'scope1 scope2 but_no_offline_access' };
       const config2 = { ...VALID_CONFIG, silentRenew: true, useRefreshToken: true, scopes: 'scope1 scope2 but_no_offline_access' };
 
@@ -112,9 +112,31 @@ describe('Config Validation Service', () => {
       const loggerWarningSpy = spyOn(loggerService, 'logWarning');
 
       const result = configValidationService.validateConfigs([config1, config2]);
+
       expect(result).toBeTrue();
       expect(loggerErrorSpy).not.toHaveBeenCalled();
-      expect(loggerWarningSpy).toHaveBeenCalledTimes(2);
+      expect(loggerWarningSpy.calls.argsFor(0)).toEqual([
+        undefined,
+        'You added multiple configs with the same authority, clientId and scope',
+      ]);
+      expect(loggerWarningSpy.calls.argsFor(1)).toEqual([
+        undefined,
+        'You added multiple configs with the same authority, clientId and scope',
+      ]);
+    });
+
+    it('should return false and a better error message when config is not passed as object with config property', () => {
+      const loggerErrorSpy = spyOn(loggerService, 'logError');
+      const loggerWarningSpy = spyOn(loggerService, 'logWarning');
+
+      const result = configValidationService.validateConfigs([null]);
+
+      expect(result).toBeFalse();
+      expect(loggerWarningSpy).not.toHaveBeenCalled();
+      expect(loggerErrorSpy.calls.argsFor(0)).toEqual([
+        undefined,
+        `Please make sure you add an object with a 'config' property: ....({ config }) instead of ...(config)`,
+      ]);
     });
   });
 });

@@ -7,34 +7,18 @@ export class LoggerService {
   constructor(private configurationProvider: ConfigurationProvider) {}
 
   logError(configId: string, message: any, ...args: any[]): void {
-    if (this.loggingIsTurnedOff(configId)) {
-      return;
-    }
-
-    if (!!args && args.length) {
-      console.error(`[ERROR] ${configId} - ${message}`, ...args);
+    if (!!configId) {
+      this.logErrorWithConfig(configId, message, ...args);
     } else {
-      console.error(`[ERROR] ${configId} - ${message}`);
+      this.logErrorWithoutConfig(message, ...args);
     }
   }
 
   logWarning(configId: string, message: any, ...args: any[]): void {
-    if (!this.logLevelIsSet(configId)) {
-      return;
-    }
-
-    if (this.loggingIsTurnedOff(configId)) {
-      return;
-    }
-
-    if (!this.currentLogLevelIsEqualOrSmallerThan(configId, LogLevel.Warn)) {
-      return;
-    }
-
-    if (!!args && args.length) {
-      console.warn(`[WARN] ${configId} - ${message}`, ...args);
+    if (!!configId) {
+      this.logWarningWithConfig(configId, message, ...args);
     } else {
-      console.warn(`[WARN] ${configId} - ${message}`);
+      this.logWarningWithoutConfig(message, ...args);
     }
   }
 
@@ -51,10 +35,60 @@ export class LoggerService {
       return;
     }
 
-    if (!!args && args.length) {
+    if (!!args && !!args.length) {
       console.log(`[DEBUG] ${configId} - ${message}`, ...args);
     } else {
       console.log(`[DEBUG] ${configId} - ${message}`);
+    }
+  }
+
+  private logWarningWithoutConfig(message: any, ...args: any[]): void {
+    if (!!args && !!args.length) {
+      console.warn(`[WARN] - ${message}`, ...args);
+    } else {
+      console.warn(`[WARN] - ${message}`);
+    }
+  }
+
+  private logWarningWithConfig(configId: string, message: any, ...args: any[]): void {
+    if (!this.logLevelIsSet(configId)) {
+      return;
+    }
+
+    if (this.loggingIsTurnedOff(configId)) {
+      return;
+    }
+
+    if (!this.currentLogLevelIsEqualOrSmallerThan(configId, LogLevel.Warn)) {
+      return;
+    }
+
+    console.log(args.length);
+
+    if (!!args && !!args.length) {
+      console.warn(`[WARN] ${configId} - ${message}`, ...args);
+    } else {
+      console.warn(`[WARN] ${configId} - ${message}`);
+    }
+  }
+
+  private logErrorWithConfig(configId: string, message: any, ...args: any[]): void {
+    if (this.loggingIsTurnedOff(configId)) {
+      return;
+    }
+
+    if (!!args && !!args.length) {
+      console.error(`[ERROR] ${configId} - ${message}`, ...args);
+    } else {
+      console.error(`[ERROR] ${configId} - ${message}`);
+    }
+  }
+
+  private logErrorWithoutConfig(message: any, ...args: any[]): void {
+    if (!!args && !!args.length) {
+      console.error(`[ERROR] - ${message}`, ...args);
+    } else {
+      console.error(`[ERROR] - ${message}`);
     }
   }
 
