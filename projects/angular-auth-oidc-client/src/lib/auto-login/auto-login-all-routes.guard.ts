@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, CanLoad, Route, RouterStateSnapshot, UrlSegment } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, CanLoad, Route, RouterStateSnapshot, UrlSegment } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { CheckAuthService } from '../check-auth.service';
@@ -8,7 +8,7 @@ import { LoginService } from '../login/login.service';
 import { AutoLoginService } from './auto-login.service';
 
 @Injectable({ providedIn: 'root' })
-export class AutoLoginAllRoutesGuard implements CanActivate, CanLoad {
+export class AutoLoginAllRoutesGuard implements CanActivate, CanActivateChild, CanLoad {
   constructor(
     private autoLoginService: AutoLoginService,
     private checkAuthService: CheckAuthService,
@@ -23,6 +23,10 @@ export class AutoLoginAllRoutesGuard implements CanActivate, CanLoad {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+    return this.checkAuth(state.url);
+  }
+
+  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     return this.checkAuth(state.url);
   }
 
