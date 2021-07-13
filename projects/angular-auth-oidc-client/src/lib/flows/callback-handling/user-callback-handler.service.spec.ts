@@ -1,13 +1,13 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { AuthStateService } from '../../authState/auth-state.service';
-import { AuthStateServiceMock } from '../../authState/auth-state.service-mock';
+import { AuthStateService } from '../../auth-state/auth-state.service';
+import { AuthStateServiceMock } from '../../auth-state/auth-state.service-mock';
 import { ConfigurationProvider } from '../../config/provider/config.provider';
 import { ConfigurationProviderMock } from '../../config/provider/config.provider-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
-import { UserServiceMock } from '../../userData/user-service-mock';
-import { UserService } from '../../userData/user.service';
+import { UserServiceMock } from '../../user-data/user-service-mock';
+import { UserService } from '../../user-data/user.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
 import { ValidationResult } from '../../validation/validation-result';
 import { FlowsDataService } from '../flows-data.service';

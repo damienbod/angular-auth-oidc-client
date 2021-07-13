@@ -6,26 +6,73 @@
 
 ### 2021-07-04 Version 12.0.0
 
-- Configuration via forRoot(...) method https://github.com/damienbod/angular-auth-oidc-client/issues/747 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1041
-- Remove the "AuthorizedState" enum in Version 12 https://github.com/damienbod/angular-auth-oidc-client/issues/755 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1062
-- Use a different key than redirect to store redirect route when using auto-login https://github.com/damienbod/angular-auth-oidc-client/issues/1060 | PR #1067
-- Return value of `loginWithPopup` and login should be the same https://github.com/damienbod/angular-auth-oidc-client/issues/1048 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1066
-- How to provide client id during logoff https://github.com/damienbod/angular-auth-oidc-client/issues/932 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1069
-- urlHandler callback function parameter in LogoffRevocationService.logoff does nothing https://github.com/damienbod/angular-auth-oidc-client/issues/966 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1069
-- Convert all instances of "Authorized" to "Authenticated" https://github.com/damienbod/angular-auth-oidc-client/issues/1088 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1085
-- Support for multiple APIs with unique scopes https://github.com/damienbod/angular-auth-oidc-client/issues/885 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1085
-- Multiple access tokens for the same client_id but different scopes https://github.com/damienbod/angular-auth-oidc-client/issues/620 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1085
-- Is there a silent renew event？#1011 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1085
-- Angular 12 Support https://github.com/damienbod/angular-auth-oidc-client/issues/1096 | PR: https://github.com/damienbod/angular-auth-oidc-client/pull/1112
-- Testing & Coverage
-- Improve documentation
-- Add configuration to disable or enable id_token expired check https://github.com/damienbod/angular-auth-oidc-client/issues/1113
-- Support for Azure B2C multiple policies https://github.com/damienbod/angular-auth-oidc-client/issues/802 | PR https://github.com/damienbod/angular-auth-oidc-client/pull/1085
-- Improve AutoLoginSample https://github.com/damienbod/angular-auth-oidc-client/issues/1138
-- Accessing AuthResult response object https://github.com/damienbod/angular-auth-oidc-client/issues/536
-- Improved Auto guards
-- renamed stsServer configuration to authority
-- Only one returntype (object) when subscribing to isAuthenticated and userdata to avoid confusion. #1164
+- Configuration via forRoot(...) method
+
+  - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/747) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1041)
+
+- Remove the "AuthorizedState" enum in Version 12
+
+  - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/755) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1062)
+
+- Use a different key than redirect to store redirect route when using autologin
+
+  - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1060) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1067)
+
+- Returnvalue of loginwithpopup and login should be the same
+
+  - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1048) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1066)
+
+- How to provide client id during logoff
+
+  - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/932) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1069)
+
+- urlHandler callback function parameter in LogoffRevocationService.logoff does nothing
+
+  - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/966) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1069)
+
+- Convert all instances of "Authorized" to "Authenticated"
+
+  - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1088) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1085)
+
+- Support for multiple APIs with unique scopes
+
+  - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/885) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1085)
+
+- Multiple access tokens for the same client_id but different scopes
+
+  - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/620) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1085)
+
+- Is there a silent renew event？
+
+  - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1011) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1085)
+
+- Angular 12 Support
+
+  - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1096) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1112)
+
+- Add configuration to disable or enable id_token expired check
+
+  - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1113) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1126)
+
+- Support for Azure B2C multiple policies
+
+  - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/802) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1085)
+
+- Improve AutoLoginSample
+
+  - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1138) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1144)
+
+- Accessing AuthResult response object
+
+  - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/536) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1142)
+
+- Rename `stsServer` configuration parameter to `authority`
+
+  - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1161) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1166)
+
+- Only one returntype (object) when subscribing to isAuthenticated and user data to avoid confusion.
+
+  - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1164) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1165)
 
 ### 2021-06-12 Version 11.6.11
 

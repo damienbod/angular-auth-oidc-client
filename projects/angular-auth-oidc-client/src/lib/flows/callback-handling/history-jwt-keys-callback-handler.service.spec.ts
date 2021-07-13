@@ -1,7 +1,7 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { AuthStateService } from '../../authState/auth-state.service';
-import { AuthStateServiceMock } from '../../authState/auth-state.service-mock';
+import { AuthStateService } from '../../auth-state/auth-state.service';
+import { AuthStateServiceMock } from '../../auth-state/auth-state.service-mock';
 import { ConfigurationProvider } from '../../config/provider/config.provider';
 import { ConfigurationProviderMock } from '../../config/provider/config.provider-mock';
 import { LoggerService } from '../../logging/logger.service';

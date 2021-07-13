@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, CanLoad, Route, RouterStateSnapshot, UrlSegment } from '@angular/router';
-import { AuthStateService } from '../authState/auth-state.service';
+import { AuthStateService } from '../auth-state/auth-state.service';
 import { ConfigurationProvider } from '../config/provider/config.provider';
 import { LoginService } from '../login/login.service';
 import { AutoLoginService } from './auto-login.service';
