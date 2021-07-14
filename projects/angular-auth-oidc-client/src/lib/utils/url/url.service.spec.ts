@@ -323,8 +323,8 @@ describe('UrlService Tests', () => {
         '&scope=openid%20email%20profile' +
         '&nonce=nonce' +
         '&state=state' +
-        '&prompt=myprompt' +
-        '&to=add&as=well';
+        '&to=add&as=well' +
+        '&prompt=myprompt';
 
       expect(value).toEqual(expectValue);
     });
@@ -623,6 +623,47 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
+    it('should add the prompt only once even if it is configured AND passed with `none` in silent renew case, taking the passed one', () => {
+      const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
+      config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
+      config.responseType = 'code';
+      config.scope = 'openid email profile';
+      config.redirectUrl = 'https://localhost:44386';
+
+      config.customParamsAuthRequest = {
+        prompt: 'select_account',
+      };
+
+      configurationProvider.setConfig(config);
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('authWellKnownEndPoints', 'configId')
+        .and.returnValue({ authorizationEndpoint: 'http://example' });
+
+      const value = (service as any).createAuthorizeUrl(
+        '', // Implicit Flow
+        config.redirectUrl,
+        'nonce',
+        'state',
+        'configId',
+        'somePrompt'
+      );
+
+      const expectValue =
+        'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
+        '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
+        '&response_type=code' +
+        '&scope=openid%20email%20profile' +
+        '&nonce=nonce' +
+        '&state=state' +
+        '&code_challenge=' +
+        '&code_challenge_method=S256' +
+        '&prompt=somePrompt';
+
+      expect(value).toEqual(expectValue);
+    });
+  });
+
+  describe('createRevocationEndpointBodyAccessToken', () => {
     it('createRevocationBody access_token default', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
@@ -653,7 +694,9 @@ describe('UrlService Tests', () => {
 
       expect(value).toBeNull();
     });
+  });
 
+  describe('createRevocationEndpointBodyRefreshToken', () => {
     it('createRevocationBody refresh_token default', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
@@ -684,7 +727,9 @@ describe('UrlService Tests', () => {
 
       expect(value).toBeNull();
     });
+  });
 
+  describe('getRevocationEndpointUrl', () => {
     it('getRevocationEndpointUrl with params', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
