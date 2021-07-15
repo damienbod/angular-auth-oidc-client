@@ -86,7 +86,7 @@ describe('PopUpService', () => {
         );
         popUpService.openPopUp('url');
 
-        expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', 'width=500,height=500,left=50,top=50');
+        expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', 'width=500,height=500,left=150,top=50');
       })
     );
 
@@ -103,7 +103,7 @@ describe('PopUpService', () => {
         );
         popUpService.openPopUp('url', { width: 100 });
 
-        expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', 'width=100,height=500,left=50,top=50');
+        expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', 'width=100,height=500,left=350,top=50');
       })
     );
 
