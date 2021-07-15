@@ -27,7 +27,7 @@ export class CodeFlowCallbackHandlerService {
   codeFlowCallback(urlToCheck: string, configId: string): Observable<CallbackContext> {
     const code = this.urlService.getUrlParameter(urlToCheck, 'code');
     const state = this.urlService.getUrlParameter(urlToCheck, 'state');
-    const sessionState = this.urlService.getUrlParameter(urlToCheck, 'session_state') || null;
+    const sessionState = this.urlService.getUrlParameter(urlToCheck, 'session_state');
 
     if (!state) {
       this.loggerService.logDebug(configId, 'no state in url');
