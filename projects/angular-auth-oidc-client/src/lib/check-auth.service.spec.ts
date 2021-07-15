@@ -436,6 +436,72 @@ describe('CheckAuthService', () => {
         });
       })
     );
+
+    it(
+      'should start check session and validation after forceRefreshSession has been called and is authenticated after forcing with silentrenew',
+      waitForAsync(() => {
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ authority: 'authority' });
+        spyOn(callBackService, 'isCallback').and.returnValue(false);
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
+        spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
+        spyOn(checkSessionService, 'isCheckSessionConfigured').and.returnValue(true);
+        spyOn(silentRenewService, 'isSilentRenewConfigured').and.returnValue(true);
+
+        const checkSessionServiceStartSpy = spyOn(checkSessionService, 'start');
+        const periodicallyTokenCheckServiceSpy = spyOn(periodicallyTokenCheckService, 'startTokenValidationPeriodically');
+        const getOrCreateIframeSpy = spyOn(silentRenewService, 'getOrCreateIframe');
+
+        spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(
+          of({
+            idToken: 'idToken',
+            accessToken: 'access_token',
+            isAuthenticated: true,
+            userData: null,
+            configId: 'configId',
+          })
+        );
+
+        checkAuthService.checkAuthIncludingServer('configId').subscribe((result) => {
+          expect(checkSessionServiceStartSpy).toHaveBeenCalledOnceWith('configId');
+          expect(periodicallyTokenCheckServiceSpy).toHaveBeenCalledTimes(1);
+          expect(getOrCreateIframeSpy).toHaveBeenCalledOnceWith('configId');
+        });
+      })
+    );
+
+    it(
+      'should start check session and validation after forceRefreshSession has been called and is authenticated after forcing without silentrenew',
+      waitForAsync(() => {
+        spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ authority: 'authority' });
+        spyOn(callBackService, 'isCallback').and.returnValue(false);
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
+        spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
+        spyOn(checkSessionService, 'isCheckSessionConfigured').and.returnValue(true);
+        spyOn(silentRenewService, 'isSilentRenewConfigured').and.returnValue(false);
+
+        const checkSessionServiceStartSpy = spyOn(checkSessionService, 'start');
+        const periodicallyTokenCheckServiceSpy = spyOn(periodicallyTokenCheckService, 'startTokenValidationPeriodically');
+        const getOrCreateIframeSpy = spyOn(silentRenewService, 'getOrCreateIframe');
+
+        spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(
+          of({
+            idToken: 'idToken',
+            accessToken: 'access_token',
+            isAuthenticated: true,
+            userData: null,
+            configId: 'configId',
+          })
+        );
+
+        checkAuthService.checkAuthIncludingServer('configId').subscribe((result) => {
+          expect(checkSessionServiceStartSpy).toHaveBeenCalledOnceWith('configId');
+          expect(periodicallyTokenCheckServiceSpy).toHaveBeenCalledTimes(1);
+          expect(getOrCreateIframeSpy).not.toHaveBeenCalled();
+        });
+      })
+    );
   });
 
   describe('checkAuthMultiple', () => {

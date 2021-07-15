@@ -328,18 +328,18 @@ export class UrlService {
       params = params.append('code_challenge_method', 'S256');
     }
 
-    if (prompt) {
-      params = params.append('prompt', prompt);
-    }
-
-    if (hdParam) {
-      params = params.append('hd', hdParam);
-    }
-
     const mergedParams = { ...customParamsAuthRequest, ...customRequestParams };
 
     if (Object.keys(mergedParams).length > 0) {
       params = this.appendCustomParams({ ...mergedParams }, params);
+    }
+
+    if (prompt) {
+      params = this.overWriteParam(params, 'prompt', prompt);
+    }
+
+    if (hdParam) {
+      params = params.append('hd', hdParam);
     }
 
     return `${authorizationUrl}?${params}`;
@@ -493,6 +493,10 @@ export class UrlService {
     }
 
     return params;
+  }
+
+  private overWriteParam(params: HttpParams, key: string, value: string | number | boolean): HttpParams {
+    return params.set(key, value);
   }
 
   private createHttpParams(existingParams?: string): HttpParams {
