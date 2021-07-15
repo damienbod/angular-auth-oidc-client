@@ -75,7 +75,7 @@ export class PopUpService {
   private getOptions(popupOptions?: PopupOptions): string {
     const popupDefaultOptions: PopupOptions = { width: 500, height: 500, left: 50, top: 50 };
 
-    const options = { ...popupDefaultOptions, ...(popupOptions || {}) };
+    const options: PopupOptions = { ...popupDefaultOptions, ...(popupOptions || {}) };
     const left: number = window.screenLeft + (window.outerWidth - options.width) / 2;
     const top: number = window.screenTop + (window.outerHeight - options.height) / 2;
     options.left = left;
