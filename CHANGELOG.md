@@ -8,7 +8,9 @@
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1186)
 - added multiple configs documentation
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1183)
-
+- Expose PopupService and PopupOptions as public
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1199)
+  
 ### 2021-07-06 12.0.1
 
 - Fix #1168 userInfoEndpoint Typo
