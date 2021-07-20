@@ -1,6 +1,6 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
-### 2021-07-18 12.0.2
+### 2021-07-20 12.0.2
 
 - Added fix overwriting prompt param
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1193)
