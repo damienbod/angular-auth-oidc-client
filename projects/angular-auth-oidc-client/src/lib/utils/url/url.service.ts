@@ -10,6 +10,7 @@ import { UriEncoder } from './uri-encoder';
 
 const CALLBACK_PARAMS_TO_CHECK = ['code', 'state', 'token', 'id_token'];
 const AUTH0_ENDPOINT = 'auth0.com';
+
 @Injectable()
 export class UrlService {
   constructor(
