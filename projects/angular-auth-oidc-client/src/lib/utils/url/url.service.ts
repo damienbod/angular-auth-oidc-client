@@ -9,6 +9,7 @@ import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { UriEncoder } from './uri-encoder';
 
 const CALLBACK_PARAMS_TO_CHECK = ['code', 'state', 'token', 'id_token'];
+const AUTH0_ENDPOINT = 'auth0.com';
 @Injectable()
 export class UrlService {
   constructor(
@@ -93,6 +94,13 @@ export class UrlService {
   }
 
   createEndSessionUrl(idTokenHint: string, configId: string, customParamsEndSession?: { [p: string]: string | number | boolean }): string {
+    // Auth0 needs a special logout url
+    // See https://auth0.com/docs/api/authentication#logout
+
+    if (this.isAuth0Endpoint(configId)) {
+      return this.composeAuth0Endpoint(configId);
+    }
+
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
     const endSessionEndpoint = authWellKnownEndPoints?.endSessionEndpoint;
 
@@ -508,5 +516,19 @@ export class UrlService {
     });
 
     return params;
+  }
+
+  private isAuth0Endpoint(configId: string): boolean {
+    const { authority } = this.configurationProvider.getOpenIDConfiguration(configId);
+
+    return authority.endsWith(AUTH0_ENDPOINT);
+  }
+
+  private composeAuth0Endpoint(configId: string) {
+    // format: https://YOUR_DOMAIN/v2/logout?client_id=YOUR_CLIENT_ID&returnTo=LOGOUT_URL
+    const { authority, clientId } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const postLogoutRedirectUrl = this.getPostLogoutRedirectUrl(configId);
+
+    return `${authority}/v2/logout?client_id=${clientId}&returnTo=${postLogoutRedirectUrl}`;
   }
 }

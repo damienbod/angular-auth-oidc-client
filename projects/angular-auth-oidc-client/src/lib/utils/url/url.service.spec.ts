@@ -1482,6 +1482,16 @@ describe('UrlService Tests', () => {
 
       expect(value).toEqual(expectValue);
     });
+
+    it('returns auth0 format url if authority ends with .auth0', () => {
+      configurationProvider.setConfig({ authority: 'something.auth0.com' });
+
+      const value = service.createEndSessionUrl('mytoken', 'configId');
+
+      const expectValue = null;
+
+      expect(value).toEqual(expectValue);
+    });
   });
 
   describe('getAuthorizeParUrl', () => {
