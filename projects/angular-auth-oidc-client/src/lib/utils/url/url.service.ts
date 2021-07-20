@@ -521,6 +521,10 @@ export class UrlService {
   private isAuth0Endpoint(configId: string): boolean {
     const { authority } = this.configurationProvider.getOpenIDConfiguration(configId);
 
+    if (!authority) {
+      return false;
+    }
+
     return authority.endsWith(AUTH0_ENDPOINT);
   }
 

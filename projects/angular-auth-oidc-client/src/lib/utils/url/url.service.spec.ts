@@ -1370,7 +1370,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('createEndSessionUrl', () => {
-    it('createEndSessionUrl create url when all parameters given', () => {
+    it('create url when all parameters given', () => {
       const config = {
         authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
@@ -1392,7 +1392,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createEndSessionUrl create url when all parameters and customParamsEndSession given', () => {
+    it('create url when all parameters and customParamsEndSession given', () => {
       const config = {
         authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
@@ -1415,7 +1415,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createEndSessionUrl with azure-ad-b2c policy parameter', () => {
+    it('with azure-ad-b2c policy parameter', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = 'myid';
@@ -1438,7 +1438,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createEndSessionUrl create url without postLogoutRedirectUri when not given', () => {
+    it('create url without postLogoutRedirectUri when not given', () => {
       const config = {
         authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
@@ -1460,7 +1460,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createEndSessionUrl returns null if no wellknownEndpoints given', () => {
+    it('returns null if no wellknownEndpoints given', () => {
       configurationProvider.setConfig({});
 
       const value = service.createEndSessionUrl('mytoken', 'configId');
@@ -1470,7 +1470,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createEndSessionUrl returns null if no wellknownEndpoints.endSessionEndpoint given', () => {
+    it('returns null if no wellknownEndpoints.endSessionEndpoint given', () => {
       configurationProvider.setConfig({});
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({
         endSessionEndpoint: null,
@@ -1484,11 +1484,15 @@ describe('UrlService Tests', () => {
     });
 
     it('returns auth0 format url if authority ends with .auth0', () => {
-      configurationProvider.setConfig({ authority: 'something.auth0.com' });
+      configurationProvider.setConfig({
+        authority: 'something.auth0.com',
+        clientId: 'someClientId',
+        postLogoutRedirectUri: 'https://localhost:1234/unauthorized',
+      });
 
-      const value = service.createEndSessionUrl('mytoken', 'configId');
+      const value = service.createEndSessionUrl('anything', 'configId');
 
-      const expectValue = null;
+      const expectValue = `something.auth0.com/v2/logout?client_id=someClientId&returnTo=https://localhost:1234/unauthorized`;
 
       expect(value).toEqual(expectValue);
     });
