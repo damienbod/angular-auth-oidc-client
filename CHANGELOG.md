@@ -1,6 +1,6 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
-### 2021-07-18 12.0.2
+### 2021-07-20 12.0.2
 
 - Added fix overwriting prompt param
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1193)
@@ -10,7 +10,9 @@
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1183)
 - Expose PopupService and PopupOptions as public
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1199)
-  
+- Support end session for Auth0 (non conform OIDC endpoint)
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1203)
+
 ### 2021-07-06 12.0.1
 
 - Fix #1168 userInfoEndpoint Typo
