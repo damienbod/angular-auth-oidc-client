@@ -529,7 +529,7 @@ export class UrlService {
     return authority.endsWith(AUTH0_ENDPOINT);
   }
 
-  private composeAuth0Endpoint(configId: string) {
+  private composeAuth0Endpoint(configId: string): string {
     // format: https://YOUR_DOMAIN/v2/logout?client_id=YOUR_CLIENT_ID&returnTo=LOGOUT_URL
     const { authority, clientId } = this.configurationProvider.getOpenIDConfiguration(configId);
     const postLogoutRedirectUrl = this.getPostLogoutRedirectUrl(configId);
