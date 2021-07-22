@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { UrlService } from 'dist/angular-auth-oidc-client/lib/utils/url/url.service';
 import { Observable } from 'rxjs';
 import { AuthOptions } from './auth-options';
 import { AuthenticatedResult } from './auth-state/auth-result';
@@ -18,6 +17,7 @@ import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.servi
 import { UserService } from './user-data/user.service';
 import { UserDataResult } from './user-data/userdata-result';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
+import { UrlService } from './utils/url/url.service';
 
 @Injectable()
 export class OidcSecurityService {
