@@ -649,7 +649,7 @@ const endSessionUrl = this.oidcSecurityService.getEndSessionUrl(customParams, 'c
 
 ## getAuthorizeUrl(customParams?: { ... }, configId?: string)
 
-Creates the authorize URL which can be used to get the url for the authentication the lib uses internall<>. You can pass custom params directly into the method. This method also takes a `configId`. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+Creates the authorize URL which can be used to get the url for the authentication the lib uses internally. You can pass custom params directly into the method. This method also takes a `configId`. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
 
 ```ts
 const authorizeUrl = this.oidcSecurityService.getAuthorizeUrl();
