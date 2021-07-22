@@ -63,8 +63,6 @@ export class LoggerService {
       return;
     }
 
-    console.log(args.length);
-
     if (!!args && !!args.length) {
       console.warn(`[WARN] ${configId} - ${message}`, ...args);
     } else {

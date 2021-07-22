@@ -23,6 +23,8 @@ import { UserServiceMock } from './user-data/user-service-mock';
 import { UserService } from './user-data/user.service';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
 import { TokenHelperServiceMock } from './utils/tokenHelper/token-helper.service-mock';
+import { UrlService } from './utils/url/url.service';
+import { UrlServiceMock } from './utils/url/url.service-mock';
 
 describe('OidcSecurityService', () => {
   let oidcSecurityService: OidcSecurityService;
@@ -36,6 +38,7 @@ describe('OidcSecurityService', () => {
   let refreshSessionService: RefreshSessionService;
   let checkAuthService: CheckAuthService;
   let userService: UserService;
+  let urlService: UrlService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -71,6 +74,7 @@ describe('OidcSecurityService', () => {
         { provide: LogoffRevocationService, useClass: LogoffRevocationServiceMock },
         { provide: LoginService, useClass: LoginServiceMock },
         { provide: RefreshSessionService, useClass: RefreshSessionServiceMock },
+        { provide: UrlService, useClass: UrlServiceMock },
       ],
     });
   });
@@ -87,6 +91,7 @@ describe('OidcSecurityService', () => {
     refreshSessionService = TestBed.inject(RefreshSessionService);
     checkAuthService = TestBed.inject(CheckAuthService);
     userService = TestBed.inject(UserService);
+    urlService = TestBed.inject(UrlService);
   });
 
   it('should create', () => {
@@ -809,6 +814,33 @@ describe('OidcSecurityService', () => {
       const spy = spyOn(logoffRevocationService, 'getEndSessionUrl');
 
       oidcSecurityService.getEndSessionUrl({ custom: 'params' }, 'configId');
+      expect(spy).toHaveBeenCalledOnceWith('configId', { custom: 'params' });
+    });
+  });
+
+  describe('getAuthorizeUrl', () => {
+    it('calls urlService.getAuthorizeUrl ', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+
+      const spy = spyOn(urlService, 'getAuthorizeUrl');
+
+      oidcSecurityService.getAuthorizeUrl();
+      expect(spy).toHaveBeenCalledOnceWith('configId', undefined);
+    });
+
+    it('calls urlService.getAuthorizeUrl with customparams', () => {
+      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+
+      const spy = spyOn(urlService, 'getAuthorizeUrl');
+
+      oidcSecurityService.getAuthorizeUrl({ custom: 'params' });
+      expect(spy).toHaveBeenCalledOnceWith('configId', { custom: 'params' });
+    });
+
+    it('calls urlService.getAuthorizeUrlwith customparams and configId', () => {
+      const spy = spyOn(urlService, 'getAuthorizeUrl');
+
+      oidcSecurityService.getAuthorizeUrl({ custom: 'params' }, 'configId');
       expect(spy).toHaveBeenCalledOnceWith('configId', { custom: 'params' });
     });
   });

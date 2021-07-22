@@ -17,6 +17,7 @@ import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.servi
 import { UserService } from './user-data/user.service';
 import { UserDataResult } from './user-data/userdata-result';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
+import { UrlService } from './utils/url/url.service';
 
 @Injectable()
 export class OidcSecurityService {
@@ -69,7 +70,8 @@ export class OidcSecurityService {
     private callbackService: CallbackService,
     private logoffRevocationService: LogoffRevocationService,
     private loginService: LoginService,
-    private refreshSessionService: RefreshSessionService
+    private refreshSessionService: RefreshSessionService,
+    private urlService: UrlService
   ) {}
 
   /**
@@ -381,5 +383,19 @@ export class OidcSecurityService {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId).configId;
 
     return this.logoffRevocationService.getEndSessionUrl(configId, customParams);
+  }
+
+  /**
+   * Creates the authorize url basd on your flow
+   *
+   * @param customParams
+   * @param configId The configId to perform the action in behalf of. If not passed, the first configs will be taken
+   *
+   * @returns A string with the authorize url or null
+   */
+  getAuthorizeUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): string | null {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId).configId;
+
+    return this.urlService.getAuthorizeUrl(configId, customParams);
   }
 }

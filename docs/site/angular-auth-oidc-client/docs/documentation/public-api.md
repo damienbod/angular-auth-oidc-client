@@ -633,7 +633,7 @@ More info: [https://tools.ietf.org/html/rfc7009](https://tools.ietf.org/html/rfc
 
 ## getEndSessionUrl(customParams?: { ... }, configId?: string)
 
-Creates the ens session URL which can be used to implement your own custom server logout. You can pass custom params directly into the method. This method also takes a `configId`. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+Creates the end session URL which can be used to implement your own custom server logout. You can pass custom params directly into the method. This method also takes a `configId`. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
 
 ```ts
 const endSessionUrl = this.oidcSecurityService.getEndSessionUrl();
@@ -645,4 +645,20 @@ const customParams: {
 };
 
 const endSessionUrl = this.oidcSecurityService.getEndSessionUrl(customParams, 'configId');
+```
+
+## getAuthorizeUrl(customParams?: { ... }, configId?: string)
+
+Creates the authorize URL which can be used to get the url for the authentication the lib uses internally. You can pass custom params directly into the method. This method also takes a `configId`. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+
+```ts
+const authorizeUrl = this.oidcSecurityService.getAuthorizeUrl();
+```
+
+```ts
+const customParams: {
+  some: 'params';
+};
+
+const authorizeUrl = this.oidcSecurityService.getAuthorizeUrl(customParams, 'configId');
 ```
