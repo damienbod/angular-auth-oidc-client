@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { UrlService } from 'dist/angular-auth-oidc-client/lib/utils/url/url.service';
 import { Observable } from 'rxjs';
 import { AuthOptions } from './auth-options';
 import { AuthenticatedResult } from './auth-state/auth-result';
@@ -69,7 +70,8 @@ export class OidcSecurityService {
     private callbackService: CallbackService,
     private logoffRevocationService: LogoffRevocationService,
     private loginService: LoginService,
-    private refreshSessionService: RefreshSessionService
+    private refreshSessionService: RefreshSessionService,
+    private urlService: UrlService
   ) {}
 
   /**
@@ -381,5 +383,19 @@ export class OidcSecurityService {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId).configId;
 
     return this.logoffRevocationService.getEndSessionUrl(configId, customParams);
+  }
+
+  /**
+   * Creates the authorize url basd on your flow
+   *
+   * @param customParams
+   * @param configId The configId to perform the action in behalf of. If not passed, the first configs will be taken
+   *
+   * @returns A string with the authorize url or null
+   */
+  getAuthorizeUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): string | null {
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId).configId;
+
+    return this.urlService.getAuthorizeUrl(configId, customParams);
   }
 }
