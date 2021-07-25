@@ -12,7 +12,7 @@ on:
 
 jobs:
   build_and_deploy_job:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed') && github.repository_owner == 'damienbod'
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
