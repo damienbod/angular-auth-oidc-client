@@ -249,7 +249,7 @@ export class UrlService {
 
     const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
     const nonce = this.flowsDataService.createNonce(configId);
-    this.loggerService.logDebug(configId, 'Authorize created. adding myautostate: ' + state + ' nonce:' + nonce);
+    this.loggerService.logDebug(configId, 'Authorize created. adding myautostate: ' + state);
 
     // code_challenge with "S256"
     const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
@@ -405,7 +405,7 @@ export class UrlService {
   private createUrlImplicitFlowAuthorize(configId: string, customParams?: { [key: string]: string | number | boolean }): string {
     const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
     const nonce = this.flowsDataService.createNonce(configId);
-    this.loggerService.logDebug(configId, 'Authorize created. adding myautostate: ' + state + ' nonce:' + nonce);
+    this.loggerService.logDebug(configId, 'Authorize created. adding myautostate: ' + state);
 
     const redirectUrl = this.getRedirectUrl(configId);
 
@@ -426,7 +426,7 @@ export class UrlService {
   private createUrlCodeFlowAuthorize(configId: string, customParams?: { [key: string]: string | number | boolean }): string {
     const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
     const nonce = this.flowsDataService.createNonce(configId);
-    this.loggerService.logDebug(configId, 'Authorize created. adding myautostate: ' + state + ' nonce:' + nonce);;
+    this.loggerService.logDebug(configId, 'Authorize created. adding myautostate: ' + state);
 
     const redirectUrl = this.getRedirectUrl(configId);
 
