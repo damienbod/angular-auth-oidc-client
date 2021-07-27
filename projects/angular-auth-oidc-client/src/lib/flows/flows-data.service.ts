@@ -15,6 +15,7 @@ export class FlowsDataService {
 
   createNonce(configId: string): string {
     const nonce = this.randomService.createRandom(40, configId);
+    this.loggerService.logDebug(configId, 'Nonce created. nonce:' + nonce);
     this.setNonce(nonce, configId);
 
     return nonce;

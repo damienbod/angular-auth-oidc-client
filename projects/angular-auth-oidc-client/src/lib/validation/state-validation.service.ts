@@ -72,7 +72,7 @@ export class StateValidationService {
       const authNonce = this.storagePersistenceService.read('authNonce', configId);
 
       if (!this.tokenValidationService.validateIdTokenNonce(toReturn.decodedIdToken, authNonce, ignoreNonceAfterRefresh, configId)) {
-        this.loggerService.logWarning(configId, 'authCallback incorrect nonce');
+        this.loggerService.logWarning(configId, 'authCallback incorrect nonce, did you call the checkAuth() method multiple times?');
         toReturn.state = ValidationResult.IncorrectNonce;
         this.handleUnsuccessfulValidation(configId);
 

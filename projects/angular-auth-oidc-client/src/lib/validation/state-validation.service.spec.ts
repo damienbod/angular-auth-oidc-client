@@ -259,7 +259,7 @@ describe('State Validation Service', () => {
     };
     const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect nonce');
+    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect nonce, did you call the checkAuth() method multiple times?');
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('id_tokenTEST');
