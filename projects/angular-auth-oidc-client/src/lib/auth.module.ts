@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { APP_INITIALIZER, InjectionToken, ModuleWithProviders, NgModule, Provider } from '@angular/core';
+import { APP_INITIALIZER, ModuleWithProviders, NgModule } from '@angular/core';
 import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './auth-state/auth-state.service';
@@ -39,6 +39,8 @@ import { ResponseTypeValidationService } from './login/response-type-validation/
 import { StandardLoginService } from './login/standard/standard-login.service';
 import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.service';
 import { OidcSecurityService } from './oidc.security.service';
+import { PASSED_CONFIG } from './passed-config/passed-config';
+import { PassedInitialConfig } from './passed-config/passed-initial-config';
 import { PublicEventsService } from './public-events/public-events.service';
 import { AbstractSecurityStorage } from './storage/abstract-security-storage';
 import { BrowserStorageService } from './storage/browser-storage.service';
@@ -54,12 +56,6 @@ import { JsrsAsignReducedService } from './validation/jsrsasign-reduced.service'
 import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';
 
-export interface PassedInitialConfig {
-  config?: OpenIdConfiguration | OpenIdConfiguration[];
-  loader?: Provider;
-  storage?: any;
-}
-
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function createStaticLoader(passedConfig: PassedInitialConfig) {
   return new StsConfigStaticLoader(passedConfig.config);
@@ -72,8 +68,6 @@ export function configurationProviderFactory(oidcConfigService: OidcConfigServic
 
   return fn;
 }
-
-export const PASSED_CONFIG = new InjectionToken<PassedInitialConfig>('PASSED_CONFIG');
 
 @NgModule({
   imports: [CommonModule, HttpClientModule],
