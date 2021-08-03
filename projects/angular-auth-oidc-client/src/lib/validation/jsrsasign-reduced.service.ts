@@ -7,12 +7,14 @@ export class JsrsAsignReducedService {
 
   async generateCodeChallenge(codeVerifier: any): Promise<string> {
     const challengeRaw: string = await this.calcHash(codeVerifier);
+    
     return base64UrlEncode(challengeRaw);
   }
 
   async generateAtHash(accessToken: any, algorithm: string): Promise<string> {
     const valueAsBytes: Uint8Array = this.textEncoder.encode(accessToken);
     const resultBytes: ArrayBuffer = await this.crypto.subtle.digest(algorithm, valueAsBytes);
+
     return String.fromCharCode.apply(null, new Uint16Array(resultBytes));
   }
 
@@ -21,6 +23,7 @@ export class JsrsAsignReducedService {
     const hashBuffer: ArrayBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
 
     const hashArray: number[] = Array.from(new Uint8Array(hashBuffer));
+
     return this.toHashString(hashArray);
   }
 
@@ -35,5 +38,6 @@ export class JsrsAsignReducedService {
 
 export function base64UrlEncode(str): string {
   const base64: string = btoa(str);
+
   return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }

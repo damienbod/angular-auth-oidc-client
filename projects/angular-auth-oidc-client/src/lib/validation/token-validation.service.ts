@@ -374,12 +374,9 @@ export class TokenValidationService {
         return false;
       }
 
-      console.log('nokid alg', alg);
-      // New
       const [header, body, sig] = idToken.split(',');
       const cyptokey = await this.cyptoObj.subtle.importKey('jwk', keyToValidate, alg, true, ['verify']);
       isValid = await this.cyptoObj.subtle.verify(alg, cyptokey, this.textEncoder.encode(sig), this.textEncoder.encode(body));
-      // End
 
       if (!isValid) {
         this.loggerService.logWarning(configId, 'incorrect Signature, validation failed for id_token');
@@ -393,7 +390,6 @@ export class TokenValidationService {
           // const publicKey = KEYUTIL.getKey(key);
           // isValid = KJUR.jws.JWS.verify(idToken, publicKey, [alg]);
           const [header, body, sig] = idToken.split(',');
-          console.log('kid alg', alg);
           const cyptokey = await this.cyptoObj.subtle.importKey('jwk', key as any, alg, true, ['verify']);
           isValid = await this.cyptoObj.subtle.verify(alg, cyptokey, this.textEncoder.encode(sig), this.textEncoder.encode(body));
           if (!isValid) {
