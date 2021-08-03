@@ -38,7 +38,7 @@ describe('RefreshSessionIframeService ', () => {
     it(
       'calls sendAuthorizeRequestUsingSilentRenew with created url',
       waitForAsync(() => {
-        spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
+        spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue(Promise.resolve('a-url'));
         const sendAuthorizeRequestUsingSilentRenewSpy = spyOn(
           refreshSessionIframeService as any,
           'sendAuthorizeRequestUsingSilentRenew'
@@ -53,7 +53,7 @@ describe('RefreshSessionIframeService ', () => {
     it(
       'returns correct observable',
       waitForAsync(() => {
-        spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue('a-url');
+        spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue(Promise.resolve('a-url'));
         const sessionIFrame = document.createElement('iframe');
         sessionIFrame.onload = () => {
           // contentWindow is set!

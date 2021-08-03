@@ -1,20 +1,39 @@
 import { Injectable } from '@angular/core';
-import { hextob64u, KJUR } from 'jsrsasign-reduced';
 
 @Injectable()
 export class JsrsAsignReducedService {
-  generateCodeChallenge(codeVerifier: any): string {
-    const hash = KJUR.crypto.Util.hashString(codeVerifier, 'sha256');
-    const testData = hextob64u(hash);
+  private crypto: Crypto = window.crypto || (window as any).msCrypto; // for IE11
+  private textEncoder: TextEncoder = new TextEncoder();
 
-    return testData;
+  async generateCodeChallenge(codeVerifier: any): Promise<string> {
+    const challengeRaw: string = await this.calcHash(codeVerifier);
+    return base64UrlEncode(challengeRaw);
   }
 
-  generateAtHash(accessToken: any, sha: string): string {
-    const hash = KJUR.crypto.Util.hashString(accessToken, sha);
-    const first128bits = hash.substr(0, hash.length / 2);
-    const testData = hextob64u(first128bits);
-
-    return testData;
+  async generateAtHash(accessToken: any, algorithm: string): Promise<string> {
+    const valueAsBytes: Uint8Array = this.textEncoder.encode(accessToken);
+    const resultBytes: ArrayBuffer = await this.crypto.subtle.digest(algorithm, valueAsBytes);
+    return String.fromCharCode.apply(null, new Uint16Array(resultBytes));
   }
+
+  async calcHash(valueToHash: string): Promise<string> {
+    const msgBuffer: Uint8Array = new TextEncoder().encode(valueToHash);
+    const hashBuffer: ArrayBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+
+    const hashArray: number[] = Array.from(new Uint8Array(hashBuffer));
+    return this.toHashString(hashArray);
+  }
+
+  toHashString(byteArray: number[]) {
+    let result = '';
+    for (let e of byteArray) {
+      result += String.fromCharCode(e);
+    }
+    return result;
+  }
+}
+
+export function base64UrlEncode(str): string {
+  const base64: string = btoa(str);
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }

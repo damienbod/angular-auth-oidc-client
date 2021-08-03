@@ -1,5 +1,4 @@
 ﻿import { Injectable } from '@angular/core';
-import { KEYUTIL, KJUR } from 'jsrsasign-reduced';
 import { LoggerService } from '../logging/logger.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { JsrsAsignReducedService } from './jsrsasign-reduced.service';
@@ -51,7 +50,10 @@ import { JsrsAsignReducedService } from './jsrsasign-reduced.service';
 @Injectable()
 export class TokenValidationService {
   static refreshTokenNoncePlaceholder = '--RefreshToken--';
-  keyAlgorithms: string[] = ['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'PS256', 'PS384', 'PS512'];
+  keyAlgorithms: string[] = ['HS-256', 'HS-384', 'HS-512', 'RS-256', 'RS-384', 'RS-512', 'ES-256', 'ES-384', 'PS-256', 'PS-384', 'PS-512'];
+
+  private cyptoObj: Crypto = window.crypto || (window as any).msCrypto; // for IE11
+  private textEncoder = new (window as any).TextEncoder();
 
   constructor(
     private tokenHelperService: TokenHelperService,
@@ -311,7 +313,7 @@ export class TokenValidationService {
   // Header Parameter of the JOSE Header.The Client MUST use the keys provided by the Issuer.
   // id_token C6: The alg value SHOULD be RS256. Validation of tokens using other signing algorithms is described in the
   // OpenID Connect Core 1.0 [OpenID.Core] specification.
-  validateSignatureIdToken(idToken: any, jwtkeys: any, configId: string): boolean {
+  async validateSignatureIdToken(idToken: any, jwtkeys: any, configId: string): Promise<boolean> {
     if (!jwtkeys || !jwtkeys.keys) {
       return false;
     }
@@ -372,7 +374,12 @@ export class TokenValidationService {
         return false;
       }
 
-      isValid = KJUR.jws.JWS.verify(idToken, KEYUTIL.getKey(keyToValidate), [alg]);
+      console.log('nokid alg', alg);
+      // New
+      const [header, body, sig] = idToken.split(',');
+      const cyptokey = await this.cyptoObj.subtle.importKey('jwk', keyToValidate, alg, true, ['verify']);
+      isValid = await this.cyptoObj.subtle.verify(alg, cyptokey, this.textEncoder.encode(sig), this.textEncoder.encode(body));
+      // End
 
       if (!isValid) {
         this.loggerService.logWarning(configId, 'incorrect Signature, validation failed for id_token');
@@ -383,8 +390,12 @@ export class TokenValidationService {
       // kid in the Jose header of id_token
       for (const key of jwtkeys.keys) {
         if ((key.kid as string) === (kid as string)) {
-          const publicKey = KEYUTIL.getKey(key);
-          isValid = KJUR.jws.JWS.verify(idToken, publicKey, [alg]);
+          // const publicKey = KEYUTIL.getKey(key);
+          // isValid = KJUR.jws.JWS.verify(idToken, publicKey, [alg]);
+          const [header, body, sig] = idToken.split(',');
+          console.log('kid alg', alg);
+          const cyptokey = await this.cyptoObj.subtle.importKey('jwk', key as any, alg, true, ['verify']);
+          isValid = await this.cyptoObj.subtle.verify(alg, cyptokey, this.textEncoder.encode(sig), this.textEncoder.encode(body));
           if (!isValid) {
             this.loggerService.logWarning(configId, 'incorrect Signature, validation failed for id_token');
           }
@@ -417,23 +428,23 @@ export class TokenValidationService {
   // access_token C2: Take the left- most half of the hash and base64url- encode it.
   // access_token C3: The value of at_hash in the ID Token MUST match the value produced in the previous step if at_hash
   // is present in the ID Token.
-  validateIdTokenAtHash(accessToken: any, atHash: any, idTokenAlg: string, configId: string): boolean {
+  async validateIdTokenAtHash(accessToken: any, atHash: any, idTokenAlg: string, configId: string): Promise<boolean> {
     this.loggerService.logDebug(configId, 'at_hash from the server:' + atHash);
 
     // 'sha256' 'sha384' 'sha512'
-    let sha = 'sha256';
+    let sha = 'SHA-256';
     if (idTokenAlg.includes('384')) {
-      sha = 'sha384';
+      sha = 'SHA-384';
     } else if (idTokenAlg.includes('512')) {
-      sha = 'sha512';
+      sha = 'SHA-512';
     }
 
-    const testData = this.jsrsAsignReducedService.generateAtHash('' + accessToken, sha);
+    const testData = await this.jsrsAsignReducedService.generateAtHash('' + accessToken, sha);
     this.loggerService.logDebug(configId, 'at_hash client validation not decoded:' + testData);
     if (testData === (atHash as string)) {
       return true; // isValid;
     } else {
-      const testValue = this.jsrsAsignReducedService.generateAtHash('' + decodeURIComponent(accessToken), sha);
+      const testValue = await this.jsrsAsignReducedService.generateAtHash('' + decodeURIComponent(accessToken), sha);
       this.loggerService.logDebug(configId, '-gen access--' + testValue);
       if (testValue === (atHash as string)) {
         return true; // isValid

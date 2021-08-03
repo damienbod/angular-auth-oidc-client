@@ -42,7 +42,7 @@ export class UrlService {
     return CALLBACK_PARAMS_TO_CHECK.some((x) => !!this.getUrlParameter(currentUrl, x));
   }
 
-  getRefreshSessionSilentRenewUrl(configId: string, customParams?: { [key: string]: string | number | boolean }): string {
+  async getRefreshSessionSilentRenewUrl(configId: string, customParams?: { [key: string]: string | number | boolean }): Promise<string> {
     if (this.flowHelper.isCurrentFlowCodeFlow(configId)) {
       return this.createUrlCodeFlowWithSilentRenew(configId, customParams);
     }
@@ -86,7 +86,7 @@ export class UrlService {
     return `${authorizationUrl}?${params}`;
   }
 
-  getAuthorizeUrl(configId: string, customParams?: { [key: string]: string | number | boolean }): string {
+  async getAuthorizeUrl(configId: string, customParams?: { [key: string]: string | number | boolean }): Promise<string> {
     if (this.flowHelper.isCurrentFlowCodeFlow(configId)) {
       return this.createUrlCodeFlowAuthorize(configId, customParams);
     }
@@ -240,7 +240,10 @@ export class UrlService {
     return params.toString();
   }
 
-  createBodyForParCodeFlowRequest(configId: string, customParamsRequest?: { [key: string]: string | number | boolean }): string {
+  async createBodyForParCodeFlowRequest(
+    configId: string,
+    customParamsRequest?: { [key: string]: string | number | boolean }
+  ): Promise<string> {
     const redirectUrl = this.getRedirectUrl(configId);
 
     if (!redirectUrl) {
@@ -253,7 +256,7 @@ export class UrlService {
 
     // code_challenge with "S256"
     const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
-    const codeChallenge = this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier);
+    const codeChallenge = await this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier);
 
     const { clientId, responseType, scope, hdParam, customParamsAuthRequest } = this.configurationProvider.getOpenIDConfiguration(configId);
 
@@ -376,7 +379,10 @@ export class UrlService {
     return null;
   }
 
-  private createUrlCodeFlowWithSilentRenew(configId: string, customParams?: { [key: string]: string | number | boolean }): string {
+  private async createUrlCodeFlowWithSilentRenew(
+    configId: string,
+    customParams?: { [key: string]: string | number | boolean }
+  ): Promise<string> {
     const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
     const nonce = this.flowsDataService.createNonce(configId);
 
@@ -384,7 +390,7 @@ export class UrlService {
 
     // code_challenge with "S256"
     const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
-    const codeChallenge = this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier);
+    const codeChallenge = await this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier);
 
     const silentRenewUrl = this.getSilentRenewUrl(configId);
 
@@ -423,7 +429,7 @@ export class UrlService {
     return null;
   }
 
-  private createUrlCodeFlowAuthorize(configId: string, customParams?: { [key: string]: string | number | boolean }): string {
+  private async createUrlCodeFlowAuthorize(configId: string, customParams?: { [key: string]: string | number | boolean }): Promise<string> {
     const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
     const nonce = this.flowsDataService.createNonce(configId);
     this.loggerService.logDebug(configId, 'Authorize created. adding myautostate: ' + state);
@@ -436,7 +442,7 @@ export class UrlService {
 
     // code_challenge with "S256"
     const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
-    const codeChallenge = this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier);
+    const codeChallenge = await this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier);
 
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
     if (authWellKnownEndPoints) {

@@ -356,39 +356,39 @@ describe('TokenValidationService', () => {
   });
 
   describe('validateSignatureIdToken', () => {
-    it('returns false if null as both parameters is passed', () => {
-      const valueFalse = tokenValidationService.validateSignatureIdToken(null, null, 'configId');
+    it('returns false if null as both parameters is passed', async () => {
+      const valueFalse = await tokenValidationService.validateSignatureIdToken(null, null, 'configId');
       expect(valueFalse).toEqual(false);
     });
 
-    it('returns false if jwtkeys has no keys-property', () => {
-      const valueFalse = tokenValidationService.validateSignatureIdToken(null, { notKeys: '' }, 'configId');
+    it('returns false if jwtkeys has no keys-property', async () => {
+      const valueFalse = await tokenValidationService.validateSignatureIdToken(null, { notKeys: '' }, 'configId');
       expect(valueFalse).toEqual(false);
     });
 
-    it('returns false if header data has no header data', () => {
+    it('returns false if header data has no header data', async () => {
       spyOn(tokenHelperService, 'getHeaderFromToken').and.returnValue({});
 
       const jwtKeys = {
         keys: 'someThing',
       };
 
-      const valueFalse = tokenValidationService.validateSignatureIdToken(null, jwtKeys, 'configId');
+      const valueFalse = await tokenValidationService.validateSignatureIdToken(null, jwtKeys, 'configId');
       expect(valueFalse).toEqual(false);
     });
 
-    it('returns false if header data alg property does not exist in keyalgorithms', () => {
+    it('returns false if header data alg property does not exist in keyalgorithms', async () => {
       spyOn(tokenHelperService, 'getHeaderFromToken').and.returnValue({ alg: 'NOT SUPPORTED ALG' });
 
       const jwtKeys = {
         keys: 'someThing',
       };
 
-      const valueFalse = tokenValidationService.validateSignatureIdToken(null, jwtKeys, 'configId');
+      const valueFalse = await tokenValidationService.validateSignatureIdToken(null, jwtKeys, 'configId');
       expect(valueFalse).toEqual(false);
     });
 
-    it('returns false if header data has kid property and kwtKeys has same kid property but they are not valid with the token', () => {
+    it('returns false if header data has kid property and kwtKeys has same kid property but they are not valid with the token', async () => {
       const kid = '5626CE6A8F4F5FCD79C6642345282CA76D337548';
 
       spyOn(tokenHelperService, 'getHeaderFromToken').and.returnValue({ alg: 'RS256', kid });
@@ -410,11 +410,11 @@ describe('TokenValidationService', () => {
         ],
       };
 
-      const valueFalse = tokenValidationService.validateSignatureIdToken('someNOTMATCHINGIdToken', jwtKeys, 'configId');
+      const valueFalse = await tokenValidationService.validateSignatureIdToken('someNOTMATCHINGIdToken', jwtKeys, 'configId');
       expect(valueFalse).toEqual(false);
     });
 
-    it('returns true if header data has kid property and kwtKeys has same kid property and they match with the token', () => {
+    it('returns true if header data has kid property and kwtKeys has same kid property and they match with the token', async () => {
       const kid = '5626CE6A8F4F5FCD79C6642345282CA76D337548';
       const idTokenGood =
         'eyJhbGciOiJSUzI1NiIsImtpZCI6IjU2MjZDRTZBOEY0RjVGQ0Q3OUM2NjQyMzQ1MjgyQ0E3NkQzMzc1NDgiLCJ0eXAiOiJKV1QiLCJ4NXQiOiJWaWJPYW85UFg4MTV4bVFqUlNnc3AyMHpkVWcifQ.eyJuYmYiOjE1ODk1NTYxODYsImV4cCI6MTU4OTU1NjIxNiwiaXNzIjoiaHR0cHM6Ly9vZmZlcmluZ3NvbHV0aW9ucy1zdHMuYXp1cmV3ZWJzaXRlcy5uZXQiLCJhdWQiOiJhbmd1bGFyQ2xpZW50Iiwibm9uY2UiOiI3YmJjMWUzNDdhNjEzNzM2MmJhMGNmZGE4ZDMxZjllNjQ1UGhVZ0VIRCIsImlhdCI6MTU4OTU1NjE4NiwiYXRfaGFzaCI6IjNnbUdCTlhZVDFnS2liYXNIOFpVVHciLCJzX2hhc2giOiJ4VUZyY2o0a1hieU5MS3VNRFJKYlJBIiwic2lkIjoiaWRpeEtiQ28ySnBJY05RMlNWX0M3QSIsInN1YiI6IjMzNGM2MGM4LWZjNWQtNDI4Yy04NmFhLWJhZmMxYjQ0MWZiNCIsImF1dGhfdGltZSI6MTU4OTU0OTMzNywiaWRwIjoibG9jYWwiLCJhbXIiOlsicHdkIl19.Oj2zm5HsR9VKBnjGMUR08SWv8ZEx5tRivfAv5seEmkWMBkCcmveTsoGKa5CnDOw-bMz08qBGRtojAHSkwsWMI6QycrHr_sAApBu7ZJqEIwRgr4rKhbZKQTkjIH5kWZMG6N27t2CWD49hHvPStC30hN9SgnUYFRaAynYJSTCKsOhicD71ICEp8dYolj1tt6U7YX8ul24NQI1mKFpfIvVDkhhE1IGZolwiYFtKxhoEM-Q_KFj0OIx-Tg6eVnwKUEzCupShmgCaMNsv2H-wXgUBF9BYzFnQTcyb7WGcW9261pGDN4dgLDUaDwEY8abpXGTlg3AbnZcxeLl6jo1IGVP5aA';
@@ -438,55 +438,55 @@ describe('TokenValidationService', () => {
         ],
       };
 
-      const valueFalse = tokenValidationService.validateSignatureIdToken(idTokenGood, jwtKeys, 'configId');
+      const valueFalse = await tokenValidationService.validateSignatureIdToken(idTokenGood, jwtKeys, 'configId');
       expect(valueFalse).toEqual(true);
     });
   });
 
   describe('validateIdTokenAtHash', () => {
-    it('returns true if sha is sha256 and generated hash equals atHash param', () => {
+    it('returns true if sha is sha256 and generated hash equals atHash param', async () => {
       const accessToken = 'iGU3DhbPoDljiYtr0oepxi7zpT8BsjdU7aaXcdq-DPk';
       const atHash = '-ODC_7Go_UIUTC8nP4k2cA';
 
-      const result = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '256', 'configId');
+      const result = await tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '256', 'configId');
       expect(result).toEqual(true);
     });
 
-    it('returns false if sha is sha256 and generated hash does not equal atHash param', () => {
+    it('returns false if sha is sha256 and generated hash does not equal atHash param', async () => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const atHash = 'bad';
 
-      const result = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '256', 'configId');
+      const result = await tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '256', 'configId');
       expect(result).toEqual(false);
     });
 
-    it('returns true if sha is sha256 and generated hash does equal atHash param', () => {
+    it('returns true if sha is sha256 and generated hash does equal atHash param', async () => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const atHash = 'good';
 
-      spyOn(jsrsAsignReducedService, 'generateAtHash').and.returnValues('notEqualsGood', 'good');
+      spyOn(jsrsAsignReducedService, 'generateAtHash').and.returnValues(Promise.resolve('notEqualsGood'), Promise.resolve('good'));
 
-      const result = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '256', 'configId');
+      const result = await tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '256', 'configId');
       expect(result).toEqual(true);
     });
 
-    it('returns false if sha is sha384 and generated hash does not equal atHash param', () => {
+    it('returns false if sha is sha384 and generated hash does not equal atHash param', async () => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const atHash = 'bad';
 
-      const result = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '384', 'configId');
+      const result = await tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '384', 'configId');
       expect(result).toEqual(false);
     });
 
-    it('returns false if sha is sha512 and generated hash does not equal atHash param', () => {
+    it('returns false if sha is sha512 and generated hash does not equal atHash param', async () => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const atHash = 'bad';
 
-      const result = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '512', 'configId');
+      const result = await tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '512', 'configId');
       expect(result).toEqual(false);
     });
   });

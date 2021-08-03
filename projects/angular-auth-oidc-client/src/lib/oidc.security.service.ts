@@ -393,7 +393,7 @@ export class OidcSecurityService {
    *
    * @returns A string with the authorize url or null
    */
-  getAuthorizeUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): string | null {
+  getAuthorizeUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): Promise<string | null> {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId).configId;
 
     return this.urlService.getAuthorizeUrl(configId, customParams);

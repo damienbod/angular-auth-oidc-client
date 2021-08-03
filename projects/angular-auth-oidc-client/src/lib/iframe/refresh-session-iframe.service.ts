@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
-import { Observable } from 'rxjs';
+import { from, Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
 import { UrlService } from '../utils/url/url.service';
 import { SilentRenewService } from './silent-renew.service';
@@ -21,9 +22,12 @@ export class RefreshSessionIframeService {
 
   refreshSessionWithIframe(configId: string, customParams?: { [key: string]: string | number | boolean }): Observable<boolean> {
     this.loggerService.logDebug(configId, 'BEGIN refresh session Authorize Iframe renew');
-    const url = this.urlService.getRefreshSessionSilentRenewUrl(configId, customParams);
-
-    return this.sendAuthorizeRequestUsingSilentRenew(url, configId);
+    const urlPromise = this.urlService.getRefreshSessionSilentRenewUrl(configId, customParams);
+    return from(urlPromise).pipe(
+      switchMap((url) => {
+        return this.sendAuthorizeRequestUsingSilentRenew(url, configId);
+      })
+    );
   }
 
   private sendAuthorizeRequestUsingSilentRenew(url: string, configId: string): Observable<boolean> {

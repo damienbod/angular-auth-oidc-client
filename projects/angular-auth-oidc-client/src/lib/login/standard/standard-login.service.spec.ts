@@ -107,7 +107,7 @@ describe('StandardLoginService', () => {
         });
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-        spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
+        spyOn(urlService, 'getAuthorizeUrl').and.returnValue(Promise.resolve('someUrl'));
         const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
 
         const result = standardLoginService.loginStandard('configId');
@@ -126,7 +126,7 @@ describe('StandardLoginService', () => {
         });
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-        spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
+        spyOn(urlService, 'getAuthorizeUrl').and.returnValue(Promise.resolve('someUrl'));
         const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
         const spy = jasmine.createSpy();
         const urlHandler = (url) => {
@@ -148,7 +148,7 @@ describe('StandardLoginService', () => {
         });
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-        const getAuthorizeUrlSpy = spyOn(urlService, 'getAuthorizeUrl').and.returnValue('someUrl');
+        const getAuthorizeUrlSpy = spyOn(urlService, 'getAuthorizeUrl').and.returnValue(Promise.resolve('someUrl'));
         const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
         const result = standardLoginService.loginStandard('configId', { customParams: { to: 'add', as: 'well' } });
         expect(result).toBeUndefined();

@@ -85,7 +85,7 @@ describe('ParService', () => {
     it(
       'calls data service with correct params',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url123');
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(Promise.resolve('some-url123'));
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ parEndpoint: 'parEndpoint' });
@@ -99,7 +99,7 @@ describe('ParService', () => {
     it(
       'Gives back correct object properties',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(Promise.resolve('some-url456'));
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ parEndpoint: 'parEndpoint' });
@@ -113,7 +113,7 @@ describe('ParService', () => {
     it(
       'throws error if data service has got an error',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url789');
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(Promise.resolve('some-url789'));
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ parEndpoint: 'parEndpoint' });
@@ -132,7 +132,7 @@ describe('ParService', () => {
     it(
       'should retry once',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(Promise.resolve('some-url456'));
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ parEndpoint: 'parEndpoint' });
@@ -152,7 +152,7 @@ describe('ParService', () => {
     it(
       'should retry twice',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(Promise.resolve('some-url456'));
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ parEndpoint: 'parEndpoint' });
@@ -172,7 +172,7 @@ describe('ParService', () => {
     it(
       'should fail after three tries',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(Promise.resolve('some-url456'));
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ parEndpoint: 'parEndpoint' });

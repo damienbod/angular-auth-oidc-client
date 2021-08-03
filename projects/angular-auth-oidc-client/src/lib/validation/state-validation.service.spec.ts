@@ -142,7 +142,7 @@ describe('State Validation Service', () => {
     config.responseType = 'id_token token';
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(Promise.resolve(true));
 
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
 
@@ -160,7 +160,7 @@ describe('State Validation Service', () => {
 
     spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(true);
 
-    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(Promise.resolve(true));
 
     config.autoCleanStateAfterAuthentication = false;
 
@@ -197,7 +197,7 @@ describe('State Validation Service', () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
     config.responseType = 'id_token token';
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(false);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(Promise.resolve(false));
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
@@ -233,7 +233,7 @@ describe('State Validation Service', () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
     config.responseType = 'id_token token';
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(Promise.resolve(true));
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(false);
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
@@ -259,7 +259,10 @@ describe('State Validation Service', () => {
     };
     const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect nonce, did you call the checkAuth() method multiple times?');
+    expect(logWarningSpy).toHaveBeenCalledWith(
+      'configId',
+      'authCallback incorrect nonce, did you call the checkAuth() method multiple times?'
+    );
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('id_tokenTEST');
@@ -274,7 +277,7 @@ describe('State Validation Service', () => {
 
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(Promise.resolve(true));
 
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
 
@@ -317,7 +320,7 @@ describe('State Validation Service', () => {
 
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(Promise.resolve(true));
 
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
 
@@ -367,7 +370,7 @@ describe('State Validation Service', () => {
 
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(Promise.resolve(true));
 
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
 
@@ -415,7 +418,7 @@ describe('State Validation Service', () => {
 
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(Promise.resolve(true));
 
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
 
@@ -467,7 +470,7 @@ describe('State Validation Service', () => {
 
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(Promise.resolve(true));
 
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
 
@@ -517,7 +520,7 @@ describe('State Validation Service', () => {
   it('Reponse is valid if authConfiguration.response_type does not equal "id_token token"', () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(Promise.resolve(true));
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateIdTokenIatMaxOffset').and.returnValue(true);
@@ -565,7 +568,7 @@ describe('State Validation Service', () => {
   it('Response is invalid if validateIdTokenAtHash is false', () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(Promise.resolve(true));
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateIdTokenIatMaxOffset').and.returnValue(true);
@@ -576,7 +579,7 @@ describe('State Validation Service', () => {
     spyOn(oidcSecurityValidation, 'validateIdTokenExpNotExpired').and.returnValue(true);
     config.responseType = 'id_token token';
     config.autoCleanStateAfterAuthentication = false;
-    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(false);
+    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(Promise.resolve(false));
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
@@ -616,13 +619,13 @@ describe('State Validation Service', () => {
 
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(Promise.resolve(true));
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateIdTokenIatMaxOffset').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateIdTokenAud').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateIdTokenExpNotExpired').and.returnValue(true);
-    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(Promise.resolve(true));
     config.responseType = 'id_token token';
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
@@ -663,7 +666,7 @@ describe('State Validation Service', () => {
     config.responseType = 'code';
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(Promise.resolve(true));
 
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
 
@@ -681,7 +684,7 @@ describe('State Validation Service', () => {
 
     spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(true);
 
-    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(Promise.resolve(true));
 
     config.autoCleanStateAfterAuthentication = false;
 
