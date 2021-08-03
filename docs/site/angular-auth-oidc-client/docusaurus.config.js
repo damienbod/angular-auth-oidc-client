@@ -1,7 +1,7 @@
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
   title: 'Angular Auth OIDC Client Docs',
-  tagline: 'Dinosaurs are cool',
+  tagline: 'Angular Auth OIDC Client Docs',
   url: 'https://lively-sand-02e04b010.azurestaticapps.net/',
   baseUrl: '/',
   customFields: {
@@ -17,7 +17,7 @@ module.exports = {
       title: 'Angular Auth OIDC Client Docs',
       logo: {
         alt: 'My Site Logo',
-        src: 'img/logo.svg',
+        src: 'img/angular-auth-logo.png',
       },
       items: [
         {
@@ -51,6 +51,19 @@ module.exports = {
             {
               label: 'GitHub',
               href: 'https://github.com/damienbod/angular-auth-oidc-client',
+            },
+          ],
+        },
+        {
+          title: 'Made by with ❤',
+          items: [
+            {
+              label: 'Fabian Gosebrink',
+              href: 'https://github.com/fabiangosebrink',
+            },
+            {
+              label: 'Damien Bowden',
+              href: 'https://github.com/damienbod',
             },
           ],
         },
