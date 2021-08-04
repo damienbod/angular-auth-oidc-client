@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
-import { switchMap, take } from 'rxjs/operators';
+import { from, Observable, of, throwError } from 'rxjs';
+import { switchMap, take, tap } from 'rxjs/operators';
 import { AuthOptions } from '../../auth-options';
 import { CheckAuthService } from '../../check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
@@ -22,8 +22,9 @@ export class PopUpLoginService {
     private configurationProvider: ConfigurationProvider,
     private authWellKnownService: AuthWellKnownService,
     private popupService: PopUpService,
-    private checkAuthService: CheckAuthService
-  ) {}
+    private checkAuthService: CheckAuthService,
+  ) {
+  }
 
   loginWithPopUpStandard(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
@@ -33,7 +34,7 @@ export class PopUpLoginService {
       return throwError(errorMessage);
     }
 
-    const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const {authWellknownEndpointUrl} = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!authWellknownEndpointUrl) {
       const errorMessage = 'no authWellknownEndpoint given!';
@@ -46,16 +47,15 @@ export class PopUpLoginService {
 
     return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).pipe(
       switchMap(() => {
-        const { customParams } = authOptions || {};
-
-        this.urlService.getAuthorizeUrl(configId, customParams).then((authUrl) => {
-          this.popupService.openPopUp(authUrl, popupOptions);
-        });
-
+        const {customParams} = authOptions || {};
+        return from(this.urlService.getAuthorizeUrl(configId, customParams));
+      }),
+      tap(authUrl => this.popupService.openPopUp(authUrl, popupOptions)),
+      switchMap(() => {
         return this.popupService.result$.pipe(
           take(1),
           switchMap((result: PopupResultReceivedUrl) => {
-            const { userClosed, receivedUrl } = result;
+            const {userClosed, receivedUrl} = result;
 
             if (userClosed) {
               return of({
@@ -69,9 +69,9 @@ export class PopUpLoginService {
             }
 
             return this.checkAuthService.checkAuth(configId, receivedUrl);
-          })
+          }),
         );
-      })
+      }),
     );
   }
 }
