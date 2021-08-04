@@ -15,7 +15,7 @@ const DUMMY_JWKS = {
     {
       kid: 'random-id',
       kty: 'RSA',
-      alg: 'RS256',
+      alg: 'RS-256',
       use: 'sig',
       n: 'some-value',
       e: 'AQAB',

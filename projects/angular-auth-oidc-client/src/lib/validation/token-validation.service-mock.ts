@@ -31,16 +31,16 @@
     return true;
   }
 
-  validateSignatureIdToken(idToken: any, jwtkeys: any): boolean {
-    return true;
+  validateSignatureIdToken(idToken: any, jwtkeys: any): Promise<boolean> {
+    return Promise.resolve(true);
   }
 
   hasConfigValidResponseType(responseType: string): boolean {
     return true;
   }
 
-  validateIdTokenAtHash(accessToken: any, atHash: any, isCodeFlow: boolean): boolean {
-    return true;
+  validateIdTokenAtHash(accessToken: any, atHash: any, isCodeFlow: boolean): Promise<boolean> {
+    return Promise.resolve(true);
   }
 
   generateCodeChallenge(codeVerifier: any): string {

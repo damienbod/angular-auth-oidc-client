@@ -85,10 +85,11 @@ describe('ParService', () => {
     it(
       'calls data service with correct params',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(Promise.resolve('some-url123'));
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(Promise.resolve(''));
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ parEndpoint: 'parEndpoint' });
+
         const dataServiceSpy = spyOn(dataService, 'post').and.returnValue(of({}));
         service.postParRequest('configId').subscribe(() => {
           expect(dataServiceSpy).toHaveBeenCalledOnceWith('parEndpoint', 'some-url123', 'configId', jasmine.any(HttpHeaders));

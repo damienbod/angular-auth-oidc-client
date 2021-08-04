@@ -7,7 +7,7 @@ export class JsrsAsignReducedService {
 
   async generateCodeChallenge(codeVerifier: any): Promise<string> {
     const challengeRaw: string = await this.calcHash(codeVerifier);
-    
+
     return base64UrlEncode(challengeRaw);
   }
 

@@ -1310,7 +1310,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns correct url if wellknownendpoints and custom params are given', () => {
+    it('returns correct url if wellknownendpoints and custom params are given', async () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const scope = 'testScope';
@@ -1338,14 +1338,14 @@ describe('UrlService Tests', () => {
 
       const serviceAsAny = service as any;
 
-      const result = serviceAsAny.createUrlCodeFlowAuthorize(configId, { to: 'add', as: 'well' });
+      const result = await serviceAsAny.createUrlCodeFlowAuthorize(configId, { to: 'add', as: 'well' });
       expect(result).toBe(
         `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com` +
           `&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&to=add&as=well`
       );
     });
 
-    it('returns empty string if no wellknownendpoints are given', () => {
+    it('returns empty string if no wellknownendpoints are given', async () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const redirectUrl = 'http://any-url.com';
@@ -1364,7 +1364,7 @@ describe('UrlService Tests', () => {
 
       const serviceAsAny = service as any;
 
-      const result = serviceAsAny.createUrlCodeFlowAuthorize('configId');
+      const result = await serviceAsAny.createUrlCodeFlowAuthorize('configId');
       expect(result).toBe(null);
     });
   });

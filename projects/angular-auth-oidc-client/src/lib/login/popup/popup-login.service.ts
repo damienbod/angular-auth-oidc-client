@@ -22,9 +22,8 @@ export class PopUpLoginService {
     private configurationProvider: ConfigurationProvider,
     private authWellKnownService: AuthWellKnownService,
     private popupService: PopUpService,
-    private checkAuthService: CheckAuthService,
-  ) {
-  }
+    private checkAuthService: CheckAuthService
+  ) {}
 
   loginWithPopUpStandard(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
@@ -34,7 +33,7 @@ export class PopUpLoginService {
       return throwError(errorMessage);
     }
 
-    const {authWellknownEndpointUrl} = this.configurationProvider.getOpenIDConfiguration(configId);
+    const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!authWellknownEndpointUrl) {
       const errorMessage = 'no authWellknownEndpoint given!';
@@ -47,15 +46,15 @@ export class PopUpLoginService {
 
     return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).pipe(
       switchMap(() => {
-        const {customParams} = authOptions || {};
+        const { customParams } = authOptions || {};
         return from(this.urlService.getAuthorizeUrl(configId, customParams));
       }),
-      tap(authUrl => this.popupService.openPopUp(authUrl, popupOptions)),
+      tap((authUrl: string) => this.popupService.openPopUp(authUrl, popupOptions)),
       switchMap(() => {
         return this.popupService.result$.pipe(
           take(1),
           switchMap((result: PopupResultReceivedUrl) => {
-            const {userClosed, receivedUrl} = result;
+            const { userClosed, receivedUrl } = result;
 
             if (userClosed) {
               return of({
@@ -69,9 +68,9 @@ export class PopUpLoginService {
             }
 
             return this.checkAuthService.checkAuth(configId, receivedUrl);
-          }),
+          })
         );
-      }),
+      })
     );
   }
 }

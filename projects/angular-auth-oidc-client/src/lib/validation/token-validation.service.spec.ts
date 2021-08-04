@@ -391,7 +391,7 @@ describe('TokenValidationService', () => {
     it('returns false if header data has kid property and kwtKeys has same kid property but they are not valid with the token', async () => {
       const kid = '5626CE6A8F4F5FCD79C6642345282CA76D337548';
 
-      spyOn(tokenHelperService, 'getHeaderFromToken').and.returnValue({ alg: 'RS256', kid });
+      spyOn(tokenHelperService, 'getHeaderFromToken').and.returnValue({ alg: 'RS-256', kid });
 
       const jwtKeys = {
         keys: [
@@ -405,7 +405,7 @@ describe('TokenValidationService', () => {
             x5c: [
               'MIIDPzCCAiegAwIBAgIQF+HRVxLHII9IlOoQk6BxcjANBgkqhkiG9w0BAQsFADAbMRkwFwYDVQQDDBBzdHMuZGV2LmNlcnQuY29tMB4XDTE5MDIyMDEwMTA0M1oXDTM5MDIyMDEwMTkyOVowGzEZMBcGA1UEAwwQc3RzLmRldi5jZXJ0LmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALrt/hyuKS0RyR6BAcxYTOdekVsep8mxuckIx+DWyo3xkPHbSstQXBo6nzGhChfCjiuODWwMe67QSgjvRCjWJHhb3FMwc1XrruI1hutV2HU3pIL/g4fxY/NuORqHBJG7wWxVunMPvzefSVqlLogr2/hDn4XLrm1HK+OGtAEMjXHGDaXFxkXDCsu/y9WITtADFC6iww1SxY+YJYeE3CdjeVZyXnatfvySjsT6g9Z4tulDkKFq1tehtvSmdf+F8X9o1/EwKvuESRB3HHc4GVSDuBeQeDLnDGRqvP4zAqYk1LFBgzgDAPwJo8SERzrTuZ+j7dMKH6yqAFYRodrAk7WkH9kCAwEAAaN/MH0wDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDATAtBgNVHREEJjAkghBzdHMuZGV2LmNlcnQuY29tghBzdHMuZGV2LmNlcnQuY29tMB0GA1UdDgQWBBQuyHxWP3je6jGMOmOiY+hz47r36jANBgkqhkiG9w0BAQsFAAOCAQEAKEHG7Ga6nb2XiHXDc69KsIJwbO80+LE8HVJojvITILz3juN6/FmK0HmogjU6cYST7m1MyxsVhQQNwJASZ6haBNuBbNzBXfyyfb4kr62t1oDLNwhctHaHaM4sJSf/xIw+YO+Qf7BtfRAVsbM05+QXIi2LycGrzELiXu7KFM0E1+T8UOZ2Qyv7OlCb/pWkYuDgE4w97ox0MhDpvgluxZLpRanOLUCVGrfFaij7gRAhjYPUY3vAEcD8JcFBz1XijU8ozRO6FaG4qg8/JCe+VgoWsMDj3sKB9g0ob6KCyG9L2bdk99PGgvXDQvMYCpkpZzG3XsxOINPd5p0gc209ZOoxTg==',
             ],
-            alg: 'RS256',
+            alg: 'RS-256',
           },
         ],
       };
@@ -419,7 +419,7 @@ describe('TokenValidationService', () => {
       const idTokenGood =
         'eyJhbGciOiJSUzI1NiIsImtpZCI6IjU2MjZDRTZBOEY0RjVGQ0Q3OUM2NjQyMzQ1MjgyQ0E3NkQzMzc1NDgiLCJ0eXAiOiJKV1QiLCJ4NXQiOiJWaWJPYW85UFg4MTV4bVFqUlNnc3AyMHpkVWcifQ.eyJuYmYiOjE1ODk1NTYxODYsImV4cCI6MTU4OTU1NjIxNiwiaXNzIjoiaHR0cHM6Ly9vZmZlcmluZ3NvbHV0aW9ucy1zdHMuYXp1cmV3ZWJzaXRlcy5uZXQiLCJhdWQiOiJhbmd1bGFyQ2xpZW50Iiwibm9uY2UiOiI3YmJjMWUzNDdhNjEzNzM2MmJhMGNmZGE4ZDMxZjllNjQ1UGhVZ0VIRCIsImlhdCI6MTU4OTU1NjE4NiwiYXRfaGFzaCI6IjNnbUdCTlhZVDFnS2liYXNIOFpVVHciLCJzX2hhc2giOiJ4VUZyY2o0a1hieU5MS3VNRFJKYlJBIiwic2lkIjoiaWRpeEtiQ28ySnBJY05RMlNWX0M3QSIsInN1YiI6IjMzNGM2MGM4LWZjNWQtNDI4Yy04NmFhLWJhZmMxYjQ0MWZiNCIsImF1dGhfdGltZSI6MTU4OTU0OTMzNywiaWRwIjoibG9jYWwiLCJhbXIiOlsicHdkIl19.Oj2zm5HsR9VKBnjGMUR08SWv8ZEx5tRivfAv5seEmkWMBkCcmveTsoGKa5CnDOw-bMz08qBGRtojAHSkwsWMI6QycrHr_sAApBu7ZJqEIwRgr4rKhbZKQTkjIH5kWZMG6N27t2CWD49hHvPStC30hN9SgnUYFRaAynYJSTCKsOhicD71ICEp8dYolj1tt6U7YX8ul24NQI1mKFpfIvVDkhhE1IGZolwiYFtKxhoEM-Q_KFj0OIx-Tg6eVnwKUEzCupShmgCaMNsv2H-wXgUBF9BYzFnQTcyb7WGcW9261pGDN4dgLDUaDwEY8abpXGTlg3AbnZcxeLl6jo1IGVP5aA';
 
-      spyOn(tokenHelperService, 'getHeaderFromToken').and.returnValue({ alg: 'RS256', kid });
+      spyOn(tokenHelperService, 'getHeaderFromToken').and.returnValue({ alg: 'RS-256', kid });
 
       const jwtKeys = {
         keys: [
@@ -433,7 +433,7 @@ describe('TokenValidationService', () => {
             x5c: [
               'MIIDPzCCAiegAwIBAgIQF+HRVxLHII9IlOoQk6BxcjANBgkqhkiG9w0BAQsFADAbMRkwFwYDVQQDDBBzdHMuZGV2LmNlcnQuY29tMB4XDTE5MDIyMDEwMTA0M1oXDTM5MDIyMDEwMTkyOVowGzEZMBcGA1UEAwwQc3RzLmRldi5jZXJ0LmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALrt/hyuKS0RyR6BAcxYTOdekVsep8mxuckIx+DWyo3xkPHbSstQXBo6nzGhChfCjiuODWwMe67QSgjvRCjWJHhb3FMwc1XrruI1hutV2HU3pIL/g4fxY/NuORqHBJG7wWxVunMPvzefSVqlLogr2/hDn4XLrm1HK+OGtAEMjXHGDaXFxkXDCsu/y9WITtADFC6iww1SxY+YJYeE3CdjeVZyXnatfvySjsT6g9Z4tulDkKFq1tehtvSmdf+F8X9o1/EwKvuESRB3HHc4GVSDuBeQeDLnDGRqvP4zAqYk1LFBgzgDAPwJo8SERzrTuZ+j7dMKH6yqAFYRodrAk7WkH9kCAwEAAaN/MH0wDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDATAtBgNVHREEJjAkghBzdHMuZGV2LmNlcnQuY29tghBzdHMuZGV2LmNlcnQuY29tMB0GA1UdDgQWBBQuyHxWP3je6jGMOmOiY+hz47r36jANBgkqhkiG9w0BAQsFAAOCAQEAKEHG7Ga6nb2XiHXDc69KsIJwbO80+LE8HVJojvITILz3juN6/FmK0HmogjU6cYST7m1MyxsVhQQNwJASZ6haBNuBbNzBXfyyfb4kr62t1oDLNwhctHaHaM4sJSf/xIw+YO+Qf7BtfRAVsbM05+QXIi2LycGrzELiXu7KFM0E1+T8UOZ2Qyv7OlCb/pWkYuDgE4w97ox0MhDpvgluxZLpRanOLUCVGrfFaij7gRAhjYPUY3vAEcD8JcFBz1XijU8ozRO6FaG4qg8/JCe+VgoWsMDj3sKB9g0ob6KCyG9L2bdk99PGgvXDQvMYCpkpZzG3XsxOINPd5p0gc209ZOoxTg==',
             ],
-            alg: 'RS256',
+            alg: 'RS-256',
           },
         ],
       };

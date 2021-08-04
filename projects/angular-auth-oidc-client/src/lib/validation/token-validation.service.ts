@@ -387,8 +387,6 @@ export class TokenValidationService {
       // kid in the Jose header of id_token
       for (const key of jwtkeys.keys) {
         if ((key.kid as string) === (kid as string)) {
-          // const publicKey = KEYUTIL.getKey(key);
-          // isValid = KJUR.jws.JWS.verify(idToken, publicKey, [alg]);
           const [header, body, sig] = idToken.split(',');
           const cyptokey = await this.cyptoObj.subtle.importKey('jwk', key as any, alg, true, ['verify']);
           isValid = await this.cyptoObj.subtle.verify(alg, cyptokey, this.textEncoder.encode(sig), this.textEncoder.encode(body));

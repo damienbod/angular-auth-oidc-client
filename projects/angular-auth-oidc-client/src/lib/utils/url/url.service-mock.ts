@@ -12,12 +12,12 @@ export class UrlServiceMock {
     return true;
   }
 
-  getRefreshSessionSilentRenewUrl(): string {
-    return '';
+  getRefreshSessionSilentRenewUrl(): Promise<string> {
+    return Promise.resolve('');
   }
 
-  getAuthorizeUrl(customParams?: { [key: string]: string | number | boolean }): string {
-    return '';
+  getAuthorizeUrl(customParams?: { [key: string]: string | number | boolean }): Promise<string> {
+    return Promise.resolve('someUrl');
   }
 
   createEndSessionUrl(idTokenHint: string) {
@@ -44,8 +44,15 @@ export class UrlServiceMock {
     return '';
   }
 
-  createBodyForParCodeFlowRequest(customParamsRequest?: { [key: string]: string | number | boolean }): string {
-    return '';
+  createBodyForParCodeFlowRequest(customParamsRequest?: { [key: string]: string | number | boolean }): Promise<string> {
+    return Promise.resolve('');
+  }
+
+  private async createUrlCodeFlowWithSilentRenew(
+    configId: string,
+    customParams?: { [key: string]: string | number | boolean }
+  ): Promise<string> {
+    return Promise.resolve('');
   }
 
   getAuthorizeParUrl(request_uri: string): string {
