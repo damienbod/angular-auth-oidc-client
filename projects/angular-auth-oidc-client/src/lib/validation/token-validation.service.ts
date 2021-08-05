@@ -358,9 +358,11 @@ export class TokenValidationService {
 
     alg = this.getAlg(alg as string);
 
-    const [header, body, sig] = idToken.split(',');
+    const data = this.tokenHelperService.getPayloadFromToken(idToken, true, configId);
+    const signature = this.tokenHelperService.getSignatureFromToken(idToken, true, configId);
+
     const cyptokey = await this.cyptoObj.subtle.importKey('jwk', key, alg, true, ['verify']);
-    isValid = await this.cyptoObj.subtle.verify(alg, cyptokey, this.textEncoder.encode(sig), this.textEncoder.encode(body));
+    isValid = await this.cyptoObj.subtle.verify(alg, cyptokey, this.textEncoder.encode(signature), this.textEncoder.encode(data));
     if (!isValid) {
       this.loggerService.logWarning(configId, 'incorrect Signature, validation failed for id_token');
     }
@@ -371,19 +373,16 @@ export class TokenValidationService {
   private getAlg(alg: string) {
     switch (alg.charAt(0)) {
       case 'R':
-
         return {
           name: 'RSASSA-PKCS1-v1_5',
           hash: 'SHA-256',
         };
       case 'E':
-
         return {
           name: 'ECDSA',
           namedCurve: 'P-256',
         };
       default:
-
         return null;
     }
   }
@@ -391,7 +390,6 @@ export class TokenValidationService {
   private alg2kty(alg: string) {
     switch (alg.charAt(0)) {
       case 'R':
-
         return 'RSA';
       case 'E':
         return 'EC';
