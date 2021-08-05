@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 export class JsrsAsignReducedService {
   private crypto: Crypto = window.crypto || (window as any).msCrypto; // for IE11
   private textEncoder: TextEncoder = new TextEncoder();
+  private textDecoder: TextDecoder = new TextDecoder();
 
   async generateCodeChallenge(codeVerifier: any): Promise<string> {
     const challengeRaw: string = await this.calcHash(codeVerifier);
@@ -14,8 +15,7 @@ export class JsrsAsignReducedService {
   async generateAtHash(accessToken: any, algorithm: string): Promise<string> {
     const valueAsBytes: Uint8Array = this.textEncoder.encode(accessToken);
     const resultBytes: ArrayBuffer = await this.crypto.subtle.digest(algorithm, valueAsBytes);
-
-    return String.fromCharCode.apply(null, new Uint16Array(resultBytes));
+    return btoa(encodeURIComponent(this.textDecoder.decode(resultBytes)));
   }
 
   async calcHash(valueToHash: string): Promise<string> {
@@ -32,7 +32,6 @@ export class JsrsAsignReducedService {
     for (let e of byteArray) {
       result += String.fromCharCode(e);
     }
-
     return result;
   }
 }
