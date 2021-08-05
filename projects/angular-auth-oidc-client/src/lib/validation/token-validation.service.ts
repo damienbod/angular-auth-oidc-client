@@ -50,7 +50,17 @@ import { JsrsAsignReducedService } from './jsrsasign-reduced.service';
 @Injectable()
 export class TokenValidationService {
   static refreshTokenNoncePlaceholder = '--RefreshToken--';
-  keyAlgorithms: string[] = ['HS-256', 'HS-384', 'HS-512', 'RS-256', 'RS-384', 'RS-512', 'ES-256', 'ES-384', 'PS-256', 'PS-384', 'PS-512'];
+  keyAlgorithms: string[] = ['HS256',
+    'HS384',
+    'HS512',
+    'RS256',
+    'RS384',
+    'RS512',
+    'ES256',
+    'ES384',
+    'PS256',
+    'PS384',
+    'PS512'];
 
   private cyptoObj: Crypto = window.crypto || (window as any).msCrypto; // for IE11
   private textEncoder = new (window as any).TextEncoder();
@@ -58,8 +68,9 @@ export class TokenValidationService {
   constructor(
     private tokenHelperService: TokenHelperService,
     private loggerService: LoggerService,
-    private jsrsAsignReducedService: JsrsAsignReducedService
-  ) {}
+    private jsrsAsignReducedService: JsrsAsignReducedService,
+  ) {
+  }
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
   // (possibly allowing for some small leeway to account for clock skew).
@@ -86,8 +97,8 @@ export class TokenValidationService {
     this.loggerService.logDebug(
       configId,
       `Has idToken expired: ${!tokenNotExpired} --> expires in ${this.millisToMinutesAndSeconds(
-        tokenExpirationValue - nowWithOffset
-      )} , ${new Date(tokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`
+        tokenExpirationValue - nowWithOffset,
+      )} , ${new Date(tokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`,
     );
 
     // Token not expired?
@@ -108,8 +119,8 @@ export class TokenValidationService {
     this.loggerService.logDebug(
       configId,
       `Has accessToken expired: ${!tokenNotExpired} --> expires in ${this.millisToMinutesAndSeconds(
-        accessTokenExpirationValue - nowWithOffset
-      )} , ${new Date(accessTokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`
+        accessTokenExpirationValue - nowWithOffset,
+      )} , ${new Date(accessTokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`,
     );
 
     // access token not expired?
@@ -180,7 +191,7 @@ export class TokenValidationService {
     dataIdToken: any,
     maxOffsetAllowedInSeconds: number,
     disableIatOffsetValidation: boolean,
-    configId: string
+    configId: string,
   ): boolean {
     if (disableIatOffsetValidation) {
       return true;
@@ -220,7 +231,7 @@ export class TokenValidationService {
     if (!isFromRefreshToken && dataIdToken.nonce !== localNonce) {
       this.loggerService.logDebug(
         configId,
-        'Validate_id_token_nonce failed, dataIdToken.nonce: ' + dataIdToken.nonce + ' local_nonce:' + localNonce
+        'Validate_id_token_nonce failed, dataIdToken.nonce: ' + dataIdToken.nonce + ' local_nonce:' + localNonce,
       );
 
       return false;
@@ -236,9 +247,9 @@ export class TokenValidationService {
       this.loggerService.logDebug(
         configId,
         'Validate_id_token_iss failed, dataIdToken.iss: ' +
-          dataIdToken.iss +
-          ' authWellKnownEndpoints issuer:' +
-          authWellKnownEndpointsIssuer
+        dataIdToken.iss +
+        ' authWellKnownEndpoints issuer:' +
+        authWellKnownEndpointsIssuer,
       );
 
       return false;
@@ -258,7 +269,7 @@ export class TokenValidationService {
       if (!result) {
         this.loggerService.logDebug(
           configId,
-          'Validate_id_token_aud array failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud
+          'Validate_id_token_aud array failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud,
         );
 
         return false;
@@ -326,8 +337,11 @@ export class TokenValidationService {
       return false;
     }
 
-    const kid = headerData.kid;
-    const alg = headerData.alg;
+    const kid: string = headerData.kid;
+    let alg = headerData.alg;
+
+    let keys: JsonWebKey[] = jwtkeys.keys;
+    let key: JsonWebKey;
 
     if (!this.keyAlgorithms.includes(alg as string)) {
       this.loggerService.logWarning(configId, 'alg not supported', alg);
@@ -335,71 +349,64 @@ export class TokenValidationService {
       return false;
     }
 
-    let jwtKtyToUse = 'RSA';
-    if ((alg as string).charAt(0) === 'E') {
-      jwtKtyToUse = 'EC';
-    }
-
     let isValid = false;
 
-    // No kid in the Jose header
-    if (!kid) {
-      let keyToValidate;
-
-      // If only one key, use it
-      if (jwtkeys.keys.length === 1 && (jwtkeys.keys[0].kty as string) === jwtKtyToUse) {
-        keyToValidate = jwtkeys.keys[0];
-      } else {
-        // More than one key
-        // Make sure there's exactly 1 key candidate
-        // kty "RSA" and "EC" uses "sig"
-        let amountOfMatchingKeys = 0;
-        for (const key of jwtkeys.keys) {
-          if ((key.kty as string) === jwtKtyToUse && (key.use as string) === 'sig') {
-            amountOfMatchingKeys++;
-            keyToValidate = key;
-          }
-        }
-
-        if (amountOfMatchingKeys > 1) {
-          this.loggerService.logWarning(configId, 'no ID Token kid claim in JOSE header and multiple supplied in jwks_uri');
-
-          return false;
-        }
-      }
-
-      if (!keyToValidate) {
-        this.loggerService.logWarning(configId, 'no keys found, incorrect Signature, validation failed for id_token');
-
-        return false;
-      }
-
-      const [header, body, sig] = idToken.split(',');
-      const cyptokey = await this.cyptoObj.subtle.importKey('jwk', keyToValidate, alg, true, ['verify']);
-      isValid = await this.cyptoObj.subtle.verify(alg, cyptokey, this.textEncoder.encode(sig), this.textEncoder.encode(body));
-
-      if (!isValid) {
-        this.loggerService.logWarning(configId, 'incorrect Signature, validation failed for id_token');
-      }
-
-      return isValid;
+    if (kid) {
+      key = keys.find(k => k['kid'] === kid);
     } else {
-      // kid in the Jose header of id_token
-      for (const key of jwtkeys.keys) {
-        if ((key.kid as string) === (kid as string)) {
-          const [header, body, sig] = idToken.split(',');
-          const cyptokey = await this.cyptoObj.subtle.importKey('jwk', key as any, alg, true, ['verify']);
-          isValid = await this.cyptoObj.subtle.verify(alg, cyptokey, this.textEncoder.encode(sig), this.textEncoder.encode(body));
-          if (!isValid) {
-            this.loggerService.logWarning(configId, 'incorrect Signature, validation failed for id_token');
-          }
+      let kty = this.alg2kty(alg);
+      let matchingKeys = keys.filter(
+        k => k.kty === kty && k.use === 'sig',
+      );
 
-          return isValid;
-        }
+      if (matchingKeys.length > 1) {
+        let error =
+          'More than one matching key found. Please specify a kid in the id_token header.';
+        console.error(error);
+        return Promise.reject(error);
+      } else if (matchingKeys.length === 1) {
+        key = matchingKeys[0];
       }
+    }
+
+    alg = this.getAlg(alg);
+
+    const [header, body, sig] = idToken.split(',');
+    const cyptokey = await this.cyptoObj.subtle.importKey('jwk', key, alg, true, ['verify']);
+    isValid = await this.cyptoObj.subtle.verify(alg, cyptokey, this.textEncoder.encode(sig), this.textEncoder.encode(body));
+    if (!isValid) {
+      this.loggerService.logWarning(configId, 'incorrect Signature, validation failed for id_token');
     }
 
     return isValid;
+  }
+
+  private getAlg(alg: string) {
+    switch (alg.charAt(0)) {
+      case 'R':
+        return {
+          name: 'RSASSA-PKCS1-v1_5',
+          hash: 'SHA-256',
+        };
+      case 'E':
+        return {
+          name: 'ECDSA',
+          namedCurve: 'P-256',
+        };
+      default:
+        return null;
+    }
+  }
+
+  private alg2kty(alg: string) {
+    switch (alg.charAt(0)) {
+      case 'R':
+        return 'RSA';
+      case 'E':
+        return 'EC';
+      default:
+        throw new Error('Cannot infer kty from alg: ' + alg);
+    }
   }
 
   // Accepts ID Token without 'kid' claim in JOSE header if only one JWK supplied in 'jwks_url'
