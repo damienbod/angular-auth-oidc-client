@@ -4,18 +4,18 @@ export class TokenHelperServiceMock {
   }
 
   getSigningInputFromToken(token: any, encoded: boolean, configId: string): any {
-    return null;
+    return '';
   }
 
   getHeaderFromToken(token: any, encoded: boolean) {
-    return null;
+    return '';
   }
 
   getPayloadFromToken(token: any, encoded: boolean) {
-    return null;
+    return '';
   }
 
   getSignatureFromToken(token: any, encoded: boolean) {
-    return null;
+    return '';
   }
 }

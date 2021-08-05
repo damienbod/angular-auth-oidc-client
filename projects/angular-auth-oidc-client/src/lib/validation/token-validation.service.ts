@@ -51,7 +51,17 @@ import { JsrsAsignReducedService } from './jsrsasign-reduced.service';
 @Injectable()
 export class TokenValidationService {
   static refreshTokenNoncePlaceholder = '--RefreshToken--';
-  keyAlgorithms: string[] = ['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'PS256', 'PS384', 'PS512'];
+  keyAlgorithms: string[] = ['HS256',
+    'HS384',
+    'HS512',
+    'RS256',
+    'RS384',
+    'RS512',
+    'ES256',
+    'ES384',
+    'PS256',
+    'PS384',
+    'PS512'];
 
   private cyptoObj: Crypto = window.crypto || (window as any).msCrypto; // for IE11
   private textEncoder = new (window as any).TextEncoder();
@@ -59,8 +69,9 @@ export class TokenValidationService {
   constructor(
     private tokenHelperService: TokenHelperService,
     private loggerService: LoggerService,
-    private jsrsAsignReducedService: JsrsAsignReducedService
-  ) {}
+    private jsrsAsignReducedService: JsrsAsignReducedService,
+  ) {
+  }
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
   // (possibly allowing for some small leeway to account for clock skew).
@@ -87,8 +98,8 @@ export class TokenValidationService {
     this.loggerService.logDebug(
       configId,
       `Has idToken expired: ${!tokenNotExpired} --> expires in ${this.millisToMinutesAndSeconds(
-        tokenExpirationValue - nowWithOffset
-      )} , ${new Date(tokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`
+        tokenExpirationValue - nowWithOffset,
+      )} , ${new Date(tokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`,
     );
 
     // Token not expired?
@@ -109,8 +120,8 @@ export class TokenValidationService {
     this.loggerService.logDebug(
       configId,
       `Has accessToken expired: ${!tokenNotExpired} --> expires in ${this.millisToMinutesAndSeconds(
-        accessTokenExpirationValue - nowWithOffset
-      )} , ${new Date(accessTokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`
+        accessTokenExpirationValue - nowWithOffset,
+      )} , ${new Date(accessTokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`,
     );
 
     // access token not expired?
@@ -181,7 +192,7 @@ export class TokenValidationService {
     dataIdToken: any,
     maxOffsetAllowedInSeconds: number,
     disableIatOffsetValidation: boolean,
-    configId: string
+    configId: string,
   ): boolean {
     if (disableIatOffsetValidation) {
       return true;
@@ -221,7 +232,7 @@ export class TokenValidationService {
     if (!isFromRefreshToken && dataIdToken.nonce !== localNonce) {
       this.loggerService.logDebug(
         configId,
-        'Validate_id_token_nonce failed, dataIdToken.nonce: ' + dataIdToken.nonce + ' local_nonce:' + localNonce
+        'Validate_id_token_nonce failed, dataIdToken.nonce: ' + dataIdToken.nonce + ' local_nonce:' + localNonce,
       );
 
       return false;
@@ -237,9 +248,9 @@ export class TokenValidationService {
       this.loggerService.logDebug(
         configId,
         'Validate_id_token_iss failed, dataIdToken.iss: ' +
-          dataIdToken.iss +
-          ' authWellKnownEndpoints issuer:' +
-          authWellKnownEndpointsIssuer
+        dataIdToken.iss +
+        ' authWellKnownEndpoints issuer:' +
+        authWellKnownEndpointsIssuer,
       );
 
       return false;
@@ -259,7 +270,7 @@ export class TokenValidationService {
       if (!result) {
         this.loggerService.logDebug(
           configId,
-          'Validate_id_token_aud array failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud
+          'Validate_id_token_aud array failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud,
         );
 
         return false;
@@ -320,7 +331,6 @@ export class TokenValidationService {
     }
 
     const headerData = this.tokenHelperService.getHeaderFromToken(idToken, false, configId);
-
     if (Object.keys(headerData).length === 0 && headerData.constructor === Object) {
       this.loggerService.logWarning(configId, 'id token has no header data');
 
@@ -333,7 +343,7 @@ export class TokenValidationService {
     let keys: JsonWebKey[] = jwtkeys.keys;
     let key: JsonWebKey;
 
-    if (!this.keyAlgorithms.includes(alg as string)) {
+    if (!this.keyAlgorithms.includes(alg)) {
       this.loggerService.logWarning(configId, 'alg not supported', alg);
 
       return false;
@@ -342,9 +352,9 @@ export class TokenValidationService {
     let isValid = false;
 
     if (kid) {
-      key = keys.find((k) => k['kid'] === kid);
+      key = keys.find((k: JsonWebKey) => k['kid'] === kid);
     } else {
-      let kty = this.alg2kty(alg as string);
+      let kty = this.alg2kty(alg);
       let matchingKeys: JsonWebKey[] = keys.filter((k: JsonWebKey) => k.kty === kty && k.use === 'sig');
 
       if (matchingKeys.length > 1) {
@@ -363,7 +373,7 @@ export class TokenValidationService {
     const rawSignature: string = this.tokenHelperService.getSignatureFromToken(idToken, true, configId);
 
     const cryptoKey: CryptoKey = await window.crypto.subtle.importKey('jwk', key, algorithm, false, ['verify']);
-    const signature: Uint8Array = base64url.parse(rawSignature, { loose: true });
+    const signature: Uint8Array = base64url.parse(rawSignature, {loose: true});
 
     isValid = await window.crypto.subtle.verify(algorithm, cryptoKey, signature, new TextEncoder().encode(signingInput));
 

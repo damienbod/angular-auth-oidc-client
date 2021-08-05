@@ -388,7 +388,8 @@ describe('TokenValidationService', () => {
       expect(valueFalse).toEqual(false);
     });
 
-    it('returns false if header data has kid property and kwtKeys has same kid property but they are not valid with the token', async () => {
+    it('returns false if header data has kid property and jwtKeys has same kid property but they are not valid with' +
+      ' the token', async () => {
       const kid = '5626CE6A8F4F5FCD79C6642345282CA76D337548';
 
       spyOn(tokenHelperService, 'getHeaderFromToken').and.returnValue({ alg: 'RS256', kid });
