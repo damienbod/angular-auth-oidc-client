@@ -47,6 +47,7 @@ export class PopUpLoginService {
     return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).pipe(
       switchMap(() => {
         const { customParams } = authOptions || {};
+
         return from(this.urlService.getAuthorizeUrl(configId, customParams));
       }),
       tap((authUrl: string) => this.popupService.openPopUp(authUrl, popupOptions)),

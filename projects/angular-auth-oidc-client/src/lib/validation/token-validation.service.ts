@@ -50,17 +50,7 @@ import { JsrsAsignReducedService } from './jsrsasign-reduced.service';
 @Injectable()
 export class TokenValidationService {
   static refreshTokenNoncePlaceholder = '--RefreshToken--';
-  keyAlgorithms: string[] = ['HS256',
-    'HS384',
-    'HS512',
-    'RS256',
-    'RS384',
-    'RS512',
-    'ES256',
-    'ES384',
-    'PS256',
-    'PS384',
-    'PS512'];
+  keyAlgorithms: string[] = ['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'PS256', 'PS384', 'PS512'];
 
   private cyptoObj: Crypto = window.crypto || (window as any).msCrypto; // for IE11
   private textEncoder = new (window as any).TextEncoder();
@@ -68,9 +58,8 @@ export class TokenValidationService {
   constructor(
     private tokenHelperService: TokenHelperService,
     private loggerService: LoggerService,
-    private jsrsAsignReducedService: JsrsAsignReducedService,
-  ) {
-  }
+    private jsrsAsignReducedService: JsrsAsignReducedService
+  ) {}
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
   // (possibly allowing for some small leeway to account for clock skew).
@@ -97,8 +86,8 @@ export class TokenValidationService {
     this.loggerService.logDebug(
       configId,
       `Has idToken expired: ${!tokenNotExpired} --> expires in ${this.millisToMinutesAndSeconds(
-        tokenExpirationValue - nowWithOffset,
-      )} , ${new Date(tokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`,
+        tokenExpirationValue - nowWithOffset
+      )} , ${new Date(tokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`
     );
 
     // Token not expired?
@@ -119,8 +108,8 @@ export class TokenValidationService {
     this.loggerService.logDebug(
       configId,
       `Has accessToken expired: ${!tokenNotExpired} --> expires in ${this.millisToMinutesAndSeconds(
-        accessTokenExpirationValue - nowWithOffset,
-      )} , ${new Date(accessTokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`,
+        accessTokenExpirationValue - nowWithOffset
+      )} , ${new Date(accessTokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`
     );
 
     // access token not expired?
@@ -191,7 +180,7 @@ export class TokenValidationService {
     dataIdToken: any,
     maxOffsetAllowedInSeconds: number,
     disableIatOffsetValidation: boolean,
-    configId: string,
+    configId: string
   ): boolean {
     if (disableIatOffsetValidation) {
       return true;
@@ -231,7 +220,7 @@ export class TokenValidationService {
     if (!isFromRefreshToken && dataIdToken.nonce !== localNonce) {
       this.loggerService.logDebug(
         configId,
-        'Validate_id_token_nonce failed, dataIdToken.nonce: ' + dataIdToken.nonce + ' local_nonce:' + localNonce,
+        'Validate_id_token_nonce failed, dataIdToken.nonce: ' + dataIdToken.nonce + ' local_nonce:' + localNonce
       );
 
       return false;
@@ -247,9 +236,9 @@ export class TokenValidationService {
       this.loggerService.logDebug(
         configId,
         'Validate_id_token_iss failed, dataIdToken.iss: ' +
-        dataIdToken.iss +
-        ' authWellKnownEndpoints issuer:' +
-        authWellKnownEndpointsIssuer,
+          dataIdToken.iss +
+          ' authWellKnownEndpoints issuer:' +
+          authWellKnownEndpointsIssuer
       );
 
       return false;
@@ -269,7 +258,7 @@ export class TokenValidationService {
       if (!result) {
         this.loggerService.logDebug(
           configId,
-          'Validate_id_token_aud array failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud,
+          'Validate_id_token_aud array failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud
         );
 
         return false;
@@ -338,7 +327,7 @@ export class TokenValidationService {
     }
 
     const kid: string = headerData.kid;
-    let alg = headerData.alg;
+    let alg: string | RsaHashedImportParams | EcKeyImportParams = headerData.alg;
 
     let keys: JsonWebKey[] = jwtkeys.keys;
     let key: JsonWebKey;
@@ -352,24 +341,22 @@ export class TokenValidationService {
     let isValid = false;
 
     if (kid) {
-      key = keys.find(k => k['kid'] === kid);
+      key = keys.find((k) => k['kid'] === kid);
     } else {
-      let kty = this.alg2kty(alg);
-      let matchingKeys = keys.filter(
-        k => k.kty === kty && k.use === 'sig',
-      );
+      let kty = this.alg2kty(alg as string);
+      let matchingKeys = keys.filter((k) => k.kty === kty && k.use === 'sig');
 
       if (matchingKeys.length > 1) {
-        let error =
-          'More than one matching key found. Please specify a kid in the id_token header.';
+        let error = 'More than one matching key found. Please specify a kid in the id_token header.';
         console.error(error);
+
         return Promise.reject(error);
       } else if (matchingKeys.length === 1) {
         key = matchingKeys[0];
       }
     }
 
-    alg = this.getAlg(alg);
+    alg = this.getAlg(alg as string);
 
     const [header, body, sig] = idToken.split(',');
     const cyptokey = await this.cyptoObj.subtle.importKey('jwk', key, alg, true, ['verify']);
@@ -384,16 +371,19 @@ export class TokenValidationService {
   private getAlg(alg: string) {
     switch (alg.charAt(0)) {
       case 'R':
+
         return {
           name: 'RSASSA-PKCS1-v1_5',
           hash: 'SHA-256',
         };
       case 'E':
+
         return {
           name: 'ECDSA',
           namedCurve: 'P-256',
         };
       default:
+
         return null;
     }
   }
@@ -401,9 +391,11 @@ export class TokenValidationService {
   private alg2kty(alg: string) {
     switch (alg.charAt(0)) {
       case 'R':
+
         return 'RSA';
       case 'E':
         return 'EC';
+
       default:
         throw new Error('Cannot infer kty from alg: ' + alg);
     }
