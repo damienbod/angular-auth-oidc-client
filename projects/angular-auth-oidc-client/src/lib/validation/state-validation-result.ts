@@ -5,7 +5,9 @@ export class StateValidationResult {
     public accessToken = '',
     public idToken = '',
     public authResponseIsValid = false,
-    public decodedIdToken: any = {},
+    public decodedIdToken: any = {
+      at_hash: '',
+    },
     public state: ValidationResult = ValidationResult.NotSet
   ) {}
 }

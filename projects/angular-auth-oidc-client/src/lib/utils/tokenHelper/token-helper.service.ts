@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { LoggerService } from '../../logging/logger.service';
 
 const PARTS_OF_TOKEN = 3;
+
 @Injectable()
 export class TokenHelperService {
   constructor(private readonly loggerService: LoggerService) {}
@@ -15,6 +16,17 @@ export class TokenHelperService {
     date.setUTCSeconds(dataIdToken.exp);
 
     return date;
+  }
+
+  getSigningInputFromToken(token: any, encoded: boolean, configId: string): any {
+    if (!this.tokenIsValid(token, configId)) {
+      return {};
+    }
+
+    const header: string = this.getHeaderFromToken(token, encoded, configId);
+    const payload: string = this.getPayloadFromToken(token, encoded, configId);
+
+    return [header, payload].join('.');
   }
 
   getHeaderFromToken(token: any, encoded: boolean, configId: string): any {
