@@ -55,7 +55,42 @@ You can pass an array of configs into the `forRoot()` method. Each config will g
 export class AuthConfigModule {}
 ```
 
-## Load config from HTTP
+### Getting static config from a service (sync)
+
+You can also get the static config from a service. In this case you can use the `StsConfigStaticLoader` passing the config in the constructor.
+
+```ts
+@Injectable({ providedIn: 'root' })
+export class ConfigService {
+  getConfig(): OpenIdConfiguration {
+    return {
+      /* Your config here */
+    };
+  }
+}
+
+const authFactory = (configService: ConfigService) => {
+  const config = configService.getConfig();
+
+  return new StsConfigStaticLoader(config);
+};
+
+@NgModule({
+  imports: [
+    AuthModule.forRoot({
+      loader: {
+        provide: StsConfigLoader,
+        useFactory: authFactory,
+        deps: [ConfigService],
+      },
+    }),
+  ],
+  exports: [AuthModule],
+})
+export class AuthConfigModule {}
+```
+
+## Load config from HTTP / Async
 
 If you want to load the config from HTTP and then map it to the interface the library provides you can use the `StsConfigHttpLoader` and pass it with the `loader` property
 
