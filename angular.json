@@ -18,6 +18,9 @@
           "configurations": {
             "production": {
               "tsConfig": "projects/angular-auth-oidc-client/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/angular-auth-oidc-client/tsconfig.lib.json"
             }
           }
         },
@@ -89,6 +92,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -103,8 +114,12 @@
           "configurations": {
             "production": {
               "browserTarget": "sample-code-flow-multi-iframe:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-code-flow-multi-iframe:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -195,6 +210,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -209,8 +232,12 @@
           "configurations": {
             "production": {
               "browserTarget": "sample-code-flow-auto-login:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-code-flow-auto-login:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -301,6 +328,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -315,8 +350,12 @@
           "configurations": {
             "production": {
               "browserTarget": "sample-code-flow-http-config:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-code-flow-http-config:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -403,6 +442,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -417,8 +464,12 @@
           "configurations": {
             "production": {
               "browserTarget": "sample-implicit-flow-google:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-implicit-flow-google:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -509,6 +560,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -523,8 +582,12 @@
           "configurations": {
             "production": {
               "browserTarget": "sample-code-flow-azuread:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-code-flow-azuread:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -619,6 +682,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -633,8 +704,12 @@
           "configurations": {
             "production": {
               "browserTarget": "sample-code-flow-azure-b2c:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-code-flow-azure-b2c:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -725,6 +800,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -739,8 +822,12 @@
           "configurations": {
             "production": {
               "browserTarget": "sample-implicit-flow-silent-renew:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-implicit-flow-silent-renew:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -833,6 +920,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -847,8 +942,12 @@
           "configurations": {
             "production": {
               "browserTarget": "sample-code-flow-auth0:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-code-flow-auth0:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -935,6 +1034,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -949,8 +1056,12 @@
           "configurations": {
             "production": {
               "browserTarget": "sample-code-flow-refresh-tokens:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-code-flow-refresh-tokens:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -1037,6 +1148,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -1051,8 +1170,12 @@
           "configurations": {
             "production": {
               "browserTarget": "sample-code-flow-multi-Azure-B2C:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-code-flow-multi-Azure-B2C:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -1139,6 +1262,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -1153,8 +1284,12 @@
           "configurations": {
             "production": {
               "browserTarget": "sample-code-flow-multi-AAD:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-code-flow-multi-AAD:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -1244,6 +1379,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -1258,8 +1401,12 @@
           "configurations": {
             "production": {
               "browserTarget": "sample-code-flow-multi-Auth0-ID4-popup:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-code-flow-multi-Auth0-ID4-popup:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -1352,6 +1499,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -1366,8 +1521,12 @@
           "configurations": {
             "production": {
               "browserTarget": "sample-code-flow-multi-Auth0-ID4:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-code-flow-multi-Auth0-ID4:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -1454,6 +1613,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -1467,8 +1634,12 @@
           "configurations": {
             "production": {
               "browserTarget": "sample-code-flow-lazy-loaded:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-code-flow-lazy-loaded:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -1559,6 +1730,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -1573,8 +1752,12 @@
           "configurations": {
             "production": {
               "browserTarget": "sample-code-flow-popup:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-code-flow-popup:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -1670,6 +1853,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -1684,8 +1875,12 @@
           "configurations": {
             "production": {
               "browserTarget": "sample-code-flow-par:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-code-flow-par:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
