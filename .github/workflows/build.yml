@@ -56,10 +56,11 @@ jobs:
           ls
           sudo npm install -g @angular/cli
           echo 'Creating new angular project'
-          sudo ng new testProject --skip-git -- --unsafe-perm=true
+          sudo ng new testProject --skip-git --skip-install
           cd testProject
           echo '=== Current Directory ==='
           ls
+          sudo npm install --unsafe-perm=true
           sudo npm install ../angular-auth-oidc-client/dist/angular-auth-oidc-client
           npm test -- --watch=false --browsers=ChromeHeadless
           sudo npm run build -- --prod
