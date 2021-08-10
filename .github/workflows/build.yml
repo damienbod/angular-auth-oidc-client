@@ -56,7 +56,7 @@ jobs:
           ls
           sudo npm install -g @angular/cli
           echo 'Creating new angular project'
-          sudo ng new testProject --skip-git --unsafe-perm=true
+          sudo ng new testProject --skip-git -- --unsafe-perm=true
           cd testProject
           echo '=== Current Directory ==='
           ls
