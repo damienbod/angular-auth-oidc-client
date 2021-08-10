@@ -18,6 +18,9 @@
           "configurations": {
             "production": {
               "tsConfig": "projects/angular-auth-oidc-client/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/angular-auth-oidc-client/tsconfig.lib.json"
             }
           }
         },
@@ -195,6 +198,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -209,8 +220,12 @@
           "configurations": {
             "production": {
               "browserTarget": "sample-code-flow-auto-login:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-code-flow-auto-login:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
