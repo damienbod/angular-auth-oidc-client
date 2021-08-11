@@ -4,7 +4,7 @@ import { LoggerService } from '../logging/logger.service';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 
 @Injectable()
-export class BrowserStorageService implements AbstractSecurityStorage {
+export class BrowserStorageService {
   constructor(private configProvider: ConfigurationProvider, private loggerService: LoggerService) {}
 
   read(key: string, configId: string): any {
@@ -14,7 +14,7 @@ export class BrowserStorageService implements AbstractSecurityStorage {
       return false;
     }
 
-    const item = this.getStorage(configId)?.getItem(key);
+    const item = this.getStorage(configId)?.read(key);
 
     if (!item) {
       return null;
@@ -39,7 +39,7 @@ export class BrowserStorageService implements AbstractSecurityStorage {
 
     value = value || null;
 
-    storage.setItem(`${key}`, JSON.stringify(value));
+    storage.write(`${key}`, JSON.stringify(value));
 
     return true;
   }
@@ -58,7 +58,7 @@ export class BrowserStorageService implements AbstractSecurityStorage {
       return false;
     }
 
-    storage.removeItem(`${key}`);
+    storage.remove(`${key}`);
 
     return true;
   }
@@ -83,7 +83,7 @@ export class BrowserStorageService implements AbstractSecurityStorage {
     return true;
   }
 
-  private getStorage(configId: string): any {
+  private getStorage(configId: string): AbstractSecurityStorage {
     const { storage } = this.configProvider.getOpenIDConfiguration(configId) || {};
 
     return storage;

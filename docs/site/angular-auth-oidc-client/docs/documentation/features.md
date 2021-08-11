@@ -54,30 +54,27 @@ Pass inside the `filter` the type of event you are interested in and subscribe t
 
 ## Custom Storage
 
-If you need, you can create a custom storage (for example to use cookies).
+The lib uses the `sessionStorage` as default. If you need, you can create a custom storage (for example to use cookies).
 
 Implement `AbstractSecurityStorage` and the `read`, `write` and `remove` methods:
 
 ```ts
+import { AbstractSecurityStorage } from 'angular-auth-oidc-client';
+
 @Injectable()
 export class CustomStorage implements AbstractSecurityStorage {
-
-    public read(key: string): any {
-        ...
-        return ...
-    }
-
-    public write(key: string, value: any): void {
-        ...
-    }
-
-    public remove(key: string): void {
-        ...
-    }
-
-    public clear(): void {
-        ...
-    }
+  read(key: string) {
+    localStorage.getItem(key);
+  }
+  write(key: string, value: any): void {
+    localStorage.setItem(key, value);
+  }
+  remove(key: string): void {
+    localStorage.removeItem(key);
+  }
+  clear(): void {
+    localStorage.clear();
+  }
 }
 ```
 
@@ -87,7 +84,7 @@ Then provide the class in the module:
 @NgModule({
     imports: [
         ...
-        AuthModule.forRoot({ config: { storage: CustomStorage } })
+        AuthModule.forRoot({ config: { storage: new CustomStorage() } })
     ],
     ...
 })

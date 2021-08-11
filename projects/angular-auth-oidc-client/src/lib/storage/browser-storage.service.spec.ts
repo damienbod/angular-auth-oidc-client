@@ -45,7 +45,7 @@ describe('Browser Service', () => {
       const returnValue = null;
 
       spyOn(service as any, 'getStorage').and.returnValue({
-        getItem: () => {
+        read: () => {
           return returnValue;
         },
       });
@@ -57,7 +57,7 @@ describe('Browser Service', () => {
       const returnValue = `{ "name":"John", "age":30, "city":"New York"}`;
 
       spyOn(service as any, 'getStorage').and.returnValue({
-        getItem: () => {
+        read: () => {
           return returnValue;
         },
       });
@@ -81,10 +81,10 @@ describe('Browser Service', () => {
       spyOn(service as any, 'hasStorage').and.returnValue(true);
 
       const serviceObject = {
-        setItem: (a, b) => {},
+        write: (a, b) => {},
       };
 
-      const setItemSpy = spyOn(serviceObject, 'setItem').and.callThrough();
+      const setItemSpy = spyOn(serviceObject, 'write').and.callThrough();
 
       spyOn(service as any, 'getStorage').and.returnValue(serviceObject);
       const result = service.write('anyKey', 'anyvalue', 'configId');
@@ -96,10 +96,10 @@ describe('Browser Service', () => {
       spyOn(service as any, 'hasStorage').and.returnValue(true);
 
       const serviceObject = {
-        setItem: (a, b) => {},
+        write: (a, b) => {},
       };
 
-      const setItemSpy = spyOn(serviceObject, 'setItem').and.callThrough();
+      const setItemSpy = spyOn(serviceObject, 'write').and.callThrough();
 
       const somethingFalsy = '';
 
@@ -126,10 +126,10 @@ describe('Browser Service', () => {
       spyOn(service as any, 'hasStorage').and.returnValue(true);
 
       const serviceObject = {
-        removeItem: (a) => {},
+        remove: (a) => {},
       };
 
-      const setItemSpy = spyOn(serviceObject, 'removeItem').and.callThrough();
+      const setItemSpy = spyOn(serviceObject, 'remove').and.callThrough();
 
       spyOn(service as any, 'getStorage').and.returnValue(serviceObject);
       const result = service.remove('anyKey', 'configId');

@@ -9,6 +9,7 @@ import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
+import { DefaultSessionStorageService } from './../storage/default-sessionstorage.service';
 import { PlatformProviderMock } from './../utils/platform-provider/platform.provider-mock';
 import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
 import { AuthWellKnownServiceMock } from './auth-well-known/auth-well-known.service-mock';
@@ -59,6 +60,7 @@ describe('Configuration Service', () => {
         PublicEventsService,
         ConfigValidationService,
         PlatformProvider,
+        DefaultSessionStorageService,
       ],
     });
   });
@@ -157,6 +159,8 @@ describe('Configuration Service', () => {
       waitForAsync(() => {
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+        spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
+
         const promise = oidcConfigService.withConfigs([{ authority: 'https://please_set', clientId: 'clientId' }]);
 
         promise.then((result) => {
@@ -167,6 +171,7 @@ describe('Configuration Service', () => {
               authWellknownEndpointUrl: 'https://please_set',
               clientId: 'clientId',
               configId: '0-clientId',
+              storage: jasmine.any(DefaultSessionStorageService),
             },
           ]);
         });
@@ -183,6 +188,8 @@ describe('Configuration Service', () => {
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue({ any: 'thing' });
         const eventServiceSpy = spyOn(eventsService, 'fireEvent');
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+        spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
+
         const promise = oidcConfigService.withConfigs([config]);
 
         promise.then((result) => {
@@ -195,6 +202,7 @@ describe('Configuration Service', () => {
             authWellknownEndpoints: {
               any: 'thing',
             },
+            storage: jasmine.any(DefaultSessionStorageService),
           });
         });
       })
@@ -209,6 +217,7 @@ describe('Configuration Service', () => {
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         const eventServiceSpy = spyOn(eventsService, 'fireEvent');
         const storeWellKnownEndpointsSpy = spyOn(authWellKnownService, 'storeWellKnownEndpoints');
+        spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
 
         const promise = oidcConfigService.withConfigs([config]);
 
@@ -221,6 +230,7 @@ describe('Configuration Service', () => {
             clientId: 'clientId',
             authWellknownEndpointUrl: 'authorityForTesting',
             authWellknownEndpoints: { issuer: 'issuerForTesting' },
+            storage: jasmine.any(DefaultSessionStorageService),
           });
         });
       })
@@ -322,7 +332,13 @@ describe('Configuration Service', () => {
     it(
       'if eagerLoadAuthWellKnownEndpoints is true: fire event',
       waitForAsync(() => {
-        const config = { authority: 'authorityForTesting', clientId: 'clientId', eagerLoadAuthWellKnownEndpoints: true };
+        const config = {
+          authority: 'authorityForTesting',
+          clientId: 'clientId',
+          eagerLoadAuthWellKnownEndpoints: true,
+          storage: jasmine.any(DefaultSessionStorageService),
+        };
+
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue(null);
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
@@ -353,8 +369,10 @@ describe('Configuration Service', () => {
           configId: '0-clientId',
           authWellknownEndpointUrl: 'authority',
           authWellknownEndpoints: { issuer: 'issuerForTesting' },
+          storage: new DefaultSessionStorageService(),
         };
 
+        spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
 
@@ -385,11 +403,13 @@ describe('Configuration Service', () => {
           silentRenew: false,
           useRefreshToken: false,
           usePushedAuthorisationRequests: false,
+          storage: new DefaultSessionStorageService(),
         } as OpenIdConfiguration;
 
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
 
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+        spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
 
         oidcConfigService.withConfigs([config]).then((result) => {
