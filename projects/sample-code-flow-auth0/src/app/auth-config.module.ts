@@ -1,5 +1,21 @@
-import { NgModule } from '@angular/core';
-import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
+import { Injectable, NgModule } from '@angular/core';
+import { AbstractSecurityStorage, AuthModule, LogLevel } from 'angular-auth-oidc-client';
+
+@Injectable()
+export class CustomStorage implements AbstractSecurityStorage {
+  read(key: string) {
+    localStorage.getItem(key);
+  }
+  write(key: string, value: any): void {
+    localStorage.setItem(key, value);
+  }
+  remove(key: string): void {
+    localStorage.removeItem(key);
+  }
+  clear(): void {
+    localStorage.clear();
+  }
+}
 
 @NgModule({
   imports: [
@@ -20,6 +36,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
         customParamsRefreshTokenRequest: {
           scope: 'openid profile offline_access auth0-user-api-spa',
         },
+        storage: new CustomStorage(),
       },
     }),
   ],

@@ -6,6 +6,7 @@ import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
+import { DefaultSessionStorageService } from './../storage/default-sessionstorage.service';
 import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
 import { DEFAULT_CONFIG } from './default-config';
 import { OpenIdConfiguration } from './openid-configuration';
@@ -110,6 +111,7 @@ export class OidcConfigService {
   private prepareConfig(configuration: OpenIdConfiguration): OpenIdConfiguration {
     const openIdConfigurationInternal = { ...DEFAULT_CONFIG, ...configuration };
     this.setSpecialCases(openIdConfigurationInternal);
+    this.setStorage(openIdConfigurationInternal);
 
     return openIdConfigurationInternal;
   }
@@ -120,6 +122,18 @@ export class OidcConfigService {
       currentConfig.silentRenew = false;
       currentConfig.useRefreshToken = false;
       currentConfig.usePushedAuthorisationRequests = false;
+    }
+  }
+
+  private setStorage(currentConfig: OpenIdConfiguration): void {
+    if (currentConfig.storage) {
+      return;
+    }
+
+    if (typeof navigator !== 'undefined' && navigator.cookieEnabled && typeof Storage !== 'undefined') {
+      currentConfig.storage = new DefaultSessionStorageService();
+    } else {
+      currentConfig.storage = null;
     }
   }
 }
