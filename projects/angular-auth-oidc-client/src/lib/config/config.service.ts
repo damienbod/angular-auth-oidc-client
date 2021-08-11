@@ -130,7 +130,9 @@ export class OidcConfigService {
       return;
     }
 
-    if (typeof navigator !== 'undefined' && navigator.cookieEnabled && typeof Storage !== 'undefined') {
+    const browserHasStorage = typeof navigator !== 'undefined' && navigator.cookieEnabled && typeof Storage !== 'undefined';
+
+    if (browserHasStorage) {
       currentConfig.storage = new DefaultSessionStorageService();
     } else {
       currentConfig.storage = null;

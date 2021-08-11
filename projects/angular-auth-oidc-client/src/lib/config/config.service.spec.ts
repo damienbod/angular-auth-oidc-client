@@ -168,6 +168,7 @@ describe('Configuration Service', () => {
               authWellknownEndpointUrl: 'https://please_set',
               clientId: 'clientId',
               configId: '0-clientId',
+              storage: new DefaultSessionStorageService(),
             },
           ]);
         });
@@ -196,6 +197,7 @@ describe('Configuration Service', () => {
             authWellknownEndpoints: {
               any: 'thing',
             },
+            storage: new DefaultSessionStorageService(),
           });
         });
       })
@@ -222,6 +224,7 @@ describe('Configuration Service', () => {
             clientId: 'clientId',
             authWellknownEndpointUrl: 'authorityForTesting',
             authWellknownEndpoints: { issuer: 'issuerForTesting' },
+            storage: new DefaultSessionStorageService(),
           });
         });
       })
@@ -360,7 +363,7 @@ describe('Configuration Service', () => {
           configId: '0-clientId',
           authWellknownEndpointUrl: 'authority',
           authWellknownEndpoints: { issuer: 'issuerForTesting' },
-          storage: null,
+          storage: new DefaultSessionStorageService(),
         };
 
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
@@ -393,6 +396,7 @@ describe('Configuration Service', () => {
           silentRenew: false,
           useRefreshToken: false,
           usePushedAuthorisationRequests: false,
+          storage: new DefaultSessionStorageService(),
         } as OpenIdConfiguration;
 
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
