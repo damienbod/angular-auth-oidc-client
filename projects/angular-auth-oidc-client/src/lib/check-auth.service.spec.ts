@@ -91,7 +91,7 @@ describe('CheckAuthService', () => {
   });
 
   afterEach(() => {
-    storagePersistenceService.clear();
+    storagePersistenceService.clear(null);
   });
 
   it('should create', () => {

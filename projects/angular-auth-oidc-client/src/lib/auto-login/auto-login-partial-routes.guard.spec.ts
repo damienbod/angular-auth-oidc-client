@@ -61,7 +61,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
   });
 
   afterEach(() => {
-    storagePersistenceService.clear();
+    storagePersistenceService.clear(null);
   });
 
   it('should create', () => {

@@ -1,27 +1,21 @@
 import { TestBed } from '@angular/core/testing';
-import { ConfigurationProvider } from '../config/provider/config.provider';
-import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
-import { AbstractSecurityStorage } from './abstract-security-storage';
+import { BrowserStorageService } from './browser-storage.service';
 import { BrowserStorageMock } from './browser-storage.service-mock';
 import { StoragePersistenceService } from './storage-persistence.service';
 
 describe('Storage Persistence Service', () => {
   let service: StoragePersistenceService;
-  let securityStorage: AbstractSecurityStorage;
+  let securityStorage: BrowserStorageService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        StoragePersistenceService,
-        { provide: AbstractSecurityStorage, useClass: BrowserStorageMock },
-        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
-      ],
+      providers: [StoragePersistenceService, { provide: BrowserStorageService, useClass: BrowserStorageMock }],
     });
   });
 
   beforeEach(() => {
     service = TestBed.inject(StoragePersistenceService);
-    securityStorage = TestBed.inject(AbstractSecurityStorage);
+    securityStorage = TestBed.inject(BrowserStorageService);
   });
 
   it('should create', () => {
@@ -32,7 +26,7 @@ describe('Storage Persistence Service', () => {
     it('reads from oidcSecurityStorage with configId', () => {
       const spy = spyOn(securityStorage, 'read');
       service.read('authNonce', 'configId');
-      expect(spy).toHaveBeenCalledWith('configId');
+      expect(spy).toHaveBeenCalledWith('authNonce', 'configId');
     });
 
     it('returns undefined (not throws exception) if key to read is not present on config', () => {
@@ -49,8 +43,8 @@ describe('Storage Persistence Service', () => {
 
       service.write('authNonce', 'anyValue', 'configId');
 
-      expect(readSpy).toHaveBeenCalledWith('configId');
-      expect(writeSpy).toHaveBeenCalledWith('configId', { authNonce: 'anyValue' });
+      expect(readSpy).toHaveBeenCalledWith('authNonce', 'configId');
+      expect(writeSpy).toHaveBeenCalledWith('authNonce', { authNonce: 'anyValue' }, 'configId');
     });
   });
 
@@ -61,8 +55,8 @@ describe('Storage Persistence Service', () => {
 
       service.remove('authNonce', 'configId');
 
-      expect(readSpy).toHaveBeenCalledWith('configId');
-      expect(writeSpy).toHaveBeenCalledWith('configId', {});
+      expect(readSpy).toHaveBeenCalledWith('authNonce', 'configId');
+      expect(writeSpy).toHaveBeenCalledWith('authNonce', {}, 'configId');
     });
 
     it('does not crash when read with configId returns null', () => {
@@ -71,8 +65,8 @@ describe('Storage Persistence Service', () => {
 
       service.remove('authNonce', 'configId');
 
-      expect(readSpy).toHaveBeenCalledWith('configId');
-      expect(writeSpy).toHaveBeenCalledWith('configId', {});
+      expect(readSpy).toHaveBeenCalledWith('authNonce', 'configId');
+      expect(writeSpy).toHaveBeenCalledWith('authNonce', {}, 'configId');
     });
   });
 
@@ -80,7 +74,7 @@ describe('Storage Persistence Service', () => {
     it('should call oidcSecurityStorage.clear()', () => {
       const clearSpy = spyOn(securityStorage, 'clear');
 
-      service.clear();
+      service.clear(null);
 
       expect(clearSpy).toHaveBeenCalledTimes(1);
     });
@@ -122,7 +116,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getAccessToken('configId');
 
       expect(result).toBe('someValue');
-      expect(spy).toHaveBeenCalledWith('configId');
+      expect(spy).toHaveBeenCalledWith('authzData', 'configId');
     });
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
@@ -130,7 +124,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getAccessToken('configId');
 
       expect(result).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith('configId');
+      expect(spy).toHaveBeenCalledWith('authzData', 'configId');
     });
   });
 
@@ -141,7 +135,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getIdToken('configId');
 
       expect(result).toBe('someValue');
-      expect(spy).toHaveBeenCalledWith('configId');
+      expect(spy).toHaveBeenCalledWith('authnResult', 'configId');
     });
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
@@ -149,7 +143,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getIdToken('configId');
 
       expect(result).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith('configId');
+      expect(spy).toHaveBeenCalledWith('authnResult', 'configId');
     });
   });
 
@@ -160,7 +154,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getAuthenticationResult('configId');
 
       expect(result.id_token).toBe('someValue');
-      expect(spy).toHaveBeenCalledWith('configId');
+      expect(spy).toHaveBeenCalledWith('authnResult', 'configId');
     });
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
@@ -168,7 +162,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getAuthenticationResult('configId');
 
       expect(result).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith('configId');
+      expect(spy).toHaveBeenCalledWith('authnResult', 'configId');
     });
   });
 
@@ -179,7 +173,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getRefreshToken('configId');
 
       expect(result).toBe('someValue');
-      expect(spy).toHaveBeenCalledWith('configId');
+      expect(spy).toHaveBeenCalledWith('authnResult', 'configId');
     });
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
@@ -188,7 +182,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getRefreshToken('configId');
 
       expect(result).toBeUndefined();
-      expect(spy).toHaveBeenCalledWith('configId');
+      expect(spy).toHaveBeenCalledWith('authnResult', 'configId');
     });
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
@@ -196,7 +190,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getRefreshToken('configId');
 
       expect(result).toBeUndefined();
-      expect(spy).toHaveBeenCalledWith('configId');
+      expect(spy).toHaveBeenCalledWith('authnResult', 'configId');
     });
   });
 });

@@ -64,7 +64,7 @@ describe(`AutoLoginAllRoutesGuard`, () => {
   });
 
   afterEach(() => {
-    storagePersistenceService.clear();
+    storagePersistenceService.clear(null);
   });
 
   it('should create', () => {
