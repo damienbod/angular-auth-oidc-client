@@ -9,6 +9,7 @@ import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
+import { DefaultSessionStorageService } from './../storage/default-sessionstorage.service';
 import { PlatformProviderMock } from './../utils/platform-provider/platform.provider-mock';
 import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
 import { AuthWellKnownServiceMock } from './auth-well-known/auth-well-known.service-mock';
@@ -322,7 +323,13 @@ describe('Configuration Service', () => {
     it(
       'if eagerLoadAuthWellKnownEndpoints is true: fire event',
       waitForAsync(() => {
-        const config = { authority: 'authorityForTesting', clientId: 'clientId', eagerLoadAuthWellKnownEndpoints: true };
+        const config = {
+          authority: 'authorityForTesting',
+          clientId: 'clientId',
+          eagerLoadAuthWellKnownEndpoints: true,
+          storage: new DefaultSessionStorageService(),
+        };
+
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue(null);
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
@@ -353,6 +360,7 @@ describe('Configuration Service', () => {
           configId: '0-clientId',
           authWellknownEndpointUrl: 'authority',
           authWellknownEndpoints: { issuer: 'issuerForTesting' },
+          storage: null,
         };
 
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
