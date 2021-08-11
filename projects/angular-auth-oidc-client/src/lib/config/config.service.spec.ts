@@ -20,7 +20,7 @@ import { ConfigurationProvider } from './provider/config.provider';
 import { ConfigurationProviderMock } from './provider/config.provider-mock';
 import { ConfigValidationService } from './validation/config-validation.service';
 
-describe('Configuration Service', () => {
+fdescribe('Configuration Service', () => {
   let oidcConfigService: OidcConfigService;
   let loggerService: LoggerService;
   let eventsService: PublicEventsService;
@@ -160,6 +160,7 @@ describe('Configuration Service', () => {
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         const promise = oidcConfigService.withConfigs([{ authority: 'https://please_set', clientId: 'clientId' }]);
 
+        spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
         promise.then((result) => {
           expect(result).toEqual([
             {
@@ -185,6 +186,8 @@ describe('Configuration Service', () => {
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue({ any: 'thing' });
         const eventServiceSpy = spyOn(eventsService, 'fireEvent');
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+        spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
+
         const promise = oidcConfigService.withConfigs([config]);
 
         promise.then((result) => {
@@ -366,6 +369,7 @@ describe('Configuration Service', () => {
           storage: new DefaultSessionStorageService(),
         };
 
+        spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
 
@@ -402,6 +406,7 @@ describe('Configuration Service', () => {
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
 
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+        spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
 
         oidcConfigService.withConfigs([config]).then((result) => {

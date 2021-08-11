@@ -130,12 +130,14 @@ export class OidcConfigService {
       return;
     }
 
-    const browserHasStorage = typeof navigator !== 'undefined' && navigator.cookieEnabled && typeof Storage !== 'undefined';
-
-    if (browserHasStorage) {
+    if (this.hasBrowserStorage()) {
       currentConfig.storage = new DefaultSessionStorageService();
     } else {
       currentConfig.storage = null;
     }
+  }
+
+  private hasBrowserStorage(): boolean {
+    return typeof navigator !== 'undefined' && navigator.cookieEnabled && typeof Storage !== 'undefined';
   }
 }
