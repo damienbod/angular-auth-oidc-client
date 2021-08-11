@@ -22,7 +22,8 @@ export class OidcConfigService {
     private authWellKnownService: AuthWellKnownService,
     private storagePersistenceService: StoragePersistenceService,
     private configValidationService: ConfigValidationService,
-    private platformProvider: PlatformProvider
+    private platformProvider: PlatformProvider,
+    private defaultSessionStorageService: DefaultSessionStorageService
   ) {}
 
   withConfigs(passedConfigs: OpenIdConfiguration[]): Promise<OpenIdConfiguration[]> {
@@ -131,7 +132,7 @@ export class OidcConfigService {
     }
 
     if (this.hasBrowserStorage()) {
-      currentConfig.storage = new DefaultSessionStorageService();
+      currentConfig.storage = this.defaultSessionStorageService;
     } else {
       currentConfig.storage = null;
     }
