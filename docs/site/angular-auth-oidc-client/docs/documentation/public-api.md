@@ -149,7 +149,7 @@ Multiple Configs
 
 ## checkSessionChanged$
 
-The `checkSessionChanged$` observable gets emitted values every time the server comes back with a check session and the value `changed`. If you want to get an information about when the CheckSession Event has been received generally take a look at the [public events](features.md#public-events).
+The `checkSessionChanged$` observable gets emitted values every time the server comes back with a check session and the value `changed`. If you want to get an information about when the CheckSession Event has been received generally take a look at the [public events](public-events.md).
 
 Example:
 
@@ -411,7 +411,7 @@ const state = this.oidcSecurityService.getState('configId');
 
 This method is being called when you want to redirect to the authority and sign in the identity. This method takes a `configId` as parameter if you want to use a specific config and it also takes `authOptions` adding `customParams` which can change every time you want to login and an `urlHandler` which is getting called instead of the redirect.
 
-See also [Custom parameters](features.md/#custom-parameters)
+See also [Custom parameters](custom-parameters.md)
 
 ```ts
 export interface AuthOptions {
@@ -500,7 +500,7 @@ This method provides the functionality to manually refresh the session at any ti
 
 This method takes `customParams` for this request as well as a `configId` as parameter if you want to use a specific config. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
 
-See also [Custom parameters](features.md/#custom-parameters)
+See also [Custom parameters](custom-parameters.md)
 
 The method returns an `Observable<LoginResponse>` containing
 
