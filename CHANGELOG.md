@@ -1,5 +1,14 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-08-17 12.0.3
+
+- docs(guards): use UrlTree for redirect, clean up
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1231)
+- fixing storage mechanism
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1228)
+- Additional logging when a nonce is created and validated
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1214)
+
 ### 2021-07-20 12.0.2
 
 - Added fix overwriting prompt param
