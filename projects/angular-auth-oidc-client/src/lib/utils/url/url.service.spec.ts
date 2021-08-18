@@ -439,7 +439,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createAuthorizeUrl creates url with with custom values and dynamic custom values', () => {
+    it('createAuthorizeUrl creates URL with with custom values and dynamic custom values', () => {
       const config = {
         authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
@@ -483,7 +483,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createAuthorizeUrl creates url with custom values equals null and dynamic custom values', () => {
+    it('createAuthorizeUrl creates URL with custom values equals null and dynamic custom values', () => {
       const config = {
         authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
@@ -521,7 +521,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createAuthorizeUrl creates url with custom values not given and dynamic custom values', () => {
+    it('createAuthorizeUrl creates URL with custom values not given and dynamic custom values', () => {
       const config = {
         authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
@@ -559,7 +559,7 @@ describe('UrlService Tests', () => {
     });
 
     // https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-reference-oidc
-    it('createAuthorizeUrl with custom url like active-directory-b2c', () => {
+    it('createAuthorizeUrl with custom URL like active-directory-b2c', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = 'myid';
@@ -921,7 +921,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('createBodyForCodeFlowRefreshTokensRequest', () => {
-    it('returns correct url', () => {
+    it('returns correct URL', () => {
       const clientId = 'clientId';
       const refreshToken = 'refreshToken';
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId });
@@ -929,7 +929,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe(`grant_type=refresh_token&client_id=${clientId}&refresh_token=${refreshToken}`);
     });
 
-    it('returns correct url with custom params if custom params are passed', () => {
+    it('returns correct URL with custom params if custom params are passed', () => {
       const clientId = 'clientId';
       const refreshToken = 'refreshToken';
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId });
@@ -953,7 +953,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe(null);
     });
 
-    it('returns basic url with no extras if properties are given', () => {
+    it('returns basic URL with no extras if properties are given', () => {
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         clientId: 'testClientId',
         responseType: 'testResponseType',
@@ -973,7 +973,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns basic url with hdParam if properties are given', () => {
+    it('returns basic URL with hdParam if properties are given', () => {
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         clientId: 'testClientId',
         responseType: 'testResponseType',
@@ -993,7 +993,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns basic url with hdParam and custom params if properties are given', () => {
+    it('returns basic URL with hdParam and custom params if properties are given', () => {
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         clientId: 'testClientId',
         responseType: 'testResponseType',
@@ -1013,7 +1013,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns basic url with hdParam and custom params and passed cutom params if properties are given', () => {
+    it('returns basic URL with hdParam and custom params and passed cutom params if properties are given', () => {
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
         clientId: 'testClientId',
         responseType: 'testResponseType',
@@ -1053,7 +1053,7 @@ describe('UrlService Tests', () => {
       expect(result).toBeNull();
     });
 
-    it('returns correct url if wellknownendpoints are given', () => {
+    it('returns correct URL if wellknownendpoints are given', () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const silentRenewUrl = 'http://any-url.com';
@@ -1133,7 +1133,7 @@ describe('UrlService Tests', () => {
       expect(result).toBeNull();
     });
 
-    it('returns correct url if wellknownendpoints are given', () => {
+    it('returns correct URL if wellknownendpoints are given', () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const silentRenewUrl = 'http://any-url.com';
@@ -1192,7 +1192,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('createUrlImplicitFlowAuthorize', () => {
-    it('returns correct url if wellknownendpoints are given', () => {
+    it('returns correct URL if wellknownendpoints are given', () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const redirectUrl = 'http://any-url.com';
@@ -1278,7 +1278,7 @@ describe('UrlService Tests', () => {
       expect(result).toBeNull();
     });
 
-    it('returns correct url if wellknownendpoints are given', () => {
+    it('returns correct URL if wellknownendpoints are given', () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const scope = 'testScope';
@@ -1310,7 +1310,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns correct url if wellknownendpoints and custom params are given', () => {
+    it('returns correct URL if wellknownendpoints and custom params are given', () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const scope = 'testScope';
@@ -1370,7 +1370,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('createEndSessionUrl', () => {
-    it('create url when all parameters given', () => {
+    it('create URL when all parameters given', () => {
       const config = {
         authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
@@ -1392,7 +1392,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('create url when all parameters and customParamsEndSession given', () => {
+    it('create URL when all parameters and customParamsEndSession given', () => {
       const config = {
         authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
@@ -1438,7 +1438,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('create url without postLogoutRedirectUri when not given', () => {
+    it('create URL without postLogoutRedirectUri when not given', () => {
       const config = {
         authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
@@ -1483,7 +1483,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('returns auth0 format url if authority ends with .auth0', () => {
+    it('returns auth0 format URL if authority ends with .auth0', () => {
       configurationProvider.setConfig({
         authority: 'something.auth0.com',
         clientId: 'someClientId',
@@ -1528,7 +1528,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe(null);
     });
 
-    it('returns correct url when everything is given', () => {
+    it('returns correct URL when everything is given', () => {
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({
         authorizationEndpoint: 'anything',
       });

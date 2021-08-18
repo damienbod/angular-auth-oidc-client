@@ -37,7 +37,7 @@ describe('AuthWellKnownDataService', () => {
 
   describe('getWellKnownDocument', () => {
     it(
-      'should add suffix if it does not exist on current url',
+      'should add suffix if it does not exist on current URL',
       waitForAsync(() => {
         const dataServiceSpy = spyOn(dataService, 'get').and.callFake((url) => {
           return of(null);

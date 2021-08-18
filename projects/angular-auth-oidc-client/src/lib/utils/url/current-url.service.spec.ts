@@ -28,7 +28,7 @@ describe('CurrentUrlService', () => {
   });
 
   describe('getCurrentUrl', () => {
-    it('returns the current url', () => {
+    it('returns the current URL', () => {
       const currentUrl = service.getCurrentUrl();
 
       expect(currentUrl).toBe('http://my-url.com?state=my-state');
@@ -36,7 +36,7 @@ describe('CurrentUrlService', () => {
   });
 
   describe('currentUrlHasStateParam', () => {
-    it('returns true for the given url', () => {
+    it('returns true for the given URL', () => {
       const hasStateParam = service.currentUrlHasStateParam();
 
       expect(hasStateParam).toBe(true);
@@ -44,7 +44,7 @@ describe('CurrentUrlService', () => {
   });
 
   describe('currentUrlHasStateParam', () => {
-    it('returns the state param for the given url', () => {
+    it('returns the state param for the given URL', () => {
       const stateParam = service.getStateParamFromCurrentUrl();
 
       expect(stateParam).toBe('my-state');

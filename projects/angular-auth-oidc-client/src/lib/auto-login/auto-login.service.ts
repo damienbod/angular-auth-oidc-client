@@ -18,23 +18,23 @@ export class AutoLoginService {
   }
 
   /**
-   * Saves the redirect url to storage.
+   * Saves the redirect URL to storage.
    *
-   * @param url The redirect url to save.
+   * @param url The redirect URL to save.
    */
   saveRedirectRoute(configId: string, url: string): void {
     this.storageService.write(STORAGE_KEY, url, configId);
   }
 
   /**
-   * Gets the stored redirect route from storage.
+   * Gets the stored redirect URL from storage.
    */
   private getStoredRedirectRoute(configId: string): string {
     return this.storageService.read(STORAGE_KEY, configId);
   }
 
   /**
-   * Removes the redirect url from storage.
+   * Removes the redirect URL from storage.
    */
   private deleteStoredRedirectRoute(configId: string): void {
     this.storageService.remove(STORAGE_KEY, configId);

@@ -7,7 +7,7 @@ sidebar_position: 6
 
 The library exposes several events which are happening during the runtime. You can subscribe to those events by using the `PublicEventsService`.
 
-Currently the events
+Currently the following events are supported:
 
 ```ts
 {
@@ -22,20 +22,19 @@ Currently the events
 }
 ```
 
-are supported.
+> Notice that the `ConfigLoaded` event only runs inside the constructor of the `AppModule` as the config is loaded with the `APP_INITIALIZER` of Angular inside of the lib.
 
-> Notice that the `ConfigLoaded` event only runs inside the `AppModule`s constructor as the config is loaded with the `APP_INITIALIZER` of Angular inside of the lib.
-
-You can inject the service and use the events like this:
+You can inject the service and use the events like this.
+Using the `filter` operator from RxJS you can decide which events you are interested in and subscribe to them.
 
 ```ts
 import { PublicEventsService } from 'angular-auth-oidc-client';
 
 constructor(private eventService: PublicEventsService) {
-    this.eventService
-            .registerForEvents()
-            .pipe(filter((notification) => notification.type === EventTypes.CheckSessionReceived))
-            .subscribe((value) => console.log('CheckSessionChanged with value ', value));
+  this.eventService
+    .registerForEvents()
+    .pipe(filter((notification) => notification.type === EventTypes.CheckSessionReceived))
+    .subscribe((value) => console.log('CheckSessionChanged with value', value));
 }
 ```
 
@@ -47,5 +46,3 @@ export interface OidcClientNotification<T> {
   value?: T;
 }
 ```
-
-Pass inside the `filter` the type of event you are interested in and subscribe to it.
