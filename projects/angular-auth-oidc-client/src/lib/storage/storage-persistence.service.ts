@@ -33,7 +33,7 @@ export class StoragePersistenceService {
     const storedConfig = this.browserStorageService.read(key, configId) || {};
 
     storedConfig[key] = value;
-    this.browserStorageService.write(key, storedConfig, configId);
+    this.browserStorageService.write(storedConfig, configId);
   }
 
   remove(key: StorageKeys, configId: string): void {
@@ -41,7 +41,7 @@ export class StoragePersistenceService {
 
     delete storedConfig[key];
 
-    this.browserStorageService.write(key, storedConfig, configId);
+    this.browserStorageService.write(storedConfig, configId);
   }
 
   clear(configId: string): void {
