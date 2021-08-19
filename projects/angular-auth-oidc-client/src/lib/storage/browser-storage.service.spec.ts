@@ -68,28 +68,28 @@ describe('Browser Service', () => {
   describe('write', () => {
     it('returns null if there is no storage', () => {
       spyOn(service as any, 'hasStorage').and.returnValue(false);
-      expect(service.write('anyKey', 'anyvalue', 'configId')).toBeFalse();
+      expect(service.write('configId', 'anyvalue')).toBeFalse();
     });
 
-    it('returns null if getStorage returns null', () => {
+    it('returns false if getStorage returns null', () => {
       spyOn(service as any, 'hasStorage').and.returnValue(true);
       spyOn(service as any, 'getStorage').and.returnValue(null);
-      expect(service.write('anyKey', 'anyvalue', 'configId')).toBeFalse();
+      expect(service.write('configId', 'anyvalue')).toBeFalse();
     });
 
-    it('returns undefined if setItem gets called correctly', () => {
+    it('writes object correctly with configId', () => {
       spyOn(service as any, 'hasStorage').and.returnValue(true);
 
       const serviceObject = {
         write: (a, b) => {},
       };
 
-      const setItemSpy = spyOn(serviceObject, 'write').and.callThrough();
+      const writeSpy = spyOn(serviceObject, 'write').and.callThrough();
 
       spyOn(service as any, 'getStorage').and.returnValue(serviceObject);
-      const result = service.write('anyKey', 'anyvalue', 'configId');
+      const result = service.write({ anyKey: 'anyvalue' }, 'configId');
       expect(result).toBe(true);
-      expect(setItemSpy).toHaveBeenCalledWith('anyKey', JSON.stringify('anyvalue'));
+      expect(writeSpy).toHaveBeenCalledWith('configId', JSON.stringify({ anyKey: 'anyvalue' }));
     });
 
     it('writes null if item is falsy', () => {
@@ -99,14 +99,14 @@ describe('Browser Service', () => {
         write: (a, b) => {},
       };
 
-      const setItemSpy = spyOn(serviceObject, 'write').and.callThrough();
+      const writeSpy = spyOn(serviceObject, 'write').and.callThrough();
 
       const somethingFalsy = '';
 
       spyOn(service as any, 'getStorage').and.returnValue(serviceObject);
-      const result = service.write('anyKey', somethingFalsy, 'configId');
+      const result = service.write(somethingFalsy, 'configId');
       expect(result).toBe(true);
-      expect(setItemSpy).toHaveBeenCalledWith('anyKey', JSON.stringify(null));
+      expect(writeSpy).toHaveBeenCalledWith('configId', JSON.stringify(null));
     });
   });
 

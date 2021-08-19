@@ -44,7 +44,7 @@ describe('Storage Persistence Service', () => {
       service.write('authNonce', 'anyValue', 'configId');
 
       expect(readSpy).toHaveBeenCalledWith('authNonce', 'configId');
-      expect(writeSpy).toHaveBeenCalledWith('authNonce', { authNonce: 'anyValue' }, 'configId');
+      expect(writeSpy).toHaveBeenCalledWith({ authNonce: 'anyValue' }, 'configId');
     });
   });
 
@@ -56,7 +56,7 @@ describe('Storage Persistence Service', () => {
       service.remove('authNonce', 'configId');
 
       expect(readSpy).toHaveBeenCalledWith('authNonce', 'configId');
-      expect(writeSpy).toHaveBeenCalledWith('authNonce', {}, 'configId');
+      expect(writeSpy).toHaveBeenCalledWith({}, 'configId');
     });
 
     it('does not crash when read with configId returns null', () => {
@@ -66,7 +66,7 @@ describe('Storage Persistence Service', () => {
       service.remove('authNonce', 'configId');
 
       expect(readSpy).toHaveBeenCalledWith('authNonce', 'configId');
-      expect(writeSpy).toHaveBeenCalledWith('authNonce', {}, 'configId');
+      expect(writeSpy).toHaveBeenCalledWith({}, 'configId');
     });
   });
 
