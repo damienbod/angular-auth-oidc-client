@@ -53,7 +53,7 @@ export class OidcSecurityService {
   }
 
   /**
-   * Emits on a secure token server callback. The observable will never contain a value.
+   * Emits on a Security Token Service callback. The observable will never contain a value.
    */
   get stsCallback$(): Observable<any> {
     return this.callbackService.stsCallback$;
@@ -110,7 +110,7 @@ export class OidcSecurityService {
    * will denote whether the user was successfully authenticated including the user data, the access token, the configId and
    * an error message in case an error happened
    *
-   * @param url The url to perform the authorization on the behalf of.
+   * @param url The URL to perform the authorization on the behalf of.
    * @param configId The configId to perform the authorization on the behalf of. If not passed, the first configs will be taken
    *
    * @returns An object `LoginResponse` containing all information about the login
@@ -125,7 +125,7 @@ export class OidcSecurityService {
    * will denote whether the user was successfully authenticated including the user data, the access token, the configId and
    * an error message in case an error happened in an array for each config which was provided
    *
-   * @param url The url to perform the authorization on the behalf of.
+   * @param url The URL to perform the authorization on the behalf of.
    * @param configId The configId to perform the authorization on the behalf of. If not passed, all of the current
    * configured ones will be used to check.
    *
@@ -250,7 +250,7 @@ export class OidcSecurityService {
   }
 
   /**
-   * Redirects the user to the secure token server to begin the authentication process.
+   * Redirects the user to the Security Token Service to begin the authentication process.
    *
    * @param configId The configId to perform the action in behalf of. If not passed, the first configs will be taken
    * @param authOptions The custom options for the the authentication request.
@@ -262,7 +262,7 @@ export class OidcSecurityService {
   }
 
   /**
-   * Opens the secure token server in a new window to begin the authentication process.
+   * Opens the Security Token Service in a new window to begin the authentication process.
    *
    * @param authOptions The custom options for the authentication request.
    * @param popupOptions The configuration for the popup window.
@@ -340,7 +340,7 @@ export class OidcSecurityService {
   }
 
   /**
-   * Revokes an access token on the secure token server. This is only required in the code flow with refresh tokens. If no token is
+   * Revokes an access token on the Security Token Service. This is only required in the code flow with refresh tokens. If no token is
    * provided, then the token from the storage is revoked. You can pass any token to revoke.
    * https://tools.ietf.org/html/rfc7009
    *
@@ -356,7 +356,7 @@ export class OidcSecurityService {
   }
 
   /**
-   * Revokes a refresh token on the secure token server. This is only required in the code flow with refresh tokens. If no token is
+   * Revokes a refresh token on the Security Token Service. This is only required in the code flow with refresh tokens. If no token is
    * provided, then the token from the storage is revoked. You can pass any token to revoke.
    * https://tools.ietf.org/html/rfc7009
    *
@@ -386,12 +386,12 @@ export class OidcSecurityService {
   }
 
   /**
-   * Creates the authorize url basd on your flow
+   * Creates the authorize URL based on your flow
    *
    * @param customParams
    * @param configId The configId to perform the action in behalf of. If not passed, the first configs will be taken
    *
-   * @returns A string with the authorize url or null
+   * @returns A string with the authorize URL or null
    */
   getAuthorizeUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): string | null {
     configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId).configId;

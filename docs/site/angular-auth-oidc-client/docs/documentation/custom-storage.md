@@ -5,9 +5,9 @@ sidebar_position: 7
 
 # Custom Storage
 
-The lib uses the `sessionStorage` as default. If you need, you can create a custom storage (for example to use cookies).
-
-Implement `AbstractSecurityStorage` and the `read`, `write` and `remove` methods:
+The lib uses the `sessionStorage` as default. If needed, you can create a custom storage implementation, e.g. to use `localStorage` or cookies.
+A storage is implemented as a class with the `AbstractSecurityStorage` interface and the `read`, `write` and `remove` methods.
+The following example shows a custom storage that uses `localStorage`:
 
 ```ts
 import { AbstractSecurityStorage } from 'angular-auth-oidc-client';
@@ -33,10 +33,10 @@ Then provide the class in the module:
 
 ```ts
 @NgModule({
-    imports: [
-        ...
-        AuthModule.forRoot({ config: { storage: new CustomStorage() } })
-    ],
-    ...
+  imports: [
+      // ...
+      AuthModule.forRoot({ config: { storage: new CustomStorage() } })
+  ],
+  // ...
 })
 ```

@@ -11,10 +11,10 @@ This example shows how you could set the configuration when loading a child modu
 
 ```ts
 import { NgModule } from '@angular/core';
-import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
 
 @NgModule({
   declarations: [

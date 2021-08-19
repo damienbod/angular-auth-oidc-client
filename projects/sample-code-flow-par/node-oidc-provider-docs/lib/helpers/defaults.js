@@ -2293,7 +2293,7 @@ function getDefaults() {
     /*
      * interactions
      *
-     * description: Holds the configuration for interaction policy and url to send end-users to
+     * description: Holds the configuration for interaction policy and URL to send end-users to
      *   when the policy decides to require interaction.
      *
      * @nodefault

@@ -66,7 +66,7 @@ describe('Config Validation Service', () => {
   });
 
   describe('ensure-authority-server.rule', () => {
-    it('return false when no secure token server is set', () => {
+    it('return false when no security token service is set', () => {
       const config = { ...VALID_CONFIG, authority: null };
       const result = configValidationService.validateConfig(config);
       expect(result).toBeFalse();
