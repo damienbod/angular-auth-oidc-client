@@ -47,7 +47,7 @@ export class BrowserStorageService {
 
     value = value || null;
 
-    storage.write(`${configId}`, JSON.stringify(value));
+    storage.write(configId, JSON.stringify(value));
 
     return true;
   }
@@ -66,7 +66,7 @@ export class BrowserStorageService {
       return false;
     }
 
-    storage.remove(`${key}`);
+    storage.remove(key);
 
     return true;
   }
