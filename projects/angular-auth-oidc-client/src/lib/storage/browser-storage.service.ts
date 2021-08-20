@@ -11,35 +11,43 @@ export class BrowserStorageService {
     if (!this.hasStorage()) {
       this.loggerService.logDebug(configId, `Wanted to read '${key}' but Storage was undefined`);
 
-      return false;
-    }
-
-    const item = this.getStorage(configId)?.read(key);
-
-    if (!item) {
       return null;
     }
 
-    return JSON.parse(item);
+    const storage = this.getStorage(configId);
+
+    if (!storage) {
+      this.loggerService.logDebug(configId, `Wanted to read config for '${configId}' but Storage was falsy`);
+
+      return null;
+    }
+
+    const storedConfig = storage.read(configId);
+
+    if (!storedConfig) {
+      return null;
+    }
+
+    return JSON.parse(storedConfig);
   }
 
-  write(key: string, value: any, configId: string): boolean {
+  write(value: any, configId: string): boolean {
     if (!this.hasStorage()) {
-      this.loggerService.logDebug(configId, `Wanted to write '${key}/${value}' but Storage was falsy`);
+      this.loggerService.logDebug(configId, `Wanted to write '${value}' but Storage was falsy`);
 
       return false;
     }
 
     const storage = this.getStorage(configId);
     if (!storage) {
-      this.loggerService.logDebug(configId, `Wanted to write '${key}/${value}' but Storage was falsy`);
+      this.loggerService.logDebug(configId, `Wanted to write '${value}' but Storage was falsy`);
 
       return false;
     }
 
     value = value || null;
 
-    storage.write(`${key}`, JSON.stringify(value));
+    storage.write(configId, JSON.stringify(value));
 
     return true;
   }
@@ -58,7 +66,7 @@ export class BrowserStorageService {
       return false;
     }
 
-    storage.remove(`${key}`);
+    storage.remove(key);
 
     return true;
   }
