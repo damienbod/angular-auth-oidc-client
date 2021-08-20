@@ -11,7 +11,7 @@ export class BrowserStorageService {
     if (!this.hasStorage()) {
       this.loggerService.logDebug(configId, `Wanted to read '${key}' but Storage was undefined`);
 
-      return false;
+      return null;
     }
 
     const storage = this.getStorage(configId);
