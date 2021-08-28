@@ -5,15 +5,17 @@ sidebar_position: 8
 
 # Auto Login
 
-If you want to have your app being redirected to the Security Token Service automatically without the user clicking any login button only by accessing a specific route, you can use the `AutoLoginPartialRoutesGuard` or the `AutoLoginAllRoutesGuard` provided by the lib. In case you are using multiple configs the guard currently uses the first config fix to perform a login! The guard handles `canActivate` and `canLoad` for you. It also saves the route you wanted to visit before the login and redirects you to that route after the successful login.
+The library supports route-based automatic login thanks to the two included route guards: `AutoLoginPartialRoutesGuard` and `AutoLoginAllRoutesGuard`. The guards implement the necessary handlers for both `canActivate` and `canLoad`, and they will preserve the route upon completing a successful login.
 
-Here are two use cases to distinguish: with and without a guarded default route.
+*IMPORTANT: If you are using multiple configurations, the guards currently select the first provided configuration to perform the login.*
+
+## Common Scenarios
+
+Here are a couple of the common use cases.
 
 ### Auto Login when default route is not guarded
 
-You have this case when you have some routes in your configuration publicly accessible and some routes should be protected by a login. The login should start when the user enters the route.
-
-#### Example
+In this use case, some of your routes should be freely accessible, while others should be protected by a login, and the login should start when the user enters the protected route.
 
 ```ts
 import { AutoLoginPartialRoutesGuard } from 'angular-auth-oidc-client';
@@ -31,7 +33,7 @@ const routes: Routes = [
 ];
 ```
 
-In this case the `/home` and `/unauthorized` routes are not protected and hence are accessible without a login.
+In this case, the `/home` and `/unauthorized` routes are not protected, and they are accessible without a login.
 Please make sure to call `checkAuth()` like normal in your `app.component.ts`.
 
 ```ts
@@ -48,7 +50,7 @@ export class AppComponent implements OnInit {
 
 ### Auto Login when all routes are guarded
 
-If all your routes are guarded please use the `AutoLoginAllRoutesGuard` instead of the `AutoLoginPartialRoutesGuard`. This guard ensures that `checkAuth()` is being called for you and you do not have to call it in your `app.component.ts` then.
+If all your routes are guarded please use the `AutoLoginAllRoutesGuard` instead of the `AutoLoginPartialRoutesGuard`. This guard ensures that `checkAuth()` is being called and that you do not need to call it in `app.component.ts`.
 
 ```ts
 export class AppComponent implements OnInit {
