@@ -1,14 +1,14 @@
-import { Injectable } from '@angular/core';
-import { ConfigurationProvider } from '../config/provider/config.provider';
-import { CallbackContext } from '../flows/callback-context';
-import { LoggerService } from '../logging/logger.service';
-import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { EqualityService } from '../utils/equality/equality.service';
-import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
-import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
-import { StateValidationResult } from './state-validation-result';
-import { TokenValidationService } from './token-validation.service';
-import { ValidationResult } from './validation-result';
+import {Injectable} from '@angular/core';
+import {ConfigurationProvider} from '../config/provider/config.provider';
+import {CallbackContext} from '../flows/callback-context';
+import {LoggerService} from '../logging/logger.service';
+import {StoragePersistenceService} from '../storage/storage-persistence.service';
+import {EqualityService} from '../utils/equality/equality.service';
+import {FlowHelper} from '../utils/flowHelper/flow-helper.service';
+import {TokenHelperService} from '../utils/tokenHelper/token-helper.service';
+import {StateValidationResult} from './state-validation-result';
+import {TokenValidationService} from './token-validation.service';
+import {ValidationResult} from './validation-result';
 
 @Injectable()
 export class StateValidationService {
@@ -20,9 +20,10 @@ export class StateValidationService {
     private configurationProvider: ConfigurationProvider,
     private equalityService: EqualityService,
     private flowHelper: FlowHelper
-  ) {}
+  ) {
+  }
 
-  getValidatedStateResult(callbackContext: CallbackContext, configId: string): StateValidationResult {
+  async getValidatedStateResult(callbackContext: CallbackContext, configId: string): Promise<StateValidationResult> {
     if (!callbackContext) {
       return new StateValidationResult('', '', false, {});
     }
@@ -34,7 +35,7 @@ export class StateValidationService {
     return this.validateState(callbackContext, configId);
   }
 
-  validateState(callbackContext: any, configId: string): StateValidationResult {
+  async validateState(callbackContext: any, configId: string): Promise<StateValidationResult> {
     const toReturn = new StateValidationResult();
     const authStateControl = this.storagePersistenceService.read('authStateControl', configId);
 
@@ -54,14 +55,21 @@ export class StateValidationService {
     }
 
     if (callbackContext.authResult.id_token) {
-      const { clientId, issValidationOff, maxIdTokenIatOffsetAllowedInSeconds, disableIatOffsetValidation, ignoreNonceAfterRefresh } =
+      const {
+        clientId,
+        issValidationOff,
+        maxIdTokenIatOffsetAllowedInSeconds,
+        disableIatOffsetValidation,
+        ignoreNonceAfterRefresh
+      } =
         this.configurationProvider.getOpenIDConfiguration(configId);
 
       toReturn.idToken = callbackContext.authResult.id_token;
 
       toReturn.decodedIdToken = this.tokenHelperService.getPayloadFromToken(toReturn.idToken, false, configId);
 
-      if (!this.tokenValidationService.validateSignatureIdToken(toReturn.idToken, callbackContext.jwtKeys, configId)) {
+      const isSignatureIdTokenValid: boolean = await this.tokenValidationService.validateSignatureIdToken(toReturn.idToken, callbackContext.jwtKeys, configId);
+      if (!isSignatureIdTokenValid) {
         this.loggerService.logDebug(configId, 'authCallback Signature validation failed id_token');
         toReturn.state = ValidationResult.SignatureFailed;
         this.handleUnsuccessfulValidation(configId);
@@ -184,25 +192,41 @@ export class StateValidationService {
     // only do check if id_token returned, no always the case when using refresh tokens
     if (callbackContext.authResult.id_token) {
       const idTokenHeader = this.tokenHelperService.getHeaderFromToken(toReturn.idToken, false, configId);
-
-      // The at_hash is optional for the code flow
       if (isCurrentFlowCodeFlow && !(toReturn.decodedIdToken.at_hash as string)) {
         this.loggerService.logDebug(configId, 'Code Flow active, and no at_hash in the id_token, skipping check!');
-      } else if (
-        !this.tokenValidationService.validateIdTokenAtHash(
+      } else {
+        const valid: boolean = await this.tokenValidationService.validateIdTokenAtHash(
           toReturn.accessToken,
           toReturn.decodedIdToken.at_hash,
           idTokenHeader.alg, // 'RS256'
           configId
-        ) ||
-        !toReturn.accessToken
-      ) {
-        this.loggerService.logWarning(configId, 'authCallback incorrect at_hash');
-        toReturn.state = ValidationResult.IncorrectAtHash;
-        this.handleUnsuccessfulValidation(configId);
+        );
+        if (!valid || !toReturn.accessToken) {
+          this.loggerService.logWarning(configId, 'authCallback incorrect at_hash');
+          toReturn.state = ValidationResult.IncorrectAtHash;
+          this.handleUnsuccessfulValidation(configId);
 
-        return toReturn;
+          return toReturn;
+        }
       }
+      //   // The at_hash is optional for the code flow
+      // if (isCurrentFlowCodeFlow && !(toReturn.decodedIdToken.at_hash as string)) {
+      //   this.loggerService.logDebug(configId, 'Code Flow active, and no at_hash in the id_token, skipping check!');
+      // } else if (
+      //   !this.tokenValidationService.validateIdTokenAtHash(
+      //     toReturn.accessToken,
+      //     toReturn.decodedIdToken.at_hash,
+      //     idTokenHeader.alg, // 'RS256'
+      //     configId
+      //   ) ||
+      //   !toReturn.accessToken
+      // ) {
+      //   this.loggerService.logWarning(configId, 'authCallback incorrect at_hash');
+      //   toReturn.state = ValidationResult.IncorrectAtHash;
+      //   this.handleUnsuccessfulValidation(configId);
+      //
+      //   return toReturn;
+      // }
     }
 
     toReturn.authResponseIsValid = true;
@@ -213,7 +237,10 @@ export class StateValidationService {
   }
 
   private isIdTokenAfterRefreshTokenRequestValid(callbackContext: CallbackContext, newIdToken: any, configId: string): boolean {
-    const { useRefreshToken, disableRefreshIdTokenAuthTimeValidation } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const {
+      useRefreshToken,
+      disableRefreshIdTokenAuthTimeValidation
+    } = this.configurationProvider.getOpenIDConfiguration(configId);
     if (!useRefreshToken) {
       return true;
     }
@@ -274,7 +301,7 @@ export class StateValidationService {
   }
 
   private handleSuccessfulValidation(configId: string): void {
-    const { autoCleanStateAfterAuthentication } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const {autoCleanStateAfterAuthentication} = this.configurationProvider.getOpenIDConfiguration(configId);
     this.storagePersistenceService.write('authNonce', null, configId);
 
     if (autoCleanStateAfterAuthentication) {
@@ -284,7 +311,7 @@ export class StateValidationService {
   }
 
   private handleUnsuccessfulValidation(configId: string): void {
-    const { autoCleanStateAfterAuthentication } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const {autoCleanStateAfterAuthentication} = this.configurationProvider.getOpenIDConfiguration(configId);
     this.storagePersistenceService.write('authNonce', null, configId);
 
     if (autoCleanStateAfterAuthentication) {

@@ -33,7 +33,7 @@ export class JsrsAsignReducedService {
     for (let e of byteArray) {
       result += String.fromCharCode(e);
     }
-    
+
     return result;
   }
 }

@@ -1,18 +1,18 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { of } from 'rxjs';
-import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
-import { AuthWellKnownServiceMock } from '../../config/auth-well-known/auth-well-known.service-mock';
-import { ConfigurationProvider } from '../../config/provider/config.provider';
-import { ConfigurationProviderMock } from '../../config/provider/config.provider-mock';
-import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
-import { RedirectService } from '../../utils/redirect/redirect.service';
-import { RedirectServiceMock } from '../../utils/redirect/redirect.service-mock';
-import { UrlService } from '../../utils/url/url.service';
-import { UrlServiceMock } from '../../utils/url/url.service-mock';
-import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
-import { ResponseTypeValidationServiceMock } from '../response-type-validation/response-type-validation.service.mock';
-import { StandardLoginService } from './standard-login.service';
+import {fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
+import {of} from 'rxjs';
+import {AuthWellKnownService} from '../../config/auth-well-known/auth-well-known.service';
+import {AuthWellKnownServiceMock} from '../../config/auth-well-known/auth-well-known.service-mock';
+import {ConfigurationProvider} from '../../config/provider/config.provider';
+import {ConfigurationProviderMock} from '../../config/provider/config.provider-mock';
+import {LoggerService} from '../../logging/logger.service';
+import {LoggerServiceMock} from '../../logging/logger.service-mock';
+import {RedirectService} from '../../utils/redirect/redirect.service';
+import {RedirectServiceMock} from '../../utils/redirect/redirect.service-mock';
+import {UrlService} from '../../utils/url/url.service';
+import {UrlServiceMock} from '../../utils/url/url.service-mock';
+import {ResponseTypeValidationService} from '../response-type-validation/response-type-validation.service';
+import {ResponseTypeValidationServiceMock} from '../response-type-validation/response-type-validation.service.mock';
+import {StandardLoginService} from './standard-login.service';
 
 describe('StandardLoginService', () => {
   let standardLoginService: StandardLoginService;
@@ -28,12 +28,12 @@ describe('StandardLoginService', () => {
       imports: [],
       providers: [
         StandardLoginService,
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: ResponseTypeValidationService, useClass: ResponseTypeValidationServiceMock },
-        { provide: UrlService, useClass: UrlServiceMock },
-        { provide: RedirectService, useClass: RedirectServiceMock },
-        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
-        { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
+        {provide: LoggerService, useClass: LoggerServiceMock},
+        {provide: ResponseTypeValidationService, useClass: ResponseTypeValidationServiceMock},
+        {provide: UrlService, useClass: UrlServiceMock},
+        {provide: RedirectService, useClass: RedirectServiceMock},
+        {provide: ConfigurationProvider, useClass: ConfigurationProviderMock},
+        {provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock},
       ],
     });
   });
@@ -70,7 +70,7 @@ describe('StandardLoginService', () => {
     it(
       'does nothing if no well known endpoint is given',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ responseType: 'stubValue' });
+        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({responseType: 'stubValue'});
         const spy = spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
 
         const result = standardLoginService.loginStandard('configId');
@@ -100,7 +100,7 @@ describe('StandardLoginService', () => {
 
     it(
       'redirects to URL with no URL handler',
-      waitForAsync(() => {
+      fakeAsync(() => {
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpointUrl: 'authWellknownEndpoint',
           responseType: 'stubValue',
@@ -109,16 +109,15 @@ describe('StandardLoginService', () => {
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue(Promise.resolve('someUrl'));
         const redirectSpy = spyOn(redirectService, 'redirectTo').and.callThrough();
-        const result = standardLoginService.loginStandard('configId');
-
-        expect(result).toBeUndefined();
+        standardLoginService.loginStandard('configId');
+        tick();
         expect(redirectSpy).toHaveBeenCalledWith('someUrl');
       })
     );
 
     it(
       'redirects to URL with URL handler when urlHandler is given',
-      waitForAsync(() => {
+      fakeAsync(() => {
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpointUrl: 'authWellknownEndpoint',
           responseType: 'stubValue',
@@ -126,13 +125,14 @@ describe('StandardLoginService', () => {
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue(Promise.resolve('someUrl'));
-        const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
+        const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {
+        });
         const spy = jasmine.createSpy();
         const urlHandler = (url) => {
           spy(url);
         };
-        const result = standardLoginService.loginStandard('configId', { urlHandler });
-        expect(result).toBeUndefined();
+        standardLoginService.loginStandard('configId', {urlHandler});
+        tick();
         expect(spy).toHaveBeenCalledWith('someUrl');
         expect(redirectSpy).not.toHaveBeenCalled();
       })
@@ -140,7 +140,7 @@ describe('StandardLoginService', () => {
 
     it(
       'calls getAuthorizeUrl with custom params if they are given as parameter',
-      waitForAsync(() => {
+      fakeAsync(() => {
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpointUrl: 'authWellknownEndpoint',
           responseType: 'stubValue',
@@ -148,11 +148,12 @@ describe('StandardLoginService', () => {
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
         const getAuthorizeUrlSpy = spyOn(urlService, 'getAuthorizeUrl').and.returnValue(Promise.resolve('someUrl'));
-        const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
-        const result = standardLoginService.loginStandard('configId', { customParams: { to: 'add', as: 'well' } });
-        expect(result).toBeUndefined();
+        const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {
+        });
+        standardLoginService.loginStandard('configId', {customParams: {to: 'add', as: 'well'}});
+        tick();
         expect(redirectSpy).toHaveBeenCalledWith('someUrl');
-        expect(getAuthorizeUrlSpy).toHaveBeenCalledWith('configId', { to: 'add', as: 'well' });
+        expect(getAuthorizeUrlSpy).toHaveBeenCalledWith('configId', {to: 'add', as: 'well'});
       })
     );
   });

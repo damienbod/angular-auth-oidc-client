@@ -101,7 +101,7 @@ describe('State Validation Service', () => {
     expect(configProvider).toBeTruthy();
   });
 
-  it('should return invalid result if validateStateFromHashCallback is false', () => {
+  it('should return invalid result if validateStateFromHashCallback is false', async () => {
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
@@ -124,7 +124,7 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const state = await stateValidationService.validateState(callbackContext, 'configId');
 
     expect(oidcSecurityValidation.validateStateFromHashCallback).toHaveBeenCalled();
 
@@ -136,7 +136,7 @@ describe('State Validation Service', () => {
     expect(state.idToken).toBe('');
   });
 
-  it('access_token should equal result.access_token and is valid if response_type is "id_token token"', () => {
+  it('access_token should equal result.access_token and is valid if response_type is "id_token token"', async () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
     config.responseType = 'id_token token';
@@ -185,7 +185,7 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const state = await stateValidationService.validateState(callbackContext, 'configId');
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('id_tokenTEST');
@@ -193,7 +193,7 @@ describe('State Validation Service', () => {
     expect(state.authResponseIsValid).toBe(true);
   });
 
-  it('should return invalid result if validateSignatureIdToken is false', () => {
+  it('should return invalid result if validateSignatureIdToken is false', async () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
     config.responseType = 'id_token token';
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
@@ -219,7 +219,7 @@ describe('State Validation Service', () => {
       existingIdToken: null,
     };
 
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const state = await stateValidationService.validateState(callbackContext, 'configId');
 
     expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback Signature validation failed id_token');
 
@@ -229,7 +229,7 @@ describe('State Validation Service', () => {
     expect(state.authResponseIsValid).toBe(false);
   });
 
-  it('should return invalid result if validateIdTokenNonce is false', () => {
+  it('should return invalid result if validateIdTokenNonce is false', async () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
     config.responseType = 'id_token token';
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
@@ -257,7 +257,7 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const state = await stateValidationService.validateState(callbackContext, 'configId');
 
     expect(logWarningSpy).toHaveBeenCalledWith(
       'configId',
@@ -270,7 +270,7 @@ describe('State Validation Service', () => {
     expect(state.authResponseIsValid).toBe(false);
   });
 
-  it('should return invalid result if validateRequiredIdToken is false', () => {
+  it('should return invalid result if validateRequiredIdToken is false', async () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
     config.responseType = 'id_token token';
@@ -303,7 +303,7 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const state = await stateValidationService.validateState(callbackContext, 'configId');
 
     expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback Validation, one of the REQUIRED properties missing from id_token');
 
@@ -313,7 +313,7 @@ describe('State Validation Service', () => {
     expect(state.authResponseIsValid).toBe(false);
   });
 
-  it('should return invalid result if validateIdTokenIatMaxOffset is false', () => {
+  it('should return invalid result if validateIdTokenIatMaxOffset is false', async () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
     config.responseType = 'id_token token';
@@ -350,7 +350,7 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const state = await stateValidationService.validateState(callbackContext, 'configId');
 
     expect(logWarningSpy).toHaveBeenCalledWith(
       'configId',
@@ -363,7 +363,7 @@ describe('State Validation Service', () => {
     expect(state.authResponseIsValid).toBe(false);
   });
 
-  it('should return invalid result if validateIdTokenIss is false', () => {
+  it('should return invalid result if validateIdTokenIss is false', async () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
     config.responseType = 'id_token token';
@@ -401,7 +401,7 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const state = await stateValidationService.validateState(callbackContext, 'configId');
 
     expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect iss does not match authWellKnownEndpoints issuer');
 
@@ -411,7 +411,7 @@ describe('State Validation Service', () => {
     expect(state.authResponseIsValid).toBe(false);
   });
 
-  it('should return invalid result if validateIdTokenAud is false', () => {
+  it('should return invalid result if validateIdTokenAud is false', async () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
     config.responseType = 'id_token token';
@@ -453,7 +453,7 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const state = await stateValidationService.validateState(callbackContext, 'configId');
 
     expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect aud');
 
@@ -463,7 +463,7 @@ describe('State Validation Service', () => {
     expect(state.authResponseIsValid).toBe(false);
   });
 
-  it('should return invalid result if validateIdTokenExpNotExpired is false', () => {
+  it('should return invalid result if validateIdTokenExpNotExpired is false', async () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
     config.responseType = 'id_token token';
@@ -507,7 +507,7 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.getValidatedStateResult(callbackContext, 'configId');
+    const state = await stateValidationService.getValidatedStateResult(callbackContext, 'configId');
 
     expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback id token expired');
 
@@ -517,7 +517,7 @@ describe('State Validation Service', () => {
     expect(state.authResponseIsValid).toBe(false);
   });
 
-  it('Reponse is valid if authConfiguration.response_type does not equal "id_token token"', () => {
+  it('Reponse is valid if authConfiguration.response_type does not equal "id_token token"', async () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
     spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(Promise.resolve(true));
@@ -554,7 +554,7 @@ describe('State Validation Service', () => {
       existingIdToken: null,
     };
 
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const state = await stateValidationService.validateState(callbackContext, 'configId');
 
     expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback token(s) validated, continue');
 
@@ -565,7 +565,7 @@ describe('State Validation Service', () => {
     expect(state.authResponseIsValid).toBe(true);
   });
 
-  it('Response is invalid if validateIdTokenAtHash is false', () => {
+  it('Response is invalid if validateIdTokenAtHash is false', async () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
     spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(Promise.resolve(true));
@@ -602,7 +602,7 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const state = await stateValidationService.validateState(callbackContext, 'configId');
 
     expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect at_hash');
 
@@ -613,7 +613,7 @@ describe('State Validation Service', () => {
     expect(state.authResponseIsValid).toBe(false);
   });
 
-  it('should return valid result if validateIdTokenIss is false and iss_validation_off is true', () => {
+  it('should return valid result if validateIdTokenIss is false and iss_validation_off is true', async () => {
     config.issValidationOff = true;
     spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(false);
 
@@ -649,7 +649,7 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const state = await stateValidationService.validateState(callbackContext, 'configId');
 
     expect(logDebugSpy).toHaveBeenCalledWith('configId', 'iss validation is turned off, this is not recommended!');
 
@@ -660,7 +660,7 @@ describe('State Validation Service', () => {
     expect(state.idToken).toBe('id_tokenTEST');
   });
 
-  it('should return valid if there is no id_token', () => {
+  it('should return valid if there is no id_token', async () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
     config.responseType = 'code';
@@ -708,7 +708,7 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const state = await stateValidationService.validateState(callbackContext, 'configId');
 
     expect(state.accessToken).toBe('access_tokenTEST');
     expect(state.idToken).toBe('');
@@ -1253,7 +1253,7 @@ describe('State Validation Service', () => {
     expect(isValid).toBe(false);
   });
 
-  it('should return invalid context error', () => {
+  it('should return invalid context error', async () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
     config.responseType = 'id_token token';
@@ -1276,13 +1276,13 @@ describe('State Validation Service', () => {
       validationResult: null,
     };
 
-    const isValid = stateValidationService.getValidatedStateResult(callbackContext, 'configId');
+    const isValid = await stateValidationService.getValidatedStateResult(callbackContext, 'configId');
 
     expect(isValid.authResponseIsValid).toBe(false);
   });
 
-  it('should return authResponseIsValid false when null is passed', () => {
-    const isValid = stateValidationService.getValidatedStateResult(null, 'configId');
+  it('should return authResponseIsValid false when null is passed', async () => {
+    const isValid = await stateValidationService.getValidatedStateResult(null, 'configId');
 
     expect(isValid.authResponseIsValid).toBe(false);
   });

@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
-import { AuthOptions } from '../../auth-options';
-import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
-import { ConfigurationProvider } from '../../config/provider/config.provider';
-import { LoggerService } from '../../logging/logger.service';
-import { RedirectService } from '../../utils/redirect/redirect.service';
-import { UrlService } from '../../utils/url/url.service';
-import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
+import {Injectable} from '@angular/core';
+import {AuthOptions} from '../../auth-options';
+import {AuthWellKnownService} from '../../config/auth-well-known/auth-well-known.service';
+import {ConfigurationProvider} from '../../config/provider/config.provider';
+import {LoggerService} from '../../logging/logger.service';
+import {RedirectService} from '../../utils/redirect/redirect.service';
+import {UrlService} from '../../utils/url/url.service';
+import {ResponseTypeValidationService} from '../response-type-validation/response-type-validation.service';
 
 @Injectable()
 export class StandardLoginService {
@@ -16,7 +16,8 @@ export class StandardLoginService {
     private redirectService: RedirectService,
     private configurationProvider: ConfigurationProvider,
     private authWellKnownService: AuthWellKnownService
-  ) {}
+  ) {
+  }
 
   loginStandard(configId: string, authOptions?: AuthOptions): void {
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
@@ -25,7 +26,7 @@ export class StandardLoginService {
       return;
     }
 
-    const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const {authWellknownEndpointUrl} = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!authWellknownEndpointUrl) {
       this.loggerService.logError(configId, 'no authWellknownEndpoint given!');
@@ -36,7 +37,7 @@ export class StandardLoginService {
     this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow, no auth data');
 
     this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).subscribe(async () => {
-      const { urlHandler, customParams } = authOptions || {};
+      const {urlHandler, customParams} = authOptions || {};
 
       const url = await this.urlService.getAuthorizeUrl(configId, customParams);
 

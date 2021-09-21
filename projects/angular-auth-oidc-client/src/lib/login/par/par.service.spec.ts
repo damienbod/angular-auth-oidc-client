@@ -85,7 +85,7 @@ describe('ParService', () => {
     it(
       'calls data service with correct params',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(Promise.resolve(''));
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(Promise.resolve('some-url123'));
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ parEndpoint: 'parEndpoint' });
