@@ -1,5 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
-import { AbstractSecurityStorage } from './abstract-security-storage';
+import { BrowserStorageService } from './browser-storage.service';
 
 export type StorageKeys =
   | 'authnResult'
@@ -21,31 +21,31 @@ export type StorageKeys =
 
 @Injectable()
 export class StoragePersistenceService {
-  constructor(private readonly oidcSecurityStorage: AbstractSecurityStorage) {}
+  constructor(private readonly browserStorageService: BrowserStorageService) {}
 
   read(key: StorageKeys, configId: string): any {
-    const storedConfig = this.oidcSecurityStorage.read(configId) || {};
+    const storedConfig = this.browserStorageService.read(key, configId) || {};
 
     return storedConfig[key];
   }
 
   write(key: StorageKeys, value: any, configId: string): void {
-    const storedConfig = this.oidcSecurityStorage.read(configId) || {};
+    const storedConfig = this.browserStorageService.read(key, configId) || {};
 
     storedConfig[key] = value;
-    this.oidcSecurityStorage.write(configId, storedConfig);
+    this.browserStorageService.write(storedConfig, configId);
   }
 
   remove(key: StorageKeys, configId: string): void {
-    const storedConfig = this.oidcSecurityStorage.read(configId) || {};
+    const storedConfig = this.browserStorageService.read(key, configId) || {};
 
     delete storedConfig[key];
 
-    this.oidcSecurityStorage.write(configId, storedConfig);
+    this.browserStorageService.write(storedConfig, configId);
   }
 
-  clear(): void {
-    this.oidcSecurityStorage.clear();
+  clear(configId: string): void {
+    this.browserStorageService.clear(configId);
   }
 
   resetStorageFlowData(configId: string): void {

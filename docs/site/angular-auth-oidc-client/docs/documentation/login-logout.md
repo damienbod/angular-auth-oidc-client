@@ -5,29 +5,30 @@ sidebar_position: 3
 
 # Login & Logout
 
-In this section the Login and Logout mechanisms should be briefly described.
-
 ## Login
 
-For logging in a user you can call the `authorize()` method.
+For logging in a user you can call the `authorize()` method:
 
 ```ts
+constructor(private oidcSecurityService: OidcSecurityService) {}
+
+// ...
 this.oidcSecurityService.authorize();
 ```
 
-You configuration will be used and you will be redirected to the Security Token Server to log into your app.
+The supplied configuration will be used and the user will be redirected to the Security Token Service to log into your app.
 
-> The configuration on server _and_ client side has to be correct to finish the login successful!
+> The configuration on server _and_ client side has to be valid to finish the login successfully!
 
 ### `ConfigId` Parameter
 
-In case you have multiple configs you can pass the `configId` parameter as the first argument.
+In case you have multiple configs you can pass the `configId` parameter as the first argument to select a specific config:
 
 ```ts
 login() {
   this.oidcSecurityService.authorizeWithPopUp('configId')
     .subscribe(({ isAuthenticated, userData, idToken, accessToken, errorMessage }) => {
-    /* ... */
+      // ...
     });
 }
 ```
@@ -40,44 +41,42 @@ You can pass options to manipulate the behavior of the login with a custom `urlH
 login() {
   const authOptions = {
     customParams: {
-    some: 'params',
-  },
-  urlHandler: () => {
-    /* ... */
+      some: 'params',
+    },
+    urlHandler: () => {
+      // ...
     },
   };
 
-  const configIdOrNull = /* ... */
+  const configIdOrNull = // ...
 
   this.oidcSecurityService.authorizeWithPopUp(configIdOrNull, authOptions)
     .subscribe(({ isAuthenticated, userData, idToken, accessToken, errorMessage }) => {
-    /* ... */
-  });
+      // ...
+    });
 }
 
 ```
 
 ## Login using a Popup
 
-You can authenticate with any Open ID Connect identity provider using a popup.
+You can authenticate with any OpenID Connect identity provider using a popup.
 
 This allows you to have the provider's consent prompt display in a popup window to avoid unloading and reloading the app.
 
 ### Sample
 
 ```ts
-  constructor(public oidcSecurityService: OidcSecurityService) {}
-
-  loginWithPopup() {
-    this.oidcSecurityService.authorizeWithPopUp().subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
-      /* use data */
-    });
-  }
+loginWithPopup() {
+  this.oidcSecurityService.authorizeWithPopUp().subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
+    /* use data */
+  });
+}
 ```
 
 ### AuthOptions & PopupOptions
 
-You can pass options to control the dimension of the popup with the `PopupOptions` interface as a second parameter
+You can pass options to control the dimension of the popup with the `PopupOptions` interface as a second parameter.
 
 ```ts
 loginWithPopup() {
@@ -115,23 +114,23 @@ loginWithPopup() {
 
 ## Logout
 
-The `logoff()` function sends an end session request to the OIDC server, if it is available, or the check session has not sent a changed event.
+The `logoff()` method sends an end session request to the OIDC server, if it is available, or the check session has not sent a changed event.
 
 ```ts
 logout() {
-   this.oidcSecurityService.logoff();
+  this.oidcSecurityService.logoff();
 }
 ```
 
 ### `ConfigId` Parameter
 
-In case you have multiple configs you can pass the `configId` parameter as the first argument.
+`logoff()` also accepts a `configId` paramater to select a specific config:
 
 ```ts
 login() {
   this.oidcSecurityService.logoff('configId')
     .subscribe(({ isAuthenticated, userData, idToken, accessToken, errorMessage }) => {
-    /* ... */
+      /* ... */
     });
 }
 ```
@@ -157,23 +156,23 @@ logout() {
 
 ### `logoffAndRevokeTokens()`
 
-The `logoffAndRevokeTokens()` function revokes the access token and the refresh token if using a refresh flow, and then logoff like above.
+The `logoffAndRevokeTokens()` method revokes the access token and the refresh token if using a refresh flow, and then logoff like above.
 
 ```ts
 logoffAndRevokeTokens() {
-   this.oidcSecurityService.logoffAndRevokeTokens()
-      .subscribe((result) => console.log(result));
+  this.oidcSecurityService.logoffAndRevokeTokens()
+    .subscribe((result) => console.log(result));
 }
 ```
 
-The method also takes a `configId` and a `authOptions` in case you want to pass this.
+The method also takes `configId` and `authOptions` parameters if needed.
 
 ### `logoffLocal()`
 
-The `logoffLocal()` function is used to reset you local session in the browser, but not sending anything to the server. It also supports the `configId` parameter.
+The `logoffLocal()` method is used to reset your local session in the browser, but does not send anything to the server. It also accepts the `configId` parameter.
 
 ```ts
-logoutLocal() {
-   this.oidcSecurityService.logoffLocal();
+logoffLocal() {
+  this.oidcSecurityService.logoffLocal();
 }
 ```

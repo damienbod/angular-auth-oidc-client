@@ -55,9 +55,43 @@ You can pass an array of configs into the `forRoot()` method. Each config will g
 export class AuthConfigModule {}
 ```
 
-## Load config from HTTP
+### Getting static config from a service (sync)
 
-If you want to load the config from HTTP and then map it to the interface the library provides you can use the `StsConfigHttpLoader` and pass it with the `loader` property
+You can also get the static config from a service. In this case you can use the `StsConfigStaticLoader` passing the config in the constructor.
+
+```ts
+@Injectable({ providedIn: 'root' })
+export class ConfigService {
+  getConfig(): OpenIdConfiguration {
+    return {
+      /* Your config here */
+    };
+  }
+}
+
+const authFactory = (configService: ConfigService) => {
+  const config = configService.getConfig();
+  return new StsConfigStaticLoader(config);
+};
+
+@NgModule({
+  imports: [
+    AuthModule.forRoot({
+      loader: {
+        provide: StsConfigLoader,
+        useFactory: authFactory,
+        deps: [ConfigService],
+      },
+    }),
+  ],
+  exports: [AuthModule],
+})
+export class AuthConfigModule {}
+```
+
+## Load config from HTTP (async)
+
+If you want to load the config from HTTP and then map it to the interface the library provides you can use the `StsConfigHttpLoader` and pass it with the `loader` property.
 
 ```ts
 import { AuthModule, StsConfigHttpLoader, StsConfigLoader } from 'angular-auth-oidc-client';
@@ -93,9 +127,9 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
 export class AuthConfigModule {}
 ```
 
-### Using multiple http configs
+### Using multiple HTTP configs
 
-Also the http loader supports multiple configs.
+The HTTP loader also supports multiple configs.
 
 ```ts
 import { AuthModule, StsConfigHttpLoader, StsConfigLoader } from 'angular-auth-oidc-client';
@@ -147,287 +181,286 @@ export class AuthConfigModule {}
 
 ### `configId`
 
-- Type: string
-- Required: false
+- Type: `string`
+- Required: `false`
 
-To identify a configuration a new parameter called `configId` was introduced. If you do not explicitly set this value, the library will generate and assign the value for you. If set, the configured value is used. The value is optional.
+To identify a configuration the `configId` parameter was introduced. If you do not explicitly set this value, the library will generate and assign the value for you. If set, the configured value is used. The value is optional.
 
 ### `authority`
 
-- Type: string
-- Required: true
+- Type: `string`
+- Required: `true`
 
-This is the authority or the secure token server (URL). This must be set.
+This is the authority or the Security Token Service URL. This must be set.
 
 ### `authWellknownEndpointUrl`
 
-- Type: string
-- Required: false
+- Type: `string`
+- Required: `false`
 
-A different well known endpoint can be defined instead of the authority domain, with the standard well known endpoints postfix. This is only required if the well known endpoint URL is not implemented in a standard way on the secure token service.
+A different well-known endpoint can be defined instead of the authority domain with the standard well-known endpoints postfix. This is only required if the well-known endpoint URL is not implemented in a standard way on the Security Token Service (STS).
 
 ### `authWellknownEndpoints`
 
-- Type: object
-- Required: false
+- Type: `object`
+- Required: `false`
 
 TBD
 
 ### `redirectUrl`
 
-- Type: string
-- Required: false
+- Type: `string`
+- Required: `false`
 
-This is the redirect_url which was configured on the security token service (STS)
+This is the `redirect_url` which was configured on the Security Token Service (STS).
 
 ### `clientId`
 
-- Type: string
-- Required: false
+- Type: `string`
+- Required: `false`
 
-The client MUST validate that the aud (audience) claim contains its client_id value registered at the Issuer identified by the iss (issuer) Claim as an audience. The id token MUST be rejected if the id token does not list the Client as a valid audience, or if it contains additional audiences not trusted by the Client.
+The client MUST validate that the aud (audience) claim contains its `client_id` value registered at the Issuer identified by the iss (issuer) Claim as an audience. The id token MUST be rejected if the id token does not list the Client as a valid audience, or if it contains additional audiences not trusted by the Client.
 
 ### `responseType`
 
-- Type: string
-- Required: false
+- Type: `string`
+- Required: `false`
 
-'code', 'id_token token' or 'id_token' Name of the flow which can be configured. <br/> You must use the 'id_token token' flow, if you want to access an API or get user data from the server. <br/> The `access_token` is required for this, and only returned with this flow.
+`code`, `id_token token` or `id_token`. Name of the flow which can be configured. <br/> You must use the `id_token token` flow, if you want to access an API or get user data from the server. <br/> The `access_token` is required for this, and only returned with this flow.
 
 ### `scope`
 
-- Type: string
-- Required: false
+- Type: `string`
+- Required: `false`
 
-This is this scopes which are requested from the server from this client. This must match the secure token server configuration for the client you use.
+List of scopes which are requested from the server from this client. This must match the Security Token Service configuration for the client you use.
 
 ### `hdParam`
 
-- Type: string
-- Required: false
+- Type: `string`
+- Required: `false`
 
 Optional hd parameter for Google Auth with particular G Suite domain, see https://developers.google.com/identity/protocols/OpenIDConnect#hd-param
 
 ### `postLogoutRedirectUri`
 
-- Type: string
-- Required: false
+- Type: `string`
+- Required: `false`
 
-URL after a server logout if using the end session API.
+URL to redirect to after a server logout if using the end session API.
 
 ### `startCheckSession`
 
-- Type: boolean
-- Required: false
+- Type: `boolean`
+- Required: `false`
 
 Starts the OpenID session management for this client.
 
 ### `silentRenew`
 
-- Type: boolean
-- Required: false
+- Type: `boolean`
+- Required: `false`
 
-Renews the client tokens, once the token_id expires. Can use the iframes, or the refresh tokens.
+Renews the client tokens, once the id_token expires. Can use iframes or refresh tokens.
 
 ### `silentRenewUrl`
 
-- Type: string
-- Required: false
+- Type: `string`
+- Required: `false`
 
 URL which can be used for a lightweight renew callback. See silent renew.
 
 ### `silentRenewTimeoutInSeconds`
 
-- Type: number
-- Required: false
+- Type: `number`
+- Required: `false`
 
-Sets the maximum waiting time for silent renew process. If this time is exceeded, the silent renew state will be reset. Default = <em>20</em>
+Sets the maximum waiting time for silent renew process. If this time is exceeded, the silent renew state will be reset. Default = _20_
 
 ### `renewTimeBeforeTokenExpiresInSeconds`
 
-- Type: number
-- Required: false
+- Type: `number`
+- Required: `false`
 
-Makes it possible to add an offset to the silent renew check in seconds. By entering a value, you can renew the tokens, before the tokens expire.
+Makes it possible to add an offset to the silent renew check in seconds. By entering a value, you can renew the tokens before the tokens expire.
 
 ### `useRefreshToken`
 
-- Type: boolean
-- Required: false
+- Type: `boolean`
+- Required: `false`
 
 Default set to false. Standard silent renew mode used per default. Refresh tokens can be activated.
 
 ### `ignoreNonceAfterRefresh`
 
-- Type: boolean
-- Required: false
+- Type: `boolean`
+- Required: `false`
 
-A token obtained by using a refresh token normally doesn't contain a nonce value. The library checks it is not there. However some oidc endpoint implementations do send one. Setting ignoreNonceAfterRefresh to true disables the check if a nonce is present. Please note that the nonce value, if present, will not be verified. Default is false.
+A token obtained by using a refresh token normally doesn't contain a nonce value. The library checks it is not there. However, some OIDC endpoint implementations do send one. Setting `ignoreNonceAfterRefresh` to `true` disables the check if a nonce is present. Please note that the nonce value, if present, will not be verified. Default is `false`.
 
 ### `postLoginRoute`
 
-- Type: string
-- Required: false
+- Type: `string`
+- Required: `false`
 
 The default Angular route which is used after a successful login, if not using the `triggerAuthorizationResultEvent`.
 
 ### `forbiddenRoute`
 
-- Type: string
-- Required: false
+- Type: `string`
+- Required: `false`
 
-Route, if the server returns a 403. This is an Angular route. HTTP 403.
+Route to redirect to if the server returns a 403 error. This has to be an Angular route. HTTP 403.
 
 ### `unauthorizedRoute`
 
 - Type: string
 - Required: false
 
-Route, if the server returns a 401. This is an Angular route. HTTP 401.
+Route to redirect to if the server returns a 401 error. This has to be an Angular route. HTTP 401.
 
 ### `autoUserInfo`
 
-- Type: boolean
-- Required: false
+- Type: `boolean`
 
 Automatically get user info after authentication.
 
 ### `renewUserInfoAfterTokenRenew`
 
-- Type: boolean
-- Required: false
+- Type: `boolean`
+- Required: `false`
 
 Automatically get user info after token renew.
 
 ### `autoCleanStateAfterAuthentication`
 
-- Type: boolean
-- Required: false
+- Type: `boolean`
+- Required: `false`
 
-Can be used for custom state logic handling, the state is not automatically reset, when set to false.
+Can be used for custom state logic handling, the state is not automatically reset when set to `false`.
 
 ### `triggerAuthorizationResultEvent`
 
-- Type: boolean
-- Required: false
+- Type: `boolean`
+- Required: `false`
 
-This can be set to `true` which emits an event instead of an angular route change. Instead of forcing the application consuming this library to automatically redirect to one of the 3 hard-configured routes (start, unauthorized, forbidden), this modification will add an extra configuration option to override such behavior and trigger an event that will allow to subscribe to it and let the application perform other actions. This would be useful to allow the application to save an initial return url so that the user is redirected to it after a successful login on the secure token server (ie: saving the return url previously on sessionStorage and then retrieving it during the triggering of the event).
+This can be set to `true` which emits an event instead of an Angular route change. Instead of forcing the application consuming this library to automatically redirect to one of the 3 hard-configured routes (start, unauthorized, forbidden), this modification will add an extra configuration option to override such behavior and trigger an event that will allow to subscribe to it and let the application perform other actions. This would be useful to allow the application to save an initial return URL so that the user is redirected to it after a successful login on the Security Token Service (i.e. saving the return URL previously on sessionStorage and then retrieving it during the triggering of the event).
 
 ### `logLevel`
 
 - Type: `LogLevel`
-- Required: false
+- Required: `false`
 
 Can be used to set the log level displayed in the console.
 
 ### `issValidationOff`
 
-- Type: boolean
-- Required: false
+- Type: `boolean`
+- Required: `false`
 
-Make it possible to turn the iss validation off per configuration. You should not turn this off!
+Make it possible to turn off the iss validation per configuration. **You should not turn this off!**
 
 ### `historyCleanupOff`
 
-- Type: boolean
-- Required: false
+- Type: `boolean`
+- Required: `false`
 
-If this is active, the history is not cleaned up at an authorize callback. This can be used, when the application needs to preserve the history.
+If this is active, the history is not cleaned up at an authorize callback. This can be used when the application needs to preserve the history.
 
 ### `maxIdTokenIatOffsetAllowedInSeconds`
 
-- Type: number
-- Required: false
+- Type: `number`
+- Required: `false`
 
-Amount of offset allowed between the server creating the token, and the client app receiving the id_token. The diff in time between the server time and client time is also important in validating this value. All times are in UTC.
+Amount of offset allowed between the server creating the token and the client app receiving the id_token. The diff in time between the server time and client time is also important in validating this value. All times are in UTC.
 
 ### `disableIatOffsetValidation`
 
-- Type: boolean
-- Required: false
+- Type: `boolean`
+- Required: `false`
 
 This allows the application to disable the iat offset validation check. The iat Claim can be used to reject tokens that were issued too far away from the current time, limiting the amount of time that nonces need to be stored to prevent attacks.The acceptable range is client specific.
 
 ### `customParamsAuthRequest`
 
-- Type: Object
-- Required: false
+- Type: `Object`
+- Required: `false`
 
-Extra parameters can be added to the authorization URL request.
+Extra parameters to add to the authorization URL request.
 
 ### `customParamsRefreshTokenRequest`
 
-- Type: Object
-- Required: false
+- Type: `Object`
+- Required: `false`
 
 Extra parameters to add to the refresh token request body.
 
 ### `customParamsEndSessionRequest`
 
-- Type: Object
-- Required: false
+- Type: `Object`
+- Required: `false`
 
 Extra parameters to add to the end session request body.
 
 ### `customParamsCodeRequest`
 
-- Type: Object
-- Required: false
+- Type: `Object`
+- Required: `false`
 
-Extra parameters can be added to the token URL request.
+Extra parameters to add to the token URL request.
 
 ### `disableRefreshIdTokenAuthTimeValidation`
 
-- Type: boolean
-- Required: false
+- Type: `boolean`
+- Required: `false`
 
-disables the auth_time validation for id_tokens in a refresh due to Azure incorrect implementation
+Disables the auth_time validation for id_tokens in a refresh due to Azure's incorrect implementation.
 
 ### `enableIdTokenExpiredValidationInRenew`
 
-- Type: boolean
-- Required: false
+- Type: `boolean`
+- Required: `false`
 
-enables the id_token validation, default value is true. You can disable this validation if you would like to ignore the expired value in the renew process. If no id_token is returned in using refresh tokens, set this to false.
+Enables the id_token validation, default value is `true`. You can disable this validation if you like to ignore the expired value in the renew process. If no id_token is returned in using refresh tokens, set this to `false`.
 
 ### `eagerLoadAuthWellKnownEndpoints`
 
-- Type: boolean
-- Required: false
+- Type: `boolean`
+- Required: `false`
 
-Tells if the AuthWellKnownEndpoints should be loaded on start or when the user calls the `authorize` method
+Tells if the `AuthWellKnownEndpoints` should be loaded on start or when the user calls the `authorize` method.
 
 ### `tokenRefreshInSeconds`
 
-- Type: number
-- Required: false
+- Type: `number`
+- Required: `false`
 
-Controls the periodic check time interval in seconds, default = 3
+Controls the periodic check time interval in seconds. Default = _3_
 
 ### `secureRoutes`
 
 - Type: `string[]`
-- Required: false
+- Required: `false`
 
-Array of secure urls on which the token should be send if the interceptor is added to the HTTP_INTERCEPTORS see [Http Interceptor](./using-access-tokens.md/#http-interceptor)
+Array of secure URLs for which the token should be sent if the interceptor is added to the `HTTP_INTERCEPTORS`, see [HTTP Interceptor](./using-access-tokens.md/#http-interceptor).
 
 ### `usePushedAuthorisationRequests`
 
-- Type: boolean
-- Required: false
+- Type: `boolean`
+- Required: `false`
 
-activates Pushed Authorisation Requests for login and popup login (Iframe renew not supported)
+Activates Pushed Authorisation Requests for login and popup login (iframe renew not supported)
 
 ### `refreshTokenRetryInSeconds`
 
-- Type: number
-- Required: false
+- Type: `number`
+- Required: `false`
 
-Controls the periodic retry time interval for retrieving new tokens in seconds, default = 3. `silentRenewTimeoutInSeconds` and `tokenRefreshInSeconds` are upper bounds for this value.
+Controls the periodic retry time interval for retrieving new tokens in seconds, default = _3_. `silentRenewTimeoutInSeconds` and `tokenRefreshInSeconds` are upper bounds for this value.
 
 ### `ngswBypass`
 
-- Type: boolean
-- Required: false
+- Type: `boolean`
+- Required: `false`
 
-Adds the `ngsw-bypass` param to all requests ([Angular Docu](https://angular.io/guide/service-worker-devops#bypassing-the-service-worker)).
+Adds the `ngsw-bypass` param to all requests ([Angular Docs](https://angular.io/guide/service-worker-devops#bypassing-the-service-worker)).

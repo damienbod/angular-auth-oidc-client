@@ -6,6 +6,7 @@ import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
+import { DefaultSessionStorageService } from './../storage/default-sessionstorage.service';
 import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
 import { DEFAULT_CONFIG } from './default-config';
 import { OpenIdConfiguration } from './openid-configuration';
@@ -21,7 +22,8 @@ export class OidcConfigService {
     private authWellKnownService: AuthWellKnownService,
     private storagePersistenceService: StoragePersistenceService,
     private configValidationService: ConfigValidationService,
-    private platformProvider: PlatformProvider
+    private platformProvider: PlatformProvider,
+    private defaultSessionStorageService: DefaultSessionStorageService
   ) {}
 
   withConfigs(passedConfigs: OpenIdConfiguration[]): Promise<OpenIdConfiguration[]> {
@@ -110,6 +112,7 @@ export class OidcConfigService {
   private prepareConfig(configuration: OpenIdConfiguration): OpenIdConfiguration {
     const openIdConfigurationInternal = { ...DEFAULT_CONFIG, ...configuration };
     this.setSpecialCases(openIdConfigurationInternal);
+    this.setStorage(openIdConfigurationInternal);
 
     return openIdConfigurationInternal;
   }
@@ -121,5 +124,21 @@ export class OidcConfigService {
       currentConfig.useRefreshToken = false;
       currentConfig.usePushedAuthorisationRequests = false;
     }
+  }
+
+  private setStorage(currentConfig: OpenIdConfiguration): void {
+    if (currentConfig.storage) {
+      return;
+    }
+
+    if (this.hasBrowserStorage()) {
+      currentConfig.storage = this.defaultSessionStorageService;
+    } else {
+      currentConfig.storage = null;
+    }
+  }
+
+  private hasBrowserStorage(): boolean {
+    return typeof navigator !== 'undefined' && navigator.cookieEnabled && typeof Storage !== 'undefined';
   }
 }

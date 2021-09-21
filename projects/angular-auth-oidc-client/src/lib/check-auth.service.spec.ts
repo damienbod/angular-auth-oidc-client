@@ -91,7 +91,7 @@ describe('CheckAuthService', () => {
   });
 
   afterEach(() => {
-    storagePersistenceService.clear();
+    storagePersistenceService.clear(null);
   });
 
   it('should create', () => {
@@ -225,7 +225,7 @@ describe('CheckAuthService', () => {
     );
 
     it(
-      'does fire the auth and user data events when it is not a callback from the secure token server and is authenticated',
+      'does fire the auth and user data events when it is not a callback from the security token service and is authenticated',
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ authority: 'authority', configId: 'configId' });
@@ -244,7 +244,7 @@ describe('CheckAuthService', () => {
     );
 
     it(
-      'does NOT fire the auth and user data events when it is not a callback from the secure token server and is NOT authenticated',
+      'does NOT fire the auth and user data events when it is not a callback from the security token service and is NOT authenticated',
       waitForAsync(() => {
         spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ authority: 'authority', configId: 'configId' });

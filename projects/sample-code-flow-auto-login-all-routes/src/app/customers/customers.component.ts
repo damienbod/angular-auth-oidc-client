@@ -8,5 +8,5 @@ import { Component, OnInit } from '@angular/core';
 export class CustomersComponent implements OnInit {
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit() {}
 }

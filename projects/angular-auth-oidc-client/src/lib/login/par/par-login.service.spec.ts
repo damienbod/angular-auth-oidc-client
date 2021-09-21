@@ -206,7 +206,7 @@ describe('ParLoginService', () => {
     );
 
     it(
-      'calls urlHandler when url is passed',
+      'calls urlHandler when URL is passed',
       waitForAsync(() => {
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
@@ -280,7 +280,7 @@ describe('ParLoginService', () => {
         service.loginWithPopUpPar('configId').subscribe({
           error: (err) => {
             expect(spy).toHaveBeenCalled();
-            expect(err).toBe("Could not create url with param requestUri: 'url'");
+            expect(err).toBe("Could not create URL with param requestUri: 'url'");
           },
         });
       })
@@ -302,14 +302,14 @@ describe('ParLoginService', () => {
         service.loginWithPopUpPar('configId', { customParams: { some: 'thing' } }).subscribe({
           error: (err) => {
             expect(spy).toHaveBeenCalledOnceWith('configId', { some: 'thing' });
-            expect(err).toBe("Could not create url with param requestUri: 'url'");
+            expect(err).toBe("Could not create URL with param requestUri: 'url'");
           },
         });
       })
     );
 
     it(
-      'returns undefined and logs error when no url could be created',
+      'returns undefined and logs error when no URL could be created',
       waitForAsync(() => {
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
@@ -325,7 +325,7 @@ describe('ParLoginService', () => {
 
         service.loginWithPopUpPar('configId', { customParams: { some: 'thing' } }).subscribe({
           error: (err) => {
-            expect(err).toBe("Could not create url with param requestUri: 'url'");
+            expect(err).toBe("Could not create URL with param requestUri: 'url'");
             expect(spy).toHaveBeenCalledTimes(1);
           },
         });
@@ -333,7 +333,7 @@ describe('ParLoginService', () => {
     );
 
     it(
-      'calls popupService openPopUp when url could be created',
+      'calls popupService openPopUp when URL could be created',
       waitForAsync(() => {
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
@@ -355,7 +355,7 @@ describe('ParLoginService', () => {
     );
 
     it(
-      'returns correct properties if url is received',
+      'returns correct properties if URL is received',
       waitForAsync(() => {
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({

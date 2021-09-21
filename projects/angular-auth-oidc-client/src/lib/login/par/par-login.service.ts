@@ -60,7 +60,7 @@ export class ParLoginService {
         this.loggerService.logDebug(configId, 'par request url: ', url);
 
         if (!url) {
-          this.loggerService.logError(configId, `Could not create url with param ${response.requestUri}: '${url}'`);
+          this.loggerService.logError(configId, `Could not create URL with param ${response.requestUri}: '${url}'`);
 
           return;
         }
@@ -104,7 +104,7 @@ export class ParLoginService {
         this.loggerService.logDebug(configId, 'par request url: ', url);
 
         if (!url) {
-          const errorMessage = `Could not create url with param ${response.requestUri}: 'url'`;
+          const errorMessage = `Could not create URL with param ${response.requestUri}: 'url'`;
           this.loggerService.logError(configId, errorMessage);
 
           return throwError(errorMessage);

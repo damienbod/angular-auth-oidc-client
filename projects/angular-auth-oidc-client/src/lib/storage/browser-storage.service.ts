@@ -4,42 +4,50 @@ import { LoggerService } from '../logging/logger.service';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 
 @Injectable()
-export class BrowserStorageService implements AbstractSecurityStorage {
+export class BrowserStorageService {
   constructor(private configProvider: ConfigurationProvider, private loggerService: LoggerService) {}
 
   read(key: string, configId: string): any {
     if (!this.hasStorage()) {
       this.loggerService.logDebug(configId, `Wanted to read '${key}' but Storage was undefined`);
 
-      return false;
-    }
-
-    const item = this.getStorage(configId)?.getItem(key);
-
-    if (!item) {
       return null;
     }
 
-    return JSON.parse(item);
+    const storage = this.getStorage(configId);
+
+    if (!storage) {
+      this.loggerService.logDebug(configId, `Wanted to read config for '${configId}' but Storage was falsy`);
+
+      return null;
+    }
+
+    const storedConfig = storage.read(configId);
+
+    if (!storedConfig) {
+      return null;
+    }
+
+    return JSON.parse(storedConfig);
   }
 
-  write(key: string, value: any, configId: string): boolean {
+  write(value: any, configId: string): boolean {
     if (!this.hasStorage()) {
-      this.loggerService.logDebug(configId, `Wanted to write '${key}/${value}' but Storage was falsy`);
+      this.loggerService.logDebug(configId, `Wanted to write '${value}' but Storage was falsy`);
 
       return false;
     }
 
     const storage = this.getStorage(configId);
     if (!storage) {
-      this.loggerService.logDebug(configId, `Wanted to write '${key}/${value}' but Storage was falsy`);
+      this.loggerService.logDebug(configId, `Wanted to write '${value}' but Storage was falsy`);
 
       return false;
     }
 
     value = value || null;
 
-    storage.setItem(`${key}`, JSON.stringify(value));
+    storage.write(configId, JSON.stringify(value));
 
     return true;
   }
@@ -58,7 +66,7 @@ export class BrowserStorageService implements AbstractSecurityStorage {
       return false;
     }
 
-    storage.removeItem(`${key}`);
+    storage.remove(key);
 
     return true;
   }
@@ -83,7 +91,7 @@ export class BrowserStorageService implements AbstractSecurityStorage {
     return true;
   }
 
-  private getStorage(configId: string): any {
+  private getStorage(configId: string): AbstractSecurityStorage {
     const { storage } = this.configProvider.getOpenIDConfiguration(configId) || {};
 
     return storage;

@@ -8,13 +8,13 @@
   "bugs": {
     "url": "https://github.com/damienbod/angular-auth-oidc-client/issues"
   },
-  "version": "12.0.2",
+  "version": "12.0.3",
   "scripts": {
     "ng": "ng",
     "build": "npm run build-lib",
     "build-app": "ng build sample-code-flow",
-    "watch-lib": "ng build angular-auth-oidc-client --watch",
-    "build-lib": "ng build angular-auth-oidc-client && npm run schematics-build && npm run copy",
+    "watch-lib": "ng build angular-auth-oidc-client --watch --configuration development",
+    "build-lib": "ng build angular-auth-oidc-client --configuration development && npm run schematics-build && npm run copy",
     "build-lib-prod": "ng build angular-auth-oidc-client --configuration production && npm run schematics-build && npm run copy",
     "test-lib": "ng test angular-auth-oidc-client --code-coverage",
     "test-lib-ci": "ng test angular-auth-oidc-client --watch=false --browsers=ChromeHeadlessNoSandbox --code-coverage",

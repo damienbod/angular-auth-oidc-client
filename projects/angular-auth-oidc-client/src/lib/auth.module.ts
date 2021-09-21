@@ -40,8 +40,8 @@ import { StandardLoginService } from './login/standard/standard-login.service';
 import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.service';
 import { OidcSecurityService } from './oidc.security.service';
 import { PublicEventsService } from './public-events/public-events.service';
-import { AbstractSecurityStorage } from './storage/abstract-security-storage';
 import { BrowserStorageService } from './storage/browser-storage.service';
+import { DefaultSessionStorageService } from './storage/default-sessionstorage.service';
 import { StoragePersistenceService } from './storage/storage-persistence.service';
 import { UserService } from './user-data/user.service';
 import { EqualityService } from './utils/equality/equality.service';
@@ -98,11 +98,6 @@ export class AuthModule {
           deps: [OidcConfigService, StsConfigLoader, PASSED_CONFIG],
           useFactory: configurationProviderFactory,
         },
-
-        {
-          provide: AbstractSecurityStorage,
-          useClass: passedConfig?.storage || BrowserStorageService,
-        },
         OidcConfigService,
         PublicEventsService,
         FlowHelper,
@@ -151,6 +146,8 @@ export class AuthModule {
         JsrsAsignReducedService,
         CurrentUrlService,
         ClosestMatchingRouteService,
+        DefaultSessionStorageService,
+        BrowserStorageService,
       ],
     };
   }

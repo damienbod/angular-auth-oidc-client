@@ -62,7 +62,7 @@ export class UrlService {
     const authorizationEndpoint = authWellKnownEndPoints.authorizationEndpoint;
 
     if (!authorizationEndpoint) {
-      this.loggerService.logError(configId, `Can not create an authorize url when authorizationEndpoint is '${authorizationEndpoint}'`);
+      this.loggerService.logError(configId, `Can not create an authorize URL when authorizationEndpoint is '${authorizationEndpoint}'`);
 
       return null;
     }
@@ -298,7 +298,7 @@ export class UrlService {
     const authorizationEndpoint = authWellKnownEndPoints?.authorizationEndpoint;
 
     if (!authorizationEndpoint) {
-      this.loggerService.logError(configId, `Can not create an authorize url when authorizationEndpoint is '${authorizationEndpoint}'`);
+      this.loggerService.logError(configId, `Can not create an authorize URL when authorizationEndpoint is '${authorizationEndpoint}'`);
 
       return null;
     }

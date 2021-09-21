@@ -99,7 +99,7 @@ describe('StandardLoginService', () => {
     );
 
     it(
-      'redirects to url with no url handler',
+      'redirects to URL with no URL handler',
       waitForAsync(() => {
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpointUrl: 'authWellknownEndpoint',
@@ -117,7 +117,7 @@ describe('StandardLoginService', () => {
     );
 
     it(
-      'redirects to url with url handler when urlHandler is given',
+      'redirects to URL with URL handler when urlHandler is given',
       waitForAsync(() => {
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
           authWellknownEndpointUrl: 'authWellknownEndpoint',
