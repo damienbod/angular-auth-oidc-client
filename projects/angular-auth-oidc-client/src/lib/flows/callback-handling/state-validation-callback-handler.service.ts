@@ -1,13 +1,13 @@
-import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable} from '@angular/core';
-import {from, Observable, throwError} from 'rxjs';
-import {AuthStateService} from '../../auth-state/auth-state.service';
-import {LoggerService} from '../../logging/logger.service';
-import {StateValidationResult} from '../../validation/state-validation-result';
-import {StateValidationService} from '../../validation/state-validation.service';
-import {CallbackContext} from '../callback-context';
-import {ResetAuthDataService} from '../reset-auth-data.service';
-import {map} from "rxjs/operators";
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable } from '@angular/core';
+import { from, Observable, throwError } from 'rxjs';
+import { AuthStateService } from '../../auth-state/auth-state.service';
+import { LoggerService } from '../../logging/logger.service';
+import { StateValidationResult } from '../../validation/state-validation-result';
+import { StateValidationService } from '../../validation/state-validation.service';
+import { CallbackContext } from '../callback-context';
+import { ResetAuthDataService } from '../reset-auth-data.service';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class StateValidationCallbackHandlerService {
@@ -17,15 +17,13 @@ export class StateValidationCallbackHandlerService {
     private readonly authStateService: AuthStateService,
     private readonly resetAuthDataService: ResetAuthDataService,
     @Inject(DOCUMENT) private readonly doc: any
-  ) {
-  }
+  ) {}
 
   // STEP 4 All flows
 
   callbackStateValidation(callbackContext: CallbackContext, configId: string): Observable<CallbackContext> {
     return from(this.stateValidationService.getValidatedStateResult(callbackContext, configId)).pipe(
       map((validationResult: StateValidationResult) => {
-
         callbackContext.validationResult = validationResult;
 
         if (validationResult.authResponseIsValid) {
@@ -39,10 +37,11 @@ export class StateValidationCallbackHandlerService {
           this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
 
           throwError(errorMessage);
-          return callbackContext
+          
+return callbackContext;
         }
       })
-    )
+    );
   }
 
   private publishUnauthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean): void {

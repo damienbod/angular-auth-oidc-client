@@ -1,12 +1,12 @@
-import {HttpHeaders} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {from, Observable, throwError} from 'rxjs';
-import {catchError, map, retry, switchMap} from 'rxjs/operators';
-import {DataService} from '../../api/data.service';
-import {LoggerService} from '../../logging/logger.service';
-import {StoragePersistenceService} from '../../storage/storage-persistence.service';
-import {UrlService} from '../../utils/url/url.service';
-import {ParResponse} from './par-response';
+import { HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { from, Observable, throwError } from 'rxjs';
+import { catchError, map, retry, switchMap } from 'rxjs/operators';
+import { DataService } from '../../api/data.service';
+import { LoggerService } from '../../logging/logger.service';
+import { StoragePersistenceService } from '../../storage/storage-persistence.service';
+import { UrlService } from '../../utils/url/url.service';
+import { ParResponse } from './par-response';
 
 @Injectable()
 export class ParService {
@@ -15,8 +15,7 @@ export class ParService {
     private urlService: UrlService,
     private dataService: DataService,
     private storagePersistenceService: StoragePersistenceService
-  ) {
-  }
+  ) {}
 
   postParRequest(configId: string, customParams?: { [key: string]: string | number | boolean }): Observable<ParResponse> {
     let headers: HttpHeaders = new HttpHeaders();
@@ -34,7 +33,7 @@ export class ParService {
     }
 
     return from(this.urlService.createBodyForParCodeFlowRequest(configId, customParams)).pipe(
-      switchMap(data => {
+      switchMap((data) => {
         return this.dataService.post(parEndpoint, data, configId, headers).pipe(
           retry(2),
           map((response: any) => {
@@ -53,6 +52,6 @@ export class ParService {
           })
         );
       })
-    )
+    );
   }
 }

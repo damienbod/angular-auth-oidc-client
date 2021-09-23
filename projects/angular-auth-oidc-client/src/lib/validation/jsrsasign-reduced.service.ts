@@ -28,7 +28,7 @@ export class JsrsAsignReducedService {
     return this.toHashString(hashArray);
   }
 
-  toHashString(byteArray: number[]) {
+  toHashString(byteArray: number[]): string {
     let result = '';
     for (let e of byteArray) {
       result += String.fromCharCode(e);

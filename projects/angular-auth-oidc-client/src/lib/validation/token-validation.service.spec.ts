@@ -449,7 +449,8 @@ describe('TokenValidationService', () => {
   describe('validateIdTokenAtHash', () => {
     it('returns true if sha is sha256 and generated hash equals atHash param', async () => {
       const accessToken = 'iGU3DhbPoDljiYtr0oepxi7zpT8BsjdU7aaXcdq-DPk';
-      const atHash = 'JUVGJUJGJUJEJUVGJUJGJUJEJUVGJUJGJUJEJUVGJUJGJUJEJUVGJUJGJUJEJUVGJUJGJUJEJUVGJUJGJUJEQiUxNEwlMkYnJTNGJUVGJUJGJUJENnAlRUYlQkYlQkQlRUYlQkYlQkQlRUYlQkYlQkQlQzMlQjQnJUNCJTgyfiVFRiVCRiVCRHUqJTI0JUVGJUJGJUJEJTNG';
+      const atHash =
+        'JUVGJUJGJUJEJUVGJUJGJUJEJUVGJUJGJUJEJUVGJUJGJUJEJUVGJUJGJUJEJUVGJUJGJUJEJUVGJUJGJUJEQiUxNEwlMkYnJTNGJUVGJUJGJUJENnAlRUYlQkYlQkQlRUYlQkYlQkQlRUYlQkYlQkQlQzMlQjQnJUNCJTgyfiVFRiVCRiVCRHUqJTI0JUVGJUJGJUJEJTNG';
 
       const result = await tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '256', 'configId');
       expect(result).toEqual(true);
