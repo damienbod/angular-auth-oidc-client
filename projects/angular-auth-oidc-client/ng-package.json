@@ -4,8 +4,8 @@
   "lib": {
     "entryFile": "src/public-api.ts",
     "umdModuleIds": {
-      "jsrsasign-reduced": "jsrsasign-reduced"
+      "rfc4648": "rfc4648"
     }
   },
-  "allowedNonPeerDependencies": ["jsrsasign-reduced", "@angular-devkit/core", "@schematics/angular", "@angular-devkit/schematics"]
+  "allowedNonPeerDependencies": ["rfc4648", "@angular-devkit/core", "@schematics/angular", "@angular-devkit/schematics"]
 }

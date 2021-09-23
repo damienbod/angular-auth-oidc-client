@@ -37,8 +37,8 @@ export class StateValidationCallbackHandlerService {
           this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
 
           throwError(errorMessage);
-          
-return callbackContext;
+
+          return callbackContext;
         }
       })
     );
