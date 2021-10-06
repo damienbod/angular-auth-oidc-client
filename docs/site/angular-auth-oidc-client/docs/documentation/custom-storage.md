@@ -5,8 +5,8 @@ sidebar_position: 7
 
 # Custom Storage
 
-The lib uses the `sessionStorage` as default. If needed, you can create a custom storage implementation, e.g. to use `localStorage` or cookies.
-A storage is implemented as a class with the `AbstractSecurityStorage` interface and the `read`, `write` and `remove` methods.
+The library uses the `sessionStorage` as the default storage mechanism. If needed, you can create a custom storage implementation, e.g. to use `localStorage` or cookies.
+A storage provider is implemented as a class with the `AbstractSecurityStorage` interface and the `read`, `write` and `remove` methods.
 The following example shows a custom storage that uses `localStorage`:
 
 ```ts
