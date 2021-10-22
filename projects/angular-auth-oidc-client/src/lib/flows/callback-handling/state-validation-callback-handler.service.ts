@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { from, Observable, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { LoggerService } from '../../logging/logger.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
@@ -22,7 +22,7 @@ export class StateValidationCallbackHandlerService {
   // STEP 4 All flows
 
   callbackStateValidation(callbackContext: CallbackContext, configId: string): Observable<CallbackContext> {
-    return from(this.stateValidationService.getValidatedStateResult(callbackContext, configId)).pipe(
+    return this.stateValidationService.getValidatedStateResult(callbackContext, configId).pipe(
       map((validationResult: StateValidationResult) => {
         callbackContext.validationResult = validationResult;
 

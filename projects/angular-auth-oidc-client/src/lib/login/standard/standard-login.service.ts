@@ -35,22 +35,22 @@ export class StandardLoginService {
 
     this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow, no auth data');
 
-    this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).subscribe(async () => {
+    this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).subscribe(() => {
       const { urlHandler, customParams } = authOptions || {};
 
-      const url = await this.urlService.getAuthorizeUrl(configId, customParams);
+      this.urlService.getAuthorizeUrl(configId, customParams).subscribe((url: string) => {
+        if (!url) {
+          this.loggerService.logError(configId, 'Could not create URL', url);
 
-      if (!url) {
-        this.loggerService.logError(configId, 'Could not create URL', url);
+          return;
+        }
 
-        return;
-      }
-
-      if (urlHandler) {
-        urlHandler(url);
-      } else {
-        this.redirectService.redirectTo(url);
-      }
+        if (urlHandler) {
+          urlHandler(url);
+        } else {
+          this.redirectService.redirectTo(url);
+        }
+      });
     });
   }
 }

@@ -21,4 +21,5 @@ export interface AuthResult {
   error?: any;
   // eslint-disable-next-line @typescript-eslint/naming-convention
   session_state?: any;
+  state?: any;
 }

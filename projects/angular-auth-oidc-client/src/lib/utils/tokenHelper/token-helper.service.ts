@@ -18,9 +18,9 @@ export class TokenHelperService {
     return date;
   }
 
-  getSigningInputFromToken(token: any, encoded: boolean, configId: string): any {
+  getSigningInputFromToken(token: any, encoded: boolean, configId: string): string {
     if (!this.tokenIsValid(token, configId)) {
-      return {};
+      return '';
     }
 
     const header: string = this.getHeaderFromToken(token, encoded, configId);

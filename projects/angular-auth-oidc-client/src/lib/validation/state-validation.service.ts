@@ -9,6 +9,8 @@ import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { StateValidationResult } from './state-validation-result';
 import { TokenValidationService } from './token-validation.service';
 import { ValidationResult } from './validation-result';
+import { Observable, of } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 
 @Injectable()
 export class StateValidationService {
@@ -22,19 +24,15 @@ export class StateValidationService {
     private flowHelper: FlowHelper
   ) {}
 
-  async getValidatedStateResult(callbackContext: CallbackContext, configId: string): Promise<StateValidationResult> {
-    if (!callbackContext) {
-      return new StateValidationResult('', '', false, {});
-    }
-
-    if (callbackContext.authResult.error) {
-      return new StateValidationResult('', '', false, {});
+  getValidatedStateResult(callbackContext: CallbackContext, configId: string): Observable<StateValidationResult> {
+    if (!callbackContext || callbackContext.authResult.error) {
+      return of(new StateValidationResult('', '', false, {}));
     }
 
     return this.validateState(callbackContext, configId);
   }
 
-  async validateState(callbackContext: any, configId: string): Promise<StateValidationResult> {
+  validateState(callbackContext: CallbackContext, configId: string): Observable<StateValidationResult> {
     const toReturn = new StateValidationResult();
     const authStateControl = this.storagePersistenceService.read('authStateControl', configId);
 
@@ -43,7 +41,7 @@ export class StateValidationService {
       toReturn.state = ValidationResult.StatesDoNotMatch;
       this.handleUnsuccessfulValidation(configId);
 
-      return toReturn;
+      return of(toReturn);
     }
 
     const isCurrentFlowImplicitFlowWithAccessToken = this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken(configId);
@@ -61,121 +59,132 @@ export class StateValidationService {
 
       toReturn.decodedIdToken = this.tokenHelperService.getPayloadFromToken(toReturn.idToken, false, configId);
 
-      const isSignatureIdTokenValid: boolean = await this.tokenValidationService.validateSignatureIdToken(
-        toReturn.idToken,
-        callbackContext.jwtKeys,
-        configId
+      return this.tokenValidationService.validateSignatureIdToken(toReturn.idToken, callbackContext.jwtKeys, configId).pipe(
+        mergeMap((isSignatureIdTokenValid: boolean) => {
+          if (!isSignatureIdTokenValid) {
+            this.loggerService.logDebug(configId, 'authCallback Signature validation failed id_token');
+            toReturn.state = ValidationResult.SignatureFailed;
+            this.handleUnsuccessfulValidation(configId);
+
+            return of(toReturn);
+          }
+
+          const authNonce = this.storagePersistenceService.read('authNonce', configId);
+
+          if (!this.tokenValidationService.validateIdTokenNonce(toReturn.decodedIdToken, authNonce, ignoreNonceAfterRefresh, configId)) {
+            this.loggerService.logWarning(configId, 'authCallback incorrect nonce, did you call the checkAuth() method multiple times?');
+            toReturn.state = ValidationResult.IncorrectNonce;
+            this.handleUnsuccessfulValidation(configId);
+
+            return of(toReturn);
+          }
+
+          if (!this.tokenValidationService.validateRequiredIdToken(toReturn.decodedIdToken, configId)) {
+            this.loggerService.logDebug(configId, 'authCallback Validation, one of the REQUIRED properties missing from id_token');
+            toReturn.state = ValidationResult.RequiredPropertyMissing;
+            this.handleUnsuccessfulValidation(configId);
+
+            return of(toReturn);
+          }
+
+          if (
+            !this.tokenValidationService.validateIdTokenIatMaxOffset(
+              toReturn.decodedIdToken,
+              maxIdTokenIatOffsetAllowedInSeconds,
+              disableIatOffsetValidation,
+              configId
+            )
+          ) {
+            this.loggerService.logWarning(
+              configId,
+              'authCallback Validation, iat rejected id_token was issued too far away from the current time'
+            );
+            toReturn.state = ValidationResult.MaxOffsetExpired;
+            this.handleUnsuccessfulValidation(configId);
+
+            return of(toReturn);
+          }
+
+          const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+
+          if (authWellKnownEndPoints) {
+            if (issValidationOff) {
+              this.loggerService.logDebug(configId, 'iss validation is turned off, this is not recommended!');
+            } else if (
+              !issValidationOff &&
+              !this.tokenValidationService.validateIdTokenIss(toReturn.decodedIdToken, authWellKnownEndPoints.issuer, configId)
+            ) {
+              this.loggerService.logWarning(configId, 'authCallback incorrect iss does not match authWellKnownEndpoints issuer');
+              toReturn.state = ValidationResult.IssDoesNotMatchIssuer;
+              this.handleUnsuccessfulValidation(configId);
+
+              return of(toReturn);
+            }
+          } else {
+            this.loggerService.logWarning(configId, 'authWellKnownEndpoints is undefined');
+            toReturn.state = ValidationResult.NoAuthWellKnownEndPoints;
+            this.handleUnsuccessfulValidation(configId);
+
+            return of(toReturn);
+          }
+
+          if (!this.tokenValidationService.validateIdTokenAud(toReturn.decodedIdToken, clientId, configId)) {
+            this.loggerService.logWarning(configId, 'authCallback incorrect aud');
+            toReturn.state = ValidationResult.IncorrectAud;
+            this.handleUnsuccessfulValidation(configId);
+
+            return of(toReturn);
+          }
+
+          if (!this.tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(toReturn.decodedIdToken)) {
+            this.loggerService.logWarning(configId, 'authCallback missing azp');
+            toReturn.state = ValidationResult.IncorrectAzp;
+            this.handleUnsuccessfulValidation(configId);
+
+            return of(toReturn);
+          }
+
+          if (!this.tokenValidationService.validateIdTokenAzpValid(toReturn.decodedIdToken, clientId)) {
+            this.loggerService.logWarning(configId, 'authCallback incorrect azp');
+            toReturn.state = ValidationResult.IncorrectAzp;
+            this.handleUnsuccessfulValidation(configId);
+
+            return of(toReturn);
+          }
+
+          if (!this.isIdTokenAfterRefreshTokenRequestValid(callbackContext, toReturn.decodedIdToken, configId)) {
+            this.loggerService.logWarning(configId, 'authCallback pre, post id_token claims do not match in refresh');
+            toReturn.state = ValidationResult.IncorrectIdTokenClaimsAfterRefresh;
+            this.handleUnsuccessfulValidation(configId);
+
+            return of(toReturn);
+          }
+
+          if (!this.tokenValidationService.validateIdTokenExpNotExpired(toReturn.decodedIdToken, configId)) {
+            this.loggerService.logWarning(configId, 'authCallback id token expired');
+            toReturn.state = ValidationResult.TokenExpired;
+            this.handleUnsuccessfulValidation(configId);
+
+            return of(toReturn);
+          }
+
+          return this.validateDefault(isCurrentFlowImplicitFlowWithAccessToken, isCurrentFlowCodeFlow, toReturn, configId, callbackContext);
+        })
       );
-      if (!isSignatureIdTokenValid) {
-        this.loggerService.logDebug(configId, 'authCallback Signature validation failed id_token');
-        toReturn.state = ValidationResult.SignatureFailed;
-        this.handleUnsuccessfulValidation(configId);
-
-        return toReturn;
-      }
-
-      const authNonce = this.storagePersistenceService.read('authNonce', configId);
-
-      if (!this.tokenValidationService.validateIdTokenNonce(toReturn.decodedIdToken, authNonce, ignoreNonceAfterRefresh, configId)) {
-        this.loggerService.logWarning(configId, 'authCallback incorrect nonce, did you call the checkAuth() method multiple times?');
-        toReturn.state = ValidationResult.IncorrectNonce;
-        this.handleUnsuccessfulValidation(configId);
-
-        return toReturn;
-      }
-
-      if (!this.tokenValidationService.validateRequiredIdToken(toReturn.decodedIdToken, configId)) {
-        this.loggerService.logDebug(configId, 'authCallback Validation, one of the REQUIRED properties missing from id_token');
-        toReturn.state = ValidationResult.RequiredPropertyMissing;
-        this.handleUnsuccessfulValidation(configId);
-
-        return toReturn;
-      }
-
-      if (
-        !this.tokenValidationService.validateIdTokenIatMaxOffset(
-          toReturn.decodedIdToken,
-          maxIdTokenIatOffsetAllowedInSeconds,
-          disableIatOffsetValidation,
-          configId
-        )
-      ) {
-        this.loggerService.logWarning(
-          configId,
-          'authCallback Validation, iat rejected id_token was issued too far away from the current time'
-        );
-        toReturn.state = ValidationResult.MaxOffsetExpired;
-        this.handleUnsuccessfulValidation(configId);
-
-        return toReturn;
-      }
-
-      const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
-
-      if (authWellKnownEndPoints) {
-        if (issValidationOff) {
-          this.loggerService.logDebug(configId, 'iss validation is turned off, this is not recommended!');
-        } else if (
-          !issValidationOff &&
-          !this.tokenValidationService.validateIdTokenIss(toReturn.decodedIdToken, authWellKnownEndPoints.issuer, configId)
-        ) {
-          this.loggerService.logWarning(configId, 'authCallback incorrect iss does not match authWellKnownEndpoints issuer');
-          toReturn.state = ValidationResult.IssDoesNotMatchIssuer;
-          this.handleUnsuccessfulValidation(configId);
-
-          return toReturn;
-        }
-      } else {
-        this.loggerService.logWarning(configId, 'authWellKnownEndpoints is undefined');
-        toReturn.state = ValidationResult.NoAuthWellKnownEndPoints;
-        this.handleUnsuccessfulValidation(configId);
-
-        return toReturn;
-      }
-
-      if (!this.tokenValidationService.validateIdTokenAud(toReturn.decodedIdToken, clientId, configId)) {
-        this.loggerService.logWarning(configId, 'authCallback incorrect aud');
-        toReturn.state = ValidationResult.IncorrectAud;
-        this.handleUnsuccessfulValidation(configId);
-
-        return toReturn;
-      }
-
-      if (!this.tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(toReturn.decodedIdToken)) {
-        this.loggerService.logWarning(configId, 'authCallback missing azp');
-        toReturn.state = ValidationResult.IncorrectAzp;
-        this.handleUnsuccessfulValidation(configId);
-
-        return toReturn;
-      }
-
-      if (!this.tokenValidationService.validateIdTokenAzpValid(toReturn.decodedIdToken, clientId)) {
-        this.loggerService.logWarning(configId, 'authCallback incorrect azp');
-        toReturn.state = ValidationResult.IncorrectAzp;
-        this.handleUnsuccessfulValidation(configId);
-
-        return toReturn;
-      }
-
-      if (!this.isIdTokenAfterRefreshTokenRequestValid(callbackContext, toReturn.decodedIdToken, configId)) {
-        this.loggerService.logWarning(configId, 'authCallback pre, post id_token claims do not match in refresh');
-        toReturn.state = ValidationResult.IncorrectIdTokenClaimsAfterRefresh;
-        this.handleUnsuccessfulValidation(configId);
-
-        return toReturn;
-      }
-
-      if (!this.tokenValidationService.validateIdTokenExpNotExpired(toReturn.decodedIdToken, configId)) {
-        this.loggerService.logWarning(configId, 'authCallback id token expired');
-        toReturn.state = ValidationResult.TokenExpired;
-        this.handleUnsuccessfulValidation(configId);
-
-        return toReturn;
-      }
     } else {
       this.loggerService.logDebug(configId, 'No id_token found, skipping id_token validation');
     }
 
+    return this.validateDefault(isCurrentFlowImplicitFlowWithAccessToken, isCurrentFlowCodeFlow, toReturn, configId, callbackContext);
+  }
+
+  private validateDefault(
+    isCurrentFlowImplicitFlowWithAccessToken: boolean,
+    isCurrentFlowCodeFlow: boolean,
+    toReturn: StateValidationResult,
+    configId: string,
+    callbackContext: CallbackContext
+  ): Observable<StateValidationResult> {
     // flow id_token
     if (!isCurrentFlowImplicitFlowWithAccessToken && !isCurrentFlowCodeFlow) {
       toReturn.authResponseIsValid = true;
@@ -183,7 +192,7 @@ export class StateValidationService {
       this.handleSuccessfulValidation(configId);
       this.handleUnsuccessfulValidation(configId);
 
-      return toReturn;
+      return of(toReturn);
     }
 
     // only do check if id_token returned, no always the case when using refresh tokens
@@ -192,45 +201,38 @@ export class StateValidationService {
       if (isCurrentFlowCodeFlow && !(toReturn.decodedIdToken.at_hash as string)) {
         this.loggerService.logDebug(configId, 'Code Flow active, and no at_hash in the id_token, skipping check!');
       } else {
-        const valid: boolean = await this.tokenValidationService.validateIdTokenAtHash(
-          toReturn.accessToken,
-          toReturn.decodedIdToken.at_hash,
-          idTokenHeader.alg, // 'RS256'
-          configId
-        );
-        if (!valid || !toReturn.accessToken) {
-          this.loggerService.logWarning(configId, 'authCallback incorrect at_hash');
-          toReturn.state = ValidationResult.IncorrectAtHash;
-          this.handleUnsuccessfulValidation(configId);
+        return this.tokenValidationService
+          .validateIdTokenAtHash(
+            toReturn.accessToken,
+            toReturn.decodedIdToken.at_hash,
+            idTokenHeader.alg, // 'RS256'
+            configId
+          )
+          .pipe(
+            map((valid: boolean) => {
+              if (!valid || !toReturn.accessToken) {
+                this.loggerService.logWarning(configId, 'authCallback incorrect at_hash');
+                toReturn.state = ValidationResult.IncorrectAtHash;
+                this.handleUnsuccessfulValidation(configId);
 
-          return toReturn;
-        }
+                return toReturn;
+              } else {
+                toReturn.authResponseIsValid = true;
+                toReturn.state = ValidationResult.Ok;
+                this.handleSuccessfulValidation(configId);
+
+                return toReturn;
+              }
+            })
+          );
       }
-      //   // The at_hash is optional for the code flow
-      // if (isCurrentFlowCodeFlow && !(toReturn.decodedIdToken.at_hash as string)) {
-      //   this.loggerService.logDebug(configId, 'Code Flow active, and no at_hash in the id_token, skipping check!');
-      // } else if (
-      //   !this.tokenValidationService.validateIdTokenAtHash(
-      //     toReturn.accessToken,
-      //     toReturn.decodedIdToken.at_hash,
-      //     idTokenHeader.alg, // 'RS256'
-      //     configId
-      //   ) ||
-      //   !toReturn.accessToken
-      // ) {
-      //   this.loggerService.logWarning(configId, 'authCallback incorrect at_hash');
-      //   toReturn.state = ValidationResult.IncorrectAtHash;
-      //   this.handleUnsuccessfulValidation(configId);
-      //
-      //   return toReturn;
-      // }
     }
 
     toReturn.authResponseIsValid = true;
     toReturn.state = ValidationResult.Ok;
     this.handleSuccessfulValidation(configId);
 
-    return toReturn;
+    return of(toReturn);
   }
 
   private isIdTokenAfterRefreshTokenRequestValid(callbackContext: CallbackContext, newIdToken: any, configId: string): boolean {

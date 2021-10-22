@@ -3,6 +3,8 @@ import { base64url } from 'rfc4648';
 import { LoggerService } from '../logging/logger.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { JsrsAsignReducedService } from './jsrsasign-reduced.service';
+import { from, Observable, of } from 'rxjs';
+import { map, mergeMap, tap } from 'rxjs/operators';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
@@ -313,16 +315,16 @@ export class TokenValidationService {
   // Header Parameter of the JOSE Header.The Client MUST use the keys provided by the Issuer.
   // id_token C6: The alg value SHOULD be RS256. Validation of tokens using other signing algorithms is described in the
   // OpenID Connect Core 1.0 [OpenID.Core] specification.
-  async validateSignatureIdToken(idToken: string, jwtkeys: any, configId: string): Promise<boolean> {
+  validateSignatureIdToken(idToken: string, jwtkeys: any, configId: string): Observable<boolean> {
     if (!jwtkeys || !jwtkeys.keys) {
-      return false;
+      return of(false);
     }
 
     const headerData = this.tokenHelperService.getHeaderFromToken(idToken, false, configId);
     if (Object.keys(headerData).length === 0 && headerData.constructor === Object) {
       this.loggerService.logWarning(configId, 'id token has no header data');
 
-      return false;
+      return of(false);
     }
 
     const kid: string = headerData.kid;
@@ -334,10 +336,8 @@ export class TokenValidationService {
     if (!this.keyAlgorithms.includes(alg)) {
       this.loggerService.logWarning(configId, 'alg not supported', alg);
 
-      return false;
+      return of(false);
     }
-
-    let isValid = false;
 
     if (kid) {
       key = keys.find((k: JsonWebKey) => k['kid'] === kid);
@@ -349,7 +349,7 @@ export class TokenValidationService {
         let error = 'More than one matching key found. Please specify a kid in the id_token header.';
         console.error(error);
 
-        return Promise.reject(error);
+        return of(false);
       } else if (matchingKeys.length === 1) {
         key = matchingKeys[0];
       }
@@ -360,16 +360,18 @@ export class TokenValidationService {
     const signingInput: string = this.tokenHelperService.getSigningInputFromToken(idToken, true, configId);
     const rawSignature: string = this.tokenHelperService.getSignatureFromToken(idToken, true, configId);
 
-    const cryptoKey: CryptoKey = await this.cyptoObj.subtle.importKey('jwk', key, algorithm, false, ['verify']);
-    const signature: Uint8Array = base64url.parse(rawSignature, { loose: true });
+    return from(this.cyptoObj.subtle.importKey('jwk', key, algorithm, false, ['verify'])).pipe(
+      mergeMap((cryptoKey: CryptoKey) => {
+        const signature: Uint8Array = base64url.parse(rawSignature, { loose: true });
 
-    isValid = await this.cyptoObj.subtle.verify(algorithm, cryptoKey, signature, new TextEncoder().encode(signingInput));
-
-    if (!isValid) {
-      this.loggerService.logWarning(configId, 'incorrect Signature, validation failed for id_token');
-    }
-
-    return isValid;
+        return from(this.cyptoObj.subtle.verify(algorithm, cryptoKey, signature, new TextEncoder().encode(signingInput)));
+      }),
+      tap((isValid: boolean) => {
+        if (!isValid) {
+          this.loggerService.logWarning(configId, 'incorrect Signature, validation failed for id_token');
+        }
+      })
+    );
   }
 
   private getAlg(alg: string): RsaHashedImportParams | EcKeyImportParams {
@@ -422,7 +424,7 @@ export class TokenValidationService {
   // access_token C2: Take the left- most half of the hash and base64url- encode it.
   // access_token C3: The value of at_hash in the ID Token MUST match the value produced in the previous step if at_hash
   // is present in the ID Token.
-  async validateIdTokenAtHash(accessToken: string, atHash: string, idTokenAlg: string, configId: string): Promise<boolean> {
+  validateIdTokenAtHash(accessToken: string, atHash: string, idTokenAlg: string, configId: string): Observable<boolean> {
     this.loggerService.logDebug(configId, 'at_hash from the server:' + atHash);
 
     // 'sha256' 'sha384' 'sha512'
@@ -433,19 +435,22 @@ export class TokenValidationService {
       sha = 'SHA-512';
     }
 
-    let hash = await this.jsrsAsignReducedService.generateAtHash('' + accessToken, sha);
-    this.loggerService.logDebug(configId, 'at_hash client validation not decoded:' + hash);
-    if (hash === atHash) {
-      return true; // isValid;
-    } else {
-      hash = await this.jsrsAsignReducedService.generateAtHash('' + decodeURIComponent(accessToken), sha);
-      this.loggerService.logDebug(configId, '-gen access--' + hash);
-      if (hash === atHash) {
-        return true; // isValid
-      }
-    }
+    return this.jsrsAsignReducedService.generateAtHash('' + accessToken, sha).pipe(
+      mergeMap((hash: string) => {
+        this.loggerService.logDebug(configId, 'at_hash client validation not decoded:' + hash);
+        if (hash === atHash) {
+          return of(true); // isValid;
+        } else {
+          return this.jsrsAsignReducedService.generateAtHash('' + decodeURIComponent(accessToken), sha).pipe(
+            map((newHash: string) => {
+              this.loggerService.logDebug(configId, '-gen access--' + hash);
 
-    return false;
+              return newHash === atHash;
+            })
+          );
+        }
+      })
+    );
   }
 
   private millisToMinutesAndSeconds(millis: number): string {

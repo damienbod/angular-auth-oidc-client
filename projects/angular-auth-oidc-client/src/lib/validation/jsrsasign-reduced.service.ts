@@ -1,34 +1,39 @@
 import { Injectable } from '@angular/core';
+import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class JsrsAsignReducedService {
   private crypto: Crypto = window.crypto || (window as any).msCrypto; // for IE11
-  private textEncoder: TextEncoder = new TextEncoder();
-  private textDecoder: TextDecoder = new TextDecoder();
 
-  async generateCodeChallenge(codeVerifier: string): Promise<string> {
-    const challengeRaw: string = await this.calcHash(codeVerifier);
-
-    return base64UrlEncode(challengeRaw);
+  generateCodeChallenge(codeVerifier: string): Observable<string> {
+    return this.calcHash(codeVerifier).pipe(map((challengeRaw: string) => base64UrlEncode(challengeRaw)));
   }
 
-  async generateAtHash(accessToken: string, algorithm: string): Promise<string> {
-    const valueAsBytes: Uint8Array = this.textEncoder.encode(accessToken);
-    const resultBytes: ArrayBuffer = await this.crypto.subtle.digest(algorithm, valueAsBytes);
+  generateAtHash(accessToken: string, algorithm: string): Observable<string> {
+    return this.calcHash(accessToken, algorithm).pipe(
+      map((tokenHash) => {
+        let substr: string = tokenHash.substr(0, tokenHash.length / 2);
+        const tokenHashBase64: string = btoa(substr);
 
-    return btoa(encodeURIComponent(this.textDecoder.decode(resultBytes)));
+        return tokenHashBase64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+      })
+    );
   }
 
-  async calcHash(valueToHash: string): Promise<string> {
+  private calcHash(valueToHash: string, algorithm: string = 'SHA-256'): Observable<string> {
     const msgBuffer: Uint8Array = new TextEncoder().encode(valueToHash);
-    const hashBuffer: ArrayBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
 
-    const hashArray: number[] = Array.from(new Uint8Array(hashBuffer));
+    return from(this.crypto.subtle.digest(algorithm, msgBuffer)).pipe(
+      map((hashBuffer: ArrayBuffer) => {
+        const hashArray: number[] = Array.from(new Uint8Array(hashBuffer));
 
-    return this.toHashString(hashArray);
+        return this.toHashString(hashArray);
+      })
+    );
   }
 
-  toHashString(byteArray: number[]): string {
+  private toHashString(byteArray: number[]): string {
     let result = '';
     for (let e of byteArray) {
       result += String.fromCharCode(e);
