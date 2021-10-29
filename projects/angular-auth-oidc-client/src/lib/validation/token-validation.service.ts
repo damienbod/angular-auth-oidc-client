@@ -1,10 +1,10 @@
-﻿import { Injectable } from '@angular/core';
-import { base64url } from 'rfc4648';
-import { LoggerService } from '../logging/logger.service';
-import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
-import { JsrsAsignReducedService } from './jsrsasign-reduced.service';
-import { from, Observable, of } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+﻿import {Injectable} from '@angular/core';
+import {base64url} from 'rfc4648';
+import {LoggerService} from '../logging/logger.service';
+import {TokenHelperService} from '../utils/tokenHelper/token-helper.service';
+import {JsrsAsignReducedService} from './jsrsasign-reduced.service';
+import {from, Observable, of} from 'rxjs';
+import {map, mergeMap, tap} from 'rxjs/operators';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
@@ -355,7 +355,7 @@ export class TokenValidationService {
       }
     }
 
-    const algorithm: RsaHashedImportParams | EcKeyImportParams = this.getAlg(alg);
+    const algorithm: RsaHashedImportParams | EcdsaParams = this.getAlg(alg);
 
     const signingInput: string = this.tokenHelperService.getSigningInputFromToken(idToken, true, configId);
     const rawSignature: string = this.tokenHelperService.getSignatureFromToken(idToken, true, configId);
@@ -374,7 +374,7 @@ export class TokenValidationService {
     );
   }
 
-  private getAlg(alg: string): RsaHashedImportParams | EcKeyImportParams {
+  private getAlg(alg: string): RsaHashedImportParams | EcdsaParams {
     switch (alg.charAt(0)) {
       case 'R':
         return {
@@ -384,7 +384,7 @@ export class TokenValidationService {
       case 'E':
         return {
           name: 'ECDSA',
-          namedCurve: 'P-256',
+          hash: 'SHA-256',
         };
       default:
         return null;
