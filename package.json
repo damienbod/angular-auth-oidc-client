@@ -23,7 +23,7 @@
     "publish-lib": "npm run build-lib-prod && npm publish ./dist/angular-auth-oidc-client",
     "publish-lib-next": "npm run build-lib && npm publish --tag next ./dist/angular-auth-oidc-client",
     "copy-readme-to-lib-folder": "ncp README.md ./dist/angular-auth-oidc-client/README.md",
-    "copy-licence-to-lib-folder": "ncp LICENSE ./dist/angular-auth-oidc-client/LICENSE",
+    "copy-license-to-lib-folder": "ncp LICENSE ./dist/angular-auth-oidc-client/LICENSE",
     "start-docs": "cd \"docs/site/angular-auth-oidc-client\" && npm start",
     "build-docs": "cd \"docs/site/angular-auth-oidc-client\" && npm run build",
     "check-prettier": "prettier --check \"projects/angular-auth-oidc-client/**/*.*\"",
@@ -51,7 +51,7 @@
     "schematics-copy": "npm run schematics-ngadd-copy && ncp projects/schematics/src/collection.json ./dist/angular-auth-oidc-client/schematics/collection.json",
     "schematics-ngadd-copy": "ncp projects/schematics/src/ng-add/files ./dist/angular-auth-oidc-client/schematics/ng-add/files && ncp projects/schematics/src/ng-add/schema.json ./dist/angular-auth-oidc-client/schematics/ng-add/schema.json",
     "schematics-build": "tsc -p projects/schematics/tsconfig.json",
-    "copy": "npm run copy-readme-to-lib-folder && npm run copy-licence-to-lib-folder && npm run schematics-copy",
+    "copy": "npm run copy-readme-to-lib-folder && npm run copy-license-to-lib-folder && npm run schematics-copy",
     "postinstall": "husky install"
   },
   "private": true,
