@@ -6,7 +6,8 @@ pre-push:
   commands:
     fix-prettier:
       tags: frontend security
-      run: npm run fix-prettier
+      glob: '*.{js,ts}'
+      run: npm run fix-prettier {staged_files}
     # gems-audit:
     #   tags: backend security
     #   run: bundle audit
