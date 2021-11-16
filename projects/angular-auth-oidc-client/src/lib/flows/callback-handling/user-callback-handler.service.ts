@@ -61,14 +61,14 @@ export class UserCallbackHandlerService {
             const errorMessage = `Called for userData but they were ${userData}`;
             this.loggerService.logWarning(configId, errorMessage);
 
-            return throwError(errorMessage);
+            return throwError(() => new Error(errorMessage));
           }
         }),
         catchError((err) => {
           const errorMessage = `Failed to retrieve user info with error:  ${err}`;
           this.loggerService.logWarning(configId, errorMessage);
 
-          return throwError(errorMessage);
+          return throwError(() => new Error(errorMessage));
         })
       );
   }

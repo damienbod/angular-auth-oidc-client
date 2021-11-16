@@ -242,7 +242,7 @@ describe('ParLoginService', () => {
         service.loginWithPopUpPar('configId').subscribe({
           error: (err) => {
             expect(loggerSpy).toHaveBeenCalled();
-            expect(err).toBe('Invalid response type!');
+            expect(err.message).toBe('Invalid response type!');
           },
         });
       })
@@ -258,7 +258,7 @@ describe('ParLoginService', () => {
         service.loginWithPopUpPar('configId').subscribe({
           error: (err) => {
             expect(loggerSpy).toHaveBeenCalled();
-            expect(err).toBe('no authWellknownEndpoint given!');
+            expect(err.message).toBe('no authWellknownEndpoint given!');
           },
         });
       })
@@ -280,7 +280,7 @@ describe('ParLoginService', () => {
         service.loginWithPopUpPar('configId').subscribe({
           error: (err) => {
             expect(spy).toHaveBeenCalled();
-            expect(err).toBe("Could not create URL with param requestUri: 'url'");
+            expect(err.message).toBe("Could not create URL with param requestUri: 'url'");
           },
         });
       })
@@ -302,7 +302,7 @@ describe('ParLoginService', () => {
         service.loginWithPopUpPar('configId', { customParams: { some: 'thing' } }).subscribe({
           error: (err) => {
             expect(spy).toHaveBeenCalledOnceWith('configId', { some: 'thing' });
-            expect(err).toBe("Could not create URL with param requestUri: 'url'");
+            expect(err.message).toBe("Could not create URL with param requestUri: 'url'");
           },
         });
       })
@@ -325,7 +325,7 @@ describe('ParLoginService', () => {
 
         service.loginWithPopUpPar('configId', { customParams: { some: 'thing' } }).subscribe({
           error: (err) => {
-            expect(err).toBe("Could not create URL with param requestUri: 'url'");
+            expect(err.message).toBe("Could not create URL with param requestUri: 'url'");
             expect(spy).toHaveBeenCalledTimes(1);
           },
         });

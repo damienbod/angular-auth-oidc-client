@@ -46,6 +46,6 @@ export class SigninKeyDataService {
     }
     this.loggerService.logError(configId, errMsg);
 
-    return throwError(errMsg);
+    return throwError(() => new Error(errMsg));
   }
 }

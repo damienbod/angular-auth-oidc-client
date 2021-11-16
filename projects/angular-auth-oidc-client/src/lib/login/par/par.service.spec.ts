@@ -63,7 +63,7 @@ describe('ParService', () => {
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
         service.postParRequest('configId').subscribe({
           error: (err) => {
-            expect(err).toBe('Could not read PAR endpoint because authWellKnownEndPoints are not given');
+            expect(err.message).toBe('Could not read PAR endpoint because authWellKnownEndPoints are not given');
           },
         });
       })
@@ -76,7 +76,7 @@ describe('ParService', () => {
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ some: 'thing' });
         service.postParRequest('configId').subscribe({
           error: (err) => {
-            expect(err).toBe('Could not read PAR endpoint from authWellKnownEndpoints');
+            expect(err.message).toBe('Could not read PAR endpoint from authWellKnownEndpoints');
           },
         });
       })
@@ -117,13 +117,13 @@ describe('ParService', () => {
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ parEndpoint: 'parEndpoint' });
-        spyOn(dataService, 'post').and.returnValue(throwError('AN ERROR'));
+        spyOn(dataService, 'post').and.returnValue(throwError(() => new Error('ERROR')));
         const loggerSpy = spyOn(loggerService, 'logError');
 
         service.postParRequest('configId').subscribe({
           error: (err) => {
-            expect(err).toBe('There was an error on ParService postParRequest');
-            expect(loggerSpy).toHaveBeenCalledOnceWith('configId', 'There was an error on ParService postParRequest', 'AN ERROR');
+            expect(err.message).toBe('There was an error on ParService postParRequest');
+            expect(loggerSpy).toHaveBeenCalledOnceWith('configId', 'There was an error on ParService postParRequest', jasmine.any(Error));
           },
         });
       })
@@ -137,7 +137,10 @@ describe('ParService', () => {
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ parEndpoint: 'parEndpoint' });
         spyOn(dataService, 'post').and.returnValue(
-          createRetriableStream(throwError({}), of({ expires_in: 123, request_uri: 'request_uri' }))
+          createRetriableStream(
+            throwError(() => new Error('ERROR')),
+            of({ expires_in: 123, request_uri: 'request_uri' })
+          )
         );
 
         service.postParRequest('configId').subscribe({
@@ -157,7 +160,11 @@ describe('ParService', () => {
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ parEndpoint: 'parEndpoint' });
         spyOn(dataService, 'post').and.returnValue(
-          createRetriableStream(throwError({}), throwError({}), of({ expires_in: 123, request_uri: 'request_uri' }))
+          createRetriableStream(
+            throwError(() => new Error('ERROR')),
+            throwError(() => new Error('ERROR')),
+            of({ expires_in: 123, request_uri: 'request_uri' })
+          )
         );
 
         service.postParRequest('configId').subscribe({
@@ -177,7 +184,12 @@ describe('ParService', () => {
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ parEndpoint: 'parEndpoint' });
         spyOn(dataService, 'post').and.returnValue(
-          createRetriableStream(throwError({}), throwError({}), throwError({}), of({ expires_in: 123, request_uri: 'request_uri' }))
+          createRetriableStream(
+            throwError(() => new Error('ERROR')),
+            throwError(() => new Error('ERROR')),
+            throwError(() => new Error('ERROR')),
+            of({ expires_in: 123, request_uri: 'request_uri' })
+          )
         );
 
         service.postParRequest('configId').subscribe({

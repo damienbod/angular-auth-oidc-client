@@ -180,7 +180,7 @@ describe('CheckAuthService', () => {
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ authority: 'authority', configId: 'configId' });
         spyOn(callBackService, 'isCallback').and.returnValue(true);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
-        const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(throwError('ERROR'));
+        const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(throwError(() => new Error('ERROR')));
         checkAuthService.checkAuth('configId').subscribe((result) => {
           expect(result).toEqual({
             isAuthenticated: false,

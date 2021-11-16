@@ -97,11 +97,11 @@ export class OidcConfigService {
               this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
             })
           )
-          .subscribe(
-            () => resolve(usedConfig),
+          .subscribe({
+            next: () => resolve(usedConfig),
 
-            () => reject()
-          );
+            error: () => reject(),
+          });
       } else {
         this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
         resolve(usedConfig);

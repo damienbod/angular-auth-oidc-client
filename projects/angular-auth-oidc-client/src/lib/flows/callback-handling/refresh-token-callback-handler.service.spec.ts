@@ -101,7 +101,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
     it(
       'returns error in case of http error',
       waitForAsync(() => {
-        spyOn(dataService, 'post').and.returnValue(throwError(HTTP_ERROR));
+        spyOn(dataService, 'post').and.returnValue(throwError(() => HTTP_ERROR));
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
@@ -118,7 +118,12 @@ describe('RefreshTokenCallbackHandlerService', () => {
     it(
       'retries request in case of no connection http error and succeeds',
       waitForAsync(() => {
-        const postSpy = spyOn(dataService, 'post').and.returnValue(createRetriableStream(throwError(CONNECTION_ERROR), of({})));
+        const postSpy = spyOn(dataService, 'post').and.returnValue(
+          createRetriableStream(
+            throwError(() => CONNECTION_ERROR),
+            of({})
+          )
+        );
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
@@ -141,7 +146,10 @@ describe('RefreshTokenCallbackHandlerService', () => {
       'retries request in case of no connection http error and fails because of http error afterwards',
       waitForAsync(() => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(
-          createRetriableStream(throwError(CONNECTION_ERROR), throwError(HTTP_ERROR))
+          createRetriableStream(
+            throwError(() => CONNECTION_ERROR),
+            throwError(() => HTTP_ERROR)
+          )
         );
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', 'configId')

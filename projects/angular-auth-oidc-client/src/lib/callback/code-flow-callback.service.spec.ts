@@ -108,7 +108,7 @@ describe('CodeFlowCallbackService ', () => {
     it(
       'resetSilentRenewRunning and stopPeriodicallTokenCheck in case of error',
       waitForAsync(() => {
-        spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(throwError('error'));
+        spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(throwError(() => new Error('error')));
         const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
         const stopPeriodicallTokenCheckSpy = spyOn(intervalService, 'stopPeriodicTokenCheck');
 
@@ -131,7 +131,7 @@ describe('CodeFlowCallbackService ', () => {
             triggerAuthorizationResultEvent is false`,
       waitForAsync(() => {
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-        spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(throwError('error'));
+        spyOn(flowsService, 'processCodeFlowCallback').and.returnValue(throwError(() => new Error('error')));
         const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
         const stopPeriodicallTokenCheckSpy = spyOn(intervalService, 'stopPeriodicTokenCheck');
         const routerSpy = spyOn(router, 'navigateByUrl');
