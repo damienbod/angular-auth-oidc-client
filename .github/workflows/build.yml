@@ -54,14 +54,12 @@ jobs:
           cd ..
           echo '=== Current Directory ==='
           ls
-          sudo npm install -g @angular/cli
           echo 'Creating new angular project'
-          sudo ng new testProject --skip-git --skip-install
+          sudo npx @angular/cli new testProject --skip-git --skip-install
           cd testProject
           echo '=== Current Directory ==='
           ls
           sudo npm install --unsafe-perm=true
-          sudo npm install rxjs@7.4
           sudo npm install ../angular-auth-oidc-client/dist/angular-auth-oidc-client
           npm test -- --watch=false --browsers=ChromeHeadless
           sudo npm run build
@@ -71,14 +69,12 @@ jobs:
           cd ..
           echo '=== Current Directory ==='
           ls
-          sudo npm install -g @angular/cli
           echo 'Creating new angular project'
-          sudo ng new testProjectSchematic --skip-git --skip-install
+          sudo npx @angular/cli new testProjectSchematic --skip-git --skip-install
           cd testProjectSchematic
           echo '=== Current Directory ==='
           ls
           sudo npm install --unsafe-perm=true
-          sudo npm install rxjs@7.4
           sudo ng add ../angular-auth-oidc-client/dist/angular-auth-oidc-client --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using iframe silent renew" --skip-confirmation
           npm test -- --watch=false --browsers=ChromeHeadless
           sudo npm run build
