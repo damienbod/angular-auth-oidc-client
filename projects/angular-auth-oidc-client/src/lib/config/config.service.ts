@@ -90,7 +90,7 @@ export class OidcConfigService {
             catchError((error) => {
               this.loggerService.logError(usedConfig.configId, 'Getting auth well known endpoints failed on start', error);
 
-              return throwError(error);
+              return throwError(() => new Error(error));
             }),
             tap((wellknownEndPoints) => {
               usedConfig.authWellknownEndpoints = wellknownEndPoints;

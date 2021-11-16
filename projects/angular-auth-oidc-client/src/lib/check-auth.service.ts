@@ -41,7 +41,7 @@ export class CheckAuthService {
       const config = this.getConfigurationWithUrlState(stateParamFromUrl);
 
       if (!config) {
-        return throwError(`could not find matching config for state ${stateParamFromUrl}`);
+        return throwError(() => new Error(`could not find matching config for state ${stateParamFromUrl}`));
       }
 
       return this.checkAuthWithConfig(config, url);
@@ -64,7 +64,7 @@ export class CheckAuthService {
       const config = this.getConfigurationWithUrlState(stateParamFromUrl);
 
       if (!config) {
-        return throwError(`could not find matching config for state ${stateParamFromUrl}`);
+        return throwError(() => new Error(`could not find matching config for state ${stateParamFromUrl}`));
       }
 
       return this.composeMultipleLoginResults(config, url);
@@ -74,7 +74,7 @@ export class CheckAuthService {
       const config = this.configurationProvider.getOpenIDConfiguration(passedConfigId);
 
       if (!config) {
-        return throwError(`could not find matching config for id ${passedConfigId}`);
+        return throwError(() => new Error(`could not find matching config for id ${passedConfigId}`));
       }
 
       return this.composeMultipleLoginResults(config, url);

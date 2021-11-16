@@ -567,8 +567,8 @@ describe('CheckAuthService', () => {
       spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([]);
 
       checkAuthService.checkAuthMultiple().subscribe({
-        error: (message) => {
-          expect(message).toBe('could not find matching config for state the-state-param');
+        error: (error) => {
+          expect(error.message).toEqual('could not find matching config for state the-state-param');
         },
       });
     });
@@ -579,8 +579,8 @@ describe('CheckAuthService', () => {
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue(null);
 
       checkAuthService.checkAuthMultiple('not-existing-config-id').subscribe({
-        error: (message) => {
-          expect(message).toBe('could not find matching config for id not-existing-config-id');
+        error: (error) => {
+          expect(error.message).toEqual('could not find matching config for id not-existing-config-id');
         },
       });
     });
