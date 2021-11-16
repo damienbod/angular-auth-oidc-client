@@ -24,7 +24,7 @@ export class AutoLoginPartialRoutesGuard implements CanActivate, CanActivateChil
     private configurationProvider: ConfigurationProvider
   ) {}
 
-  canLoad(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+  canLoad(route: Route, segments: UrlSegment[]): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
     const routeToRedirect = segments.join('/');
 
     return this.checkAuth(routeToRedirect);
@@ -33,14 +33,14 @@ export class AutoLoginPartialRoutesGuard implements CanActivate, CanActivateChil
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+  ): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
     return this.checkAuth(state.url);
   }
 
   canActivateChild(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+  ): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
     return this.checkAuth(state.url);
   }
 
