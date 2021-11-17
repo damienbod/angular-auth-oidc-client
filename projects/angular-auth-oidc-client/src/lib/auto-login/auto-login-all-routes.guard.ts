@@ -25,23 +25,17 @@ export class AutoLoginAllRoutesGuard implements CanActivate, CanActivateChild, C
     private configurationProvider: ConfigurationProvider
   ) {}
 
-  canLoad(route: Route, segments: UrlSegment[]): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
+  canLoad(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree> {
     const routeToRedirect = segments.join('/');
 
     return this.checkAuth(routeToRedirect);
   }
 
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
     return this.checkAuth(state.url);
   }
 
-  canActivateChild(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
+  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
     return this.checkAuth(state.url);
   }
 
