@@ -72,7 +72,7 @@ jobs:
           ls
           sudo npm install -g @angular/cli
           echo 'Creating new angular project'
-          sudo ng new testProjectSchematic --skip-git --skip-install
+          sudo ng new testProjectSchematicRxJs6 --skip-git --skip-install
           cd testProjectSchematicRxJs6
           echo '=== Current Directory ==='
           ls
