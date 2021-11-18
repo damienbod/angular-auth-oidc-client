@@ -5,7 +5,7 @@ import { NgAddOptions } from '../models/ng-add-options';
 export function addSilentRenewHtmlToAssetsArrayInAngularJson(ngAddOptions: NgAddOptions): Rule {
   return (host: Tree, context: SchematicContext) => {
     if (!ngAddOptions.needsSilentRenewHtml) {
-      context.logger.info(`No silent-renew entry in assets array needed`);
+      context.logger.info(`✅️ No silent-renew entry in assets array needed`);
       return host;
     }
 

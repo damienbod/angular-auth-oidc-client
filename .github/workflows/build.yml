@@ -65,7 +65,7 @@ jobs:
           npm test -- --watch=false --browsers=ChromeHeadless
           sudo npm run build
 
-      - name: Create new Angular Project and use the schematics to add a module
+      - name: Create new Angular Project (RxJs 6) and use the schematics to add a module
         run: |
           cd ..
           echo '=== Current Directory ==='
@@ -77,6 +77,23 @@ jobs:
           echo '=== Current Directory ==='
           ls
           sudo npm install --unsafe-perm=true
-          sudo ng add ../angular-auth-oidc-client/dist/angular-auth-oidc-client --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using iframe silent renew" --skip-confirmation
+          sudo ng add ../angular-auth-oidc-client/dist/angular-auth-oidc-client --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using iframe silent renew" --use-local-package=true --skip-confirmation
+          npm test -- --watch=false --browsers=ChromeHeadless
+          sudo npm run build
+
+      - name: Create new Angular Project (RxJs 7) and use the schematics to add a module
+        run: |
+          cd ..
+          echo '=== Current Directory ==='
+          ls
+          sudo npm install -g @angular/cli
+          echo 'Creating new angular project'
+          sudo ng new testProjectSchematic --skip-git --skip-install
+          cd testProjectSchematic
+          echo '=== Current Directory ==='
+          ls
+          sudo npm install --unsafe-perm=true
+          sudo npm install rxjs@7.4
+          sudo ng add ../angular-auth-oidc-client/dist/angular-auth-oidc-client --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using iframe silent renew" --use-local-package=true --skip-confirmation
           npm test -- --watch=false --browsers=ChromeHeadless
           sudo npm run build
