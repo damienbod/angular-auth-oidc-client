@@ -5,7 +5,7 @@ export const ensureRedirectRule = (passedConfig: OpenIdConfiguration): RuleValid
   if (!passedConfig.redirectUrl) {
     return {
       result: false,
-      messages: ['The redirectURL is required and missing from your config'],
+      messages: ['The redirectUrl is required and missing from your config'],
       level: 'error',
     };
   }
