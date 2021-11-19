@@ -26,7 +26,7 @@ export class AuthWellKnownService {
       catchError((error) => {
         this.publicEventsService.fireEvent(EventTypes.ConfigLoadingFailed, null);
 
-        return throwError(error);
+        return throwError(() => new Error(error));
       })
     );
   }

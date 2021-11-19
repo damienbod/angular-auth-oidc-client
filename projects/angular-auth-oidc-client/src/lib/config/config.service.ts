@@ -90,18 +90,18 @@ export class OidcConfigService {
             catchError((error) => {
               this.loggerService.logError(usedConfig.configId, 'Getting auth well known endpoints failed on start', error);
 
-              return throwError(error);
+              return throwError(() => new Error(error));
             }),
             tap((wellknownEndPoints) => {
               usedConfig.authWellknownEndpoints = wellknownEndPoints;
               this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
             })
           )
-          .subscribe(
-            () => resolve(usedConfig),
+          .subscribe({
+            next: () => resolve(usedConfig),
 
-            () => reject()
-          );
+            error: () => reject(),
+          });
       } else {
         this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
         resolve(usedConfig);

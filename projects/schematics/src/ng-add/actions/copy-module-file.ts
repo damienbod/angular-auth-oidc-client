@@ -24,13 +24,13 @@ export function copyModuleFile(options: NgAddOptions): Rule {
 
     const filePath = `${project.sourceRoot}/app/auth/${moduleFileName}.ts`;
     if (host.exists(filePath)) {
-      context.logger.info(`✅️ "${filePath}" already existing - skipping file create`);
+      context.logger.info(`✅️ '${filePath}'' already existing - skipping file create`);
       return host;
     }
 
     const templateConfig = getTemplateConfig(options);
 
-    context.logger.info(`✅️ "${filePath}" will be created`);
+    context.logger.info(`✅️ '${filePath}''will be created`);
 
     const templateSource = apply(url(`./files/${moduleFolder}`), [
       template(templateConfig),

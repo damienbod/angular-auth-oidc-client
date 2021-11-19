@@ -125,7 +125,7 @@ describe('PeriodicallyTokenCheckService', () => {
       spyOn(periodicallyTokenCheckService as any, 'shouldStartPeriodicallyCheckForConfig').and.returnValue(true);
       const resetSilentRenewRunning = spyOn(flowsDataService, 'resetSilentRenewRunning');
       spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
-      spyOn(refreshSessionRefreshTokenService, 'refreshSessionWithRefreshTokens').and.returnValue(throwError('some error'));
+      spyOn(refreshSessionRefreshTokenService, 'refreshSessionWithRefreshTokens').and.returnValue(throwError(() => new Error('error')));
 
       spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([
         { configId: 'configId', silentRenew: true, tokenRefreshInSeconds: 1 },
@@ -143,7 +143,7 @@ describe('PeriodicallyTokenCheckService', () => {
       spyOn(periodicallyTokenCheckService as any, 'shouldStartPeriodicallyCheckForConfig').and.returnValue(true);
       const resetSilentRenewRunning = spyOn(flowsDataService, 'resetSilentRenewRunning');
       spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
-      spyOn(refreshSessionIframeService, 'refreshSessionWithIframe').and.returnValue(throwError('some error'));
+      spyOn(refreshSessionIframeService, 'refreshSessionWithIframe').and.returnValue(throwError(() => new Error('error')));
 
       spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([
         { configId: 'configId', silentRenew: true, tokenRefreshInSeconds: 1 },

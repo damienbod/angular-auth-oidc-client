@@ -60,7 +60,7 @@ export class UserService {
 
             return of(userData);
           } else {
-            return throwError('Received no user data, request failed');
+            return throwError(() => new Error('Received no user data, request failed'));
           }
         })
       );
@@ -117,7 +117,7 @@ export class UserService {
     if (!authWellKnownEndPoints) {
       this.loggerService.logWarning(configId, 'init check session: authWellKnownEndpoints is undefined');
 
-      return throwError('authWellKnownEndpoints is undefined');
+      return throwError(() => new Error('authWellKnownEndpoints is undefined'));
     }
 
     const userInfoEndpoint = authWellKnownEndPoints.userInfoEndpoint;
@@ -128,7 +128,7 @@ export class UserService {
         'init check session: authWellKnownEndpoints.userinfo_endpoint is undefined; set auto_userinfo = false in config'
       );
 
-      return throwError('authWellKnownEndpoints.userinfo_endpoint is undefined');
+      return throwError(() => new Error('authWellKnownEndpoints.userinfo_endpoint is undefined'));
     }
 
     return this.oidcDataService.get(userInfoEndpoint, configId, token).pipe(retry(2));

@@ -79,7 +79,7 @@ export class LogoffRevocationService {
           const errorMessage = `revoke token failed`;
           this.loggerService.logError(configId, errorMessage, error);
 
-          return throwError(errorMessage);
+          return throwError(() => new Error(errorMessage));
         }),
         tap(() => this.logoff(configId, authOptions))
       );
@@ -89,7 +89,7 @@ export class LogoffRevocationService {
           const errorMessage = `revoke accessToken failed`;
           this.loggerService.logError(configId, errorMessage, error);
 
-          return throwError(errorMessage);
+          return throwError(() => new Error(errorMessage));
         }),
         tap(() => this.logoff(configId, authOptions))
       );
@@ -144,7 +144,7 @@ export class LogoffRevocationService {
         const errorMessage = `Revocation request failed`;
         this.loggerService.logError(configId, errorMessage, error);
 
-        return throwError(errorMessage);
+        return throwError(() => new Error(errorMessage));
       })
     );
   }

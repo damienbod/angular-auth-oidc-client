@@ -36,7 +36,7 @@ export class ImplicitFlowCallbackService {
           this.router.navigateByUrl(unauthorizedRoute);
         }
 
-        return throwError(error);
+        return throwError(() => new Error(error));
       })
     );
   }

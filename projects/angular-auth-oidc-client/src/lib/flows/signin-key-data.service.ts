@@ -22,7 +22,7 @@ export class SigninKeyDataService {
       const error = `getSigningKeys: authWellKnownEndpoints.jwksUri is: '${jwksUri}'`;
       this.loggerService.logWarning(configId, error);
 
-      return throwError(error);
+      return throwError(() => new Error(error));
     }
 
     this.loggerService.logDebug(configId, 'Getting signinkeys from ', jwksUri);
@@ -46,6 +46,6 @@ export class SigninKeyDataService {
     }
     this.loggerService.logError(configId, errMsg);
 
-    return throwError(errMsg);
+    return throwError(() => new Error(errMsg));
   }
 }

@@ -2,10 +2,7 @@
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../dist/angular-auth-oidc-client",
   "lib": {
-    "entryFile": "src/public-api.ts",
-    "umdModuleIds": {
-      "jsrsasign-reduced": "jsrsasign-reduced"
-    }
+    "entryFile": "src/public-api.ts"
   },
   "allowedNonPeerDependencies": ["jsrsasign-reduced", "@angular-devkit/core", "@schematics/angular", "@angular-devkit/schematics"]
 }

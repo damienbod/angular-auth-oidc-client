@@ -141,7 +141,7 @@ export class RefreshSessionService {
         const currentAttempt = index + 1;
 
         if (!(error instanceof TimeoutError) || currentAttempt > MAX_RETRY_ATTEMPTS) {
-          return throwError(error);
+          return throwError(() => new Error(error));
         }
 
         this.loggerService.logDebug(configId, `forceRefreshSession timeout. Attempt #${currentAttempt}`);

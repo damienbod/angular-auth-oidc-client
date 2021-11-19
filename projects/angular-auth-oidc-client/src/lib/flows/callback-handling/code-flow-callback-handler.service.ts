@@ -32,13 +32,13 @@ export class CodeFlowCallbackHandlerService {
     if (!state) {
       this.loggerService.logDebug(configId, 'no state in url');
 
-      return throwError('no state in url');
+      return throwError(() => new Error('no state in url'));
     }
 
     if (!code) {
       this.loggerService.logDebug(configId, 'no code in url');
 
-      return throwError('no code in url');
+      return throwError(() => new Error('no code in url'));
     }
 
     this.loggerService.logDebug(configId, 'running validation for callback', urlToCheck);
@@ -65,13 +65,13 @@ export class CodeFlowCallbackHandlerService {
     const isStateCorrect = this.tokenValidationService.validateStateFromHashCallback(callbackContext.state, authStateControl, configId);
 
     if (!isStateCorrect) {
-      return throwError('codeFlowCodeRequest incorrect state');
+      return throwError(() => new Error('codeFlowCodeRequest incorrect state'));
     }
 
     const authWellknownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
     const tokenEndpoint = authWellknownEndpoints?.tokenEndpoint;
     if (!tokenEndpoint) {
-      return throwError('Token Endpoint not defined');
+      return throwError(() => new Error('Token Endpoint not defined'));
     }
 
     let headers: HttpHeaders = new HttpHeaders();
@@ -102,7 +102,7 @@ export class CodeFlowCallbackHandlerService {
         const errorMessage = `OidcService code request ${authority}`;
         this.loggerService.logError(configId, errorMessage, error);
 
-        return throwError(errorMessage);
+        return throwError(() => new Error(errorMessage));
       })
     );
   }
@@ -119,7 +119,7 @@ export class CodeFlowCallbackHandlerService {
           return timer(refreshTokenRetryInSeconds * 1000);
         }
 
-        return throwError(error);
+        return throwError(() => new Error(error));
       })
     );
   }

@@ -103,7 +103,12 @@ describe('Signin Key Data Service', () => {
       'should retry once',
       waitForAsync(() => {
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ jwksUri: 'someUrl' });
-        spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), of(DUMMY_JWKS)));
+        spyOn(dataService, 'get').and.returnValue(
+          createRetriableStream(
+            throwError(() => new Error('Error')),
+            of(DUMMY_JWKS)
+          )
+        );
 
         service.getSigningKeys('configId').subscribe({
           next: (res) => {
@@ -118,7 +123,13 @@ describe('Signin Key Data Service', () => {
       'should retry twice',
       waitForAsync(() => {
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ jwksUri: 'someUrl' });
-        spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), of(DUMMY_JWKS)));
+        spyOn(dataService, 'get').and.returnValue(
+          createRetriableStream(
+            throwError(() => new Error('Error')),
+            throwError(() => new Error('Error')),
+            of(DUMMY_JWKS)
+          )
+        );
 
         service.getSigningKeys('configId').subscribe({
           next: (res) => {
@@ -133,7 +144,14 @@ describe('Signin Key Data Service', () => {
       'should fail after three tries',
       waitForAsync(() => {
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ jwksUri: 'someUrl' });
-        spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), throwError({}), of(DUMMY_JWKS)));
+        spyOn(dataService, 'get').and.returnValue(
+          createRetriableStream(
+            throwError(() => new Error('Error')),
+            throwError(() => new Error('Error')),
+            throwError(() => new Error('Error')),
+            of(DUMMY_JWKS)
+          )
+        );
 
         service.getSigningKeys('configId').subscribe({
           error: (err) => {

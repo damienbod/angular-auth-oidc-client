@@ -23,6 +23,10 @@
       "description": "Please enter your authority URL or Azure tenant id or Http config URL",
       "type": "string",
       "x-prompt": "Please enter your authority URL or Azure tenant id or Http config URL"
+    },
+    "useLocalPackage": {
+      "description": "Used for local testing. When 'true' the local package path is not overwritten with the npm one when installing.",
+      "type": "boolean"
     }
   },
   "required": ["authorityUrlOrTenantId", "flowType"]

@@ -70,7 +70,7 @@ describe('PopUpLoginService', () => {
         popUpLoginService.loginWithPopUpStandard('configId').subscribe({
           error: (err) => {
             expect(loggerSpy).toHaveBeenCalled();
-            expect(err).toBe('Invalid response type!');
+            expect(err.message).toBe('Invalid response type!');
           },
         });
       })
@@ -87,7 +87,7 @@ describe('PopUpLoginService', () => {
           error: (err) => {
             expect(spy).toHaveBeenCalled();
             expect(loggerSpy).toHaveBeenCalled();
-            expect(err).toBe('no authWellknownEndpoint given!');
+            expect(err.message).toBe('no authWellknownEndpoint given!');
           },
         });
       })

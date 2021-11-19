@@ -9,8 +9,9 @@ import { parseSchema } from './schema-parser';
 
 export function getAllActions(options: Schema) {
   const ngAddOptions = parseSchema(options);
+
   return [
-    addPackageJsonDependencies(),
+    addPackageJsonDependencies(ngAddOptions),
     installPackageJsonDependencies(),
     copyModuleFile(ngAddOptions),
     addModuleToImports(ngAddOptions),

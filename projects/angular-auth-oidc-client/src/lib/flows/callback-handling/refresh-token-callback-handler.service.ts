@@ -31,7 +31,7 @@ export class RefreshTokenCallbackHandlerService {
     const authWellknownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
     const tokenEndpoint = authWellknownEndpoints?.tokenEndpoint;
     if (!tokenEndpoint) {
-      return throwError('Token Endpoint not defined');
+      return throwError(() => new Error('Token Endpoint not defined'));
     }
 
     const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken, configId, customParamsRefresh);
@@ -53,7 +53,7 @@ export class RefreshTokenCallbackHandlerService {
         const errorMessage = `OidcService code request ${authority}`;
         this.loggerService.logError(configId, errorMessage, error);
 
-        return throwError(errorMessage);
+        return throwError(() => new Error(errorMessage));
       })
     );
   }
@@ -70,7 +70,7 @@ export class RefreshTokenCallbackHandlerService {
           return timer(refreshTokenRetryInSeconds * 1000);
         }
 
-        return throwError(error);
+        return throwError(() => new Error(error));
       })
     );
   }

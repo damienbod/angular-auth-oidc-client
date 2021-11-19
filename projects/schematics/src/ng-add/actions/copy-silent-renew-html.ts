@@ -6,7 +6,7 @@ import { NgAddOptions } from '../models/ng-add-options';
 export function copySilentRenewHtmlToRoot(options: NgAddOptions): Rule {
   return (host: Tree, context: SchematicContext) => {
     if (!options.needsSilentRenewHtml) {
-      context.logger.info(`No silent-renew.html needed`);
+      context.logger.info(`✅️ No 'silent-renew.html' needed`);
       return host;
     }
 

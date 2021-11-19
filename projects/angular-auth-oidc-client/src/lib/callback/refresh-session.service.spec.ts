@@ -1,5 +1,5 @@
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
-import { of, throwError, TimeoutError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.service';
@@ -207,15 +207,15 @@ describe('RefreshSessionService ', () => {
       const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
       const expectedInvokeCount = MAX_RETRY_ATTEMPTS;
 
-      refreshSessionService.forceRefreshSession('configId').subscribe(
-        () => {
+      refreshSessionService.forceRefreshSession('configId').subscribe({
+        next: () => {
           fail('It should not return any result.');
         },
-        (error) => {
-          expect(error).toBeInstanceOf(TimeoutError);
+        error: (error) => {
+          expect(error).toBeInstanceOf(Error);
           expect(resetSilentRenewRunningSpy).toHaveBeenCalledTimes(expectedInvokeCount);
-        }
-      );
+        },
+      });
 
       tick(openIDConfiguration.silentRenewTimeoutInSeconds * 10000);
     }));
@@ -228,22 +228,22 @@ describe('RefreshSessionService ', () => {
       const expectedErrorMessage = 'Test error message';
 
       spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
-      spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(throwError(new Error(expectedErrorMessage)));
+      spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(throwError(() => new Error(expectedErrorMessage)));
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
       spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue(openIDConfiguration);
 
       const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
 
-      refreshSessionService.forceRefreshSession('configId').subscribe(
-        () => {
+      refreshSessionService.forceRefreshSession('configId').subscribe({
+        next: () => {
           fail('It should not return any result.');
         },
-        (error) => {
+        error: (error) => {
           expect(error).toBeInstanceOf(Error);
-          expect((error as Error).message === expectedErrorMessage).toBeTruthy();
+          expect(error.message).toEqual(`Error: ${expectedErrorMessage}`);
           expect(resetSilentRenewRunningSpy).not.toHaveBeenCalled();
-        }
-      );
+        },
+      });
     }));
 
     describe('NOT isCurrentFlowCodeFlowWithRefreshTokens', () => {

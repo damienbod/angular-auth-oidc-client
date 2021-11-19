@@ -1,5 +1,9 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-11-19 13.0.0
+
+- Update to Angular 13 and rxjs 7
+
 ### 2021-08-17 12.0.3
 
 - docs(guards): use UrlTree for redirect, clean up
