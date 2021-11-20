@@ -1,5 +1,5 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { LoggerService } from '../logging/logger.service';
@@ -79,8 +79,8 @@ describe('Configuration Service', () => {
     expect(oidcConfigService).toBeTruthy();
   });
 
-  it('should return a promise', () => {
-    expect(oidcConfigService.withConfigs([])).toEqual(jasmine.any(Promise));
+  it('should return an Observable', () => {
+    expect(oidcConfigService.withConfigs([])).toEqual(jasmine.any(Observable));
   });
 
   describe('withConfigs', () => {
@@ -90,9 +90,9 @@ describe('Configuration Service', () => {
         const config = {};
         spyOn(configValidationService, 'validateConfigs').and.returnValue(false);
 
-        const promise = oidcConfigService.withConfigs([config]);
+        const configs$ = oidcConfigService.withConfigs([config]);
 
-        promise.then((result) => {
+        configs$.subscribe((result) => {
           expect(result).toBeNull();
         });
       })
@@ -105,9 +105,9 @@ describe('Configuration Service', () => {
         spyOn(loggerService, 'logError');
         spyOn(configValidationService, 'validateConfig').and.returnValue(false);
 
-        const promise = oidcConfigService.withConfigs([config]);
+        const obs$ = oidcConfigService.withConfigs([config]);
 
-        promise.then(() => {
+        obs$.subscribe(() => {
           expect(loggerService.logError).toHaveBeenCalled();
         });
       })
@@ -118,9 +118,9 @@ describe('Configuration Service', () => {
       waitForAsync(() => {
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        const promise = oidcConfigService.withConfigs([{ authority: 'https://please_set', clientId: 'clientId' }]);
+        const obs$ = oidcConfigService.withConfigs([{ authority: 'https://please_set', clientId: 'clientId' }]);
 
-        promise.then((result) => {
+        obs$.subscribe((result) => {
           expect(result[0].configId).toEqual('0-clientId');
         });
       })
@@ -131,9 +131,9 @@ describe('Configuration Service', () => {
       waitForAsync(() => {
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        const promise = oidcConfigService.withConfigs([{ authority: 'https://please_set', clientId: 'clientId', configId: 'myConfigId' }]);
+        const obs$ = oidcConfigService.withConfigs([{ authority: 'https://please_set', clientId: 'clientId', configId: 'myConfigId' }]);
 
-        promise.then((result) => {
+        obs$.subscribe((result) => {
           expect(result[0].configId).toEqual('myConfigId');
         });
       })
@@ -144,11 +144,11 @@ describe('Configuration Service', () => {
       waitForAsync(() => {
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        const promise = oidcConfigService.withConfigs([
+        const obs$ = oidcConfigService.withConfigs([
           { authority: 'https://please_set', clientId: 'clientId', authWellknownEndpointUrl: 'my-auth-url' },
         ]);
 
-        promise.then((result) => {
+        obs$.subscribe((result) => {
           expect(result[0].authWellknownEndpointUrl).toEqual('my-auth-url');
         });
       })
@@ -161,9 +161,9 @@ describe('Configuration Service', () => {
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
 
-        const promise = oidcConfigService.withConfigs([{ authority: 'https://please_set', clientId: 'clientId' }]);
+        const obs$ = oidcConfigService.withConfigs([{ authority: 'https://please_set', clientId: 'clientId' }]);
 
-        promise.then((result) => {
+        obs$.subscribe((result) => {
           expect(result).toEqual([
             {
               ...DEFAULT_CONFIG,
@@ -190,9 +190,9 @@ describe('Configuration Service', () => {
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
 
-        const promise = oidcConfigService.withConfigs([config]);
+        const obs$ = oidcConfigService.withConfigs([config]);
 
-        promise.then((result) => {
+        obs$.subscribe((result) => {
           expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
             ...DEFAULT_CONFIG,
             authority: 'authorityForTesting',
@@ -219,9 +219,9 @@ describe('Configuration Service', () => {
         const storeWellKnownEndpointsSpy = spyOn(authWellKnownService, 'storeWellKnownEndpoints');
         spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
 
-        const promise = oidcConfigService.withConfigs([config]);
+        const obs$ = oidcConfigService.withConfigs([config]);
 
-        promise.then(() => {
+        obs$.subscribe(() => {
           expect(storeWellKnownEndpointsSpy).toHaveBeenCalledWith('0-clientId', authWellKnown);
           expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
             ...DEFAULT_CONFIG,
@@ -243,9 +243,28 @@ describe('Configuration Service', () => {
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue(null);
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         const getWellKnownEndPointsFromUrlSpy = spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
-        const promise = oidcConfigService.withConfigs([config]);
-        promise.then(() => {
+        const obs$ = oidcConfigService.withConfigs([config]);
+        obs$.subscribe(() => {
           expect(getWellKnownEndPointsFromUrlSpy).toHaveBeenCalledWith('authorityForTesting', '0-clientId');
+        });
+      })
+    );
+
+    it(
+      'if eagerLoadAuthWellKnownEndpoints is true but call throws error --> Error is thrown',
+      waitForAsync(() => {
+        const config = { authority: 'authorityForTesting', clientId: 'clientId', eagerLoadAuthWellKnownEndpoints: true };
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue(null);
+        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(throwError(() => new Error('ErrorError')));
+
+        const obs$ = oidcConfigService.withConfigs([config]);
+
+        obs$.subscribe({
+          error: (err) => {
+            expect(err).toBeTruthy();
+            expect(err.message).toEqual('Error: ErrorError');
+          },
         });
       })
     );
@@ -257,8 +276,8 @@ describe('Configuration Service', () => {
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue(null);
         const storeWellKnownEndpointsSpy = spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        const promise = oidcConfigService.withConfigs([config]);
-        promise.then(() => {
+        const obs$ = oidcConfigService.withConfigs([config]);
+        obs$.subscribe(() => {
           expect(storeWellKnownEndpointsSpy).not.toHaveBeenCalled();
         });
       })
@@ -279,7 +298,7 @@ describe('Configuration Service', () => {
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
 
-        oidcConfigService.withConfigs([config]).then((result) => {
+        oidcConfigService.withConfigs([config]).subscribe((result) => {
           expect(result[0].silentRenew).toEqual(false);
           expect(result[0].startCheckSession).toEqual(false);
         });
@@ -301,7 +320,7 @@ describe('Configuration Service', () => {
         spyOnProperty(platformProvider, 'isBrowser').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
 
-        oidcConfigService.withConfigs([config]).then(([{ silentRenew, startCheckSession }]) => {
+        oidcConfigService.withConfigs([config]).subscribe(([{ silentRenew, startCheckSession }]) => {
           expect(silentRenew).toEqual(true);
           expect(startCheckSession).toEqual(true);
         });
@@ -323,7 +342,7 @@ describe('Configuration Service', () => {
         const spy = spyOn(oidcConfigService as any, 'setSpecialCases');
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
 
-        oidcConfigService.withConfigs([config]).then(() => {
+        oidcConfigService.withConfigs([config]).subscribe(() => {
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -343,8 +362,8 @@ describe('Configuration Service', () => {
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
         const eventServiceSpy = spyOn(eventsService, 'fireEvent');
-        const promise = oidcConfigService.withConfigs([config]);
-        promise.then(() => {
+        const obs$ = oidcConfigService.withConfigs([config]);
+        obs$.subscribe(() => {
           expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
             ...DEFAULT_CONFIG,
             ...config,
@@ -376,7 +395,7 @@ describe('Configuration Service', () => {
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
 
-        oidcConfigService.withConfigs([config]).then((result) => {
+        oidcConfigService.withConfigs([config]).subscribe((result) => {
           expect(result).toEqual([expected]);
         });
       })
@@ -412,7 +431,7 @@ describe('Configuration Service', () => {
         spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
 
-        oidcConfigService.withConfigs([config]).then((result) => {
+        oidcConfigService.withConfigs([config]).subscribe((result) => {
           expect(result[0]).toEqual(expected);
         });
       })

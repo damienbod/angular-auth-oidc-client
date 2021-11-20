@@ -1,4 +1,5 @@
 import { Provider } from '@angular/core';
+import { Observable, of } from 'rxjs';
 import { OpenIdConfiguration } from '../openid-configuration';
 
 export class OpenIdConfigLoader {
@@ -6,29 +7,27 @@ export class OpenIdConfigLoader {
 }
 
 export abstract class StsConfigLoader {
-  abstract loadConfigs(): Promise<OpenIdConfiguration>[];
+  abstract loadConfigs(): Observable<OpenIdConfiguration>[];
 }
 
 export class StsConfigStaticLoader implements StsConfigLoader {
   constructor(private passedConfigs: OpenIdConfiguration | OpenIdConfiguration[]) {}
 
-  loadConfigs(): Promise<OpenIdConfiguration>[] {
+  loadConfigs(): Observable<OpenIdConfiguration>[] {
     if (Array.isArray(this.passedConfigs)) {
-      const allInstantStaticPromises = this.passedConfigs.map((x) => new Promise((resolve, _) => resolve(x)));
-
-      return allInstantStaticPromises;
+      return this.passedConfigs.map((x) => of(x));
     }
 
-    const singleStaticPromise = new Promise((resolve, _) => resolve(this.passedConfigs));
+    const singleStaticConfig$ = of(this.passedConfigs);
 
-    return [singleStaticPromise];
+    return [singleStaticConfig$];
   }
 }
 
 export class StsConfigHttpLoader implements StsConfigLoader {
-  constructor(private configs$: Promise<OpenIdConfiguration> | Promise<OpenIdConfiguration>[]) {}
+  constructor(private configs$: Observable<OpenIdConfiguration> | Observable<OpenIdConfiguration>[]) {}
 
-  loadConfigs(): Promise<OpenIdConfiguration>[] {
+  loadConfigs(): Observable<OpenIdConfiguration>[] {
     return Array.isArray(this.configs$) ? this.configs$ : [this.configs$];
   }
 }
