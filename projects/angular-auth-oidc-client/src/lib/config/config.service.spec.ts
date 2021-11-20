@@ -1,5 +1,5 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { LoggerService } from '../logging/logger.service';
@@ -246,6 +246,25 @@ describe('Configuration Service', () => {
         const obs$ = oidcConfigService.withConfigs([config]);
         obs$.subscribe(() => {
           expect(getWellKnownEndPointsFromUrlSpy).toHaveBeenCalledWith('authorityForTesting', '0-clientId');
+        });
+      })
+    );
+
+    it(
+      'if eagerLoadAuthWellKnownEndpoints is true but call throws error --> Error is thrown',
+      waitForAsync(() => {
+        const config = { authority: 'authorityForTesting', clientId: 'clientId', eagerLoadAuthWellKnownEndpoints: true };
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue(null);
+        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(throwError(() => new Error('ErrorError')));
+
+        const obs$ = oidcConfigService.withConfigs([config]);
+
+        obs$.subscribe({
+          error: (err) => {
+            expect(err).toBeTruthy();
+            expect(err.message).toEqual('Error: ErrorError');
+          },
         });
       })
     );
