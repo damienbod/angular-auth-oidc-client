@@ -5,7 +5,7 @@ import { OpenIdConfiguration } from '../openid-configuration';
 export class ConfigurationProvider {
   private configsInternal: Record<string, OpenIdConfiguration> = {};
 
-  hasAsLeastOneConfig(): boolean {
+  hasAtLeastOneConfig(): boolean {
     return Object.keys(this.configsInternal).length > 0;
   }
 

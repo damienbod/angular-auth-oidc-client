@@ -60,15 +60,15 @@ describe('ConfigurationProviderTests', () => {
     });
   });
 
-  describe('hasAsLeastOneConfig', () => {
+  describe('hasAtLeastOneConfig', () => {
     it('hasConfig is true if config is set', () => {
       configurationProvider.setConfig({ authority: 'hello' });
 
-      expect(configurationProvider.hasAsLeastOneConfig()).toBeTrue();
+      expect(configurationProvider.hasAtLeastOneConfig()).toBeTrue();
     });
 
     it('hasConfig is false if no config is set', () => {
-      expect(configurationProvider.hasAsLeastOneConfig()).toBeFalse();
+      expect(configurationProvider.hasAtLeastOneConfig()).toBeFalse();
     });
   });
 
@@ -99,7 +99,7 @@ describe('ConfigurationProviderTests', () => {
     });
 
     it('hasConfig is false if no config is set', () => {
-      expect(configurationProvider.hasAsLeastOneConfig()).toBeFalse();
+      expect(configurationProvider.hasAtLeastOneConfig()).toBeFalse();
     });
   });
 });
