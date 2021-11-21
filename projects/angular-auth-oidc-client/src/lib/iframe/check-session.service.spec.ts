@@ -83,27 +83,6 @@ describe('CheckSessionService', () => {
     expect(result).toBeDefined();
   });
 
-  /*
-      THIS TEST WORKS IN WHEN DEBUGGING...location.replace
-       does not return a promise or something we can wait for
-    */
-  xit(
-    'location of iframe is set to authWellKnownEndpoints.check_session_iframe if existing',
-    waitForAsync(async () => {
-      const authWellKnownEndpoints = {
-        checkSessionIframe: 'https://some-testing-url.com',
-      };
-
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
-      spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
-
-      (checkSessionService as any).init();
-      await Promise.resolve().then();
-      const iframe = (checkSessionService as any).getOrCreateIframe();
-      expect(iframe.contentWindow.location.toString()).toContain('someTestingValue');
-    })
-  );
-
   it('init appends iframe on body with correct values', () => {
     expect((checkSessionService as any).sessionIframe).toBeFalsy();
     spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});

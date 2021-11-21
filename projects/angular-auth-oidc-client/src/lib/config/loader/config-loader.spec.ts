@@ -1,3 +1,4 @@
+import { Observable, of } from 'rxjs';
 import { OpenIdConfiguration } from '../openid-configuration';
 import { StsConfigHttpLoader, StsConfigStaticLoader } from './config-loader';
 describe('ConfigLoader', () => {
@@ -21,14 +22,14 @@ describe('ConfigLoader', () => {
         expect(Array.isArray(result)).toBeTrue();
       });
 
-      it('all entries in array are Promises', () => {
+      it('all entries in array are Observables', () => {
         const loader = new StsConfigStaticLoader({} as OpenIdConfiguration);
 
         const result = loader.loadConfigs();
 
-        const allEntriesArePromises = result.every((x) => x instanceof Promise);
+        const allEntriesAreObservables = result.every((x) => x instanceof Observable);
 
-        expect(allEntriesArePromises).toBeTrue();
+        expect(allEntriesAreObservables).toBeTrue();
       });
     });
   });
@@ -36,15 +37,7 @@ describe('ConfigLoader', () => {
   describe('StsConfigHttpLoader', () => {
     describe('loadConfigs', () => {
       it('returns an array if an array is passed', () => {
-        const promise1 = new Promise<OpenIdConfiguration>((resolve, reject) => {
-          resolve({} as OpenIdConfiguration);
-        });
-
-        const promise2 = new Promise<OpenIdConfiguration>((resolve, reject) => {
-          resolve({} as OpenIdConfiguration);
-        });
-
-        const toPass = [promise1, promise2];
+        const toPass = [of({} as OpenIdConfiguration), of({} as OpenIdConfiguration)];
 
         const loader = new StsConfigHttpLoader(toPass);
 
@@ -54,28 +47,20 @@ describe('ConfigLoader', () => {
       });
 
       it('returns an array if only one config is passed', () => {
-        const promise1 = new Promise<OpenIdConfiguration>((resolve, reject) => {
-          resolve({} as OpenIdConfiguration);
-        });
-
-        const loader = new StsConfigHttpLoader(promise1);
+        const loader = new StsConfigHttpLoader(of({} as OpenIdConfiguration));
 
         const result = loader.loadConfigs();
 
         expect(Array.isArray(result)).toBeTrue();
       });
 
-      it('all entries in array are Promises', () => {
-        const promise1 = new Promise<OpenIdConfiguration>((resolve, reject) => {
-          resolve({} as OpenIdConfiguration);
-        });
-
-        const loader = new StsConfigHttpLoader(promise1);
+      it('all entries in array are Observables', () => {
+        const loader = new StsConfigHttpLoader(of({} as OpenIdConfiguration));
 
         const result = loader.loadConfigs();
-        const allEntriesArePromises = result.every((x) => x instanceof Promise);
+        const allEntriesAreObservables = result.every((x) => x instanceof Observable);
 
-        expect(allEntriesArePromises).toBeTrue();
+        expect(allEntriesAreObservables).toBeTrue();
       });
     });
   });

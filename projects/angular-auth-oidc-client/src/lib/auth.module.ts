@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { InjectionToken, ModuleWithProviders, NgModule, Provider } from '@angular/core';
+import { forkJoin, Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './auth-state/auth-state.service';
@@ -66,9 +68,14 @@ export function createStaticLoader(passedConfig: PassedInitialConfig) {
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function configurationProviderFactory(oidcConfigService: OidcConfigService, loader: StsConfigLoader) {
-  const allLoadPromises = Promise.all(loader.loadConfigs());
-  const fn: () => Promise<OpenIdConfiguration[]> = () => allLoadPromises.then((configs) => oidcConfigService.withConfigs(configs));
+export function configurationProviderFactory(
+  oidcConfigService: OidcConfigService,
+  loader: StsConfigLoader
+): () => Observable<OpenIdConfiguration[]> {
+  const allConfigs$ = forkJoin(loader.loadConfigs());
+
+  const fn: () => Observable<OpenIdConfiguration[]> = () =>
+    allConfigs$.pipe(switchMap((configs) => oidcConfigService.withConfigs(configs)));
 
   return fn;
 }
