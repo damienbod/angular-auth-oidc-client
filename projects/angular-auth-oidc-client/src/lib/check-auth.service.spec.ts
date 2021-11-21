@@ -13,8 +13,6 @@ import { RefreshSessionServiceMock } from './callback/refresh-session.service.mo
 import { CheckAuthService } from './check-auth.service';
 import { StsConfigLoader } from './config/loader/config-loader';
 import { StsConfigLoaderMock } from './config/loader/config-loader-mock';
-import { ConfigurationProvider } from './config/provider/config.provider';
-import { ConfigurationProviderMock } from './config/provider/config.provider-mock';
 import { CheckSessionService } from './iframe/check-session.service';
 import { CheckSessionServiceMock } from './iframe/check-session.service-mock';
 import { SilentRenewService } from './iframe/silent-renew.service';
@@ -53,7 +51,6 @@ describe('CheckAuthService', () => {
         { provide: SilentRenewService, useClass: SilentRenewServiceMock },
         { provide: UserService, useClass: UserServiceMock },
         { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
         { provide: AuthStateService, useClass: AuthStateServiceMock },
         { provide: CallbackService, useClass: CallbackServiceMock },
         { provide: RefreshSessionService, useClass: RefreshSessionServiceMock },

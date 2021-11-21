@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
-import { catchError, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -15,7 +15,7 @@ import { ConfigurationProvider } from './provider/config.provider';
 import { ConfigValidationService } from './validation/config-validation.service';
 
 @Injectable()
-export class OidcConfigService {
+export class ConfigurationService {
   constructor(
     private loggerService: LoggerService,
     private publicEventsService: PublicEventsService,
@@ -28,7 +28,61 @@ export class OidcConfigService {
     private loader: StsConfigLoader
   ) {}
 
-  getOpenIDConfiguration(configId?: string): Observable<OpenIdConfiguration> {}
+  private configsInternal: Record<string, OpenIdConfiguration> = {};
+
+  hasAsLeastOneConfig(): boolean {
+    return Object.keys(this.configsInternal).length > 0;
+  }
+
+  hasManyConfigs(): boolean {
+    return Object.keys(this.configsInternal).length > 1;
+  }
+
+  setConfig(readyConfig: OpenIdConfiguration): void {
+    const { configId } = readyConfig;
+    this.configsInternal[configId] = readyConfig;
+  }
+
+  // getOpenIDConfiguration(configId?: string): Observable<OpenIdConfiguration> {
+  //   if (!!configId) {
+  //     return this.configsInternal[configId] || null;
+  //   }
+
+  //   const [, value] = Object.entries(this.configsInternal)[0] || [[null, null]];
+
+  //   return value || null;
+  // }
+
+  getAllConfigurations(): OpenIdConfiguration[] {
+    return Object.values(this.configsInternal);
+  }
+
+  getOpenIDConfiguration(configId?: string): Observable<OpenIdConfiguration> {
+    if (this.configsAlreadySaved()) {
+      return of(this.getConfig(configId));
+    }
+
+    return this.loadConfigs().pipe(
+      tap(() => this.saveConfigsInStorage()),
+      map(() => this.getConfig(configId))
+    );
+  }
+
+  saveConfigsInStorage(): void {
+    throw new Error('Method not implemented.');
+  }
+
+  loadConfigs(): Observable<OpenIdConfiguration[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  getConfig(configId: string): OpenIdConfiguration {
+    throw new Error('Method not implemented.');
+  }
+
+  configsAlreadySaved(): boolean {
+    return false;
+  }
 
   withConfigs(passedConfigs: OpenIdConfiguration[]): Observable<OpenIdConfiguration[]> {
     if (!this.configValidationService.validateConfigs(passedConfigs)) {
@@ -81,24 +135,18 @@ export class OidcConfigService {
       return of(usedConfig);
     }
 
-    if (usedConfig.eagerLoadAuthWellKnownEndpoints) {
-      return this.authWellKnownService.getAuthWellKnownEndPoints(usedConfig.authWellknownEndpointUrl, usedConfig.configId).pipe(
-        catchError((error) => {
-          this.loggerService.logError(usedConfig.configId, 'Getting auth well known endpoints failed on start', error);
+    return this.authWellKnownService.getAuthWellKnownEndPoints(usedConfig.authWellknownEndpointUrl, usedConfig.configId).pipe(
+      catchError((error) => {
+        this.loggerService.logError(usedConfig.configId, 'Getting auth well known endpoints failed on start', error);
 
-          return throwError(() => new Error(error));
-        }),
-        tap((wellknownEndPoints) => {
-          usedConfig.authWellknownEndpoints = wellknownEndPoints;
-          this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
-        }),
-        switchMap(() => of(usedConfig))
-      );
-    } else {
-      this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
-
-      return of(usedConfig);
-    }
+        return throwError(() => new Error(error));
+      }),
+      tap((wellknownEndPoints) => {
+        usedConfig.authWellknownEndpoints = wellknownEndPoints;
+        this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
+      }),
+      switchMap(() => of(usedConfig))
+    );
   }
 
   private prepareConfig(configuration: OpenIdConfiguration): OpenIdConfiguration {
