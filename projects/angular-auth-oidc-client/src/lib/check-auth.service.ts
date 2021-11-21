@@ -6,7 +6,6 @@ import { AutoLoginService } from './auto-login/auto-login.service';
 import { CallbackService } from './callback/callback.service';
 import { PeriodicallyTokenCheckService } from './callback/periodically-token-check.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
-import { ConfigurationService } from './config/config.service';
 import { OpenIdConfiguration } from './config/openid-configuration';
 import { CheckSessionService } from './iframe/check-session.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
@@ -25,7 +24,6 @@ export class CheckAuthService {
     private silentRenewService: SilentRenewService,
     private userService: UserService,
     private loggerService: LoggerService,
-    private configurationService: ConfigurationService,
     private authStateService: AuthStateService,
     private callbackService: CallbackService,
     private refreshSessionService: RefreshSessionService,
@@ -35,10 +33,10 @@ export class CheckAuthService {
     private storagePersistenceService: StoragePersistenceService
   ) {}
 
-  checkAuth(passedConfigId?: string, url?: string): Observable<LoginResponse> {
+  checkAuth(configuration: OpenIdConfiguration, url?: string): Observable<LoginResponse> {
     if (this.currentUrlService.currentUrlHasStateParam()) {
       const stateParamFromUrl = this.currentUrlService.getStateParamFromCurrentUrl();
-      const config = this.getConfigurationWithUrlState(stateParamFromUrl);
+      const config = this.getConfigurationWithUrlState([configuration], stateParamFromUrl);
 
       if (!config) {
         return throwError(() => new Error(`could not find matching config for state ${stateParamFromUrl}`));
@@ -47,51 +45,31 @@ export class CheckAuthService {
       return this.checkAuthWithConfig(config, url);
     }
 
-    if (!!passedConfigId) {
-      const config = this.configurationService.getOpenIDConfiguration(passedConfigId);
-
-      return this.checkAuthWithConfig(config, url);
-    }
-
-    const onlyExistingConfig = this.configurationService.getOpenIDConfiguration();
-
-    return this.checkAuthWithConfig(onlyExistingConfig, url);
+    return this.checkAuthWithConfig(configuration, url);
   }
 
-  checkAuthMultiple(passedConfigId?: string, url?: string): Observable<LoginResponse[]> {
+  checkAuthMultiple(configurations: OpenIdConfiguration[], url?: string): Observable<LoginResponse[]> {
     if (this.currentUrlService.currentUrlHasStateParam()) {
       const stateParamFromUrl = this.currentUrlService.getStateParamFromCurrentUrl();
-      const config = this.getConfigurationWithUrlState(stateParamFromUrl);
+      const config = this.getConfigurationWithUrlState(configurations, stateParamFromUrl);
 
       if (!config) {
         return throwError(() => new Error(`could not find matching config for state ${stateParamFromUrl}`));
       }
 
-      return this.composeMultipleLoginResults(config, url);
+      return this.composeMultipleLoginResults(configurations, config, url);
     }
 
-    if (!!passedConfigId) {
-      const config = this.configurationService.getOpenIDConfiguration(passedConfigId);
-
-      if (!config) {
-        return throwError(() => new Error(`could not find matching config for id ${passedConfigId}`));
-      }
-
-      return this.composeMultipleLoginResults(config, url);
-    }
-
-    const allConfigs = this.configurationService.getAllConfigurations();
-    const allChecks$ = allConfigs.map((x) => this.checkAuthWithConfig(x, url));
+    const allChecks$ = configurations.map((x) => this.checkAuthWithConfig(x, url));
 
     return forkJoin(allChecks$);
   }
 
-  checkAuthIncludingServer(configId: string): Observable<LoginResponse> {
-    const config = this.configurationService.getOpenIDConfiguration(configId);
-
-    return this.checkAuthWithConfig(config).pipe(
+  checkAuthIncludingServer(configuration: OpenIdConfiguration): Observable<LoginResponse> {
+    return this.checkAuthWithConfig(configuration).pipe(
       switchMap((loginResponse) => {
         const { isAuthenticated } = loginResponse;
+        const { configId } = configuration;
 
         if (isAuthenticated) {
           return of(loginResponse);
@@ -111,7 +89,7 @@ export class CheckAuthService {
   private checkAuthWithConfig(config: OpenIdConfiguration, url?: string): Observable<LoginResponse> {
     const { configId, authority } = config;
 
-    if (!this.configurationProvider.hasAtLeastOneConfig()) {
+    if (!config) {
       const errorMessage = 'Please provide at least one configuration before setting up the module';
       this.loggerService.logError(configId, errorMessage);
 
@@ -181,10 +159,8 @@ export class CheckAuthService {
     }
   }
 
-  private getConfigurationWithUrlState(stateFromUrl: string): OpenIdConfiguration {
-    const allConfigs = this.configurationService.getAllConfigurations();
-
-    for (const config of allConfigs) {
+  private getConfigurationWithUrlState(configurations: OpenIdConfiguration[], stateFromUrl: string): OpenIdConfiguration {
+    for (const config of configurations) {
       const storedState = this.storagePersistenceService.read('authStateControl', config.configId);
 
       if (storedState === stateFromUrl) {
@@ -195,8 +171,12 @@ export class CheckAuthService {
     return null;
   }
 
-  private composeMultipleLoginResults(activeConfig: OpenIdConfiguration, url?: string): Observable<LoginResponse[]> {
-    const allOtherConfigs = this.configurationService.getAllConfigurations().filter((x) => x.configId !== activeConfig.configId);
+  private composeMultipleLoginResults(
+    configurations: OpenIdConfiguration[],
+    activeConfig: OpenIdConfiguration,
+    url?: string
+  ): Observable<LoginResponse[]> {
+    const allOtherConfigs = configurations.filter((x) => x.configId !== activeConfig.configId);
 
     const currentConfigResult = this.checkAuthWithConfig(activeConfig, url);
 

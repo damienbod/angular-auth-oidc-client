@@ -29,11 +29,12 @@ export class StoragePersistenceService {
     return storedConfig[key];
   }
 
-  write(key: StorageKeys, value: any, configId: string): void {
+  write(key: StorageKeys, value: any, configId: string): boolean {
     const storedConfig = this.browserStorageService.read(key, configId) || {};
 
     storedConfig[key] = value;
-    this.browserStorageService.write(storedConfig, configId);
+
+    return this.browserStorageService.write(storedConfig, configId);
   }
 
   remove(key: StorageKeys, configId: string): void {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ConfigurationProvider } from '../config/provider/config.provider';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -17,12 +17,11 @@ export class StateValidationService {
     private tokenValidationService: TokenValidationService,
     private tokenHelperService: TokenHelperService,
     private loggerService: LoggerService,
-    private configurationProvider: ConfigurationProvider,
     private equalityService: EqualityService,
     private flowHelper: FlowHelper
   ) {}
 
-  getValidatedStateResult(callbackContext: CallbackContext, configId: string): StateValidationResult {
+  getValidatedStateResult(callbackContext: CallbackContext, configuration: OpenIdConfiguration): StateValidationResult {
     if (!callbackContext) {
       return new StateValidationResult('', '', false, {});
     }
@@ -31,23 +30,24 @@ export class StateValidationService {
       return new StateValidationResult('', '', false, {});
     }
 
-    return this.validateState(callbackContext, configId);
+    return this.validateState(callbackContext, configuration);
   }
 
-  validateState(callbackContext: any, configId: string): StateValidationResult {
+  validateState(callbackContext: any, configuration: OpenIdConfiguration): StateValidationResult {
     const toReturn = new StateValidationResult();
+    const { configId } = configuration;
     const authStateControl = this.storagePersistenceService.read('authStateControl', configId);
 
     if (!this.tokenValidationService.validateStateFromHashCallback(callbackContext.authResult.state, authStateControl, configId)) {
       this.loggerService.logWarning(configId, 'authCallback incorrect state');
       toReturn.state = ValidationResult.StatesDoNotMatch;
-      this.handleUnsuccessfulValidation(configId);
+      this.handleUnsuccessfulValidation(configuration);
 
       return toReturn;
     }
 
-    const isCurrentFlowImplicitFlowWithAccessToken = this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken(configId);
-    const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow(configId);
+    const isCurrentFlowImplicitFlowWithAccessToken = this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken(configuration);
+    const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow(configuration);
 
     if (isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow) {
       toReturn.accessToken = callbackContext.authResult.access_token;
@@ -55,7 +55,7 @@ export class StateValidationService {
 
     if (callbackContext.authResult.id_token) {
       const { clientId, issValidationOff, maxIdTokenIatOffsetAllowedInSeconds, disableIatOffsetValidation, ignoreNonceAfterRefresh } =
-        this.configurationProvider.getOpenIDConfiguration(configId);
+        configuration;
 
       toReturn.idToken = callbackContext.authResult.id_token;
 
@@ -64,7 +64,7 @@ export class StateValidationService {
       if (!this.tokenValidationService.validateSignatureIdToken(toReturn.idToken, callbackContext.jwtKeys, configId)) {
         this.loggerService.logDebug(configId, 'authCallback Signature validation failed id_token');
         toReturn.state = ValidationResult.SignatureFailed;
-        this.handleUnsuccessfulValidation(configId);
+        this.handleUnsuccessfulValidation(configuration);
 
         return toReturn;
       }
@@ -74,7 +74,7 @@ export class StateValidationService {
       if (!this.tokenValidationService.validateIdTokenNonce(toReturn.decodedIdToken, authNonce, ignoreNonceAfterRefresh, configId)) {
         this.loggerService.logWarning(configId, 'authCallback incorrect nonce, did you call the checkAuth() method multiple times?');
         toReturn.state = ValidationResult.IncorrectNonce;
-        this.handleUnsuccessfulValidation(configId);
+        this.handleUnsuccessfulValidation(configuration);
 
         return toReturn;
       }
@@ -82,7 +82,7 @@ export class StateValidationService {
       if (!this.tokenValidationService.validateRequiredIdToken(toReturn.decodedIdToken, configId)) {
         this.loggerService.logDebug(configId, 'authCallback Validation, one of the REQUIRED properties missing from id_token');
         toReturn.state = ValidationResult.RequiredPropertyMissing;
-        this.handleUnsuccessfulValidation(configId);
+        this.handleUnsuccessfulValidation(configuration);
 
         return toReturn;
       }
@@ -100,7 +100,7 @@ export class StateValidationService {
           'authCallback Validation, iat rejected id_token was issued too far away from the current time'
         );
         toReturn.state = ValidationResult.MaxOffsetExpired;
-        this.handleUnsuccessfulValidation(configId);
+        this.handleUnsuccessfulValidation(configuration);
 
         return toReturn;
       }
@@ -116,14 +116,14 @@ export class StateValidationService {
         ) {
           this.loggerService.logWarning(configId, 'authCallback incorrect iss does not match authWellKnownEndpoints issuer');
           toReturn.state = ValidationResult.IssDoesNotMatchIssuer;
-          this.handleUnsuccessfulValidation(configId);
+          this.handleUnsuccessfulValidation(configuration);
 
           return toReturn;
         }
       } else {
         this.loggerService.logWarning(configId, 'authWellKnownEndpoints is undefined');
         toReturn.state = ValidationResult.NoAuthWellKnownEndPoints;
-        this.handleUnsuccessfulValidation(configId);
+        this.handleUnsuccessfulValidation(configuration);
 
         return toReturn;
       }
@@ -131,7 +131,7 @@ export class StateValidationService {
       if (!this.tokenValidationService.validateIdTokenAud(toReturn.decodedIdToken, clientId, configId)) {
         this.loggerService.logWarning(configId, 'authCallback incorrect aud');
         toReturn.state = ValidationResult.IncorrectAud;
-        this.handleUnsuccessfulValidation(configId);
+        this.handleUnsuccessfulValidation(configuration);
 
         return toReturn;
       }
@@ -139,7 +139,7 @@ export class StateValidationService {
       if (!this.tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(toReturn.decodedIdToken)) {
         this.loggerService.logWarning(configId, 'authCallback missing azp');
         toReturn.state = ValidationResult.IncorrectAzp;
-        this.handleUnsuccessfulValidation(configId);
+        this.handleUnsuccessfulValidation(configuration);
 
         return toReturn;
       }
@@ -147,15 +147,15 @@ export class StateValidationService {
       if (!this.tokenValidationService.validateIdTokenAzpValid(toReturn.decodedIdToken, clientId)) {
         this.loggerService.logWarning(configId, 'authCallback incorrect azp');
         toReturn.state = ValidationResult.IncorrectAzp;
-        this.handleUnsuccessfulValidation(configId);
+        this.handleUnsuccessfulValidation(configuration);
 
         return toReturn;
       }
 
-      if (!this.isIdTokenAfterRefreshTokenRequestValid(callbackContext, toReturn.decodedIdToken, configId)) {
+      if (!this.isIdTokenAfterRefreshTokenRequestValid(callbackContext, toReturn.decodedIdToken, configuration)) {
         this.loggerService.logWarning(configId, 'authCallback pre, post id_token claims do not match in refresh');
         toReturn.state = ValidationResult.IncorrectIdTokenClaimsAfterRefresh;
-        this.handleUnsuccessfulValidation(configId);
+        this.handleUnsuccessfulValidation(configuration);
 
         return toReturn;
       }
@@ -163,7 +163,7 @@ export class StateValidationService {
       if (!this.tokenValidationService.validateIdTokenExpNotExpired(toReturn.decodedIdToken, configId)) {
         this.loggerService.logWarning(configId, 'authCallback id token expired');
         toReturn.state = ValidationResult.TokenExpired;
-        this.handleUnsuccessfulValidation(configId);
+        this.handleUnsuccessfulValidation(configuration);
 
         return toReturn;
       }
@@ -175,8 +175,8 @@ export class StateValidationService {
     if (!isCurrentFlowImplicitFlowWithAccessToken && !isCurrentFlowCodeFlow) {
       toReturn.authResponseIsValid = true;
       toReturn.state = ValidationResult.Ok;
-      this.handleSuccessfulValidation(configId);
-      this.handleUnsuccessfulValidation(configId);
+      this.handleSuccessfulValidation(configuration);
+      this.handleUnsuccessfulValidation(configuration);
 
       return toReturn;
     }
@@ -199,7 +199,7 @@ export class StateValidationService {
       ) {
         this.loggerService.logWarning(configId, 'authCallback incorrect at_hash');
         toReturn.state = ValidationResult.IncorrectAtHash;
-        this.handleUnsuccessfulValidation(configId);
+        this.handleUnsuccessfulValidation(configuration);
 
         return toReturn;
       }
@@ -207,13 +207,17 @@ export class StateValidationService {
 
     toReturn.authResponseIsValid = true;
     toReturn.state = ValidationResult.Ok;
-    this.handleSuccessfulValidation(configId);
+    this.handleSuccessfulValidation(configuration);
 
     return toReturn;
   }
 
-  private isIdTokenAfterRefreshTokenRequestValid(callbackContext: CallbackContext, newIdToken: any, configId: string): boolean {
-    const { useRefreshToken, disableRefreshIdTokenAuthTimeValidation } = this.configurationProvider.getOpenIDConfiguration(configId);
+  private isIdTokenAfterRefreshTokenRequestValid(
+    callbackContext: CallbackContext,
+    newIdToken: any,
+    configuration: OpenIdConfiguration
+  ): boolean {
+    const { useRefreshToken, disableRefreshIdTokenAuthTimeValidation, configId } = configuration;
     if (!useRefreshToken) {
       return true;
     }
@@ -273,8 +277,8 @@ export class StateValidationService {
     return true;
   }
 
-  private handleSuccessfulValidation(configId: string): void {
-    const { autoCleanStateAfterAuthentication } = this.configurationProvider.getOpenIDConfiguration(configId);
+  private handleSuccessfulValidation(configuration: OpenIdConfiguration): void {
+    const { autoCleanStateAfterAuthentication, configId } = configuration;
     this.storagePersistenceService.write('authNonce', null, configId);
 
     if (autoCleanStateAfterAuthentication) {
@@ -283,8 +287,8 @@ export class StateValidationService {
     this.loggerService.logDebug(configId, 'authCallback token(s) validated, continue');
   }
 
-  private handleUnsuccessfulValidation(configId: string): void {
-    const { autoCleanStateAfterAuthentication } = this.configurationProvider.getOpenIDConfiguration(configId);
+  private handleUnsuccessfulValidation(configuration: OpenIdConfiguration): void {
+    const { autoCleanStateAfterAuthentication, configId } = configuration;
     this.storagePersistenceService.write('authNonce', null, configId);
 
     if (autoCleanStateAfterAuthentication) {

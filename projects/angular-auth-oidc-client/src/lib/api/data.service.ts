@@ -1,14 +1,15 @@
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { ConfigurationProvider } from '../config/provider/config.provider';
+import { map, Observable } from 'rxjs';
+import { concatMap } from 'rxjs/operators';
+import { ConfigurationService } from '../angular-auth-oidc-client';
 import { HttpBaseService } from './http-base.service';
 
 const NGSW_CUSTOM_PARAM = 'ngsw-bypass';
 
 @Injectable()
 export class DataService {
-  constructor(private httpClient: HttpBaseService, private readonly configurationProvider: ConfigurationProvider) {}
+  constructor(private httpClient: HttpBaseService, private readonly configurationService: ConfigurationService) {}
 
   get<T>(url: string, configId: string, token?: string): Observable<T> {
     const headers = this.prepareHeaders(token);
@@ -22,9 +23,12 @@ export class DataService {
 
   post<T>(url: string, body: any, configId: string, headersParams?: HttpHeaders): Observable<T> {
     const headers = headersParams || this.prepareHeaders();
-    const params = this.prepareParams(configId);
 
-    return this.httpClient.post<T>(url, body, { headers, params });
+    return this.prepareParams(configId).pipe(
+      concatMap((params) => {
+        return this.httpClient.post<T>(url, body, { headers, params });
+      })
+    );
   }
 
   private prepareHeaders(token?: string): HttpHeaders {
@@ -38,14 +42,17 @@ export class DataService {
     return headers;
   }
 
-  private prepareParams(configId: string): HttpParams {
+  private prepareParams(configId: string): Observable<HttpParams> {
     let params = new HttpParams();
-    const { ngswBypass } = this.configurationProvider.getOpenIDConfiguration(configId);
 
-    if (ngswBypass) {
-      params = params.set(NGSW_CUSTOM_PARAM, '');
-    }
+    return this.configurationService.getOpenIDConfiguration(configId).pipe(
+      map(({ ngswBypass }) => {
+        if (ngswBypass) {
+          params = params.set(NGSW_CUSTOM_PARAM, '');
+        }
 
-    return params;
+        return params;
+      })
+    );
   }
 }

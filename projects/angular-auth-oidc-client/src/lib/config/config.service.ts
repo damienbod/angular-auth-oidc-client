@@ -11,15 +11,15 @@ import { AuthWellKnownService } from './auth-well-known/auth-well-known.service'
 import { DEFAULT_CONFIG } from './default-config';
 import { StsConfigLoader } from './loader/config-loader';
 import { OpenIdConfiguration } from './openid-configuration';
-import { ConfigurationProvider } from './provider/config.provider';
 import { ConfigValidationService } from './validation/config-validation.service';
 
 @Injectable()
 export class ConfigurationService {
+  private configsInternal: Record<string, OpenIdConfiguration> = {};
+
   constructor(
     private loggerService: LoggerService,
     private publicEventsService: PublicEventsService,
-    private configurationProvider: ConfigurationProvider,
     private authWellKnownService: AuthWellKnownService,
     private storagePersistenceService: StoragePersistenceService,
     private configValidationService: ConfigValidationService,
@@ -28,30 +28,9 @@ export class ConfigurationService {
     private loader: StsConfigLoader
   ) {}
 
-  private configsInternal: Record<string, OpenIdConfiguration> = {};
-
-  hasAsLeastOneConfig(): boolean {
-    return Object.keys(this.configsInternal).length > 0;
-  }
-
   hasManyConfigs(): boolean {
     return Object.keys(this.configsInternal).length > 1;
   }
-
-  setConfig(readyConfig: OpenIdConfiguration): void {
-    const { configId } = readyConfig;
-    this.configsInternal[configId] = readyConfig;
-  }
-
-  // getOpenIDConfiguration(configId?: string): Observable<OpenIdConfiguration> {
-  //   if (!!configId) {
-  //     return this.configsInternal[configId] || null;
-  //   }
-
-  //   const [, value] = Object.entries(this.configsInternal)[0] || [[null, null]];
-
-  //   return value || null;
-  // }
 
   getAllConfigurations(): OpenIdConfiguration[] {
     return Object.values(this.configsInternal);
@@ -63,28 +42,39 @@ export class ConfigurationService {
     }
 
     return this.loadConfigs().pipe(
-      tap(() => this.saveConfigsInStorage()),
+      tap((allConfigs) => this.prepareAndSaveConfigs(allConfigs)),
       map(() => this.getConfig(configId))
     );
   }
 
-  saveConfigsInStorage(): void {
-    throw new Error('Method not implemented.');
+  hasAtLeastOneConfig(): boolean {
+    return Object.keys(this.configsInternal).length > 0;
   }
 
-  loadConfigs(): Observable<OpenIdConfiguration[]> {
-    throw new Error('Method not implemented.');
+  private setConfig(readyConfig: OpenIdConfiguration): void {
+    const { configId } = readyConfig;
+    this.configsInternal[configId] = readyConfig;
   }
 
-  getConfig(configId: string): OpenIdConfiguration {
-    throw new Error('Method not implemented.');
+  private loadConfigs(): Observable<OpenIdConfiguration[]> {
+    return forkJoin(this.loader.loadConfigs());
   }
 
-  configsAlreadySaved(): boolean {
-    return false;
+  private configsAlreadySaved(): boolean {
+    return this.hasAtLeastOneConfig();
   }
 
-  withConfigs(passedConfigs: OpenIdConfiguration[]): Observable<OpenIdConfiguration[]> {
+  private getConfig(configId: string): OpenIdConfiguration {
+    if (!!configId) {
+      return this.configsInternal[configId] || null;
+    }
+
+    const [, value] = Object.entries(this.configsInternal)[0] || [[null, null]];
+
+    return value || null;
+  }
+
+  private prepareAndSaveConfigs(passedConfigs: OpenIdConfiguration[]): Observable<OpenIdConfiguration[]> {
     if (!this.configValidationService.validateConfigs(passedConfigs)) {
       return of(null);
     }
@@ -115,7 +105,7 @@ export class ConfigurationService {
     }
 
     const usedConfig = this.prepareConfig(passedConfig);
-    this.configurationProvider.setConfig(usedConfig);
+    this.setConfig(usedConfig);
 
     const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', usedConfig.configId);
     if (!!alreadyExistingAuthWellKnownEndpoints) {

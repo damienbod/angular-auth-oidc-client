@@ -9,7 +9,7 @@ import { ImplicitFlowCallbackService } from './callback/implicit-flow-callback.s
 import { CheckAuthService } from './check-auth.service';
 import { AuthWellKnownDataService } from './config/auth-well-known/auth-well-known-data.service';
 import { AuthWellKnownService } from './config/auth-well-known/auth-well-known.service';
-import { OidcConfigService } from './config/config.service';
+import { ConfigurationService } from './config/config.service';
 import { StsConfigLoader, StsConfigStaticLoader } from './config/loader/config-loader';
 import { OpenIdConfiguration } from './config/openid-configuration';
 import { ConfigValidationService } from './config/validation/config-validation.service';
@@ -64,19 +64,6 @@ export function createStaticLoader(passedConfig: PassedInitialConfig) {
   return new StsConfigStaticLoader(passedConfig.config);
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-// export function configurationProviderFactory(
-//   oidcConfigService: OidcConfigService,
-//   loader: StsConfigLoader
-// ): () => Observable<OpenIdConfiguration[]> {
-//   const allConfigs$ = forkJoin(loader.loadConfigs());
-
-//   const fn: () => Observable<OpenIdConfiguration[]> = () =>
-//     allConfigs$.pipe(switchMap((configs) => oidcConfigService.withConfigs(configs)));
-
-//   return fn;
-// }
-
 export const PASSED_CONFIG = new InjectionToken<PassedInitialConfig>('PASSED_CONFIG');
 
 @NgModule({
@@ -94,15 +81,7 @@ export class AuthModule {
 
         // Create the loader: Either the one getting passed or a static one
         passedConfig?.loader || { provide: StsConfigLoader, useFactory: createStaticLoader, deps: [PASSED_CONFIG] },
-
-        // Load the config when the app starts
-        // {
-        //   provide: APP_INITIALIZER,
-        //   multi: true,
-        //   deps: [OidcConfigService, StsConfigLoader, PASSED_CONFIG],
-        //   useFactory: configurationProviderFactory,
-        // },
-        OidcConfigService,
+        ConfigurationService,
         PublicEventsService,
         FlowHelper,
         OidcSecurityService,

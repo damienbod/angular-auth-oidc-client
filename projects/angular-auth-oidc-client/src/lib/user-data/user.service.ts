@@ -3,7 +3,6 @@ import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map, retry, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
-import { ConfigurationProvider } from '../config/provider/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -27,32 +26,38 @@ export class UserService {
     private eventService: PublicEventsService,
     private loggerService: LoggerService,
     private tokenHelperService: TokenHelperService,
-    private flowHelper: FlowHelper,
-    private configurationProvider: ConfigurationProvider
+    private flowHelper: FlowHelper
   ) {}
 
-  getAndPersistUserDataInStore(configId: string, isRenewProcess = false, idToken?: any, decodedIdToken?: any): Observable<any> {
+  getAndPersistUserDataInStore(
+    currentConfiguration: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[],
+    isRenewProcess = false,
+    idToken?: any,
+    decodedIdToken?: any
+  ): Observable<any> {
+    const { configId } = currentConfiguration;
     idToken = idToken || this.storagePersistenceService.getIdToken(configId);
     decodedIdToken = decodedIdToken || this.tokenHelperService.getPayloadFromToken(idToken, false, configId);
 
-    const existingUserDataFromStorage = this.getUserDataFromStore(configId);
+    const existingUserDataFromStorage = this.getUserDataFromStore(currentConfiguration);
     const haveUserData = !!existingUserDataFromStorage;
-    const isCurrentFlowImplicitFlowWithAccessToken = this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken(configId);
-    const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow(configId);
+    const isCurrentFlowImplicitFlowWithAccessToken = this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken(currentConfiguration);
+    const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow(currentConfiguration);
 
     const accessToken = this.storagePersistenceService.getAccessToken(configId);
     if (!(isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow)) {
       this.loggerService.logDebug(configId, `authCallback idToken flow with accessToken ${accessToken}`);
 
-      this.setUserDataToStore(decodedIdToken, configId);
+      this.setUserDataToStore(decodedIdToken, currentConfiguration, allConfigs);
 
       return of(decodedIdToken);
     }
 
-    const { renewUserInfoAfterTokenRenew } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const { renewUserInfoAfterTokenRenew } = currentConfiguration;
 
     if (!isRenewProcess || renewUserInfoAfterTokenRenew || !haveUserData) {
-      return this.getUserDataOidcFlowAndSave(decodedIdToken.sub, configId).pipe(
+      return this.getUserDataOidcFlowAndSave(decodedIdToken.sub, currentConfiguration, allConfigs).pipe(
         switchMap((userData) => {
           this.loggerService.logDebug(configId, 'Received user data: ', userData);
           if (!!userData) {
@@ -69,39 +74,51 @@ export class UserService {
     return of(existingUserDataFromStorage);
   }
 
-  getUserDataFromStore(configId: string): any {
+  getUserDataFromStore(currentConfiguration: OpenIdConfiguration): any {
+    const { configId } = currentConfiguration;
+
     return this.storagePersistenceService.read('userData', configId) || null;
   }
 
-  publishUserDataIfExists(configId: string): void {
-    const userData = this.getUserDataFromStore(configId);
+  publishUserDataIfExists(currentConfiguration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
+    const userData = this.getUserDataFromStore(currentConfiguration);
 
     if (userData) {
-      this.fireUserDataEvent(configId, userData);
+      this.fireUserDataEvent(currentConfiguration, allConfigs, userData);
     }
   }
 
-  setUserDataToStore(userData: any, configId: string): void {
+  setUserDataToStore(userData: any, currentConfiguration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
+    const { configId } = currentConfiguration;
+
     this.storagePersistenceService.write('userData', userData, configId);
-    this.fireUserDataEvent(configId, userData);
+    this.fireUserDataEvent(currentConfiguration, allConfigs, userData);
   }
 
-  resetUserDataInStore(configId: string): void {
+  resetUserDataInStore(currentConfiguration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
+    const { configId } = currentConfiguration;
+
     this.storagePersistenceService.remove('userData', configId);
-    this.fireUserDataEvent(configId, null);
+    this.fireUserDataEvent(currentConfiguration, allConfigs, null);
   }
 
-  private getUserDataOidcFlowAndSave(idTokenSub: any, configId: string): Observable<any> {
+  private getUserDataOidcFlowAndSave(
+    idTokenSub: any,
+    currentConfiguration: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): Observable<any> {
+    const { configId } = currentConfiguration;
+
     return this.getIdentityUserData(configId).pipe(
       map((data: any) => {
         if (this.validateUserDataSubIdToken(idTokenSub, data?.sub)) {
-          this.setUserDataToStore(data, configId);
+          this.setUserDataToStore(data, currentConfiguration, allConfigs);
 
           return data;
         } else {
           // something went wrong, user data sub does not match that from id_token
           this.loggerService.logWarning(configId, `User data sub does not match sub in id_token, resetting`);
-          this.resetUserDataInStore(configId);
+          this.resetUserDataInStore(currentConfiguration, allConfigs);
 
           return null;
         }
@@ -152,24 +169,31 @@ export class UserService {
     return true;
   }
 
-  private fireUserDataEvent(configId: string, passedUserData: any): void {
-    const userData = this.composeSingleOrMultipleUserDataObject(configId, passedUserData);
+  private fireUserDataEvent(currentConfiguration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[], passedUserData: any): void {
+    const userData = this.composeSingleOrMultipleUserDataObject(currentConfiguration, allConfigs, passedUserData);
 
     this.userDataInternal$.next(userData);
 
+    const { configId } = currentConfiguration;
     this.eventService.fireEvent(EventTypes.UserDataChanged, { configId, userData: passedUserData });
   }
 
-  private composeSingleOrMultipleUserDataObject(configId: string, passedUserData: any): UserDataResult {
-    const hasManyConfigs = this.configurationProvider.hasManyConfigs();
+  private composeSingleOrMultipleUserDataObject(
+    currentConfiguration: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[],
+    passedUserData: any
+  ): UserDataResult {
+    const hasManyConfigs = allConfigs.length > 1;
 
     if (!hasManyConfigs) {
+      const { configId } = currentConfiguration;
+
       return this.composeSingleUserDataResult(configId, passedUserData);
     }
 
-    const configs = this.configurationProvider.getAllConfigurations();
+    const allUserData: ConfigUserDataResult[] = allConfigs.map((config) => {
+      const { configId } = currentConfiguration;
 
-    const allUserData: ConfigUserDataResult[] = configs.map((config) => {
       if (this.currentConfigIsToUpdate(configId, config)) {
         return { configId: config.configId, userData: passedUserData };
       }

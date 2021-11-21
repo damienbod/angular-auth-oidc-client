@@ -1,21 +1,17 @@
 import { Injectable } from '@angular/core';
-import { ConfigurationProvider } from '../config/provider/config.provider';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 
 @Injectable()
 export class ClosestMatchingRouteService {
-  constructor(private configProvider: ConfigurationProvider) {}
+  getConfigIdForClosestMatchingRoute(route: string, configurations: OpenIdConfiguration[]): ClosestMatchingRouteResult {
+    for (const config of configurations) {
+      const { secureRoutes } = config;
 
-  getConfigIdForClosestMatchingRoute(route: string): ClosestMatchingRouteResult {
-    const allConfiguredRoutes = this.getAllConfiguredRoutes();
-
-    for (const routesWithConfig of allConfiguredRoutes) {
-      const allRoutesForConfig = routesWithConfig.routes;
-
-      for (const configuredRoute of allRoutesForConfig) {
+      for (const configuredRoute of secureRoutes) {
         if (route.startsWith(configuredRoute)) {
           return {
             matchingRoute: configuredRoute,
-            matchingConfigId: routesWithConfig.configId,
+            matchingConfig: config,
           };
         }
       }
@@ -23,14 +19,8 @@ export class ClosestMatchingRouteService {
 
     return {
       matchingRoute: null,
-      matchingConfigId: null,
+      matchingConfig: null,
     };
-  }
-
-  private getAllConfiguredRoutes(): ConfiguredRoutesWithConfig[] {
-    const allConfigurations = this.configProvider.getAllConfigurations();
-
-    return allConfigurations.map((x) => ({ routes: x.secureRoutes, configId: x.configId }));
   }
 }
 
@@ -41,5 +31,5 @@ export interface ConfiguredRoutesWithConfig {
 
 export interface ClosestMatchingRouteResult {
   matchingRoute: string;
-  matchingConfigId: string;
+  matchingConfig: OpenIdConfiguration;
 }

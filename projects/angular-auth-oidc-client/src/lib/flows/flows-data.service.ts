@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { ConfigurationProvider } from '../config/provider/config.provider';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { OpenIdConfiguration } from './../config/openid-configuration';
 import { RandomService } from './random/random.service';
 
 @Injectable()
@@ -9,7 +9,6 @@ export class FlowsDataService {
   constructor(
     private storagePersistenceService: StoragePersistenceService,
     private randomService: RandomService,
-    private configurationProvider: ConfigurationProvider,
     private loggerService: LoggerService
   ) {}
 
@@ -29,8 +28,8 @@ export class FlowsDataService {
     return this.storagePersistenceService.read('authStateControl', configId);
   }
 
-  setAuthStateControl(authStateControl: string, configId: string): void {
-    this.storagePersistenceService.write('authStateControl', authStateControl, configId);
+  setAuthStateControl(authStateControl: string, configId: string): boolean {
+    return this.storagePersistenceService.write('authStateControl', authStateControl, configId);
   }
 
   getExistingOrCreateAuthStateControl(configId: string): any {
@@ -62,14 +61,14 @@ export class FlowsDataService {
     return codeVerifier;
   }
 
-  isSilentRenewRunning(configId: string): boolean {
+  isSilentRenewRunning(configuration: OpenIdConfiguration): boolean {
+    const { configId, silentRenewTimeoutInSeconds } = configuration;
     const storageObject = this.getSilentRenewRunningStorageEntry(configId);
 
     if (!storageObject) {
       return false;
     }
 
-    const { silentRenewTimeoutInSeconds } = this.configurationProvider.getOpenIDConfiguration(configId);
     const timeOutInMilliseconds = silentRenewTimeoutInSeconds * 1000;
     const dateOfLaunchedProcessUtc = Date.parse(storageObject.dateOfLaunchedProcessUtc);
     const currentDateUtc = Date.parse(new Date().toISOString());

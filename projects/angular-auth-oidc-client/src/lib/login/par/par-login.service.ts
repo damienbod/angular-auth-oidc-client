@@ -4,7 +4,7 @@ import { switchMap, take } from 'rxjs/operators';
 import { AuthOptions } from '../../auth-options';
 import { CheckAuthService } from '../../check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
-import { ConfigurationProvider } from '../../config/provider/config.provider';
+import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
@@ -23,21 +23,20 @@ export class ParLoginService {
     private responseTypeValidationService: ResponseTypeValidationService,
     private urlService: UrlService,
     private redirectService: RedirectService,
-    private configurationProvider: ConfigurationProvider,
     private authWellKnownService: AuthWellKnownService,
     private popupService: PopUpService,
     private checkAuthService: CheckAuthService,
     private parService: ParService
   ) {}
 
-  loginPar(configId: string, authOptions?: AuthOptions): void {
+  loginPar(configuration: OpenIdConfiguration, authOptions?: AuthOptions): void {
+    const { authWellknownEndpointUrl, configId } = configuration;
+
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
       this.loggerService.logError(configId, 'Invalid response type!');
 
       return;
     }
-
-    const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!authWellknownEndpointUrl) {
       this.loggerService.logError(configId, 'no authWellknownEndpoint given!');
@@ -55,7 +54,7 @@ export class ParLoginService {
       .subscribe((response) => {
         this.loggerService.logDebug(configId, 'par response: ', response);
 
-        const url = this.urlService.getAuthorizeParUrl(response.requestUri, configId);
+        const url = this.urlService.getAuthorizeParUrl(response.requestUri, configuration);
 
         this.loggerService.logDebug(configId, 'par request url: ', url);
 
@@ -73,15 +72,15 @@ export class ParLoginService {
       });
   }
 
-  loginWithPopUpPar(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
+  loginWithPopUpPar(configuration: OpenIdConfiguration, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
+    const { authWellknownEndpointUrl, configId } = configuration;
+
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
       const errorMessage = 'Invalid response type!';
       this.loggerService.logError(configId, errorMessage);
 
       return throwError(() => new Error(errorMessage));
     }
-
-    const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
 
     if (!authWellknownEndpointUrl) {
       const errorMessage = 'no authWellknownEndpoint given!';
@@ -99,7 +98,7 @@ export class ParLoginService {
       switchMap((response: ParResponse) => {
         this.loggerService.logDebug(configId, 'par response: ', response);
 
-        const url = this.urlService.getAuthorizeParUrl(response.requestUri, configId);
+        const url = this.urlService.getAuthorizeParUrl(response.requestUri, configuration);
 
         this.loggerService.logDebug(configId, 'par request url: ', url);
 
@@ -128,7 +127,7 @@ export class ParLoginService {
               });
             }
 
-            return this.checkAuthService.checkAuth(configId, receivedUrl);
+            return this.checkAuthService.checkAuth(configuration, receivedUrl);
           })
         );
       })

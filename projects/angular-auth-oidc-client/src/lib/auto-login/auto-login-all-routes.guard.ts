@@ -10,9 +10,9 @@ import {
   UrlTree,
 } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { map, switchMap, take } from 'rxjs/operators';
+import { ConfigurationService } from '../angular-auth-oidc-client';
 import { CheckAuthService } from '../check-auth.service';
-import { ConfigurationProvider } from '../config/provider/config.provider';
 import { LoginService } from '../login/login.service';
 import { AutoLoginService } from './auto-login.service';
 
@@ -22,7 +22,7 @@ export class AutoLoginAllRoutesGuard implements CanActivate, CanActivateChild, C
     private autoLoginService: AutoLoginService,
     private checkAuthService: CheckAuthService,
     private loginService: LoginService,
-    private configurationProvider: ConfigurationProvider
+    private configurationService: ConfigurationService
   ) {}
 
   canLoad(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree> {
@@ -40,26 +40,25 @@ export class AutoLoginAllRoutesGuard implements CanActivate, CanActivateChild, C
   }
 
   private checkAuth(url: string): Observable<boolean> {
-    const configId = this.getId();
+    return this.configurationService.getOpenIDConfiguration().pipe(
+      switchMap((config) => {
+        return this.checkAuthService.checkAuth(config).pipe(
+          take(1),
+          map(({ isAuthenticated }) => {
+            const { configId } = config;
+            if (isAuthenticated) {
+              this.autoLoginService.checkSavedRedirectRouteAndNavigate(configId);
+            }
 
-    return this.checkAuthService.checkAuth().pipe(
-      take(1),
-      map(({ isAuthenticated }) => {
-        if (isAuthenticated) {
-          this.autoLoginService.checkSavedRedirectRouteAndNavigate(configId);
-        }
+            if (!isAuthenticated) {
+              this.autoLoginService.saveRedirectRoute(configId, url);
+              this.loginService.login(config);
+            }
 
-        if (!isAuthenticated) {
-          this.autoLoginService.saveRedirectRoute(configId, url);
-          this.loginService.login(configId);
-        }
-
-        return isAuthenticated;
+            return isAuthenticated;
+          })
+        );
       })
     );
-  }
-
-  private getId(): string {
-    return this.configurationProvider.getOpenIDConfiguration().configId;
   }
 }

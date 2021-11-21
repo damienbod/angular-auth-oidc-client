@@ -4,7 +4,7 @@ import { switchMap, take } from 'rxjs/operators';
 import { AuthOptions } from '../../auth-options';
 import { CheckAuthService } from '../../check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
-import { ConfigurationProvider } from '../../config/provider/config.provider';
+import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { UrlService } from '../../utils/url/url.service';
 import { LoginResponse } from '../login-response';
@@ -19,21 +19,26 @@ export class PopUpLoginService {
     private loggerService: LoggerService,
     private responseTypeValidationService: ResponseTypeValidationService,
     private urlService: UrlService,
-    private configurationProvider: ConfigurationProvider,
     private authWellKnownService: AuthWellKnownService,
     private popupService: PopUpService,
     private checkAuthService: CheckAuthService
   ) {}
 
-  loginWithPopUpStandard(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
-    if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
+  loginWithPopUpStandard(
+    configuration: OpenIdConfiguration,
+    authOptions?: AuthOptions,
+    popupOptions?: PopupOptions
+  ): Observable<LoginResponse> {
+    const { configId } = configuration;
+
+    if (!this.responseTypeValidationService.hasConfigValidResponseType(configuration)) {
       const errorMessage = 'Invalid response type!';
       this.loggerService.logError(configId, errorMessage);
 
       return throwError(() => new Error(errorMessage));
     }
 
-    const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
+    const { authWellknownEndpointUrl } = configuration;
 
     if (!authWellknownEndpointUrl) {
       const errorMessage = 'no authWellknownEndpoint given!';
@@ -48,7 +53,7 @@ export class PopUpLoginService {
       switchMap(() => {
         const { customParams } = authOptions || {};
 
-        const authUrl = this.urlService.getAuthorizeUrl(configId, customParams);
+        const authUrl = this.urlService.getAuthorizeUrl(configuration, customParams);
 
         this.popupService.openPopUp(authUrl, popupOptions);
 
@@ -68,7 +73,7 @@ export class PopUpLoginService {
               });
             }
 
-            return this.checkAuthService.checkAuth(configId, receivedUrl);
+            return this.checkAuthService.checkAuth(configuration, receivedUrl);
           })
         );
       })
