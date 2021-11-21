@@ -1,5 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
-import { throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
@@ -9,6 +9,7 @@ import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { DefaultSessionStorageService } from './../storage/default-sessionstorage.service';
 import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
 import { DEFAULT_CONFIG } from './default-config';
+import { StsConfigLoader } from './loader/config-loader';
 import { OpenIdConfiguration } from './openid-configuration';
 import { ConfigurationProvider } from './provider/config.provider';
 import { ConfigValidationService } from './validation/config-validation.service';
@@ -23,8 +24,11 @@ export class OidcConfigService {
     private storagePersistenceService: StoragePersistenceService,
     private configValidationService: ConfigValidationService,
     private platformProvider: PlatformProvider,
-    private defaultSessionStorageService: DefaultSessionStorageService
+    private defaultSessionStorageService: DefaultSessionStorageService,
+    private loader: StsConfigLoader
   ) {}
+
+  getOpenIDConfiguration(configId?: string): Observable<OpenIdConfiguration> {}
 
   withConfigs(passedConfigs: OpenIdConfiguration[]): Promise<OpenIdConfiguration[]> {
     if (!this.configValidationService.validateConfigs(passedConfigs)) {

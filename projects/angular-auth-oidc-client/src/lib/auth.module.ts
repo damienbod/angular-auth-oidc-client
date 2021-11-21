@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { APP_INITIALIZER, InjectionToken, ModuleWithProviders, NgModule, Provider } from '@angular/core';
+import { InjectionToken, ModuleWithProviders, NgModule, Provider } from '@angular/core';
 import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './auth-state/auth-state.service';
@@ -92,12 +92,12 @@ export class AuthModule {
         passedConfig?.loader || { provide: StsConfigLoader, useFactory: createStaticLoader, deps: [PASSED_CONFIG] },
 
         // Load the config when the app starts
-        {
-          provide: APP_INITIALIZER,
-          multi: true,
-          deps: [OidcConfigService, StsConfigLoader, PASSED_CONFIG],
-          useFactory: configurationProviderFactory,
-        },
+        // {
+        //   provide: APP_INITIALIZER,
+        //   multi: true,
+        //   deps: [OidcConfigService, StsConfigLoader, PASSED_CONFIG],
+        //   useFactory: configurationProviderFactory,
+        // },
         OidcConfigService,
         PublicEventsService,
         FlowHelper,

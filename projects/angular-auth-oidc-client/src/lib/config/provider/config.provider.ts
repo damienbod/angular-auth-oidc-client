@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { OpenIdConfiguration } from '../openid-configuration';
 
 @Injectable()
@@ -18,7 +19,7 @@ export class ConfigurationProvider {
     this.configsInternal[configId] = readyConfig;
   }
 
-  getOpenIDConfiguration(configId?: string): OpenIdConfiguration {
+  getOpenIDConfiguration(configId?: string): Observable<OpenIdConfiguration> {
     if (!!configId) {
       return this.configsInternal[configId] || null;
     }
