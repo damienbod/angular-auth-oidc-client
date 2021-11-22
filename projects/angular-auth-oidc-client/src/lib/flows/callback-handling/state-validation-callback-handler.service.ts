@@ -2,6 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { AuthStateService } from '../../auth-state/auth-state.service';
+import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
 import { StateValidationService } from '../../validation/state-validation.service';
@@ -20,17 +21,18 @@ export class StateValidationCallbackHandlerService {
 
   // STEP 4 All flows
 
-  callbackStateValidation(callbackContext: CallbackContext, configId: string): Observable<CallbackContext> {
-    const validationResult = this.stateValidationService.getValidatedStateResult(callbackContext, configId);
+  callbackStateValidation(callbackContext: CallbackContext, config: OpenIdConfiguration): Observable<CallbackContext> {
+    const validationResult = this.stateValidationService.getValidatedStateResult(callbackContext, config);
+    const { configId } = config;
     callbackContext.validationResult = validationResult;
 
     if (validationResult.authResponseIsValid) {
-      this.authStateService.setAuthorizationData(validationResult.accessToken, callbackContext.authResult, configId);
+      this.authStateService.setAuthorizationData(validationResult.accessToken, callbackContext.authResult, config);
 
       return of(callbackContext);
     } else {
       const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${this.doc.location.hash}`;
-      this.loggerService.logWarning(configId, errorMessage);
+      this.loggerService.logWarning(config, errorMessage);
       this.resetAuthDataService.resetAuthorizationData(configId);
       this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
 

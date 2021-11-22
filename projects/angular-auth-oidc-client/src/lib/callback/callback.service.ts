@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { UrlService } from '../utils/url/url.service';
@@ -26,13 +27,17 @@ export class CallbackService {
     return this.urlService.isCallbackFromSts(currentUrl);
   }
 
-  handleCallbackAndFireEvents(currentCallbackUrl: string, configId: string): Observable<CallbackContext> {
+  handleCallbackAndFireEvents(
+    currentCallbackUrl: string,
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): Observable<CallbackContext> {
     let callback$: Observable<any>;
 
-    if (this.flowHelper.isCurrentFlowCodeFlow(configId)) {
-      callback$ = this.codeFlowCallbackService.authenticatedCallbackWithCode(currentCallbackUrl, configId);
-    } else if (this.flowHelper.isCurrentFlowAnyImplicitFlow(configId)) {
-      callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(configId);
+    if (this.flowHelper.isCurrentFlowCodeFlow(config)) {
+      callback$ = this.codeFlowCallbackService.authenticatedCallbackWithCode(currentCallbackUrl, config, allConfigs);
+    } else if (this.flowHelper.isCurrentFlowAnyImplicitFlow(config)) {
+      callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(config, allConfigs);
     }
 
     return callback$.pipe(tap(() => this.stsCallbackInternal$.next()));

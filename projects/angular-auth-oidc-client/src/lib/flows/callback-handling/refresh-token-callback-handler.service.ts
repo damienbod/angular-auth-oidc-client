@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { catchError, mergeMap, retryWhen, switchMap } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
-import { ConfigurationProvider } from '../../config/provider/config.provider';
+import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
@@ -14,7 +14,6 @@ export class RefreshTokenCallbackHandlerService {
   constructor(
     private readonly urlService: UrlService,
     private readonly loggerService: LoggerService,
-    private readonly configurationProvider: ConfigurationProvider,
     private readonly dataService: DataService,
     private readonly storagePersistenceService: StoragePersistenceService
   ) {}
@@ -22,9 +21,10 @@ export class RefreshTokenCallbackHandlerService {
   // STEP 2 Refresh Token
   refreshTokensRequestTokens(
     callbackContext: CallbackContext,
-    configId: string,
+    config: OpenIdConfiguration,
     customParamsRefresh?: { [key: string]: string | number | boolean }
   ): Observable<CallbackContext> {
+    const { configId } = config;
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -34,11 +34,12 @@ export class RefreshTokenCallbackHandlerService {
       return throwError(() => new Error('Token Endpoint not defined'));
     }
 
-    const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken, configId, customParamsRefresh);
+    const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken, config, customParamsRefresh);
 
     return this.dataService.post(tokenEndpoint, data, configId, headers).pipe(
       switchMap((response: any) => {
-        this.loggerService.logDebug(configId, 'token refresh response: ', response);
+        this.loggerService.logDebug(config, 'token refresh response: ', response);
+        // TODO FGO LOOK AT THIS
         let authResult: any = new Object();
         authResult = response;
         authResult.state = callbackContext.state;
@@ -47,25 +48,25 @@ export class RefreshTokenCallbackHandlerService {
 
         return of(callbackContext);
       }),
-      retryWhen((error) => this.handleRefreshRetry(error, configId)),
+      retryWhen((error) => this.handleRefreshRetry(error, config)),
       catchError((error) => {
-        const { authority } = this.configurationProvider.getOpenIDConfiguration(configId);
+        const { authority } = config;
         const errorMessage = `OidcService code request ${authority}`;
-        this.loggerService.logError(configId, errorMessage, error);
+        this.loggerService.logError(config, errorMessage, error);
 
         return throwError(() => new Error(errorMessage));
       })
     );
   }
 
-  private handleRefreshRetry(errors: Observable<any>, configId: string): Observable<any> {
+  private handleRefreshRetry(errors: Observable<any>, config: OpenIdConfiguration): Observable<any> {
     return errors.pipe(
       mergeMap((error) => {
         // retry token refresh if there is no internet connection
         if (error && error instanceof HttpErrorResponse && error.error instanceof ProgressEvent && error.error.type === 'error') {
-          const { authority, refreshTokenRetryInSeconds } = this.configurationProvider.getOpenIDConfiguration(configId);
+          const { authority, refreshTokenRetryInSeconds } = config;
           const errorMessage = `OidcService code request ${authority} - no internet connection`;
-          this.loggerService.logWarning(configId, errorMessage, error);
+          this.loggerService.logWarning(config, errorMessage, error);
 
           return timer(refreshTokenRetryInSeconds * 1000);
         }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../../auth-state/auth-state.service';
-import { ConfigurationProvider } from '../../config/provider/config.provider';
+import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { JwtKeys } from '../../validation/jwtkeys';
@@ -18,7 +18,6 @@ const JWT_KEYS = 'jwtKeys';
 export class HistoryJwtKeysCallbackHandlerService {
   constructor(
     private readonly loggerService: LoggerService,
-    private readonly configurationProvider: ConfigurationProvider,
     private readonly authStateService: AuthStateService,
     private readonly flowsDataService: FlowsDataService,
     private readonly signInKeyDataService: SigninKeyDataService,
@@ -27,18 +26,20 @@ export class HistoryJwtKeysCallbackHandlerService {
   ) {}
 
   // STEP 3 Code Flow, STEP 2 Implicit Flow, STEP 3 Refresh Token
-  callbackHistoryAndResetJwtKeys(callbackContext: CallbackContext, configId: string): Observable<CallbackContext> {
+  callbackHistoryAndResetJwtKeys(callbackContext: CallbackContext, config: OpenIdConfiguration): Observable<CallbackContext> {
+    const { configId } = config;
+
     this.storagePersistenceService.write('authnResult', callbackContext.authResult, configId);
 
-    if (this.historyCleanUpTurnedOn(configId) && !callbackContext.isRenewProcess) {
+    if (this.historyCleanUpTurnedOn(config) && !callbackContext.isRenewProcess) {
       this.resetBrowserHistory();
     } else {
-      this.loggerService.logDebug(configId, 'history clean up inactive');
+      this.loggerService.logDebug(config, 'history clean up inactive');
     }
 
     if (callbackContext.authResult.error) {
       const errorMessage = `AuthCallback AuthResult came with error: ${callbackContext.authResult.error}`;
-      this.loggerService.logDebug(configId, errorMessage);
+      this.loggerService.logDebug(config, errorMessage);
       this.resetAuthDataService.resetAuthorizationData(configId);
       this.flowsDataService.setNonce('', configId);
       this.handleResultErrorFromCallback(callbackContext.authResult, callbackContext.isRenewProcess);
@@ -47,7 +48,7 @@ export class HistoryJwtKeysCallbackHandlerService {
     }
 
     this.loggerService.logDebug(
-      configId,
+      config,
       `AuthResult '${JSON.stringify(callbackContext.authResult, null, 2)}'.
       AuthCallback created, begin token validation`
     );
@@ -58,7 +59,7 @@ export class HistoryJwtKeysCallbackHandlerService {
         // fallback: try to load jwtKeys from storage
         const storedJwtKeys = this.readSigningKeys(configId);
         if (!!storedJwtKeys) {
-          this.loggerService.logWarning(configId, `Failed to retrieve signing keys, fallback to stored keys`);
+          this.loggerService.logWarning(config, `Failed to retrieve signing keys, fallback to stored keys`);
 
           return of(storedJwtKeys);
         }
@@ -73,13 +74,13 @@ export class HistoryJwtKeysCallbackHandlerService {
         }
 
         const errorMessage = `Failed to retrieve signing key`;
-        this.loggerService.logWarning(configId, errorMessage);
+        this.loggerService.logWarning(config, errorMessage);
 
         return throwError(() => new Error(errorMessage));
       }),
       catchError((err) => {
         const errorMessage = `Failed to retrieve signing key with error: ${err}`;
-        this.loggerService.logWarning(configId, errorMessage);
+        this.loggerService.logWarning(config, errorMessage);
 
         return throwError(() => new Error(errorMessage));
       })
@@ -100,8 +101,8 @@ export class HistoryJwtKeysCallbackHandlerService {
     });
   }
 
-  private historyCleanUpTurnedOn(configId: string): boolean {
-    const { historyCleanupOff } = this.configurationProvider.getOpenIDConfiguration(configId);
+  private historyCleanUpTurnedOn(config: OpenIdConfiguration): boolean {
+    const { historyCleanupOff } = config;
 
     return !historyCleanupOff;
   }

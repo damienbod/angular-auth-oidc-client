@@ -47,7 +47,7 @@ export class UserService {
 
     const accessToken = this.storagePersistenceService.getAccessToken(configId);
     if (!(isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow)) {
-      this.loggerService.logDebug(configId, `authCallback idToken flow with accessToken ${accessToken}`);
+      this.loggerService.logDebug(currentConfiguration, `authCallback idToken flow with accessToken ${accessToken}`);
 
       this.setUserDataToStore(decodedIdToken, currentConfiguration, allConfigs);
 
@@ -59,9 +59,9 @@ export class UserService {
     if (!isRenewProcess || renewUserInfoAfterTokenRenew || !haveUserData) {
       return this.getUserDataOidcFlowAndSave(decodedIdToken.sub, currentConfiguration, allConfigs).pipe(
         switchMap((userData) => {
-          this.loggerService.logDebug(configId, 'Received user data: ', userData);
+          this.loggerService.logDebug(currentConfiguration, 'Received user data: ', userData);
           if (!!userData) {
-            this.loggerService.logDebug(configId, 'accessToken: ', accessToken);
+            this.loggerService.logDebug(currentConfiguration, 'accessToken: ', accessToken);
 
             return of(userData);
           } else {
@@ -107,17 +107,15 @@ export class UserService {
     currentConfiguration: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
   ): Observable<any> {
-    const { configId } = currentConfiguration;
-
-    return this.getIdentityUserData(configId).pipe(
+    return this.getIdentityUserData(currentConfiguration).pipe(
       map((data: any) => {
-        if (this.validateUserDataSubIdToken(idTokenSub, data?.sub)) {
+        if (this.validateUserDataSubIdToken(currentConfiguration, idTokenSub, data?.sub)) {
           this.setUserDataToStore(data, currentConfiguration, allConfigs);
 
           return data;
         } else {
           // something went wrong, user data sub does not match that from id_token
-          this.loggerService.logWarning(configId, `User data sub does not match sub in id_token, resetting`);
+          this.loggerService.logWarning(currentConfiguration, `User data sub does not match sub in id_token, resetting`);
           this.resetUserDataInStore(currentConfiguration, allConfigs);
 
           return null;
@@ -126,13 +124,15 @@ export class UserService {
     );
   }
 
-  private getIdentityUserData(configId: string): Observable<any> {
+  private getIdentityUserData(currentConfiguration: OpenIdConfiguration): Observable<any> {
+    const { configId } = currentConfiguration;
+
     const token = this.storagePersistenceService.getAccessToken(configId);
 
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
 
     if (!authWellKnownEndPoints) {
-      this.loggerService.logWarning(configId, 'init check session: authWellKnownEndpoints is undefined');
+      this.loggerService.logWarning(currentConfiguration, 'init check session: authWellKnownEndpoints is undefined');
 
       return throwError(() => new Error('authWellKnownEndpoints is undefined'));
     }
@@ -141,7 +141,7 @@ export class UserService {
 
     if (!userInfoEndpoint) {
       this.loggerService.logError(
-        configId,
+        currentConfiguration,
         'init check session: authWellKnownEndpoints.userinfo_endpoint is undefined; set auto_userinfo = false in config'
       );
 
@@ -151,7 +151,7 @@ export class UserService {
     return this.oidcDataService.get(userInfoEndpoint, configId, token).pipe(retry(2));
   }
 
-  private validateUserDataSubIdToken(idTokenSub: any, userDataSub: any): boolean {
+  private validateUserDataSubIdToken(currentConfiguration: OpenIdConfiguration, idTokenSub: any, userDataSub: any): boolean {
     if (!idTokenSub) {
       return false;
     }
@@ -161,7 +161,7 @@ export class UserService {
     }
 
     if ((idTokenSub as string) !== (userDataSub as string)) {
-      this.loggerService.logDebug('validateUserDataSubIdToken failed', idTokenSub, userDataSub);
+      this.loggerService.logDebug(currentConfiguration, 'validateUserDataSubIdToken failed', idTokenSub, userDataSub);
 
       return false;
     }

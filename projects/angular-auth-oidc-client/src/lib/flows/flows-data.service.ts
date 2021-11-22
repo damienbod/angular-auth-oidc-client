@@ -12,9 +12,10 @@ export class FlowsDataService {
     private loggerService: LoggerService
   ) {}
 
-  createNonce(configId: string): string {
+  createNonce(configuration: OpenIdConfiguration): string {
+    const { configId } = configuration;
     const nonce = this.randomService.createRandom(40, configId);
-    this.loggerService.logDebug(configId, 'Nonce created. nonce:' + nonce);
+    this.loggerService.logDebug(configuration, 'Nonce created. nonce:' + nonce);
     this.setNonce(nonce, configId);
 
     return nonce;
@@ -76,7 +77,7 @@ export class FlowsDataService {
     const isProbablyStuck = elapsedTimeInMilliseconds > timeOutInMilliseconds;
 
     if (isProbablyStuck) {
-      this.loggerService.logDebug(configId, 'silent renew process is probably stuck, state will be reset.', configId);
+      this.loggerService.logDebug(configuration, 'silent renew process is probably stuck, state will be reset.', configId);
       this.resetSilentRenewRunning(configId);
 
       return false;
