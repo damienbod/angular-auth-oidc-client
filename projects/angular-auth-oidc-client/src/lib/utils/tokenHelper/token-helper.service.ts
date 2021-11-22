@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 
 const PARTS_OF_TOKEN = 3;
@@ -17,24 +18,24 @@ export class TokenHelperService {
     return date;
   }
 
-  getHeaderFromToken(token: any, encoded: boolean, configId: string): any {
-    if (!this.tokenIsValid(token, configId)) {
+  getHeaderFromToken(token: any, encoded: boolean, configuration: OpenIdConfiguration): any {
+    if (!this.tokenIsValid(token, configuration)) {
       return {};
     }
 
     return this.getPartOfToken(token, 0, encoded);
   }
 
-  getPayloadFromToken(token: any, encoded: boolean, configId: string): any {
-    if (!this.tokenIsValid(token, configId)) {
+  getPayloadFromToken(token: any, encoded: boolean, configuration: OpenIdConfiguration): any {
+    if (!this.tokenIsValid(token, configuration)) {
       return {};
     }
 
     return this.getPartOfToken(token, 1, encoded);
   }
 
-  getSignatureFromToken(token: any, encoded: boolean, configId: string): any {
-    if (!this.tokenIsValid(token, configId)) {
+  getSignatureFromToken(token: any, encoded: boolean, configuration: OpenIdConfiguration): any {
+    if (!this.tokenIsValid(token, configuration)) {
       return {};
     }
 
@@ -84,15 +85,15 @@ export class TokenHelperService {
     }
   }
 
-  private tokenIsValid(token: string, configId: string): boolean {
+  private tokenIsValid(token: string, configuration: OpenIdConfiguration): boolean {
     if (!token) {
-      this.loggerService.logError(configId, `token '${token}' is not valid --> token falsy`);
+      this.loggerService.logError(configuration, `token '${token}' is not valid --> token falsy`);
 
       return false;
     }
 
     if (!(token as string).includes('.')) {
-      this.loggerService.logError(configId, `token '${token}' is not valid --> no dots included`);
+      this.loggerService.logError(configuration, `token '${token}' is not valid --> no dots included`);
 
       return false;
     }
@@ -100,7 +101,7 @@ export class TokenHelperService {
     const parts = token.split('.');
 
     if (parts.length !== PARTS_OF_TOKEN) {
-      this.loggerService.logError(configId, `token '${token}' is not valid --> token has to have exactly ${PARTS_OF_TOKEN - 1} dots`);
+      this.loggerService.logError(configuration, `token '${token}' is not valid --> token has to have exactly ${PARTS_OF_TOKEN - 1} dots`);
 
       return false;
     }

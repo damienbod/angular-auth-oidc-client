@@ -45,13 +45,12 @@ export class AutoLoginAllRoutesGuard implements CanActivate, CanActivateChild, C
         return this.checkAuthService.checkAuth(config).pipe(
           take(1),
           map(({ isAuthenticated }) => {
-            const { configId } = config;
             if (isAuthenticated) {
-              this.autoLoginService.checkSavedRedirectRouteAndNavigate(configId);
+              this.autoLoginService.checkSavedRedirectRouteAndNavigate(config);
             }
 
             if (!isAuthenticated) {
-              this.autoLoginService.saveRedirectRoute(configId, url);
+              this.autoLoginService.saveRedirectRoute(config, url);
               this.loginService.login(config);
             }
 

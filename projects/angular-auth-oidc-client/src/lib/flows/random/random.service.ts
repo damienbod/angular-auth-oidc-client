@@ -1,23 +1,27 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { LoggerService } from '../../logging/logger.service';
+import { OpenIdConfiguration } from './../../config/openid-configuration';
 
 @Injectable()
 export class RandomService {
   constructor(@Inject(DOCUMENT) private readonly doc: any, private loggerService: LoggerService) {}
 
-  createRandom(requiredLength: number, configId: string): string {
+  createRandom(requiredLength: number, configuration: OpenIdConfiguration): string {
     if (requiredLength <= 0) {
       return '';
     }
 
     if (requiredLength > 0 && requiredLength < 7) {
-      this.loggerService.logWarning(configId, `RandomService called with ${requiredLength} but 7 chars is the minimum, returning 10 chars`);
+      this.loggerService.logWarning(
+        configuration,
+        `RandomService called with ${requiredLength} but 7 chars is the minimum, returning 10 chars`
+      );
       requiredLength = 10;
     }
 
     const length = requiredLength - 6;
-    const arr = new Uint8Array(Math.floor((length || length) / 2));
+    const arr = new Uint8Array(Math.floor(length / 2));
     if (this.getCrypto()) {
       this.getCrypto().getRandomValues(arr);
     }

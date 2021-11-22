@@ -1,4 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
+import { OpenIdConfiguration } from './../config/openid-configuration';
 import { BrowserStorageService } from './browser-storage.service';
 
 export type StorageKeys =
@@ -23,61 +24,61 @@ export type StorageKeys =
 export class StoragePersistenceService {
   constructor(private readonly browserStorageService: BrowserStorageService) {}
 
-  read(key: StorageKeys, configId: string): any {
-    const storedConfig = this.browserStorageService.read(key, configId) || {};
+  read(key: StorageKeys, config: OpenIdConfiguration): any {
+    const storedConfig = this.browserStorageService.read(key, config) || {};
 
     return storedConfig[key];
   }
 
-  write(key: StorageKeys, value: any, configId: string): boolean {
-    const storedConfig = this.browserStorageService.read(key, configId) || {};
+  write(key: StorageKeys, value: any, config: OpenIdConfiguration): boolean {
+    const storedConfig = this.browserStorageService.read(key, config) || {};
 
     storedConfig[key] = value;
 
-    return this.browserStorageService.write(storedConfig, configId);
+    return this.browserStorageService.write(storedConfig, config);
   }
 
-  remove(key: StorageKeys, configId: string): void {
-    const storedConfig = this.browserStorageService.read(key, configId) || {};
+  remove(key: StorageKeys, config: OpenIdConfiguration): void {
+    const storedConfig = this.browserStorageService.read(key, config) || {};
 
     delete storedConfig[key];
 
-    this.browserStorageService.write(storedConfig, configId);
+    this.browserStorageService.write(storedConfig, config);
   }
 
-  clear(configId: string): void {
-    this.browserStorageService.clear(configId);
+  clear(config: OpenIdConfiguration): void {
+    this.browserStorageService.clear(config);
   }
 
-  resetStorageFlowData(configId: string): void {
-    this.remove('session_state', configId);
-    this.remove('storageSilentRenewRunning', configId);
-    this.remove('codeVerifier', configId);
-    this.remove('userData', configId);
-    this.remove('storageCustomParamsAuthRequest', configId);
-    this.remove('access_token_expires_at', configId);
-    this.remove('storageCustomParamsRefresh', configId);
-    this.remove('storageCustomParamsEndSession', configId);
+  resetStorageFlowData(config: OpenIdConfiguration): void {
+    this.remove('session_state', config);
+    this.remove('storageSilentRenewRunning', config);
+    this.remove('codeVerifier', config);
+    this.remove('userData', config);
+    this.remove('storageCustomParamsAuthRequest', config);
+    this.remove('access_token_expires_at', config);
+    this.remove('storageCustomParamsRefresh', config);
+    this.remove('storageCustomParamsEndSession', config);
   }
 
-  resetAuthStateInStorage(configId: string): void {
-    this.remove('authzData', configId);
-    this.remove('authnResult', configId);
+  resetAuthStateInStorage(config: OpenIdConfiguration): void {
+    this.remove('authzData', config);
+    this.remove('authnResult', config);
   }
 
-  getAccessToken(configId: string): string {
-    return this.read('authzData', configId);
+  getAccessToken(config: OpenIdConfiguration): string {
+    return this.read('authzData', config);
   }
 
-  getIdToken(configId: string): string {
-    return this.read('authnResult', configId)?.id_token;
+  getIdToken(config: OpenIdConfiguration): string {
+    return this.read('authnResult', config)?.id_token;
   }
 
-  getRefreshToken(configId: string): string {
-    return this.read('authnResult', configId)?.refresh_token;
+  getRefreshToken(config: OpenIdConfiguration): string {
+    return this.read('authnResult', config)?.refresh_token;
   }
 
-  getAuthenticationResult(configId: string): any {
-    return this.read('authnResult', configId);
+  getAuthenticationResult(config: OpenIdConfiguration): any {
+    return this.read('authnResult', config);
   }
 }

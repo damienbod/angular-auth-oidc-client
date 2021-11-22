@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { OpenIdConfiguration } from './../config/openid-configuration';
 
 const STORAGE_KEY = 'redirect';
 
@@ -8,11 +9,11 @@ const STORAGE_KEY = 'redirect';
 export class AutoLoginService {
   constructor(private readonly storageService: StoragePersistenceService, private readonly router: Router) {}
 
-  checkSavedRedirectRouteAndNavigate(configId: string): void {
-    const savedRouteForRedirect = this.getStoredRedirectRoute(configId);
+  checkSavedRedirectRouteAndNavigate(config: OpenIdConfiguration): void {
+    const savedRouteForRedirect = this.getStoredRedirectRoute(config);
 
     if (savedRouteForRedirect) {
-      this.deleteStoredRedirectRoute(configId);
+      this.deleteStoredRedirectRoute(config);
       this.router.navigateByUrl(savedRouteForRedirect);
     }
   }
@@ -22,21 +23,21 @@ export class AutoLoginService {
    *
    * @param url The redirect URL to save.
    */
-  saveRedirectRoute(configId: string, url: string): void {
-    this.storageService.write(STORAGE_KEY, url, configId);
+  saveRedirectRoute(config: OpenIdConfiguration, url: string): void {
+    this.storageService.write(STORAGE_KEY, url, config);
   }
 
   /**
    * Gets the stored redirect URL from storage.
    */
-  private getStoredRedirectRoute(configId: string): string {
-    return this.storageService.read(STORAGE_KEY, configId);
+  private getStoredRedirectRoute(config: OpenIdConfiguration): string {
+    return this.storageService.read(STORAGE_KEY, config);
   }
 
   /**
    * Removes the redirect URL from storage.
    */
-  private deleteStoredRedirectRoute(configId: string): void {
-    this.storageService.remove(STORAGE_KEY, configId);
+  private deleteStoredRedirectRoute(config: OpenIdConfiguration): void {
+    this.storageService.remove(STORAGE_KEY, config);
   }
 }

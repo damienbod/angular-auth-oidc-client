@@ -33,15 +33,14 @@ export class AutoLoginPartialRoutesGuard implements CanActivate, CanActivateChil
   private checkAuth(url: string): Observable<boolean> {
     return this.configurationService.getOpenIDConfiguration().pipe(
       map((configuration) => {
-        const { configId } = configuration;
         const isAuthenticated = this.authStateService.areAuthStorageTokensValid(configuration);
 
         if (isAuthenticated) {
-          this.autoLoginService.checkSavedRedirectRouteAndNavigate(configId);
+          this.autoLoginService.checkSavedRedirectRouteAndNavigate(configuration);
         }
 
         if (!isAuthenticated) {
-          this.autoLoginService.saveRedirectRoute(configId, url);
+          this.autoLoginService.saveRedirectRoute(configuration, url);
           this.loginService.login(configuration);
         }
 

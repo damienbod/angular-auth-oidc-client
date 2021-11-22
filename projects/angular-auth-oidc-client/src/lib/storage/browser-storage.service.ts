@@ -11,7 +11,7 @@ export class BrowserStorageService {
     const { configId } = configuration;
 
     if (!this.hasStorage()) {
-      this.loggerService.logDebug(configId, `Wanted to read '${key}' but Storage was undefined`);
+      this.loggerService.logDebug(configuration, `Wanted to read '${key}' but Storage was undefined`);
 
       return null;
     }
@@ -19,7 +19,7 @@ export class BrowserStorageService {
     const storage = this.getStorage(configuration);
 
     if (!storage) {
-      this.loggerService.logDebug(configId, `Wanted to read config for '${configId}' but Storage was falsy`);
+      this.loggerService.logDebug(configuration, `Wanted to read config for '${configId}' but Storage was falsy`);
 
       return null;
     }
@@ -37,14 +37,14 @@ export class BrowserStorageService {
     const { configId } = configuration;
 
     if (!this.hasStorage()) {
-      this.loggerService.logDebug(configId, `Wanted to write '${value}' but Storage was falsy`);
+      this.loggerService.logDebug(configuration, `Wanted to write '${value}' but Storage was falsy`);
 
       return false;
     }
 
     const storage = this.getStorage(configuration);
     if (!storage) {
-      this.loggerService.logDebug(configId, `Wanted to write '${value}' but Storage was falsy`);
+      this.loggerService.logDebug(configuration, `Wanted to write '${value}' but Storage was falsy`);
 
       return false;
     }
@@ -57,17 +57,15 @@ export class BrowserStorageService {
   }
 
   remove(key: string, configuration: OpenIdConfiguration): boolean {
-    const { configId } = configuration;
-
     if (!this.hasStorage()) {
-      this.loggerService.logDebug(configId, `Wanted to remove '${key}' but Storage was falsy`);
+      this.loggerService.logDebug(configuration, `Wanted to remove '${key}' but Storage was falsy`);
 
       return false;
     }
 
     const storage = this.getStorage(configuration);
     if (!storage) {
-      this.loggerService.logDebug(configId, `Wanted to write '${key}' but Storage was falsy`);
+      this.loggerService.logDebug(configuration, `Wanted to write '${key}' but Storage was falsy`);
 
       return false;
     }
@@ -79,17 +77,15 @@ export class BrowserStorageService {
 
   // TODO THIS STORAGE WANTS AN ID BUT CLEARS EVERYTHING
   clear(configuration: OpenIdConfiguration): boolean {
-    const { configId } = configuration;
-
     if (!this.hasStorage()) {
-      this.loggerService.logDebug(configId, `Wanted to clear storage but Storage was falsy`);
+      this.loggerService.logDebug(configuration, `Wanted to clear storage but Storage was falsy`);
 
       return false;
     }
 
     const storage = this.getStorage(configuration);
     if (!storage) {
-      this.loggerService.logDebug(configId, `Wanted to clear storage but Storage was falsy`);
+      this.loggerService.logDebug(configuration, `Wanted to clear storage but Storage was falsy`);
 
       return false;
     }
