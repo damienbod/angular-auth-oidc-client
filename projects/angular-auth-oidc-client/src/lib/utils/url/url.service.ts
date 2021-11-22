@@ -51,10 +51,10 @@ export class UrlService {
 
   getAuthorizeParUrl(requestUri: string, configuration: OpenIdConfiguration): string {
     const { configId } = configuration;
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
 
     if (!authWellKnownEndPoints) {
-      this.loggerService.logError(configId, 'authWellKnownEndpoints is undefined');
+      this.loggerService.logError(configuration, 'authWellKnownEndpoints is undefined');
 
       return null;
     }
@@ -62,7 +62,10 @@ export class UrlService {
     const authorizationEndpoint = authWellKnownEndPoints.authorizationEndpoint;
 
     if (!authorizationEndpoint) {
-      this.loggerService.logError(configId, `Can not create an authorize URL when authorizationEndpoint is '${authorizationEndpoint}'`);
+      this.loggerService.logError(
+        configuration,
+        `Can not create an authorize URL when authorizationEndpoint is '${authorizationEndpoint}'`
+      );
 
       return null;
     }
@@ -70,7 +73,7 @@ export class UrlService {
     const { clientId } = configuration;
 
     if (!clientId) {
-      this.loggerService.logError(configId, `getAuthorizeParUrl could not add clientId because it was: `, clientId);
+      this.loggerService.logError(configuration, `getAuthorizeParUrl could not add clientId because it was: `, clientId);
 
       return null;
     }
@@ -107,7 +110,7 @@ export class UrlService {
     }
 
     const { configId } = configuration;
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
     const endSessionEndpoint = authWellKnownEndPoints?.endSessionEndpoint;
 
     if (!endSessionEndpoint) {
@@ -164,8 +167,8 @@ export class UrlService {
     return params.toString();
   }
 
-  getRevocationEndpointUrl(configId: string): string {
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+  getRevocationEndpointUrl(configuration: OpenIdConfiguration): string {
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
     const revocationEndpoint = authWellKnownEndPoints?.revocationEndpoint;
 
     if (!revocationEndpoint) {
@@ -184,10 +187,9 @@ export class UrlService {
     configuration: OpenIdConfiguration,
     customTokenParams?: { [p: string]: string | number | boolean }
   ): string {
-    const { configId } = configuration;
-    const codeVerifier = this.flowsDataService.getCodeVerifier(configId);
+    const codeVerifier = this.flowsDataService.getCodeVerifier(configuration);
     if (!codeVerifier) {
-      this.loggerService.logError(configId, `CodeVerifier is not set `, codeVerifier);
+      this.loggerService.logError(configuration, `CodeVerifier is not set `, codeVerifier);
 
       return null;
     }
@@ -254,19 +256,18 @@ export class UrlService {
     configuration: OpenIdConfiguration,
     customParamsRequest?: { [key: string]: string | number | boolean }
   ): string {
-    const { configId } = configuration;
     const redirectUrl = this.getRedirectUrl(configuration);
 
     if (!redirectUrl) {
       return null;
     }
 
-    const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
-    const nonce = this.flowsDataService.createNonce(configId);
-    this.loggerService.logDebug(configId, 'Authorize created. adding myautostate: ' + state);
+    const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configuration);
+    const nonce = this.flowsDataService.createNonce(configuration);
+    this.loggerService.logDebug(configuration, 'Authorize created. adding myautostate: ' + state);
 
     // code_challenge with "S256"
-    const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
+    const codeVerifier = this.flowsDataService.createCodeVerifier(configuration);
     const codeChallenge = this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier);
 
     const { clientId, responseType, scope, hdParam, customParamsAuthRequest } = configuration;
@@ -305,12 +306,14 @@ export class UrlService {
     prompt?: string,
     customRequestParams?: { [key: string]: string | number | boolean }
   ): string {
-    const { configId } = configuration;
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
     const authorizationEndpoint = authWellKnownEndPoints?.authorizationEndpoint;
 
     if (!authorizationEndpoint) {
-      this.loggerService.logError(configId, `Can not create an authorize URL when authorizationEndpoint is '${authorizationEndpoint}'`);
+      this.loggerService.logError(
+        configuration,
+        `Can not create an authorize URL when authorizationEndpoint is '${authorizationEndpoint}'`
+      );
 
       return null;
     }
@@ -318,19 +321,19 @@ export class UrlService {
     const { clientId, responseType, scope, hdParam, customParamsAuthRequest } = configuration;
 
     if (!clientId) {
-      this.loggerService.logError(configId, `createAuthorizeUrl could not add clientId because it was: `, clientId);
+      this.loggerService.logError(configuration, `createAuthorizeUrl could not add clientId because it was: `, clientId);
 
       return null;
     }
 
     if (!responseType) {
-      this.loggerService.logError(configId, `createAuthorizeUrl could not add responseType because it was: `, responseType);
+      this.loggerService.logError(configuration, `createAuthorizeUrl could not add responseType because it was: `, responseType);
 
       return null;
     }
 
     if (!scope) {
-      this.loggerService.logError(configId, `createAuthorizeUrl could not add scope because it was: `, scope);
+      this.loggerService.logError(configuration, `createAuthorizeUrl could not add scope because it was: `, scope);
 
       return null;
     }
@@ -373,9 +376,8 @@ export class UrlService {
     configuration: OpenIdConfiguration,
     customParams?: { [key: string]: string | number | boolean }
   ): string {
-    const { configId } = configuration;
-    const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
-    const nonce = this.flowsDataService.createNonce(configId);
+    const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configuration);
+    const nonce = this.flowsDataService.createNonce(configuration);
 
     const silentRenewUrl = this.getSilentRenewUrl(configuration);
 
@@ -383,14 +385,14 @@ export class UrlService {
       return null;
     }
 
-    this.loggerService.logDebug(configId, 'RefreshSession created. adding myautostate: ', state);
+    this.loggerService.logDebug(configuration, 'RefreshSession created. adding myautostate: ', state);
 
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
     if (authWellKnownEndPoints) {
       return this.createAuthorizeUrl('', silentRenewUrl, nonce, state, configuration, 'none', customParams);
     }
 
-    this.loggerService.logError(configId, 'authWellKnownEndpoints is undefined');
+    this.loggerService.logError(configuration, 'authWellKnownEndpoints is undefined');
 
     return null;
   }
@@ -399,14 +401,13 @@ export class UrlService {
     configuration: OpenIdConfiguration,
     customParams?: { [key: string]: string | number | boolean }
   ): string {
-    const { configId } = configuration;
-    const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
-    const nonce = this.flowsDataService.createNonce(configId);
+    const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configuration);
+    const nonce = this.flowsDataService.createNonce(configuration);
 
-    this.loggerService.logDebug(configId, 'RefreshSession created. adding myautostate: ' + state);
+    this.loggerService.logDebug(configuration, 'RefreshSession created. adding myautostate: ' + state);
 
     // code_challenge with "S256"
-    const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
+    const codeVerifier = this.flowsDataService.createCodeVerifier(configuration);
     const codeChallenge = this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier);
 
     const silentRenewUrl = this.getSilentRenewUrl(configuration);
@@ -415,12 +416,12 @@ export class UrlService {
       return null;
     }
 
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
     if (authWellKnownEndPoints) {
       return this.createAuthorizeUrl(codeChallenge, silentRenewUrl, nonce, state, configuration, 'none', customParams);
     }
 
-    this.loggerService.logWarning(configId, 'authWellKnownEndpoints is undefined');
+    this.loggerService.logWarning(configuration, 'authWellKnownEndpoints is undefined');
 
     return null;
   }
@@ -429,10 +430,9 @@ export class UrlService {
     configuration: OpenIdConfiguration,
     customParams?: { [key: string]: string | number | boolean }
   ): string {
-    const { configId } = configuration;
-    const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
-    const nonce = this.flowsDataService.createNonce(configId);
-    this.loggerService.logDebug(configId, 'Authorize created. adding myautostate: ' + state);
+    const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configuration);
+    const nonce = this.flowsDataService.createNonce(configuration);
+    this.loggerService.logDebug(configuration, 'Authorize created. adding myautostate: ' + state);
 
     const redirectUrl = this.getRedirectUrl(configuration);
 
@@ -440,12 +440,12 @@ export class UrlService {
       return null;
     }
 
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
     if (authWellKnownEndPoints) {
       return this.createAuthorizeUrl('', redirectUrl, nonce, state, configuration, null, customParams);
     }
 
-    this.loggerService.logError(configId, 'authWellKnownEndpoints is undefined');
+    this.loggerService.logError(configuration, 'authWellKnownEndpoints is undefined');
 
     return null;
   }
@@ -454,10 +454,9 @@ export class UrlService {
     configuration: OpenIdConfiguration,
     customParams?: { [key: string]: string | number | boolean }
   ): string {
-    const { configId } = configuration;
-    const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
-    const nonce = this.flowsDataService.createNonce(configId);
-    this.loggerService.logDebug(configId, 'Authorize created. adding myautostate: ' + state);
+    const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configuration);
+    const nonce = this.flowsDataService.createNonce(configuration);
+    this.loggerService.logDebug(configuration, 'Authorize created. adding myautostate: ' + state);
 
     const redirectUrl = this.getRedirectUrl(configuration);
 
@@ -466,24 +465,24 @@ export class UrlService {
     }
 
     // code_challenge with "S256"
-    const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
+    const codeVerifier = this.flowsDataService.createCodeVerifier(configuration);
     const codeChallenge = this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier);
 
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
     if (authWellKnownEndPoints) {
       return this.createAuthorizeUrl(codeChallenge, redirectUrl, nonce, state, configuration, null, customParams);
     }
 
-    this.loggerService.logError(configId, 'authWellKnownEndpoints is undefined');
+    this.loggerService.logError(configuration, 'authWellKnownEndpoints is undefined');
 
     return null;
   }
 
   private getRedirectUrl(configuration: OpenIdConfiguration): string {
-    const { redirectUrl, configId } = configuration;
+    const { redirectUrl } = configuration;
 
     if (!redirectUrl) {
-      this.loggerService.logError(configId, `could not get redirectUrl, was: `, redirectUrl);
+      this.loggerService.logError(configuration, `could not get redirectUrl, was: `, redirectUrl);
 
       null;
     }
@@ -492,10 +491,10 @@ export class UrlService {
   }
 
   private getSilentRenewUrl(configuration: OpenIdConfiguration): string {
-    const { silentRenewUrl, configId } = configuration;
+    const { silentRenewUrl } = configuration;
 
     if (!silentRenewUrl) {
-      this.loggerService.logError(configId, `could not get silentRenewUrl, was: `, silentRenewUrl);
+      this.loggerService.logError(configuration, `could not get silentRenewUrl, was: `, silentRenewUrl);
 
       return null;
     }
@@ -504,10 +503,10 @@ export class UrlService {
   }
 
   private getPostLogoutRedirectUrl(configuration: OpenIdConfiguration): string {
-    const { postLogoutRedirectUri, configId } = configuration;
+    const { postLogoutRedirectUri } = configuration;
 
     if (!postLogoutRedirectUri) {
-      this.loggerService.logError(configId, `could not get postLogoutRedirectUri, was: `, postLogoutRedirectUri);
+      this.loggerService.logError(configuration, `could not get postLogoutRedirectUri, was: `, postLogoutRedirectUri);
 
       return null;
     }
@@ -516,10 +515,10 @@ export class UrlService {
   }
 
   private getClientId(configuration: OpenIdConfiguration): string {
-    const { clientId, configId } = configuration;
+    const { clientId } = configuration;
 
     if (!clientId) {
-      this.loggerService.logError(configId, `could not get clientId, was: `, clientId);
+      this.loggerService.logError(configuration, `could not get clientId, was: `, clientId);
 
       return null;
     }

@@ -53,12 +53,18 @@ export class SilentRenewService {
     return !useRefreshToken && silentRenew;
   }
 
-  codeFlowCallbackSilentRenewIframe(urlParts: any, configId: string): Observable<CallbackContext> {
+  codeFlowCallbackSilentRenewIframe(
+    urlParts: any,
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): Observable<CallbackContext> {
     const params = new HttpParams({
       fromString: urlParts[1],
     });
 
     const error = params.get('error');
+
+    const { configId } = config;
 
     if (error) {
       this.authStateService.updateAndPublishAuthState({
@@ -67,7 +73,7 @@ export class SilentRenewService {
         isRenewProcess: true,
       });
       this.resetAuthDataService.resetAuthorizationData(configId);
-      this.flowsDataService.setNonce('', configId);
+      this.flowsDataService.setNonce('', config);
       this.intervalService.stopPeriodicTokenCheck();
 
       return throwError(() => new Error(error));
@@ -89,7 +95,7 @@ export class SilentRenewService {
       existingIdToken: null,
     };
 
-    return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext, configId).pipe(
+    return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext, config, allConfigs).pipe(
       catchError((errorFromFlow) => {
         this.intervalService.stopPeriodicTokenCheck();
         this.resetAuthDataService.resetAuthorizationData(configId);
@@ -99,33 +105,31 @@ export class SilentRenewService {
     );
   }
 
-  silentRenewEventHandler(e: CustomEvent, configuration: OpenIdConfiguration): void {
-    this.loggerService.logDebug(configuration, 'silentRenewEventHandler');
+  silentRenewEventHandler(e: CustomEvent, config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
+    this.loggerService.logDebug(config, 'silentRenewEventHandler');
     if (!e.detail) {
       return;
     }
 
     let callback$ = of(null) as Observable<CallbackContext>;
-    const { configId } = configuration;
-
-    const isCodeFlow = this.flowHelper.isCurrentFlowCodeFlow(configuration);
+    const isCodeFlow = this.flowHelper.isCurrentFlowCodeFlow(config);
 
     if (isCodeFlow) {
       const urlParts = e.detail.toString().split('?');
-      callback$ = this.codeFlowCallbackSilentRenewIframe(urlParts, configId);
+      callback$ = this.codeFlowCallbackSilentRenewIframe(urlParts, config, allConfigs);
     } else {
-      callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(configId, e.detail);
+      callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(config, e.detail);
     }
 
     callback$.subscribe({
       next: (callbackContext) => {
         this.refreshSessionWithIFrameCompletedInternal$.next(callbackContext);
-        this.flowsDataService.resetSilentRenewRunning(configId);
+        this.flowsDataService.resetSilentRenewRunning(config);
       },
       error: (err: any) => {
-        this.loggerService.logError(configuration, 'Error: ' + err);
+        this.loggerService.logError(config, 'Error: ' + err);
         this.refreshSessionWithIFrameCompletedInternal$.next(null);
-        this.flowsDataService.resetSilentRenewRunning(configId);
+        this.flowsDataService.resetSilentRenewRunning(config);
       },
     });
   }

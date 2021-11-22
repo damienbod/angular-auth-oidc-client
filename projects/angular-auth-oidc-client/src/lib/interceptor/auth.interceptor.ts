@@ -43,8 +43,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     this.loggerService.logDebug(matchingConfig, `'${req.url}' matches configured route '${matchingRoute}'`);
 
-    const { configId } = matchingConfig;
-    const token = this.authStateService.getAccessToken(configId);
+    const token = this.authStateService.getAccessToken(matchingConfig);
 
     if (!token) {
       this.loggerService.logDebug(matchingConfig, `Wanted to add token to ${req.url} but found no token: '${token}'`);

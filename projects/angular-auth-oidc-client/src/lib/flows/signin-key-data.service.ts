@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { JwtKeys } from '../validation/jwtkeys';
@@ -15,25 +16,26 @@ export class SigninKeyDataService {
     private dataService: DataService
   ) {}
 
-  getSigningKeys(configId: string): Observable<JwtKeys> {
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+  getSigningKeys(currentConfiguration: OpenIdConfiguration): Observable<JwtKeys> {
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', currentConfiguration);
     const jwksUri = authWellKnownEndPoints?.jwksUri;
     if (!jwksUri) {
       const error = `getSigningKeys: authWellKnownEndpoints.jwksUri is: '${jwksUri}'`;
-      this.loggerService.logWarning(configId, error);
+      this.loggerService.logWarning(currentConfiguration, error);
 
       return throwError(() => new Error(error));
     }
 
-    this.loggerService.logDebug(configId, 'Getting signinkeys from ', jwksUri);
+    const { configId } = currentConfiguration;
+    this.loggerService.logDebug(currentConfiguration, 'Getting signinkeys from ', jwksUri);
 
     return this.dataService.get<JwtKeys>(jwksUri, configId).pipe(
       retry(2),
-      catchError((e) => this.handleErrorGetSigningKeys(e, configId))
+      catchError((e) => this.handleErrorGetSigningKeys(e, currentConfiguration))
     );
   }
 
-  private handleErrorGetSigningKeys(errorResponse: HttpResponse<any> | any, configId: string): Observable<never> {
+  private handleErrorGetSigningKeys(errorResponse: HttpResponse<any> | any, currentConfiguration: OpenIdConfiguration): Observable<never> {
     let errMsg = '';
     if (errorResponse instanceof HttpResponse) {
       const body = errorResponse.body || {};
@@ -44,7 +46,7 @@ export class SigninKeyDataService {
       const { message } = errorResponse;
       errMsg = !!message ? message : `${errorResponse}`;
     }
-    this.loggerService.logError(configId, errMsg);
+    this.loggerService.logError(currentConfiguration, errMsg);
 
     return throwError(() => new Error(errMsg));
   }

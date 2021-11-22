@@ -60,14 +60,14 @@ export class CodeFlowCallbackHandlerService {
   // STEP 2 Code Flow //  Code Flow Silent Renew starts here
   codeFlowCodeRequest(callbackContext: CallbackContext, config: OpenIdConfiguration): Observable<CallbackContext> {
     const { configId } = config;
-    const authStateControl = this.flowsDataService.getAuthStateControl(configId);
-    const isStateCorrect = this.tokenValidationService.validateStateFromHashCallback(callbackContext.state, authStateControl, configId);
+    const authStateControl = this.flowsDataService.getAuthStateControl(config);
+    const isStateCorrect = this.tokenValidationService.validateStateFromHashCallback(callbackContext.state, authStateControl, config);
 
     if (!isStateCorrect) {
       return throwError(() => new Error('codeFlowCodeRequest incorrect state'));
     }
 
-    const authWellknownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+    const authWellknownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', config);
     const tokenEndpoint = authWellknownEndpoints?.tokenEndpoint;
     if (!tokenEndpoint) {
       return throwError(() => new Error('Token Endpoint not defined'));

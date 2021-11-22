@@ -37,15 +37,15 @@ export class UserService {
     decodedIdToken?: any
   ): Observable<any> {
     const { configId } = currentConfiguration;
-    idToken = idToken || this.storagePersistenceService.getIdToken(configId);
-    decodedIdToken = decodedIdToken || this.tokenHelperService.getPayloadFromToken(idToken, false, configId);
+    idToken = idToken || this.storagePersistenceService.getIdToken(currentConfiguration);
+    decodedIdToken = decodedIdToken || this.tokenHelperService.getPayloadFromToken(idToken, false, currentConfiguration);
 
     const existingUserDataFromStorage = this.getUserDataFromStore(currentConfiguration);
     const haveUserData = !!existingUserDataFromStorage;
     const isCurrentFlowImplicitFlowWithAccessToken = this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken(currentConfiguration);
     const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow(currentConfiguration);
 
-    const accessToken = this.storagePersistenceService.getAccessToken(configId);
+    const accessToken = this.storagePersistenceService.getAccessToken(currentConfiguration);
     if (!(isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow)) {
       this.loggerService.logDebug(currentConfiguration, `authCallback idToken flow with accessToken ${accessToken}`);
 
@@ -75,9 +75,7 @@ export class UserService {
   }
 
   getUserDataFromStore(currentConfiguration: OpenIdConfiguration): any {
-    const { configId } = currentConfiguration;
-
-    return this.storagePersistenceService.read('userData', configId) || null;
+    return this.storagePersistenceService.read('userData', currentConfiguration) || null;
   }
 
   publishUserDataIfExists(currentConfiguration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
@@ -89,16 +87,12 @@ export class UserService {
   }
 
   setUserDataToStore(userData: any, currentConfiguration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
-    const { configId } = currentConfiguration;
-
-    this.storagePersistenceService.write('userData', userData, configId);
+    this.storagePersistenceService.write('userData', userData, currentConfiguration);
     this.fireUserDataEvent(currentConfiguration, allConfigs, userData);
   }
 
   resetUserDataInStore(currentConfiguration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
-    const { configId } = currentConfiguration;
-
-    this.storagePersistenceService.remove('userData', configId);
+    this.storagePersistenceService.remove('userData', currentConfiguration);
     this.fireUserDataEvent(currentConfiguration, allConfigs, null);
   }
 
@@ -127,9 +121,9 @@ export class UserService {
   private getIdentityUserData(currentConfiguration: OpenIdConfiguration): Observable<any> {
     const { configId } = currentConfiguration;
 
-    const token = this.storagePersistenceService.getAccessToken(configId);
+    const token = this.storagePersistenceService.getAccessToken(currentConfiguration);
 
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', currentConfiguration);
 
     if (!authWellKnownEndPoints) {
       this.loggerService.logWarning(currentConfiguration, 'init check session: authWellKnownEndpoints is undefined');
@@ -198,7 +192,7 @@ export class UserService {
         return { configId: config.configId, userData: passedUserData };
       }
 
-      const alreadySavedUserData = this.storagePersistenceService.read('userData', config.configId) || null;
+      const alreadySavedUserData = this.storagePersistenceService.read('userData', config) || null;
 
       return { configId: config.configId, userData: alreadySavedUserData };
     });

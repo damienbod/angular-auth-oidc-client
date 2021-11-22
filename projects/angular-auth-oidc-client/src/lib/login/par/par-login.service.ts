@@ -32,19 +32,19 @@ export class ParLoginService {
   loginPar(configuration: OpenIdConfiguration, authOptions?: AuthOptions): void {
     const { authWellknownEndpointUrl, configId } = configuration;
 
-    if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
-      this.loggerService.logError(configId, 'Invalid response type!');
+    if (!this.responseTypeValidationService.hasConfigValidResponseType(configuration)) {
+      this.loggerService.logError(configuration, 'Invalid response type!');
 
       return;
     }
 
     if (!authWellknownEndpointUrl) {
-      this.loggerService.logError(configId, 'no authWellknownEndpoint given!');
+      this.loggerService.logError(configuration, 'no authWellknownEndpoint given!');
 
       return;
     }
 
-    this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow, no auth data');
+    this.loggerService.logDebug(configuration, 'BEGIN Authorize OIDC Flow, no auth data');
 
     const { urlHandler, customParams } = authOptions || {};
 
@@ -52,14 +52,14 @@ export class ParLoginService {
       .getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId)
       .pipe(switchMap(() => this.parService.postParRequest(configId, customParams)))
       .subscribe((response) => {
-        this.loggerService.logDebug(configId, 'par response: ', response);
+        this.loggerService.logDebug(configuration, 'par response: ', response);
 
         const url = this.urlService.getAuthorizeParUrl(response.requestUri, configuration);
 
-        this.loggerService.logDebug(configId, 'par request url: ', url);
+        this.loggerService.logDebug(configuration, 'par request url: ', url);
 
         if (!url) {
-          this.loggerService.logError(configId, `Could not create URL with param ${response.requestUri}: '${url}'`);
+          this.loggerService.logError(configuration, `Could not create URL with param ${response.requestUri}: '${url}'`);
 
           return;
         }
@@ -72,39 +72,44 @@ export class ParLoginService {
       });
   }
 
-  loginWithPopUpPar(configuration: OpenIdConfiguration, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
+  loginWithPopUpPar(
+    configuration: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[],
+    authOptions?: AuthOptions,
+    popupOptions?: PopupOptions
+  ): Observable<LoginResponse> {
     const { authWellknownEndpointUrl, configId } = configuration;
 
-    if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
+    if (!this.responseTypeValidationService.hasConfigValidResponseType(configuration)) {
       const errorMessage = 'Invalid response type!';
-      this.loggerService.logError(configId, errorMessage);
+      this.loggerService.logError(configuration, errorMessage);
 
       return throwError(() => new Error(errorMessage));
     }
 
     if (!authWellknownEndpointUrl) {
       const errorMessage = 'no authWellknownEndpoint given!';
-      this.loggerService.logError(configId, errorMessage);
+      this.loggerService.logError(configuration, errorMessage);
 
       return throwError(() => new Error(errorMessage));
     }
 
-    this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow with popup, no auth data');
+    this.loggerService.logDebug(configuration, 'BEGIN Authorize OIDC Flow with popup, no auth data');
 
     const { customParams } = authOptions || {};
 
     return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).pipe(
       switchMap(() => this.parService.postParRequest(configId, customParams)),
       switchMap((response: ParResponse) => {
-        this.loggerService.logDebug(configId, 'par response: ', response);
+        this.loggerService.logDebug(configuration, 'par response: ', response);
 
         const url = this.urlService.getAuthorizeParUrl(response.requestUri, configuration);
 
-        this.loggerService.logDebug(configId, 'par request url: ', url);
+        this.loggerService.logDebug(configuration, 'par request url: ', url);
 
         if (!url) {
           const errorMessage = `Could not create URL with param ${response.requestUri}: 'url'`;
-          this.loggerService.logError(configId, errorMessage);
+          this.loggerService.logError(configuration, errorMessage);
 
           return throwError(() => new Error(errorMessage));
         }
@@ -127,7 +132,7 @@ export class ParLoginService {
               });
             }
 
-            return this.checkAuthService.checkAuth(configuration, receivedUrl);
+            return this.checkAuthService.checkAuth(configuration, allConfigs, receivedUrl);
           })
         );
       })

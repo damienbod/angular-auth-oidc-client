@@ -26,10 +26,12 @@ export class HistoryJwtKeysCallbackHandlerService {
   ) {}
 
   // STEP 3 Code Flow, STEP 2 Implicit Flow, STEP 3 Refresh Token
-  callbackHistoryAndResetJwtKeys(callbackContext: CallbackContext, config: OpenIdConfiguration): Observable<CallbackContext> {
-    const { configId } = config;
-
-    this.storagePersistenceService.write('authnResult', callbackContext.authResult, configId);
+  callbackHistoryAndResetJwtKeys(
+    callbackContext: CallbackContext,
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): Observable<CallbackContext> {
+    this.storagePersistenceService.write('authnResult', callbackContext.authResult, config);
 
     if (this.historyCleanUpTurnedOn(config) && !callbackContext.isRenewProcess) {
       this.resetBrowserHistory();
@@ -40,8 +42,8 @@ export class HistoryJwtKeysCallbackHandlerService {
     if (callbackContext.authResult.error) {
       const errorMessage = `AuthCallback AuthResult came with error: ${callbackContext.authResult.error}`;
       this.loggerService.logDebug(config, errorMessage);
-      this.resetAuthDataService.resetAuthorizationData(configId);
-      this.flowsDataService.setNonce('', configId);
+      this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
+      this.flowsDataService.setNonce('', config);
       this.handleResultErrorFromCallback(callbackContext.authResult, callbackContext.isRenewProcess);
 
       return throwError(() => new Error(errorMessage));
@@ -53,11 +55,11 @@ export class HistoryJwtKeysCallbackHandlerService {
       AuthCallback created, begin token validation`
     );
 
-    return this.signInKeyDataService.getSigningKeys(configId).pipe(
-      tap((jwtKeys: JwtKeys) => this.storeSigningKeys(jwtKeys, configId)),
+    return this.signInKeyDataService.getSigningKeys(config).pipe(
+      tap((jwtKeys: JwtKeys) => this.storeSigningKeys(jwtKeys, config)),
       catchError((err) => {
         // fallback: try to load jwtKeys from storage
-        const storedJwtKeys = this.readSigningKeys(configId);
+        const storedJwtKeys = this.readSigningKeys(config);
         if (!!storedJwtKeys) {
           this.loggerService.logWarning(config, `Failed to retrieve signing keys, fallback to stored keys`);
 
@@ -111,11 +113,11 @@ export class HistoryJwtKeysCallbackHandlerService {
     window.history.replaceState({}, window.document.title, window.location.origin + window.location.pathname);
   }
 
-  private storeSigningKeys(jwtKeys: JwtKeys, configId: string): void {
-    this.storagePersistenceService.write(JWT_KEYS, jwtKeys, configId);
+  private storeSigningKeys(jwtKeys: JwtKeys, config: OpenIdConfiguration): void {
+    this.storagePersistenceService.write(JWT_KEYS, jwtKeys, config);
   }
 
-  private readSigningKeys(configId: string): any {
-    return this.storagePersistenceService.read(JWT_KEYS, configId);
+  private readSigningKeys(config: OpenIdConfiguration): any {
+    return this.storagePersistenceService.read(JWT_KEYS, config);
   }
 }
