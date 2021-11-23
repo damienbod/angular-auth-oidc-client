@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   templateUrl: 'home.component.html',
 })
 export class HomeComponent implements OnInit {
-  configuration: OpenIdConfiguration;
+  configuration$: Observable<OpenIdConfiguration>;
   userDataChanged$: Observable<OidcClientNotification<any>>;
   userData$: Observable<UserDataResult>;
   isAuthenticated = false;
@@ -15,7 +15,7 @@ export class HomeComponent implements OnInit {
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.configuration = this.oidcSecurityService.getConfiguration();
+    this.configuration$ = this.oidcSecurityService.getConfiguration();
     this.userData$ = this.oidcSecurityService.userData$;
 
     this.oidcSecurityService.isAuthenticated$.subscribe(({ isAuthenticated }) => {

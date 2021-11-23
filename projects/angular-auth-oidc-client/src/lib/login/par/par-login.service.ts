@@ -3,7 +3,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { switchMap, take } from 'rxjs/operators';
 import { AuthOptions } from '../../auth-options';
 import { CheckAuthService } from '../../check-auth.service';
-import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
+import { ConfigurationService } from '../../config/config.service';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
@@ -23,14 +23,14 @@ export class ParLoginService {
     private responseTypeValidationService: ResponseTypeValidationService,
     private urlService: UrlService,
     private redirectService: RedirectService,
-    private authWellKnownService: AuthWellKnownService,
+    private authWellKnownService: ConfigurationService,
     private popupService: PopUpService,
     private checkAuthService: CheckAuthService,
     private parService: ParService
   ) {}
 
   loginPar(configuration: OpenIdConfiguration, authOptions?: AuthOptions): void {
-    const { authWellknownEndpointUrl, configId } = configuration;
+    const { authWellknownEndpointUrl } = configuration;
 
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configuration)) {
       this.loggerService.logError(configuration, 'Invalid response type!');

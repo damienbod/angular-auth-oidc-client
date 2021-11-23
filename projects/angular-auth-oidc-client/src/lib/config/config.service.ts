@@ -1,13 +1,14 @@
 ﻿import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, concatMap, map, switchMap, tap } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { DefaultSessionStorageService } from './../storage/default-sessionstorage.service';
-import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
+import { AuthWellKnownDataService } from './auth-well-known/auth-well-known-data.service';
+import { AuthWellKnownEndpoints } from './auth-well-known/auth-well-known-endpoints';
 import { DEFAULT_CONFIG } from './default-config';
 import { StsConfigLoader } from './loader/config-loader';
 import { OpenIdConfiguration } from './openid-configuration';
@@ -20,10 +21,10 @@ export class ConfigurationService {
   constructor(
     private loggerService: LoggerService,
     private publicEventsService: PublicEventsService,
-    private authWellKnownService: AuthWellKnownService,
     private storagePersistenceService: StoragePersistenceService,
     private configValidationService: ConfigValidationService,
     private platformProvider: PlatformProvider,
+    private dataService: AuthWellKnownDataService,
     private defaultSessionStorageService: DefaultSessionStorageService,
     private loader: StsConfigLoader
   ) {}
@@ -48,17 +49,17 @@ export class ConfigurationService {
   }
 
   getOpenIDConfigurations(configId?: string): Observable<{ allConfigs; currentConfig }> {
-    if (this.configsAlreadySaved()) {
-      return of({
-        allConfigs: this.getAllConfigurations(),
-        currentConfig: this.getConfig(configId),
-      });
-    }
+    // if (this.configsAlreadySaved()) {
+    //   return of({
+    //     allConfigs: this.getAllConfigurations(),
+    //     currentConfig: this.getConfig(configId),
+    //   });
+    // }
 
     return this.loadConfigs().pipe(
-      tap((allConfigs) => this.prepareAndSaveConfigs(allConfigs)),
-      map((allConfigs) => ({
-        allConfigs,
+      concatMap((allConfigs) => this.prepareAndSaveConfigs(allConfigs)),
+      map((allPreparedConfigs) => ({
+        allConfigs: allPreparedConfigs,
         currentConfig: this.getConfig(configId),
       }))
     );
@@ -68,7 +69,27 @@ export class ConfigurationService {
     return Object.keys(this.configsInternal).length > 0;
   }
 
-  private setConfig(readyConfig: OpenIdConfiguration): void {
+  getAuthWellKnownEndPoints(authWellknownEndpointUrl: string, config: OpenIdConfiguration): Observable<AuthWellKnownEndpoints> {
+    const alreadySavedWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', config);
+    if (!!alreadySavedWellKnownEndpoints) {
+      return of(alreadySavedWellKnownEndpoints);
+    }
+
+    return this.dataService.getWellKnownEndPointsFromUrl(authWellknownEndpointUrl, config).pipe(
+      tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(config, mappedWellKnownEndpoints)),
+      catchError((error) => {
+        this.publicEventsService.fireEvent(EventTypes.ConfigLoadingFailed, null);
+
+        return throwError(() => new Error(error));
+      })
+    );
+  }
+
+  storeWellKnownEndpoints(config: OpenIdConfiguration, mappedWellKnownEndpoints: AuthWellKnownEndpoints): void {
+    this.storagePersistenceService.write('authWellKnownEndPoints', mappedWellKnownEndpoints, config);
+  }
+
+  private saveConfig(readyConfig: OpenIdConfiguration): void {
     const { configId } = readyConfig;
     this.configsInternal[configId] = readyConfig;
   }
@@ -122,7 +143,7 @@ export class ConfigurationService {
     }
 
     const usedConfig = this.prepareConfig(passedConfig);
-    this.setConfig(usedConfig);
+    this.saveConfig(usedConfig);
 
     const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', usedConfig);
     if (!!alreadyExistingAuthWellKnownEndpoints) {
@@ -135,14 +156,14 @@ export class ConfigurationService {
     const passedAuthWellKnownEndpoints = usedConfig.authWellknownEndpoints;
 
     if (!!passedAuthWellKnownEndpoints) {
-      this.authWellKnownService.storeWellKnownEndpoints(usedConfig, passedAuthWellKnownEndpoints);
+      this.storeWellKnownEndpoints(usedConfig, passedAuthWellKnownEndpoints);
       usedConfig.authWellknownEndpoints = passedAuthWellKnownEndpoints;
       this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
 
       return of(usedConfig);
     }
 
-    return this.authWellKnownService.getAuthWellKnownEndPoints(usedConfig.authWellknownEndpointUrl, usedConfig).pipe(
+    return this.getAuthWellKnownEndPoints(usedConfig.authWellknownEndpointUrl, usedConfig).pipe(
       catchError((error) => {
         this.loggerService.logError(usedConfig, 'Getting auth well known endpoints failed on start', error);
 

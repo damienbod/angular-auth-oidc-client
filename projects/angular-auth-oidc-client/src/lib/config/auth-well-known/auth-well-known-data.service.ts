@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, retry } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
+import { OpenIdConfiguration } from '../openid-configuration';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 
 const WELL_KNOWN_SUFFIX = `/.well-known/openid-configuration`;
@@ -10,8 +11,8 @@ const WELL_KNOWN_SUFFIX = `/.well-known/openid-configuration`;
 export class AuthWellKnownDataService {
   constructor(private readonly http: DataService) {}
 
-  getWellKnownEndPointsFromUrl(authWellknownEndpoint: string, configId: string): Observable<AuthWellKnownEndpoints> {
-    return this.getWellKnownDocument(authWellknownEndpoint, configId).pipe(
+  getWellKnownEndPointsFromUrl(authWellknownEndpoint: string, config: OpenIdConfiguration): Observable<AuthWellKnownEndpoints> {
+    return this.getWellKnownDocument(authWellknownEndpoint, config).pipe(
       map(
         (wellKnownEndpoints) =>
           ({
@@ -30,13 +31,13 @@ export class AuthWellKnownDataService {
     );
   }
 
-  private getWellKnownDocument(wellKnownEndpoint: string, configId: string): Observable<any> {
+  private getWellKnownDocument(wellKnownEndpoint: string, config: OpenIdConfiguration): Observable<any> {
     let url = wellKnownEndpoint;
 
     if (!wellKnownEndpoint.includes(WELL_KNOWN_SUFFIX)) {
       url = `${wellKnownEndpoint}${WELL_KNOWN_SUFFIX}`;
     }
 
-    return this.http.get<any>(url, configId).pipe(retry(2));
+    return this.http.get<any>(url, config).pipe(retry(2));
   }
 }

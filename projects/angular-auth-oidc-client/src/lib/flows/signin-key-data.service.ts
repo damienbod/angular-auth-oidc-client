@@ -29,7 +29,7 @@ export class SigninKeyDataService {
     const { configId } = currentConfiguration;
     this.loggerService.logDebug(currentConfiguration, 'Getting signinkeys from ', jwksUri);
 
-    return this.dataService.get<JwtKeys>(jwksUri, configId).pipe(
+    return this.dataService.get<JwtKeys>(jwksUri, currentConfiguration).pipe(
       retry(2),
       catchError((e) => this.handleErrorGetSigningKeys(e, currentConfiguration))
     );

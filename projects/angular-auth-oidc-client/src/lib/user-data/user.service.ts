@@ -119,8 +119,6 @@ export class UserService {
   }
 
   private getIdentityUserData(currentConfiguration: OpenIdConfiguration): Observable<any> {
-    const { configId } = currentConfiguration;
-
     const token = this.storagePersistenceService.getAccessToken(currentConfiguration);
 
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', currentConfiguration);
@@ -142,7 +140,7 @@ export class UserService {
       return throwError(() => new Error('authWellKnownEndpoints.userinfo_endpoint is undefined'));
     }
 
-    return this.oidcDataService.get(userInfoEndpoint, configId, token).pipe(retry(2));
+    return this.oidcDataService.get(userInfoEndpoint, currentConfiguration, token).pipe(retry(2));
   }
 
   private validateUserDataSubIdToken(currentConfiguration: OpenIdConfiguration, idTokenSub: any, userDataSub: any): boolean {

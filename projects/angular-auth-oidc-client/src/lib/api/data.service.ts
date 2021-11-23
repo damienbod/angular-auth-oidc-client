@@ -1,19 +1,18 @@
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
-import { concatMap } from 'rxjs/operators';
-import { ConfigurationService } from '../config/config.service';
+import { Observable } from 'rxjs';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { HttpBaseService } from './http-base.service';
 
 const NGSW_CUSTOM_PARAM = 'ngsw-bypass';
 
 @Injectable()
 export class DataService {
-  constructor(private httpClient: HttpBaseService, private readonly configurationService: ConfigurationService) {}
+  constructor(private httpClient: HttpBaseService) {}
 
-  get<T>(url: string, configId: string, token?: string): Observable<T> {
+  get<T>(url: string, config: OpenIdConfiguration, token?: string): Observable<T> {
     const headers = this.prepareHeaders(token);
-    const params = this.prepareParams(configId);
+    const params = this.prepareParams(config);
 
     return this.httpClient.get<T>(url, {
       headers,
@@ -21,14 +20,11 @@ export class DataService {
     });
   }
 
-  post<T>(url: string, body: any, configId: string, headersParams?: HttpHeaders): Observable<T> {
+  post<T>(url: string, body: any, config: OpenIdConfiguration, headersParams?: HttpHeaders): Observable<T> {
     const headers = headersParams || this.prepareHeaders();
+    const params = this.prepareParams(config);
 
-    return this.prepareParams(configId).pipe(
-      concatMap((params) => {
-        return this.httpClient.post<T>(url, body, { headers, params });
-      })
-    );
+    return this.httpClient.post<T>(url, body, { headers, params });
   }
 
   private prepareHeaders(token?: string): HttpHeaders {
@@ -42,17 +38,15 @@ export class DataService {
     return headers;
   }
 
-  private prepareParams(configId: string): Observable<HttpParams> {
+  private prepareParams(config: OpenIdConfiguration): HttpParams {
     let params = new HttpParams();
 
-    return this.configurationService.getOpenIDConfiguration(configId).pipe(
-      map(({ ngswBypass }) => {
-        if (ngswBypass) {
-          params = params.set(NGSW_CUSTOM_PARAM, '');
-        }
+    const { ngswBypass } = config;
 
-        return params;
-      })
-    );
+    if (ngswBypass) {
+      params = params.set(NGSW_CUSTOM_PARAM, '');
+    }
+
+    return params;
   }
 }

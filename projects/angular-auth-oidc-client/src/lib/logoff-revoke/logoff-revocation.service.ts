@@ -126,13 +126,12 @@ export class LogoffRevocationService {
   }
 
   private sendRevokeRequest(configuration: OpenIdConfiguration, body: string): Observable<any> {
-    const { configId } = configuration;
     const url = this.urlService.getRevocationEndpointUrl(configuration);
 
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-    return this.dataService.post(url, body, configId, headers).pipe(
+    return this.dataService.post(url, body, configuration, headers).pipe(
       retry(2),
       switchMap((response: any) => {
         this.loggerService.logDebug(configuration, 'revocation endpoint post response: ', response);

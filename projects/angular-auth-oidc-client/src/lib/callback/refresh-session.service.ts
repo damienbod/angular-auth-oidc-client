@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, throwError, TimeoutError, timer } from 'rxjs';
 import { map, mergeMap, retryWhen, switchMap, take, timeout } from 'rxjs/operators';
 import { AuthStateService } from '../auth-state/auth-state.service';
-import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
@@ -13,6 +12,7 @@ import { LoginResponse } from '../login/login-response';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UserService } from '../user-data/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
+import { ConfigurationService } from './../config/config.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 
 export const MAX_RETRY_ATTEMPTS = 3;
@@ -24,7 +24,7 @@ export class RefreshSessionService {
     private loggerService: LoggerService,
     private silentRenewService: SilentRenewService,
     private authStateService: AuthStateService,
-    private authWellKnownService: AuthWellKnownService,
+    private authWellKnownService: ConfigurationService,
     private refreshSessionIframeService: RefreshSessionIframeService,
     private storagePersistenceService: StoragePersistenceService,
     private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService,

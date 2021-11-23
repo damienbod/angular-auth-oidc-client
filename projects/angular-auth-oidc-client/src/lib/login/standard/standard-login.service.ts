@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthOptions } from '../../auth-options';
-import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
+import { ConfigurationService } from '../../config/config.service';
 import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
@@ -14,7 +14,7 @@ export class StandardLoginService {
     private responseTypeValidationService: ResponseTypeValidationService,
     private urlService: UrlService,
     private redirectService: RedirectService,
-    private authWellKnownService: AuthWellKnownService
+    private authWellKnownService: ConfigurationService
   ) {}
 
   loginStandard(configuration: OpenIdConfiguration, authOptions?: AuthOptions): void {

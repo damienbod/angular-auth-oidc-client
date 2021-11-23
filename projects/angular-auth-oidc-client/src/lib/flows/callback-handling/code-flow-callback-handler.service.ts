@@ -59,7 +59,6 @@ export class CodeFlowCallbackHandlerService {
 
   // STEP 2 Code Flow //  Code Flow Silent Renew starts here
   codeFlowCodeRequest(callbackContext: CallbackContext, config: OpenIdConfiguration): Observable<CallbackContext> {
-    const { configId } = config;
     const authStateControl = this.flowsDataService.getAuthStateControl(config);
     const isStateCorrect = this.tokenValidationService.validateStateFromHashCallback(callbackContext.state, authStateControl, config);
 
@@ -78,7 +77,7 @@ export class CodeFlowCallbackHandlerService {
 
     const bodyForCodeFlow = this.urlService.createBodyForCodeFlowCodeRequest(callbackContext.code, config, config?.customParamsCodeRequest);
 
-    return this.dataService.post(tokenEndpoint, bodyForCodeFlow, configId, headers).pipe(
+    return this.dataService.post(tokenEndpoint, bodyForCodeFlow, config, headers).pipe(
       switchMap((response) => {
         let authResult: any = new Object();
         authResult = response;

@@ -24,7 +24,6 @@ export class RefreshTokenCallbackHandlerService {
     config: OpenIdConfiguration,
     customParamsRefresh?: { [key: string]: string | number | boolean }
   ): Observable<CallbackContext> {
-    const { configId } = config;
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -36,7 +35,7 @@ export class RefreshTokenCallbackHandlerService {
 
     const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken, config, customParamsRefresh);
 
-    return this.dataService.post(tokenEndpoint, data, configId, headers).pipe(
+    return this.dataService.post(tokenEndpoint, data, config, headers).pipe(
       switchMap((response: any) => {
         this.loggerService.logDebug(config, 'token refresh response: ', response);
         // TODO FGO LOOK AT THIS

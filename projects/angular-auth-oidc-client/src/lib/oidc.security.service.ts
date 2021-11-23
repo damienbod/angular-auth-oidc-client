@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { map, Observable, switchMap, tap } from 'rxjs';
+import { map, Observable, switchMap } from 'rxjs';
 import { AuthOptions } from './auth-options';
 import { AuthenticatedResult } from './auth-state/auth-result';
 import { AuthStateService } from './auth-state/auth-state.service';
@@ -253,7 +253,7 @@ export class OidcSecurityService {
    * @param authOptions The custom options for the the authentication request.
    */
   authorize(configId?: string, authOptions?: AuthOptions): void {
-    this.configurationService.getOpenIDConfiguration(configId).pipe(tap((config) => this.loginService.login(config, authOptions)));
+    this.configurationService.getOpenIDConfiguration(configId).subscribe((config) => this.loginService.login(config, authOptions));
   }
 
   /**
@@ -321,7 +321,7 @@ export class OidcSecurityService {
   logoff(configId?: string, authOptions?: AuthOptions): void {
     this.configurationService
       .getOpenIDConfigurations(configId)
-      .pipe(tap(({ allConfigs, currentConfig }) => this.logoffRevocationService.logoff(currentConfig, allConfigs, authOptions)));
+      .subscribe(({ allConfigs, currentConfig }) => this.logoffRevocationService.logoff(currentConfig, allConfigs, authOptions));
   }
 
   /**
@@ -333,7 +333,7 @@ export class OidcSecurityService {
   logoffLocal(configId?: string): void {
     this.configurationService
       .getOpenIDConfigurations(configId)
-      .pipe(tap(({ allConfigs, currentConfig }) => this.logoffRevocationService.logoffLocal(currentConfig, allConfigs)));
+      .subscribe(({ allConfigs, currentConfig }) => this.logoffRevocationService.logoffLocal(currentConfig, allConfigs));
   }
 
   /**
@@ -343,7 +343,7 @@ export class OidcSecurityService {
   logoffLocalMultiple(): void {
     this.configurationService
       .getOpenIDConfigurations()
-      .pipe(tap(({ allConfigs }) => this.logoffRevocationService.logoffLocalMultiple(allConfigs)));
+      .subscribe(({ allConfigs }) => this.logoffRevocationService.logoffLocalMultiple(allConfigs));
   }
 
   /**
