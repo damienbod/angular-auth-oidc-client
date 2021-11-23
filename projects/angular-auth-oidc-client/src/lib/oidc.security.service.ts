@@ -331,9 +331,9 @@ export class OidcSecurityService {
    * @param configId The configId to perform the action in behalf of. If not passed, the first configs will be taken
    */
   logoffLocal(configId?: string): void {
-    configId = configId ?? this.configurationService.getOpenIDConfiguration(configId).configId;
-
-    return this.logoffRevocationService.logoffLocal(configId);
+    this.configurationService
+      .getOpenIDConfigurations(configId)
+      .pipe(tap(({ allConfigs, currentConfig }) => this.logoffRevocationService.logoffLocal(currentConfig, allConfigs)));
   }
 
   /**
@@ -341,7 +341,9 @@ export class OidcSecurityService {
    * Use this method if you have _multiple_ configs enabled.
    */
   logoffLocalMultiple(): void {
-    return this.logoffRevocationService.logoffLocalMultiple();
+    this.configurationService
+      .getOpenIDConfigurations()
+      .pipe(tap(({ allConfigs }) => this.logoffRevocationService.logoffLocalMultiple(allConfigs)));
   }
 
   /**
@@ -355,9 +357,9 @@ export class OidcSecurityService {
    * @returns An observable when the action is finished
    */
   revokeAccessToken(accessToken?: any, configId?: string): Observable<any> {
-    configId = configId ?? this.configurationService.getOpenIDConfiguration(configId).configId;
-
-    return this.logoffRevocationService.revokeAccessToken(configId, accessToken);
+    return this.configurationService
+      .getOpenIDConfiguration(configId)
+      .pipe(switchMap((config) => this.logoffRevocationService.revokeAccessToken(config, accessToken)));
   }
 
   /**
@@ -371,9 +373,9 @@ export class OidcSecurityService {
    * @returns An observable when the action is finished
    */
   revokeRefreshToken(refreshToken?: any, configId?: string): Observable<any> {
-    configId = configId ?? this.configurationService.getOpenIDConfiguration(configId).configId;
-
-    return this.logoffRevocationService.revokeRefreshToken(configId, refreshToken);
+    return this.configurationService
+      .getOpenIDConfiguration(configId)
+      .pipe(switchMap((config) => this.logoffRevocationService.revokeRefreshToken(config, refreshToken)));
   }
 
   /**
@@ -384,10 +386,10 @@ export class OidcSecurityService {
    *
    * @returns A string with the end session url or null
    */
-  getEndSessionUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): string | null {
-    configId = configId ?? this.configurationService.getOpenIDConfiguration(configId).configId;
-
-    return this.logoffRevocationService.getEndSessionUrl(configId, customParams);
+  getEndSessionUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): Observable<string | null> {
+    return this.configurationService
+      .getOpenIDConfiguration(configId)
+      .pipe(map((config) => this.logoffRevocationService.getEndSessionUrl(config, customParams)));
   }
 
   /**
@@ -398,9 +400,9 @@ export class OidcSecurityService {
    *
    * @returns A string with the authorize URL or null
    */
-  getAuthorizeUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): string | null {
-    configId = configId ?? this.configurationService.getOpenIDConfiguration(configId).configId;
-
-    return this.urlService.getAuthorizeUrl(configId, customParams);
+  getAuthorizeUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): Observable<string | null> {
+    return this.configurationService
+      .getOpenIDConfiguration(configId)
+      .pipe(map((config) => this.urlService.getAuthorizeUrl(config, customParams)));
   }
 }

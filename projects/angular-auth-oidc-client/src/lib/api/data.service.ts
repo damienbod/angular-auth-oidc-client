@@ -2,7 +2,7 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
-import { ConfigurationService } from '../angular-auth-oidc-client';
+import { ConfigurationService } from '../config/config.service';
 import { HttpBaseService } from './http-base.service';
 
 const NGSW_CUSTOM_PARAM = 'ngsw-bypass';

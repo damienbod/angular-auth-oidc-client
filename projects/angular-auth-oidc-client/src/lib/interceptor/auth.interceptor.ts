@@ -1,8 +1,8 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ConfigurationService } from '../angular-auth-oidc-client';
 import { AuthStateService } from '../auth-state/auth-state.service';
+import { ConfigurationService } from '../config/config.service';
 import { LoggerService } from '../logging/logger.service';
 import { ClosestMatchingRouteService } from './closest-matching-route.service';
 
