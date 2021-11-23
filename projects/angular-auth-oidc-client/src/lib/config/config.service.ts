@@ -47,6 +47,23 @@ export class ConfigurationService {
     );
   }
 
+  getOpenIDConfigurations(configId?: string): Observable<{ allConfigs; currentConfig }> {
+    if (this.configsAlreadySaved()) {
+      return of({
+        allConfigs: this.getAllConfigurations(),
+        currentConfig: this.getConfig(configId),
+      });
+    }
+
+    return this.loadConfigs().pipe(
+      tap((allConfigs) => this.prepareAndSaveConfigs(allConfigs)),
+      map((allConfigs) => ({
+        allConfigs,
+        currentConfig: this.getConfig(configId),
+      }))
+    );
+  }
+
   hasAtLeastOneConfig(): boolean {
     return Object.keys(this.configsInternal).length > 0;
   }
