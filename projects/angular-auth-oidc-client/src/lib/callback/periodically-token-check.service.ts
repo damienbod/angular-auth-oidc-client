@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { AuthStateService } from '../auth-state/auth-state.service';
+import { ConfigurationService } from '../config/config.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
@@ -28,7 +29,8 @@ export class PeriodicallyTokenCheckService {
     private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService,
     private intervalService: IntervalService,
     private storagePersistenceService: StoragePersistenceService,
-    private publicEventsService: PublicEventsService
+    private publicEventsService: PublicEventsService,
+    private configurationService: ConfigurationService
   ) {}
 
   startTokenValidationPeriodically(allConfigs: OpenIdConfiguration[], currentConfig: OpenIdConfiguration): void {
@@ -47,23 +49,30 @@ export class PeriodicallyTokenCheckService {
     const periodicallyCheck$ = this.intervalService.startPeriodicTokenCheck(refreshTimeInSeconds).pipe(
       switchMap(() => {
         const objectWithConfigIdsAndRefreshEvent = {};
-        configsWithSilentRenewEnabled.forEach(({ configId }) => {
-          objectWithConfigIdsAndRefreshEvent[configId] = this.getRefreshEvent(currentConfig, allConfigs);
+        configsWithSilentRenewEnabled.forEach((config) => {
+          objectWithConfigIdsAndRefreshEvent[config.configId] = this.getRefreshEvent(config, allConfigs);
         });
 
         return forkJoin(objectWithConfigIdsAndRefreshEvent);
       })
     );
 
-    this.intervalService.runTokenValidationRunning = periodicallyCheck$.subscribe((objectWithConfigIds) => {
-      for (const [key, config] of Object.entries(objectWithConfigIds)) {
-        this.loggerService.logDebug(currentConfig, 'silent renew, periodic check finished!');
+    this.intervalService.runTokenValidationRunning = periodicallyCheck$
+      .pipe(
+        map((objectWithConfigIds) =>
+          Object.keys(objectWithConfigIds).map((configId) => this.configurationService.getOpenIDConfiguration(configId))
+        ),
+        switchMap((configIds) => forkJoin([...configIds]))
+      )
+      .subscribe((configs) => {
+        for (const config of configs) {
+          this.loggerService.logDebug(currentConfig, 'silent renew, periodic check finished!');
 
-        if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(currentConfig)) {
-          this.flowsDataService.resetSilentRenewRunning(config);
+          if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(currentConfig)) {
+            this.flowsDataService.resetSilentRenewRunning(config);
+          }
         }
-      }
-    });
+      });
   }
 
   private getRefreshEvent(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): Observable<any> {
