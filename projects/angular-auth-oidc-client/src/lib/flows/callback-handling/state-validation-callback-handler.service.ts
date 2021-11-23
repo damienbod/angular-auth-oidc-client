@@ -21,7 +21,11 @@ export class StateValidationCallbackHandlerService {
 
   // STEP 4 All flows
 
-  callbackStateValidation(callbackContext: CallbackContext, config: OpenIdConfiguration): Observable<CallbackContext> {
+  callbackStateValidation(
+    callbackContext: CallbackContext,
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): Observable<CallbackContext> {
     const validationResult = this.stateValidationService.getValidatedStateResult(callbackContext, config);
     const { configId } = config;
     callbackContext.validationResult = validationResult;
@@ -33,7 +37,7 @@ export class StateValidationCallbackHandlerService {
     } else {
       const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${this.doc.location.hash}`;
       this.loggerService.logWarning(config, errorMessage);
-      this.resetAuthDataService.resetAuthorizationData(configId);
+      this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
       this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
 
       return throwError(() => new Error(errorMessage));

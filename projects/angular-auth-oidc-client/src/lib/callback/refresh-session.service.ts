@@ -33,28 +33,30 @@ export class RefreshSessionService {
 
   userForceRefreshSession(
     config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[],
     extraCustomParams?: { [key: string]: string | number | boolean }
   ): Observable<LoginResponse> {
     this.persistCustomParams(extraCustomParams, config);
 
-    return this.forceRefreshSession(config, extraCustomParams);
+    return this.forceRefreshSession(config, allConfigs, extraCustomParams);
   }
 
   forceRefreshSession(
     config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[],
     extraCustomParams?: { [key: string]: string | number | boolean }
   ): Observable<LoginResponse> {
     const { customParamsRefreshTokenRequest, configId } = config;
     const mergedParams = { ...customParamsRefreshTokenRequest, ...extraCustomParams };
 
     if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config)) {
-      return this.startRefreshSession(config, mergedParams).pipe(
+      return this.startRefreshSession(config, allConfigs, mergedParams).pipe(
         map(() => {
           const isAuthenticated = this.authStateService.areAuthStorageTokensValid(config);
           if (isAuthenticated) {
             return {
-              idToken: this.authStateService.getIdToken(configId),
-              accessToken: this.authStateService.getAccessToken(configId),
+              idToken: this.authStateService.getIdToken(config),
+              accessToken: this.authStateService.getAccessToken(config),
               userData: this.userService.getUserDataFromStore(config),
               isAuthenticated,
               configId,
@@ -70,7 +72,7 @@ export class RefreshSessionService {
     const timeOutTime = silentRenewTimeoutInSeconds * 1000;
 
     return forkJoin([
-      this.startRefreshSession(config, extraCustomParams),
+      this.startRefreshSession(config, allConfigs, extraCustomParams),
       this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1)),
     ]).pipe(
       timeout(timeOutTime),
@@ -93,19 +95,20 @@ export class RefreshSessionService {
   }
 
   private persistCustomParams(extraCustomParams: { [key: string]: string | number | boolean }, config: OpenIdConfiguration): void {
-    const { useRefreshToken, configId } = config;
+    const { useRefreshToken } = config;
 
     if (extraCustomParams) {
       if (useRefreshToken) {
-        this.storagePersistenceService.write('storageCustomParamsRefresh', extraCustomParams, configId);
+        this.storagePersistenceService.write('storageCustomParamsRefresh', extraCustomParams, config);
       } else {
-        this.storagePersistenceService.write('storageCustomParamsAuthRequest', extraCustomParams, configId);
+        this.storagePersistenceService.write('storageCustomParamsAuthRequest', extraCustomParams, config);
       }
     }
   }
 
   private startRefreshSession(
     config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[],
     extraCustomParams?: { [key: string]: string | number | boolean }
   ): Observable<boolean | CallbackContext | null> {
     const { configId, authWellknownEndpointUrl } = config;
@@ -124,23 +127,21 @@ export class RefreshSessionService {
       return of(null);
     }
 
-    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).pipe(
+    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, config).pipe(
       switchMap(() => {
-        this.flowsDataService.setSilentRenewRunning(configId);
+        this.flowsDataService.setSilentRenewRunning(config);
 
         if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config)) {
           // Refresh Session using Refresh tokens
-          return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(configId, extraCustomParams);
+          return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(config, allConfigs, extraCustomParams);
         }
 
-        return this.refreshSessionIframeService.refreshSessionWithIframe(configId, extraCustomParams);
+        return this.refreshSessionIframeService.refreshSessionWithIframe(config, allConfigs, extraCustomParams);
       })
     );
   }
 
   private timeoutRetryStrategy(errorAttempts: Observable<any>, config: OpenIdConfiguration): Observable<number> {
-    const { configId } = config;
-
     return errorAttempts.pipe(
       mergeMap((error, index) => {
         const scalingDuration = 1000;
@@ -152,7 +153,7 @@ export class RefreshSessionService {
 
         this.loggerService.logDebug(config, `forceRefreshSession timeout. Attempt #${currentAttempt}`);
 
-        this.flowsDataService.resetSilentRenewRunning(configId);
+        this.flowsDataService.resetSilentRenewRunning(config);
 
         return timer(currentAttempt * scalingDuration);
       })

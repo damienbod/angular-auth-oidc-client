@@ -17,11 +17,10 @@ export class RefreshSessionCallbackHandlerService {
 
   // STEP 1 Refresh session
   refreshSessionWithRefreshTokens(config: OpenIdConfiguration): Observable<CallbackContext> {
-    const { configId } = config;
-    const stateData = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
+    const stateData = this.flowsDataService.getExistingOrCreateAuthStateControl(config);
     this.loggerService.logDebug(config, 'RefreshSession created. Adding myautostate: ' + stateData);
-    const refreshToken = this.authStateService.getRefreshToken(configId);
-    const idToken = this.authStateService.getIdToken(configId);
+    const refreshToken = this.authStateService.getRefreshToken(config);
+    const idToken = this.authStateService.getIdToken(config);
 
     if (refreshToken) {
       const callbackContext = {
@@ -38,7 +37,7 @@ export class RefreshSessionCallbackHandlerService {
 
       this.loggerService.logDebug(config, 'found refresh code, obtaining new credentials with refresh code');
       // Nonce is not used with refresh tokens; but Key cloak may send it anyway
-      this.flowsDataService.setNonce(TokenValidationService.refreshTokenNoncePlaceholder, configId);
+      this.flowsDataService.setNonce(TokenValidationService.refreshTokenNoncePlaceholder, config);
 
       return of(callbackContext);
     } else {

@@ -18,13 +18,12 @@ export class ImplicitFlowCallbackHandlerService {
 
   // STEP 1 Code Flow
   // STEP 1 Implicit Flow
-  implicitFlowCallback(config: OpenIdConfiguration, hash?: string): Observable<CallbackContext> {
+  implicitFlowCallback(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[], hash?: string): Observable<CallbackContext> {
     const isRenewProcessData = this.flowsDataService.isSilentRenewRunning(config);
-    const { configId } = config;
 
     this.loggerService.logDebug(config, 'BEGIN callback, no auth data');
     if (!isRenewProcessData) {
-      this.resetAuthDataService.resetAuthorizationData(configId);
+      this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
     }
 
     hash = hash || this.doc.location.hash.substr(1);

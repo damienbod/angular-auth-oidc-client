@@ -69,16 +69,15 @@ export class CheckAuthService {
     return this.checkAuthWithConfig(configuration, allConfigs).pipe(
       switchMap((loginResponse) => {
         const { isAuthenticated } = loginResponse;
-        const { configId } = configuration;
 
         if (isAuthenticated) {
           return of(loginResponse);
         }
 
-        return this.refreshSessionService.forceRefreshSession(configuration).pipe(
+        return this.refreshSessionService.forceRefreshSession(configuration, allConfigs).pipe(
           tap((loginResponseAfterRefreshSession) => {
             if (loginResponseAfterRefreshSession?.isAuthenticated) {
-              this.startCheckSessionAndValidation(configId);
+              this.startCheckSessionAndValidation(configuration, allConfigs);
             }
           })
         );
@@ -116,7 +115,7 @@ export class CheckAuthService {
       map(() => {
         const isAuthenticated = this.authStateService.areAuthStorageTokensValid(config);
         if (isAuthenticated) {
-          this.startCheckSessionAndValidation(configId);
+          this.startCheckSessionAndValidation(config, allConfigs);
 
           if (!isCallback) {
             this.authStateService.setAuthenticatedAndFireEvent(allConfigs);
@@ -153,15 +152,16 @@ export class CheckAuthService {
     }
 
     this.periodicallyTokenCheckService.startTokenValidationPeriodically(allConfigs, config);
+    const { configId } = config;
 
-    if (this.silentRenewService.isSilentRenewConfigured(configId)) {
-      this.silentRenewService.getOrCreateIframe(configId);
+    if (this.silentRenewService.isSilentRenewConfigured(config)) {
+      this.silentRenewService.getOrCreateIframe(config);
     }
   }
 
   private getConfigurationWithUrlState(configurations: OpenIdConfiguration[], stateFromUrl: string): OpenIdConfiguration {
     for (const config of configurations) {
-      const storedState = this.storagePersistenceService.read('authStateControl', config.configId);
+      const storedState = this.storagePersistenceService.read('authStateControl', config);
 
       if (storedState === stateFromUrl) {
         return config;
@@ -178,12 +178,12 @@ export class CheckAuthService {
   ): Observable<LoginResponse[]> {
     const allOtherConfigs = configurations.filter((x) => x.configId !== activeConfig.configId);
 
-    const currentConfigResult = this.checkAuthWithConfig(activeConfig, url);
+    const currentConfigResult = this.checkAuthWithConfig(activeConfig, configurations, url);
 
     const allOtherConfigResults = allOtherConfigs.map((config) => {
       const { redirectUrl } = config;
 
-      return this.checkAuthWithConfig(config, redirectUrl);
+      return this.checkAuthWithConfig(config, configurations, redirectUrl);
     });
 
     return forkJoin([currentConfigResult, ...allOtherConfigResults]);

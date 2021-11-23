@@ -38,7 +38,7 @@ export class UserCallbackHandlerService {
       }
 
       if (!isRenewProcess && !refreshToken) {
-        this.flowsDataService.setSessionState(authResult.session_state, configId);
+        this.flowsDataService.setSessionState(authResult.session_state, configuration);
       }
 
       this.publishAuthState(validationResult, isRenewProcess);
@@ -52,14 +52,14 @@ export class UserCallbackHandlerService {
         switchMap((userData) => {
           if (!!userData) {
             if (!refreshToken) {
-              this.flowsDataService.setSessionState(authResult.session_state, configId);
+              this.flowsDataService.setSessionState(authResult.session_state, configuration);
             }
 
             this.publishAuthState(validationResult, isRenewProcess);
 
             return of(callbackContext);
           } else {
-            this.resetAuthDataService.resetAuthorizationData(configId);
+            this.resetAuthDataService.resetAuthorizationData(configuration, allConfigs);
             this.publishUnauthenticatedState(validationResult, isRenewProcess);
             const errorMessage = `Called for userData but they were ${userData}`;
             this.loggerService.logWarning(configuration, errorMessage);

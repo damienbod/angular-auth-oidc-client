@@ -95,7 +95,7 @@ export class ConfigurationService {
 
   private handleConfig(passedConfig: OpenIdConfiguration): Observable<OpenIdConfiguration> {
     if (!this.configValidationService.validateConfig(passedConfig)) {
-      this.loggerService.logError(passedConfig.configId, 'Validation of config rejected with errors. Config is NOT set.');
+      this.loggerService.logError(passedConfig, 'Validation of config rejected with errors. Config is NOT set.');
 
       return of(null);
     }
@@ -107,7 +107,7 @@ export class ConfigurationService {
     const usedConfig = this.prepareConfig(passedConfig);
     this.setConfig(usedConfig);
 
-    const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', usedConfig.configId);
+    const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', usedConfig);
     if (!!alreadyExistingAuthWellKnownEndpoints) {
       usedConfig.authWellknownEndpoints = alreadyExistingAuthWellKnownEndpoints;
       this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
@@ -118,16 +118,16 @@ export class ConfigurationService {
     const passedAuthWellKnownEndpoints = usedConfig.authWellknownEndpoints;
 
     if (!!passedAuthWellKnownEndpoints) {
-      this.authWellKnownService.storeWellKnownEndpoints(usedConfig.configId, passedAuthWellKnownEndpoints);
+      this.authWellKnownService.storeWellKnownEndpoints(usedConfig, passedAuthWellKnownEndpoints);
       usedConfig.authWellknownEndpoints = passedAuthWellKnownEndpoints;
       this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
 
       return of(usedConfig);
     }
 
-    return this.authWellKnownService.getAuthWellKnownEndPoints(usedConfig.authWellknownEndpointUrl, usedConfig.configId).pipe(
+    return this.authWellKnownService.getAuthWellKnownEndPoints(usedConfig.authWellknownEndpointUrl, usedConfig).pipe(
       catchError((error) => {
-        this.loggerService.logError(usedConfig.configId, 'Getting auth well known endpoints failed on start', error);
+        this.loggerService.logError(usedConfig, 'Getting auth well known endpoints failed on start', error);
 
         return throwError(() => new Error(error));
       }),

@@ -42,7 +42,9 @@ export class AutoLoginAllRoutesGuard implements CanActivate, CanActivateChild, C
   private checkAuth(url: string): Observable<boolean> {
     return this.configurationService.getOpenIDConfiguration().pipe(
       switchMap((config) => {
-        return this.checkAuthService.checkAuth(config).pipe(
+        const allconfigs = this.configurationService.getAllConfigurations();
+
+        return this.checkAuthService.checkAuth(config, allconfigs).pipe(
           take(1),
           map(({ isAuthenticated }) => {
             if (isAuthenticated) {

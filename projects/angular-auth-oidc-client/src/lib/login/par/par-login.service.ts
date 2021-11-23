@@ -49,8 +49,8 @@ export class ParLoginService {
     const { urlHandler, customParams } = authOptions || {};
 
     this.authWellKnownService
-      .getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId)
-      .pipe(switchMap(() => this.parService.postParRequest(configId, customParams)))
+      .getAuthWellKnownEndPoints(authWellknownEndpointUrl, configuration)
+      .pipe(switchMap(() => this.parService.postParRequest(configuration, customParams)))
       .subscribe((response) => {
         this.loggerService.logDebug(configuration, 'par response: ', response);
 
@@ -98,8 +98,8 @@ export class ParLoginService {
 
     const { customParams } = authOptions || {};
 
-    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).pipe(
-      switchMap(() => this.parService.postParRequest(configId, customParams)),
+    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configuration).pipe(
+      switchMap(() => this.parService.postParRequest(configuration, customParams)),
       switchMap((response: ParResponse) => {
         this.loggerService.logDebug(configuration, 'par response: ', response);
 

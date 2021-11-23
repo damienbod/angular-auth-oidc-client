@@ -22,7 +22,7 @@ export class ConfigValidationService {
 
     let overallErrorCount = 0;
     passedConfigs.forEach((passedConfig) => {
-      const errorCount = this.processValidationResultsAndGetErrorCount(allValidationResults, passedConfig?.configId);
+      const errorCount = this.processValidationResultsAndGetErrorCount(allValidationResults, passedConfig);
       overallErrorCount += errorCount;
     });
 
@@ -32,18 +32,18 @@ export class ConfigValidationService {
   private validateConfigInternal(passedConfig: OpenIdConfiguration, allRulesToUse: any[]): boolean {
     const allValidationResults = allRulesToUse.map((rule) => rule(passedConfig));
 
-    const errorCount = this.processValidationResultsAndGetErrorCount(allValidationResults, passedConfig.configId);
+    const errorCount = this.processValidationResultsAndGetErrorCount(allValidationResults, passedConfig);
 
     return errorCount === 0;
   }
 
-  private processValidationResultsAndGetErrorCount(allValidationResults: RuleValidationResult[], configId: string): number {
+  private processValidationResultsAndGetErrorCount(allValidationResults: RuleValidationResult[], config: OpenIdConfiguration): number {
     const allMessages = allValidationResults.filter((x) => x.messages.length > 0);
 
     const allErrorMessages = this.getAllMessagesOfType('error', allMessages);
     const allWarnings = this.getAllMessagesOfType('warning', allMessages);
-    allErrorMessages.forEach((message) => this.loggerService.logError(configId, message));
-    allWarnings.forEach((message) => this.loggerService.logWarning(configId, message));
+    allErrorMessages.forEach((message) => this.loggerService.logError(config, message));
+    allWarnings.forEach((message) => this.loggerService.logWarning(config, message));
 
     return allErrorMessages.length;
   }

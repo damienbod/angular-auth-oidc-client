@@ -23,7 +23,7 @@ export class CodeFlowCallbackService {
     allConfigs: OpenIdConfiguration[]
   ): Observable<CallbackContext> {
     const isRenewProcess = this.flowsDataService.isSilentRenewRunning(config);
-    const { triggerAuthorizationResultEvent, postLoginRoute, unauthorizedRoute, configId } = config;
+    const { triggerAuthorizationResultEvent, postLoginRoute, unauthorizedRoute } = config;
 
     return this.flowsService.processCodeFlowCallback(urlToCheck, config, allConfigs).pipe(
       tap((callbackContext) => {
@@ -32,7 +32,7 @@ export class CodeFlowCallbackService {
         }
       }),
       catchError((error) => {
-        this.flowsDataService.resetSilentRenewRunning(configId);
+        this.flowsDataService.resetSilentRenewRunning(config);
         this.intervalService.stopPeriodicTokenCheck();
         if (!triggerAuthorizationResultEvent && !isRenewProcess) {
           this.router.navigateByUrl(unauthorizedRoute);

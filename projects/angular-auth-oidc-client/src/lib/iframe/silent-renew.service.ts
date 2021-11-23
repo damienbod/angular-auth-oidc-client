@@ -37,11 +37,11 @@ export class SilentRenewService {
     private intervalService: IntervalService
   ) {}
 
-  getOrCreateIframe(configId: string): HTMLIFrameElement {
+  getOrCreateIframe(config: OpenIdConfiguration): HTMLIFrameElement {
     const existingIframe = this.getExistingIframe();
 
     if (!existingIframe) {
-      return this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_SILENT_RENEW_IDENTIFIER, configId);
+      return this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_SILENT_RENEW_IDENTIFIER, config);
     }
 
     return existingIframe;
@@ -72,7 +72,7 @@ export class SilentRenewService {
         validationResult: ValidationResult.LoginRequired,
         isRenewProcess: true,
       });
-      this.resetAuthDataService.resetAuthorizationData(configId);
+      this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
       this.flowsDataService.setNonce('', config);
       this.intervalService.stopPeriodicTokenCheck();
 
@@ -98,7 +98,7 @@ export class SilentRenewService {
     return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext, config, allConfigs).pipe(
       catchError((errorFromFlow) => {
         this.intervalService.stopPeriodicTokenCheck();
-        this.resetAuthDataService.resetAuthorizationData(configId);
+        this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
 
         return throwError(() => new Error(error));
       })

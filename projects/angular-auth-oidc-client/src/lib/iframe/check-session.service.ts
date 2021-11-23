@@ -73,8 +73,7 @@ export class CheckSessionService {
       return of(undefined);
     }
 
-    const { configId } = configuration;
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
 
     if (!authWellKnownEndPoints) {
       this.loggerService.logWarning(configuration, 'CheckSession - init check session: authWellKnownEndpoints is undefined. Returning.');
@@ -82,7 +81,7 @@ export class CheckSessionService {
       return of();
     }
 
-    const existingIframe = this.getOrCreateIframe(configId);
+    const existingIframe = this.getOrCreateIframe(configuration);
     const checkSessionIframe = authWellKnownEndPoints.checkSessionIframe;
 
     if (checkSessionIframe) {
@@ -102,7 +101,6 @@ export class CheckSessionService {
 
   private pollServerSession(clientId: string, configuration: OpenIdConfiguration): void {
     this.outstandingMessages = 0;
-    const { configId } = configuration;
 
     const pollServerSessionRecur = (): void => {
       this.init(configuration)
@@ -111,8 +109,8 @@ export class CheckSessionService {
           const existingIframe = this.getExistingIframe();
           if (existingIframe && clientId) {
             this.loggerService.logDebug(configuration, `CheckSession - clientId : '${clientId}' - existingIframe: '${existingIframe}'`);
-            const sessionState = this.storagePersistenceService.read('session_state', configId);
-            const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+            const sessionState = this.storagePersistenceService.read('session_state', configuration);
+            const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
 
             if (sessionState && authWellKnownEndPoints?.checkSessionIframe) {
               const iframeOrigin = new URL(authWellKnownEndPoints.checkSessionIframe)?.origin;
@@ -162,8 +160,7 @@ export class CheckSessionService {
 
   private messageHandler(configuration: OpenIdConfiguration, e: any): void {
     const existingIFrame = this.getExistingIframe();
-    const { configId } = configuration;
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
     const startsWith = !!authWellKnownEndPoints?.checkSessionIframe?.startsWith(e.origin);
 
     this.outstandingMessages = 0;
@@ -188,11 +185,12 @@ export class CheckSessionService {
     window.addEventListener('message', iframeMessageEvent, false);
   }
 
-  private getOrCreateIframe(configId: string): HTMLIFrameElement {
+  private getOrCreateIframe(configuration: OpenIdConfiguration): HTMLIFrameElement {
     const existingIframe = this.getExistingIframe();
 
     if (!existingIframe) {
-      const frame = this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_CHECK_SESSION_IDENTIFIER, configId);
+      const frame = this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_CHECK_SESSION_IDENTIFIER, configuration);
+      const { configId } = configuration;
       this.bindMessageEventToIframe(configId);
 
       return frame;

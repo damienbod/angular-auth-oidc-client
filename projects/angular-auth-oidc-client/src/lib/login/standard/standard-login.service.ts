@@ -18,29 +18,29 @@ export class StandardLoginService {
   ) {}
 
   loginStandard(configuration: OpenIdConfiguration, authOptions?: AuthOptions): void {
-    const { configId, authWellknownEndpointUrl } = configuration;
+    const { authWellknownEndpointUrl } = configuration;
 
-    if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
-      this.loggerService.logError(configId, 'Invalid response type!');
+    if (!this.responseTypeValidationService.hasConfigValidResponseType(configuration)) {
+      this.loggerService.logError(configuration, 'Invalid response type!');
 
       return;
     }
 
     if (!authWellknownEndpointUrl) {
-      this.loggerService.logError(configId, 'no authWellknownEndpoint given!');
+      this.loggerService.logError(configuration, 'no authWellknownEndpoint given!');
 
       return;
     }
 
-    this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow, no auth data');
+    this.loggerService.logDebug(configuration, 'BEGIN Authorize OIDC Flow, no auth data');
 
-    this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).subscribe(() => {
+    this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configuration).subscribe(() => {
       const { urlHandler, customParams } = authOptions || {};
 
-      const url = this.urlService.getAuthorizeUrl(configId, customParams);
+      const url = this.urlService.getAuthorizeUrl(configuration, customParams);
 
       if (!url) {
-        this.loggerService.logError(configId, 'Could not create URL', url);
+        this.loggerService.logError(configuration, 'Could not create URL', url);
 
         return;
       }
