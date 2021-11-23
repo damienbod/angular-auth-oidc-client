@@ -3,7 +3,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { switchMap, take } from 'rxjs/operators';
 import { AuthOptions } from '../../auth-options';
 import { CheckAuthService } from '../../check-auth.service';
-import { ConfigurationService } from '../../config/config.service';
+import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
@@ -23,7 +23,7 @@ export class ParLoginService {
     private responseTypeValidationService: ResponseTypeValidationService,
     private urlService: UrlService,
     private redirectService: RedirectService,
-    private authWellKnownService: ConfigurationService,
+    private authWellKnownService: AuthWellKnownService,
     private popupService: PopUpService,
     private checkAuthService: CheckAuthService,
     private parService: ParService
@@ -49,7 +49,7 @@ export class ParLoginService {
     const { urlHandler, customParams } = authOptions || {};
 
     this.authWellKnownService
-      .getAuthWellKnownEndPoints(authWellknownEndpointUrl, configuration)
+      .queryAndStoreAuthWellKnownEndPoints(authWellknownEndpointUrl, configuration)
       .pipe(switchMap(() => this.parService.postParRequest(configuration, customParams)))
       .subscribe((response) => {
         this.loggerService.logDebug(configuration, 'par response: ', response);
@@ -98,7 +98,7 @@ export class ParLoginService {
 
     const { customParams } = authOptions || {};
 
-    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configuration).pipe(
+    return this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(authWellknownEndpointUrl, configuration).pipe(
       switchMap(() => this.parService.postParRequest(configuration, customParams)),
       switchMap((response: ParResponse) => {
         this.loggerService.logDebug(configuration, 'par response: ', response);

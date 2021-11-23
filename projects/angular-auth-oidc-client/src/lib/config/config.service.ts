@@ -1,14 +1,13 @@
 ﻿import { Injectable } from '@angular/core';
-import { forkJoin, Observable, of, throwError } from 'rxjs';
-import { catchError, concatMap, map, switchMap, tap } from 'rxjs/operators';
+import { forkJoin, Observable, of } from 'rxjs';
+import { concatMap, map, tap } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { DefaultSessionStorageService } from './../storage/default-sessionstorage.service';
-import { AuthWellKnownDataService } from './auth-well-known/auth-well-known-data.service';
-import { AuthWellKnownEndpoints } from './auth-well-known/auth-well-known-endpoints';
+import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
 import { DEFAULT_CONFIG } from './default-config';
 import { StsConfigLoader } from './loader/config-loader';
 import { OpenIdConfiguration } from './openid-configuration';
@@ -24,8 +23,8 @@ export class ConfigurationService {
     private storagePersistenceService: StoragePersistenceService,
     private configValidationService: ConfigValidationService,
     private platformProvider: PlatformProvider,
-    private dataService: AuthWellKnownDataService,
     private defaultSessionStorageService: DefaultSessionStorageService,
+    private authWellKnownService: AuthWellKnownService,
     private loader: StsConfigLoader
   ) {}
 
@@ -67,26 +66,6 @@ export class ConfigurationService {
 
   hasAtLeastOneConfig(): boolean {
     return Object.keys(this.configsInternal).length > 0;
-  }
-
-  getAuthWellKnownEndPoints(authWellknownEndpointUrl: string, config: OpenIdConfiguration): Observable<AuthWellKnownEndpoints> {
-    const alreadySavedWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', config);
-    if (!!alreadySavedWellKnownEndpoints) {
-      return of(alreadySavedWellKnownEndpoints);
-    }
-
-    return this.dataService.getWellKnownEndPointsFromUrl(authWellknownEndpointUrl, config).pipe(
-      tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(config, mappedWellKnownEndpoints)),
-      catchError((error) => {
-        this.publicEventsService.fireEvent(EventTypes.ConfigLoadingFailed, null);
-
-        return throwError(() => new Error(error));
-      })
-    );
-  }
-
-  storeWellKnownEndpoints(config: OpenIdConfiguration, mappedWellKnownEndpoints: AuthWellKnownEndpoints): void {
-    this.storagePersistenceService.write('authWellKnownEndPoints', mappedWellKnownEndpoints, config);
   }
 
   private saveConfig(readyConfig: OpenIdConfiguration): void {
@@ -156,25 +135,12 @@ export class ConfigurationService {
     const passedAuthWellKnownEndpoints = usedConfig.authWellknownEndpoints;
 
     if (!!passedAuthWellKnownEndpoints) {
-      this.storeWellKnownEndpoints(usedConfig, passedAuthWellKnownEndpoints);
+      this.authWellKnownService.storeWellKnownEndpoints(usedConfig, passedAuthWellKnownEndpoints);
       usedConfig.authWellknownEndpoints = passedAuthWellKnownEndpoints;
       this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
-
-      return of(usedConfig);
     }
 
-    return this.getAuthWellKnownEndPoints(usedConfig.authWellknownEndpointUrl, usedConfig).pipe(
-      catchError((error) => {
-        this.loggerService.logError(usedConfig, 'Getting auth well known endpoints failed on start', error);
-
-        return throwError(() => new Error(error));
-      }),
-      tap((wellknownEndPoints) => {
-        usedConfig.authWellknownEndpoints = wellknownEndPoints;
-        this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
-      }),
-      switchMap(() => of(usedConfig))
-    );
+    return of(usedConfig);
   }
 
   private prepareConfig(configuration: OpenIdConfiguration): OpenIdConfiguration {

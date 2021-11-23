@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthOptions } from '../../auth-options';
-import { ConfigurationService } from '../../config/config.service';
+import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
 import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
@@ -14,7 +14,7 @@ export class StandardLoginService {
     private responseTypeValidationService: ResponseTypeValidationService,
     private urlService: UrlService,
     private redirectService: RedirectService,
-    private authWellKnownService: ConfigurationService
+    private authWellKnownService: AuthWellKnownService
   ) {}
 
   loginStandard(configuration: OpenIdConfiguration, authOptions?: AuthOptions): void {
@@ -34,7 +34,7 @@ export class StandardLoginService {
 
     this.loggerService.logDebug(configuration, 'BEGIN Authorize OIDC Flow, no auth data');
 
-    this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configuration).subscribe(() => {
+    this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(authWellknownEndpointUrl, configuration).subscribe(() => {
       const { urlHandler, customParams } = authOptions || {};
 
       const url = this.urlService.getAuthorizeUrl(configuration, customParams);
