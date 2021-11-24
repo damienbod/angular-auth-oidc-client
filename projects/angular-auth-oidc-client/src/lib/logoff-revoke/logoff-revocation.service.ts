@@ -27,7 +27,6 @@ export class LogoffRevocationService {
   // Logs out on the server and the local client.
   // If the server state has changed, check session, then only a local logout.
   logoff(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[], authOptions?: AuthOptions): void {
-    const { configId } = config;
     const { urlHandler, customParams } = authOptions || {};
 
     this.loggerService.logDebug(config, 'logoff, remove auth ');

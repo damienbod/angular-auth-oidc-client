@@ -36,7 +36,6 @@ export class UserService {
     idToken?: any,
     decodedIdToken?: any
   ): Observable<any> {
-    const { configId } = currentConfiguration;
     idToken = idToken || this.storagePersistenceService.getIdToken(currentConfiguration);
     decodedIdToken = decodedIdToken || this.tokenHelperService.getPayloadFromToken(idToken, false, currentConfiguration);
 

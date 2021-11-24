@@ -50,7 +50,6 @@ export class UrlService {
   }
 
   getAuthorizeParUrl(requestUri: string, configuration: OpenIdConfiguration): string {
-    const { configId } = configuration;
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
 
     if (!authWellKnownEndPoints) {
@@ -109,7 +108,6 @@ export class UrlService {
       return this.composeAuth0Endpoint(configuration);
     }
 
-    const { configId } = configuration;
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
     const endSessionEndpoint = authWellKnownEndPoints?.endSessionEndpoint;
 

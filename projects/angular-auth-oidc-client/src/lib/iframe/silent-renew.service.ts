@@ -64,8 +64,6 @@ export class SilentRenewService {
 
     const error = params.get('error');
 
-    const { configId } = config;
-
     if (error) {
       this.authStateService.updateAndPublishAuthState({
         isAuthenticated: false,

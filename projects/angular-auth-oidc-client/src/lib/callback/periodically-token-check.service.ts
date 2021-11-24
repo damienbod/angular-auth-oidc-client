@@ -111,8 +111,6 @@ export class PeriodicallyTokenCheckService {
   }
 
   private createRefreshEventForConfig(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): Observable<any> {
-    const { configId } = config;
-
     this.loggerService.logDebug(config, 'starting silent renew...');
 
     if (!config?.silentRenew) {

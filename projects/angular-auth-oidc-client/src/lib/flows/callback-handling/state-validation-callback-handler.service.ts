@@ -27,11 +27,10 @@ export class StateValidationCallbackHandlerService {
     allConfigs: OpenIdConfiguration[]
   ): Observable<CallbackContext> {
     const validationResult = this.stateValidationService.getValidatedStateResult(callbackContext, config);
-    const { configId } = config;
     callbackContext.validationResult = validationResult;
 
     if (validationResult.authResponseIsValid) {
-      this.authStateService.setAuthorizationData(validationResult.accessToken, callbackContext.authResult, config);
+      this.authStateService.setAuthorizationData(validationResult.accessToken, callbackContext.authResult, config, allConfigs);
 
       return of(callbackContext);
     } else {

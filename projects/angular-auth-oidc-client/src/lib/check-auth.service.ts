@@ -152,7 +152,6 @@ export class CheckAuthService {
     }
 
     this.periodicallyTokenCheckService.startTokenValidationPeriodically(allConfigs, config);
-    const { configId } = config;
 
     if (this.silentRenewService.isSilentRenewConfigured(config)) {
       this.silentRenewService.getOrCreateIframe(config);

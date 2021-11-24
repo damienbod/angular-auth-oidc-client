@@ -35,7 +35,6 @@ export class StateValidationService {
 
   validateState(callbackContext: any, configuration: OpenIdConfiguration): StateValidationResult {
     const toReturn = new StateValidationResult();
-    const { configId } = configuration;
     const authStateControl = this.storagePersistenceService.read('authStateControl', configuration);
 
     if (!this.tokenValidationService.validateStateFromHashCallback(callbackContext.authResult.state, authStateControl, configuration)) {
