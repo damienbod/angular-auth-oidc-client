@@ -39,18 +39,9 @@ export class PopUpLoginService {
       return throwError(() => new Error(errorMessage));
     }
 
-    const { authWellknownEndpointUrl } = configuration;
-
-    if (!authWellknownEndpointUrl) {
-      const errorMessage = 'no authWellknownEndpoint given!';
-      this.loggerService.logError(configuration, errorMessage);
-
-      return throwError(() => new Error(errorMessage));
-    }
-
     this.loggerService.logDebug(configuration, 'BEGIN Authorize OIDC Flow with popup, no auth data');
 
-    return this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(authWellknownEndpointUrl, configuration).pipe(
+    return this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(configuration).pipe(
       switchMap(() => {
         const { customParams } = authOptions || {};
 

@@ -30,16 +30,8 @@ export class ParLoginService {
   ) {}
 
   loginPar(configuration: OpenIdConfiguration, authOptions?: AuthOptions): void {
-    const { authWellknownEndpointUrl } = configuration;
-
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configuration)) {
       this.loggerService.logError(configuration, 'Invalid response type!');
-
-      return;
-    }
-
-    if (!authWellknownEndpointUrl) {
-      this.loggerService.logError(configuration, 'no authWellknownEndpoint given!');
 
       return;
     }
@@ -49,7 +41,7 @@ export class ParLoginService {
     const { urlHandler, customParams } = authOptions || {};
 
     this.authWellKnownService
-      .queryAndStoreAuthWellKnownEndPoints(authWellknownEndpointUrl, configuration)
+      .queryAndStoreAuthWellKnownEndPoints(configuration)
       .pipe(switchMap(() => this.parService.postParRequest(configuration, customParams)))
       .subscribe((response) => {
         this.loggerService.logDebug(configuration, 'par response: ', response);
@@ -87,18 +79,11 @@ export class ParLoginService {
       return throwError(() => new Error(errorMessage));
     }
 
-    if (!authWellknownEndpointUrl) {
-      const errorMessage = 'no authWellknownEndpoint given!';
-      this.loggerService.logError(configuration, errorMessage);
-
-      return throwError(() => new Error(errorMessage));
-    }
-
     this.loggerService.logDebug(configuration, 'BEGIN Authorize OIDC Flow with popup, no auth data');
 
     const { customParams } = authOptions || {};
 
-    return this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(authWellknownEndpointUrl, configuration).pipe(
+    return this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(configuration).pipe(
       switchMap(() => this.parService.postParRequest(configuration, customParams)),
       switchMap((response: ParResponse) => {
         this.loggerService.logDebug(configuration, 'par response: ', response);

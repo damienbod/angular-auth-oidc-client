@@ -111,8 +111,6 @@ export class RefreshSessionService {
     allConfigs: OpenIdConfiguration[],
     extraCustomParams?: { [key: string]: string | number | boolean }
   ): Observable<boolean | CallbackContext | null> {
-    const { authWellknownEndpointUrl } = config;
-
     const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning(config);
     this.loggerService.logDebug(config, `Checking: silentRenewRunning: ${isSilentRenewRunning}`);
     const shouldBeExecuted = !isSilentRenewRunning;
@@ -121,13 +119,7 @@ export class RefreshSessionService {
       return of(null);
     }
 
-    if (!authWellknownEndpointUrl) {
-      this.loggerService.logError(config, 'no authWellKnownEndpoint given!');
-
-      return of(null);
-    }
-
-    return this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(authWellknownEndpointUrl, config).pipe(
+    return this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(config).pipe(
       switchMap(() => {
         this.flowsDataService.setSilentRenewRunning(config);
 

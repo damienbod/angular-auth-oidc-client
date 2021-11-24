@@ -6,6 +6,8 @@ import { AuthStateService } from './auth-state/auth-state.service';
 import { CallbackService } from './callback/callback.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
 import { CheckAuthService } from './check-auth.service';
+import { AuthWellKnownEndpoints } from './config/auth-well-known/auth-well-known-endpoints';
+import { AuthWellKnownService } from './config/auth-well-known/auth-well-known.service';
 import { ConfigurationService } from './config/config.service';
 import { OpenIdConfiguration } from './config/openid-configuration';
 import { FlowsDataService } from './flows/flows-data.service';
@@ -71,8 +73,15 @@ export class OidcSecurityService {
     private logoffRevocationService: LogoffRevocationService,
     private loginService: LoginService,
     private refreshSessionService: RefreshSessionService,
-    private urlService: UrlService
+    private urlService: UrlService,
+    private authWellKnownService: AuthWellKnownService
   ) {}
+
+  preloadAuthWellKnownDocument(configId?: string): Observable<AuthWellKnownEndpoints> {
+    return this.configurationService
+      .getOpenIDConfiguration(configId)
+      .pipe(switchMap((config) => this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(config)));
+  }
 
   /**
    * Returns the currently active OpenID configurations.
