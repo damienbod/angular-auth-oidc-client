@@ -43,7 +43,7 @@ export class HistoryJwtKeysCallbackHandlerService {
       this.flowsDataService.setNonce('', configId);
       this.handleResultErrorFromCallback(callbackContext.authResult, callbackContext.isRenewProcess);
 
-      return throwError(errorMessage);
+      return throwError(() => new Error(errorMessage));
     }
 
     this.loggerService.logDebug(
@@ -63,7 +63,7 @@ export class HistoryJwtKeysCallbackHandlerService {
           return of(storedJwtKeys);
         }
 
-        return throwError(err);
+        return throwError(() => new Error(err));
       }),
       switchMap((jwtKeys) => {
         if (jwtKeys) {
@@ -75,13 +75,13 @@ export class HistoryJwtKeysCallbackHandlerService {
         const errorMessage = `Failed to retrieve signing key`;
         this.loggerService.logWarning(configId, errorMessage);
 
-        return throwError(errorMessage);
+        return throwError(() => new Error(errorMessage));
       }),
       catchError((err) => {
         const errorMessage = `Failed to retrieve signing key with error: ${err}`;
         this.loggerService.logWarning(configId, errorMessage);
 
-        return throwError(errorMessage);
+        return throwError(() => new Error(errorMessage));
       })
     );
   }

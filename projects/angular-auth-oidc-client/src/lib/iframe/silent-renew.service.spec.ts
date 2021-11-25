@@ -176,7 +176,7 @@ describe('SilentRenewService  ', () => {
 
     it('loggs and calls flowsDataService.resetSilentRenewRunning in case of an error', fakeAsync(() => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-      spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe').and.returnValue(throwError('ERROR'));
+      spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe').and.returnValue(throwError(() => new Error('ERROR')));
       const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
       const logErrorSpy = spyOn(loggerService, 'logError');
 
@@ -190,7 +190,7 @@ describe('SilentRenewService  ', () => {
 
     it('calls next on refreshSessionWithIFrameCompleted with null in case of error', fakeAsync(() => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-      spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe').and.returnValue(throwError('ERROR'));
+      spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe').and.returnValue(throwError(() => new Error('ERROR')));
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
 
       silentRenewService.refreshSessionWithIFrameCompleted$.subscribe((result) => {

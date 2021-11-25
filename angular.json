@@ -101,7 +101,8 @@
               "sourceMap": true,
               "namedChunks": true
             }
-          }
+          },
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -1777,17 +1778,6 @@
             "scripts": []
           }
         },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/sample-code-flow-popup/tsconfig.app.json",
-              "projects/sample-code-flow-popup/tsconfig.spec.json",
-              "projects/sample-code-flow-popup/e2e/tsconfig.json"
-            ],
-            "exclude": ["**/node_modules/**"]
-          }
-        },
         "e2e": {
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
@@ -1898,17 +1888,6 @@
             "assets": ["projects/sample-code-flow-par/src/favicon.ico", "projects/sample-code-flow-par/src/assets"],
             "styles": ["projects/sample-code-flow-par/src/styles.css"],
             "scripts": []
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/sample-code-flow-par/tsconfig.app.json",
-              "projects/sample-code-flow-par/tsconfig.spec.json",
-              "projects/sample-code-flow-par/e2e/tsconfig.json"
-            ],
-            "exclude": ["**/node_modules/**"]
           }
         },
         "e2e": {

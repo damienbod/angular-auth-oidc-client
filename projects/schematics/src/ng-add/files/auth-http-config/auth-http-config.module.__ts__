@@ -45,4 +45,4 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
   ],
   exports: [AuthModule],
 })
-export class AuthConfigModule {}
+export class AuthHttpConfigModule {}

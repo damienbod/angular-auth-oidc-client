@@ -84,7 +84,7 @@ export class PeriodicallyTokenCheckService {
         this.loggerService.logError(configId, 'silent renew failed!', error);
         this.flowsDataService.resetSilentRenewRunning(configId);
 
-        return throwError(error);
+        return throwError(() => new Error(error));
       })
     );
 

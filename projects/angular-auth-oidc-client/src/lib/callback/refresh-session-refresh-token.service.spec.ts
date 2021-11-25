@@ -54,7 +54,7 @@ describe('RefreshSessionRefreshTokenService', () => {
     it(
       'resetAuthorizationData and stopPeriodicTokenCheck in case of error',
       waitForAsync(() => {
-        spyOn(flowsService, 'processRefreshToken').and.returnValue(throwError('error'));
+        spyOn(flowsService, 'processRefreshToken').and.returnValue(throwError(() => new Error('error')));
         const resetSilentRenewRunningSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
         const stopPeriodicallyTokenCheckSpy = spyOn(intervalService, 'stopPeriodicTokenCheck');
 

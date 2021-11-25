@@ -1,6 +1,6 @@
 {
   "name": "schematics",
-  "version": "12.0.3",
+  "version": "13.0.0",
   "description": "A schematic for the Angular Lib for OpenID Connect & OAuth2",
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -13,8 +13,8 @@
   "license": "MIT",
   "schematics": "./src/collection.json",
   "dependencies": {
-    "@angular-devkit/core": "12.0.0",
-    "@angular-devkit/schematics": "12.0.0",
-    "typescript": "~4.0.2"
+    "@schematics/angular": "^13.0.0",
+    "@angular-devkit/core": "^13.0.0",
+    "typescript": "~4.4.3"
   }
 }

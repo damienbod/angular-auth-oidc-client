@@ -122,7 +122,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     );
 
     it(
-      'returns error if no jwtKeys have been in the call',
+      'returns error if no jwtKeys have been in the call --> keys are null',
       waitForAsync(() => {
         const callbackContext = { isRenewProcess: false, authResult: 'authResult' } as unknown as CallbackContext;
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: false });
@@ -130,22 +130,22 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of(null));
         service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe({
           error: (err) => {
-            expect(err).toEqual(`Failed to retrieve signing key with error: Failed to retrieve signing key`);
+            expect(err.message).toEqual(`Failed to retrieve signing key with error: Error: Failed to retrieve signing key`);
           },
         });
       })
     );
 
     it(
-      'returns error if no jwtKeys have been in the call',
+      'returns error if no jwtKeys have been in the call --> keys throw an error',
       waitForAsync(() => {
         const callbackContext = { isRenewProcess: false, authResult: 'authResult' } as unknown as CallbackContext;
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: false });
 
-        spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(throwError('WOAH SOMETHING BAD HAPPENED'));
+        spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(throwError(() => new Error('error')));
         service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe({
           error: (err) => {
-            expect(err).toEqual(`Failed to retrieve signing key with error: WOAH SOMETHING BAD HAPPENED`);
+            expect(err.message).toEqual(`Failed to retrieve signing key with error: Error: Error: error`);
           },
         });
       })
@@ -159,7 +159,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
 
         service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe({
           error: (err) => {
-            expect(err).toEqual(`AuthCallback AuthResult came with error: someError`);
+            expect(err.message).toEqual(`AuthCallback AuthResult came with error: someError`);
           },
         });
       })
@@ -242,7 +242,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         const callbackContext = { authResult: 'authResultToStore' } as unknown as CallbackContext;
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
         const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'write');
-        spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(throwError({}));
+        spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(throwError(() => new Error('Error')));
 
         service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe({
           next: (callbackContext: CallbackContext) => {
@@ -265,7 +265,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
         const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'read');
         storagePersistenceServiceSpy.and.returnValue(DUMMY_JWT_KEYS);
-        spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(throwError({}));
+        spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(throwError(() => new Error('Error')));
 
         service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe({
           next: (callbackContext: CallbackContext) => {
@@ -285,7 +285,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         const callbackContext = { authResult: 'authResultToStore' } as unknown as CallbackContext;
         spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
         spyOn(storagePersistenceService, 'read').and.returnValue(null);
-        spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(throwError({}));
+        spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(throwError(() => new Error('Error')));
 
         service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe({
           next: (callbackContext: CallbackContext) => {

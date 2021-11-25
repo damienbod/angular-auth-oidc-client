@@ -42,7 +42,7 @@ describe('AuthModule', () => {
             AuthModule.forRoot({
               loader: {
                 provide: StsConfigLoader,
-                useFactory: () => new StsConfigHttpLoader(of(null).toPromise()),
+                useFactory: () => new StsConfigHttpLoader(of(null)),
               },
             }),
           ],

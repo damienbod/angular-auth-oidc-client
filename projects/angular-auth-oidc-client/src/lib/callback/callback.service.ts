@@ -9,7 +9,7 @@ import { ImplicitFlowCallbackService } from './implicit-flow-callback.service';
 
 @Injectable({ providedIn: 'root' })
 export class CallbackService {
-  private stsCallbackInternal$ = new Subject();
+  private stsCallbackInternal$ = new Subject<void>();
 
   get stsCallback$(): Observable<unknown> {
     return this.stsCallbackInternal$.asObservable();

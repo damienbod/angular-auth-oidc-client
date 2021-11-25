@@ -22,7 +22,7 @@ export function addModuleToImports(options: NgAddOptions): Rule {
       addImport(host, context, moduleName, modulePath, target);
     });
 
-    context.logger.info(`All imports done, please add the 'RouterModule' as well if you don't have it imported yet.`);
+    context.logger.info(`✅️ All imports done, please add the 'RouterModule' as well if you don't have it imported yet.`);
 
     return host;
   };

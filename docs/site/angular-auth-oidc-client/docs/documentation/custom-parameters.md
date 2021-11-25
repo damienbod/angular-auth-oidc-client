@@ -5,7 +5,9 @@ sidebar_position: 9
 
 # Custom Parameters
 
-Custom parameters can be added to the auth request by adding them to the config. They are provided by
+Custom parameters can be added to the auth request by adding them to the config.
+
+They are provided by:
 
 ```ts
 customParamsAuthRequest?: {
@@ -13,7 +15,7 @@ customParamsAuthRequest?: {
 };
 ```
 
-so you can pass them as an object like this:
+And you can pass them as an object like this:
 
 ```ts
 AuthModule.forRoot({

@@ -30,7 +30,7 @@ export class PopUpLoginService {
       const errorMessage = 'Invalid response type!';
       this.loggerService.logError(configId, errorMessage);
 
-      return throwError(errorMessage);
+      return throwError(() => new Error(errorMessage));
     }
 
     const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
@@ -39,7 +39,7 @@ export class PopUpLoginService {
       const errorMessage = 'no authWellknownEndpoint given!';
       this.loggerService.logError(configId, errorMessage);
 
-      return throwError(errorMessage);
+      return throwError(() => new Error(errorMessage));
     }
 
     this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow with popup, no auth data');

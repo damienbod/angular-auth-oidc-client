@@ -16,7 +16,7 @@ export class AuthInterceptor implements HttpInterceptor {
   ) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (!this.configurationProvider.hasAsLeastOneConfig()) {
+    if (!this.configurationProvider.hasAtLeastOneConfig()) {
       return next.handle(req);
     }
 

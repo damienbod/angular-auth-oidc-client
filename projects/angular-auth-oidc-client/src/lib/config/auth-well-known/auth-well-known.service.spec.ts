@@ -80,7 +80,7 @@ describe('AuthWellKnownService', () => {
     it(
       'throws `ConfigLoadingFailed` event when error happens from http',
       waitForAsync(() => {
-        spyOn(dataService, 'getWellKnownEndPointsFromUrl').and.returnValue(throwError('This is an error'));
+        spyOn(dataService, 'getWellKnownEndPointsFromUrl').and.returnValue(throwError(() => new Error('error')));
         const publicEventsServiceSpy = spyOn(publicEventsService, 'fireEvent');
         service.getAuthWellKnownEndPoints('any-url', 'configId').subscribe({
           error: (err) => {

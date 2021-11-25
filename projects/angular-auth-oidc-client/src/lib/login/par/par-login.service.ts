@@ -78,7 +78,7 @@ export class ParLoginService {
       const errorMessage = 'Invalid response type!';
       this.loggerService.logError(configId, errorMessage);
 
-      return throwError(errorMessage);
+      return throwError(() => new Error(errorMessage));
     }
 
     const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
@@ -87,7 +87,7 @@ export class ParLoginService {
       const errorMessage = 'no authWellknownEndpoint given!';
       this.loggerService.logError(configId, errorMessage);
 
-      return throwError(errorMessage);
+      return throwError(() => new Error(errorMessage));
     }
 
     this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow with popup, no auth data');
@@ -107,7 +107,7 @@ export class ParLoginService {
           const errorMessage = `Could not create URL with param ${response.requestUri}: 'url'`;
           this.loggerService.logError(configId, errorMessage);
 
-          return throwError(errorMessage);
+          return throwError(() => new Error(errorMessage));
         }
 
         this.popupService.openPopUp(url, popupOptions);

@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
-import { throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { forkJoin, Observable, of, throwError } from 'rxjs';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -26,15 +26,15 @@ export class OidcConfigService {
     private defaultSessionStorageService: DefaultSessionStorageService
   ) {}
 
-  withConfigs(passedConfigs: OpenIdConfiguration[]): Promise<OpenIdConfiguration[]> {
+  withConfigs(passedConfigs: OpenIdConfiguration[]): Observable<OpenIdConfiguration[]> {
     if (!this.configValidationService.validateConfigs(passedConfigs)) {
-      return Promise.resolve(null);
+      return of(null);
     }
 
     this.createUniqueIds(passedConfigs);
-    const allHandleConfigPromises = passedConfigs.map((x) => this.handleConfig(x));
+    const allHandleConfigs$ = passedConfigs.map((x) => this.handleConfig(x));
 
-    return Promise.all(allHandleConfigPromises);
+    return forkJoin(allHandleConfigs$);
   }
 
   private createUniqueIds(passedConfigs: OpenIdConfiguration[]): void {
@@ -45,68 +45,56 @@ export class OidcConfigService {
     });
   }
 
-  private handleConfig(passedConfig: OpenIdConfiguration): Promise<OpenIdConfiguration> {
-    return new Promise((resolve, reject) => {
-      if (!this.configValidationService.validateConfig(passedConfig)) {
-        this.loggerService.logError(passedConfig.configId, 'Validation of config rejected with errors. Config is NOT set.');
-        resolve(null);
+  private handleConfig(passedConfig: OpenIdConfiguration): Observable<OpenIdConfiguration> {
+    if (!this.configValidationService.validateConfig(passedConfig)) {
+      this.loggerService.logError(passedConfig.configId, 'Validation of config rejected with errors. Config is NOT set.');
 
-        return;
-      }
+      return of(null);
+    }
 
-      if (!passedConfig.authWellknownEndpointUrl) {
-        passedConfig.authWellknownEndpointUrl = passedConfig.authority;
-      }
+    if (!passedConfig.authWellknownEndpointUrl) {
+      passedConfig.authWellknownEndpointUrl = passedConfig.authority;
+    }
 
-      const usedConfig = this.prepareConfig(passedConfig);
-      this.configurationProvider.setConfig(usedConfig);
+    const usedConfig = this.prepareConfig(passedConfig);
+    this.configurationProvider.setConfig(usedConfig);
 
-      const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', usedConfig.configId);
-      if (!!alreadyExistingAuthWellKnownEndpoints) {
-        usedConfig.authWellknownEndpoints = alreadyExistingAuthWellKnownEndpoints;
-        this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
+    const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', usedConfig.configId);
+    if (!!alreadyExistingAuthWellKnownEndpoints) {
+      usedConfig.authWellknownEndpoints = alreadyExistingAuthWellKnownEndpoints;
+      this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
 
-        resolve(usedConfig);
+      return of(usedConfig);
+    }
 
-        return;
-      }
+    const passedAuthWellKnownEndpoints = usedConfig.authWellknownEndpoints;
 
-      const passedAuthWellKnownEndpoints = usedConfig.authWellknownEndpoints;
+    if (!!passedAuthWellKnownEndpoints) {
+      this.authWellKnownService.storeWellKnownEndpoints(usedConfig.configId, passedAuthWellKnownEndpoints);
+      usedConfig.authWellknownEndpoints = passedAuthWellKnownEndpoints;
+      this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
 
-      if (!!passedAuthWellKnownEndpoints) {
-        this.authWellKnownService.storeWellKnownEndpoints(usedConfig.configId, passedAuthWellKnownEndpoints);
-        usedConfig.authWellknownEndpoints = passedAuthWellKnownEndpoints;
-        this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
+      return of(usedConfig);
+    }
 
-        resolve(usedConfig);
+    if (usedConfig.eagerLoadAuthWellKnownEndpoints) {
+      return this.authWellKnownService.getAuthWellKnownEndPoints(usedConfig.authWellknownEndpointUrl, usedConfig.configId).pipe(
+        catchError((error) => {
+          this.loggerService.logError(usedConfig.configId, 'Getting auth well known endpoints failed on start', error);
 
-        return;
-      }
+          return throwError(() => new Error(error));
+        }),
+        tap((wellknownEndPoints) => {
+          usedConfig.authWellknownEndpoints = wellknownEndPoints;
+          this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
+        }),
+        switchMap(() => of(usedConfig))
+      );
+    } else {
+      this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
 
-      if (usedConfig.eagerLoadAuthWellKnownEndpoints) {
-        this.authWellKnownService
-          .getAuthWellKnownEndPoints(usedConfig.authWellknownEndpointUrl, usedConfig.configId)
-          .pipe(
-            catchError((error) => {
-              this.loggerService.logError(usedConfig.configId, 'Getting auth well known endpoints failed on start', error);
-
-              return throwError(error);
-            }),
-            tap((wellknownEndPoints) => {
-              usedConfig.authWellknownEndpoints = wellknownEndPoints;
-              this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
-            })
-          )
-          .subscribe(
-            () => resolve(usedConfig),
-
-            () => reject()
-          );
-      } else {
-        this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
-        resolve(usedConfig);
-      }
-    });
+      return of(usedConfig);
+    }
   }
 
   private prepareConfig(configuration: OpenIdConfiguration): OpenIdConfiguration {

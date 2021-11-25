@@ -79,7 +79,12 @@ describe('AuthWellKnownDataService', () => {
     it(
       'should retry once',
       waitForAsync(() => {
-        spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), of(DUMMY_WELL_KNOWN_DOCUMENT)));
+        spyOn(dataService, 'get').and.returnValue(
+          createRetriableStream(
+            throwError(() => new Error('one')),
+            of(DUMMY_WELL_KNOWN_DOCUMENT)
+          )
+        );
 
         (service as any).getWellKnownDocument('anyurl', 'configId').subscribe({
           next: (res) => {
@@ -93,7 +98,13 @@ describe('AuthWellKnownDataService', () => {
     it(
       'should retry twice',
       waitForAsync(() => {
-        spyOn(dataService, 'get').and.returnValue(createRetriableStream(throwError({}), throwError({}), of(DUMMY_WELL_KNOWN_DOCUMENT)));
+        spyOn(dataService, 'get').and.returnValue(
+          createRetriableStream(
+            throwError(() => new Error('one')),
+            throwError(() => new Error('two')),
+            of(DUMMY_WELL_KNOWN_DOCUMENT)
+          )
+        );
 
         (service as any).getWellKnownDocument('anyurl', 'configId').subscribe({
           next: (res) => {
@@ -108,7 +119,12 @@ describe('AuthWellKnownDataService', () => {
       'should fail after three tries',
       waitForAsync(() => {
         spyOn(dataService, 'get').and.returnValue(
-          createRetriableStream(throwError({}), throwError({}), throwError({}), of(DUMMY_WELL_KNOWN_DOCUMENT))
+          createRetriableStream(
+            throwError(() => new Error('one')),
+            throwError(() => new Error('two')),
+            throwError(() => new Error('three')),
+            of(DUMMY_WELL_KNOWN_DOCUMENT)
+          )
         );
 
         (service as any).getWellKnownDocument('anyurl', 'configId').subscribe({

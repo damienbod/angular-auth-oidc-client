@@ -127,7 +127,7 @@ logout() {
 `logoff()` also accepts a `configId` paramater to select a specific config:
 
 ```ts
-login() {
+logout() {
   this.oidcSecurityService.logoff('configId')
     .subscribe(({ isAuthenticated, userData, idToken, accessToken, errorMessage }) => {
       /* ... */

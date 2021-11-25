@@ -12,4 +12,5 @@ export interface NgAddOptions {
   isHttpOption: boolean;
   needsSilentRenewHtml: boolean;
   moduleInfo: ModuleInfo;
+  useLocalPackage: boolean;
 }

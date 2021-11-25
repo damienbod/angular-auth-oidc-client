@@ -1,16 +1,19 @@
 import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
 import { addPackageJsonDependency, NodeDependency, NodeDependencyType } from '@schematics/angular/utility/dependencies';
+import { NgAddOptions } from '../models/ng-add-options';
 
-const dependenciesToAdd = [
+const dependenciesToAdd: any[] = [
   {
     name: 'angular-auth-oidc-client',
-    version: '12.0.3',
+    version: '13.0.0',
   },
 ];
 
-export function addPackageJsonDependencies(): Rule {
+export function addPackageJsonDependencies(options: NgAddOptions): Rule {
   return (host: Tree, context: SchematicContext) => {
-    for (const pack of dependenciesToAdd) {
+    const dependencies = getDependencies(options);
+
+    for (const pack of dependencies) {
       const nodeDependency = createNodeDependency(pack);
       addPackageJsonDependency(host, nodeDependency);
       context.logger.info(`✅️ Added "${pack.name}" ${pack.version}`);
@@ -29,4 +32,14 @@ function createNodeDependency(pack: any): NodeDependency {
     version,
     overwrite: true,
   };
+}
+
+function getDependencies(options: NgAddOptions){
+  const {useLocalPackage} = options;
+
+  if(!useLocalPackage){
+    return dependenciesToAdd;
+  }
+
+  return []
 }

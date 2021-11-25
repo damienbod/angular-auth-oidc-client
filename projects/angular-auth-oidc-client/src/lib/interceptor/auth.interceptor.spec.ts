@@ -165,7 +165,7 @@ describe(`AuthHttpInterceptor`, () => {
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
 
-      spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(false);
+      spyOn(configurationProvider, 'hasAtLeastOneConfig').and.returnValue(false);
 
       httpClient.get(actionUrl).subscribe((response) => {
         expect(response).toBeTruthy();
@@ -182,7 +182,7 @@ describe(`AuthHttpInterceptor`, () => {
   it(
     'should not add an Authorization header when no configured route is matching the request',
     waitForAsync(() => {
-      spyOn(configurationProvider, 'hasAsLeastOneConfig').and.returnValue(true);
+      spyOn(configurationProvider, 'hasAtLeastOneConfig').and.returnValue(true);
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
 
       spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ secureRoutes: [actionUrl], configId: 'configId' }]);

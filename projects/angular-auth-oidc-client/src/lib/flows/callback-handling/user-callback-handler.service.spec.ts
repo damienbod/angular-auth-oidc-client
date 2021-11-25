@@ -299,7 +299,7 @@ describe('UserCallbackHandlerService', () => {
               validationResult: ValidationResult.MaxOffsetExpired,
               isRenewProcess: false,
             });
-            expect(err).toEqual('Failed to retrieve user info with error:  Called for userData but they were null');
+            expect(err.message).toEqual('Failed to retrieve user info with error:  Error: Called for userData but they were null');
           },
         });
       })
@@ -328,7 +328,7 @@ describe('UserCallbackHandlerService', () => {
         service.callbackUser(callbackContext, 'configId').subscribe({
           error: (err) => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
-            expect(err).toEqual('Failed to retrieve user info with error:  Called for userData but they were null');
+            expect(err.message).toEqual('Failed to retrieve user info with error:  Error: Called for userData but they were null');
           },
         });
       })

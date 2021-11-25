@@ -24,12 +24,12 @@ export class ParService {
     const authWellknownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
 
     if (!authWellknownEndpoints) {
-      return throwError('Could not read PAR endpoint because authWellKnownEndPoints are not given');
+      return throwError(() => new Error('Could not read PAR endpoint because authWellKnownEndPoints are not given'));
     }
 
     const parEndpoint = authWellknownEndpoints.parEndpoint;
     if (!parEndpoint) {
-      return throwError('Could not read PAR endpoint from authWellKnownEndpoints');
+      return throwError(() => new Error('Could not read PAR endpoint from authWellKnownEndpoints'));
     }
 
     return from(this.urlService.createBodyForParCodeFlowRequest(configId, customParams)).pipe(
@@ -48,7 +48,7 @@ export class ParService {
             const errorMessage = `There was an error on ParService postParRequest`;
             this.loggerService.logError(configId, errorMessage, error);
 
-            return throwError(errorMessage);
+            return throwError(() => new Error(errorMessage));
           })
         );
       })

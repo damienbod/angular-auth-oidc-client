@@ -124,7 +124,7 @@ describe('Logout and Revoke Service', () => {
         spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(paramToken);
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logError');
-        spyOn(dataService, 'post').and.returnValue(throwError('FAILUUURE'));
+        spyOn(dataService, 'post').and.returnValue(throwError(() => new Error('Error')));
 
         // Act
         service.revokeAccessToken('configId').subscribe({
@@ -144,7 +144,12 @@ describe('Logout and Revoke Service', () => {
         spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(paramToken);
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logDebug');
-        spyOn(dataService, 'post').and.returnValue(createRetriableStream(throwError({}), of({ data: 'anything' })));
+        spyOn(dataService, 'post').and.returnValue(
+          createRetriableStream(
+            throwError(() => new Error('Error')),
+            of({ data: 'anything' })
+          )
+        );
 
         service.revokeAccessToken('configId').subscribe({
           next: (res) => {
@@ -165,7 +170,13 @@ describe('Logout and Revoke Service', () => {
         spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(paramToken);
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logDebug');
-        spyOn(dataService, 'post').and.returnValue(createRetriableStream(throwError({}), throwError({}), of({ data: 'anything' })));
+        spyOn(dataService, 'post').and.returnValue(
+          createRetriableStream(
+            throwError(() => new Error('Error')),
+            throwError(() => new Error('Error')),
+            of({ data: 'anything' })
+          )
+        );
 
         service.revokeAccessToken('configId').subscribe({
           next: (res) => {
@@ -187,7 +198,12 @@ describe('Logout and Revoke Service', () => {
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logError');
         spyOn(dataService, 'post').and.returnValue(
-          createRetriableStream(throwError({}), throwError({}), throwError({}), of({ data: 'anything' }))
+          createRetriableStream(
+            throwError(() => new Error('Error')),
+            throwError(() => new Error('Error')),
+            throwError(() => new Error('Error')),
+            of({ data: 'anything' })
+          )
         );
 
         service.revokeAccessToken('configId').subscribe({
@@ -262,7 +278,7 @@ describe('Logout and Revoke Service', () => {
         spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logError');
-        spyOn(dataService, 'post').and.returnValue(throwError('FAILUUURE'));
+        spyOn(dataService, 'post').and.returnValue(throwError(() => new Error('Error')));
 
         // Act
         service.revokeRefreshToken('configId').subscribe({
@@ -282,7 +298,12 @@ describe('Logout and Revoke Service', () => {
         spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logDebug');
-        spyOn(dataService, 'post').and.returnValue(createRetriableStream(throwError({}), of({ data: 'anything' })));
+        spyOn(dataService, 'post').and.returnValue(
+          createRetriableStream(
+            throwError(() => new Error('Error')),
+            of({ data: 'anything' })
+          )
+        );
 
         service.revokeRefreshToken('configId').subscribe({
           next: (res) => {
@@ -303,7 +324,13 @@ describe('Logout and Revoke Service', () => {
         spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logDebug');
-        spyOn(dataService, 'post').and.returnValue(createRetriableStream(throwError({}), throwError({}), of({ data: 'anything' })));
+        spyOn(dataService, 'post').and.returnValue(
+          createRetriableStream(
+            throwError(() => new Error('Error')),
+            throwError(() => new Error('Error')),
+            of({ data: 'anything' })
+          )
+        );
 
         service.revokeRefreshToken('configId').subscribe({
           next: (res) => {
@@ -325,7 +352,12 @@ describe('Logout and Revoke Service', () => {
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logError');
         spyOn(dataService, 'post').and.returnValue(
-          createRetriableStream(throwError({}), throwError({}), throwError({}), of({ data: 'anything' }))
+          createRetriableStream(
+            throwError(() => new Error('Error')),
+            throwError(() => new Error('Error')),
+            throwError(() => new Error('Error')),
+            of({ data: 'anything' })
+          )
         );
 
         service.revokeRefreshToken('configId').subscribe({
@@ -440,7 +472,7 @@ describe('Logout and Revoke Service', () => {
         spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
         spyOn(service, 'revokeRefreshToken').and.returnValue(of({ any: 'thing' }));
         const loggerSpy = spyOn(loggerService, 'logError');
-        spyOn(service, 'revokeAccessToken').and.returnValue(throwError('FAILUUURE'));
+        spyOn(service, 'revokeAccessToken').and.returnValue(throwError(() => new Error('Error')));
 
         // Act
         service.logoffAndRevokeTokens('configId').subscribe({
@@ -511,7 +543,7 @@ describe('Logout and Revoke Service', () => {
         // Arrange
         spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(null);
         const loggerSpy = spyOn(loggerService, 'logError');
-        spyOn(service, 'revokeAccessToken').and.returnValue(throwError('FAILUUURE'));
+        spyOn(service, 'revokeAccessToken').and.returnValue(throwError(() => new Error('Error')));
 
         // Act
         service.logoffAndRevokeTokens('configId').subscribe({

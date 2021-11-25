@@ -1,6 +1,7 @@
 export interface Schema {
   authorityUrlOrTenantId: string;
   flowType: FlowType;
+  useLocalPackage: boolean;
 }
 
 export enum FlowType {

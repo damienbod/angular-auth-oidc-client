@@ -71,7 +71,7 @@ export class SilentRenewService {
       this.flowsDataService.setNonce('', configId);
       this.intervalService.stopPeriodicTokenCheck();
 
-      return throwError(error);
+      return throwError(() => new Error(error));
     }
 
     const code = params.get('code');
@@ -95,7 +95,7 @@ export class SilentRenewService {
         this.intervalService.stopPeriodicTokenCheck();
         this.resetAuthDataService.resetAuthorizationData(configId);
 
-        return throwError(errorFromFlow);
+        return throwError(() => new Error(error));
       })
     );
   }
@@ -106,7 +106,7 @@ export class SilentRenewService {
       return;
     }
 
-    let callback$ = of(null);
+    let callback$ = of(null) as Observable<CallbackContext>;
 
     const isCodeFlow = this.flowHelper.isCurrentFlowCodeFlow(configId);
 
@@ -117,17 +117,17 @@ export class SilentRenewService {
       callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(configId, e.detail);
     }
 
-    callback$.subscribe(
-      (callbackContext) => {
+    callback$.subscribe({
+      next: (callbackContext) => {
         this.refreshSessionWithIFrameCompletedInternal$.next(callbackContext);
         this.flowsDataService.resetSilentRenewRunning(configId);
       },
-      (err: any) => {
+      error: (err: any) => {
         this.loggerService.logError(configId, 'Error: ' + err);
         this.refreshSessionWithIFrameCompletedInternal$.next(null);
         this.flowsDataService.resetSilentRenewRunning(configId);
-      }
-    );
+      },
+    });
   }
 
   private getExistingIframe(): HTMLIFrameElement {
