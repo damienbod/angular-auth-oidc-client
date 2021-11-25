@@ -360,6 +360,12 @@ export class TokenValidationService {
     const signingInput: string = this.tokenHelperService.getSigningInputFromToken(idToken, true, configId);
     const rawSignature: string = this.tokenHelperService.getSignatureFromToken(idToken, true, configId);
 
+    const agent: string = window.navigator.userAgent.toLowerCase();
+
+    if (agent.indexOf('firefox') > -1 && key.kty === 'EC') {
+      key.alg = '';
+    }
+
     return from(this.cyptoObj.subtle.importKey('jwk', key, algorithm, false, ['verify'])).pipe(
       mergeMap((cryptoKey: CryptoKey) => {
         const signature: Uint8Array = base64url.parse(rawSignature, {loose: true});
