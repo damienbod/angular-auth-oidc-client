@@ -35,9 +35,7 @@ export class StateValidationCallbackHandlerService {
           this.loggerService.logWarning(configId, errorMessage);
           this.resetAuthDataService.resetAuthorizationData(configId);
           this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
-
-          throwError(errorMessage);
-          return throwError(() => new Error(errorMessage));
+          throw new Error(errorMessage);
         }
       })
     );
