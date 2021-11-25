@@ -355,15 +355,16 @@ export class TokenValidationService {
       }
     }
 
-    const algorithm: RsaHashedImportParams | EcdsaParams = this.getAlg(alg);
+    const algorithm: RsaHashedImportParams | EcKeyImportParams = this.getImportAlg(alg);
 
     const signingInput: string = this.tokenHelperService.getSigningInputFromToken(idToken, true, configId);
     const rawSignature: string = this.tokenHelperService.getSignatureFromToken(idToken, true, configId);
 
     return from(this.cyptoObj.subtle.importKey('jwk', key, algorithm, false, ['verify'])).pipe(
       mergeMap((cryptoKey: CryptoKey) => {
-        const signature: Uint8Array = base64url.parse(rawSignature, { loose: true });
+        const signature: Uint8Array = base64url.parse(rawSignature, {loose: true});
 
+        const algorithm: RsaHashedImportParams | EcdsaParams = this.getVerifyAlg(alg);
         return from(this.cyptoObj.subtle.verify(algorithm, cryptoKey, signature, new TextEncoder().encode(signingInput)));
       }),
       tap((isValid: boolean) => {
@@ -374,7 +375,47 @@ export class TokenValidationService {
     );
   }
 
-  private getAlg(alg: string): RsaHashedImportParams | EcdsaParams {
+  private getImportAlg(alg: string): RsaHashedImportParams | EcKeyImportParams {
+    switch (alg.charAt(0)) {
+      case 'R':
+        if (alg.includes('256')) {
+          return {
+            name: 'RSASSA-PKCS1-v1_5',
+            hash: 'SHA-256',
+          };
+        } else if (alg.includes('384')) {
+          return {
+            name: 'RSASSA-PKCS1-v1_5',
+            hash: 'SHA-384',
+          };
+        } else if (alg.includes('512')) {
+          return {
+            name: 'RSASSA-PKCS1-v1_5',
+            hash: 'SHA-512',
+          };
+        } else {
+          return null;
+        }
+      case 'E':
+        if (alg.includes('256')) {
+          return {
+            name: 'ECDSA',
+            namedCurve: 'P-256',
+          };
+        } else if (alg.includes('384')) {
+          return {
+            name: 'ECDSA',
+            namedCurve: 'P-384',
+          };
+        } else {
+          return null;
+        }
+      default:
+        return null;
+    }
+  }
+
+  private getVerifyAlg(alg: string): RsaHashedImportParams | EcdsaParams {
     switch (alg.charAt(0)) {
       case 'R':
         return {
@@ -382,10 +423,19 @@ export class TokenValidationService {
           hash: 'SHA-256',
         };
       case 'E':
-        return {
-          name: 'ECDSA',
-          hash: 'SHA-256',
-        };
+        if (alg.includes('256')) {
+          return {
+            name: 'ECDSA',
+            hash: 'SHA-256',
+          };
+        } else if (alg.includes('384')) {
+          return {
+            name: 'ECDSA',
+            hash: 'SHA-384',
+          };
+        } else {
+          return null
+        }
       default:
         return null;
     }
