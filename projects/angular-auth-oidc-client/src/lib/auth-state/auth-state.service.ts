@@ -28,15 +28,15 @@ export class AuthStateService {
     private tokenValidationService: TokenValidationService
   ) {}
 
-  setAuthenticatedAndFireEvent(configurations: OpenIdConfiguration[]): void {
-    const result = this.composeAuthenticatedResult(configurations);
+  setAuthenticatedAndFireEvent(allConfigs: OpenIdConfiguration[]): void {
+    const result = this.composeAuthenticatedResult(allConfigs);
     this.authenticatedInternal$.next(result);
   }
 
-  setUnauthenticatedAndFireEvent(configuration: OpenIdConfiguration): void {
-    this.storagePersistenceService.resetAuthStateInStorage(configuration);
+  setUnauthenticatedAndFireEvent(currentConfig: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
+    this.storagePersistenceService.resetAuthStateInStorage(currentConfig);
 
-    const result = this.composeUnAuthenticatedResult([configuration]);
+    const result = this.composeUnAuthenticatedResult(allConfigs);
     this.authenticatedInternal$.next(result);
   }
 

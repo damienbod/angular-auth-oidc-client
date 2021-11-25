@@ -1,8 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
 import { EventTypes, PublicEventsService } from '../../public-api';
-import { ConfigurationProvider } from '../config/provider/config.provider';
-import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -18,14 +16,12 @@ describe('Auth State Service', () => {
   let storagePersistenceService: StoragePersistenceService;
   let eventsService: PublicEventsService;
   let tokenValidationService: TokenValidationService;
-  let configurationProvider: ConfigurationProvider;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         AuthStateService,
         PublicEventsService,
-        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
         { provide: LoggerService, useClass: LoggerServiceMock },
         { provide: TokenValidationService, useClass: TokenValidationServiceMock },
         { provide: PlatformProvider, useClass: PlatformProviderMock },
@@ -42,7 +38,6 @@ describe('Auth State Service', () => {
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
     eventsService = TestBed.inject(PublicEventsService);
     tokenValidationService = TestBed.inject(TokenValidationService);
-    configurationProvider = TestBed.inject(ConfigurationProvider);
   });
 
   it('should create', () => {
@@ -56,9 +51,8 @@ describe('Auth State Service', () => {
   describe('setAuthorizedAndFireEvent', () => {
     it('throws correct event with single config', () => {
       const spy = spyOn((authStateService as any).authenticatedInternal$, 'next');
-      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId1' });
 
-      authStateService.setAuthenticatedAndFireEvent();
+      authStateService.setAuthenticatedAndFireEvent([{ configId: 'configId1' }]);
 
       expect(spy).toHaveBeenCalledWith({
         isAuthenticated: true,
@@ -67,12 +61,9 @@ describe('Auth State Service', () => {
     });
 
     it('throws correct event with multiple configs', () => {
-      spyOn(configurationProvider, 'hasManyConfigs').and.returnValue(true);
-      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ configId: 'configId1' }, { configId: 'configId2' }]);
-
       const spy = spyOn((authStateService as any).authenticatedInternal$, 'next');
 
-      authStateService.setAuthenticatedAndFireEvent();
+      authStateService.setAuthenticatedAndFireEvent([{ configId: 'configId1' }, { configId: 'configId2' }]);
 
       expect(spy).toHaveBeenCalledWith({
         isAuthenticated: false,
@@ -84,23 +75,21 @@ describe('Auth State Service', () => {
     });
 
     it('throws correct event with multiple configs, one is authenticated', () => {
-      spyOn(configurationProvider, 'hasManyConfigs').and.returnValue(true);
-      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ configId: 'configId1' }, { configId: 'configId2' }]);
       spyOn(storagePersistenceService, 'getAccessToken')
-        .withArgs('configId1')
+        .withArgs({ configId: 'configId1' })
         .and.returnValue('someAccessToken')
-        .withArgs('configId2')
+        .withArgs({ configId: 'configId2' })
         .and.returnValue(null);
 
       spyOn(storagePersistenceService, 'getIdToken')
-        .withArgs('configId1')
+        .withArgs({ configId: 'configId1' })
         .and.returnValue('someIdToken')
-        .withArgs('configId2')
+        .withArgs({ configId: 'configId2' })
         .and.returnValue(null);
 
       const spy = spyOn((authStateService as any).authenticatedInternal$, 'next');
 
-      authStateService.setAuthenticatedAndFireEvent();
+      authStateService.setAuthenticatedAndFireEvent([{ configId: 'configId1' }, { configId: 'configId2' }]);
 
       expect(spy).toHaveBeenCalledWith({
         isAuthenticated: false,
@@ -115,15 +104,14 @@ describe('Auth State Service', () => {
   describe('setUnauthorizedAndFireEvent', () => {
     it('persist AuthState In Storage', () => {
       const spy = spyOn(storagePersistenceService, 'resetAuthStateInStorage');
-      authStateService.setUnauthenticatedAndFireEvent('configIdToReset');
-      expect(spy).toHaveBeenCalledWith('configIdToReset');
+      authStateService.setUnauthenticatedAndFireEvent({ configId: 'configId1' }, [{ configId: 'configId1' }]);
+      expect(spy).toHaveBeenCalledWith({ configId: 'configId1' });
     });
 
     it('throws correct event with single config', () => {
-      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId1' });
       const spy = spyOn((authStateService as any).authenticatedInternal$, 'next');
 
-      authStateService.setUnauthenticatedAndFireEvent('configId1');
+      authStateService.setUnauthenticatedAndFireEvent({ configId: 'configId1' }, [{ configId: 'configId1' }]);
 
       expect(spy).toHaveBeenCalledWith({
         isAuthenticated: false,
@@ -132,12 +120,9 @@ describe('Auth State Service', () => {
     });
 
     it('throws correct event with multiple configs', () => {
-      spyOn(configurationProvider, 'hasManyConfigs').and.returnValue(true);
-      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ configId: 'configId1' }, { configId: 'configId2' }]);
-
       const spy = spyOn((authStateService as any).authenticatedInternal$, 'next');
 
-      authStateService.setUnauthenticatedAndFireEvent('configIdToReset');
+      authStateService.setUnauthenticatedAndFireEvent({ configId: 'configId1' }, [{ configId: 'configId1' }, { configId: 'configId2' }]);
 
       expect(spy).toHaveBeenCalledWith({
         isAuthenticated: false,
