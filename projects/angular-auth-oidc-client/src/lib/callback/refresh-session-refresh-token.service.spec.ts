@@ -45,9 +45,11 @@ describe('RefreshSessionRefreshTokenService', () => {
       waitForAsync(() => {
         const spy = spyOn(flowsService, 'processRefreshToken').and.returnValue(of(null));
 
-        refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens('configId').subscribe(() => {
-          expect(spy).toHaveBeenCalled();
-        });
+        refreshSessionRefreshTokenService
+          .refreshSessionWithRefreshTokens({ configId: 'configId1' }, [{ configId: 'configId1' }])
+          .subscribe(() => {
+            expect(spy).toHaveBeenCalled();
+          });
       })
     );
 
@@ -58,13 +60,15 @@ describe('RefreshSessionRefreshTokenService', () => {
         const resetSilentRenewRunningSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
         const stopPeriodicallyTokenCheckSpy = spyOn(intervalService, 'stopPeriodicTokenCheck');
 
-        refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens('configId').subscribe({
-          error: (err) => {
-            expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-            expect(stopPeriodicallyTokenCheckSpy).toHaveBeenCalled();
-            expect(err).toBeTruthy();
-          },
-        });
+        refreshSessionRefreshTokenService
+          .refreshSessionWithRefreshTokens({ configId: 'configId1' }, [{ configId: 'configId1' }])
+          .subscribe({
+            error: (err) => {
+              expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+              expect(stopPeriodicallyTokenCheckSpy).toHaveBeenCalled();
+              expect(err).toBeTruthy();
+            },
+          });
       })
     );
   });

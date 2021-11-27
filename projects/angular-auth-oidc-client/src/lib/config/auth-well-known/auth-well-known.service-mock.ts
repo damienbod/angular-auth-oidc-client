@@ -1,11 +1,10 @@
-import { Injectable } from '@angular/core';
+import { OpenIdConfiguration } from '../openid-configuration';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 
-@Injectable()
 export class AuthWellKnownServiceMock {
-  getAuthWellKnownEndPoints(authWellknownEndpoint: string) {
+  getAuthWellKnownEndPoints(config: OpenIdConfiguration, mappedWellKnownEndpoints: AuthWellKnownEndpoints) {
     return null;
   }
 
-  storeWellKnownEndpoints(mappedWellKnownEndpoints: AuthWellKnownEndpoints) {}
+  queryAndStoreAuthWellKnownEndPoints(config: OpenIdConfiguration) {}
 }
