@@ -1,9 +1,5 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
-import { ConfigurationProvider } from '../config/provider/config.provider';
-import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
-import { FlowsService } from '../flows/flows.service';
-import { FlowsServiceMock } from '../flows/flows.service-mock';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { UrlService } from '../utils/url/url.service';
 import { UrlServiceMock } from '../utils/url/url.service-mock';
@@ -26,11 +22,9 @@ describe('CallbackService ', () => {
       providers: [
         CallbackService,
         { provide: UrlService, useClass: UrlServiceMock },
-        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
-        { provide: FlowsService, useClass: FlowsServiceMock },
+        FlowHelper,
         { provide: ImplicitFlowCallbackService, useClass: ImplicitFlowCallbackServiceMock },
         { provide: CodeFlowCallbackService, useClass: CodeFlowCallbackServiceMock },
-        FlowHelper,
       ],
     });
   });
@@ -65,8 +59,8 @@ describe('CallbackService ', () => {
         spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
         const authorizedCallbackWithCodeSpy = spyOn(codeFlowCallbackService, 'authenticatedCallbackWithCode').and.returnValue(of(null));
 
-        callbackService.handleCallbackAndFireEvents('anyUrl', 'configId').subscribe(() => {
-          expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl', 'configId');
+        callbackService.handleCallbackAndFireEvents('anyUrl', { configId: 'configId1' }, [{ configId: 'configId1' }]).subscribe(() => {
+          expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl', { configId: 'configId1' }, [{ configId: 'configId1' }]);
         });
       })
     );
@@ -80,7 +74,7 @@ describe('CallbackService ', () => {
           of(null)
         );
 
-        callbackService.handleCallbackAndFireEvents('anyUrl', 'configId').subscribe(() => {
+        callbackService.handleCallbackAndFireEvents('anyUrl', { configId: 'configId1' }, [{ configId: 'configId1' }]).subscribe(() => {
           expect(authorizedCallbackWithCodeSpy).toHaveBeenCalled();
         });
       })
@@ -89,10 +83,10 @@ describe('CallbackService ', () => {
     it('emits callbackinternal no matter which flow it is', () => {
       const callbackSpy = spyOn((callbackService as any).stsCallbackInternal$, 'next');
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-      const authorizedCallbackWithCodeSpy = spyOn(codeFlowCallbackService, 'authenticatedCallbackWithCode').and.returnValue(of(null));
+      const authenticatedCallbackWithCodeSpy = spyOn(codeFlowCallbackService, 'authenticatedCallbackWithCode').and.returnValue(of(null));
 
-      callbackService.handleCallbackAndFireEvents('anyUrl', 'configId').subscribe(() => {
-        expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl', 'configId');
+      callbackService.handleCallbackAndFireEvents('anyUrl', { configId: 'configId1' }, [{ configId: 'configId1' }]).subscribe(() => {
+        expect(authenticatedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl', { configId: 'configId1' }, [{ configId: 'configId1' }]);
         expect(callbackSpy).toHaveBeenCalled();
       });
     });
