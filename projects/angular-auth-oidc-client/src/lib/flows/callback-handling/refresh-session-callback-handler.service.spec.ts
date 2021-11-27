@@ -52,7 +52,8 @@ describe('RefreshSessionCallbackHandlerService', () => {
           validationResult: null,
           existingIdToken: 'henlo-legger',
         };
-        (service as any).refreshSessionWithRefreshTokens().subscribe((callbackContext) => {
+
+        service.refreshSessionWithRefreshTokens({ configId: 'configId1' }).subscribe((callbackContext) => {
           expect(callbackContext).toEqual(expectedCallbackContext);
         });
       })
@@ -65,7 +66,7 @@ describe('RefreshSessionCallbackHandlerService', () => {
         spyOn(authStateService, 'getRefreshToken').and.returnValue(null);
         spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
 
-        (service as any).refreshSessionWithRefreshTokens().subscribe({
+        service.refreshSessionWithRefreshTokens({ configId: 'configId1' }).subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },

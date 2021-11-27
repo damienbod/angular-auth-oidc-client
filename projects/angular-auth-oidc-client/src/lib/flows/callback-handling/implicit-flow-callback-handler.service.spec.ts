@@ -52,8 +52,13 @@ describe('ImplicitFlowCallbackHandlerService', () => {
       waitForAsync(() => {
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
+        const allconfigs = [
+          {
+            configId: 'configId1',
+          },
+        ];
 
-        service.implicitFlowCallback('configId', 'any-hash').subscribe(() => {
+        service.implicitFlowCallback(allconfigs[0], allconfigs, 'any-hash').subscribe(() => {
           expect(resetAuthorizationDataSpy).toHaveBeenCalled();
         });
       })
@@ -64,8 +69,13 @@ describe('ImplicitFlowCallbackHandlerService', () => {
       waitForAsync(() => {
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
+        const allconfigs = [
+          {
+            configId: 'configId1',
+          },
+        ];
 
-        service.implicitFlowCallback('configId', 'any-hash').subscribe(() => {
+        service.implicitFlowCallback(allconfigs[0], allconfigs, 'any-hash').subscribe(() => {
           expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
         });
       })
@@ -87,7 +97,13 @@ describe('ImplicitFlowCallbackHandlerService', () => {
           existingIdToken: null,
         } as CallbackContext;
 
-        service.implicitFlowCallback('configId', 'anyHash').subscribe((callbackContext) => {
+        const allconfigs = [
+          {
+            configId: 'configId1',
+          },
+        ];
+
+        service.implicitFlowCallback(allconfigs[0], allconfigs, 'anyHash').subscribe((callbackContext) => {
           expect(callbackContext).toEqual(expectedCallbackContext);
         });
       })
@@ -109,7 +125,13 @@ describe('ImplicitFlowCallbackHandlerService', () => {
           existingIdToken: null,
         } as CallbackContext;
 
-        service.implicitFlowCallback('configId').subscribe((callbackContext) => {
+        const allconfigs = [
+          {
+            configId: 'configId1',
+          },
+        ];
+
+        service.implicitFlowCallback(allconfigs[0], allconfigs).subscribe((callbackContext) => {
           expect(callbackContext).toEqual(expectedCallbackContext);
         });
       })
