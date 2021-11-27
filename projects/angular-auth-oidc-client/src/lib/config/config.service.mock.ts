@@ -1,10 +1,24 @@
-﻿import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+﻿import { Observable } from 'rxjs';
 import { OpenIdConfiguration } from './openid-configuration';
 
-@Injectable()
-export class OidcConfigServiceMock {
-  withConfigs(passedConfigs: OpenIdConfiguration[]): Observable<OpenIdConfiguration[]> {
-    return of(null);
+export class ConfigurationServiceMock {
+  hasManyConfigs(): boolean {
+    return null;
+  }
+
+  getAllConfigurations(): OpenIdConfiguration[] {
+    return null;
+  }
+
+  getOpenIDConfiguration(configId?: string): Observable<OpenIdConfiguration> {
+    return null;
+  }
+
+  getOpenIDConfigurations(configId?: string): Observable<{ allConfigs; currentConfig }> {
+    return null;
+  }
+
+  hasAtLeastOneConfig(): boolean {
+    return null;
   }
 }

@@ -13,7 +13,7 @@ import { DefaultSessionStorageService } from './../storage/default-sessionstorag
 import { PlatformProviderMock } from './../utils/platform-provider/platform.provider-mock';
 import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
 import { AuthWellKnownServiceMock } from './auth-well-known/auth-well-known.service-mock';
-import { OidcConfigService } from './config.service';
+import { ConfigurationService } from './config.service';
 import { DEFAULT_CONFIG } from './default-config';
 import { OpenIdConfiguration } from './openid-configuration';
 import { ConfigurationProvider } from './provider/config.provider';
@@ -32,7 +32,7 @@ describe('Configuration Service', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        OidcConfigService,
+        ConfigurationService,
         {
           provide: LoggerService,
           useClass: LoggerServiceMock,
