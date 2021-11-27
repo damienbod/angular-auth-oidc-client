@@ -4,8 +4,6 @@ import { of, throwError } from 'rxjs';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
 import { DataServiceMock } from '../../api/data.service-mock';
-import { ConfigurationProvider } from '../../config/provider/config.provider';
-import { ConfigurationProviderMock } from '../../config/provider/config.provider-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
@@ -24,7 +22,6 @@ describe('CodeFlowCallbackHandlerService', () => {
   let dataService: DataService;
   let storagePersistenceService: StoragePersistenceService;
   let tokenValidationService: TokenValidationService;
-  let configurationProvider: ConfigurationProvider;
   let urlService: UrlService;
 
   beforeEach(() => {
@@ -35,7 +32,6 @@ describe('CodeFlowCallbackHandlerService', () => {
         { provide: LoggerService, useClass: LoggerServiceMock },
         { provide: TokenValidationService, useClass: TokenValidationServiceMock },
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
-        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
         { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
         { provide: DataService, useClass: DataServiceMock },
       ],
@@ -46,7 +42,6 @@ describe('CodeFlowCallbackHandlerService', () => {
     service = TestBed.inject(CodeFlowCallbackHandlerService);
     dataService = TestBed.inject(DataService);
     urlService = TestBed.inject(UrlService);
-    configurationProvider = TestBed.inject(ConfigurationProvider);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
     tokenValidationService = TestBed.inject(TokenValidationService);
   });
@@ -62,7 +57,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         const getUrlParameterSpy = spyOn(urlService, 'getUrlParameter').and.returnValue('params');
         getUrlParameterSpy.withArgs('any-url', 'state').and.returnValue(null);
 
-        service.codeFlowCallback('any-url', 'configId').subscribe({
+        service.codeFlowCallback('any-url', { configId: 'configId1' }).subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },
@@ -76,7 +71,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         const getUrlParameterSpy = spyOn(urlService, 'getUrlParameter').and.returnValue('params');
         getUrlParameterSpy.withArgs('any-url', 'code').and.returnValue(null);
 
-        service.codeFlowCallback('any-url', 'configId').subscribe({
+        service.codeFlowCallback('any-url', { configId: 'configId1' }).subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },
@@ -101,7 +96,7 @@ describe('CodeFlowCallbackHandlerService', () => {
           existingIdToken: null,
         };
 
-        service.codeFlowCallback('any-url', 'configId').subscribe((callbackContext) => {
+        service.codeFlowCallback('any-url', { configId: 'configId1' }).subscribe((callbackContext) => {
           expect(callbackContext).toEqual(expectedCallbackContext);
         });
       })
@@ -122,7 +117,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       waitForAsync(() => {
         spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
 
-        service.codeFlowCodeRequest({} as CallbackContext, 'configId').subscribe({
+        service.codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' }).subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },
@@ -133,7 +128,7 @@ describe('CodeFlowCallbackHandlerService', () => {
     it(
       'throws error if no tokenEndpoint is given',
       waitForAsync(() => {
-        service.codeFlowCodeRequest({} as CallbackContext, 'configId').subscribe({
+        service.codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' }).subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },
@@ -146,11 +141,11 @@ describe('CodeFlowCallbackHandlerService', () => {
       waitForAsync(() => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
         spyOn(storagePersistenceService, 'read')
-          .withArgs('authWellKnownEndPoints', 'configId')
+          .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
-        service.codeFlowCodeRequest({} as CallbackContext, 'configId').subscribe((callbackContext) => {
-          expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', 'configId', jasmine.any(HttpHeaders));
+        service.codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' }).subscribe(() => {
+          expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', { configId: 'configId1' }, jasmine.any(HttpHeaders));
         });
       })
     );
@@ -159,15 +154,18 @@ describe('CodeFlowCallbackHandlerService', () => {
       'calls url service with custom token params',
       waitForAsync(() => {
         const urlServiceSpy = spyOn(urlService, 'createBodyForCodeFlowCodeRequest');
+        const config = {
+          configId: 'configId1',
+          customParamsCodeRequest: { foo: 'bar' },
+        };
         spyOn(storagePersistenceService, 'read')
-          .withArgs('authWellKnownEndPoints', 'configId')
+          .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ customParamsCodeRequest: { foo: 'bar' } });
 
-        service.codeFlowCodeRequest({ code: 'foo' } as CallbackContext, 'configId').subscribe((callbackContext) => {
-          expect(urlServiceSpy).toHaveBeenCalledWith('foo', 'configId', { foo: 'bar' });
+        service.codeFlowCodeRequest({ code: 'foo' } as CallbackContext, config).subscribe(() => {
+          expect(urlServiceSpy).toHaveBeenCalledWith('foo', config, { foo: 'bar' });
           expect(postSpy).toHaveBeenCalledTimes(1);
         });
       })
@@ -177,11 +175,15 @@ describe('CodeFlowCallbackHandlerService', () => {
       'calls dataService with correct headers if all params are good',
       waitForAsync(() => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+        const config = {
+          configId: 'configId1',
+          customParamsCodeRequest: { foo: 'bar' },
+        };
         spyOn(storagePersistenceService, 'read')
-          .withArgs('authWellKnownEndPoints', 'configId')
+          .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
-        service.codeFlowCodeRequest({} as CallbackContext, 'configId').subscribe((callbackContext) => {
+        service.codeFlowCodeRequest({} as CallbackContext, config).subscribe(() => {
           const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
           expect(httpHeaders.has('Content-Type')).toBeTrue();
           expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
@@ -193,12 +195,16 @@ describe('CodeFlowCallbackHandlerService', () => {
       'returns error in case of http error',
       waitForAsync(() => {
         spyOn(dataService, 'post').and.returnValue(throwError(() => HTTP_ERROR));
+        const config = {
+          configId: 'configId1',
+          customParamsCodeRequest: { foo: 'bar' },
+          authority: 'authority',
+        };
         spyOn(storagePersistenceService, 'read')
-          .withArgs('authWellKnownEndPoints', 'configId')
+          .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ authority: 'authority' });
 
-        service.codeFlowCodeRequest({} as CallbackContext, 'configId').subscribe({
+        service.codeFlowCodeRequest({} as CallbackContext, config).subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },
@@ -215,12 +221,17 @@ describe('CodeFlowCallbackHandlerService', () => {
             of({})
           )
         );
-        spyOn(storagePersistenceService, 'read')
-          .withArgs('authWellKnownEndPoints', 'configId')
-          .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ authority: 'authority' });
+        const config = {
+          configId: 'configId1',
+          customParamsCodeRequest: { foo: 'bar' },
+          authority: 'authority',
+        };
 
-        service.codeFlowCodeRequest({} as CallbackContext, 'configId').subscribe({
+        spyOn(storagePersistenceService, 'read')
+          .withArgs('authWellKnownEndPoints', config)
+          .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+
+        service.codeFlowCodeRequest({} as CallbackContext, config).subscribe({
           next: (res) => {
             expect(res).toBeTruthy();
             expect(postSpy).toHaveBeenCalledTimes(1);
@@ -242,12 +253,16 @@ describe('CodeFlowCallbackHandlerService', () => {
             throwError(() => HTTP_ERROR)
           )
         );
+        const config = {
+          configId: 'configId1',
+          customParamsCodeRequest: { foo: 'bar' },
+          authority: 'authority',
+        };
         spyOn(storagePersistenceService, 'read')
-          .withArgs('authWellKnownEndPoints', 'configId')
+          .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ authority: 'authority' });
 
-        service.codeFlowCodeRequest({} as CallbackContext, 'configId').subscribe({
+        service.codeFlowCodeRequest({} as CallbackContext, config).subscribe({
           next: (res) => {
             // fails if there should be a result
             expect(res).toBeFalsy();

@@ -2,8 +2,6 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../../auth-state/auth-state.service-mock';
-import { ConfigurationProvider } from '../../config/provider/config.provider';
-import { ConfigurationProviderMock } from '../../config/provider/config.provider-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
@@ -36,7 +34,6 @@ const DUMMY_JWT_KEYS: JwtKeys = {
 describe('HistoryJwtKeysCallbackHandlerService', () => {
   let service: HistoryJwtKeysCallbackHandlerService;
   let storagePersistenceService: StoragePersistenceService;
-  let configurationProvider: ConfigurationProvider;
   let signInKeyDataService: SigninKeyDataService;
   let resetAuthDataService: ResetAuthDataService;
   let flowsDataService: FlowsDataService;
@@ -47,7 +44,6 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       providers: [
         HistoryJwtKeysCallbackHandlerService,
         { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
         { provide: AuthStateService, useClass: AuthStateServiceMock },
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
         { provide: SigninKeyDataService, useClass: SigninKeyDataServiceMock },
@@ -62,7 +58,6 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
     resetAuthDataService = TestBed.inject(ResetAuthDataService);
     signInKeyDataService = TestBed.inject(SigninKeyDataService);
-    configurationProvider = TestBed.inject(ConfigurationProvider);
     flowsDataService = TestBed.inject(FlowsDataService);
     authStateService = TestBed.inject(AuthStateService);
   });
@@ -77,11 +72,16 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       waitForAsync(() => {
         const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'write');
         const callbackContext = { authResult: 'authResultToStore' } as unknown as CallbackContext;
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
+        const allconfigs = [
+          {
+            configId: 'configId1',
+            historyCleanupOff: true,
+          },
+        ];
 
         spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of({ keys: [] } as JwtKeys));
-        service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe(() => {
-          expect(storagePersistenceServiceSpy).toHaveBeenCalledWith('authnResult', 'authResultToStore', 'configId');
+        service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe(() => {
+          expect(storagePersistenceServiceSpy).toHaveBeenCalledWith('authnResult', 'authResultToStore', allconfigs[0]);
 
           // write authnResult & jwtKeys
           expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(2);
@@ -93,12 +93,17 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'resetBrowserHistory if historyCleanup is turned on and is not in a renewProcess',
       waitForAsync(() => {
         const callbackContext = { isRenewProcess: false, authResult: 'authResult' } as unknown as CallbackContext;
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: false });
+        const allconfigs = [
+          {
+            configId: 'configId1',
+            historyCleanupOff: false,
+          },
+        ];
 
         const windowSpy = spyOn(window.history, 'replaceState');
 
         spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of({ keys: [] } as JwtKeys));
-        service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe(() => {
+        service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe(() => {
           expect(windowSpy).toHaveBeenCalledTimes(1);
         });
       })
@@ -108,10 +113,15 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'returns callbackContext with jwtkeys filled if everything works fine',
       waitForAsync(() => {
         const callbackContext = { isRenewProcess: false, authResult: 'authResult' } as unknown as CallbackContext;
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: false });
+        const allconfigs = [
+          {
+            configId: 'configId1',
+            historyCleanupOff: false,
+          },
+        ];
 
         spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of({ keys: [{ kty: 'henlo' } as JwtKey] } as JwtKeys));
-        service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe((result) => {
+        service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe((result) => {
           expect(result).toEqual({
             isRenewProcess: false,
             authResult: 'authResult',
@@ -125,10 +135,15 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'returns error if no jwtKeys have been in the call --> keys are null',
       waitForAsync(() => {
         const callbackContext = { isRenewProcess: false, authResult: 'authResult' } as unknown as CallbackContext;
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: false });
+        const allconfigs = [
+          {
+            configId: 'configId1',
+            historyCleanupOff: false,
+          },
+        ];
 
         spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of(null));
-        service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe({
+        service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe({
           error: (err) => {
             expect(err.message).toEqual(`Failed to retrieve signing key with error: Error: Failed to retrieve signing key`);
           },
@@ -140,10 +155,15 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'returns error if no jwtKeys have been in the call --> keys throw an error',
       waitForAsync(() => {
         const callbackContext = { isRenewProcess: false, authResult: 'authResult' } as unknown as CallbackContext;
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: false });
+        const allconfigs = [
+          {
+            configId: 'configId1',
+            historyCleanupOff: false,
+          },
+        ];
 
         spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(throwError(() => new Error('error')));
-        service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe({
+        service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe({
           error: (err) => {
             expect(err.message).toEqual(`Failed to retrieve signing key with error: Error: Error: error`);
           },
@@ -155,9 +175,14 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'returns error if callbackContext.authresult has an error property filled',
       waitForAsync(() => {
         const callbackContext = { authResult: { error: 'someError' } } as unknown as CallbackContext;
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
+        const allconfigs = [
+          {
+            configId: 'configId1',
+            historyCleanupOff: true,
+          },
+        ];
 
-        service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe({
+        service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe({
           error: (err) => {
             expect(err.message).toEqual(`AuthCallback AuthResult came with error: someError`);
           },
@@ -169,13 +194,18 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'calls resetAuthorizationData, resets nonce and authStateService in case of an error',
       waitForAsync(() => {
         const callbackContext = { authResult: { error: 'someError' } } as unknown as CallbackContext;
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
+        const allconfigs = [
+          {
+            configId: 'configId1',
+            historyCleanupOff: true,
+          },
+        ];
 
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
         const setNonceSpy = spyOn(flowsDataService, 'setNonce');
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
 
-        service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe({
+        service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe({
           error: (err) => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(setNonceSpy).toHaveBeenCalledTimes(1);
@@ -193,13 +223,18 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'calls authStateService.updateAndPublishAuthState with login required if the error is `login_required`',
       waitForAsync(() => {
         const callbackContext = { authResult: { error: 'login_required' } } as unknown as CallbackContext;
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
+        const allconfigs = [
+          {
+            configId: 'configId1',
+            historyCleanupOff: true,
+          },
+        ];
 
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
         const setNonceSpy = spyOn(flowsDataService, 'setNonce');
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
 
-        service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe({
+        service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe({
           error: (err) => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(setNonceSpy).toHaveBeenCalledTimes(1);
@@ -217,14 +252,19 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'should store jwtKeys',
       waitForAsync(() => {
         const callbackContext = { authResult: 'authResultToStore' } as unknown as CallbackContext;
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
+        const allconfigs = [
+          {
+            configId: 'configId1',
+            historyCleanupOff: true,
+          },
+        ];
         const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'write');
         spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of(DUMMY_JWT_KEYS));
 
-        service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe({
+        service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe({
           next: (callbackContext: CallbackContext) => {
-            expect(storagePersistenceServiceSpy).toHaveBeenCalledWith('authnResult', 'authResultToStore', 'configId');
-            expect(storagePersistenceServiceSpy).toHaveBeenCalledWith('jwtKeys', DUMMY_JWT_KEYS, 'configId');
+            expect(storagePersistenceServiceSpy).toHaveBeenCalledWith('authnResult', 'authResultToStore', allconfigs[0]);
+            expect(storagePersistenceServiceSpy).toHaveBeenCalledWith('jwtKeys', DUMMY_JWT_KEYS, allconfigs[0]);
             expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(2);
 
             expect(callbackContext.jwtKeys).toEqual(DUMMY_JWT_KEYS);
@@ -240,11 +280,16 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'should not store jwtKeys on error',
       waitForAsync(() => {
         const callbackContext = { authResult: 'authResultToStore' } as unknown as CallbackContext;
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
+        const allconfigs = [
+          {
+            configId: 'configId1',
+            historyCleanupOff: true,
+          },
+        ];
         const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'write');
         spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(throwError(() => new Error('Error')));
 
-        service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe({
+        service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe({
           next: (callbackContext: CallbackContext) => {
             expect(callbackContext).toBeFalsy();
           },
@@ -252,7 +297,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
             expect(err).toBeTruthy();
 
             // storagePersistenceService.write() should not have been called with jwtKeys
-            expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith('authnResult', 'authResultToStore', 'configId');
+            expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith('authnResult', 'authResultToStore', allconfigs[0]);
           },
         });
       })
@@ -262,14 +307,19 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'should fallback to stored jwtKeys on error',
       waitForAsync(() => {
         const callbackContext = { authResult: 'authResultToStore' } as unknown as CallbackContext;
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
+        const allconfigs = [
+          {
+            configId: 'configId1',
+            historyCleanupOff: true,
+          },
+        ];
         const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'read');
         storagePersistenceServiceSpy.and.returnValue(DUMMY_JWT_KEYS);
         spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(throwError(() => new Error('Error')));
 
-        service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe({
+        service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe({
           next: (callbackContext: CallbackContext) => {
-            expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith('jwtKeys', 'configId');
+            expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith('jwtKeys', allconfigs[0]);
             expect(callbackContext.jwtKeys).toEqual(DUMMY_JWT_KEYS);
           },
           error: (err) => {
@@ -283,11 +333,16 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       'should throw error if no jwtKeys are stored',
       waitForAsync(() => {
         const callbackContext = { authResult: 'authResultToStore' } as unknown as CallbackContext;
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ historyCleanupOff: true });
+        const allconfigs = [
+          {
+            configId: 'configId1',
+            historyCleanupOff: true,
+          },
+        ];
         spyOn(storagePersistenceService, 'read').and.returnValue(null);
         spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(throwError(() => new Error('Error')));
 
-        service.callbackHistoryAndResetJwtKeys(callbackContext, 'configId').subscribe({
+        service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe({
           next: (callbackContext: CallbackContext) => {
             expect(callbackContext).toBeFalsy();
           },
@@ -301,20 +356,22 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
 
   describe('historyCleanUpTurnedOn ', () => {
     it('check for false if historyCleanUpTurnedOn is on', () => {
-      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
+      const config = {
+        configId: 'configId1',
         historyCleanupOff: true,
-      });
+      };
 
-      const value = (service as any).historyCleanUpTurnedOn();
+      const value = (service as any).historyCleanUpTurnedOn(config);
       expect(value).toEqual(false);
     });
 
     it('check for true if historyCleanUpTurnedOn is off', () => {
-      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
+      const config = {
+        configId: 'configId1',
         historyCleanupOff: false,
-      });
+      };
 
-      const value = (service as any).historyCleanUpTurnedOn();
+      const value = (service as any).historyCleanUpTurnedOn(config);
       expect(value).toEqual(true);
     });
   });
