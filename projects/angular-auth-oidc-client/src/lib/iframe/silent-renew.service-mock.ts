@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
 
 @Injectable()
@@ -9,22 +10,21 @@ export class SilentRenewServiceMock {
     return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
   }
 
-  getOrCreateIframe(): HTMLIFrameElement {
+  getOrCreateIframe(config: OpenIdConfiguration): HTMLIFrameElement {
     return null;
   }
 
-  isSilentRenewConfigured() {
-    return true;
+  isSilentRenewConfigured(configuration: OpenIdConfiguration): boolean {
+    return null;
   }
 
-  codeFlowCallbackSilentRenewIframe(urlParts) {}
-
-  silentRenewEventHandler(e: CustomEvent) {}
-
-  fireRefreshWithIframeCompleted(callbackContext: CallbackContext) {
-    this.refreshSessionWithIFrameCompletedInternal$.next(callbackContext);
-    this.refreshSessionWithIFrameCompletedInternal$.complete();
+  codeFlowCallbackSilentRenewIframe(
+    urlParts: any,
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): Observable<CallbackContext> {
+    return null;
   }
 
-  getExistingIframe() {}
+  silentRenewEventHandler(e: CustomEvent, config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {}
 }

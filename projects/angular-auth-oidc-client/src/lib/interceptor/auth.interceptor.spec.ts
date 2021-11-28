@@ -3,8 +3,8 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
-import { ConfigurationProvider } from '../config/provider/config.provider';
-import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
+import { ConfigurationService } from '../config/config.service';
+import { ConfigurationServiceMock } from '../config/config.service.mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { AuthInterceptor } from './auth.interceptor';
@@ -12,7 +12,7 @@ import { ClosestMatchingRouteService } from './closest-matching-route.service';
 
 describe(`AuthHttpInterceptor`, () => {
   let httpTestingController: HttpTestingController;
-  let configurationProvider: ConfigurationProvider;
+  let configurationService: ConfigurationService;
   let httpClient: HttpClient;
   let authStateService: AuthStateService;
   let closestMatchingRouteService: ClosestMatchingRouteService;
@@ -33,15 +33,15 @@ describe(`AuthHttpInterceptor`, () => {
           useClass: LoggerServiceMock,
         },
         {
-          provide: ConfigurationProvider,
-          useClass: ConfigurationProviderMock,
+          provide: ConfigurationService,
+          useClass: ConfigurationServiceMock,
         },
       ],
     });
 
     httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);
-    configurationProvider = TestBed.inject(ConfigurationProvider);
+    configurationService = TestBed.inject(ConfigurationService);
     authStateService = TestBed.inject(AuthStateService);
     closestMatchingRouteService = TestBed.inject(ClosestMatchingRouteService);
   });
@@ -54,7 +54,7 @@ describe(`AuthHttpInterceptor`, () => {
     'should add an Authorization header when route matches and token is present',
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
-      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([
+      spyOn(configurationService, 'getAllConfigurations').and.returnValue([
         {
           secureRoutes: [actionUrl],
           configId: 'configId',
@@ -79,7 +79,7 @@ describe(`AuthHttpInterceptor`, () => {
     'should not add an Authorization header when `secureRoutes` is not given',
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
-      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([
+      spyOn(configurationService, 'getAllConfigurations').and.returnValue([
         {
           configId: 'configId',
         },
@@ -103,7 +103,7 @@ describe(`AuthHttpInterceptor`, () => {
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
 
-      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ secureRoutes: [], configId: 'configId' }]);
+      spyOn(configurationService, 'getAllConfigurations').and.returnValue([{ secureRoutes: [], configId: 'configId' }]);
 
       spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
 
@@ -123,7 +123,7 @@ describe(`AuthHttpInterceptor`, () => {
     'should not add an Authorization header when no routes configured and no token is present',
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
-      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ secureRoutes: [], configId: 'configId' }]);
+      spyOn(configurationService, 'getAllConfigurations').and.returnValue([{ secureRoutes: [], configId: 'configId' }]);
 
       spyOn(authStateService, 'getAccessToken').and.returnValue('');
 
@@ -144,7 +144,7 @@ describe(`AuthHttpInterceptor`, () => {
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
 
-      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ secureRoutes: [actionUrl], configId: 'configId' }]);
+      spyOn(configurationService, 'getAllConfigurations').and.returnValue([{ secureRoutes: [actionUrl], configId: 'configId' }]);
 
       spyOn(authStateService, 'getAccessToken').and.returnValue('');
 
@@ -165,7 +165,7 @@ describe(`AuthHttpInterceptor`, () => {
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
 
-      spyOn(configurationProvider, 'hasAtLeastOneConfig').and.returnValue(false);
+      spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(false);
 
       httpClient.get(actionUrl).subscribe((response) => {
         expect(response).toBeTruthy();
@@ -182,13 +182,13 @@ describe(`AuthHttpInterceptor`, () => {
   it(
     'should not add an Authorization header when no configured route is matching the request',
     waitForAsync(() => {
-      spyOn(configurationProvider, 'hasAtLeastOneConfig').and.returnValue(true);
+      spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(true);
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
 
-      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ secureRoutes: [actionUrl], configId: 'configId' }]);
+      spyOn(configurationService, 'getAllConfigurations').and.returnValue([{ secureRoutes: [actionUrl], configId: 'configId' }]);
       spyOn(closestMatchingRouteService, 'getConfigIdForClosestMatchingRoute').and.returnValue({
         matchingRoute: null,
-        matchingConfigId: null,
+        matchingConfig: null,
       });
 
       httpClient.get(actionUrl).subscribe((response) => {
@@ -209,7 +209,7 @@ describe(`AuthHttpInterceptor`, () => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
       const actionUrl2 = `https://some-other-url.com/`;
 
-      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([
+      spyOn(configurationService, 'getAllConfigurations').and.returnValue([
         { secureRoutes: [actionUrl, actionUrl2], configId: 'configId' },
       ]);
 

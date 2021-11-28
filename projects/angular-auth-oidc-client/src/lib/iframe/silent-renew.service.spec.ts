@@ -5,8 +5,6 @@ import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
 import { ImplicitFlowCallbackServiceMock } from '../callback/implicit-flow-callback.service-mock';
 import { IntervalService } from '../callback/interval.service';
-import { ConfigurationProvider } from '../config/provider/config.provider';
-import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsDataServiceMock } from '../flows/flows-data.service-mock';
@@ -25,7 +23,6 @@ describe('SilentRenewService  ', () => {
   let flowHelper: FlowHelper;
   let implicitFlowCallbackService: ImplicitFlowCallbackService;
   let iFrameService: IFrameService;
-  let configurationProvider: ConfigurationProvider;
   let flowsDataService: FlowsDataService;
   let loggerService: LoggerService;
 
@@ -33,16 +30,15 @@ describe('SilentRenewService  ', () => {
     TestBed.configureTestingModule({
       providers: [
         SilentRenewService,
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: ImplicitFlowCallbackService, useClass: ImplicitFlowCallbackServiceMock },
-        { provide: FlowsService, useClass: FlowsServiceMock },
-        { provide: AuthStateService, useClass: AuthStateServiceMock },
-        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
-        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
-        FlowHelper,
         IFrameService,
+        { provide: FlowsService, useClass: FlowsServiceMock },
+        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
+        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
+        { provide: AuthStateService, useClass: AuthStateServiceMock },
+        { provide: LoggerService, useClass: LoggerServiceMock },
+        FlowHelper,
+        { provide: ImplicitFlowCallbackService, useClass: ImplicitFlowCallbackServiceMock },
         IntervalService,
-        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
       ],
     });
   });
@@ -53,7 +49,6 @@ describe('SilentRenewService  ', () => {
     flowHelper = TestBed.inject(FlowHelper);
     implicitFlowCallbackService = TestBed.inject(ImplicitFlowCallbackService);
     flowsDataService = TestBed.inject(FlowsDataService);
-    configurationProvider = TestBed.inject(ConfigurationProvider);
     loggerService = TestBed.inject(LoggerService);
   });
 
@@ -69,25 +64,24 @@ describe('SilentRenewService  ', () => {
 
   describe('isSilentRenewConfigured', () => {
     it('returns true if refreshToken is configured false and silentRenew is configured true', () => {
-      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ useRefreshToken: false, silentRenew: true });
-
-      const result = silentRenewService.isSilentRenewConfigured('configId');
+      const config = { useRefreshToken: false, silentRenew: true };
+      const result = silentRenewService.isSilentRenewConfigured(config);
 
       expect(result).toBe(true);
     });
 
     it('returns false if refreshToken is configured true and silentRenew is configured true', () => {
-      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ useRefreshToken: true, silentRenew: true });
+      const config = { useRefreshToken: true, silentRenew: true };
 
-      const result = silentRenewService.isSilentRenewConfigured('configId');
+      const result = silentRenewService.isSilentRenewConfigured(config);
 
       expect(result).toBe(false);
     });
 
     it('returns false if refreshToken is configured false and silentRenew is configured false', () => {
-      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ useRefreshToken: false, silentRenew: false });
+      const config = { useRefreshToken: false, silentRenew: false };
 
-      const result = silentRenewService.isSilentRenewConfigured('configId');
+      const result = silentRenewService.isSilentRenewConfigured(config);
 
       expect(result).toBe(false);
     });
@@ -97,7 +91,7 @@ describe('SilentRenewService  ', () => {
     it('returns iframe if iframe is truthy', () => {
       spyOn(silentRenewService as any, 'getExistingIframe').and.returnValue({ name: 'anything' });
 
-      const result = silentRenewService.getOrCreateIframe('configId');
+      const result = silentRenewService.getOrCreateIframe({ configId: 'configId1' });
 
       expect(result).toEqual({ name: 'anything' } as HTMLIFrameElement);
     });
@@ -107,11 +101,11 @@ describe('SilentRenewService  ', () => {
 
       const spy = spyOn(iFrameService, 'addIFrameToWindowBody').and.returnValue({ name: 'anything' } as HTMLIFrameElement);
 
-      const result = silentRenewService.getOrCreateIframe('configId');
+      const result = silentRenewService.getOrCreateIframe({ configId: 'configId1' });
 
       expect(result).toEqual({ name: 'anything' } as HTMLIFrameElement);
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith('myiFrameForSilentRenew', 'configId');
+      expect(spy).toHaveBeenCalledWith('myiFrameForSilentRenew', { configId: 'configId1' });
     });
   });
 
@@ -120,8 +114,8 @@ describe('SilentRenewService  ', () => {
       const isCurrentFlowCodeFlowSpy = spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
       spyOn(implicitFlowCallbackService, 'authenticatedImplicitFlowCallback').and.returnValue(of(null));
       const eventData = { detail: null } as CustomEvent;
-
-      silentRenewService.silentRenewEventHandler(eventData, 'configId');
+      const allConfigs = [{ configId: 'configId1' }];
+      silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
       tick(1000);
       expect(isCurrentFlowCodeFlowSpy).not.toHaveBeenCalled();
     }));
@@ -132,31 +126,34 @@ describe('SilentRenewService  ', () => {
         of(null)
       );
       const eventData = { detail: 'detail' } as CustomEvent;
+      const allConfigs = [{ configId: 'configId1' }];
 
-      silentRenewService.silentRenewEventHandler(eventData, 'configId');
+      silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
       tick(1000);
       expect(isCurrentFlowCodeFlowSpy).toHaveBeenCalled();
-      expect(authorizedImplicitFlowCallbackSpy).toHaveBeenCalledWith('configId', 'detail');
+      expect(authorizedImplicitFlowCallbackSpy).toHaveBeenCalledWith(allConfigs[0], allConfigs, 'detail');
     }));
 
     it('calls codeFlowCallbackSilentRenewIframe if current flow is code flow', fakeAsync(() => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
       const codeFlowCallbackSilentRenewIframe = spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe').and.returnValue(of(null));
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
+      const allConfigs = [{ configId: 'configId1' }];
 
-      silentRenewService.silentRenewEventHandler(eventData, 'configId');
+      silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
       tick(1000);
-      expect(codeFlowCallbackSilentRenewIframe).toHaveBeenCalledWith(['detail', 'detail2'], 'configId');
+      expect(codeFlowCallbackSilentRenewIframe).toHaveBeenCalledWith(['detail', 'detail2'], allConfigs[0], allConfigs);
     }));
 
     it('calls authorizedImplicitFlowCallback if current flow is not code flow', fakeAsync(() => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
       const codeFlowCallbackSilentRenewIframe = spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe').and.returnValue(of(null));
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
+      const allConfigs = [{ configId: 'configId1' }];
 
-      silentRenewService.silentRenewEventHandler(eventData, 'configId');
+      silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
       tick(1000);
-      expect(codeFlowCallbackSilentRenewIframe).toHaveBeenCalledWith(['detail', 'detail2'], 'configId');
+      expect(codeFlowCallbackSilentRenewIframe).toHaveBeenCalledWith(['detail', 'detail2'], allConfigs[0], allConfigs);
     }));
 
     it('calls next on refreshSessionWithIFrameCompleted with callbackcontext', fakeAsync(() => {
@@ -165,12 +162,13 @@ describe('SilentRenewService  ', () => {
         of({ refreshToken: 'callbackContext' } as CallbackContext)
       );
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
+      const allConfigs = [{ configId: 'configId1' }];
 
       silentRenewService.refreshSessionWithIFrameCompleted$.subscribe((result) => {
         expect(result).toEqual({ refreshToken: 'callbackContext' } as CallbackContext);
       });
 
-      silentRenewService.silentRenewEventHandler(eventData, 'configId');
+      silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
       tick(1000);
     }));
 
@@ -179,10 +177,10 @@ describe('SilentRenewService  ', () => {
       spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe').and.returnValue(throwError(() => new Error('ERROR')));
       const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
       const logErrorSpy = spyOn(loggerService, 'logError');
-
+      const allConfigs = [{ configId: 'configId1' }];
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
 
-      silentRenewService.silentRenewEventHandler(eventData, 'configId');
+      silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
       tick(1000);
       expect(resetSilentRenewRunningSpy).toHaveBeenCalledTimes(1);
       expect(logErrorSpy).toHaveBeenCalledTimes(1);
@@ -192,12 +190,13 @@ describe('SilentRenewService  ', () => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
       spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe').and.returnValue(throwError(() => new Error('ERROR')));
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
+      const allConfigs = [{ configId: 'configId1' }];
 
       silentRenewService.refreshSessionWithIFrameCompleted$.subscribe((result) => {
         expect(result).toBeNull();
       });
 
-      silentRenewService.silentRenewEventHandler(eventData, 'configId');
+      silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
       tick(1000);
     }));
   });
