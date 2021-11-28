@@ -63,8 +63,9 @@ describe('StateValidationCallbackHandlerService', () => {
           idToken: 'idTokenJustForTesting',
           authResponseIsValid: true,
         } as StateValidationResult);
+        const allConfigs = [{ configId: 'configId1' }];
 
-        service.callbackStateValidation({} as CallbackContext, 'configId').subscribe((newCallbackContext) => {
+        service.callbackStateValidation({} as CallbackContext, allConfigs[0], allConfigs).subscribe((newCallbackContext) => {
           expect(newCallbackContext).toEqual({
             validationResult: {
               idToken: 'idTokenJustForTesting',
@@ -83,11 +84,12 @@ describe('StateValidationCallbackHandlerService', () => {
         } as StateValidationResult);
 
         const loggerSpy = spyOn(loggerService, 'logWarning');
+        const allConfigs = [{ configId: 'configId1' }];
 
-        service.callbackStateValidation({} as CallbackContext, 'configId').subscribe({
+        service.callbackStateValidation({} as CallbackContext, allConfigs[0], allConfigs).subscribe({
           error: (err) => {
             expect(loggerSpy).toHaveBeenCalledOnceWith(
-              'configId',
+              allConfigs[0],
               'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
             );
           },
@@ -105,8 +107,9 @@ describe('StateValidationCallbackHandlerService', () => {
 
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
+        const allConfigs = [{ configId: 'configId1' }];
 
-        service.callbackStateValidation({ isRenewProcess: true } as CallbackContext, 'configId').subscribe({
+        service.callbackStateValidation({ isRenewProcess: true } as CallbackContext, allConfigs[0], allConfigs).subscribe({
           error: (err) => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({

@@ -1,3 +1,5 @@
+import { OpenIdConfiguration } from '../config/openid-configuration';
+
 export class ResetAuthDataServiceMock {
-  resetAuthorizationData(configId: string): void {}
+  resetAuthorizationData(currentConfiguration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {}
 }
