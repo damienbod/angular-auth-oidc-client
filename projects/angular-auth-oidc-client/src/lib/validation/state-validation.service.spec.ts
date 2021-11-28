@@ -2,8 +2,6 @@
 import { TestBed } from '@angular/core/testing';
 import { AuthWellKnownEndpoints } from '../config/auth-well-known/auth-well-known-endpoints';
 import { OpenIdConfiguration } from '../config/openid-configuration';
-import { ConfigurationProvider } from '../config/provider/config.provider';
-import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { LogLevel } from '../logging/log-level';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
@@ -22,7 +20,6 @@ describe('State Validation Service', () => {
   let oidcSecurityValidation: TokenValidationService;
   let tokenHelperService: TokenHelperService;
   let loggerService: LoggerService;
-  let configProvider: ConfigurationProvider;
   let config: OpenIdConfiguration;
   let authWellKnownEndpoints: AuthWellKnownEndpoints;
   let storagePersistenceService: StoragePersistenceService;
@@ -44,10 +41,6 @@ describe('State Validation Service', () => {
           provide: LoggerService,
           useClass: LoggerServiceMock,
         },
-        {
-          provide: ConfigurationProvider,
-          useClass: ConfigurationProviderMock,
-        },
         TokenHelperService,
         EqualityService,
         FlowHelper,
@@ -58,7 +51,6 @@ describe('State Validation Service', () => {
   beforeEach(() => {
     stateValidationService = TestBed.inject(StateValidationService);
     oidcSecurityValidation = TestBed.inject(TokenValidationService);
-    configProvider = TestBed.inject(ConfigurationProvider);
     tokenHelperService = TestBed.inject(TokenHelperService);
     loggerService = TestBed.inject(LoggerService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);

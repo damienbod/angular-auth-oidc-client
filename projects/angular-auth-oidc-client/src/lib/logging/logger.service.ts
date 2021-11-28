@@ -34,14 +34,6 @@ export class LoggerService {
     }
   }
 
-  private logWarningWithoutConfig(message: any, ...args: any[]): void {
-    if (!!args && !!args.length) {
-      console.warn(`[WARN] - ${message}`, ...args);
-    } else {
-      console.warn(`[WARN] - ${message}`);
-    }
-  }
-
   private logWarningWithConfig(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {
     if (!this.logLevelIsSet(configuration)) {
       return;
@@ -75,14 +67,6 @@ export class LoggerService {
       console.error(`[ERROR] ${configId} - ${message}`, ...args);
     } else {
       console.error(`[ERROR] ${configId} - ${message}`);
-    }
-  }
-
-  private logErrorWithoutConfig(message: any, ...args: any[]): void {
-    if (!!args && !!args.length) {
-      console.error(`[ERROR] - ${message}`, ...args);
-    } else {
-      console.error(`[ERROR] - ${message}`);
     }
   }
 

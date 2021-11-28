@@ -1,8 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { skip } from 'rxjs/operators';
-import { ConfigurationProvider } from '../config/provider/config.provider';
-import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { OidcSecurityService } from '../oidc.security.service';
@@ -19,7 +17,6 @@ import { IFrameService } from './existing-iframe.service';
 describe('CheckSessionService', () => {
   let checkSessionService: CheckSessionService;
   let loggerService: LoggerService;
-  let configurationProvider: ConfigurationProvider;
   let iFrameService: IFrameService;
   let storagePersistenceService: StoragePersistenceService;
 
@@ -34,10 +31,6 @@ describe('CheckSessionService', () => {
           provide: StoragePersistenceService,
           useClass: StoragePersistenceServiceMock,
         },
-        {
-          provide: ConfigurationProvider,
-          useClass: ConfigurationProviderMock,
-        },
         { provide: LoggerService, useClass: LoggerServiceMock },
         { provide: AbstractSecurityStorage, useClass: BrowserStorageMock },
         { provide: PlatformProvider, useClass: PlatformProviderMock },
@@ -47,7 +40,6 @@ describe('CheckSessionService', () => {
 
   beforeEach(() => {
     checkSessionService = TestBed.inject(CheckSessionService);
-    configurationProvider = TestBed.inject(ConfigurationProvider);
     loggerService = TestBed.inject(LoggerService);
     iFrameService = TestBed.inject(IFrameService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
@@ -77,7 +69,7 @@ describe('CheckSessionService', () => {
   });
 
   it('getOrCreateIframe returns true if document found on window.document', () => {
-    iFrameService.addIFrameToWindowBody('myiFrameForCheckSession', 'configId');
+    iFrameService.addIFrameToWindowBody('myiFrameForCheckSession', { configId: 'configId1' });
 
     const result = (checkSessionService as any).getOrCreateIframe();
     expect(result).toBeDefined();
@@ -97,30 +89,29 @@ describe('CheckSessionService', () => {
   });
 
   it('log warning if authWellKnownEndpoints.check_session_iframe is not existing', () => {
-    spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
     const spyLogWarning = spyOn<any>(loggerService, 'logWarning');
     spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
     spyOn(storagePersistenceService, 'read')
-      .withArgs('authWellKnownEndPoints', 'configId')
+      .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
       .and.returnValue({ checkSessionIframe: undefined });
     (checkSessionService as any).init('configId');
 
-    expect(spyLogWarning).toHaveBeenCalledWith('configId', jasmine.any(String));
+    expect(spyLogWarning).toHaveBeenCalledWith({ configId: 'configId1' }, jasmine.any(String));
   });
 
   it('start() calls pollserversession() with clientId if no scheduledheartbeat is set', () => {
     const spy = spyOn<any>(checkSessionService, 'pollServerSession');
-    spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ clientId: 'clientId', configId: 'configId' });
+    const config = { clientId: 'clientId', configId: 'configId' };
 
-    checkSessionService.start('configId');
-    expect(spy).toHaveBeenCalledWith('clientId', 'configId');
+    checkSessionService.start(config);
+    expect(spy).toHaveBeenCalledWith('clientId', config);
   });
 
   it('start() does not call pollServerSession() if scheduledHeartBeatRunning is set', () => {
-    spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+    const config = { configId: 'configId' };
     const spy = spyOn<any>(checkSessionService, 'pollServerSession');
     (checkSessionService as any).scheduledHeartBeatRunning = () => {};
-    checkSessionService.start('configId');
+    checkSessionService.start(config);
     expect(spy).not.toHaveBeenCalled();
   });
 
@@ -140,22 +131,22 @@ describe('CheckSessionService', () => {
 
   describe('serverStateChanged', () => {
     it('returns false if startCheckSession is not configured', () => {
-      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ startCheckSession: false });
-      const result = checkSessionService.serverStateChanged('configId');
+      const config = { startCheckSession: false, configId: 'configId' };
+      const result = checkSessionService.serverStateChanged(config);
       expect(result).toBeFalsy();
     });
 
     it('returns false if checkSessionReceived is false', () => {
       (checkSessionService as any).checkSessionReceived = false;
-      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ startCheckSession: true });
-      const result = checkSessionService.serverStateChanged('configId');
+      const config = { startCheckSession: true, configId: 'configId' };
+      const result = checkSessionService.serverStateChanged(config);
       expect(result).toBeFalse();
     });
 
     it('returns true if startCheckSession is configured and checkSessionReceived is true', () => {
       (checkSessionService as any).checkSessionReceived = true;
-      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ startCheckSession: true });
-      const result = checkSessionService.serverStateChanged('configId');
+      const config = { startCheckSession: true, configId: 'configId' };
+      const result = checkSessionService.serverStateChanged(config);
       expect(result).toBeTrue();
     });
   });
@@ -170,13 +161,14 @@ describe('CheckSessionService', () => {
       const authWellKnownEndpoints = {
         checkSessionIframe: 'https://some-testing-url.com',
       };
+      const config = { configId: 'configId1' };
       spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', 'configId')
+        .withArgs('authWellKnownEndPoints', config)
         .and.returnValue(authWellKnownEndpoints)
-        .withArgs('session_state', 'configId')
+        .withArgs('session_state', config)
         .and.returnValue('session_state');
       spyOn(loggerService, 'logDebug').and.callFake(() => {});
-      (checkSessionService as any).pollServerSession('clientId', 'configId');
+      (checkSessionService as any).pollServerSession('clientId', config);
       expect((checkSessionService as any).outstandingMessages).toBe(1);
     });
 
@@ -185,11 +177,12 @@ describe('CheckSessionService', () => {
       const authWellKnownEndpoints = {
         checkSessionIframe: 'https://some-testing-url.com',
       };
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
+      const config = { configId: 'configId1' };
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
       const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => {});
       spyOn(loggerService, 'logDebug').and.callFake(() => {});
-      (checkSessionService as any).pollServerSession('clientId', 'configId');
-      expect(spyLogWarning).toHaveBeenCalledWith('configId', jasmine.any(String));
+      (checkSessionService as any).pollServerSession('clientId', config);
+      expect(spyLogWarning).toHaveBeenCalledWith(config, jasmine.any(String));
     });
 
     it('logs warning if clientId is not set', () => {
@@ -197,11 +190,12 @@ describe('CheckSessionService', () => {
       const authWellKnownEndpoints = {
         checkSessionIframe: 'https://some-testing-url.com',
       };
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
+      const config = { configId: 'configId1' };
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
       const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => {});
       spyOn(loggerService, 'logDebug').and.callFake(() => {});
       (checkSessionService as any).pollServerSession('', 'configId');
-      expect(spyLogWarning).toHaveBeenCalledWith('configId', jasmine.any(String));
+      expect(spyLogWarning).toHaveBeenCalledWith(config, jasmine.any(String));
     });
 
     it('logs debug if session_state is not set', () => {
@@ -209,29 +203,30 @@ describe('CheckSessionService', () => {
       const authWellKnownEndpoints = {
         checkSessionIframe: 'https://some-testing-url.com',
       };
-
+      const config = { configId: 'configId1' };
       spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', 'configId')
+        .withArgs('authWellKnownEndPoints', config)
         .and.returnValue(authWellKnownEndpoints)
-        .withArgs('session_state', 'configId')
+        .withArgs('session_state', config)
         .and.returnValue(null);
 
       const spyLogDebug = spyOn(loggerService, 'logDebug').and.callFake(() => {});
-      (checkSessionService as any).pollServerSession('clientId', 'configId');
+      (checkSessionService as any).pollServerSession('clientId', config);
       expect(spyLogDebug).toHaveBeenCalledTimes(2);
     });
 
     it('logs debug if session_state is set but authWellKnownEndpoints are not set', () => {
       spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue({});
       const authWellKnownEndpoints = null;
+      const config = { configId: 'configId1' };
 
       spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', 'configId')
+        .withArgs('authWellKnownEndPoints', config)
         .and.returnValue(authWellKnownEndpoints)
-        .withArgs('session_state', 'configId')
+        .withArgs('session_state', config)
         .and.returnValue('some_session_state');
       const spyLogDebug = spyOn(loggerService, 'logDebug').and.callFake(() => {});
-      (checkSessionService as any).pollServerSession('clientId', 'configId');
+      (checkSessionService as any).pollServerSession('clientId', config);
       expect(spyLogDebug).toHaveBeenCalledTimes(2);
     });
   });
@@ -255,17 +250,17 @@ describe('CheckSessionService', () => {
 
   describe('isCheckSessionConfigured', () => {
     it('returns true if startCheckSession on config is true', () => {
-      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ startCheckSession: true });
+      const config = { configId: 'configId1', startCheckSession: true };
 
-      const result = checkSessionService.isCheckSessionConfigured('configId');
+      const result = checkSessionService.isCheckSessionConfigured(config);
 
       expect(result).toBe(true);
     });
 
     it('returns true if startCheckSession on config is true', () => {
-      spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ startCheckSession: false });
+      const config = { configId: 'configId1', startCheckSession: false };
 
-      const result = checkSessionService.isCheckSessionConfigured('configId');
+      const result = checkSessionService.isCheckSessionConfigured(config);
 
       expect(result).toBe(false);
     });

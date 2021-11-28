@@ -43,9 +43,10 @@ describe('RefreshSessionIframeService ', () => {
           refreshSessionIframeService as any,
           'sendAuthorizeRequestUsingSilentRenew'
         ).and.returnValue(of(null));
+        const allConfigs = [{ configId: 'configId1' }];
 
-        refreshSessionIframeService.refreshSessionWithIframe('configId').subscribe(() => {
-          expect(sendAuthorizeRequestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url', 'configId');
+        refreshSessionIframeService.refreshSessionWithIframe(allConfigs[0], allConfigs).subscribe(() => {
+          expect(sendAuthorizeRequestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url', allConfigs[0]);
         });
       })
     );
@@ -62,12 +63,13 @@ describe('RefreshSessionIframeService ', () => {
         document.body.appendChild(sessionIFrame);
 
         const addEventListenerSpy = spyOn(sessionIFrame, 'addEventListener');
+        const allConfigs = [{ configId: 'configId1' }];
 
         spyOn(silentRenewService, 'getOrCreateIframe').and.returnValue(sessionIFrame);
 
         spyOn(refreshSessionIframeService as any, 'sendAuthorizeRequestUsingSilentRenew').and.callThrough();
 
-        refreshSessionIframeService.refreshSessionWithIframe('configId').subscribe((result) => {
+        refreshSessionIframeService.refreshSessionWithIframe(allConfigs[0], allConfigs).subscribe((result) => {
           expect(result).toBeTrue();
           expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
         });

@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 
 @Injectable()
 export class LoggerServiceMock {
-  logError(message: any, ...args: any[]) {}
+  logError(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {}
 
-  logWarning(message: any) {}
+  logWarning(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {}
 
-  logDebug(message: any) {}
+  logDebug(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {}
 }
