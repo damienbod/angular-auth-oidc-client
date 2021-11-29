@@ -493,6 +493,7 @@ export class TokenValidationService {
 
     return this.jsrsAsignReducedService.generateAtHash('' + accessToken, sha).pipe(
       mergeMap((hash: string) => {
+        console.warn('hash', hash);
         this.loggerService.logDebug(configId, 'at_hash client validation not decoded:' + hash);
         if (hash === atHash) {
           return of(true); // isValid;

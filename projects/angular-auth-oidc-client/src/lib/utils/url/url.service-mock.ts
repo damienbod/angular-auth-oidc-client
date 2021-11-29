@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable, of } from "rxjs";
 
 @Injectable()
 export class UrlServiceMock {
@@ -12,12 +13,12 @@ export class UrlServiceMock {
     return true;
   }
 
-  getRefreshSessionSilentRenewUrl(): Promise<string> {
-    return Promise.resolve('');
+  getRefreshSessionSilentRenewUrl(): Observable<string> {
+    return of('');
   }
 
-  getAuthorizeUrl(customParams?: { [key: string]: string | number | boolean }): Promise<string> {
-    return Promise.resolve('someUrl');
+  getAuthorizeUrl(customParams?: { [key: string]: string | number | boolean }): Observable<string> {
+    return of('someUrl');
   }
 
   createEndSessionUrl(idTokenHint: string) {
