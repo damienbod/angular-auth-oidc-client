@@ -70,7 +70,7 @@ export class ParLoginService {
     authOptions?: AuthOptions,
     popupOptions?: PopupOptions
   ): Observable<LoginResponse> {
-    const { authWellknownEndpointUrl, configId } = configuration;
+    const { configId } = configuration;
 
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configuration)) {
       const errorMessage = 'Invalid response type!';

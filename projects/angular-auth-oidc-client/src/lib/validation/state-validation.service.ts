@@ -277,7 +277,7 @@ export class StateValidationService {
   }
 
   private handleSuccessfulValidation(configuration: OpenIdConfiguration): void {
-    const { autoCleanStateAfterAuthentication, configId } = configuration;
+    const { autoCleanStateAfterAuthentication } = configuration;
     this.storagePersistenceService.write('authNonce', null, configuration);
 
     if (autoCleanStateAfterAuthentication) {
@@ -287,7 +287,7 @@ export class StateValidationService {
   }
 
   private handleUnsuccessfulValidation(configuration: OpenIdConfiguration): void {
-    const { autoCleanStateAfterAuthentication, configId } = configuration;
+    const { autoCleanStateAfterAuthentication } = configuration;
     this.storagePersistenceService.write('authNonce', null, configuration);
 
     if (autoCleanStateAfterAuthentication) {

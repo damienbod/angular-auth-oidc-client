@@ -20,7 +20,6 @@ import { PopUpServiceMock } from './popup.service-mock';
 
 describe('PopUpLoginService', () => {
   let popUpLoginService: PopUpLoginService;
-  let configurationProvider: ConfigurationProvider;
   let urlService: UrlService;
   let loggerService: LoggerService;
   let responseTypValidationService: ResponseTypeValidationService;
@@ -46,7 +45,6 @@ describe('PopUpLoginService', () => {
 
   beforeEach(() => {
     popUpLoginService = TestBed.inject(PopUpLoginService);
-    configurationProvider = TestBed.inject(ConfigurationProvider);
     urlService = TestBed.inject(UrlService);
     loggerService = TestBed.inject(LoggerService);
     responseTypValidationService = TestBed.inject(ResponseTypeValidationService);
