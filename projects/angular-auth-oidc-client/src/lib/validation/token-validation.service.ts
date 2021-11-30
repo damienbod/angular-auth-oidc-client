@@ -1,10 +1,10 @@
-﻿import {Injectable} from '@angular/core';
-import {base64url} from 'rfc4648';
-import {LoggerService} from '../logging/logger.service';
-import {TokenHelperService} from '../utils/tokenHelper/token-helper.service';
-import {JsrsAsignReducedService} from './jsrsasign-reduced.service';
-import {from, Observable, of} from 'rxjs';
-import {map, mergeMap, tap} from 'rxjs/operators';
+﻿import { Injectable } from '@angular/core';
+import { base64url } from 'rfc4648';
+import { from, Observable, of } from 'rxjs';
+import { map, mergeMap, tap } from 'rxjs/operators';
+import { LoggerService } from '../logging/logger.service';
+import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
+import { JsrsAsignReducedService } from './jsrsasign-reduced.service';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
@@ -368,9 +368,10 @@ export class TokenValidationService {
 
     return from(this.cyptoObj.subtle.importKey('jwk', key, algorithm, false, ['verify'])).pipe(
       mergeMap((cryptoKey: CryptoKey) => {
-        const signature: Uint8Array = base64url.parse(rawSignature, {loose: true});
+        const signature: Uint8Array = base64url.parse(rawSignature, { loose: true });
 
         const algorithm: RsaHashedImportParams | EcdsaParams = this.getVerifyAlg(alg);
+
         return from(this.cyptoObj.subtle.verify(algorithm, cryptoKey, signature, new TextEncoder().encode(signingInput)));
       }),
       tap((isValid: boolean) => {
@@ -440,7 +441,7 @@ export class TokenValidationService {
             hash: 'SHA-384',
           };
         } else {
-          return null
+          return null;
         }
       default:
         return null;
