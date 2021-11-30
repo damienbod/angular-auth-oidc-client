@@ -401,7 +401,7 @@ export class UrlService {
         const silentRenewUrl = this.getSilentRenewUrl(configId);
 
         if (!silentRenewUrl) {
-          return null;
+          return '';
         }
 
         const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
@@ -460,7 +460,7 @@ export class UrlService {
 
         this.loggerService.logError(configId, 'authWellKnownEndpoints is undefined');
 
-        return null;
+        return '';
       })
     );
   }

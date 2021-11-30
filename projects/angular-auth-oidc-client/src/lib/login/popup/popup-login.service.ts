@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from, Observable, of, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { switchMap, take, tap } from 'rxjs/operators';
 import { AuthOptions } from '../../auth-options';
 import { CheckAuthService } from '../../check-auth.service';
@@ -22,8 +22,9 @@ export class PopUpLoginService {
     private configurationProvider: ConfigurationProvider,
     private authWellKnownService: AuthWellKnownService,
     private popupService: PopUpService,
-    private checkAuthService: CheckAuthService
-  ) {}
+    private checkAuthService: CheckAuthService,
+  ) {
+  }
 
   loginWithPopUpStandard(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
@@ -69,9 +70,9 @@ export class PopUpLoginService {
             }
 
             return this.checkAuthService.checkAuth(configId, receivedUrl);
-          })
+          }),
         );
-      })
+      }),
     );
   }
 }

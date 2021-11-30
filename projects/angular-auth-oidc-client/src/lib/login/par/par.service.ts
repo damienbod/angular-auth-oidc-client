@@ -1,6 +1,6 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { from, Observable, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, map, retry, switchMap } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
 import { LoggerService } from '../../logging/logger.service';
@@ -21,18 +21,18 @@ export class ParService {
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-    const authWellknownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+    const authWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
 
-    if (!authWellknownEndpoints) {
+    if (!authWellKnownEndpoints) {
       return throwError(() => new Error('Could not read PAR endpoint because authWellKnownEndPoints are not given'));
     }
 
-    const parEndpoint = authWellknownEndpoints.parEndpoint;
+    const parEndpoint = authWellKnownEndpoints.parEndpoint;
     if (!parEndpoint) {
       return throwError(() => new Error('Could not read PAR endpoint from authWellKnownEndpoints'));
     }
 
-    return from(this.urlService.createBodyForParCodeFlowRequest(configId, customParams)).pipe(
+    return this.urlService.createBodyForParCodeFlowRequest(configId, customParams).pipe(
       switchMap((data) => {
         return this.dataService.post(parEndpoint, data, configId, headers).pipe(
           retry(2),
