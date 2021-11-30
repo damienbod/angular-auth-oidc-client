@@ -198,7 +198,7 @@ describe("State Validation Service", () => {
     });
   });
 
-  it("should return invalid result if validateSignatureIdToken is false", async () => {
+  it("should return invalid result if validateSignatureIdToken is false", () => {
     spyOn(oidcSecurityValidation, "validateStateFromHashCallback").and.returnValue(true);
     config.responseType = "id_token token";
     spyOn(tokenHelperService, "getPayloadFromToken").and.returnValue("decoded_id_token");
@@ -236,7 +236,7 @@ describe("State Validation Service", () => {
     });
   });
 
-  it("should return invalid result if validateIdTokenNonce is false", async () => {
+  it("should return invalid result if validateIdTokenNonce is false", () => {
     spyOn(oidcSecurityValidation, "validateStateFromHashCallback").and.returnValue(true);
     config.responseType = "id_token token";
     spyOn(tokenHelperService, "getPayloadFromToken").and.returnValue("decoded_id_token");
@@ -279,7 +279,7 @@ describe("State Validation Service", () => {
     });
   });
 
-  it("should return invalid result if validateRequiredIdToken is false", async () => {
+  it("should return invalid result if validateRequiredIdToken is false", () => {
     spyOn(oidcSecurityValidation, "validateStateFromHashCallback").and.returnValue(true);
 
     config.responseType = "id_token token";
@@ -324,7 +324,7 @@ describe("State Validation Service", () => {
     });
   });
 
-  it("should return invalid result if validateIdTokenIatMaxOffset is false", async () => {
+  it("should return invalid result if validateIdTokenIatMaxOffset is false", () => {
     spyOn(oidcSecurityValidation, "validateStateFromHashCallback").and.returnValue(true);
 
     config.responseType = "id_token token";
@@ -376,7 +376,7 @@ describe("State Validation Service", () => {
     });
   });
 
-  it("should return invalid result if validateIdTokenIss is false", async () => {
+  it("should return invalid result if validateIdTokenIss is false", () => {
     spyOn(oidcSecurityValidation, "validateStateFromHashCallback").and.returnValue(true);
 
     config.responseType = "id_token token";
@@ -426,7 +426,7 @@ describe("State Validation Service", () => {
     });
   });
 
-  it("should return invalid result if validateIdTokenAud is false", async () => {
+  it("should return invalid result if validateIdTokenAud is false", () => {
     spyOn(oidcSecurityValidation, "validateStateFromHashCallback").and.returnValue(true);
 
     config.responseType = "id_token token";
@@ -480,7 +480,7 @@ describe("State Validation Service", () => {
     });
   });
 
-  it("should return invalid result if validateIdTokenExpNotExpired is false", async () => {
+  it("should return invalid result if validateIdTokenExpNotExpired is false", () => {
     spyOn(oidcSecurityValidation, "validateStateFromHashCallback").and.returnValue(true);
 
     config.responseType = "id_token token";
@@ -536,7 +536,7 @@ describe("State Validation Service", () => {
     });
   });
 
-  it("Reponse is valid if authConfiguration.response_type does not equal \"id_token token\"", async () => {
+  it("Reponse is valid if authConfiguration.response_type does not equal \"id_token token\"", () => {
     spyOn(oidcSecurityValidation, "validateStateFromHashCallback").and.returnValue(true);
     spyOn(tokenHelperService, "getPayloadFromToken").and.returnValue("decoded_id_token");
     spyOn(oidcSecurityValidation, "validateSignatureIdToken").and.returnValue(of(true));
@@ -586,7 +586,7 @@ describe("State Validation Service", () => {
     });
   });
 
-  it("Response is invalid if validateIdTokenAtHash is false", async () => {
+  it("Response is invalid if validateIdTokenAtHash is false", () => {
     spyOn(oidcSecurityValidation, "validateStateFromHashCallback").and.returnValue(true);
     spyOn(tokenHelperService, "getPayloadFromToken").and.returnValue("decoded_id_token");
     spyOn(oidcSecurityValidation, "validateSignatureIdToken").and.returnValue(of(true));
@@ -636,7 +636,7 @@ describe("State Validation Service", () => {
     });
   });
 
-  it("should return valid result if validateIdTokenIss is false and iss_validation_off is true", async () => {
+  it("should return valid result if validateIdTokenIss is false and iss_validation_off is true", () => {
     config.issValidationOff = true;
     spyOn(oidcSecurityValidation, "validateIdTokenIss").and.returnValue(false);
 
@@ -684,7 +684,7 @@ describe("State Validation Service", () => {
     });
   });
 
-  it("should return valid if there is no id_token", async () => {
+  it("should return valid if there is no id_token", () => {
     spyOn(oidcSecurityValidation, "validateStateFromHashCallback").and.returnValue(true);
 
     config.responseType = "code";
@@ -1280,7 +1280,7 @@ describe("State Validation Service", () => {
     expect(isValid).toBe(false);
   });
 
-  it("should return invalid context error", async () => {
+  it("should return invalid context error", () => {
     spyOn(oidcSecurityValidation, "validateStateFromHashCallback").and.returnValue(true);
 
     config.responseType = "id_token token";
@@ -1310,7 +1310,7 @@ describe("State Validation Service", () => {
     });
   });
 
-  it("should return authResponseIsValid false when null is passed", async () => {
+  it("should return authResponseIsValid false when null is passed", () => {
     const isValidObs$ = stateValidationService.getValidatedStateResult(null, "configId");
 
     isValidObs$.subscribe(isValid => {

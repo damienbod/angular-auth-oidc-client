@@ -474,8 +474,7 @@ describe('TokenValidationService', () => {
       'returns true if sha is sha256 and generated hash equals atHash param',
       waitForAsync(() => {
         const accessToken = 'iGU3DhbPoDljiYtr0oepxi7zpT8BsjdU7aaXcdq-DPk';
-        const atHash =
-          'JUVGJUJGJUJEJUVGJUJGJUJEJUVGJUJGJUJEJUVGJUJGJUJEJUVGJUJGJUJEJUVGJUJGJUJEJUVGJUJGJUJEQiUxNEwlMkYnJTNGJUVGJUJGJUJENnAlRUYlQkYlQkQlRUYlQkYlQkQlRUYlQkYlQkQlQzMlQjQnJUNCJTgyfiVFRiVCRiVCRHUqJTI0JUVGJUJGJUJEJTNG';
+        const atHash = '-ODC_7Go_UIUTC8nP4k2cA';
 
         const result$ = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '256', 'configId');
         result$.subscribe((result) => {
