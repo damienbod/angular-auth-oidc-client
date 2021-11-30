@@ -1,4 +1,6 @@
-﻿export class TokenValidationServiceMock {
+﻿import { Observable, of } from 'rxjs';
+
+export class TokenValidationServiceMock {
   hasIdTokenExpired(idToken: string, offsetSeconds?: number): boolean {
     return false;
   }
@@ -31,16 +33,16 @@
     return true;
   }
 
-  validateSignatureIdToken(idToken: any, jwtkeys: any): Promise<boolean> {
-    return Promise.resolve(true);
+  validateSignatureIdToken(idToken: any, jwtkeys: any): Observable<boolean> {
+    return of(true);
   }
 
   hasConfigValidResponseType(responseType: string): boolean {
     return true;
   }
 
-  validateIdTokenAtHash(accessToken: any, atHash: any, isCodeFlow: boolean): Promise<boolean> {
-    return Promise.resolve(true);
+  validateIdTokenAtHash(accessToken: any, atHash: any, isCodeFlow: boolean): Observable<boolean> {
+    return of(true);
   }
 
   generateCodeChallenge(codeVerifier: any): string {

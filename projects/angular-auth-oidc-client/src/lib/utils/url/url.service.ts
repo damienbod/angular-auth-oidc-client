@@ -249,7 +249,7 @@ export class UrlService {
     const redirectUrl = this.getRedirectUrl(configId);
 
     if (!redirectUrl) {
-      return null;
+      return of(null);
     }
 
     const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
@@ -445,7 +445,7 @@ export class UrlService {
     const redirectUrl = this.getRedirectUrl(configId);
 
     if (!redirectUrl) {
-      return null;
+      return of(null);
     }
 
     // code_challenge with "S256"

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from "rxjs";
+import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class UrlServiceMock {
-  constructor() {}
+  constructor() {
+  }
 
   getUrlParameter(urlToCheck: any, name: any): string {
     return '';
@@ -45,13 +46,13 @@ export class UrlServiceMock {
     return '';
   }
 
-  createBodyForParCodeFlowRequest(customParamsRequest?: { [key: string]: string | number | boolean }): Promise<string> {
-    return Promise.resolve('');
+  createBodyForParCodeFlowRequest(customParamsRequest?: { [key: string]: string | number | boolean }): Observable<string> {
+    return of('');
   }
 
   private async createUrlCodeFlowWithSilentRenew(
     configId: string,
-    customParams?: { [key: string]: string | number | boolean }
+    customParams?: { [key: string]: string | number | boolean },
   ): Promise<string> {
     return Promise.resolve('');
   }

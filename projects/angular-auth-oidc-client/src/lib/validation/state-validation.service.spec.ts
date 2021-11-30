@@ -102,7 +102,7 @@ describe('State Validation Service', () => {
     expect(configProvider).toBeTruthy();
   });
 
-  it('should return invalid result if validateStateFromHashCallback is false', async () => {
+  it('should return invalid result if validateStateFromHashCallback is false', () => {
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
@@ -139,7 +139,7 @@ describe('State Validation Service', () => {
     });
   });
 
-  it('access_token should equal result.access_token and is valid if response_type is "id_token token"', async () => {
+  it('access_token should equal result.access_token and is valid if response_type is "id_token token"', () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
 
     config.responseType = 'id_token token';
