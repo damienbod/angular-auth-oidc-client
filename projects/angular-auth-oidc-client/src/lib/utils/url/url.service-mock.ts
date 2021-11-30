@@ -50,11 +50,11 @@ export class UrlServiceMock {
     return of('');
   }
 
-  private async createUrlCodeFlowWithSilentRenew(
+  private createUrlCodeFlowWithSilentRenew(
     configId: string,
     customParams?: { [key: string]: string | number | boolean },
-  ): Promise<string> {
-    return Promise.resolve('');
+  ): Observable<string> {
+    return of('');
   }
 
   getAuthorizeParUrl(request_uri: string): string {
