@@ -2,6 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
 import { UrlService } from '../utils/url/url.service';
 import { SilentRenewService } from './silent-renew.service';
@@ -20,12 +21,16 @@ export class RefreshSessionIframeService {
     this.renderer = rendererFactory.createRenderer(null, null);
   }
 
-  refreshSessionWithIframe(configId: string, customParams?: { [key: string]: string | number | boolean }): Observable<boolean> {
-    this.loggerService.logDebug(configId, 'BEGIN refresh session Authorize Iframe renew');
+  refreshSessionWithIframe(
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[],
+    customParams?: { [key: string]: string | number | boolean }
+  ): Observable<boolean> {
+    this.loggerService.logDebug(config, 'BEGIN refresh session Authorize Iframe renew');
 
-    return this.urlService.getRefreshSessionSilentRenewUrl(configId, customParams).pipe(
+    return this.urlService.getRefreshSessionSilentRenewUrl(config, customParams).pipe(
       switchMap((url) => {
-        return this.sendAuthorizeRequestUsingSilentRenew(url, configId);
+        return this.sendAuthorizeRequestUsingSilentRenew(url, config, allConfigs);
       })
     );
   }
@@ -61,7 +66,7 @@ export class RefreshSessionIframeService {
       }
     });
     const renewDestroyHandler = this.renderer.listen('window', 'oidc-silent-renew-message', (e) =>
-      this.silentRenewService.silentRenewEventHandler(e, configId)
+      this.silentRenewService.silentRenewEventHandler(e, config, allConfigs)
     );
 
     this.doc.defaultView.dispatchEvent(

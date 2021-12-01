@@ -19,19 +19,19 @@ export class TokenHelperService {
     return date;
   }
 
-  getSigningInputFromToken(token: any, encoded: boolean, configId: string): string {
-    if (!this.tokenIsValid(token, configId)) {
+  getSigningInputFromToken(token: any, encoded: boolean, configuration: OpenIdConfiguration): string {
+    if (!this.tokenIsValid(token, configuration)) {
       return '';
     }
 
-    const header: string = this.getHeaderFromToken(token, encoded, configId);
-    const payload: string = this.getPayloadFromToken(token, encoded, configId);
+    const header: string = this.getHeaderFromToken(token, encoded, configuration);
+    const payload: string = this.getPayloadFromToken(token, encoded, configuration);
 
     return [header, payload].join('.');
   }
 
-  getHeaderFromToken(token: any, encoded: boolean, configId: string): any {
-    if (!this.tokenIsValid(token, configId)) {
+  getHeaderFromToken(token: any, encoded: boolean, configuration: OpenIdConfiguration): any {
+    if (!this.tokenIsValid(token, configuration)) {
       return {};
     }
 

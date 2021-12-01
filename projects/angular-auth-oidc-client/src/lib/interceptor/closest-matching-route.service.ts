@@ -24,11 +24,6 @@ export class ClosestMatchingRouteService {
   }
 }
 
-export interface ConfiguredRoutesWithConfig {
-  routes: string[];
-  configId: string;
-}
-
 export interface ClosestMatchingRouteResult {
   matchingRoute: string;
   matchingConfig: OpenIdConfiguration;
