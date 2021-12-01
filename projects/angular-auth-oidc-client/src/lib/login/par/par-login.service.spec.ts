@@ -148,7 +148,7 @@ describe('ParLoginService', () => {
         const result = service.loginPar(config, { customParams: { some: 'thing' } });
 
         expect(result).toBeUndefined();
-        expect(spy).toHaveBeenCalledOnceWith(config, { some: 'thing' });
+        expect(spy).toHaveBeenCalledOnceWith('configId', { some: 'thing' });
       })
     );
 
@@ -296,7 +296,7 @@ describe('ParLoginService', () => {
 
         service.loginWithPopUpPar(config, allConfigs, { customParams: { some: 'thing' } }).subscribe({
           error: (err) => {
-            expect(spy).toHaveBeenCalledOnceWith(config, { some: 'thing' });
+            expect(spy).toHaveBeenCalledOnceWith('configId', { some: 'thing' });
             expect(err.message).toBe("Could not create URL with param requestUri: 'url'");
           },
         });
@@ -368,7 +368,13 @@ describe('ParLoginService', () => {
         spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
 
         const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(
-          of({ isAuthenticated: true, configId: 'configId', idToken: null, userData: { any: 'userData' }, accessToken: 'anyAccessToken' })
+          of({
+            isAuthenticated: true,
+            configId: 'configId',
+            idToken: null,
+            userData: { any: 'userData' },
+            accessToken: 'anyAccessToken',
+          })
         );
         const popupResult: PopupResult = { userClosed: false, receivedUrl: 'someUrl' };
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));

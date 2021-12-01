@@ -8,8 +8,8 @@ import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { UrlService } from '../../utils/url/url.service';
-import { DataServiceMock } from './../../api/data.service-mock';
-import { UrlServiceMock } from './../../utils/url/url.service-mock';
+import { DataServiceMock } from '../../api/data.service-mock';
+import { UrlServiceMock } from '../../utils/url/url.service-mock';
 import { ParService } from './par.service';
 
 describe('ParService', () => {
@@ -66,7 +66,7 @@ describe('ParService', () => {
             expect(err.message).toBe('Could not read PAR endpoint because authWellKnownEndPoints are not given');
           },
         });
-      })
+      }),
     );
 
     it(
@@ -81,16 +81,17 @@ describe('ParService', () => {
             expect(err.message).toBe('Could not read PAR endpoint from authWellKnownEndpoints');
           },
         });
-      })
+      }),
     );
 
     it(
       'calls data service with correct params',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url123');
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(of('some-url123'));
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
           .and.returnValue({ parEndpoint: 'parEndpoint' });
+
         const dataServiceSpy = spyOn(dataService, 'post').and.returnValue(of({}));
         service.postParRequest({ configId: 'configId1' }).subscribe(() => {
           expect(dataServiceSpy).toHaveBeenCalledOnceWith(
@@ -100,13 +101,13 @@ describe('ParService', () => {
             jasmine.any(HttpHeaders)
           );
         });
-      })
+      }),
     );
 
     it(
       'Gives back correct object properties',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(of('some-url456'));
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
           .and.returnValue({ parEndpoint: 'parEndpoint' });
@@ -114,13 +115,13 @@ describe('ParService', () => {
         service.postParRequest({ configId: 'configId1' }).subscribe((result) => {
           expect(result).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
         });
-      })
+      }),
     );
 
     it(
       'throws error if data service has got an error',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url789');
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(of('some-url789'));
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
           .and.returnValue({ parEndpoint: 'parEndpoint' });
@@ -137,21 +138,21 @@ describe('ParService', () => {
             );
           },
         });
-      })
+      }),
     );
 
     it(
       'should retry once',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(of('some-url456'));
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
           .and.returnValue({ parEndpoint: 'parEndpoint' });
         spyOn(dataService, 'post').and.returnValue(
           createRetriableStream(
             throwError(() => new Error('ERROR')),
-            of({ expires_in: 123, request_uri: 'request_uri' })
-          )
+            of({ expires_in: 123, request_uri: 'request_uri' }),
+          ),
         );
 
         service.postParRequest({ configId: 'configId1' }).subscribe({
@@ -160,13 +161,13 @@ describe('ParService', () => {
             expect(res).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
           },
         });
-      })
+      }),
     );
 
     it(
       'should retry twice',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(of('some-url456'));
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
           .and.returnValue({ parEndpoint: 'parEndpoint' });
@@ -174,8 +175,8 @@ describe('ParService', () => {
           createRetriableStream(
             throwError(() => new Error('ERROR')),
             throwError(() => new Error('ERROR')),
-            of({ expires_in: 123, request_uri: 'request_uri' })
-          )
+            of({ expires_in: 123, request_uri: 'request_uri' }),
+          ),
         );
 
         service.postParRequest({ configId: 'configId1' }).subscribe({
@@ -184,13 +185,13 @@ describe('ParService', () => {
             expect(res).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
           },
         });
-      })
+      }),
     );
 
     it(
       'should fail after three tries',
       waitForAsync(() => {
-        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue('some-url456');
+        spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(of('some-url456'));
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
           .and.returnValue({ parEndpoint: 'parEndpoint' });
@@ -199,8 +200,8 @@ describe('ParService', () => {
             throwError(() => new Error('ERROR')),
             throwError(() => new Error('ERROR')),
             throwError(() => new Error('ERROR')),
-            of({ expires_in: 123, request_uri: 'request_uri' })
-          )
+            of({ expires_in: 123, request_uri: 'request_uri' }),
+          ),
         );
 
         service.postParRequest({ configId: 'configId1' }).subscribe({
@@ -208,7 +209,7 @@ describe('ParService', () => {
             expect(err).toBeTruthy();
           },
         });
-      })
+      }),
     );
   });
 });

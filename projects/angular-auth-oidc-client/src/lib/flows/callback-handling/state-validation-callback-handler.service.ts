@@ -1,8 +1,8 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { AuthStateService } from '../../auth-state/auth-state.service';
-import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
 import { StateValidationService } from '../../validation/state-validation.service';
@@ -21,26 +21,25 @@ export class StateValidationCallbackHandlerService {
 
   // STEP 4 All flows
 
-  callbackStateValidation(
-    callbackContext: CallbackContext,
-    config: OpenIdConfiguration,
-    allConfigs: OpenIdConfiguration[]
-  ): Observable<CallbackContext> {
-    const validationResult = this.stateValidationService.getValidatedStateResult(callbackContext, config);
-    callbackContext.validationResult = validationResult;
+  callbackStateValidation(callbackContext: CallbackContext, configId: string): Observable<CallbackContext> {
+    return this.stateValidationService.getValidatedStateResult(callbackContext, configId).pipe(
+      map((validationResult: StateValidationResult) => {
+        callbackContext.validationResult = validationResult;
 
-    if (validationResult.authResponseIsValid) {
-      this.authStateService.setAuthorizationData(validationResult.accessToken, callbackContext.authResult, config, allConfigs);
+        if (validationResult.authResponseIsValid) {
+          this.authStateService.setAuthorizationData(validationResult.accessToken, callbackContext.authResult, configId);
 
-      return of(callbackContext);
-    } else {
-      const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${this.doc.location.hash}`;
-      this.loggerService.logWarning(config, errorMessage);
-      this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
-      this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
+          return callbackContext;
+        } else {
+          const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${this.doc.location.hash}`;
+          this.loggerService.logWarning(configId, errorMessage);
+          this.resetAuthDataService.resetAuthorizationData(configId);
+          this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
 
-      return throwError(() => new Error(errorMessage));
-    }
+          throw new Error(errorMessage);
+        }
+      })
+    );
   }
 
   private publishUnauthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean): void {

@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../../auth-state/auth-state.service-mock';
 import { LoggerService } from '../../logging/logger.service';
@@ -59,11 +60,12 @@ describe('StateValidationCallbackHandlerService', () => {
     it(
       'returns callbackContext with validationResult if validationResult is valid',
       waitForAsync(() => {
-        spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue({
-          idToken: 'idTokenJustForTesting',
-          authResponseIsValid: true,
-        } as StateValidationResult);
-        const allConfigs = [{ configId: 'configId1' }];
+        spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
+          of({
+            idToken: 'idTokenJustForTesting',
+            authResponseIsValid: true,
+          } as StateValidationResult)
+        );
 
         service.callbackStateValidation({} as CallbackContext, allConfigs[0], allConfigs).subscribe((newCallbackContext) => {
           expect(newCallbackContext).toEqual({
@@ -79,9 +81,11 @@ describe('StateValidationCallbackHandlerService', () => {
     it(
       'logs error in case of an error',
       waitForAsync(() => {
-        spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue({
-          authResponseIsValid: false,
-        } as StateValidationResult);
+        spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
+          of({
+            authResponseIsValid: false,
+          } as StateValidationResult)
+        );
 
         const loggerSpy = spyOn(loggerService, 'logWarning');
         const allConfigs = [{ configId: 'configId1' }];
@@ -89,7 +93,7 @@ describe('StateValidationCallbackHandlerService', () => {
         service.callbackStateValidation({} as CallbackContext, allConfigs[0], allConfigs).subscribe({
           error: (err) => {
             expect(loggerSpy).toHaveBeenCalledOnceWith(
-              allConfigs[0],
+              'configId',
               'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
             );
           },
@@ -100,10 +104,12 @@ describe('StateValidationCallbackHandlerService', () => {
     it(
       'calls resetAuthDataService.resetAuthorizationData and authStateService.updateAndPublishAuthState in case of an error',
       waitForAsync(() => {
-        spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue({
-          authResponseIsValid: false,
-          state: ValidationResult.LoginRequired,
-        } as StateValidationResult);
+        spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
+          of({
+            authResponseIsValid: false,
+            state: ValidationResult.LoginRequired,
+          } as StateValidationResult)
+        );
 
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');

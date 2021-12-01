@@ -1,9 +1,9 @@
-import { OpenIdConfiguration } from '../openid-configuration';
+import { Observable, of } from 'rxjs';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 
 export class AuthWellKnownServiceMock {
-  getAuthWellKnownEndPoints(config: OpenIdConfiguration, mappedWellKnownEndpoints: AuthWellKnownEndpoints) {
-    return null;
+  getAuthWellKnownEndPoints(authWellknownEndpoint: string): Observable<AuthWellKnownEndpoints> {
+    return of(null);
   }
 
   queryAndStoreAuthWellKnownEndPoints(config: OpenIdConfiguration) {}

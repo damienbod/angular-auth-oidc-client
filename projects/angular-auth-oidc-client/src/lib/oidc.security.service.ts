@@ -410,8 +410,8 @@ export class OidcSecurityService {
    * @returns A string with the authorize URL or null
    */
   getAuthorizeUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): Observable<string | null> {
-    return this.configurationService
-      .getOpenIDConfiguration(configId)
-      .pipe(map((config) => this.urlService.getAuthorizeUrl(config, customParams)));
+    configId = configId ?? this.configurationProvider.getOpenIDConfiguration(configId).configId;
+
+    return this.urlService.getAuthorizeUrl(configId, customParams);
   }
 }

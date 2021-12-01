@@ -12,7 +12,7 @@ import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { UrlService } from '../../utils/url/url.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
 import { ResponseTypeValidationServiceMock } from '../response-type-validation/response-type-validation.service.mock';
-import { UrlServiceMock } from './../../utils/url/url.service-mock';
+import { UrlServiceMock } from '../../utils/url/url.service-mock';
 import { PopUpLoginService } from './popup-login.service';
 import { PopupResult } from './popup-result';
 import { PopUpService } from './popup.service';
@@ -71,7 +71,7 @@ describe('PopUpLoginService', () => {
             expect(err.message).toBe('Invalid response type!');
           },
         });
-      })
+      }),
     );
 
     it(
@@ -88,7 +88,7 @@ describe('PopUpLoginService', () => {
             expect(err.message).toBe('no authWellknownEndpoint given!');
           },
         });
-      })
+      }),
     );
 
     it(
@@ -101,12 +101,12 @@ describe('PopUpLoginService', () => {
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOnProperty(popupService, 'result$').and.returnValue(of({}));
-        const spy = spyOn(urlService, 'getAuthorizeUrl');
+        spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
 
         popUpLoginService.loginWithPopUpStandard('configId').subscribe(() => {
-          expect(spy).toHaveBeenCalled();
+          expect(urlService.getAuthorizeUrl).toHaveBeenCalled();
         });
-      })
+      }),
     );
 
     it(
@@ -118,14 +118,14 @@ describe('PopUpLoginService', () => {
         });
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-        spyOn(urlService, 'getAuthorizeUrl');
+        spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
         spyOnProperty(popupService, 'result$').and.returnValue(of({}));
         const popupSpy = spyOn(popupService, 'openPopUp');
 
         popUpLoginService.loginWithPopUpStandard('configId').subscribe(() => {
           expect(popupSpy).toHaveBeenCalled();
         });
-      })
+      }),
     );
 
     it(
@@ -137,10 +137,16 @@ describe('PopUpLoginService', () => {
         });
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-        spyOn(urlService, 'getAuthorizeUrl');
+        spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
         spyOn(popupService, 'openPopUp');
         const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(
-          of({ isAuthenticated: true, configId: 'configId', idToken: null, userData: { any: 'userData' }, accessToken: 'anyAccessToken' })
+          of({
+            isAuthenticated: true,
+            configId: 'configId',
+            idToken: null,
+            userData: { any: 'userData' },
+            accessToken: 'anyAccessToken',
+          }),
         );
         const popupResult: PopupResult = { userClosed: false, receivedUrl: 'someUrl' };
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
@@ -156,7 +162,7 @@ describe('PopUpLoginService', () => {
             accessToken: 'anyAccessToken',
           });
         });
-      })
+      }),
     );
 
     it(
@@ -168,7 +174,7 @@ describe('PopUpLoginService', () => {
         });
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
-        spyOn(urlService, 'getAuthorizeUrl');
+        spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
         spyOn(popupService, 'openPopUp');
         const checkAuthSpy = spyOn(checkAuthService, 'checkAuth');
         const popupResult: PopupResult = { userClosed: true };
@@ -185,7 +191,7 @@ describe('PopUpLoginService', () => {
             accessToken: null,
           });
         });
-      })
+      }),
     );
   });
 });

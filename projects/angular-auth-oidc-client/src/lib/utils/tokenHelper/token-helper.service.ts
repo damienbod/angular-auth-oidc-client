@@ -3,6 +3,7 @@ import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 
 const PARTS_OF_TOKEN = 3;
+
 @Injectable()
 export class TokenHelperService {
   constructor(private readonly loggerService: LoggerService) {}
@@ -18,8 +19,19 @@ export class TokenHelperService {
     return date;
   }
 
-  getHeaderFromToken(token: any, encoded: boolean, configuration: OpenIdConfiguration): any {
-    if (!this.tokenIsValid(token, configuration)) {
+  getSigningInputFromToken(token: any, encoded: boolean, configId: string): string {
+    if (!this.tokenIsValid(token, configId)) {
+      return '';
+    }
+
+    const header: string = this.getHeaderFromToken(token, encoded, configId);
+    const payload: string = this.getPayloadFromToken(token, encoded, configId);
+
+    return [header, payload].join('.');
+  }
+
+  getHeaderFromToken(token: any, encoded: boolean, configId: string): any {
+    if (!this.tokenIsValid(token, configId)) {
       return {};
     }
 
