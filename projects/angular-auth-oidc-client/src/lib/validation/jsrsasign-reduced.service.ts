@@ -3,7 +3,7 @@ import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
-export class JsrsAsignReducedService {
+export class JwtWindowCryptoService {
   private crypto: Crypto = window.crypto || (window as any).msCrypto; // for IE11
 
   generateCodeChallenge(codeVerifier: string): Observable<string> {

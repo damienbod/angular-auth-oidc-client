@@ -1,14 +1,14 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ConfigurationProvider } from '../../config/provider/config.provider';
 import { FlowsDataService } from '../../flows/flows-data.service';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
-import { JsrsAsignReducedService } from '../../validation/jsrsasign-reduced.service';
+import { JwtWindowCryptoService } from '../../validation/jsrsasign-reduced.service';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { UriEncoder } from './uri-encoder';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 const CALLBACK_PARAMS_TO_CHECK = ['code', 'state', 'token', 'id_token'];
 const AUTH0_ENDPOINT = 'auth0.com';
@@ -21,7 +21,7 @@ export class UrlService {
     private readonly flowsDataService: FlowsDataService,
     private readonly flowHelper: FlowHelper,
     private storagePersistenceService: StoragePersistenceService,
-    private jsrsAsignReducedService: JsrsAsignReducedService
+    private jwtWindowCryptoService: JwtWindowCryptoService
   ) {}
 
   getUrlParameter(urlToCheck: any, name: any): string {
@@ -259,7 +259,7 @@ export class UrlService {
     // code_challenge with "S256"
     const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
 
-    return this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier).pipe(
+    return this.jwtWindowCryptoService.generateCodeChallenge(codeVerifier).pipe(
       map((codeChallenge: string) => {
         const { clientId, responseType, scope, hdParam, customParamsAuthRequest } =
           this.configurationProvider.getOpenIDConfiguration(configId);
@@ -396,7 +396,7 @@ export class UrlService {
     // code_challenge with "S256"
     const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
 
-    return this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier).pipe(
+    return this.jwtWindowCryptoService.generateCodeChallenge(codeVerifier).pipe(
       map((codeChallenge: string) => {
         const silentRenewUrl = this.getSilentRenewUrl(configId);
 
@@ -451,7 +451,7 @@ export class UrlService {
     // code_challenge with "S256"
     const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
 
-    return this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier).pipe(
+    return this.jwtWindowCryptoService.generateCodeChallenge(codeVerifier).pipe(
       map((codeChallenge: string) => {
         const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
         if (authWellKnownEndPoints) {
