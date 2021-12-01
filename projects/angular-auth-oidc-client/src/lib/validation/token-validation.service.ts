@@ -1,5 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
-import { KEYUTIL, KJUR } from 'jsrsasign-reduced';
+import { base64url } from 'rfc4648';
+import { from, Observable, of } from 'rxjs';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { JsrsAsignReducedService } from './jsrsasign-reduced.service';
@@ -52,6 +54,8 @@ import { JsrsAsignReducedService } from './jsrsasign-reduced.service';
 export class TokenValidationService {
   static refreshTokenNoncePlaceholder = '--RefreshToken--';
   keyAlgorithms: string[] = ['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'PS256', 'PS384', 'PS512'];
+
+  private cyptoObj: Crypto = window.crypto || (window as any).msCrypto; // for IE11
 
   constructor(
     private tokenHelperService: TokenHelperService,
@@ -311,90 +315,150 @@ export class TokenValidationService {
   // Header Parameter of the JOSE Header.The Client MUST use the keys provided by the Issuer.
   // id_token C6: The alg value SHOULD be RS256. Validation of tokens using other signing algorithms is described in the
   // OpenID Connect Core 1.0 [OpenID.Core] specification.
-  validateSignatureIdToken(idToken: any, jwtkeys: any, configId: string): boolean {
+  validateSignatureIdToken(idToken: string, jwtkeys: any, configId: string): Observable<boolean> {
     if (!jwtkeys || !jwtkeys.keys) {
-      return false;
+      return of(false);
     }
 
     const headerData = this.tokenHelperService.getHeaderFromToken(idToken, false, configId);
-
     if (Object.keys(headerData).length === 0 && headerData.constructor === Object) {
       this.loggerService.logWarning(configId, 'id token has no header data');
 
-      return false;
+      return of(false);
     }
 
-    const kid = headerData.kid;
-    const alg = headerData.alg;
+    const kid: string = headerData.kid;
+    let alg: string = headerData.alg;
 
-    if (!this.keyAlgorithms.includes(alg as string)) {
+    let keys: JsonWebKey[] = jwtkeys.keys;
+    let key: JsonWebKey;
+
+    if (!this.keyAlgorithms.includes(alg)) {
       this.loggerService.logWarning(configId, 'alg not supported', alg);
 
-      return false;
+      return of(false);
     }
 
-    let jwtKtyToUse = 'RSA';
-    if ((alg as string).charAt(0) === 'E') {
-      jwtKtyToUse = 'EC';
-    }
-
-    let isValid = false;
-
-    // No kid in the Jose header
-    if (!kid) {
-      let keyToValidate;
-
-      // If only one key, use it
-      if (jwtkeys.keys.length === 1 && (jwtkeys.keys[0].kty as string) === jwtKtyToUse) {
-        keyToValidate = jwtkeys.keys[0];
-      } else {
-        // More than one key
-        // Make sure there's exactly 1 key candidate
-        // kty "RSA" and "EC" uses "sig"
-        let amountOfMatchingKeys = 0;
-        for (const key of jwtkeys.keys) {
-          if ((key.kty as string) === jwtKtyToUse && (key.use as string) === 'sig') {
-            amountOfMatchingKeys++;
-            keyToValidate = key;
-          }
-        }
-
-        if (amountOfMatchingKeys > 1) {
-          this.loggerService.logWarning(configId, 'no ID Token kid claim in JOSE header and multiple supplied in jwks_uri');
-
-          return false;
-        }
-      }
-
-      if (!keyToValidate) {
-        this.loggerService.logWarning(configId, 'no keys found, incorrect Signature, validation failed for id_token');
-
-        return false;
-      }
-
-      isValid = KJUR.jws.JWS.verify(idToken, KEYUTIL.getKey(keyToValidate), [alg]);
-
-      if (!isValid) {
-        this.loggerService.logWarning(configId, 'incorrect Signature, validation failed for id_token');
-      }
-
-      return isValid;
+    if (kid) {
+      key = keys.find((k: JsonWebKey) => k['kid'] === kid);
     } else {
-      // kid in the Jose header of id_token
-      for (const key of jwtkeys.keys) {
-        if ((key.kid as string) === (kid as string)) {
-          const publicKey = KEYUTIL.getKey(key);
-          isValid = KJUR.jws.JWS.verify(idToken, publicKey, [alg]);
-          if (!isValid) {
-            this.loggerService.logWarning(configId, 'incorrect Signature, validation failed for id_token');
-          }
+      let kty = this.alg2kty(alg);
+      let matchingKeys: JsonWebKey[] = keys.filter((k: JsonWebKey) => k.kty === kty && k.use === 'sig');
 
-          return isValid;
-        }
+      if (matchingKeys.length > 1) {
+        let error = 'More than one matching key found. Please specify a kid in the id_token header.';
+        console.error(error);
+
+        return of(false);
+      } else if (matchingKeys.length === 1) {
+        key = matchingKeys[0];
       }
     }
 
-    return isValid;
+    const algorithm: RsaHashedImportParams | EcKeyImportParams = this.getImportAlg(alg);
+
+    const signingInput: string = this.tokenHelperService.getSigningInputFromToken(idToken, true, configId);
+    const rawSignature: string = this.tokenHelperService.getSignatureFromToken(idToken, true, configId);
+
+    const agent: string = window.navigator.userAgent.toLowerCase();
+
+    if (agent.indexOf('firefox') > -1 && key.kty === 'EC') {
+      key.alg = '';
+    }
+
+    return from(this.cyptoObj.subtle.importKey('jwk', key, algorithm, false, ['verify'])).pipe(
+      mergeMap((cryptoKey: CryptoKey) => {
+        const signature: Uint8Array = base64url.parse(rawSignature, { loose: true });
+
+        const algorithm: RsaHashedImportParams | EcdsaParams = this.getVerifyAlg(alg);
+
+        return from(this.cyptoObj.subtle.verify(algorithm, cryptoKey, signature, new TextEncoder().encode(signingInput)));
+      }),
+      tap((isValid: boolean) => {
+        if (!isValid) {
+          this.loggerService.logWarning(configId, 'incorrect Signature, validation failed for id_token');
+        }
+      })
+    );
+  }
+
+  private getImportAlg(alg: string): RsaHashedImportParams | EcKeyImportParams {
+    switch (alg.charAt(0)) {
+      case 'R':
+        if (alg.includes('256')) {
+          return {
+            name: 'RSASSA-PKCS1-v1_5',
+            hash: 'SHA-256',
+          };
+        } else if (alg.includes('384')) {
+          return {
+            name: 'RSASSA-PKCS1-v1_5',
+            hash: 'SHA-384',
+          };
+        } else if (alg.includes('512')) {
+          return {
+            name: 'RSASSA-PKCS1-v1_5',
+            hash: 'SHA-512',
+          };
+        } else {
+          return null;
+        }
+      case 'E':
+        if (alg.includes('256')) {
+          return {
+            name: 'ECDSA',
+            namedCurve: 'P-256',
+          };
+        } else if (alg.includes('384')) {
+          return {
+            name: 'ECDSA',
+            namedCurve: 'P-384',
+          };
+        } else {
+          return null;
+        }
+      default:
+        return null;
+    }
+  }
+
+  private getVerifyAlg(alg: string): RsaHashedImportParams | EcdsaParams {
+    switch (alg.charAt(0)) {
+      case 'R':
+        return {
+          name: 'RSASSA-PKCS1-v1_5',
+          hash: 'SHA-256',
+        };
+      case 'E':
+        if (alg.includes('256')) {
+          return {
+            name: 'ECDSA',
+            hash: 'SHA-256',
+          };
+        } else if (alg.includes('384')) {
+          return {
+            name: 'ECDSA',
+            hash: 'SHA-384',
+          };
+        } else {
+          return null;
+        }
+      default:
+        return null;
+    }
+  }
+
+  private alg2kty(alg: string): string {
+    switch (alg.charAt(0)) {
+      case 'R':
+        return 'RSA';
+
+      case 'E':
+        return 'EC';
+
+      default:
+        throw new Error('Cannot infer kty from alg: ' + alg);
+    }
   }
 
   // Accepts ID Token without 'kid' claim in JOSE header if only one JWK supplied in 'jwks_url'
@@ -417,30 +481,33 @@ export class TokenValidationService {
   // access_token C2: Take the left- most half of the hash and base64url- encode it.
   // access_token C3: The value of at_hash in the ID Token MUST match the value produced in the previous step if at_hash
   // is present in the ID Token.
-  validateIdTokenAtHash(accessToken: any, atHash: any, idTokenAlg: string, configId: string): boolean {
+  validateIdTokenAtHash(accessToken: string, atHash: string, idTokenAlg: string, configId: string): Observable<boolean> {
     this.loggerService.logDebug(configId, 'at_hash from the server:' + atHash);
 
     // 'sha256' 'sha384' 'sha512'
-    let sha = 'sha256';
+    let sha = 'SHA-256';
     if (idTokenAlg.includes('384')) {
-      sha = 'sha384';
+      sha = 'SHA-384';
     } else if (idTokenAlg.includes('512')) {
-      sha = 'sha512';
+      sha = 'SHA-512';
     }
 
-    const testData = this.jsrsAsignReducedService.generateAtHash('' + accessToken, sha);
-    this.loggerService.logDebug(configId, 'at_hash client validation not decoded:' + testData);
-    if (testData === (atHash as string)) {
-      return true; // isValid;
-    } else {
-      const testValue = this.jsrsAsignReducedService.generateAtHash('' + decodeURIComponent(accessToken), sha);
-      this.loggerService.logDebug(configId, '-gen access--' + testValue);
-      if (testValue === (atHash as string)) {
-        return true; // isValid
-      }
-    }
+    return this.jsrsAsignReducedService.generateAtHash('' + accessToken, sha).pipe(
+      mergeMap((hash: string) => {
+        this.loggerService.logDebug(configId, 'at_hash client validation not decoded:' + hash);
+        if (hash === atHash) {
+          return of(true); // isValid;
+        } else {
+          return this.jsrsAsignReducedService.generateAtHash('' + decodeURIComponent(accessToken), sha).pipe(
+            map((newHash: string) => {
+              this.loggerService.logDebug(configId, '-gen access--' + hash);
 
-    return false;
+              return newHash === atHash;
+            })
+          );
+        }
+      })
+    );
   }
 
   private millisToMinutesAndSeconds(millis: number): string {

@@ -12,6 +12,7 @@ import { CallbackContext } from '../callback-context';
 import { ResetAuthDataService } from '../reset-auth-data.service';
 import { ResetAuthDataServiceMock } from '../reset-auth-data.service-mock';
 import { StateValidationCallbackHandlerService } from './state-validation-callback-handler.service';
+import { of } from 'rxjs';
 
 describe('StateValidationCallbackHandlerService', () => {
   let service: StateValidationCallbackHandlerService;
@@ -35,7 +36,8 @@ describe('StateValidationCallbackHandlerService', () => {
               get hash() {
                 return '&anyFakeHash';
               },
-              set hash(v) {},
+              set hash(v) {
+              },
             },
           },
         },
@@ -59,10 +61,12 @@ describe('StateValidationCallbackHandlerService', () => {
     it(
       'returns callbackContext with validationResult if validationResult is valid',
       waitForAsync(() => {
-        spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue({
-          idToken: 'idTokenJustForTesting',
-          authResponseIsValid: true,
-        } as StateValidationResult);
+        spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
+          of({
+            idToken: 'idTokenJustForTesting',
+            authResponseIsValid: true,
+          } as StateValidationResult),
+        );
 
         service.callbackStateValidation({} as CallbackContext, 'configId').subscribe((newCallbackContext) => {
           expect(newCallbackContext).toEqual({
@@ -72,15 +76,17 @@ describe('StateValidationCallbackHandlerService', () => {
             },
           } as CallbackContext);
         });
-      })
+      }),
     );
 
     it(
       'logs error in case of an error',
       waitForAsync(() => {
-        spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue({
-          authResponseIsValid: false,
-        } as StateValidationResult);
+        spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
+          of({
+            authResponseIsValid: false,
+          } as StateValidationResult),
+        );
 
         const loggerSpy = spyOn(loggerService, 'logWarning');
 
@@ -88,20 +94,22 @@ describe('StateValidationCallbackHandlerService', () => {
           error: (err) => {
             expect(loggerSpy).toHaveBeenCalledOnceWith(
               'configId',
-              'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
+              'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash',
             );
           },
         });
-      })
+      }),
     );
 
     it(
       'calls resetAuthDataService.resetAuthorizationData and authStateService.updateAndPublishAuthState in case of an error',
       waitForAsync(() => {
-        spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue({
-          authResponseIsValid: false,
-          state: ValidationResult.LoginRequired,
-        } as StateValidationResult);
+        spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
+          of({
+            authResponseIsValid: false,
+            state: ValidationResult.LoginRequired,
+          } as StateValidationResult),
+        );
 
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
@@ -116,7 +124,7 @@ describe('StateValidationCallbackHandlerService', () => {
             });
           },
         });
-      })
+      }),
     );
   });
 });

@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "tslib": "^2.3.0",
-    "jsrsasign-reduced": "^8.0.15"
+    "rfc4648": "^1.5.0"
   },
   "repository": {
     "type": "git",

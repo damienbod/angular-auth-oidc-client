@@ -7,6 +7,8 @@ import { StoragePersistenceService } from '../../storage/storage-persistence.ser
 import { JsrsAsignReducedService } from '../../validation/jsrsasign-reduced.service';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { UriEncoder } from './uri-encoder';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 const CALLBACK_PARAMS_TO_CHECK = ['code', 'state', 'token', 'id_token'];
 const AUTH0_ENDPOINT = 'auth0.com';
@@ -42,12 +44,12 @@ export class UrlService {
     return CALLBACK_PARAMS_TO_CHECK.some((x) => !!this.getUrlParameter(currentUrl, x));
   }
 
-  getRefreshSessionSilentRenewUrl(configId: string, customParams?: { [key: string]: string | number | boolean }): string {
+  getRefreshSessionSilentRenewUrl(configId: string, customParams?: { [key: string]: string | number | boolean }): Observable<string> {
     if (this.flowHelper.isCurrentFlowCodeFlow(configId)) {
       return this.createUrlCodeFlowWithSilentRenew(configId, customParams);
     }
 
-    return this.createUrlImplicitFlowWithSilentRenew(configId, customParams) || '';
+    return of(this.createUrlImplicitFlowWithSilentRenew(configId, customParams) || '');
   }
 
   getAuthorizeParUrl(requestUri: string, configId: string): string {
@@ -86,12 +88,12 @@ export class UrlService {
     return `${authorizationUrl}?${params}`;
   }
 
-  getAuthorizeUrl(configId: string, customParams?: { [key: string]: string | number | boolean }): string {
+  getAuthorizeUrl(configId: string, customParams?: { [key: string]: string | number | boolean }): Observable<string> {
     if (this.flowHelper.isCurrentFlowCodeFlow(configId)) {
       return this.createUrlCodeFlowAuthorize(configId, customParams);
     }
 
-    return this.createUrlImplicitFlowAuthorize(configId, customParams) || '';
+    return of(this.createUrlImplicitFlowAuthorize(configId, customParams) || '');
   }
 
   createEndSessionUrl(idTokenHint: string, configId: string, customParamsEndSession?: { [p: string]: string | number | boolean }): string {
@@ -240,11 +242,14 @@ export class UrlService {
     return params.toString();
   }
 
-  createBodyForParCodeFlowRequest(configId: string, customParamsRequest?: { [key: string]: string | number | boolean }): string {
+  createBodyForParCodeFlowRequest(
+    configId: string,
+    customParamsRequest?: { [key: string]: string | number | boolean }
+  ): Observable<string> {
     const redirectUrl = this.getRedirectUrl(configId);
 
     if (!redirectUrl) {
-      return null;
+      return of(null);
     }
 
     const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
@@ -253,33 +258,36 @@ export class UrlService {
 
     // code_challenge with "S256"
     const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
-    const codeChallenge = this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier);
 
-    const { clientId, responseType, scope, hdParam, customParamsAuthRequest } = this.configurationProvider.getOpenIDConfiguration(configId);
+    return this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier).pipe(
+      map((codeChallenge: string) => {
+        const { clientId, responseType, scope, hdParam, customParamsAuthRequest } =
+          this.configurationProvider.getOpenIDConfiguration(configId);
+        let params = this.createHttpParams('');
+        params = params.set('client_id', clientId);
+        params = params.append('redirect_uri', redirectUrl);
+        params = params.append('response_type', responseType);
+        params = params.append('scope', scope);
+        params = params.append('nonce', nonce);
+        params = params.append('state', state);
+        params = params.append('code_challenge', codeChallenge);
+        params = params.append('code_challenge_method', 'S256');
 
-    let params = this.createHttpParams('');
-    params = params.set('client_id', clientId);
-    params = params.append('redirect_uri', redirectUrl);
-    params = params.append('response_type', responseType);
-    params = params.append('scope', scope);
-    params = params.append('nonce', nonce);
-    params = params.append('state', state);
-    params = params.append('code_challenge', codeChallenge);
-    params = params.append('code_challenge_method', 'S256');
+        if (hdParam) {
+          params = params.append('hd', hdParam);
+        }
 
-    if (hdParam) {
-      params = params.append('hd', hdParam);
-    }
+        if (customParamsAuthRequest) {
+          params = this.appendCustomParams({ ...customParamsAuthRequest }, params);
+        }
 
-    if (customParamsAuthRequest) {
-      params = this.appendCustomParams({ ...customParamsAuthRequest }, params);
-    }
+        if (customParamsRequest) {
+          params = this.appendCustomParams({ ...customParamsRequest }, params);
+        }
 
-    if (customParamsRequest) {
-      params = this.appendCustomParams({ ...customParamsRequest }, params);
-    }
-
-    return params.toString();
+        return params.toString();
+      })
+    );
   }
 
   private createAuthorizeUrl(
@@ -376,7 +384,10 @@ export class UrlService {
     return null;
   }
 
-  private createUrlCodeFlowWithSilentRenew(configId: string, customParams?: { [key: string]: string | number | boolean }): string {
+  private createUrlCodeFlowWithSilentRenew(
+    configId: string,
+    customParams?: { [key: string]: string | number | boolean }
+  ): Observable<string> {
     const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
     const nonce = this.flowsDataService.createNonce(configId);
 
@@ -384,22 +395,25 @@ export class UrlService {
 
     // code_challenge with "S256"
     const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
-    const codeChallenge = this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier);
 
-    const silentRenewUrl = this.getSilentRenewUrl(configId);
+    return this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier).pipe(
+      map((codeChallenge: string) => {
+        const silentRenewUrl = this.getSilentRenewUrl(configId);
 
-    if (!silentRenewUrl) {
-      return null;
-    }
+        if (!silentRenewUrl) {
+          return '';
+        }
 
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
-    if (authWellKnownEndPoints) {
-      return this.createAuthorizeUrl(codeChallenge, silentRenewUrl, nonce, state, configId, 'none', customParams);
-    }
+        const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+        if (authWellKnownEndPoints) {
+          return this.createAuthorizeUrl(codeChallenge, silentRenewUrl, nonce, state, configId, 'none', customParams);
+        }
 
-    this.loggerService.logWarning(configId, 'authWellKnownEndpoints is undefined');
+        this.loggerService.logWarning(configId, 'authWellKnownEndpoints is undefined');
 
-    return null;
+        return null;
+      })
+    );
   }
 
   private createUrlImplicitFlowAuthorize(configId: string, customParams?: { [key: string]: string | number | boolean }): string {
@@ -423,7 +437,7 @@ export class UrlService {
     return null;
   }
 
-  private createUrlCodeFlowAuthorize(configId: string, customParams?: { [key: string]: string | number | boolean }): string {
+  private createUrlCodeFlowAuthorize(configId: string, customParams?: { [key: string]: string | number | boolean }): Observable<string> {
     const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configId);
     const nonce = this.flowsDataService.createNonce(configId);
     this.loggerService.logDebug(configId, 'Authorize created. adding myautostate: ' + state);
@@ -431,21 +445,24 @@ export class UrlService {
     const redirectUrl = this.getRedirectUrl(configId);
 
     if (!redirectUrl) {
-      return null;
+      return of(null);
     }
 
     // code_challenge with "S256"
     const codeVerifier = this.flowsDataService.createCodeVerifier(configId);
-    const codeChallenge = this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier);
 
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
-    if (authWellKnownEndPoints) {
-      return this.createAuthorizeUrl(codeChallenge, redirectUrl, nonce, state, configId, null, customParams);
-    }
+    return this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier).pipe(
+      map((codeChallenge: string) => {
+        const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+        if (authWellKnownEndPoints) {
+          return this.createAuthorizeUrl(codeChallenge, redirectUrl, nonce, state, configId, null, customParams);
+        }
 
-    this.loggerService.logError(configId, 'authWellKnownEndpoints is undefined');
+        this.loggerService.logError(configId, 'authWellKnownEndpoints is undefined');
 
-    return null;
+        return '';
+      })
+    );
   }
 
   private getRedirectUrl(configId: string): string {
@@ -454,7 +471,7 @@ export class UrlService {
     if (!redirectUrl) {
       this.loggerService.logError(configId, `could not get redirectUrl, was: `, redirectUrl);
 
-      null;
+      return null;
     }
 
     return redirectUrl;

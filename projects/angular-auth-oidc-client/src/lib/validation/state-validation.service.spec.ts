@@ -16,6 +16,7 @@ import { StateValidationService } from './state-validation.service';
 import { TokenValidationService } from './token-validation.service';
 import { TokenValidationServiceMock } from './token-validation.service-mock';
 import { ValidationResult } from './validation-result';
+import { of } from 'rxjs';
 
 describe('State Validation Service', () => {
   let stateValidationService: StateValidationService;
@@ -108,7 +109,8 @@ describe('State Validation Service', () => {
     readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
 
-    const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+    const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {
+    });
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -124,16 +126,17 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
 
     expect(oidcSecurityValidation.validateStateFromHashCallback).toHaveBeenCalled();
 
-    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect state');
-
-    expect(state.accessToken).toBe('');
-    expect(state.authResponseIsValid).toBe(false);
-    expect(state.decodedIdToken).toBeDefined();
-    expect(state.idToken).toBe('');
+    stateObs$.subscribe(state => {
+      expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect state');
+      expect(state.accessToken).toBe('');
+      expect(state.authResponseIsValid).toBe(false);
+      expect(state.decodedIdToken).toBeDefined();
+      expect(state.idToken).toBe('');
+    });
   });
 
   it('access_token should equal result.access_token and is valid if response_type is "id_token token"', () => {
@@ -142,7 +145,7 @@ describe('State Validation Service', () => {
     config.responseType = 'id_token token';
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
 
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
 
@@ -160,7 +163,7 @@ describe('State Validation Service', () => {
 
     spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(true);
 
-    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(of(true));
 
     config.autoCleanStateAfterAuthentication = false;
 
@@ -185,24 +188,27 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(state.accessToken).toBe('access_tokenTEST');
-    expect(state.idToken).toBe('id_tokenTEST');
-    expect(state.decodedIdToken).toBe('decoded_id_token');
-    expect(state.authResponseIsValid).toBe(true);
+    stateObs$.subscribe(state => {
+      expect(state.accessToken).toBe('access_tokenTEST');
+      expect(state.idToken).toBe('id_tokenTEST');
+      expect(state.decodedIdToken).toBe('decoded_id_token');
+      expect(state.authResponseIsValid).toBe(true);
+    });
   });
 
   it('should return invalid result if validateSignatureIdToken is false', () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
     config.responseType = 'id_token token';
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(false);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(false));
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
-    const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
+    const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {
+    });
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -219,21 +225,22 @@ describe('State Validation Service', () => {
       existingIdToken: null,
     };
 
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback Signature validation failed id_token');
-
-    expect(state.accessToken).toBe('access_tokenTEST');
-    expect(state.idToken).toBe('id_tokenTEST');
-    expect(state.decodedIdToken).toBe('decoded_id_token');
-    expect(state.authResponseIsValid).toBe(false);
+    stateObs$.subscribe(state => {
+      expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback Signature validation failed id_token');
+      expect(state.accessToken).toBe('access_tokenTEST');
+      expect(state.idToken).toBe('id_tokenTEST');
+      expect(state.decodedIdToken).toBe('decoded_id_token');
+      expect(state.authResponseIsValid).toBe(false);
+    });
   });
 
   it('should return invalid result if validateIdTokenNonce is false', () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
     config.responseType = 'id_token token';
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(false);
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
@@ -241,7 +248,8 @@ describe('State Validation Service', () => {
     readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
     readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
 
-    const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+    const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {
+    });
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -257,17 +265,18 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logWarningSpy).toHaveBeenCalledWith(
-      'configId',
-      'authCallback incorrect nonce, did you call the checkAuth() method multiple times?'
-    );
-
-    expect(state.accessToken).toBe('access_tokenTEST');
-    expect(state.idToken).toBe('id_tokenTEST');
-    expect(state.decodedIdToken).toBe('decoded_id_token');
-    expect(state.authResponseIsValid).toBe(false);
+    stateObs$.subscribe(state => {
+      expect(logWarningSpy).toHaveBeenCalledWith(
+        'configId',
+        'authCallback incorrect nonce, did you call the checkAuth() method multiple times?',
+      );
+      expect(state.accessToken).toBe('access_tokenTEST');
+      expect(state.idToken).toBe('id_tokenTEST');
+      expect(state.decodedIdToken).toBe('decoded_id_token');
+      expect(state.authResponseIsValid).toBe(false);
+    });
   });
 
   it('should return invalid result if validateRequiredIdToken is false', () => {
@@ -277,7 +286,7 @@ describe('State Validation Service', () => {
 
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
 
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
 
@@ -287,7 +296,8 @@ describe('State Validation Service', () => {
     readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
     readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
-    const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
+    const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {
+    });
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -303,14 +313,15 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback Validation, one of the REQUIRED properties missing from id_token');
-
-    expect(state.accessToken).toBe('access_tokenTEST');
-    expect(state.idToken).toBe('id_tokenTEST');
-    expect(state.decodedIdToken).toBe('decoded_id_token');
-    expect(state.authResponseIsValid).toBe(false);
+    stateObs$.subscribe(state => {
+      expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback Validation, one of the REQUIRED properties missing from id_token');
+      expect(state.accessToken).toBe('access_tokenTEST');
+      expect(state.idToken).toBe('id_tokenTEST');
+      expect(state.decodedIdToken).toBe('decoded_id_token');
+      expect(state.authResponseIsValid).toBe(false);
+    });
   });
 
   it('should return invalid result if validateIdTokenIatMaxOffset is false', () => {
@@ -320,7 +331,7 @@ describe('State Validation Service', () => {
 
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
 
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
 
@@ -334,7 +345,8 @@ describe('State Validation Service', () => {
     readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
     readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
-    const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+    const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {
+    });
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -350,17 +362,18 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logWarningSpy).toHaveBeenCalledWith(
-      'configId',
-      'authCallback Validation, iat rejected id_token was issued too far away from the current time'
-    );
-
-    expect(state.accessToken).toBe('access_tokenTEST');
-    expect(state.idToken).toBe('id_tokenTEST');
-    expect(state.decodedIdToken).toBe('decoded_id_token');
-    expect(state.authResponseIsValid).toBe(false);
+    stateObs$.subscribe(state => {
+      expect(logWarningSpy).toHaveBeenCalledWith(
+        'configId',
+        'authCallback Validation, iat rejected id_token was issued too far away from the current time',
+      );
+      expect(state.accessToken).toBe('access_tokenTEST');
+      expect(state.idToken).toBe('id_tokenTEST');
+      expect(state.decodedIdToken).toBe('decoded_id_token');
+      expect(state.authResponseIsValid).toBe(false);
+    });
   });
 
   it('should return invalid result if validateIdTokenIss is false', () => {
@@ -370,7 +383,7 @@ describe('State Validation Service', () => {
 
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
 
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
 
@@ -385,7 +398,8 @@ describe('State Validation Service', () => {
     readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
     readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
-    const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+    const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {
+    });
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -401,14 +415,15 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect iss does not match authWellKnownEndpoints issuer');
-
-    expect(state.accessToken).toBe('access_tokenTEST');
-    expect(state.idToken).toBe('id_tokenTEST');
-    expect(state.decodedIdToken).toBe('decoded_id_token');
-    expect(state.authResponseIsValid).toBe(false);
+    stateObs$.subscribe(state => {
+      expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect iss does not match authWellKnownEndpoints issuer');
+      expect(state.accessToken).toBe('access_tokenTEST');
+      expect(state.idToken).toBe('id_tokenTEST');
+      expect(state.decodedIdToken).toBe('decoded_id_token');
+      expect(state.authResponseIsValid).toBe(false);
+    });
   });
 
   it('should return invalid result if validateIdTokenAud is false', () => {
@@ -418,7 +433,7 @@ describe('State Validation Service', () => {
 
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
 
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
 
@@ -437,7 +452,8 @@ describe('State Validation Service', () => {
     readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
     readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
-    const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+    const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {
+    });
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -453,14 +469,15 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect aud');
-
-    expect(state.accessToken).toBe('access_tokenTEST');
-    expect(state.idToken).toBe('id_tokenTEST');
-    expect(state.decodedIdToken).toBe('decoded_id_token');
-    expect(state.authResponseIsValid).toBe(false);
+    stateObs$.subscribe(state => {
+      expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect aud');
+      expect(state.accessToken).toBe('access_tokenTEST');
+      expect(state.idToken).toBe('id_tokenTEST');
+      expect(state.decodedIdToken).toBe('decoded_id_token');
+      expect(state.authResponseIsValid).toBe(false);
+    });
   });
 
   it('should return invalid result if validateIdTokenExpNotExpired is false', () => {
@@ -470,7 +487,7 @@ describe('State Validation Service', () => {
 
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
 
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
 
@@ -491,7 +508,8 @@ describe('State Validation Service', () => {
     readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
     readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
 
-    const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+    const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {
+    });
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -507,20 +525,21 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.getValidatedStateResult(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, 'configId');
 
-    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback id token expired');
-
-    expect(state.accessToken).toBe('access_tokenTEST');
-    expect(state.idToken).toBe('id_tokenTEST');
-    expect(state.decodedIdToken).toBe('decoded_id_token');
-    expect(state.authResponseIsValid).toBe(false);
+    stateObs$.subscribe(state => {
+      expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback id token expired');
+      expect(state.accessToken).toBe('access_tokenTEST');
+      expect(state.idToken).toBe('id_tokenTEST');
+      expect(state.decodedIdToken).toBe('decoded_id_token');
+      expect(state.authResponseIsValid).toBe(false);
+    });
   });
 
   it('Reponse is valid if authConfiguration.response_type does not equal "id_token token"', () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateIdTokenIatMaxOffset').and.returnValue(true);
@@ -537,7 +556,8 @@ describe('State Validation Service', () => {
     readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
     readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
 
-    const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
+    const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {
+    });
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -554,21 +574,22 @@ describe('State Validation Service', () => {
       existingIdToken: null,
     };
 
-    const state = stateValidationService.validateState(callbackContext, 'configId');
-
-    expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback token(s) validated, continue');
+    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
 
     // CAN THIS BE DONE VIA IF/ELSE IN THE BEGINNING?
-    expect(state.accessToken).toBe('');
-    expect(state.idToken).toBe('id_tokenTEST');
-    expect(state.decodedIdToken).toBe('decoded_id_token');
-    expect(state.authResponseIsValid).toBe(true);
+    stateObs$.subscribe(state => {
+      expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback token(s) validated, continue');
+      expect(state.accessToken).toBe('');
+      expect(state.idToken).toBe('id_tokenTEST');
+      expect(state.decodedIdToken).toBe('decoded_id_token');
+      expect(state.authResponseIsValid).toBe(true);
+    });
   });
 
   it('Response is invalid if validateIdTokenAtHash is false', () => {
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateIdTokenIatMaxOffset').and.returnValue(true);
@@ -579,14 +600,15 @@ describe('State Validation Service', () => {
     spyOn(oidcSecurityValidation, 'validateIdTokenExpNotExpired').and.returnValue(true);
     config.responseType = 'id_token token';
     config.autoCleanStateAfterAuthentication = false;
-    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(false);
+    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(of(false));
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
     readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
 
-    const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
+    const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {
+    });
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -602,15 +624,16 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
-
-    expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect at_hash');
+    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
 
     // CAN THIS BE DONE VIA IF/ELSE IN THE BEGINNING?
-    expect(state.accessToken).toBe('access_tokenTEST');
-    expect(state.idToken).toBe('id_tokenTEST');
-    expect(state.decodedIdToken).toBe('decoded_id_token');
-    expect(state.authResponseIsValid).toBe(false);
+    stateObs$.subscribe(state => {
+      expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect at_hash');
+      expect(state.accessToken).toBe('access_tokenTEST');
+      expect(state.idToken).toBe('id_tokenTEST');
+      expect(state.decodedIdToken).toBe('decoded_id_token');
+      expect(state.authResponseIsValid).toBe(false);
+    });
   });
 
   it('should return valid result if validateIdTokenIss is false and iss_validation_off is true', () => {
@@ -619,13 +642,13 @@ describe('State Validation Service', () => {
 
     spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateIdTokenIatMaxOffset').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateIdTokenAud').and.returnValue(true);
     spyOn(oidcSecurityValidation, 'validateIdTokenExpNotExpired').and.returnValue(true);
-    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(of(true));
     config.responseType = 'id_token token';
     spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
     const readSpy = spyOn(storagePersistenceService, 'read');
@@ -649,15 +672,16 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(logDebugSpy).toHaveBeenCalledWith('configId', 'iss validation is turned off, this is not recommended!');
-
-    expect(state.state).toBe(ValidationResult.Ok);
-    expect(state.accessToken).toBe('access_tokenTEST');
-    expect(state.authResponseIsValid).toBe(true);
-    expect(state.decodedIdToken).toBeDefined();
-    expect(state.idToken).toBe('id_tokenTEST');
+    stateObs$.subscribe(state => {
+      expect(logDebugSpy).toHaveBeenCalledWith('configId', 'iss validation is turned off, this is not recommended!');
+      expect(state.state).toBe(ValidationResult.Ok);
+      expect(state.accessToken).toBe('access_tokenTEST');
+      expect(state.authResponseIsValid).toBe(true);
+      expect(state.decodedIdToken).toBeDefined();
+      expect(state.idToken).toBe('id_tokenTEST');
+    });
   });
 
   it('should return valid if there is no id_token', () => {
@@ -666,7 +690,7 @@ describe('State Validation Service', () => {
     config.responseType = 'code';
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
 
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
 
@@ -684,7 +708,7 @@ describe('State Validation Service', () => {
 
     spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(true);
 
-    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(true);
+    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(of(true));
 
     config.autoCleanStateAfterAuthentication = false;
 
@@ -708,12 +732,15 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const state = stateValidationService.validateState(callbackContext, 'configId');
 
-    expect(state.accessToken).toBe('access_tokenTEST');
-    expect(state.idToken).toBe('');
-    expect(state.decodedIdToken).toBeDefined();
-    expect(state.authResponseIsValid).toBe(true);
+    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
+
+    stateObs$.subscribe(state => {
+      expect(state.accessToken).toBe('access_tokenTEST');
+      expect(state.idToken).toBe('');
+      expect(state.decodedIdToken).toBeDefined();
+      expect(state.authResponseIsValid).toBe(true);
+    });
   });
 
   it('validate refresh good ', () => {
@@ -1276,14 +1303,18 @@ describe('State Validation Service', () => {
       validationResult: null,
     };
 
-    const isValid = stateValidationService.getValidatedStateResult(callbackContext, 'configId');
+    const isValidObs$ = stateValidationService.getValidatedStateResult(callbackContext, 'configId');
 
-    expect(isValid.authResponseIsValid).toBe(false);
+    isValidObs$.subscribe(isValid => {
+      expect(isValid.authResponseIsValid).toBe(false);
+    });
   });
 
   it('should return authResponseIsValid false when null is passed', () => {
-    const isValid = stateValidationService.getValidatedStateResult(null, 'configId');
+    const isValidObs$ = stateValidationService.getValidatedStateResult(null, 'configId');
 
-    expect(isValid.authResponseIsValid).toBe(false);
+    isValidObs$.subscribe(isValid => {
+      expect(isValid.authResponseIsValid).toBe(false);
+    });
   });
 });

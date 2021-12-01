@@ -106,7 +106,7 @@ describe('ParLoginService', () => {
 
         expect(result).toBeUndefined();
         expect(loggerSpy).toHaveBeenCalled();
-      })
+      }),
     );
 
     it(
@@ -119,7 +119,7 @@ describe('ParLoginService', () => {
 
         expect(result).toBeUndefined();
         expect(spy).toHaveBeenCalled();
-      })
+      }),
     );
 
     it(
@@ -139,7 +139,7 @@ describe('ParLoginService', () => {
 
         expect(result).toBeUndefined();
         expect(spy).toHaveBeenCalled();
-      })
+      }),
     );
 
     it(
@@ -159,7 +159,7 @@ describe('ParLoginService', () => {
 
         expect(result).toBeUndefined();
         expect(spy).toHaveBeenCalledOnceWith('configId', { some: 'thing' });
-      })
+      }),
     );
 
     it(
@@ -181,7 +181,7 @@ describe('ParLoginService', () => {
 
         expect(result).toBeUndefined();
         expect(spy).toHaveBeenCalledTimes(1);
-      })
+      }),
     );
 
     it(
@@ -202,7 +202,7 @@ describe('ParLoginService', () => {
         service.loginPar('configId');
 
         expect(spy).toHaveBeenCalledOnceWith('some-par-url');
-      })
+      }),
     );
 
     it(
@@ -228,7 +228,7 @@ describe('ParLoginService', () => {
 
         expect(spy).toHaveBeenCalledWith('some-par-url');
         expect(redirectToSpy).not.toHaveBeenCalled();
-      })
+      }),
     );
   });
 
@@ -245,7 +245,7 @@ describe('ParLoginService', () => {
             expect(err.message).toBe('Invalid response type!');
           },
         });
-      })
+      }),
     );
 
     it(
@@ -261,7 +261,7 @@ describe('ParLoginService', () => {
             expect(err.message).toBe('no authWellknownEndpoint given!');
           },
         });
-      })
+      }),
     );
 
     it(
@@ -280,10 +280,10 @@ describe('ParLoginService', () => {
         service.loginWithPopUpPar('configId').subscribe({
           error: (err) => {
             expect(spy).toHaveBeenCalled();
-            expect(err.message).toBe("Could not create URL with param requestUri: 'url'");
+            expect(err.message).toBe('Could not create URL with param requestUri: \'url\'');
           },
         });
-      })
+      }),
     );
 
     it(
@@ -302,10 +302,10 @@ describe('ParLoginService', () => {
         service.loginWithPopUpPar('configId', { customParams: { some: 'thing' } }).subscribe({
           error: (err) => {
             expect(spy).toHaveBeenCalledOnceWith('configId', { some: 'thing' });
-            expect(err.message).toBe("Could not create URL with param requestUri: 'url'");
+            expect(err.message).toBe('Could not create URL with param requestUri: \'url\'');
           },
         });
-      })
+      }),
     );
 
     it(
@@ -325,11 +325,11 @@ describe('ParLoginService', () => {
 
         service.loginWithPopUpPar('configId', { customParams: { some: 'thing' } }).subscribe({
           error: (err) => {
-            expect(err.message).toBe("Could not create URL with param requestUri: 'url'");
+            expect(err.message).toBe('Could not create URL with param requestUri: \'url\'');
             expect(spy).toHaveBeenCalledTimes(1);
           },
         });
-      })
+      }),
     );
 
     it(
@@ -351,7 +351,7 @@ describe('ParLoginService', () => {
         service.loginWithPopUpPar('configId').subscribe((result) => {
           expect(spy).toHaveBeenCalledOnceWith('some-par-url', undefined);
         });
-      })
+      }),
     );
 
     it(
@@ -369,7 +369,13 @@ describe('ParLoginService', () => {
         spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
 
         const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(
-          of({ isAuthenticated: true, configId: 'configId', idToken: null, userData: { any: 'userData' }, accessToken: 'anyAccessToken' })
+          of({
+            isAuthenticated: true,
+            configId: 'configId',
+            idToken: null,
+            userData: { any: 'userData' },
+            accessToken: 'anyAccessToken',
+          }),
         );
         const popupResult: PopupResult = { userClosed: false, receivedUrl: 'someUrl' };
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
@@ -385,7 +391,7 @@ describe('ParLoginService', () => {
             accessToken: 'anyAccessToken',
           });
         });
-      })
+      }),
     );
 
     it(
@@ -417,7 +423,7 @@ describe('ParLoginService', () => {
             accessToken: null,
           });
         });
-      })
+      }),
     );
   });
 });

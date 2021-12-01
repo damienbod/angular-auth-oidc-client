@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class UrlServiceMock {
-  constructor() {}
+  constructor() {
+  }
 
   getUrlParameter(urlToCheck: any, name: any): string {
     return '';
@@ -12,12 +14,12 @@ export class UrlServiceMock {
     return true;
   }
 
-  getRefreshSessionSilentRenewUrl(): string {
-    return '';
+  getRefreshSessionSilentRenewUrl(): Observable<string> {
+    return of('');
   }
 
-  getAuthorizeUrl(customParams?: { [key: string]: string | number | boolean }): string {
-    return '';
+  getAuthorizeUrl(customParams?: { [key: string]: string | number | boolean }): Observable<string> {
+    return of('someUrl');
   }
 
   createEndSessionUrl(idTokenHint: string) {
@@ -44,8 +46,15 @@ export class UrlServiceMock {
     return '';
   }
 
-  createBodyForParCodeFlowRequest(customParamsRequest?: { [key: string]: string | number | boolean }): string {
-    return '';
+  createBodyForParCodeFlowRequest(customParamsRequest?: { [key: string]: string | number | boolean }): Observable<string> {
+    return of('');
+  }
+
+  private createUrlCodeFlowWithSilentRenew(
+    configId: string,
+    customParams?: { [key: string]: string | number | boolean },
+  ): Observable<string> {
+    return of('');
   }
 
   getAuthorizeParUrl(request_uri: string): string {

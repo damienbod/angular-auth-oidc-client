@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { switchMap, take } from 'rxjs/operators';
+import { switchMap, take, tap } from 'rxjs/operators';
 import { AuthOptions } from '../../auth-options';
 import { CheckAuthService } from '../../check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
@@ -22,8 +22,9 @@ export class PopUpLoginService {
     private configurationProvider: ConfigurationProvider,
     private authWellKnownService: AuthWellKnownService,
     private popupService: PopUpService,
-    private checkAuthService: CheckAuthService
-  ) {}
+    private checkAuthService: CheckAuthService,
+  ) {
+  }
 
   loginWithPopUpStandard(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
@@ -48,10 +49,10 @@ export class PopUpLoginService {
       switchMap(() => {
         const { customParams } = authOptions || {};
 
-        const authUrl = this.urlService.getAuthorizeUrl(configId, customParams);
-
-        this.popupService.openPopUp(authUrl, popupOptions);
-
+        return this.urlService.getAuthorizeUrl(configId, customParams);
+      }),
+      tap((authUrl: string) => this.popupService.openPopUp(authUrl, popupOptions)),
+      switchMap(() => {
         return this.popupService.result$.pipe(
           take(1),
           switchMap((result: PopupResultReceivedUrl) => {
@@ -69,9 +70,9 @@ export class PopUpLoginService {
             }
 
             return this.checkAuthService.checkAuth(configId, receivedUrl);
-          })
+          }),
         );
-      })
+      }),
     );
   }
 }
