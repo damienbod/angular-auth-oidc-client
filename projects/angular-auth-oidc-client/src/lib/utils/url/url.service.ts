@@ -6,7 +6,7 @@ import { ConfigurationProvider } from '../../config/provider/config.provider';
 import { FlowsDataService } from '../../flows/flows-data.service';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
-import { JwtWindowCryptoService } from '../../validation/jsrsasign-reduced.service';
+import { JwtWindowCryptoService } from '../../validation/jwt-window-crypto.service';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { UriEncoder } from './uri-encoder';
 

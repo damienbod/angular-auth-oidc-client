@@ -52,7 +52,7 @@ import { PlatformProvider } from './utils/platform-provider/platform.provider';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
 import { CurrentUrlService } from './utils/url/current-url.service';
 import { UrlService } from './utils/url/url.service';
-import { JwtWindowCryptoService } from './validation/jsrsasign-reduced.service';
+import { JwtWindowCryptoService } from './validation/jwt-window-crypto.service';
 import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';
 

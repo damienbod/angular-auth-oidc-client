@@ -4,7 +4,7 @@ import { from, Observable, of } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
-import { JwtWindowCryptoService } from './jsrsasign-reduced.service';
+import { JwtWindowCryptoService } from './jwt-window-crypto.service';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 

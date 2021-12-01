@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { TestScheduler } from 'rxjs/testing';
-import { JwtWindowCryptoService } from './jsrsasign-reduced.service';
+import { JwtWindowCryptoService } from './jwt-window-crypto.service';
 
 describe('JwtWindowCryptoService', () => {
   let service: JwtWindowCryptoService;

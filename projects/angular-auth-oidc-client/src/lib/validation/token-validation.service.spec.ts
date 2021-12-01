@@ -4,7 +4,7 @@ import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { TokenHelperServiceMock } from '../utils/tokenHelper/token-helper.service-mock';
-import { JwtWindowCryptoService } from './jsrsasign-reduced.service';
+import { JwtWindowCryptoService } from './jwt-window-crypto.service';
 import { TokenValidationService } from './token-validation.service';
 
 describe('TokenValidationService', () => {
