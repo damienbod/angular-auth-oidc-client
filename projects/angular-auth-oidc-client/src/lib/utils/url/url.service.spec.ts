@@ -10,6 +10,7 @@ import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { JwtWindowCryptoService } from '../../validation/jsrsasign-reduced.service';
+import { JwtWindowCryptoServiceMock } from '../../validation/jsrsasign-reduced.service-mock';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { UrlService } from './url.service';
 
