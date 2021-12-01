@@ -1,20 +1,20 @@
 import { TestBed } from '@angular/core/testing';
-import { JsrsAsignReducedService } from './jsrsasign-reduced.service';
 import { TestScheduler } from 'rxjs/testing';
+import { JwtWindowCryptoService } from './jwt-window-crypto.service';
 
-describe('JsrsAsignReducedService', () => {
-  let service: JsrsAsignReducedService;
+describe('JwtWindowCryptoService', () => {
+  let service: JwtWindowCryptoService;
   let testScheduler: TestScheduler;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [],
-      providers: [JsrsAsignReducedService],
+      providers: [JwtWindowCryptoService],
     });
   });
 
   beforeEach(() => {
-    service = TestBed.inject(JsrsAsignReducedService);
+    service = TestBed.inject(JwtWindowCryptoService);
     testScheduler = new TestScheduler((actual, expected) => {
       expect(actual).toBe(expected);
     });
@@ -29,7 +29,7 @@ describe('JsrsAsignReducedService', () => {
       const outcome = 'R2TWD45Vtcf_kfAqjuE3LMSRF3JDE5fsFndnn6-a0nQ';
       const observable = service.generateCodeChallenge('44445543344242132145455aaabbdc3b4');
 
-      observable.subscribe(value => {
+      observable.subscribe((value) => {
         expect(value).toBe(outcome);
       });
     });

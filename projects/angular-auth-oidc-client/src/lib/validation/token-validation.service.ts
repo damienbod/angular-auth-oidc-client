@@ -4,7 +4,7 @@ import { from, Observable, of } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
-import { JsrsAsignReducedService } from './jsrsasign-reduced.service';
+import { JwtWindowCryptoService } from './jwt-window-crypto.service';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
@@ -60,7 +60,7 @@ export class TokenValidationService {
   constructor(
     private tokenHelperService: TokenHelperService,
     private loggerService: LoggerService,
-    private jsrsAsignReducedService: JsrsAsignReducedService
+    private jwtWindowCryptoService: JwtWindowCryptoService
   ) {}
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
@@ -492,13 +492,13 @@ export class TokenValidationService {
       sha = 'SHA-512';
     }
 
-    return this.jsrsAsignReducedService.generateAtHash('' + accessToken, sha).pipe(
+    return this.jwtWindowCryptoService.generateAtHash('' + accessToken, sha).pipe(
       mergeMap((hash: string) => {
         this.loggerService.logDebug(configId, 'at_hash client validation not decoded:' + hash);
         if (hash === atHash) {
           return of(true); // isValid;
         } else {
-          return this.jsrsAsignReducedService.generateAtHash('' + decodeURIComponent(accessToken), sha).pipe(
+          return this.jwtWindowCryptoService.generateAtHash('' + decodeURIComponent(accessToken), sha).pipe(
             map((newHash: string) => {
               this.loggerService.logDebug(configId, '-gen access--' + hash);
 
