@@ -8,7 +8,7 @@
   "bugs": {
     "url": "https://github.com/damienbod/angular-auth-oidc-client/issues"
   },
-  "version": "13.0.0",
+  "version": "13.1.0",
   "scripts": {
     "ng": "ng",
     "build": "npm run build-lib",

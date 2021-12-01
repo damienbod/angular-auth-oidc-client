@@ -1,5 +1,11 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-12-01 13.1.0
+
+- Using window.crypto for jwt signature validation
+- Removed jsrsasign dependency
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1220)
+
 ### 2021-11-19 13.0.0
 
 - Update to Angular 13 and rxjs 7
