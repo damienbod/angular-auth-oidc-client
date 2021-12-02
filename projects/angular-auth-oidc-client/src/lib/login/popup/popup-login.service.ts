@@ -45,7 +45,7 @@ export class PopUpLoginService {
       switchMap(() => {
         const { customParams } = authOptions || {};
 
-        return this.urlService.getAuthorizeUrl(configId, customParams);
+        return this.urlService.getAuthorizeUrl(configuration, customParams);
       }),
       tap((authUrl: string) => this.popupService.openPopUp(authUrl, popupOptions)),
       switchMap(() => {
@@ -65,7 +65,7 @@ export class PopUpLoginService {
               });
             }
 
-            return this.checkAuthService.checkAuth(configId, receivedUrl);
+            return this.checkAuthService.checkAuth(configuration, allConfigs, receivedUrl);
           })
         );
       })

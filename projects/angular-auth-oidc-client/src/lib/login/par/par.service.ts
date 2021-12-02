@@ -22,7 +22,7 @@ export class ParService {
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-    const authWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configId);
+    const authWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
 
     if (!authWellKnownEndpoints) {
       return throwError(() => new Error('Could not read PAR endpoint because authWellKnownEndPoints are not given'));
@@ -33,12 +33,12 @@ export class ParService {
       return throwError(() => new Error('Could not read PAR endpoint from authWellKnownEndpoints'));
     }
 
-    return this.urlService.createBodyForParCodeFlowRequest(configId, customParams).pipe(
+    return this.urlService.createBodyForParCodeFlowRequest(configuration, customParams).pipe(
       switchMap((data) => {
-        return this.dataService.post(parEndpoint, data, configId, headers).pipe(
+        return this.dataService.post(parEndpoint, data, configuration, headers).pipe(
           retry(2),
           map((response: any) => {
-            this.loggerService.logDebug(configId, 'par response: ', response);
+            this.loggerService.logDebug(configuration, 'par response: ', response);
 
             return {
               expiresIn: response.expires_in,
@@ -47,7 +47,7 @@ export class ParService {
           }),
           catchError((error) => {
             const errorMessage = `There was an error on ParService postParRequest`;
-            this.loggerService.logError(configId, errorMessage, error);
+            this.loggerService.logError(configuration, errorMessage, error);
 
             return throwError(() => new Error(errorMessage));
           })

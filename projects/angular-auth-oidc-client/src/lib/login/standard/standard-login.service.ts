@@ -29,9 +29,9 @@ export class StandardLoginService {
     this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(configuration).subscribe(() => {
       const { urlHandler, customParams } = authOptions || {};
 
-      this.urlService.getAuthorizeUrl(configId, customParams).subscribe((url: string) => {
+      this.urlService.getAuthorizeUrl(configuration, customParams).subscribe((url: string) => {
         if (!url) {
-          this.loggerService.logError(configId, 'Could not create URL', url);
+          this.loggerService.logError(configuration, 'Could not create URL', url);
 
           return;
         }
