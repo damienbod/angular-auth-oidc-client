@@ -115,12 +115,12 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     expect(oidcSecurityValidation.validateStateFromHashCallback).toHaveBeenCalled();
 
     stateObs$.subscribe((state) => {
-      expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect state');
+      expect(logWarningSpy).toHaveBeenCalledWith(config, 'authCallback incorrect state');
       expect(state.accessToken).toBe('');
       expect(state.authResponseIsValid).toBe(false);
       expect(state.decodedIdToken).toBeDefined();
@@ -175,7 +175,7 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     stateObs$.subscribe((state) => {
       expect(state.accessToken).toBe('access_tokenTEST');
@@ -190,10 +190,10 @@ describe('State Validation Service', () => {
     config.responseType = 'id_token token';
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
     spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(false));
-    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
+
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
+    readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
     const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
     const callbackContext = {
@@ -211,10 +211,10 @@ describe('State Validation Service', () => {
       existingIdToken: null,
     };
 
-    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     stateObs$.subscribe((state) => {
-      expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback Signature validation failed id_token');
+      expect(logDebugSpy).toHaveBeenCalledWith(config, 'authCallback Signature validation failed id_token');
       expect(state.accessToken).toBe('access_tokenTEST');
       expect(state.idToken).toBe('id_tokenTEST');
       expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -249,11 +249,11 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     stateObs$.subscribe((state) => {
       expect(logWarningSpy).toHaveBeenCalledWith(
-        'configId',
+        config,
         'authCallback incorrect nonce, did you call the checkAuth() method multiple times?'
       );
       expect(state.accessToken).toBe('access_tokenTEST');
@@ -276,9 +276,9 @@ describe('State Validation Service', () => {
 
     spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(false);
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
-    readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
+    readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+    readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
     const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => {});
 
     const callbackContext = {
@@ -295,10 +295,10 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     stateObs$.subscribe((state) => {
-      expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback Validation, one of the REQUIRED properties missing from id_token');
+      expect(logDebugSpy).toHaveBeenCalledWith(config, 'authCallback Validation, one of the REQUIRED properties missing from id_token');
       expect(state.accessToken).toBe('access_tokenTEST');
       expect(state.idToken).toBe('id_tokenTEST');
       expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -323,9 +323,9 @@ describe('State Validation Service', () => {
 
     config.maxIdTokenIatOffsetAllowedInSeconds = 0;
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
-    readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
+    readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+    readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
     const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
     const callbackContext = {
@@ -342,11 +342,11 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     stateObs$.subscribe((state) => {
       expect(logWarningSpy).toHaveBeenCalledWith(
-        'configId',
+        config,
         'authCallback Validation, iat rejected id_token was issued too far away from the current time'
       );
       expect(state.accessToken).toBe('access_tokenTEST');
@@ -374,9 +374,9 @@ describe('State Validation Service', () => {
     config.maxIdTokenIatOffsetAllowedInSeconds = 0;
     spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(false);
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
-    readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
+    readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+    readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
     const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
     const callbackContext = {
@@ -393,10 +393,10 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     stateObs$.subscribe((state) => {
-      expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect iss does not match authWellKnownEndpoints issuer');
+      expect(logWarningSpy).toHaveBeenCalledWith(config, 'authCallback incorrect iss does not match authWellKnownEndpoints issuer');
       expect(state.accessToken).toBe('access_tokenTEST');
       expect(state.idToken).toBe('id_tokenTEST');
       expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -426,9 +426,9 @@ describe('State Validation Service', () => {
 
     config.clientId = '';
     const readSpy = spyOn(storagePersistenceService, 'read');
-    readSpy.withArgs('authWellKnownEndPoints', 'configId').and.returnValue(authWellKnownEndpoints);
-    readSpy.withArgs('authStateControl', 'configId').and.returnValue('authStateControl');
-    readSpy.withArgs('authNonce', 'configId').and.returnValue('authNonce');
+    readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
+    readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+    readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
     const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
     const callbackContext = {
@@ -445,10 +445,10 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     stateObs$.subscribe((state) => {
-      expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect aud');
+      expect(logWarningSpy).toHaveBeenCalledWith(config, 'authCallback incorrect aud');
       expect(state.accessToken).toBe('access_tokenTEST');
       expect(state.idToken).toBe('id_tokenTEST');
       expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -499,10 +499,10 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
 
     stateObs$.subscribe((state) => {
-      expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback id token expired');
+      expect(logWarningSpy).toHaveBeenCalledWith(config, 'authCallback id token expired');
       expect(state.accessToken).toBe('access_tokenTEST');
       expect(state.idToken).toBe('id_tokenTEST');
       expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -546,11 +546,11 @@ describe('State Validation Service', () => {
       existingIdToken: null,
     };
 
-    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     // CAN THIS BE DONE VIA IF/ELSE IN THE BEGINNING?
     stateObs$.subscribe((state) => {
-      expect(logDebugSpy).toHaveBeenCalledWith('configId', 'authCallback token(s) validated, continue');
+      expect(logDebugSpy).toHaveBeenCalledWith(config, 'authCallback token(s) validated, continue');
       expect(state.accessToken).toBe('');
       expect(state.idToken).toBe('id_tokenTEST');
       expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -573,7 +573,7 @@ describe('State Validation Service', () => {
     config.responseType = 'id_token token';
     config.autoCleanStateAfterAuthentication = false;
     spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(of(false));
-    spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
+
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
@@ -595,11 +595,11 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     // CAN THIS BE DONE VIA IF/ELSE IN THE BEGINNING?
     stateObs$.subscribe((state) => {
-      expect(logWarningSpy).toHaveBeenCalledWith('configId', 'authCallback incorrect at_hash');
+      expect(logWarningSpy).toHaveBeenCalledWith(config, 'authCallback incorrect at_hash');
       expect(state.accessToken).toBe('access_tokenTEST');
       expect(state.idToken).toBe('id_tokenTEST');
       expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -642,10 +642,10 @@ describe('State Validation Service', () => {
       validationResult: null,
       existingIdToken: null,
     };
-    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     stateObs$.subscribe((state) => {
-      expect(logDebugSpy).toHaveBeenCalledWith('configId', 'iss validation is turned off, this is not recommended!');
+      expect(logDebugSpy).toHaveBeenCalledWith(config, 'iss validation is turned off, this is not recommended!');
       expect(state.state).toBe(ValidationResult.Ok);
       expect(state.accessToken).toBe('access_tokenTEST');
       expect(state.authResponseIsValid).toBe(true);
@@ -702,7 +702,7 @@ describe('State Validation Service', () => {
       existingIdToken: null,
     };
 
-    const stateObs$ = stateValidationService.validateState(callbackContext, 'configId');
+    const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     stateObs$.subscribe((state) => {
       expect(state.accessToken).toBe('access_tokenTEST');
@@ -1263,7 +1263,7 @@ describe('State Validation Service', () => {
       validationResult: null,
     };
 
-    const isValidObs$ = stateValidationService.getValidatedStateResult(callbackContext, 'configId');
+    const isValidObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
 
     isValidObs$.subscribe((isValid) => {
       expect(isValid.authResponseIsValid).toBe(false);
@@ -1271,7 +1271,7 @@ describe('State Validation Service', () => {
   });
 
   it('should return authResponseIsValid false when null is passed', () => {
-    const isValidObs$ = stateValidationService.getValidatedStateResult(null, 'configId');
+    const isValidObs$ = stateValidationService.getValidatedStateResult(null, config);
 
     isValidObs$.subscribe((isValid) => {
       expect(isValid.authResponseIsValid).toBe(false);

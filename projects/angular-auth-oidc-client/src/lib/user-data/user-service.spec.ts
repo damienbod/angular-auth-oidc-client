@@ -4,8 +4,6 @@ import { createRetriableStream } from '../../test/create-retriable-stream.helper
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { OpenIdConfiguration } from '../config/openid-configuration';
-import { ConfigurationProvider } from '../config/provider/config.provider';
-import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { EventTypes } from '../public-events/event-types';
@@ -25,7 +23,6 @@ const DUMMY_USER_DATA = {
 };
 
 describe('User Service', () => {
-  let configProvider: ConfigurationProvider;
   let loggerService: LoggerService;
   let userService: UserService;
   let storagePersistenceService: StoragePersistenceService;
@@ -44,10 +41,6 @@ describe('User Service', () => {
         { provide: PlatformProvider, useClass: PlatformProviderMock },
         PublicEventsService,
         TokenHelperService,
-        {
-          provide: ConfigurationProvider,
-          useClass: ConfigurationProviderMock,
-        },
         UserService,
         FlowHelper,
       ],
@@ -55,7 +48,6 @@ describe('User Service', () => {
   });
 
   beforeEach(() => {
-    configProvider = TestBed.inject(ConfigurationProvider);
     loggerService = TestBed.inject(LoggerService);
     userService = TestBed.inject(UserService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
@@ -85,11 +77,9 @@ describe('User Service', () => {
           configId: 'configId',
         } as OpenIdConfiguration;
 
-        spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
-
         spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
 
-        userService.getAndPersistUserDataInStore('configId', isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
+        userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
           expect(decodedIdToken).toBe(token);
         });
       })
@@ -108,12 +98,10 @@ describe('User Service', () => {
           configId: 'configId',
         } as OpenIdConfiguration;
 
-        spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
-
         spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
         spyOn(userService, 'setUserDataToStore');
 
-        userService.getAndPersistUserDataInStore('configId', isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
+        userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
           expect(decodedIdToken).toBe(token);
         });
 
@@ -134,11 +122,9 @@ describe('User Service', () => {
           configId: 'configId',
         } as OpenIdConfiguration;
 
-        spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
-
         spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
 
-        userService.getAndPersistUserDataInStore('configId', isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
+        userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
           expect(userDataInstore).toBe(token);
         });
       })
@@ -158,12 +144,10 @@ describe('User Service', () => {
           configId: 'configId',
         } as OpenIdConfiguration;
 
-        spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
-
         spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
         const spy = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
 
-        userService.getAndPersistUserDataInStore('configId', isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
+        userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
           expect(userDataFromSts).toEqual(token);
         });
 
@@ -187,14 +171,12 @@ describe('User Service', () => {
           configId: 'configId',
         } as OpenIdConfiguration;
 
-        spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
-
         spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
         const spy = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
         spyOn(loggerService, 'logDebug');
         spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
 
-        userService.getAndPersistUserDataInStore('configId', isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
+        userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
           expect(userDataFromSts).toEqual(token);
         });
 
@@ -219,14 +201,12 @@ describe('User Service', () => {
           configId: 'configId',
         } as OpenIdConfiguration;
 
-        spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
-
         spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
         const spyGetIdentityUserData = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
         spyOn(loggerService, 'logDebug');
         spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
 
-        userService.getAndPersistUserDataInStore('configId', isRenewProcess, idToken, decodedIdToken).subscribe({
+        userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe({
           error: (err) => {
             expect(err.message).toEqual('Received no user data, request failed');
           },
@@ -252,12 +232,10 @@ describe('User Service', () => {
           configId: 'configId',
         } as OpenIdConfiguration;
 
-        spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue(config);
-
         spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
         const spy = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
 
-        userService.getAndPersistUserDataInStore('configId', isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
+        userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
           expect(userDataFromSts).toEqual(token);
         });
 
@@ -268,30 +246,33 @@ describe('User Service', () => {
 
   describe('getUserDataFromStore', () => {
     it('returns null if there is not data', () => {
-      const result = userService.getUserDataFromStore('configId');
+      const config = { configId: 'configId' };
+      const result = userService.getUserDataFromStore(config);
       expect(result).toBeNull();
     });
 
     it('returns value if there is data', () => {
-      spyOn(storagePersistenceService, 'read').withArgs('userData', 'configId').and.returnValue('userData');
-      const result = userService.getUserDataFromStore('configId');
+      const config = { configId: 'configId' };
+      spyOn(storagePersistenceService, 'read').withArgs('userData', config).and.returnValue('userData');
+      const result = userService.getUserDataFromStore(config);
       expect(result).toBeTruthy();
     });
   });
 
   describe('setUserDataToStore', () => {
     it('sets userData in storagePersistenceService', () => {
-      spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+      const config = { configId: 'configId' };
       const spy = spyOn(storagePersistenceService, 'write');
-      userService.setUserDataToStore('userDataForTest', 'configId');
-      expect(spy).toHaveBeenCalledWith('userData', 'userDataForTest', 'configId');
+      userService.setUserDataToStore('userDataForTest', config, [config]);
+      expect(spy).toHaveBeenCalledWith('userData', 'userDataForTest', config);
     });
 
     it('userDataInternal$ is called when userData is set', () => {
-      spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+      const config = { configId: 'configId' };
+
       const spy = spyOn((userService as any).userDataInternal$, 'next');
 
-      userService.setUserDataToStore('userDataForTest', 'configId');
+      userService.setUserDataToStore('userDataForTest', config, [config]);
 
       expect(spy).toHaveBeenCalledWith({
         userData: 'userDataForTest',
@@ -300,10 +281,10 @@ describe('User Service', () => {
     });
 
     it('eventService.fireEvent is called when userData is set', () => {
-      spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+      const config = { configId: 'configId' };
       const spy = spyOn(eventsService, 'fireEvent');
 
-      userService.setUserDataToStore('userDataForTest', 'configId');
+      userService.setUserDataToStore('userDataForTest', config, [config]);
 
       expect(spy).toHaveBeenCalledWith(EventTypes.UserDataChanged, { configId: 'configId', userData: 'userDataForTest' });
     });
@@ -311,19 +292,19 @@ describe('User Service', () => {
 
   describe('resetUserDataInStore', () => {
     it('resets userData sets null in storagePersistenceService', () => {
-      spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+      const config = { configId: 'configId' };
       const spy = spyOn(storagePersistenceService, 'remove');
 
-      userService.resetUserDataInStore('configId');
+      userService.resetUserDataInStore(config, [config]);
 
-      expect(spy).toHaveBeenCalledWith('userData', 'configId');
+      expect(spy).toHaveBeenCalledWith('userData', config);
     });
 
     it('userDataInternal$ is called with null when userData is reset', () => {
-      spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+      const config = { configId: 'configId' };
       const spy = spyOn((userService as any).userDataInternal$, 'next');
 
-      userService.resetUserDataInStore('configId');
+      userService.resetUserDataInStore(config, [config]);
 
       expect(spy).toHaveBeenCalledWith({
         userData: null,
@@ -332,10 +313,10 @@ describe('User Service', () => {
     });
 
     it('eventService.fireEvent is called with null when userData is reset', () => {
-      spyOn(configProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+      const config = { configId: 'configId' };
       const spy = spyOn(eventsService, 'fireEvent');
 
-      userService.resetUserDataInStore('configId');
+      userService.resetUserDataInStore(config, [config]);
 
       expect(spy).toHaveBeenCalledWith(EventTypes.UserDataChanged, { configId: 'configId', userData: null });
     });
@@ -520,9 +501,10 @@ describe('User Service', () => {
   it(
     'should fail after three tries',
     waitForAsync(() => {
+      const config = { configId: 'configId' };
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
       spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', 'configId')
+        .withArgs('authWellKnownEndPoints', config)
         .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
       spyOn(dataService, 'get').and.returnValue(
         createRetriableStream(
@@ -533,7 +515,7 @@ describe('User Service', () => {
         )
       );
 
-      (userService as any).getIdentityUserData('configId').subscribe({
+      (userService as any).getIdentityUserData(config).subscribe({
         error: (err) => {
           expect(err).toBeTruthy();
         },
