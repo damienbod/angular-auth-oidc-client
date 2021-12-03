@@ -153,7 +153,10 @@ export class AuthStateService {
   }
 
   isAuthenticated(configuration: OpenIdConfiguration): boolean {
-    return !!this.storagePersistenceService.getAccessToken(configuration) && !!this.storagePersistenceService.getIdToken(configuration);
+    const hasAccessToken = !!this.storagePersistenceService.getAccessToken(configuration);
+    const hasIdToken = !!this.storagePersistenceService.getIdToken(configuration);
+
+    return hasAccessToken && hasIdToken;
   }
 
   private decodeURIComponentSafely(token: string): string {
