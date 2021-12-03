@@ -5,14 +5,12 @@ import { CheckAuthService } from '../../check-auth.service';
 import { CheckAuthServiceMock } from '../../check-auth.service-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
 import { AuthWellKnownServiceMock } from '../../config/auth-well-known/auth-well-known.service-mock';
-import { ConfigurationProvider } from '../../config/provider/config.provider';
-import { ConfigurationProviderMock } from '../../config/provider/config.provider-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { UrlService } from '../../utils/url/url.service';
+import { UrlServiceMock } from '../../utils/url/url.service-mock';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
 import { ResponseTypeValidationServiceMock } from '../response-type-validation/response-type-validation.service.mock';
-import { UrlServiceMock } from '../../utils/url/url.service-mock';
 import { PopUpLoginService } from './popup-login.service';
 import { PopupResult } from './popup-result';
 import { PopUpService } from './popup.service';
@@ -35,7 +33,6 @@ describe('PopUpLoginService', () => {
         { provide: LoggerService, useClass: LoggerServiceMock },
         { provide: ResponseTypeValidationService, useClass: ResponseTypeValidationServiceMock },
         { provide: UrlService, useClass: UrlServiceMock },
-        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
         { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
         { provide: PopUpService, useClass: PopUpServiceMock },
         { provide: CheckAuthService, useClass: CheckAuthServiceMock },
@@ -61,137 +58,137 @@ describe('PopUpLoginService', () => {
     it(
       'does nothing if it has an invalid response type',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ responseType: 'stubValue' });
+        const config = { responseType: 'stubValue' };
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(false);
         const loggerSpy = spyOn(loggerService, 'logError');
 
-        popUpLoginService.loginWithPopUpStandard('configId').subscribe({
+        popUpLoginService.loginWithPopUpStandard(config, [config]).subscribe({
           error: (err) => {
             expect(loggerSpy).toHaveBeenCalled();
             expect(err.message).toBe('Invalid response type!');
           },
         });
-      }),
+      })
     );
 
     it(
       'does nothing if no well known endpoint is given',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ responseType: 'stubValue' });
+        const config = { responseType: 'stubValue' };
         const spy = spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         const loggerSpy = spyOn(loggerService, 'logError');
 
-        popUpLoginService.loginWithPopUpStandard('configId').subscribe({
+        popUpLoginService.loginWithPopUpStandard(config, [config]).subscribe({
           error: (err) => {
             expect(spy).toHaveBeenCalled();
             expect(loggerSpy).toHaveBeenCalled();
             expect(err.message).toBe('no authWellknownEndpoint given!');
           },
         });
-      }),
+      })
     );
 
     it(
       'calls urlService.getAuthorizeUrl() if everything fits',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
+        const config = {
           authWellknownEndpointUrl: 'authWellknownEndpoint',
           responseType: 'stubValue',
-        });
+        };
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+        spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOnProperty(popupService, 'result$').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
 
-        popUpLoginService.loginWithPopUpStandard('configId').subscribe(() => {
+        popUpLoginService.loginWithPopUpStandard(config, [config]).subscribe(() => {
           expect(urlService.getAuthorizeUrl).toHaveBeenCalled();
         });
-      }),
+      })
     );
 
     it(
       'opens popup if everything fits',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
+        const config = {
           authWellknownEndpointUrl: 'authWellknownEndpoint',
           responseType: 'stubValue',
-        });
+        };
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+        spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
         spyOnProperty(popupService, 'result$').and.returnValue(of({}));
         const popupSpy = spyOn(popupService, 'openPopUp');
 
-        popUpLoginService.loginWithPopUpStandard('configId').subscribe(() => {
+        popUpLoginService.loginWithPopUpStandard(config, [config]).subscribe(() => {
           expect(popupSpy).toHaveBeenCalled();
         });
-      }),
+      })
     );
 
     it(
       'returns three properties when popupservice received an url',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
+        const config = {
           authWellknownEndpointUrl: 'authWellknownEndpoint',
           responseType: 'stubValue',
-        });
+        };
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+        spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
         spyOn(popupService, 'openPopUp');
         const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(
           of({
             isAuthenticated: true,
-            configId: 'configId',
+            configId: 'configId1',
             idToken: null,
             userData: { any: 'userData' },
             accessToken: 'anyAccessToken',
-          }),
+          })
         );
         const popupResult: PopupResult = { userClosed: false, receivedUrl: 'someUrl' };
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
-        popUpLoginService.loginWithPopUpStandard('configId').subscribe((result) => {
-          expect(checkAuthSpy).toHaveBeenCalledWith('configId', 'someUrl');
+        popUpLoginService.loginWithPopUpStandard(config, [config]).subscribe((result) => {
+          expect(checkAuthSpy).toHaveBeenCalledWith(config, [config], 'someUrl');
 
           expect(result).toEqual({
             isAuthenticated: true,
-            configId: 'configId',
+            configId: 'configId1',
             idToken: null,
             userData: { any: 'userData' },
             accessToken: 'anyAccessToken',
           });
         });
-      }),
+      })
     );
 
     it(
       'returns two properties if popup was closed by user',
       waitForAsync(() => {
-        spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({
+        const config = {
           authWellknownEndpointUrl: 'authWellknownEndpoint',
           responseType: 'stubValue',
-        });
+        };
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({}));
+        spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
         spyOn(popupService, 'openPopUp');
         const checkAuthSpy = spyOn(checkAuthService, 'checkAuth');
         const popupResult: PopupResult = { userClosed: true };
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
-        popUpLoginService.loginWithPopUpStandard('configId').subscribe((result) => {
+        popUpLoginService.loginWithPopUpStandard(config, [config]).subscribe((result) => {
           expect(checkAuthSpy).not.toHaveBeenCalled();
           expect(result).toEqual({
             isAuthenticated: false,
             errorMessage: 'User closed popup',
-            configId: 'configId',
+            configId: 'configId1',
             idToken: null,
             userData: null,
             accessToken: null,
           });
         });
-      }),
+      })
     );
   });
 });

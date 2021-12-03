@@ -24,49 +24,54 @@ describe('Storage Persistence Service', () => {
 
   describe('read', () => {
     it('reads from oidcSecurityStorage with configId', () => {
+      const config = { configId: 'configId1' };
       const spy = spyOn(securityStorage, 'read');
-      service.read('authNonce', 'configId');
-      expect(spy).toHaveBeenCalledWith('authNonce', 'configId');
+      service.read('authNonce', config);
+      expect(spy).toHaveBeenCalledWith('authNonce', config);
     });
 
     it('returns undefined (not throws exception) if key to read is not present on config', () => {
+      const config = { configId: 'configId1' };
       spyOn(securityStorage, 'read').and.returnValue({ some: 'thing' });
-      const result = service.read('authNonce', 'configId');
+      const result = service.read('authNonce', config);
       expect(result).toBeUndefined();
     });
   });
 
   describe('write', () => {
     it('writes to oidcSecurityStorage with correct key and correct config', () => {
+      const config = { configId: 'configId1' };
       const readSpy = spyOn(securityStorage, 'read');
       const writeSpy = spyOn(securityStorage, 'write');
 
-      service.write('authNonce', 'anyValue', 'configId');
+      service.write('authNonce', 'anyValue', config);
 
-      expect(readSpy).toHaveBeenCalledWith('authNonce', 'configId');
-      expect(writeSpy).toHaveBeenCalledWith({ authNonce: 'anyValue' }, 'configId');
+      expect(readSpy).toHaveBeenCalledWith('authNonce', config);
+      expect(writeSpy).toHaveBeenCalledWith({ authNonce: 'anyValue' }, config);
     });
   });
 
   describe('remove', () => {
     it('should remove key from config', () => {
+      const config = { configId: 'configId1' };
       const readSpy = spyOn(securityStorage, 'read').and.returnValue({ authNonce: 'anyValue' });
       const writeSpy = spyOn(securityStorage, 'write');
 
-      service.remove('authNonce', 'configId');
+      service.remove('authNonce', config);
 
-      expect(readSpy).toHaveBeenCalledWith('authNonce', 'configId');
-      expect(writeSpy).toHaveBeenCalledWith({}, 'configId');
+      expect(readSpy).toHaveBeenCalledWith('authNonce', config);
+      expect(writeSpy).toHaveBeenCalledWith({}, config);
     });
 
     it('does not crash when read with configId returns null', () => {
+      const config = { configId: 'configId1' };
       const readSpy = spyOn(securityStorage, 'read').and.returnValue(null);
       const writeSpy = spyOn(securityStorage, 'write');
 
-      service.remove('authNonce', 'configId');
+      service.remove('authNonce', config);
 
-      expect(readSpy).toHaveBeenCalledWith('authNonce', 'configId');
-      expect(writeSpy).toHaveBeenCalledWith({}, 'configId');
+      expect(readSpy).toHaveBeenCalledWith('authNonce', config);
+      expect(writeSpy).toHaveBeenCalledWith({}, config);
     });
   });
 
@@ -82,49 +87,53 @@ describe('Storage Persistence Service', () => {
 
   describe('resetStorageFlowData', () => {
     it('resets the correct values', () => {
+      const config = { configId: 'configId1' };
       const spy = spyOn(service, 'remove');
 
-      service.resetStorageFlowData('configId');
+      service.resetStorageFlowData(config);
 
       expect(spy).toHaveBeenCalledTimes(8);
-      expect(spy.calls.argsFor(0)).toEqual(['session_state', 'configId']);
-      expect(spy.calls.argsFor(1)).toEqual(['storageSilentRenewRunning', 'configId']);
-      expect(spy.calls.argsFor(2)).toEqual(['codeVerifier', 'configId']);
-      expect(spy.calls.argsFor(3)).toEqual(['userData', 'configId']);
-      expect(spy.calls.argsFor(4)).toEqual(['storageCustomParamsAuthRequest', 'configId']);
-      expect(spy.calls.argsFor(5)).toEqual(['access_token_expires_at', 'configId']);
-      expect(spy.calls.argsFor(6)).toEqual(['storageCustomParamsRefresh', 'configId']);
-      expect(spy.calls.argsFor(7)).toEqual(['storageCustomParamsEndSession', 'configId']);
+      expect(spy.calls.argsFor(0)).toEqual(['session_state', config]);
+      expect(spy.calls.argsFor(1)).toEqual(['storageSilentRenewRunning', config]);
+      expect(spy.calls.argsFor(2)).toEqual(['codeVerifier', config]);
+      expect(spy.calls.argsFor(3)).toEqual(['userData', config]);
+      expect(spy.calls.argsFor(4)).toEqual(['storageCustomParamsAuthRequest', config]);
+      expect(spy.calls.argsFor(5)).toEqual(['access_token_expires_at', config]);
+      expect(spy.calls.argsFor(6)).toEqual(['storageCustomParamsRefresh', config]);
+      expect(spy.calls.argsFor(7)).toEqual(['storageCustomParamsEndSession', config]);
     });
   });
 
   describe('resetAuthStateInStorage', () => {
     it('resets the correct values', () => {
+      const config = { configId: 'configId1' };
       const spy = spyOn(service, 'remove');
 
-      service.resetAuthStateInStorage('configId');
+      service.resetAuthStateInStorage(config);
 
-      expect(spy.calls.argsFor(0)).toEqual(['authzData', 'configId']);
-      expect(spy.calls.argsFor(1)).toEqual(['authnResult', 'configId']);
+      expect(spy.calls.argsFor(0)).toEqual(['authzData', config]);
+      expect(spy.calls.argsFor(1)).toEqual(['authnResult', config]);
     });
   });
 
   describe('getAccessToken', () => {
     it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
       const returnValue = { authzData: 'someValue' };
+      const config = { configId: 'configId1' };
       const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-      const result = service.getAccessToken('configId');
+      const result = service.getAccessToken(config);
 
       expect(result).toBe('someValue');
-      expect(spy).toHaveBeenCalledWith('authzData', 'configId');
+      expect(spy).toHaveBeenCalledWith('authzData', config);
     });
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
       const spy = spyOn(securityStorage, 'read').and.returnValue(null);
-      const result = service.getAccessToken('configId');
+      const config = { configId: 'configId1' };
+      const result = service.getAccessToken(config);
 
       expect(result).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith('authzData', 'configId');
+      expect(spy).toHaveBeenCalledWith('authzData', config);
     });
   });
 
@@ -132,37 +141,41 @@ describe('Storage Persistence Service', () => {
     it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
       const returnValue = { authnResult: { id_token: 'someValue' } };
       const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-      const result = service.getIdToken('configId');
+      const config = { configId: 'configId1' };
+      const result = service.getIdToken(config);
 
       expect(result).toBe('someValue');
-      expect(spy).toHaveBeenCalledWith('authnResult', 'configId');
+      expect(spy).toHaveBeenCalledWith('authnResult', config);
     });
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
       const spy = spyOn(securityStorage, 'read').and.returnValue(null);
-      const result = service.getIdToken('configId');
+      const config = { configId: 'configId1' };
+      const result = service.getIdToken(config);
 
       expect(result).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith('authnResult', 'configId');
+      expect(spy).toHaveBeenCalledWith('authnResult', config);
     });
   });
 
   describe('getAuthenticationResult', () => {
     it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
       const returnValue = { authnResult: { id_token: 'someValue' } };
+      const config = { configId: 'configId1' };
       const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-      const result = service.getAuthenticationResult('configId');
+      const result = service.getAuthenticationResult(config);
 
       expect(result.id_token).toBe('someValue');
-      expect(spy).toHaveBeenCalledWith('authnResult', 'configId');
+      expect(spy).toHaveBeenCalledWith('authnResult', config);
     });
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
       const spy = spyOn(securityStorage, 'read').and.returnValue(null);
-      const result = service.getAuthenticationResult('configId');
+      const config = { configId: 'configId1' };
+      const result = service.getAuthenticationResult(config);
 
       expect(result).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith('authnResult', 'configId');
+      expect(spy).toHaveBeenCalledWith('authnResult', config);
     });
   });
 
@@ -170,27 +183,30 @@ describe('Storage Persistence Service', () => {
     it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
       const returnValue = { authnResult: { refresh_token: 'someValue' } };
       const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-      const result = service.getRefreshToken('configId');
+      const config = { configId: 'configId1' };
+      const result = service.getRefreshToken(config);
 
       expect(result).toBe('someValue');
-      expect(spy).toHaveBeenCalledWith('authnResult', 'configId');
+      expect(spy).toHaveBeenCalledWith('authnResult', config);
     });
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
       const returnValue = { authnResult: { NO_refresh_token: 'someValue' } };
       const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
-      const result = service.getRefreshToken('configId');
+      const config = { configId: 'configId1' };
+      const result = service.getRefreshToken(config);
 
       expect(result).toBeUndefined();
-      expect(spy).toHaveBeenCalledWith('authnResult', 'configId');
+      expect(spy).toHaveBeenCalledWith('authnResult', config);
     });
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
       const spy = spyOn(securityStorage, 'read').and.returnValue(null);
-      const result = service.getRefreshToken('configId');
+      const config = { configId: 'configId1' };
+      const result = service.getRefreshToken(config);
 
       expect(result).toBeUndefined();
-      expect(spy).toHaveBeenCalledWith('authnResult', 'configId');
+      expect(spy).toHaveBeenCalledWith('authnResult', config);
     });
   });
 });

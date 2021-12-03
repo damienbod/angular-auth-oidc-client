@@ -148,7 +148,7 @@ describe('ParLoginService', () => {
         const result = service.loginPar(config, { customParams: { some: 'thing' } });
 
         expect(result).toBeUndefined();
-        expect(spy).toHaveBeenCalledOnceWith('configId', { some: 'thing' });
+        expect(spy).toHaveBeenCalledOnceWith(config, { some: 'thing' });
       })
     );
 
@@ -296,7 +296,7 @@ describe('ParLoginService', () => {
 
         service.loginWithPopUpPar(config, allConfigs, { customParams: { some: 'thing' } }).subscribe({
           error: (err) => {
-            expect(spy).toHaveBeenCalledOnceWith('configId', { some: 'thing' });
+            expect(spy).toHaveBeenCalledOnceWith(config, { some: 'thing' });
             expect(err.message).toBe("Could not create URL with param requestUri: 'url'");
           },
         });
@@ -358,7 +358,7 @@ describe('ParLoginService', () => {
         const config = {
           authWellknownEndpointUrl: 'authWellknownEndpoint',
           responseType: 'stubValue',
-          configId: 'configId',
+          configId: 'configId1',
         };
         const allConfigs = [config];
 
@@ -370,7 +370,7 @@ describe('ParLoginService', () => {
         const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(
           of({
             isAuthenticated: true,
-            configId: 'configId',
+            configId: 'configId1',
             idToken: null,
             userData: { any: 'userData' },
             accessToken: 'anyAccessToken',
@@ -384,7 +384,7 @@ describe('ParLoginService', () => {
 
           expect(result).toEqual({
             isAuthenticated: true,
-            configId: 'configId',
+            configId: 'configId1',
             idToken: null,
             userData: { any: 'userData' },
             accessToken: 'anyAccessToken',
@@ -417,7 +417,7 @@ describe('ParLoginService', () => {
           expect(result).toEqual({
             isAuthenticated: false,
             errorMessage: 'User closed popup',
-            configId: 'configId',
+            configId: 'configId1',
             idToken: null,
             userData: null,
             accessToken: null,

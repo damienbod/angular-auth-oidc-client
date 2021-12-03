@@ -66,6 +66,7 @@ describe('StateValidationCallbackHandlerService', () => {
             authResponseIsValid: true,
           } as StateValidationResult)
         );
+        const allConfigs = [{ configId: 'configId1' }];
 
         service.callbackStateValidation({} as CallbackContext, allConfigs[0], allConfigs).subscribe((newCallbackContext) => {
           expect(newCallbackContext).toEqual({
@@ -93,7 +94,7 @@ describe('StateValidationCallbackHandlerService', () => {
         service.callbackStateValidation({} as CallbackContext, allConfigs[0], allConfigs).subscribe({
           error: (err) => {
             expect(loggerSpy).toHaveBeenCalledOnceWith(
-              'configId',
+              allConfigs[0],
               'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
             );
           },

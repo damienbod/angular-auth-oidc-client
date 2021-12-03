@@ -101,14 +101,14 @@ describe('CheckSessionService', () => {
 
   it('start() calls pollserversession() with clientId if no scheduledheartbeat is set', () => {
     const spy = spyOn<any>(checkSessionService, 'pollServerSession');
-    const config = { clientId: 'clientId', configId: 'configId' };
+    const config = { clientId: 'clientId', configId: 'configId1' };
 
     checkSessionService.start(config);
     expect(spy).toHaveBeenCalledWith('clientId', config);
   });
 
   it('start() does not call pollServerSession() if scheduledHeartBeatRunning is set', () => {
-    const config = { configId: 'configId' };
+    const config = { configId: 'configId1' };
     const spy = spyOn<any>(checkSessionService, 'pollServerSession');
     (checkSessionService as any).scheduledHeartBeatRunning = () => {};
     checkSessionService.start(config);
@@ -131,21 +131,21 @@ describe('CheckSessionService', () => {
 
   describe('serverStateChanged', () => {
     it('returns false if startCheckSession is not configured', () => {
-      const config = { startCheckSession: false, configId: 'configId' };
+      const config = { startCheckSession: false, configId: 'configId1' };
       const result = checkSessionService.serverStateChanged(config);
       expect(result).toBeFalsy();
     });
 
     it('returns false if checkSessionReceived is false', () => {
       (checkSessionService as any).checkSessionReceived = false;
-      const config = { startCheckSession: true, configId: 'configId' };
+      const config = { startCheckSession: true, configId: 'configId1' };
       const result = checkSessionService.serverStateChanged(config);
       expect(result).toBeFalse();
     });
 
     it('returns true if startCheckSession is configured and checkSessionReceived is true', () => {
       (checkSessionService as any).checkSessionReceived = true;
-      const config = { startCheckSession: true, configId: 'configId' };
+      const config = { startCheckSession: true, configId: 'configId1' };
       const result = checkSessionService.serverStateChanged(config);
       expect(result).toBeTrue();
     });

@@ -176,7 +176,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
     it('calls refreshSessionWithRefreshTokens if current flow is Code flow with refresh tokens', fakeAsync(() => {
       spyOn(configurationService, 'getAllConfigurations').and.returnValue([
-        { configId: 'configId', silentRenew: true, tokenRefreshInSeconds: 1 },
+        { configId: 'configId1', silentRenew: true, tokenRefreshInSeconds: 1 },
       ]);
       spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
       spyOn(periodicallyTokenCheckService as any, 'shouldStartPeriodicallyCheckForConfig').and.returnValue(true);
@@ -203,7 +203,7 @@ describe('PeriodicallyTokenCheckService', () => {
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
       spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
 
-      const result = (periodicallyTokenCheckService as any).shouldStartPeriodicallyCheckForConfig({ configId: 'configId' });
+      const result = (periodicallyTokenCheckService as any).shouldStartPeriodicallyCheckForConfig({ configId: 'configId1' });
 
       expect(result).toBeFalse();
     });
@@ -213,7 +213,7 @@ describe('PeriodicallyTokenCheckService', () => {
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
       spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
 
-      const result = (periodicallyTokenCheckService as any).shouldStartPeriodicallyCheckForConfig({ configId: 'configId' });
+      const result = (periodicallyTokenCheckService as any).shouldStartPeriodicallyCheckForConfig({ configId: 'configId1' });
 
       expect(result).toBeFalse();
     });
@@ -223,7 +223,7 @@ describe('PeriodicallyTokenCheckService', () => {
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
       spyOn(userService, 'getUserDataFromStore').and.returnValue(null);
 
-      const result = (periodicallyTokenCheckService as any).shouldStartPeriodicallyCheckForConfig({ configId: 'configId' });
+      const result = (periodicallyTokenCheckService as any).shouldStartPeriodicallyCheckForConfig({ configId: 'configId1' });
 
       expect(result).toBeFalse();
     });
@@ -233,7 +233,7 @@ describe('PeriodicallyTokenCheckService', () => {
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
       spyOn(userService, 'getUserDataFromStore').and.returnValue('some-userdata');
 
-      const result = (periodicallyTokenCheckService as any).shouldStartPeriodicallyCheckForConfig({ configId: 'configId' });
+      const result = (periodicallyTokenCheckService as any).shouldStartPeriodicallyCheckForConfig({ configId: 'configId1' });
 
       expect(result).toBeTrue();
     });
@@ -245,7 +245,7 @@ describe('PeriodicallyTokenCheckService', () => {
       spyOn(authStateService, 'hasIdTokenExpiredAndRenewCheckIsEnabled').and.returnValue(false);
       spyOn(authStateService, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(false);
 
-      const result = (periodicallyTokenCheckService as any).shouldStartPeriodicallyCheckForConfig({ configId: 'configId' });
+      const result = (periodicallyTokenCheckService as any).shouldStartPeriodicallyCheckForConfig({ configId: 'configId1' });
 
       expect(result).toBeFalse();
     });
@@ -258,7 +258,7 @@ describe('PeriodicallyTokenCheckService', () => {
       spyOn(authStateService, 'hasIdTokenExpiredAndRenewCheckIsEnabled').and.returnValue(true);
       spyOn(authStateService, 'hasAccessTokenExpiredIfExpiryExists').and.returnValue(true);
 
-      const result = (periodicallyTokenCheckService as any).shouldStartPeriodicallyCheckForConfig({ configId: 'configId' });
+      const result = (periodicallyTokenCheckService as any).shouldStartPeriodicallyCheckForConfig({ configId: 'configId1' });
 
       expect(result).toBeTrue();
     });

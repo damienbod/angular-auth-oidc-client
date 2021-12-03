@@ -78,11 +78,11 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const saveRedirectRouteSpy = spyOn(autoLoginService, 'saveRedirectRoute');
         const loginSpy = spyOn(loginService, 'login');
 
-        autoLoginPartialRoutesGuard.canActivate(null, { url: 'some-url1' } as RouterStateSnapshot);
-
-        expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'some-url1');
-        expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
-        expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
+        autoLoginPartialRoutesGuard.canActivate(null, { url: 'some-url1' } as RouterStateSnapshot).subscribe(() => {
+          expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'some-url1');
+          expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
+          expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
+        });
       })
     );
 
@@ -94,11 +94,11 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const saveRedirectRouteSpy = spyOn(autoLoginService, 'saveRedirectRoute');
         const loginSpy = spyOn(loginService, 'login');
 
-        autoLoginPartialRoutesGuard.canActivate(null, { url: 'some-url1' } as RouterStateSnapshot);
-
-        expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
-        expect(loginSpy).not.toHaveBeenCalled();
-        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
+        autoLoginPartialRoutesGuard.canActivate(null, { url: 'some-url1' } as RouterStateSnapshot).subscribe(() => {
+          expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
+          expect(loginSpy).not.toHaveBeenCalled();
+          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
+        });
       })
     );
   });
@@ -112,11 +112,11 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const saveRedirectRouteSpy = spyOn(autoLoginService, 'saveRedirectRoute');
         const loginSpy = spyOn(loginService, 'login');
 
-        autoLoginPartialRoutesGuard.canActivateChild(null, { url: 'some-url1' } as RouterStateSnapshot);
-
-        expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'some-url1');
-        expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
-        expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
+        autoLoginPartialRoutesGuard.canActivateChild(null, { url: 'some-url1' } as RouterStateSnapshot).subscribe(() => {
+          expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'some-url1');
+          expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
+          expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
+        });
       })
     );
 
@@ -128,11 +128,11 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const saveRedirectRouteSpy = spyOn(autoLoginService, 'saveRedirectRoute');
         const loginSpy = spyOn(loginService, 'login');
 
-        autoLoginPartialRoutesGuard.canActivateChild(null, { url: 'some-url1' } as RouterStateSnapshot);
-
-        expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
-        expect(loginSpy).not.toHaveBeenCalled();
-        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
+        autoLoginPartialRoutesGuard.canActivateChild(null, { url: 'some-url1' } as RouterStateSnapshot).subscribe(() => {
+          expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
+          expect(loginSpy).not.toHaveBeenCalled();
+          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
+        });
       })
     );
   });
@@ -146,11 +146,11 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const saveRedirectRouteSpy = spyOn(autoLoginService, 'saveRedirectRoute');
         const loginSpy = spyOn(loginService, 'login');
 
-        autoLoginPartialRoutesGuard.canLoad(null, []);
-
-        expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, '');
-        expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
-        expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
+        autoLoginPartialRoutesGuard.canLoad(null, []).subscribe(() => {
+          expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, '');
+          expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
+          expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
+        });
       })
     );
 
@@ -162,15 +162,13 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const saveRedirectRouteSpy = spyOn(autoLoginService, 'saveRedirectRoute');
         const loginSpy = spyOn(loginService, 'login');
 
-        autoLoginPartialRoutesGuard.canLoad(null, [
-          new UrlSegment('some-url12', {}),
-          new UrlSegment('with', {}),
-          new UrlSegment('some-param', {}),
-        ]);
-
-        expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'some-url12/with/some-param');
-        expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
-        expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
+        autoLoginPartialRoutesGuard
+          .canLoad(null, [new UrlSegment('some-url12', {}), new UrlSegment('with', {}), new UrlSegment('some-param', {})])
+          .subscribe(() => {
+            expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'some-url12/with/some-param');
+            expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
+            expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
+          });
       })
     );
 
@@ -182,11 +180,11 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const saveRedirectRouteSpy = spyOn(autoLoginService, 'saveRedirectRoute');
         const loginSpy = spyOn(loginService, 'login');
 
-        autoLoginPartialRoutesGuard.canLoad(null, []);
-
-        expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
-        expect(loginSpy).not.toHaveBeenCalled();
-        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
+        autoLoginPartialRoutesGuard.canLoad(null, []).subscribe(() => {
+          expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
+          expect(loginSpy).not.toHaveBeenCalled();
+          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
+        });
       })
     );
   });

@@ -11,7 +11,7 @@ import { TokenValidationService } from '../validation/token-validation.service';
 import { TokenValidationServiceMock } from '../validation/token-validation.service-mock';
 import { AuthStateService } from './auth-state.service';
 
-describe('Auth State Service', () => {
+fdescribe('Auth State Service', () => {
   let authStateService: AuthStateService;
   let storagePersistenceService: StoragePersistenceService;
   let eventsService: PublicEventsService;
@@ -356,17 +356,17 @@ describe('Auth State Service', () => {
 
   describe('hasIdTokenExpiredAndRenewCheckIsEnabled', () => {
     it('tokenValidationService gets called with id token if id_token is set', () => {
-      // configurationProvider.setConfig({ renewTimeBeforeTokenExpiresInSeconds: 30, enableIdTokenExpiredValidationInRenew: true });
       spyOn(storagePersistenceService, 'getIdToken').withArgs({ configId: 'configId1' }).and.returnValue('idToken');
       const spy = spyOn(tokenValidationService, 'hasIdTokenExpired').and.callFake((a, b) => true);
-
-      authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled({
+      const config = {
         configId: 'configId1',
         renewTimeBeforeTokenExpiresInSeconds: 30,
         enableIdTokenExpiredValidationInRenew: true,
-      });
+      };
 
-      expect(spy).toHaveBeenCalledWith('idToken', { configId: 'configId1' }, 30);
+      authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled(config);
+
+      expect(spy).toHaveBeenCalledWith('idToken', config, 30);
     });
 
     it('fires event if idToken is expired', () => {
@@ -408,13 +408,15 @@ describe('Auth State Service', () => {
       const validateAccessTokenNotExpiredResult = true;
       const expectedResult = !validateAccessTokenNotExpiredResult;
       const date = new Date(new Date().toUTCString());
-      spyOn(storagePersistenceService, 'read').withArgs('access_token_expires_at', { configId: 'configId1' }).and.returnValue(date);
-      const spy = spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(validateAccessTokenNotExpiredResult);
-      const result = authStateService.hasAccessTokenExpiredIfExpiryExists({
+      const config = {
         configId: 'configId1',
         renewTimeBeforeTokenExpiresInSeconds: 5,
-      });
-      expect(spy).toHaveBeenCalledWith(date, { configId: 'configId1' }, 5);
+      };
+
+      spyOn(storagePersistenceService, 'read').withArgs('access_token_expires_at', config).and.returnValue(date);
+      const spy = spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(validateAccessTokenNotExpiredResult);
+      const result = authStateService.hasAccessTokenExpiredIfExpiryExists(config);
+      expect(spy).toHaveBeenCalledWith(date, config, 5);
       expect(result).toEqual(expectedResult);
     });
 

@@ -57,7 +57,7 @@ describe(`AuthHttpInterceptor`, () => {
       spyOn(configurationService, 'getAllConfigurations').and.returnValue([
         {
           secureRoutes: [actionUrl],
-          configId: 'configId',
+          configId: 'configId1',
         },
       ]);
 
@@ -81,7 +81,7 @@ describe(`AuthHttpInterceptor`, () => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
       spyOn(configurationService, 'getAllConfigurations').and.returnValue([
         {
-          configId: 'configId',
+          configId: 'configId1',
         },
       ]);
       spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
@@ -103,7 +103,7 @@ describe(`AuthHttpInterceptor`, () => {
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
 
-      spyOn(configurationService, 'getAllConfigurations').and.returnValue([{ secureRoutes: [], configId: 'configId' }]);
+      spyOn(configurationService, 'getAllConfigurations').and.returnValue([{ secureRoutes: [], configId: 'configId1' }]);
 
       spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
 
@@ -123,7 +123,7 @@ describe(`AuthHttpInterceptor`, () => {
     'should not add an Authorization header when no routes configured and no token is present',
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
-      spyOn(configurationService, 'getAllConfigurations').and.returnValue([{ secureRoutes: [], configId: 'configId' }]);
+      spyOn(configurationService, 'getAllConfigurations').and.returnValue([{ secureRoutes: [], configId: 'configId1' }]);
 
       spyOn(authStateService, 'getAccessToken').and.returnValue('');
 
@@ -144,7 +144,7 @@ describe(`AuthHttpInterceptor`, () => {
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
 
-      spyOn(configurationService, 'getAllConfigurations').and.returnValue([{ secureRoutes: [actionUrl], configId: 'configId' }]);
+      spyOn(configurationService, 'getAllConfigurations').and.returnValue([{ secureRoutes: [actionUrl], configId: 'configId1' }]);
 
       spyOn(authStateService, 'getAccessToken').and.returnValue('');
 
@@ -185,7 +185,7 @@ describe(`AuthHttpInterceptor`, () => {
       spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(true);
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
 
-      spyOn(configurationService, 'getAllConfigurations').and.returnValue([{ secureRoutes: [actionUrl], configId: 'configId' }]);
+      spyOn(configurationService, 'getAllConfigurations').and.returnValue([{ secureRoutes: [actionUrl], configId: 'configId1' }]);
       spyOn(closestMatchingRouteService, 'getConfigIdForClosestMatchingRoute').and.returnValue({
         matchingRoute: null,
         matchingConfig: null,
@@ -210,7 +210,7 @@ describe(`AuthHttpInterceptor`, () => {
       const actionUrl2 = `https://some-other-url.com/`;
 
       spyOn(configurationService, 'getAllConfigurations').and.returnValue([
-        { secureRoutes: [actionUrl, actionUrl2], configId: 'configId' },
+        { secureRoutes: [actionUrl, actionUrl2], configId: 'configId1' },
       ]);
 
       spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
