@@ -6,8 +6,8 @@ import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
-import { JsrsAsignReducedService } from '../../validation/jsrsasign-reduced.service';
-import { JsrsAsignReducedServiceMock } from '../../validation/jsrsasign-reduced.service-mock';
+import { JwtWindowCryptoService } from '../../validation/jwt-window-crypto.service';
+import { JwtWindowCryptoServiceMock } from '../../validation/jwt-window-crypto.service-mock';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { OpenIdConfiguration } from './../../config/openid-configuration';
 import { UrlService } from './url.service';
@@ -16,7 +16,7 @@ describe('UrlService Tests', () => {
   let service: UrlService;
   let flowHelper: FlowHelper;
   let flowsDataService: FlowsDataService;
-  let jsrsAsignReducedService: JsrsAsignReducedService;
+  let jwtWindowCryptoService: JwtWindowCryptoService;
   let storagePersistenceService: StoragePersistenceService;
 
   beforeEach(() => {
@@ -33,7 +33,7 @@ describe('UrlService Tests', () => {
         },
         FlowHelper,
         { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
-        { provide: JsrsAsignReducedService, useClass: JsrsAsignReducedServiceMock },
+        { provide: JwtWindowCryptoService, useClass: JwtWindowCryptoServiceMock },
       ],
     });
   });
@@ -42,7 +42,7 @@ describe('UrlService Tests', () => {
     service = TestBed.inject(UrlService);
     flowHelper = TestBed.inject(FlowHelper);
     flowsDataService = TestBed.inject(FlowsDataService);
-    jsrsAsignReducedService = TestBed.inject(JsrsAsignReducedService);
+    jwtWindowCryptoService = TestBed.inject(JwtWindowCryptoService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
   });
 
@@ -929,7 +929,7 @@ describe('UrlService Tests', () => {
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('testState');
       spyOn(flowsDataService, 'createNonce').and.returnValue('testNonce');
       spyOn(flowsDataService, 'createCodeVerifier').and.returnValue('testCodeVerifier');
-      spyOn(jsrsAsignReducedService, 'generateCodeChallenge').and.returnValue(of('testCodeChallenge'));
+      spyOn(jwtWindowCryptoService, 'generateCodeChallenge').and.returnValue(of('testCodeChallenge'));
 
       const resultObs$ = service.createBodyForParCodeFlowRequest(config);
       resultObs$.subscribe((result) => {
@@ -951,7 +951,7 @@ describe('UrlService Tests', () => {
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('testState');
       spyOn(flowsDataService, 'createNonce').and.returnValue('testNonce');
       spyOn(flowsDataService, 'createCodeVerifier').and.returnValue('testCodeVerifier');
-      spyOn(jsrsAsignReducedService, 'generateCodeChallenge').and.returnValue(of('testCodeChallenge'));
+      spyOn(jwtWindowCryptoService, 'generateCodeChallenge').and.returnValue(of('testCodeChallenge'));
 
       const resultObs$ = service.createBodyForParCodeFlowRequest(config);
       resultObs$.subscribe((result) => {
@@ -973,7 +973,7 @@ describe('UrlService Tests', () => {
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('testState');
       spyOn(flowsDataService, 'createNonce').and.returnValue('testNonce');
       spyOn(flowsDataService, 'createCodeVerifier').and.returnValue('testCodeVerifier');
-      spyOn(jsrsAsignReducedService, 'generateCodeChallenge').and.returnValue(of('testCodeChallenge'));
+      spyOn(jwtWindowCryptoService, 'generateCodeChallenge').and.returnValue(of('testCodeChallenge'));
 
       const resultObs$ = service.createBodyForParCodeFlowRequest(config);
       resultObs$.subscribe((result) => {
@@ -995,7 +995,7 @@ describe('UrlService Tests', () => {
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('testState');
       spyOn(flowsDataService, 'createNonce').and.returnValue('testNonce');
       spyOn(flowsDataService, 'createCodeVerifier').and.returnValue('testCodeVerifier');
-      spyOn(jsrsAsignReducedService, 'generateCodeChallenge').and.returnValue(of('testCodeChallenge'));
+      spyOn(jwtWindowCryptoService, 'generateCodeChallenge').and.returnValue(of('testCodeChallenge'));
 
       const resultObs$ = service.createBodyForParCodeFlowRequest(config, { any: 'otherThing' });
       resultObs$.subscribe((result) => {
@@ -1090,7 +1090,7 @@ describe('UrlService Tests', () => {
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
       spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
       spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-      spyOn(jsrsAsignReducedService, 'generateCodeChallenge').and.returnValue(of(codeChallenge));
+      spyOn(jwtWindowCryptoService, 'generateCodeChallenge').and.returnValue(of(codeChallenge));
 
       const config = {
         silentRenewUrl,
@@ -1124,7 +1124,7 @@ describe('UrlService Tests', () => {
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
       spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
       spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-      spyOn(jsrsAsignReducedService, 'generateCodeChallenge').and.returnValue(of(codeChallenge));
+      spyOn(jwtWindowCryptoService, 'generateCodeChallenge').and.returnValue(of(codeChallenge));
 
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({ authorizationEndpoint });
 
@@ -1155,7 +1155,7 @@ describe('UrlService Tests', () => {
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
       spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
       spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-      spyOn(jsrsAsignReducedService, 'generateCodeChallenge').and.returnValue(of(codeChallenge));
+      spyOn(jwtWindowCryptoService, 'generateCodeChallenge').and.returnValue(of(codeChallenge));
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue(null);
 
       const serviceAsAny = service as any;
@@ -1274,7 +1274,7 @@ describe('UrlService Tests', () => {
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
       spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
       spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-      spyOn(jsrsAsignReducedService, 'generateCodeChallenge').and.returnValue(of(codeChallenge));
+      spyOn(jwtWindowCryptoService, 'generateCodeChallenge').and.returnValue(of(codeChallenge));
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({ authorizationEndpoint });
 
       const serviceAsAny = service as any;
@@ -1309,7 +1309,7 @@ describe('UrlService Tests', () => {
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
       spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
       spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-      spyOn(jsrsAsignReducedService, 'generateCodeChallenge').and.returnValue(of(codeChallenge));
+      spyOn(jwtWindowCryptoService, 'generateCodeChallenge').and.returnValue(of(codeChallenge));
 
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({ authorizationEndpoint });
 
@@ -1337,7 +1337,7 @@ describe('UrlService Tests', () => {
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue(state);
       spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
       spyOn(flowsDataService, 'createCodeVerifier').and.returnValue(codeVerifier);
-      spyOn(jsrsAsignReducedService, 'generateCodeChallenge').and.returnValue(of(codeChallenge));
+      spyOn(jwtWindowCryptoService, 'generateCodeChallenge').and.returnValue(of(codeChallenge));
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue(null);
 
       const serviceAsAny = service as any;

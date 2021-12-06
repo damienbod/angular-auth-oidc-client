@@ -1,4 +1,4 @@
-export class JsrsAsignReducedServiceMock {
+export class JwtWindowCryptoServiceMock {
   generateCodeChallenge(codeVerifier: any): string {
     return '';
   }

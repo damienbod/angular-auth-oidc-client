@@ -6,7 +6,7 @@ import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { FlowsDataService } from '../../flows/flows-data.service';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
-import { JsrsAsignReducedService } from '../../validation/jsrsasign-reduced.service';
+import { JwtWindowCryptoService } from '../../validation/jwt-window-crypto.service';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { UriEncoder } from './uri-encoder';
 
@@ -20,7 +20,7 @@ export class UrlService {
     private readonly flowsDataService: FlowsDataService,
     private readonly flowHelper: FlowHelper,
     private readonly storagePersistenceService: StoragePersistenceService,
-    private readonly jsrsAsignReducedService: JsrsAsignReducedService
+    private readonly jwtWindowCryptoService: JwtWindowCryptoService
   ) {}
 
   getUrlParameter(urlToCheck: any, name: any): string {
@@ -272,7 +272,7 @@ export class UrlService {
     // code_challenge with "S256"
     const codeVerifier = this.flowsDataService.createCodeVerifier(configuration);
 
-    return this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier).pipe(
+    return this.jwtWindowCryptoService.generateCodeChallenge(codeVerifier).pipe(
       map((codeChallenge: string) => {
         const { clientId, responseType, scope, hdParam, customParamsAuthRequest } = configuration;
         let params = this.createHttpParams('');
@@ -414,7 +414,7 @@ export class UrlService {
     // code_challenge with "S256"
     const codeVerifier = this.flowsDataService.createCodeVerifier(configuration);
 
-    return this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier).pipe(
+    return this.jwtWindowCryptoService.generateCodeChallenge(codeVerifier).pipe(
       map((codeChallenge: string) => {
         const silentRenewUrl = this.getSilentRenewUrl(configuration);
 
@@ -475,7 +475,7 @@ export class UrlService {
     // code_challenge with "S256"
     const codeVerifier = this.flowsDataService.createCodeVerifier(config);
 
-    return this.jsrsAsignReducedService.generateCodeChallenge(codeVerifier).pipe(
+    return this.jwtWindowCryptoService.generateCodeChallenge(codeVerifier).pipe(
       map((codeChallenge: string) => {
         const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', config);
         if (authWellKnownEndPoints) {
