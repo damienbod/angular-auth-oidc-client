@@ -96,7 +96,7 @@ describe('Browser Service', () => {
       const result = service.write({ anyKey: 'anyvalue' }, config);
 
       expect(result).toBe(true);
-      expect(writeSpy).toHaveBeenCalledWith(config, JSON.stringify({ anyKey: 'anyvalue' }));
+      expect(writeSpy).toHaveBeenCalledWith('configId1', JSON.stringify({ anyKey: 'anyvalue' }));
     });
 
     it('writes null if item is falsy', () => {
@@ -112,7 +112,7 @@ describe('Browser Service', () => {
       const result = service.write(somethingFalsy, config);
 
       expect(result).toBe(true);
-      expect(writeSpy).toHaveBeenCalledWith(config, JSON.stringify(null));
+      expect(writeSpy).toHaveBeenCalledWith('configId1', JSON.stringify(null));
     });
   });
 

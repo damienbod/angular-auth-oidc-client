@@ -46,7 +46,7 @@ describe('RefreshSessionIframeService ', () => {
         const allConfigs = [{ configId: 'configId1' }];
 
         refreshSessionIframeService.refreshSessionWithIframe(allConfigs[0], allConfigs).subscribe(() => {
-          expect(sendAuthorizeRequestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url', allConfigs[0]);
+          expect(sendAuthorizeRequestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url', allConfigs[0], allConfigs);
         });
       })
     );
