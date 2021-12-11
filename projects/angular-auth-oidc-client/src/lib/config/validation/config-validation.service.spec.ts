@@ -139,4 +139,14 @@ describe('Config Validation Service', () => {
       ]);
     });
   });
+
+  describe('validateConfigs', () => {
+    it('calls internal method with empty array if something falsy is passed', () => {
+      const spy = spyOn(configValidationService as any, 'validateConfigsInternal');
+
+      const result = configValidationService.validateConfigs(null);
+
+      console.log(result);
+    });
+  });
 });
