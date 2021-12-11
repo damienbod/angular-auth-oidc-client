@@ -63,19 +63,6 @@ describe('StandardLoginService', () => {
     );
 
     it(
-      'does nothing if no well known endpoint is given',
-      waitForAsync(() => {
-        const config = { responseType: 'stubValue' };
-        const spy = spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-
-        const result = standardLoginService.loginStandard(config);
-
-        expect(result).toBeUndefined();
-        expect(spy).toHaveBeenCalled();
-      })
-    );
-
-    it(
       'calls urlService.getAuthorizeUrl() if everything fits',
       waitForAsync(() => {
         const config = {

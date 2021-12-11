@@ -153,18 +153,16 @@ describe('UrlService Tests', () => {
     });
 
     it('returns null when clientId is null', () => {
-      const clientId = null;
+      const config = { configId: 'configId1', clientId: null };
       const authorizationEndpoint = 'authorizationEndpoint';
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue({ authorizationEndpoint });
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({ authorizationEndpoint });
 
       const value = (service as any).createAuthorizeUrl(
         '', // Implicit Flow
         'https://localhost:44386',
         'nonce',
         'state',
-        { configId: 'configId1', clientId }
+        config
       );
 
       const expectValue = null;
@@ -173,19 +171,16 @@ describe('UrlService Tests', () => {
     });
 
     it('returns null when responseType is null', () => {
-      const clientId = 'something';
-      const responseType = null;
+      const config = { configId: 'configId1', clientId: 'something', responseType: null };
       const authorizationEndpoint = 'authorizationEndpoint';
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue({ authorizationEndpoint });
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({ authorizationEndpoint });
 
       const value = (service as any).createAuthorizeUrl(
         '', // Implicit Flow
         'https://localhost:44386',
         'nonce',
         'state',
-        { configId: 'configId1', clientId, responseType }
+        config
       );
 
       const expectValue = null;
@@ -194,20 +189,16 @@ describe('UrlService Tests', () => {
     });
 
     it('returns null when scope is null', () => {
-      const clientId = 'something';
-      const responseType = 'responsetype';
-      const scope = null;
+      const config = { configId: 'configId1', clientId: 'something', responseType: 'responsetype', scope: null };
       const authorizationEndpoint = 'authorizationEndpoint';
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue({ authorizationEndpoint });
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({ authorizationEndpoint });
 
       const value = (service as any).createAuthorizeUrl(
         '', // Implicit Flow
         'https://localhost:44386',
         'nonce',
         'state',
-        { configId: 'configId1', clientId, responseType, scope }
+        config
       );
 
       const expectValue = null;
@@ -590,7 +581,7 @@ describe('UrlService Tests', () => {
         config.redirectUrl,
         'nonce',
         'state',
-        config.configId
+        config
       );
 
       const expectValue =

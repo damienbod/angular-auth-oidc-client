@@ -144,7 +144,7 @@ describe('Auth State Service', () => {
       spyOn(storagePersistenceService, 'getIdToken')
         .withArgs({ configId: 'configId1' })
         .and.returnValue('someIdToken')
-        .withArgs({ configId: 'configId1' })
+        .withArgs({ configId: 'configId2' })
         .and.returnValue(null);
 
       const spy = spyOn((authStateService as any).authenticatedInternal$, 'next');

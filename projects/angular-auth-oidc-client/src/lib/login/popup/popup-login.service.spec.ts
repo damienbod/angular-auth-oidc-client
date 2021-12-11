@@ -72,23 +72,6 @@ describe('PopUpLoginService', () => {
     );
 
     it(
-      'does nothing if no well known endpoint is given',
-      waitForAsync(() => {
-        const config = { responseType: 'stubValue' };
-        const spy = spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-        const loggerSpy = spyOn(loggerService, 'logError');
-
-        popUpLoginService.loginWithPopUpStandard(config, [config]).subscribe({
-          error: (err) => {
-            expect(spy).toHaveBeenCalled();
-            expect(loggerSpy).toHaveBeenCalled();
-            expect(err.message).toBe('no authWellknownEndpoint given!');
-          },
-        });
-      })
-    );
-
-    it(
       'calls urlService.getAuthorizeUrl() if everything fits',
       waitForAsync(() => {
         const config = {

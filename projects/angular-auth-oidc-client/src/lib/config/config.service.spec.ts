@@ -10,6 +10,8 @@ import { PlatformProviderMock } from './../utils/platform-provider/platform.prov
 import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
 import { AuthWellKnownServiceMock } from './auth-well-known/auth-well-known.service-mock';
 import { ConfigurationService } from './config.service';
+import { StsConfigLoader } from './loader/config-loader';
+import { StsConfigLoaderMock } from './loader/config-loader-mock';
 import { ConfigValidationService } from './validation/config-validation.service';
 
 describe('Configuration Service', () => {
@@ -44,6 +46,7 @@ describe('Configuration Service', () => {
           provide: AuthWellKnownService,
           useClass: AuthWellKnownServiceMock,
         },
+        { provide: StsConfigLoader, useClass: StsConfigLoaderMock },
       ],
     });
   });

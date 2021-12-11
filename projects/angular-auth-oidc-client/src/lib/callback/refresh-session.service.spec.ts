@@ -196,10 +196,6 @@ describe('RefreshSessionService ', () => {
           expect(result.idToken).toBeDefined();
           expect(result.accessToken).toBeDefined();
         });
-
-        (silentRenewService as any).fireRefreshWithIframeCompleted({
-          authResult: { id_token: 'id_token', access_token: 'access_token' },
-        });
       })
     );
 
@@ -218,10 +214,6 @@ describe('RefreshSessionService ', () => {
 
         refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs).subscribe((result) => {
           expect(result).toBeNull();
-        });
-
-        (silentRenewService as any).fireRefreshWithIframeCompleted({
-          authResult: { id_token: 'id_token', access_token: 'access_token' },
         });
       })
     );

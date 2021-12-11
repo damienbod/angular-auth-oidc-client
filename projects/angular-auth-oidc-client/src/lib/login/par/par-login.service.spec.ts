@@ -102,18 +102,6 @@ describe('ParLoginService', () => {
     );
 
     it(
-      'does nothing if no well known endpoint is given',
-      waitForAsync(() => {
-        const spy = spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-
-        const result = service.loginPar({ responseType: 'stubValue' });
-
-        expect(result).toBeUndefined();
-        expect(spy).toHaveBeenCalled();
-      })
-    );
-
-    it(
       'calls parService.postParRequest without custom params when no custom params are passed',
       waitForAsync(() => {
         spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
@@ -235,23 +223,6 @@ describe('ParLoginService', () => {
           error: (err) => {
             expect(loggerSpy).toHaveBeenCalled();
             expect(err.message).toBe('Invalid response type!');
-          },
-        });
-      })
-    );
-
-    it(
-      'does nothing if no well known endpoint is given',
-      waitForAsync(() => {
-        const config = { responseType: 'stubValue' };
-        const allConfigs = [config];
-        spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-        const loggerSpy = spyOn(loggerService, 'logError');
-
-        service.loginWithPopUpPar(config, allConfigs).subscribe({
-          error: (err) => {
-            expect(loggerSpy).toHaveBeenCalled();
-            expect(err.message).toBe('no authWellknownEndpoint given!');
           },
         });
       })

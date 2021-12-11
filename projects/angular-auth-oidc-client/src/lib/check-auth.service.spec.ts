@@ -127,7 +127,7 @@ describe('CheckAuthService', () => {
       const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
 
       checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
-        expect(spy).toHaveBeenCalledOnceWith({ configId: 'configId1', authority: 'some-authority' }, undefined);
+        expect(spy).toHaveBeenCalledOnceWith({ configId: 'configId1', authority: 'some-authority' }, allConfigs);
       });
     });
 
