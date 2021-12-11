@@ -186,6 +186,9 @@ describe('RefreshSessionService ', () => {
         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
         spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+        spyOnProperty(silentRenewService, 'refreshSessionWithIFrameCompleted$').and.returnValue(
+          of({ authResult: { id_token: 'some-id_token', access_token: 'some-access_token' } })
+        );
         const allConfigs = [
           {
             configId: 'configId1',
@@ -205,6 +208,7 @@ describe('RefreshSessionService ', () => {
         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
         spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
+        spyOnProperty(silentRenewService, 'refreshSessionWithIFrameCompleted$').and.returnValue(of(null));
         const allConfigs = [
           {
             configId: 'configId1',
@@ -287,13 +291,10 @@ describe('RefreshSessionService ', () => {
           spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
           spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
           spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
+          spyOnProperty(silentRenewService, 'refreshSessionWithIFrameCompleted$').and.returnValue(of(null));
 
           refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs).subscribe((result) => {
             expect(result).toBeNull();
-          });
-
-          (silentRenewService as any).fireRefreshWithIframeCompleted({
-            authResult: { id_token: 'id_token', access_token: 'access_token' },
           });
         })
       );
@@ -310,25 +311,20 @@ describe('RefreshSessionService ', () => {
 
           spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
           spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
+          spyOnProperty(silentRenewService, 'refreshSessionWithIFrameCompleted$').and.returnValue(
+            of({ authResult: { id_token: 'some-id_token', access_token: 'some-access_token' } })
+          );
           const spyInsideMap = spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
           refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs).subscribe((result) => {
             expect(result).toEqual({
-              idToken: 'id_token',
-              accessToken: 'access_token',
+              idToken: 'some-id_token',
+              accessToken: 'some-access_token',
               isAuthenticated: true,
               userData: null,
               configId: 'configId1',
             });
             expect(spyInsideMap).toHaveBeenCalledTimes(1);
-          });
-
-          (silentRenewService as any).fireRefreshWithIframeCompleted({
-            authResult: { id_token: 'id_token', access_token: 'access_token' },
-          });
-
-          (silentRenewService as any).fireRefreshWithIframeCompleted({
-            authResult: { id_token: 'id_token2', access_token: 'access_token2' },
           });
         })
       );
@@ -353,23 +349,6 @@ describe('RefreshSessionService ', () => {
         spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
 
         (refreshSessionService as any).startRefreshSession().subscribe((result) => {
-          expect(result).toBe(null);
-        });
-      })
-    );
-
-    it(
-      'returns null if no authwellknownendpoints are given',
-      waitForAsync(() => {
-        spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-        const allConfigs = [
-          {
-            configId: 'configId1',
-            authWellknownEndpointUrl: null,
-          },
-        ];
-
-        (refreshSessionService as any).startRefreshSession(allConfigs[0], allConfigs).subscribe((result) => {
           expect(result).toBe(null);
         });
       })
