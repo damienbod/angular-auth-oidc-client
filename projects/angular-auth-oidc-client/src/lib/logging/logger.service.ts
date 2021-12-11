@@ -5,36 +5,20 @@ import { LogLevel } from './log-level';
 @Injectable()
 export class LoggerService {
   logError(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {
-    this.logErrorWithConfig(configuration, message, ...args);
-  }
-
-  logWarning(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {
-    this.logWarningWithConfig(configuration, message, ...args);
-  }
-
-  logDebug(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {
-    if (!this.logLevelIsSet(configuration)) {
-      return;
-    }
-
     if (this.loggingIsTurnedOff(configuration)) {
-      return;
-    }
-
-    if (!this.currentLogLevelIsEqualOrSmallerThan(configuration, LogLevel.Debug)) {
       return;
     }
 
     const { configId } = configuration;
 
     if (!!args && !!args.length) {
-      console.log(`[DEBUG] ${configId} - ${message}`, ...args);
+      console.error(`[ERROR] ${configId} - ${message}`, ...args);
     } else {
-      console.log(`[DEBUG] ${configId} - ${message}`);
+      console.error(`[ERROR] ${configId} - ${message}`);
     }
   }
 
-  private logWarningWithConfig(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {
+  logWarning(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {
     if (!this.logLevelIsSet(configuration)) {
       return;
     }
@@ -56,17 +40,25 @@ export class LoggerService {
     }
   }
 
-  private logErrorWithConfig(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {
+  logDebug(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {
+    if (!this.logLevelIsSet(configuration)) {
+      return;
+    }
+
     if (this.loggingIsTurnedOff(configuration)) {
+      return;
+    }
+
+    if (!this.currentLogLevelIsEqualOrSmallerThan(configuration, LogLevel.Debug)) {
       return;
     }
 
     const { configId } = configuration;
 
     if (!!args && !!args.length) {
-      console.error(`[ERROR] ${configId} - ${message}`, ...args);
+      console.log(`[DEBUG] ${configId} - ${message}`, ...args);
     } else {
-      console.error(`[ERROR] ${configId} - ${message}`);
+      console.log(`[DEBUG] ${configId} - ${message}`);
     }
   }
 

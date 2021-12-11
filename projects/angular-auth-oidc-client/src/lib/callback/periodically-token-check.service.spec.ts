@@ -25,7 +25,7 @@ import { PeriodicallyTokenCheckService } from './periodically-token-check.servic
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 import { RefreshSessionRefreshTokenServiceMock } from './refresh-session-refresh-token.service-mock';
 
-fdescribe('PeriodicallyTokenCheckService', () => {
+describe('PeriodicallyTokenCheckService', () => {
   let periodicallyTokenCheckService: PeriodicallyTokenCheckService;
   let intervalService: IntervalService;
   let flowsDataService: FlowsDataService;
@@ -141,22 +141,6 @@ fdescribe('PeriodicallyTokenCheckService', () => {
       tick(1000);
 
       expect(periodicallyTokenCheckService.startTokenValidationPeriodically).toThrowError();
-      expect(resetSilentRenewRunning).toHaveBeenCalledOnceWith(configs[0]);
-    }));
-
-    fit('interval calls resetSilentRenewRunning in case of error when current flow is NOT CodeFlowWithRefreshTokens', fakeAsync(() => {
-      spyOn(intervalService, 'startPeriodicTokenCheck').and.returnValue(of(null));
-      spyOn(periodicallyTokenCheckService as any, 'shouldStartPeriodicallyCheckForConfig').and.returnValue(true);
-      const resetSilentRenewRunning = spyOn(flowsDataService, 'resetSilentRenewRunning');
-      spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
-      spyOn(refreshSessionIframeService, 'refreshSessionWithIframe').and.returnValue(throwError(() => new Error('error')));
-
-      const configs = [{ silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 }];
-
-      periodicallyTokenCheckService.startTokenValidationPeriodically(configs, configs[0]);
-      tick(1000);
-
-      expect(periodicallyTokenCheckService.startTokenValidationPeriodically).toThrow();
       expect(resetSilentRenewRunning).toHaveBeenCalledOnceWith(configs[0]);
     }));
 
