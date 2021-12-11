@@ -60,7 +60,8 @@ export class CheckAuthService {
       return this.composeMultipleLoginResults(allConfigs, config, url);
     }
 
-    const allChecks$ = allConfigs.map((x) => this.checkAuthWithConfig(x, allConfigs, url));
+    const configs = allConfigs ?? [];
+    const allChecks$ = configs.map((x) => this.checkAuthWithConfig(x, configs, url));
 
     return forkJoin(allChecks$);
   }
@@ -86,16 +87,15 @@ export class CheckAuthService {
   }
 
   private checkAuthWithConfig(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[], url?: string): Observable<LoginResponse> {
-    const { configId, authority } = config;
-
     if (!config) {
       const errorMessage = 'Please provide at least one configuration before setting up the module';
       this.loggerService.logError(config, errorMessage);
 
-      return of({ isAuthenticated: false, errorMessage, userData: null, idToken: null, accessToken: null, configId });
+      return of({ isAuthenticated: false, errorMessage, userData: null, idToken: null, accessToken: null, configId: null });
     }
 
     const currentUrl = url || this.currentUrlService.getCurrentUrl();
+    const { configId, authority } = config;
 
     this.loggerService.logDebug(config, `Working with config '${configId}' using ${authority}`);
 

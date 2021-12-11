@@ -151,6 +151,7 @@ describe('PopUpLoginService', () => {
         const config = {
           authWellknownEndpointUrl: 'authWellknownEndpoint',
           responseType: 'stubValue',
+          configId: 'configId1',
         };
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));

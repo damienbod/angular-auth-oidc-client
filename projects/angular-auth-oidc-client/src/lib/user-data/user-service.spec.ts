@@ -418,7 +418,7 @@ describe('User Service', () => {
         const serviceAsAny = userService as any;
         spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue(null);
-        serviceAsAny.getIdentityUserData('configId').subscribe({
+        serviceAsAny.getIdentityUserData(config).subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },
@@ -433,7 +433,7 @@ describe('User Service', () => {
         const serviceAsAny = userService as any;
         spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({ userInfoEndpoint: null });
-        serviceAsAny.getIdentityUserData('configId').subscribe({
+        serviceAsAny.getIdentityUserData(config).subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },
@@ -451,7 +451,7 @@ describe('User Service', () => {
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
-        serviceAsAny.getIdentityUserData('configId').subscribe(() => {
+        serviceAsAny.getIdentityUserData(config).subscribe(() => {
           expect(spy).toHaveBeenCalledWith('userInfoEndpoint', config, 'accessToken');
         });
       })

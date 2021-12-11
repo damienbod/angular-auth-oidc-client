@@ -102,7 +102,7 @@ describe('CheckAuthService', () => {
       const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
 
       checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
-        expect(spy).toHaveBeenCalledOnceWith(allConfigs[0], undefined);
+        expect(spy).toHaveBeenCalledOnceWith(allConfigs[0], allConfigs, undefined);
       });
     });
 
@@ -127,7 +127,7 @@ describe('CheckAuthService', () => {
       const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
 
       checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
-        expect(spy).toHaveBeenCalledOnceWith({ configId: 'configId1', authority: 'some-authority' }, allConfigs);
+        expect(spy).toHaveBeenCalledOnceWith({ configId: 'configId1', authority: 'some-authority' }, allConfigs, undefined);
       });
     });
 
@@ -139,7 +139,7 @@ describe('CheckAuthService', () => {
           expect(result).toEqual({
             isAuthenticated: false,
             errorMessage: 'Please provide at least one configuration before setting up the module',
-            configId: undefined,
+            configId: null,
             idToken: null,
             userData: null,
             accessToken: null,
@@ -201,6 +201,7 @@ describe('CheckAuthService', () => {
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
         spyOn(callBackService, 'isCallback').and.returnValue(false);
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
           expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null, configId: 'configId1', idToken: null });
@@ -484,7 +485,7 @@ describe('CheckAuthService', () => {
 
       checkAuthService.checkAuthMultiple(allConfigs).subscribe((result) => {
         expect(Array.isArray(result)).toBe(true);
-        expect(spy).toHaveBeenCalledOnceWith({ configId: 'configId1', authority: 'some-authority' }, undefined);
+        expect(spy).toHaveBeenCalledOnceWith({ configId: 'configId1', authority: 'some-authority' }, allConfigs, undefined);
       });
     });
 
@@ -501,8 +502,8 @@ describe('CheckAuthService', () => {
       checkAuthService.checkAuthMultiple(allConfigs).subscribe((result) => {
         expect(Array.isArray(result)).toBe(true);
         expect(spy.calls.allArgs()).toEqual([
-          [{ configId: 'configId1', authority: 'some-authority1' }, undefined],
-          [{ configId: 'configId2', authority: 'some-authority2' }, undefined],
+          [{ configId: 'configId1', authority: 'some-authority1' }, allConfigs, undefined],
+          [{ configId: 'configId2', authority: 'some-authority2' }, allConfigs, undefined],
         ]);
       });
     });
@@ -520,8 +521,8 @@ describe('CheckAuthService', () => {
       checkAuthService.checkAuthMultiple(allConfigs).subscribe((result) => {
         expect(Array.isArray(result)).toBe(true);
         expect(spy).toHaveBeenCalledTimes(2);
-        expect(spy).toHaveBeenCalledWith({ configId: 'configId1', authority: 'some-authority1' }, undefined);
-        expect(spy).toHaveBeenCalledWith({ configId: 'configId2', authority: 'some-authority2' }, undefined);
+        expect(spy).toHaveBeenCalledWith({ configId: 'configId1', authority: 'some-authority1' }, allConfigs, undefined);
+        expect(spy).toHaveBeenCalledWith({ configId: 'configId2', authority: 'some-authority2' }, allConfigs, undefined);
       });
     });
 
