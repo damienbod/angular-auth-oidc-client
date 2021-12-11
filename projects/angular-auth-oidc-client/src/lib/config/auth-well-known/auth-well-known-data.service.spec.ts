@@ -21,6 +21,7 @@ const DUMMY_WELL_KNOWN_DOCUMENT = {
 describe('AuthWellKnownDataService', () => {
   let service: AuthWellKnownDataService;
   let dataService: DataService;
+  let loggerService: LoggerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -34,6 +35,7 @@ describe('AuthWellKnownDataService', () => {
 
   beforeEach(() => {
     service = TestBed.inject(AuthWellKnownDataService);
+    loggerService = TestBed.inject(LoggerService);
     dataService = TestBed.inject(DataService);
   });
 
@@ -142,7 +144,7 @@ describe('AuthWellKnownDataService', () => {
     );
   });
 
-  describe('getWellKnownEndPointsFromUrl', () => {
+  describe('getWellKnownEndPointsForConfig', () => {
     it('calling internal getWellKnownDocument and maps', () => {
       spyOn<any>(dataService, 'get').and.returnValue(of({ jwks_uri: 'jwks_uri' }));
 
@@ -151,6 +153,18 @@ describe('AuthWellKnownDataService', () => {
         expect(spy).toHaveBeenCalled();
         expect((result as any).jwks_uri).toBeUndefined();
         expect(result.jwksUri).toBe('jwks_uri');
+      });
+    });
+
+    it('throws error and logs if no authwellknownUrl is given', () => {
+      const loggerSpy = spyOn(loggerService, 'logError');
+      const config = { configId: 'configId1', authWellknownEndpointUrl: null };
+
+      service.getWellKnownEndPointsForConfig(config).subscribe({
+        error: (error) => {
+          expect(loggerSpy).toHaveBeenCalledOnceWith(config, 'no authWellknownEndpoint given!');
+          expect(error.message).toEqual('no authWellknownEndpoint given!');
+        },
       });
     });
   });

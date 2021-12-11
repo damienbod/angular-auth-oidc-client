@@ -107,6 +107,7 @@ describe(`AuthHttpInterceptor`, () => {
 
       spyOn(configurationService, 'getAllConfigurations').and.returnValue([{ secureRoutes: [], configId: 'configId1' }]);
 
+      spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(true);
       spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
 
       httpClient.get(actionUrl).subscribe((response) => {
@@ -122,12 +123,12 @@ describe(`AuthHttpInterceptor`, () => {
   );
 
   it(
-    'should not add an Authorization header when no routes configured and no token is present',
+    'should not add an Authorization header when no routes configured',
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
       spyOn(configurationService, 'getAllConfigurations').and.returnValue([{ secureRoutes: [], configId: 'configId1' }]);
 
-      spyOn(authStateService, 'getAccessToken').and.returnValue('');
+      spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(true);
 
       httpClient.get(actionUrl).subscribe((response) => {
         expect(response).toBeTruthy();
@@ -142,12 +143,13 @@ describe(`AuthHttpInterceptor`, () => {
   );
 
   it(
-    'should not add an Authorization header when route is configured and no token is present',
+    'should not add an Authorization header when route is configured but no token is present',
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
 
       spyOn(configurationService, 'getAllConfigurations').and.returnValue([{ secureRoutes: [actionUrl], configId: 'configId1' }]);
 
+      spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(true);
       spyOn(authStateService, 'getAccessToken').and.returnValue('');
 
       httpClient.get(actionUrl).subscribe((response) => {

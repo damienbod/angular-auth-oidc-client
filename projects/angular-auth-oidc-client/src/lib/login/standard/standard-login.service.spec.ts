@@ -126,5 +126,21 @@ describe('StandardLoginService', () => {
       expect(redirectSpy).toHaveBeenCalledWith('someUrl');
       expect(getAuthorizeUrlSpy).toHaveBeenCalledWith(config, { to: 'add', as: 'well' });
     }));
+
+    it('does nothing, logs only if getAuthorizeUrl returns falsy', fakeAsync(() => {
+      const config = {
+        authWellknownEndpointUrl: 'authWellknownEndpoint',
+        responseType: 'stubValue',
+      };
+      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
+      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      const loggerSpy = spyOn(loggerService, 'logError');
+      spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of(''));
+      const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
+      standardLoginService.loginStandard(config);
+      tick();
+      expect(loggerSpy).toHaveBeenCalledWith(config, 'Could not create URL', '');
+      expect(redirectSpy).not.toHaveBeenCalled();
+    }));
   });
 });

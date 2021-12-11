@@ -3,6 +3,7 @@ import { LogLevel } from '../../logging/log-level';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { ConfigValidationService } from './config-validation.service';
+import { allMultipleConfigRules } from './rules';
 
 describe('Config Validation Service', () => {
   let configValidationService: ConfigValidationService;
@@ -142,11 +143,12 @@ describe('Config Validation Service', () => {
 
   describe('validateConfigs', () => {
     it('calls internal method with empty array if something falsy is passed', () => {
-      const spy = spyOn(configValidationService as any, 'validateConfigsInternal');
+      const spy = spyOn(configValidationService as any, 'validateConfigsInternal').and.callThrough();
 
       const result = configValidationService.validateConfigs(null);
 
-      console.log(result);
+      expect(result).toBeTrue();
+      expect(spy).toHaveBeenCalledOnceWith([], allMultipleConfigRules);
     });
   });
 });
