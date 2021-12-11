@@ -116,11 +116,11 @@ describe('Config Validation Service', () => {
       expect(result).toBeTrue();
       expect(loggerErrorSpy).not.toHaveBeenCalled();
       expect(loggerWarningSpy.calls.argsFor(0)).toEqual([
-        undefined,
+        config1,
         'You added multiple configs with the same authority, clientId and scope',
       ]);
       expect(loggerWarningSpy.calls.argsFor(1)).toEqual([
-        undefined,
+        config2,
         'You added multiple configs with the same authority, clientId and scope',
       ]);
     });
@@ -134,7 +134,7 @@ describe('Config Validation Service', () => {
       expect(result).toBeFalse();
       expect(loggerWarningSpy).not.toHaveBeenCalled();
       expect(loggerErrorSpy.calls.argsFor(0)).toEqual([
-        undefined,
+        null,
         `Please make sure you add an object with a 'config' property: ....({ config }) instead of ...(config)`,
       ]);
     });

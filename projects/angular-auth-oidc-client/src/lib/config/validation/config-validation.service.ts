@@ -10,7 +10,7 @@ export class ConfigValidationService {
   constructor(private loggerService: LoggerService) {}
 
   validateConfigs(passedConfigs: OpenIdConfiguration[]): boolean {
-    return this.validateConfigsInternal(passedConfigs, allMultipleConfigRules);
+    return this.validateConfigsInternal(passedConfigs ?? [], allMultipleConfigRules);
   }
 
   validateConfig(passedConfig: OpenIdConfiguration): boolean {

@@ -371,6 +371,7 @@ describe('ParLoginService', () => {
         const config = {
           authWellknownEndpointUrl: 'authWellknownEndpoint',
           responseType: 'stubValue',
+          configId: 'configId1',
         };
         const allConfigs = [config];
 
