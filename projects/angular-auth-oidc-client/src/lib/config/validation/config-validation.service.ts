@@ -39,7 +39,6 @@ export class ConfigValidationService {
 
   private processValidationResultsAndGetErrorCount(allValidationResults: RuleValidationResult[], config: OpenIdConfiguration): number {
     const allMessages = allValidationResults.filter((x) => x.messages.length > 0);
-
     const allErrorMessages = this.getAllMessagesOfType('error', allMessages);
     const allWarnings = this.getAllMessagesOfType('warning', allMessages);
     allErrorMessages.forEach((message) => this.loggerService.logError(config, message));

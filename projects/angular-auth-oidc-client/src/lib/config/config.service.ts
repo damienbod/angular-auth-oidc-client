@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
-import { concatMap, map, tap } from 'rxjs/operators';
+import { concatMap, map } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -41,20 +41,10 @@ export class ConfigurationService {
       return of(this.getConfig(configId));
     }
 
-    return this.loadConfigs().pipe(
-      tap((allConfigs) => this.prepareAndSaveConfigs(allConfigs)),
-      map(() => this.getConfig(configId))
-    );
+    return this.getOpenIDConfigurations(configId).pipe(map((result) => result.currentConfig));
   }
 
   getOpenIDConfigurations(configId?: string): Observable<{ allConfigs; currentConfig }> {
-    // if (this.configsAlreadySaved()) {
-    //   return of({
-    //     allConfigs: this.getAllConfigurations(),
-    //     currentConfig: this.getConfig(configId),
-    //   });
-    // }
-
     return this.loadConfigs().pipe(
       concatMap((allConfigs) => this.prepareAndSaveConfigs(allConfigs)),
       map((allPreparedConfigs) => ({
