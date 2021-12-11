@@ -62,6 +62,7 @@ describe(`AuthHttpInterceptor`, () => {
       ]);
 
       spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
+      spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(true);
 
       httpClient.get(actionUrl).subscribe((response) => {
         expect(response).toBeTruthy();
@@ -85,6 +86,7 @@ describe(`AuthHttpInterceptor`, () => {
         },
       ]);
       spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
+      spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(true);
 
       httpClient.get(actionUrl).subscribe((response) => {
         expect(response).toBeTruthy();
@@ -214,6 +216,7 @@ describe(`AuthHttpInterceptor`, () => {
       ]);
 
       spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
+      spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(true);
 
       httpClient.get(actionUrl).subscribe((response) => {
         expect(response).toBeTruthy();

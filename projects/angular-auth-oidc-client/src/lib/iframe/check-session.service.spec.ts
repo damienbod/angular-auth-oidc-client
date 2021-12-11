@@ -63,7 +63,7 @@ describe('CheckSessionService', () => {
   it('getOrCreateIframe calls iFrameService.addIFrameToWindowBody if no Iframe exists', () => {
     spyOn(iFrameService, 'addIFrameToWindowBody').and.callThrough();
 
-    const result = (checkSessionService as any).getOrCreateIframe();
+    const result = (checkSessionService as any).getOrCreateIframe({ configId: 'configId1' });
     expect(result).toBeTruthy();
     expect(iFrameService.addIFrameToWindowBody).toHaveBeenCalled();
   });
@@ -80,7 +80,7 @@ describe('CheckSessionService', () => {
     spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
 
     (checkSessionService as any).init();
-    const iframe = (checkSessionService as any).getOrCreateIframe();
+    const iframe = (checkSessionService as any).getOrCreateIframe({ configId: 'configId1' });
     expect(iframe).toBeTruthy();
     expect(iframe.id).toBe('myiFrameForCheckSession');
     expect(iframe.style.display).toBe('none');
@@ -90,13 +90,12 @@ describe('CheckSessionService', () => {
 
   it('log warning if authWellKnownEndpoints.check_session_iframe is not existing', () => {
     const spyLogWarning = spyOn<any>(loggerService, 'logWarning');
+    const config = { configId: 'configId1' };
     spyOn<any>(loggerService, 'logDebug').and.callFake(() => {});
-    spyOn(storagePersistenceService, 'read')
-      .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-      .and.returnValue({ checkSessionIframe: undefined });
-    (checkSessionService as any).init('configId');
+    spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({ checkSessionIframe: undefined });
+    (checkSessionService as any).init(config);
 
-    expect(spyLogWarning).toHaveBeenCalledWith({ configId: 'configId1' }, jasmine.any(String));
+    expect(spyLogWarning).toHaveBeenCalledWith(config, jasmine.any(String));
   });
 
   it('start() calls pollserversession() with clientId if no scheduledheartbeat is set', () => {
@@ -194,7 +193,7 @@ describe('CheckSessionService', () => {
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
       const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => {});
       spyOn(loggerService, 'logDebug').and.callFake(() => {});
-      (checkSessionService as any).pollServerSession('', 'configId');
+      (checkSessionService as any).pollServerSession('', config);
       expect(spyLogWarning).toHaveBeenCalledWith(config, jasmine.any(String));
     });
 
