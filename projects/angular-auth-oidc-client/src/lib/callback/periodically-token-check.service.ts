@@ -61,7 +61,7 @@ export class PeriodicallyTokenCheckService {
       .pipe(catchError((error) => throwError(() => new Error(error))))
       .subscribe({
         next: (objectWithConfigIds) => {
-          for (const [configId, refreshEvent] of Object.entries(objectWithConfigIds)) {
+          for (const [configId, _] of Object.entries(objectWithConfigIds)) {
             this.configurationService.getOpenIDConfiguration(configId).subscribe((config) => {
               this.loggerService.logDebug(config, 'silent renew, periodic check finished!');
 
@@ -120,7 +120,6 @@ export class PeriodicallyTokenCheckService {
 
     return this.configurationService.getOpenIDConfiguration(configuration.configId).pipe(
       switchMap((config) => {
-        console.log(config.silentRenew);
         if (!config?.silentRenew) {
           this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
 

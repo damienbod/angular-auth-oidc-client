@@ -144,7 +144,7 @@ fdescribe('PeriodicallyTokenCheckService', () => {
       expect(resetSilentRenewRunning).toHaveBeenCalledOnceWith(configs[0]);
     }));
 
-    it('interval calls resetSilentRenewRunning in case of error when current flow is NOT CodeFlowWithRefreshTokens', fakeAsync(() => {
+    fit('interval calls resetSilentRenewRunning in case of error when current flow is NOT CodeFlowWithRefreshTokens', fakeAsync(() => {
       spyOn(intervalService, 'startPeriodicTokenCheck').and.returnValue(of(null));
       spyOn(periodicallyTokenCheckService as any, 'shouldStartPeriodicallyCheckForConfig').and.returnValue(true);
       const resetSilentRenewRunning = spyOn(flowsDataService, 'resetSilentRenewRunning');
@@ -154,29 +154,30 @@ fdescribe('PeriodicallyTokenCheckService', () => {
       const configs = [{ silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 }];
 
       periodicallyTokenCheckService.startTokenValidationPeriodically(configs, configs[0]);
-      expect(periodicallyTokenCheckService.startTokenValidationPeriodically).toThrow();
       tick(1000);
 
+      expect(periodicallyTokenCheckService.startTokenValidationPeriodically).toThrow();
       expect(resetSilentRenewRunning).toHaveBeenCalledOnceWith(configs[0]);
     }));
 
-    fit('calls resetAuthorizationData and returns if no silent renew is configured', fakeAsync(() => {
+    it('calls resetAuthorizationData and returns if no silent renew is configured', fakeAsync(() => {
       const configs = [{ silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 }];
       spyOn(periodicallyTokenCheckService as any, 'shouldStartPeriodicallyCheckForConfig').and.returnValue(true);
+
+      const configSpy = spyOn(configurationService, 'getOpenIDConfiguration');
+      const configWithoutSilentRenew = { silentRenew: false, configId: 'configId1', tokenRefreshInSeconds: 1 };
+      const configWithoutSilentRenew$ = of(configWithoutSilentRenew);
+      configSpy.and.returnValue(configWithoutSilentRenew$);
 
       const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
 
       periodicallyTokenCheckService.startTokenValidationPeriodically(configs, configs[0]);
       tick(1000);
-      spyOn(configurationService, 'getOpenIDConfiguration').and.returnValue(
-        of({ silentRenew: false, configId: 'configId1', tokenRefreshInSeconds: 1 })
-      );
-      tick(1000);
       intervalService.runTokenValidationRunning.unsubscribe();
       intervalService.runTokenValidationRunning = null;
 
-      expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(2);
-      expect(resetAuthorizationDataSpy).toHaveBeenCalledWith(configs[0], configs);
+      expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
+      expect(resetAuthorizationDataSpy).toHaveBeenCalledWith(configWithoutSilentRenew, configs);
     }));
 
     it('calls refreshSessionWithRefreshTokens if current flow is Code flow with refresh tokens', fakeAsync(() => {
