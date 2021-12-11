@@ -19,11 +19,7 @@ export class EqualityService {
       return value1 === value2;
     }
 
-    if (this.bothValuesAreArrays(value1, value2)) {
-      return this.arraysHaveEqualContent(value1 as any[], value2 as any[]);
-    }
-
-    return false;
+    return this.arraysHaveEqualContent(value1 as any[], value2 as any[]);
   }
 
   areEqual(value1: string | any[] | any | null | undefined, value2: string | any[] | any | null | undefined): boolean {
@@ -52,7 +48,7 @@ export class EqualityService {
       }
     }
 
-    return false;
+    return value1 === value2;
   }
 
   private oneValueIsStringAndTheOtherIsArray(value1: string | any | any[], value2: string | any | any[]): boolean {
