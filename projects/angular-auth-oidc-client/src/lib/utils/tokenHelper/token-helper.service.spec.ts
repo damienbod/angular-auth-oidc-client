@@ -42,6 +42,21 @@ describe('Token Helper Service', () => {
     });
   });
 
+  describe('getSigningInputFromToken', () => {
+    it('returns empty string if token is not valid', () => {
+      const result = tokenHelperService.getSigningInputFromToken('', true, { configId: 'configId1' });
+
+      expect(result).toBe('');
+    });
+
+    it('returns string if token is valid', () => {
+      const token = 'a.valid.token';
+      const result = tokenHelperService.getSigningInputFromToken(token, true, { configId: 'configId1' });
+
+      expect(result).toBe('a.valid');
+    });
+  });
+
   describe('getPayloadFromToken', () => {
     it('returns not null if token is undefined, encode is false', () => {
       const result = tokenHelperService.getPayloadFromToken(undefined, false, { configId: 'configId1' });
