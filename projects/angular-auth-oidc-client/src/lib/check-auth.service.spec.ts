@@ -476,79 +476,79 @@ describe('CheckAuthService', () => {
   });
 
   describe('checkAuthMultiple', () => {
-    it('uses config with matching state when url has state param and config with state param is stored', () => {
-      const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
-      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
-      spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
-      spyOn(storagePersistenceService, 'read').withArgs('authStateControl', allConfigs[0]).and.returnValue('the-state-param');
-      const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
+    it(
+      'uses config with matching state when url has state param and config with state param is stored',
+      waitForAsync(() => {
+        const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+        spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
+        spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
+        spyOn(storagePersistenceService, 'read').withArgs('authStateControl', allConfigs[0]).and.returnValue('the-state-param');
+        const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
 
-      checkAuthService.checkAuthMultiple(allConfigs).subscribe((result) => {
-        expect(Array.isArray(result)).toBe(true);
-        expect(spy).toHaveBeenCalledOnceWith({ configId: 'configId1', authority: 'some-authority' }, allConfigs, undefined);
-      });
-    });
+        checkAuthService.checkAuthMultiple(allConfigs).subscribe((result) => {
+          expect(Array.isArray(result)).toBe(true);
+          expect(spy).toHaveBeenCalledOnceWith({ configId: 'configId1', authority: 'some-authority' }, allConfigs, undefined);
+        });
+      })
+    );
 
-    it('uses config from passed configId if configId was passed and returns all results', () => {
-      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(false);
+    it(
+      'uses config from passed configId if configId was passed and returns all results',
+      waitForAsync(() => {
+        spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(false);
 
-      const allConfigs = [
-        { configId: 'configId1', authority: 'some-authority1' },
-        { configId: 'configId2', authority: 'some-authority2' },
-      ];
+        const allConfigs = [
+          { configId: 'configId1', authority: 'some-authority1' },
+          { configId: 'configId2', authority: 'some-authority2' },
+        ];
 
-      const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
+        const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
 
-      checkAuthService.checkAuthMultiple(allConfigs).subscribe((result) => {
-        expect(Array.isArray(result)).toBe(true);
-        expect(spy.calls.allArgs()).toEqual([
-          [{ configId: 'configId1', authority: 'some-authority1' }, allConfigs, undefined],
-          [{ configId: 'configId2', authority: 'some-authority2' }, allConfigs, undefined],
-        ]);
-      });
-    });
+        checkAuthService.checkAuthMultiple(allConfigs).subscribe((result) => {
+          expect(Array.isArray(result)).toBe(true);
+          expect(spy.calls.allArgs()).toEqual([
+            [{ configId: 'configId1', authority: 'some-authority1' }, allConfigs, undefined],
+            [{ configId: 'configId2', authority: 'some-authority2' }, allConfigs, undefined],
+          ]);
+        });
+      })
+    );
 
-    it('runs through all configs if no parameter is passed and has no state in url', () => {
-      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(false);
+    it(
+      'runs through all configs if no parameter is passed and has no state in url',
+      waitForAsync(() => {
+        spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(false);
 
-      const allConfigs = [
-        { configId: 'configId1', authority: 'some-authority1' },
-        { configId: 'configId2', authority: 'some-authority2' },
-      ];
+        const allConfigs = [
+          { configId: 'configId1', authority: 'some-authority1' },
+          { configId: 'configId2', authority: 'some-authority2' },
+        ];
 
-      const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
+        const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
 
-      checkAuthService.checkAuthMultiple(allConfigs).subscribe((result) => {
-        expect(Array.isArray(result)).toBe(true);
-        expect(spy).toHaveBeenCalledTimes(2);
-        expect(spy).toHaveBeenCalledWith({ configId: 'configId1', authority: 'some-authority1' }, allConfigs, undefined);
-        expect(spy).toHaveBeenCalledWith({ configId: 'configId2', authority: 'some-authority2' }, allConfigs, undefined);
-      });
-    });
+        checkAuthService.checkAuthMultiple(allConfigs).subscribe((result) => {
+          expect(Array.isArray(result)).toBe(true);
+          expect(spy).toHaveBeenCalledTimes(2);
+          expect(spy).toHaveBeenCalledWith({ configId: 'configId1', authority: 'some-authority1' }, allConfigs, undefined);
+          expect(spy).toHaveBeenCalledWith({ configId: 'configId2', authority: 'some-authority2' }, allConfigs, undefined);
+        });
+      })
+    );
 
-    it('throws error if url has state param but no config could be found', () => {
-      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
-      spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
+    it(
+      'throws error if url has state param but no config could be found',
+      waitForAsync(() => {
+        spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
+        spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
 
-      const allConfigs = [];
+        const allConfigs = [];
 
-      checkAuthService.checkAuthMultiple(allConfigs).subscribe({
-        error: (error) => {
-          expect(error.message).toEqual('could not find matching config for state the-state-param');
-        },
-      });
-    });
-
-    it('throws error if configId was passed and was not found', () => {
-      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(false);
-
-      const allConfigs = null;
-
-      checkAuthService.checkAuthMultiple(allConfigs).subscribe({
-        error: (error) => {
-          expect(error.message).toEqual('could not find matching config for id not-existing-config-id');
-        },
-      });
-    });
+        checkAuthService.checkAuthMultiple(allConfigs).subscribe({
+          error: (error) => {
+            expect(error.message).toEqual('could not find matching config for state the-state-param');
+          },
+        });
+      })
+    );
   });
 });

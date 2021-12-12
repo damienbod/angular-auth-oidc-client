@@ -50,31 +50,6 @@ describe('RefreshSessionIframeService ', () => {
         });
       })
     );
-
-    it(
-      'returns correct observable',
-      waitForAsync(() => {
-        spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue(of('a-url'));
-        const sessionIFrame = document.createElement('iframe');
-        sessionIFrame.onload = () => {
-          // contentWindow is set!
-        };
-        sessionIFrame.src = 'about:blank';
-        document.body.appendChild(sessionIFrame);
-
-        const addEventListenerSpy = spyOn(sessionIFrame, 'addEventListener');
-        const allConfigs = [{ configId: 'configId1' }];
-
-        spyOn(silentRenewService, 'getOrCreateIframe').and.returnValue(sessionIFrame);
-
-        spyOn(refreshSessionIframeService as any, 'sendAuthorizeRequestUsingSilentRenew').and.callThrough();
-
-        refreshSessionIframeService.refreshSessionWithIframe(allConfigs[0], allConfigs).subscribe((result) => {
-          expect(result).toBeTrue();
-          expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
-        });
-      })
-    );
   });
 
   describe('initSilentRenewRequest', () => {
