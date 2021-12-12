@@ -1,20 +1,20 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { AuthStateService } from './auth-state/auth-state.service';
-import { AutoLoginService } from './auto-login/auto-login.service';
-import { CallbackService } from './callback/callback.service';
-import { PeriodicallyTokenCheckService } from './callback/periodically-token-check.service';
-import { RefreshSessionService } from './callback/refresh-session.service';
-import { OpenIdConfiguration } from './config/openid-configuration';
-import { CheckSessionService } from './iframe/check-session.service';
-import { SilentRenewService } from './iframe/silent-renew.service';
-import { LoggerService } from './logging/logger.service';
-import { LoginResponse } from './login/login-response';
-import { PopUpService } from './login/popup/popup.service';
-import { StoragePersistenceService } from './storage/storage-persistence.service';
-import { UserService } from './user-data/user.service';
-import { CurrentUrlService } from './utils/url/current-url.service';
+import { AuthStateService } from '../auth-state/auth-state.service';
+import { AutoLoginService } from '../auto-login/auto-login.service';
+import { CallbackService } from '../callback/callback.service';
+import { PeriodicallyTokenCheckService } from '../callback/periodically-token-check.service';
+import { RefreshSessionService } from '../callback/refresh-session.service';
+import { OpenIdConfiguration } from '../config/openid-configuration';
+import { CheckSessionService } from '../iframe/check-session.service';
+import { SilentRenewService } from '../iframe/silent-renew.service';
+import { LoggerService } from '../logging/logger.service';
+import { LoginResponse } from '../login/login-response';
+import { PopUpService } from '../login/popup/popup.service';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { UserService } from '../user-data/user.service';
+import { CurrentUrlService } from '../utils/url/current-url.service';
 
 @Injectable()
 export class CheckAuthService {

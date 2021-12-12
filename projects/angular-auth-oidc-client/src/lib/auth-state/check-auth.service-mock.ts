@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { LoginResponse } from './login/login-response';
+import { LoginResponse } from '../login/login-response';
 
 @Injectable()
 export class CheckAuthServiceMock {

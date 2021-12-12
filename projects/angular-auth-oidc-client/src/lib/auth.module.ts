@@ -4,9 +4,9 @@ import { InjectionToken, ModuleWithProviders, NgModule, Provider } from '@angula
 import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './auth-state/auth-state.service';
+import { CheckAuthService } from './auth-state/check-auth.service';
 import { AutoLoginService } from './auto-login/auto-login.service';
 import { ImplicitFlowCallbackService } from './callback/implicit-flow-callback.service';
-import { CheckAuthService } from './check-auth.service';
 import { AuthWellKnownDataService } from './config/auth-well-known/auth-well-known-data.service';
 import { AuthWellKnownService } from './config/auth-well-known/auth-well-known.service';
 import { ConfigurationService } from './config/config.service';
