@@ -1,9 +1,11 @@
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { of, Subscription, throwError } from 'rxjs';
+import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { of, throwError } from 'rxjs';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { ConfigurationService } from '../config/config.service';
 import { ConfigurationServiceMock } from '../config/config.service.mock';
+import { OpenIdConfiguration } from '../config/openid-configuration';
+import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsDataServiceMock } from '../flows/flows-data.service-mock';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
@@ -18,14 +20,12 @@ import { StoragePersistenceServiceMock } from '../storage/storage-persistence.se
 import { UserServiceMock } from '../user-data/user-service-mock';
 import { UserService } from '../user-data/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
-import { OpenIdConfiguration } from './../config/openid-configuration';
-import { CallbackContext } from './../flows/callback-context';
 import { IntervalService } from './interval.service';
 import { PeriodicallyTokenCheckService } from './periodically-token-check.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 import { RefreshSessionRefreshTokenServiceMock } from './refresh-session-refresh-token.service-mock';
 
-xdescribe('PeriodicallyTokenCheckService', () => {
+describe('PeriodicallyTokenCheckService', () => {
   let periodicallyTokenCheckService: PeriodicallyTokenCheckService;
   let intervalService: IntervalService;
   let flowsDataService: FlowsDataService;
@@ -74,8 +74,9 @@ xdescribe('PeriodicallyTokenCheckService', () => {
   });
 
   afterEach(() => {
-    if (!!intervalService.runTokenValidationRunning) {
-      console.warn(intervalService.runTokenValidationRunning.unsubscribe);
+    if (!!intervalService.runTokenValidationRunning?.unsubscribe) {
+      intervalService.runTokenValidationRunning.unsubscribe();
+      intervalService.runTokenValidationRunning = null;
     }
   });
 
@@ -84,34 +85,32 @@ xdescribe('PeriodicallyTokenCheckService', () => {
   });
 
   describe('startTokenValidationPeriodically', () => {
-    it('returns if no config has silentrenew enabled', () => {
-      const configs = [
-        { silentRenew: false, configId: 'configId1' },
-        { silentRenew: false, configId: 'configId2' },
-      ];
+    it(
+      'returns if no config has silentrenew enabled',
+      waitForAsync(() => {
+        const configs = [
+          { silentRenew: false, configId: 'configId1' },
+          { silentRenew: false, configId: 'configId2' },
+        ];
 
-      const result = periodicallyTokenCheckService.startTokenValidationPeriodically(configs, configs[0]);
+        const result = periodicallyTokenCheckService.startTokenValidationPeriodically(configs, configs[0]);
 
-      expect(result).toBeUndefined();
-    });
+        expect(result).toBeUndefined();
+      })
+    );
 
-    it('returns if runTokenValidationRunning', () => {
-      const configs = [{ silentRenew: true, configId: 'configId1' }];
+    it(
+      'returns if runTokenValidationRunning',
+      waitForAsync(() => {
+        const configs = [{ silentRenew: true, configId: 'configId1' }];
 
-      spyOn(intervalService as any, 'runTokenValidationRunning').and.returnValue(new Subscription());
+        spyOn(intervalService, 'isTokenValidationRunning').and.returnValue(true);
 
-      const result = periodicallyTokenCheckService.startTokenValidationPeriodically(configs, configs[0]);
+        const result = periodicallyTokenCheckService.startTokenValidationPeriodically(configs, configs[0]);
 
-      expect(result).toBeUndefined();
-    });
-
-    it('returns if openIDConfiguration.silentrenew is false', () => {
-      const configs = [{ silentRenew: true, configId: 'configId1' }];
-
-      const result = periodicallyTokenCheckService.startTokenValidationPeriodically(configs, configs[0]);
-
-      expect(result).toBeUndefined();
-    });
+        expect(result).toBeUndefined();
+      })
+    );
 
     it('interval calls resetSilentRenewRunning when current flow is CodeFlowWithRefreshTokens', fakeAsync(() => {
       const configs = [{ silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 }];

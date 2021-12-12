@@ -1,11 +1,15 @@
 import { Injectable, NgZone } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class IntervalService {
-  runTokenValidationRunning: Subscription = null;
+  runTokenValidationRunning = null;
 
   constructor(private zone: NgZone) {}
+
+  isTokenValidationRunning(): boolean {
+    return !!this.runTokenValidationRunning;
+  }
 
   stopPeriodicTokenCheck(): void {
     if (this.runTokenValidationRunning) {

@@ -40,12 +40,11 @@ export class PeriodicallyTokenCheckService {
       return;
     }
 
-    const refreshTimeInSeconds = this.getSmallestRefreshTimeFromConfigs(configsWithSilentRenewEnabled);
-
-    if (!!this.intervalService.runTokenValidationRunning) {
+    if (this.intervalService.isTokenValidationRunning()) {
       return;
     }
 
+    const refreshTimeInSeconds = this.getSmallestRefreshTimeFromConfigs(configsWithSilentRenewEnabled);
     const periodicallyCheck$ = this.intervalService.startPeriodicTokenCheck(refreshTimeInSeconds).pipe(
       switchMap(() => {
         const objectWithConfigIdsAndRefreshEvent = {};
