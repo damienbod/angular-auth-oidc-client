@@ -479,7 +479,10 @@ describe('CheckAuthService', () => {
     it(
       'uses config with matching state when url has state param and config with state param is stored',
       waitForAsync(() => {
-        const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+        const allConfigs = [
+          { configId: 'configId1', authority: 'some-authority1' },
+          { configId: 'configId2', authority: 'some-authority2' },
+        ];
         spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
         spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
         spyOn(storagePersistenceService, 'read').withArgs('authStateControl', allConfigs[0]).and.returnValue('the-state-param');
@@ -487,7 +490,9 @@ describe('CheckAuthService', () => {
 
         checkAuthService.checkAuthMultiple(allConfigs).subscribe((result) => {
           expect(Array.isArray(result)).toBe(true);
-          expect(spy).toHaveBeenCalledOnceWith({ configId: 'configId1', authority: 'some-authority' }, allConfigs, undefined);
+          expect(spy).toHaveBeenCalledTimes(2);
+          expect(spy.calls.argsFor(0)).toEqual([allConfigs[0], allConfigs, undefined]);
+          expect(spy.calls.argsFor(1)).toEqual([allConfigs[1], allConfigs, undefined]);
         });
       })
     );
