@@ -458,140 +458,63 @@ describe('OidcSecurityService', () => {
     );
   });
 
-  // describe('forceRefreshSession', () => {
-  //   it(
-  //     'calls refreshSessionService userForceRefreshSession with configId from config when none is passed',
-  //     waitForAsync(() => {
-  //       spyOn(configurationService, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId1' });
+  describe('authorizeWithPopUp', () => {
+    it(
+      'calls login service loginWithPopUp',
+      waitForAsync(() => {
+        const config = { configId: 'configId1' };
+        spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
+        const spy = spyOn(loginService, 'loginWithPopUp').and.callFake(() => of(null));
+        oidcSecurityService.authorizeWithPopUp().subscribe(() => {
+          expect(spy).toHaveBeenCalledOnceWith(config, [config], undefined, undefined);
+        });
+      })
+    );
+  });
 
-  //       const spy = spyOn(refreshSessionService, 'userForceRefreshSession').and.returnValue(of(null));
-  //       oidcSecurityService.forceRefreshSession().subscribe(() => {
-  //         expect(spy).toHaveBeenCalledOnceWith('configId', undefined);
-  //       });
-  //     })
-  //   );
+  describe('forceRefreshSession', () => {
+    it(
+      'calls refreshSessionService userForceRefreshSession with configId from config when none is passed',
+      waitForAsync(() => {
+        const config = { configId: 'configId1' };
+        spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
 
-  //   it(
-  //     'calls refreshSessionService userForceRefreshSession with configId when configId is passed',
-  //     waitForAsync(() => {
-  //       const spy = spyOn(refreshSessionService, 'userForceRefreshSession').and.returnValue(of(null));
-  //       oidcSecurityService.forceRefreshSession(undefined, 'configId').subscribe(() => {
-  //         expect(spy).toHaveBeenCalledOnceWith('configId', undefined);
-  //       });
-  //     })
-  //   );
+        const spy = spyOn(refreshSessionService, 'userForceRefreshSession').and.returnValue(of(null));
+        oidcSecurityService.forceRefreshSession().subscribe(() => {
+          expect(spy).toHaveBeenCalledOnceWith(config, [config], undefined);
+        });
+      })
+    );
+  });
 
-  //   it(
-  //     'calls refreshSessionService userForceRefreshSession with configId and customparams when configId is passed',
-  //     waitForAsync(() => {
-  //       const spy = spyOn(refreshSessionService, 'userForceRefreshSession').and.returnValue(of(null));
-  //       oidcSecurityService.forceRefreshSession({ custom: 'params' }, 'configId').subscribe(() => {
-  //         expect(spy).toHaveBeenCalledOnceWith('configId', { custom: 'params' });
-  //       });
-  //     })
-  //   );
-  // });
+  describe('logoffAndRevokeTokens', () => {
+    it(
+      'calls logoffRevocationService.logoffAndRevokeTokens',
+      waitForAsync(() => {
+        const config = { configId: 'configId1' };
+        spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
+        const spy = spyOn(logoffRevocationService, 'logoffAndRevokeTokens').and.returnValue(of(null));
 
-  // describe('authorizeWithPopUp', () => {
-  //   it(
-  //     'calls login service loginWithPopUp',
-  //     waitForAsync(() => {
-  //       const spy = spyOn(loginService, 'loginWithPopUp').and.callFake(() => of(null));
-  //       oidcSecurityService.authorizeWithPopUp().subscribe(() => {
-  //         expect(spy).toHaveBeenCalledTimes(1);
-  //       });
-  //     })
-  //   );
+        oidcSecurityService.logoffAndRevokeTokens().subscribe(() => {
+          expect(spy).toHaveBeenCalledOnceWith(config, [config], undefined);
+        });
+      })
+    );
+  });
 
-  //   it(
-  //     'calls login service loginWithPopUp with params if given',
-  //     waitForAsync(() => {
-  //       const spy = spyOn(loginService, 'loginWithPopUp').and.callFake(() => of(null));
-  //       oidcSecurityService.authorizeWithPopUp({ customParams: { any: 'thing' } }, null, 'configId').subscribe(() => {
-  //         expect(spy).toHaveBeenCalledWith('configId', { customParams: { any: 'thing' } }, null);
-  //       });
-  //     })
-  //   );
+  describe('logoff', () => {
+    it(
+      'calls logoffRevocationService.logoff ',
+      waitForAsync(() => {
+        const config = { configId: 'configId1' };
+        spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
+        const spy = spyOn(logoffRevocationService, 'logoff');
 
-  //   it(
-  //     'calls login service loginWithPopUp with params and popupparams if given',
-  //     waitForAsync(() => {
-  //       const somePopupOptions = { width: 500, height: 500, left: 50, top: 50 };
-  //       spyOn(configurationService, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId1' });
-  //       const spy = spyOn(loginService, 'loginWithPopUp').and.callFake(() => of(null));
-  //       oidcSecurityService.authorizeWithPopUp({ customParams: { any: 'thing' } }, somePopupOptions).subscribe(() => {
-  //         expect(spy).toHaveBeenCalledWith('configId', { customParams: { any: 'thing' } }, somePopupOptions);
-  //       });
-  //     })
-  //   );
-  // });
-
-  // describe('logoffAndRevokeTokens', () => {
-  //   it(
-  //     'calls logoffRevocationService.logoffAndRevokeTokens if no authOptions are given',
-  //     waitForAsync(() => {
-  //       const spy = spyOn(logoffRevocationService, 'logoffAndRevokeTokens');
-
-  //       oidcSecurityService.logoffAndRevokeTokens();
-  //       expect(spy).toHaveBeenCalledWith(undefined, undefined);
-  //     })
-  //   );
-
-  //   it(
-  //     'calls logoffRevocationService.logoffAndRevokeTokens with authOptions if given',
-  //     waitForAsync(() => {
-  //       const spy = spyOn(logoffRevocationService, 'logoffAndRevokeTokens');
-
-  //       const authOptions = {
-  //         urlHandler: () => {},
-  //       };
-
-  //       oidcSecurityService.logoffAndRevokeTokens('configId', authOptions);
-  //       expect(spy).toHaveBeenCalledWith('configId', authOptions);
-  //     })
-  //   );
-  // });
-
-  // describe('logoff', () => {
-  //   it(
-  //     'calls logoffRevocationService.logoff if no authOptions are given',
-  //     waitForAsync(() => {
-  //       const spy = spyOn(logoffRevocationService, 'logoff');
-
-  //       oidcSecurityService.logoff();
-  //       expect(spy).toHaveBeenCalledWith(undefined, undefined);
-  //     })
-  //   );
-
-  //   it(
-  //     'calls logoffRevocationService.logoff with authOptions if  given',
-  //     waitForAsync(() => {
-  //       const spy = spyOn(logoffRevocationService, 'logoff');
-
-  //       const authOptions = {
-  //         urlHandler: () => {},
-  //       };
-
-  //       oidcSecurityService.logoff('configId', authOptions);
-  //       expect(spy).toHaveBeenCalledWith('configId', authOptions);
-  //     })
-  //   );
-
-  //   it(
-  //     'calls logoffRevocationService.logoff with urlHandler if it is given',
-  //     waitForAsync(() => {
-  //       const spy = spyOn(logoffRevocationService, 'logoff');
-
-  //       const authOptions = {
-  //         urlHandler: () => {},
-  //         customParams: { my: 'custom', params: 1 },
-  //       };
-
-  //       oidcSecurityService.logoff('configId', authOptions);
-  //       expect(spy).toHaveBeenCalledWith('configId', authOptions);
-  //     })
-  //   );
-  // });
+        oidcSecurityService.logoff();
+        expect(spy).toHaveBeenCalledOnceWith(config, [config], undefined);
+      })
+    );
+  });
 
   // describe('logoffLocal', () => {
   //   it(
