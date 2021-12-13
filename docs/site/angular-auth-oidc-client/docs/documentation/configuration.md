@@ -276,7 +276,7 @@ If you are using the silent renew process and set this parameter, the supplied U
 - Type: `number`
 - Required: `false`
 
-Sets the maximum wait time for the silent renew process. If this time is exceeded, the silent renew state will be reset. Default = *20*
+Sets the maximum wait time for the silent renew process. If this time is exceeded, the silent renew state will be reset. Default = _20_
 
 ### `renewTimeBeforeTokenExpiresInSeconds`
 
@@ -291,7 +291,7 @@ Makes it possible to add an offset to the silent renew check in seconds. By ente
 - Required: `false`
 
 If set to true, refresh tokens will be used for the silent renew process instead of the default iframes. <br/>
-Default = *false*
+Default = _false_
 
 ### `ignoreNonceAfterRefresh`
 
@@ -424,14 +424,7 @@ Disables the `auth_time` validation for `id_tokens` in a refresh due to Microsof
 - Required: `false`
 
 Enables the `id_token` validation. You can disable this validation if you would like to ignore expired values during the renew process. If no `id_token` is returned while using refresh tokens, set this to false. <br/>
-Default = *true*
-
-### `eagerLoadAuthWellKnownEndpoints`
-
-- Type: `boolean`
-- Required: `false`
-
-Denotes whether `AuthWellKnownEndpoints` should be loaded on start or when the user calls the `authorize` method.
+Default = _true_
 
 ### `tokenRefreshInSeconds`
 
@@ -439,7 +432,7 @@ Denotes whether `AuthWellKnownEndpoints` should be loaded on start or when the u
 - Required: `false`
 
 Controls the periodic check time interval in seconds. <br/>
-Default = *3*
+Default = _3_
 
 ### `secureRoutes`
 
@@ -454,7 +447,7 @@ See [Http Interceptor](./using-access-tokens.md/#http-interceptor)
 - Type: `boolean`
 - Required: `false`
 
-Activates Pushed Authorisation Requests (PAR) for login and popup login. <br/> 
+Activates Pushed Authorisation Requests (PAR) for login and popup login. <br/>
 (iframe renew is not supported)
 
 ### `refreshTokenRetryInSeconds`
@@ -463,7 +456,7 @@ Activates Pushed Authorisation Requests (PAR) for login and popup login. <br/>
 - Required: `false`
 
 Controls the periodic retry time interval for retrieving new tokens in seconds. <br/>
-Default = *3*. <br/>
+Default = _3_. <br/>
 `silentRenewTimeoutInSeconds` and `tokenRefreshInSeconds` are the upper bounds for this value.
 
 ### `ngswBypass`

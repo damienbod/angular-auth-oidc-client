@@ -145,9 +145,6 @@ export interface OpenIdConfiguration {
   /** Extra parameters to add to the token URL request */
   customParamsCodeRequest?: { [key: string]: string | number | boolean };
 
-  /** Tells if the `AuthWellKnownEndpoints` should be loaded at startup or when the user calls the authorize method. */
-  eagerLoadAuthWellKnownEndpoints?: boolean;
-
   // Azure B2C have implemented this incorrectly. Add support for to disable this until fixed.
   /** Disables the auth_time validation for id_tokens in a refresh due to Azure's incorrect implementation. */
   disableRefreshIdTokenAuthTimeValidation?: boolean;
