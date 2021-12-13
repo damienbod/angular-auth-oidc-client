@@ -480,10 +480,13 @@ describe('Logout and Revoke Service', () => {
       waitForAsync(() => {
         // Arrange
         const paramToken = 'damien';
+        const config = { configId: 'configId1' };
+        spyOn(storagePersistenceService, 'read')
+          .withArgs('authWellKnownEndPoints', config)
+          .and.returnValue({ revocationEndpoint: 'revocationEndpoint' });
         spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
         const revokeRefreshTokenSpy = spyOn(service, 'revokeRefreshToken').and.returnValue(of({ any: 'thing' }));
         const revokeAccessTokenSpy = spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
-        const config = { configId: 'configId1' };
 
         // Act
         service.logoffAndRevokeTokens(config, [config]).subscribe(() => {
@@ -499,10 +502,13 @@ describe('Logout and Revoke Service', () => {
       waitForAsync(() => {
         // Arrange
         const paramToken = 'damien';
+        const config = { configId: 'configId1' };
+        spyOn(storagePersistenceService, 'read')
+          .withArgs('authWellKnownEndPoints', config)
+          .and.returnValue({ revocationEndpoint: 'revocationEndpoint' });
         spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
         spyOn(service, 'revokeRefreshToken').and.returnValue(of({ any: 'thing' }));
         const loggerSpy = spyOn(loggerService, 'logError');
-        const config = { configId: 'configId1' };
 
         spyOn(service, 'revokeAccessToken').and.returnValue(throwError(() => new Error('Error')));
 
@@ -559,10 +565,14 @@ describe('Logout and Revoke Service', () => {
       'calls revokeAccessToken when storage does not hold a refreshtoken',
       waitForAsync(() => {
         // Arrange
+        const config = { configId: 'configId1' };
+        spyOn(storagePersistenceService, 'read')
+          .withArgs('authWellKnownEndPoints', config)
+          .and.returnValue({ revocationEndpoint: 'revocationEndpoint' });
+
         spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(null);
         const revokeRefreshTokenSpy = spyOn(service, 'revokeRefreshToken');
         const revokeAccessTokenSpy = spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
-        const config = { configId: 'configId1' };
 
         // Act
         service.logoffAndRevokeTokens(config, [config]).subscribe(() => {
@@ -577,10 +587,13 @@ describe('Logout and Revoke Service', () => {
       'loggs error when revokeaccesstoken throws an error',
       waitForAsync(() => {
         // Arrange
+        const config = { configId: 'configId1' };
+        spyOn(storagePersistenceService, 'read')
+          .withArgs('authWellKnownEndPoints', config)
+          .and.returnValue({ revocationEndpoint: 'revocationEndpoint' });
         spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(null);
         const loggerSpy = spyOn(loggerService, 'logError');
         spyOn(service, 'revokeAccessToken').and.returnValue(throwError(() => new Error('Error')));
-        const config = { configId: 'configId1' };
 
         // Act
         service.logoffAndRevokeTokens(config, [config]).subscribe({
