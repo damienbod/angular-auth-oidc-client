@@ -67,6 +67,8 @@ export class LogoffRevocationService {
     if (!revocationEndpoint) {
       this.loggerService.logDebug(config, 'revocation endpoint not supported');
       this.logoff(config, allConfigs, authOptions);
+
+      return of(null);
     }
 
     if (this.storagePersistenceService.getRefreshToken(config)) {

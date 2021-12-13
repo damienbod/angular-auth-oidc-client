@@ -90,7 +90,7 @@ describe('StandardLoginService', () => {
       const redirectSpy = spyOn(redirectService, 'redirectTo').and.callThrough();
       standardLoginService.loginStandard(config);
       tick();
-      expect(redirectSpy).toHaveBeenCalledWith('someUrl');
+      expect(redirectSpy).toHaveBeenCalledOnceWith('someUrl');
     }));
 
     it('redirects to URL with URL handler when urlHandler is given', fakeAsync(() => {
@@ -108,7 +108,7 @@ describe('StandardLoginService', () => {
       };
       standardLoginService.loginStandard(config, { urlHandler });
       tick();
-      expect(spy).toHaveBeenCalledWith('someUrl');
+      expect(spy).toHaveBeenCalledOnceWith('someUrl');
       expect(redirectSpy).not.toHaveBeenCalled();
     }));
 
@@ -123,8 +123,8 @@ describe('StandardLoginService', () => {
       const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
       standardLoginService.loginStandard(config, { customParams: { to: 'add', as: 'well' } });
       tick();
-      expect(redirectSpy).toHaveBeenCalledWith('someUrl');
-      expect(getAuthorizeUrlSpy).toHaveBeenCalledWith(config, { to: 'add', as: 'well' });
+      expect(redirectSpy).toHaveBeenCalledOnceWith('someUrl');
+      expect(getAuthorizeUrlSpy).toHaveBeenCalledOnceWith(config, { to: 'add', as: 'well' });
     }));
 
     it('does nothing, logs only if getAuthorizeUrl returns falsy', fakeAsync(() => {
@@ -139,7 +139,7 @@ describe('StandardLoginService', () => {
       const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
       standardLoginService.loginStandard(config);
       tick();
-      expect(loggerSpy).toHaveBeenCalledWith(config, 'Could not create URL', '');
+      expect(loggerSpy).toHaveBeenCalledOnceWith(config, 'Could not create URL', '');
       expect(redirectSpy).not.toHaveBeenCalled();
     }));
   });

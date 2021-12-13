@@ -164,7 +164,7 @@ describe('PeriodicallyTokenCheckService', () => {
       intervalService.runTokenValidationRunning = null;
 
       expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
-      expect(resetAuthorizationDataSpy).toHaveBeenCalledWith(configWithoutSilentRenew, configs);
+      expect(resetAuthorizationDataSpy).toHaveBeenCalledOnceWith(configWithoutSilentRenew, configs);
     }));
 
     it('calls refreshSessionWithRefreshTokens if current flow is Code flow with refresh tokens', fakeAsync(() => {

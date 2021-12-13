@@ -95,7 +95,7 @@ describe('CheckSessionService', () => {
     spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({ checkSessionIframe: undefined });
     (checkSessionService as any).init(config);
 
-    expect(spyLogWarning).toHaveBeenCalledWith(config, jasmine.any(String));
+    expect(spyLogWarning).toHaveBeenCalledOnceWith(config, jasmine.any(String));
   });
 
   it('start() calls pollserversession() with clientId if no scheduledheartbeat is set', () => {
@@ -103,7 +103,7 @@ describe('CheckSessionService', () => {
     const config = { clientId: 'clientId', configId: 'configId1' };
 
     checkSessionService.start(config);
-    expect(spy).toHaveBeenCalledWith('clientId', config);
+    expect(spy).toHaveBeenCalledOnceWith('clientId', config);
   });
 
   it('start() does not call pollServerSession() if scheduledHeartBeatRunning is set', () => {
@@ -125,7 +125,7 @@ describe('CheckSessionService', () => {
     (checkSessionService as any).scheduledHeartBeatRunning = null;
     const spy = spyOn<any>(checkSessionService, 'clearScheduledHeartBeat');
     checkSessionService.stop();
-    expect(spy).not.toHaveBeenCalledWith();
+    expect(spy).not.toHaveBeenCalledOnceWith();
   });
 
   describe('serverStateChanged', () => {
@@ -181,7 +181,7 @@ describe('CheckSessionService', () => {
       const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => {});
       spyOn(loggerService, 'logDebug').and.callFake(() => {});
       (checkSessionService as any).pollServerSession('clientId', config);
-      expect(spyLogWarning).toHaveBeenCalledWith(config, jasmine.any(String));
+      expect(spyLogWarning).toHaveBeenCalledOnceWith(config, jasmine.any(String));
     });
 
     it('logs warning if clientId is not set', () => {
@@ -194,7 +194,7 @@ describe('CheckSessionService', () => {
       const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => {});
       spyOn(loggerService, 'logDebug').and.callFake(() => {});
       (checkSessionService as any).pollServerSession('', config);
-      expect(spyLogWarning).toHaveBeenCalledWith(config, jasmine.any(String));
+      expect(spyLogWarning).toHaveBeenCalledOnceWith(config, jasmine.any(String));
     });
 
     it('logs debug if session_state is not set', () => {

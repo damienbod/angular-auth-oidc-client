@@ -81,8 +81,10 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
 
         spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of({ keys: [] } as JwtKeys));
         service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe(() => {
-          expect(storagePersistenceServiceSpy).toHaveBeenCalledWith('authnResult', 'authResultToStore', allconfigs[0]);
-
+          expect(storagePersistenceServiceSpy.calls.allArgs()).toEqual([
+            ['authnResult', 'authResultToStore', allconfigs[0]],
+            ['jwtKeys', { keys: [] }, allconfigs[0]],
+          ]);
           // write authnResult & jwtKeys
           expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(2);
         });
@@ -263,9 +265,11 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
 
         service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe({
           next: (callbackContext: CallbackContext) => {
-            expect(storagePersistenceServiceSpy).toHaveBeenCalledWith('authnResult', 'authResultToStore', allconfigs[0]);
-            expect(storagePersistenceServiceSpy).toHaveBeenCalledWith('jwtKeys', DUMMY_JWT_KEYS, allconfigs[0]);
             expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(2);
+            expect(storagePersistenceServiceSpy.calls.allArgs()).toEqual([
+              ['authnResult', 'authResultToStore', allconfigs[0]],
+              ['jwtKeys', DUMMY_JWT_KEYS, allconfigs[0]],
+            ]);
 
             expect(callbackContext.jwtKeys).toEqual(DUMMY_JWT_KEYS);
           },

@@ -27,7 +27,7 @@ describe('Storage Persistence Service', () => {
       const config = { configId: 'configId1' };
       const spy = spyOn(securityStorage, 'read');
       service.read('authNonce', config);
-      expect(spy).toHaveBeenCalledWith('authNonce', config);
+      expect(spy).toHaveBeenCalledOnceWith('authNonce', config);
     });
 
     it('returns undefined (not throws exception) if key to read is not present on config', () => {
@@ -46,8 +46,8 @@ describe('Storage Persistence Service', () => {
 
       service.write('authNonce', 'anyValue', config);
 
-      expect(readSpy).toHaveBeenCalledWith('authNonce', config);
-      expect(writeSpy).toHaveBeenCalledWith({ authNonce: 'anyValue' }, config);
+      expect(readSpy).toHaveBeenCalledOnceWith('authNonce', config);
+      expect(writeSpy).toHaveBeenCalledOnceWith({ authNonce: 'anyValue' }, config);
     });
   });
 
@@ -59,8 +59,8 @@ describe('Storage Persistence Service', () => {
 
       service.remove('authNonce', config);
 
-      expect(readSpy).toHaveBeenCalledWith('authNonce', config);
-      expect(writeSpy).toHaveBeenCalledWith({}, config);
+      expect(readSpy).toHaveBeenCalledOnceWith('authNonce', config);
+      expect(writeSpy).toHaveBeenCalledOnceWith({}, config);
     });
 
     it('does not crash when read with configId returns null', () => {
@@ -70,8 +70,8 @@ describe('Storage Persistence Service', () => {
 
       service.remove('authNonce', config);
 
-      expect(readSpy).toHaveBeenCalledWith('authNonce', config);
-      expect(writeSpy).toHaveBeenCalledWith({}, config);
+      expect(readSpy).toHaveBeenCalledOnceWith('authNonce', config);
+      expect(writeSpy).toHaveBeenCalledOnceWith({}, config);
     });
   });
 
@@ -124,7 +124,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getAccessToken(config);
 
       expect(result).toBe('someValue');
-      expect(spy).toHaveBeenCalledWith('authzData', config);
+      expect(spy).toHaveBeenCalledOnceWith('authzData', config);
     });
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
@@ -133,7 +133,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getAccessToken(config);
 
       expect(result).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith('authzData', config);
+      expect(spy).toHaveBeenCalledOnceWith('authzData', config);
     });
   });
 
@@ -145,7 +145,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getIdToken(config);
 
       expect(result).toBe('someValue');
-      expect(spy).toHaveBeenCalledWith('authnResult', config);
+      expect(spy).toHaveBeenCalledOnceWith('authnResult', config);
     });
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
@@ -154,7 +154,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getIdToken(config);
 
       expect(result).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith('authnResult', config);
+      expect(spy).toHaveBeenCalledOnceWith('authnResult', config);
     });
   });
 
@@ -166,7 +166,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getAuthenticationResult(config);
 
       expect(result.id_token).toBe('someValue');
-      expect(spy).toHaveBeenCalledWith('authnResult', config);
+      expect(spy).toHaveBeenCalledOnceWith('authnResult', config);
     });
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
@@ -175,7 +175,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getAuthenticationResult(config);
 
       expect(result).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith('authnResult', config);
+      expect(spy).toHaveBeenCalledOnceWith('authnResult', config);
     });
   });
 
@@ -187,7 +187,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getRefreshToken(config);
 
       expect(result).toBe('someValue');
-      expect(spy).toHaveBeenCalledWith('authnResult', config);
+      expect(spy).toHaveBeenCalledOnceWith('authnResult', config);
     });
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
@@ -197,7 +197,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getRefreshToken(config);
 
       expect(result).toBeUndefined();
-      expect(spy).toHaveBeenCalledWith('authnResult', config);
+      expect(spy).toHaveBeenCalledOnceWith('authnResult', config);
     });
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {
@@ -206,7 +206,7 @@ describe('Storage Persistence Service', () => {
       const result = service.getRefreshToken(config);
 
       expect(result).toBeUndefined();
-      expect(spy).toHaveBeenCalledWith('authnResult', config);
+      expect(spy).toHaveBeenCalledOnceWith('authnResult', config);
     });
   });
 });

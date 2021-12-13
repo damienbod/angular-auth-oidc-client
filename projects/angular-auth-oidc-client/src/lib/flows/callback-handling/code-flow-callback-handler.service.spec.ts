@@ -145,7 +145,7 @@ describe('CodeFlowCallbackHandlerService', () => {
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
         service.codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' }).subscribe(() => {
-          expect(postSpy).toHaveBeenCalledWith('tokenEndpoint', '', { configId: 'configId1' }, jasmine.any(HttpHeaders));
+          expect(postSpy).toHaveBeenCalledOnceWith('tokenEndpoint', '', { configId: 'configId1' }, jasmine.any(HttpHeaders));
         });
       })
     );
@@ -165,7 +165,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
 
         service.codeFlowCodeRequest({ code: 'foo' } as CallbackContext, config).subscribe(() => {
-          expect(urlServiceSpy).toHaveBeenCalledWith('foo', config, { foo: 'bar' });
+          expect(urlServiceSpy).toHaveBeenCalledOnceWith('foo', config, { foo: 'bar' });
           expect(postSpy).toHaveBeenCalledTimes(1);
         });
       })

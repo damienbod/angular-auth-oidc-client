@@ -54,7 +54,7 @@ describe('Auth State Service', () => {
 
       authStateService.setAuthenticatedAndFireEvent([{ configId: 'configId1' }]);
 
-      expect(spy).toHaveBeenCalledWith({
+      expect(spy).toHaveBeenCalledOnceWith({
         isAuthenticated: true,
         allConfigsAuthenticated: [{ configId: 'configId1', isAuthenticated: true }],
       });
@@ -65,7 +65,7 @@ describe('Auth State Service', () => {
 
       authStateService.setAuthenticatedAndFireEvent([{ configId: 'configId1' }, { configId: 'configId2' }]);
 
-      expect(spy).toHaveBeenCalledWith({
+      expect(spy).toHaveBeenCalledOnceWith({
         isAuthenticated: false,
         allConfigsAuthenticated: [
           { configId: 'configId1', isAuthenticated: false },
@@ -92,7 +92,7 @@ describe('Auth State Service', () => {
 
       authStateService.setAuthenticatedAndFireEvent(allConfigs);
 
-      expect(spy).toHaveBeenCalledWith({
+      expect(spy).toHaveBeenCalledOnceWith({
         isAuthenticated: false,
         allConfigsAuthenticated: [
           { configId: 'configId1', isAuthenticated: true },
@@ -106,7 +106,7 @@ describe('Auth State Service', () => {
     it('persist AuthState In Storage', () => {
       const spy = spyOn(storagePersistenceService, 'resetAuthStateInStorage');
       authStateService.setUnauthenticatedAndFireEvent({ configId: 'configId1' }, [{ configId: 'configId1' }]);
-      expect(spy).toHaveBeenCalledWith({ configId: 'configId1' });
+      expect(spy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
     });
 
     it('throws correct event with single config', () => {
@@ -114,7 +114,7 @@ describe('Auth State Service', () => {
 
       authStateService.setUnauthenticatedAndFireEvent({ configId: 'configId1' }, [{ configId: 'configId1' }]);
 
-      expect(spy).toHaveBeenCalledWith({
+      expect(spy).toHaveBeenCalledOnceWith({
         isAuthenticated: false,
         allConfigsAuthenticated: [{ configId: 'configId1', isAuthenticated: false }],
       });
@@ -125,7 +125,7 @@ describe('Auth State Service', () => {
 
       authStateService.setUnauthenticatedAndFireEvent({ configId: 'configId1' }, [{ configId: 'configId1' }, { configId: 'configId2' }]);
 
-      expect(spy).toHaveBeenCalledWith({
+      expect(spy).toHaveBeenCalledOnceWith({
         isAuthenticated: false,
         allConfigsAuthenticated: [
           { configId: 'configId1', isAuthenticated: false },
@@ -151,7 +151,7 @@ describe('Auth State Service', () => {
 
       authStateService.setUnauthenticatedAndFireEvent({ configId: 'configId1' }, [{ configId: 'configId1' }, { configId: 'configId2' }]);
 
-      expect(spy).toHaveBeenCalledWith({
+      expect(spy).toHaveBeenCalledOnceWith({
         isAuthenticated: false,
         allConfigsAuthenticated: [
           { configId: 'configId1', isAuthenticated: true },
@@ -167,7 +167,7 @@ describe('Auth State Service', () => {
 
       authStateService.updateAndPublishAuthState({ isAuthenticated: false, isRenewProcess: false, validationResult: null });
 
-      expect(eventsService.fireEvent).toHaveBeenCalledWith(EventTypes.NewAuthenticationResult, jasmine.any(Object));
+      expect(eventsService.fireEvent).toHaveBeenCalledOnceWith(EventTypes.NewAuthenticationResult, jasmine.any(Object));
     });
   });
 
@@ -186,9 +186,11 @@ describe('Auth State Service', () => {
       };
 
       authStateService.setAuthorizationData('accesstoken', authResult, { configId: 'configId1' }, [{ configId: 'configId1' }]);
-
-      expect(spy).toHaveBeenCalledWith('authzData', 'accesstoken', { configId: 'configId1' });
       expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy.calls.allArgs()).toEqual([
+        ['authzData', 'accesstoken', { configId: 'configId1' }],
+        ['access_token_expires_at', jasmine.any(Number), { configId: 'configId1' }],
+      ]);
     });
 
     it('does not crash and store accessToken when authResult is null', () => {
@@ -367,7 +369,7 @@ describe('Auth State Service', () => {
 
       authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled(config);
 
-      expect(spy).toHaveBeenCalledWith('idToken', config, 30);
+      expect(spy).toHaveBeenCalledOnceWith('idToken', config, 30);
     });
 
     it('fires event if idToken is expired', () => {
@@ -386,7 +388,7 @@ describe('Auth State Service', () => {
       const result = authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled(config);
 
       expect(result).toBe(true);
-      expect(spy).toHaveBeenCalledWith(EventTypes.IdTokenExpired, true);
+      expect(spy).toHaveBeenCalledOnceWith(EventTypes.IdTokenExpired, true);
     });
 
     it('does NOT fire event if idToken is NOT expired', () => {
@@ -419,7 +421,7 @@ describe('Auth State Service', () => {
       spyOn(storagePersistenceService, 'read').withArgs('access_token_expires_at', config).and.returnValue(date);
       const spy = spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(validateAccessTokenNotExpiredResult);
       const result = authStateService.hasAccessTokenExpiredIfExpiryExists(config);
-      expect(spy).toHaveBeenCalledWith(date, config, 5);
+      expect(spy).toHaveBeenCalledOnceWith(date, config, 5);
       expect(result).toEqual(expectedResult);
     });
 
@@ -437,7 +439,7 @@ describe('Auth State Service', () => {
       spyOn(storagePersistenceService, 'read').withArgs('access_token_expires_at', config).and.returnValue(date);
       spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(validateAccessTokenNotExpiredResult);
       authStateService.hasAccessTokenExpiredIfExpiryExists(config);
-      expect(eventsService.fireEvent).toHaveBeenCalledWith(EventTypes.TokenExpired, expectedResult);
+      expect(eventsService.fireEvent).toHaveBeenCalledOnceWith(EventTypes.TokenExpired, expectedResult);
     });
   });
 });

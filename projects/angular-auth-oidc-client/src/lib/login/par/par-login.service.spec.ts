@@ -204,7 +204,7 @@ describe('ParLoginService', () => {
 
         service.loginPar(config, { urlHandler });
 
-        expect(spy).toHaveBeenCalledWith('some-par-url');
+        expect(spy).toHaveBeenCalledOnceWith('some-par-url');
         expect(redirectToSpy).not.toHaveBeenCalled();
       })
     );
@@ -351,7 +351,7 @@ describe('ParLoginService', () => {
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
         service.loginWithPopUpPar(config, allConfigs).subscribe((result) => {
-          expect(checkAuthSpy).toHaveBeenCalledWith(config, allConfigs, 'someUrl');
+          expect(checkAuthSpy).toHaveBeenCalledOnceWith(config, allConfigs, 'someUrl');
 
           expect(result).toEqual({
             isAuthenticated: true,

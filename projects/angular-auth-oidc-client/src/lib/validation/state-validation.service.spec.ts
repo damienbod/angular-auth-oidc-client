@@ -120,7 +120,7 @@ describe('State Validation Service', () => {
     expect(oidcSecurityValidation.validateStateFromHashCallback).toHaveBeenCalled();
 
     stateObs$.subscribe((state) => {
-      expect(logWarningSpy).toHaveBeenCalledWith(config, 'authCallback incorrect state');
+      expect(logWarningSpy).toHaveBeenCalledOnceWith(config, 'authCallback incorrect state');
       expect(state.accessToken).toBe('');
       expect(state.authResponseIsValid).toBe(false);
       expect(state.decodedIdToken).toBeDefined();
@@ -214,7 +214,11 @@ describe('State Validation Service', () => {
     const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     stateObs$.subscribe((state) => {
-      expect(logDebugSpy).toHaveBeenCalledWith(config, 'authCallback Signature validation failed id_token');
+      expect(logDebugSpy.calls.allArgs()).toEqual([
+        [config, 'authCallback Signature validation failed id_token'],
+        [config, 'authCallback token(s) invalid'],
+      ]);
+
       expect(state.accessToken).toBe('access_tokenTEST');
       expect(state.idToken).toBe('id_tokenTEST');
       expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -252,7 +256,7 @@ describe('State Validation Service', () => {
     const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     stateObs$.subscribe((state) => {
-      expect(logWarningSpy).toHaveBeenCalledWith(
+      expect(logWarningSpy).toHaveBeenCalledOnceWith(
         config,
         'authCallback incorrect nonce, did you call the checkAuth() method multiple times?'
       );
@@ -299,6 +303,7 @@ describe('State Validation Service', () => {
 
     stateObs$.subscribe((state) => {
       expect(logDebugSpy).toHaveBeenCalledWith(config, 'authCallback Validation, one of the REQUIRED properties missing from id_token');
+      expect(logDebugSpy).toHaveBeenCalledWith(config, 'authCallback token(s) invalid');
       expect(state.accessToken).toBe('access_tokenTEST');
       expect(state.idToken).toBe('id_tokenTEST');
       expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -312,13 +317,9 @@ describe('State Validation Service', () => {
     config.responseType = 'id_token token';
 
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-
     spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
-
     spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
-
     spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(true);
-
     spyOn(oidcSecurityValidation, 'validateIdTokenIatMaxOffset').and.returnValue(false);
 
     config.maxIdTokenIatOffsetAllowedInSeconds = 0;
@@ -345,7 +346,7 @@ describe('State Validation Service', () => {
     const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     stateObs$.subscribe((state) => {
-      expect(logWarningSpy).toHaveBeenCalledWith(
+      expect(logWarningSpy).toHaveBeenCalledOnceWith(
         config,
         'authCallback Validation, iat rejected id_token was issued too far away from the current time'
       );
@@ -396,7 +397,7 @@ describe('State Validation Service', () => {
     const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     stateObs$.subscribe((state) => {
-      expect(logWarningSpy).toHaveBeenCalledWith(config, 'authCallback incorrect iss does not match authWellKnownEndpoints issuer');
+      expect(logWarningSpy).toHaveBeenCalledOnceWith(config, 'authCallback incorrect iss does not match authWellKnownEndpoints issuer');
       expect(state.accessToken).toBe('access_tokenTEST');
       expect(state.idToken).toBe('id_tokenTEST');
       expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -448,7 +449,7 @@ describe('State Validation Service', () => {
     const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     stateObs$.subscribe((state) => {
-      expect(logWarningSpy).toHaveBeenCalledWith(config, 'authCallback incorrect aud');
+      expect(logWarningSpy).toHaveBeenCalledOnceWith(config, 'authCallback incorrect aud');
       expect(state.accessToken).toBe('access_tokenTEST');
       expect(state.idToken).toBe('id_tokenTEST');
       expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -502,7 +503,7 @@ describe('State Validation Service', () => {
     const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
 
     stateObs$.subscribe((state) => {
-      expect(logWarningSpy).toHaveBeenCalledWith(config, 'authCallback id token expired');
+      expect(logWarningSpy).toHaveBeenCalledOnceWith(config, 'authCallback id token expired');
       expect(state.accessToken).toBe('access_tokenTEST');
       expect(state.idToken).toBe('id_tokenTEST');
       expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -551,6 +552,7 @@ describe('State Validation Service', () => {
     // CAN THIS BE DONE VIA IF/ELSE IN THE BEGINNING?
     stateObs$.subscribe((state) => {
       expect(logDebugSpy).toHaveBeenCalledWith(config, 'authCallback token(s) validated, continue');
+      expect(logDebugSpy).toHaveBeenCalledWith(config, 'authCallback token(s) invalid');
       expect(state.accessToken).toBe('');
       expect(state.idToken).toBe('id_tokenTEST');
       expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -599,7 +601,7 @@ describe('State Validation Service', () => {
 
     // CAN THIS BE DONE VIA IF/ELSE IN THE BEGINNING?
     stateObs$.subscribe((state) => {
-      expect(logWarningSpy).toHaveBeenCalledWith(config, 'authCallback incorrect at_hash');
+      expect(logWarningSpy).toHaveBeenCalledOnceWith(config, 'authCallback incorrect at_hash');
       expect(state.accessToken).toBe('access_tokenTEST');
       expect(state.idToken).toBe('id_tokenTEST');
       expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -645,7 +647,10 @@ describe('State Validation Service', () => {
     const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
     stateObs$.subscribe((state) => {
-      expect(logDebugSpy).toHaveBeenCalledWith(config, 'iss validation is turned off, this is not recommended!');
+      expect(logDebugSpy.calls.allArgs()).toEqual([
+        [config, 'iss validation is turned off, this is not recommended!'],
+        [config, 'authCallback token(s) validated, continue'],
+      ]);
       expect(state.state).toBe(ValidationResult.Ok);
       expect(state.accessToken).toBe('access_tokenTEST');
       expect(state.authResponseIsValid).toBe(true);

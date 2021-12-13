@@ -87,7 +87,7 @@ describe('AuthWellKnownService', () => {
           error: (err) => {
             expect(err).toBeTruthy();
             expect(publicEventsServiceSpy).toHaveBeenCalledTimes(1);
-            expect(publicEventsServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoadingFailed, null);
+            expect(publicEventsServiceSpy).toHaveBeenCalledOnceWith(EventTypes.ConfigLoadingFailed, null);
           },
         });
       })

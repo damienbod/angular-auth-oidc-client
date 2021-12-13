@@ -264,7 +264,7 @@ describe('User Service', () => {
       const config = { configId: 'configId1' };
       const spy = spyOn(storagePersistenceService, 'write');
       userService.setUserDataToStore('userDataForTest', config, [config]);
-      expect(spy).toHaveBeenCalledWith('userData', 'userDataForTest', config);
+      expect(spy).toHaveBeenCalledOnceWith('userData', 'userDataForTest', config);
     });
 
     it('userDataInternal$ is called when userData is set', () => {
@@ -274,7 +274,7 @@ describe('User Service', () => {
 
       userService.setUserDataToStore('userDataForTest', config, [config]);
 
-      expect(spy).toHaveBeenCalledWith({
+      expect(spy).toHaveBeenCalledOnceWith({
         userData: 'userDataForTest',
         allUserData: [{ configId: 'configId1', userData: 'userDataForTest' }],
       });
@@ -286,7 +286,7 @@ describe('User Service', () => {
 
       userService.setUserDataToStore('userDataForTest', config, [config]);
 
-      expect(spy).toHaveBeenCalledWith(EventTypes.UserDataChanged, { configId: 'configId1', userData: 'userDataForTest' });
+      expect(spy).toHaveBeenCalledOnceWith(EventTypes.UserDataChanged, { configId: 'configId1', userData: 'userDataForTest' });
     });
   });
 
@@ -297,7 +297,7 @@ describe('User Service', () => {
 
       userService.resetUserDataInStore(config, [config]);
 
-      expect(spy).toHaveBeenCalledWith('userData', config);
+      expect(spy).toHaveBeenCalledOnceWith('userData', config);
     });
 
     it('userDataInternal$ is called with null when userData is reset', () => {
@@ -306,7 +306,7 @@ describe('User Service', () => {
 
       userService.resetUserDataInStore(config, [config]);
 
-      expect(spy).toHaveBeenCalledWith({
+      expect(spy).toHaveBeenCalledOnceWith({
         userData: null,
         allUserData: [{ configId: 'configId1', userData: null }],
       });
@@ -318,7 +318,7 @@ describe('User Service', () => {
 
       userService.resetUserDataInStore(config, [config]);
 
-      expect(spy).toHaveBeenCalledWith(EventTypes.UserDataChanged, { configId: 'configId1', userData: null });
+      expect(spy).toHaveBeenCalledOnceWith(EventTypes.UserDataChanged, { configId: 'configId1', userData: null });
     });
   });
 
@@ -342,7 +342,7 @@ describe('User Service', () => {
 
       userService.publishUserDataIfExists(config, [config]);
 
-      expect(observableSpy).toHaveBeenCalledWith({
+      expect(observableSpy).toHaveBeenCalledOnceWith({
         userData: 'something',
         allUserData: [{ configId: 'configId1', userData: 'something' }],
       });
@@ -359,7 +359,7 @@ describe('User Service', () => {
 
       userService.publishUserDataIfExists(allConfigs[0], allConfigs);
 
-      expect(observableSpy).toHaveBeenCalledWith({
+      expect(observableSpy).toHaveBeenCalledOnceWith({
         userData: null,
         allUserData: [
           { configId: 'configId1', userData: 'somethingForConfig1' },
@@ -375,7 +375,7 @@ describe('User Service', () => {
 
       userService.publishUserDataIfExists(allConfigs[0], allConfigs);
 
-      expect(eventSpy).toHaveBeenCalledWith(EventTypes.UserDataChanged, { configId: 'configId1', userData: 'something' });
+      expect(eventSpy).toHaveBeenCalledOnceWith(EventTypes.UserDataChanged, { configId: 'configId1', userData: 'something' });
     });
   });
 
@@ -406,7 +406,7 @@ describe('User Service', () => {
       const result = serviceAsAny.validateUserDataSubIdToken(config, 'something', 'something2');
 
       expect(result).toBeFalse();
-      expect(loggerSpy).toHaveBeenCalledWith(config, 'validateUserDataSubIdToken failed', 'something', 'something2');
+      expect(loggerSpy).toHaveBeenCalledOnceWith(config, 'validateUserDataSubIdToken failed', 'something', 'something2');
     });
   });
 
@@ -452,7 +452,7 @@ describe('User Service', () => {
           .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
         serviceAsAny.getIdentityUserData(config).subscribe(() => {
-          expect(spy).toHaveBeenCalledWith('userInfoEndpoint', config, 'accessToken');
+          expect(spy).toHaveBeenCalledOnceWith('userInfoEndpoint', config, 'accessToken');
         });
       })
     );

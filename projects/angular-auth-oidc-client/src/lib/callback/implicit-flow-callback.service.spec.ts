@@ -47,7 +47,7 @@ describe('ImplicitFlowCallbackService ', () => {
 
       implicitFlowCallbackService.authenticatedImplicitFlowCallback(config, [config], 'some-hash');
 
-      expect(spy).toHaveBeenCalledWith(config, [config], 'some-hash');
+      expect(spy).toHaveBeenCalledOnceWith(config, [config], 'some-hash');
     });
 
     it(
@@ -68,7 +68,7 @@ describe('ImplicitFlowCallbackService ', () => {
         const routerSpy = spyOn(router, 'navigateByUrl');
         const config = { configId: 'configId1', triggerAuthorizationResultEvent: true };
         implicitFlowCallbackService.authenticatedImplicitFlowCallback(config, [config], 'some-hash').subscribe(() => {
-          expect(spy).toHaveBeenCalledWith(config, [config], 'some-hash');
+          expect(spy).toHaveBeenCalledOnceWith(config, [config], 'some-hash');
           expect(routerSpy).not.toHaveBeenCalled();
         });
       })
@@ -93,8 +93,8 @@ describe('ImplicitFlowCallbackService ', () => {
         const config = { configId: 'configId1', triggerAuthorizationResultEvent: false, postLoginRoute: 'postLoginRoute' };
 
         implicitFlowCallbackService.authenticatedImplicitFlowCallback(config, [config], 'some-hash').subscribe(() => {
-          expect(spy).toHaveBeenCalledWith(config, [config], 'some-hash');
-          expect(routerSpy).toHaveBeenCalledWith('postLoginRoute');
+          expect(spy).toHaveBeenCalledOnceWith(config, [config], 'some-hash');
+          expect(routerSpy).toHaveBeenCalledOnceWith('postLoginRoute');
         });
       })
     );
@@ -133,7 +133,7 @@ describe('ImplicitFlowCallbackService ', () => {
             expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
             expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
             expect(err).toBeTruthy();
-            expect(routerSpy).toHaveBeenCalledWith('unauthorizedRoute');
+            expect(routerSpy).toHaveBeenCalledOnceWith('unauthorizedRoute');
           },
         });
       })

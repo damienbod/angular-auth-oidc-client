@@ -553,7 +553,7 @@ describe('OidcSecurityService', () => {
         const spy = spyOn(logoffRevocationService, 'revokeAccessToken').and.returnValue(of(null));
 
         oidcSecurityService.revokeAccessToken().subscribe(() => {
-          expect(spy).toHaveBeenCalledWith(config, undefined);
+          expect(spy).toHaveBeenCalledOnceWith(config, undefined);
         });
       })
     );
@@ -566,7 +566,7 @@ describe('OidcSecurityService', () => {
         const spy = spyOn(logoffRevocationService, 'revokeAccessToken').and.returnValue(of(null));
 
         oidcSecurityService.revokeAccessToken('access_token').subscribe(() => {
-          expect(spy).toHaveBeenCalledWith(config, 'access_token');
+          expect(spy).toHaveBeenCalledOnceWith(config, 'access_token');
         });
       })
     );
@@ -581,7 +581,7 @@ describe('OidcSecurityService', () => {
         const spy = spyOn(logoffRevocationService, 'revokeRefreshToken').and.returnValue(of(null));
 
         oidcSecurityService.revokeRefreshToken().subscribe(() => {
-          expect(spy).toHaveBeenCalledWith(config, undefined);
+          expect(spy).toHaveBeenCalledOnceWith(config, undefined);
         });
       })
     );
@@ -594,7 +594,7 @@ describe('OidcSecurityService', () => {
         const spy = spyOn(logoffRevocationService, 'revokeRefreshToken').and.returnValue(of(null));
 
         oidcSecurityService.revokeRefreshToken('refresh_token').subscribe(() => {
-          expect(spy).toHaveBeenCalledWith(config, 'refresh_token');
+          expect(spy).toHaveBeenCalledOnceWith(config, 'refresh_token');
         });
       })
     );

@@ -97,7 +97,7 @@ describe('Signin Key Data Service', () => {
 
         result.subscribe({
           complete: () => {
-            expect(spy).toHaveBeenCalledWith('someUrl', { configId: 'configId1' });
+            expect(spy).toHaveBeenCalledOnceWith('someUrl', { configId: 'configId1' });
           },
         });
       })
@@ -190,7 +190,7 @@ describe('Signin Key Data Service', () => {
           .handleErrorGetSigningKeys(new HttpResponse({ status: 400, statusText: 'nono' }), { configId: 'configId1' })
           .subscribe({
             error: () => {
-              expect(logSpy).toHaveBeenCalledWith({ configId: 'configId1' }, '400 - nono {}');
+              expect(logSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, '400 - nono {}');
             },
           });
       })
@@ -202,7 +202,7 @@ describe('Signin Key Data Service', () => {
         const logSpy = spyOn(loggerService, 'logError');
         (service as any).handleErrorGetSigningKeys('Just some Error', { configId: 'configId1' }).subscribe({
           error: () => {
-            expect(logSpy).toHaveBeenCalledWith({ configId: 'configId1' }, 'Just some Error');
+            expect(logSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'Just some Error');
           },
         });
       })
@@ -214,7 +214,7 @@ describe('Signin Key Data Service', () => {
         const logSpy = spyOn(loggerService, 'logError');
         (service as any).handleErrorGetSigningKeys({ message: 'Just some Error' }, { configId: 'configId1' }).subscribe({
           error: () => {
-            expect(logSpy).toHaveBeenCalledWith({ configId: 'configId1' }, 'Just some Error');
+            expect(logSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'Just some Error');
           },
         });
       })

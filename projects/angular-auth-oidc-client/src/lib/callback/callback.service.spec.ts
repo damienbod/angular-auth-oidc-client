@@ -60,7 +60,7 @@ describe('CallbackService ', () => {
         const authorizedCallbackWithCodeSpy = spyOn(codeFlowCallbackService, 'authenticatedCallbackWithCode').and.returnValue(of(null));
 
         callbackService.handleCallbackAndFireEvents('anyUrl', { configId: 'configId1' }, [{ configId: 'configId1' }]).subscribe(() => {
-          expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl', { configId: 'configId1' }, [{ configId: 'configId1' }]);
+          expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledOnceWith('anyUrl', { configId: 'configId1' }, [{ configId: 'configId1' }]);
         });
       })
     );
@@ -86,7 +86,7 @@ describe('CallbackService ', () => {
       const authenticatedCallbackWithCodeSpy = spyOn(codeFlowCallbackService, 'authenticatedCallbackWithCode').and.returnValue(of(null));
 
       callbackService.handleCallbackAndFireEvents('anyUrl', { configId: 'configId1' }, [{ configId: 'configId1' }]).subscribe(() => {
-        expect(authenticatedCallbackWithCodeSpy).toHaveBeenCalledWith('anyUrl', { configId: 'configId1' }, [{ configId: 'configId1' }]);
+        expect(authenticatedCallbackWithCodeSpy).toHaveBeenCalledOnceWith('anyUrl', { configId: 'configId1' }, [{ configId: 'configId1' }]);
         expect(callbackSpy).toHaveBeenCalled();
       });
     });

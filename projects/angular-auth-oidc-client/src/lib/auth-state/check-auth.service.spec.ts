@@ -534,8 +534,8 @@ describe('CheckAuthService', () => {
         checkAuthService.checkAuthMultiple(allConfigs).subscribe((result) => {
           expect(Array.isArray(result)).toBe(true);
           expect(spy).toHaveBeenCalledTimes(2);
-          expect(spy).toHaveBeenCalledWith({ configId: 'configId1', authority: 'some-authority1' }, allConfigs, undefined);
-          expect(spy).toHaveBeenCalledWith({ configId: 'configId2', authority: 'some-authority2' }, allConfigs, undefined);
+          expect(spy.calls.argsFor(0)).toEqual([{ configId: 'configId1', authority: 'some-authority1' }, allConfigs, undefined]);
+          expect(spy.calls.argsFor(1)).toEqual([{ configId: 'configId2', authority: 'some-authority2' }, allConfigs, undefined]);
         });
       })
     );

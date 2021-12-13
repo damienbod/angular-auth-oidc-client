@@ -132,7 +132,7 @@ describe('PopUpLoginService', () => {
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
         popUpLoginService.loginWithPopUpStandard(config, [config]).subscribe((result) => {
-          expect(checkAuthSpy).toHaveBeenCalledWith(config, [config], 'someUrl');
+          expect(checkAuthSpy).toHaveBeenCalledOnceWith(config, [config], 'someUrl');
 
           expect(result).toEqual({
             isAuthenticated: true,

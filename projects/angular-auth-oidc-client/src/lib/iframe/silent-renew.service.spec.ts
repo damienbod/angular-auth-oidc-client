@@ -1,4 +1,4 @@
-﻿import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+﻿import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
@@ -25,6 +25,7 @@ describe('SilentRenewService  ', () => {
   let iFrameService: IFrameService;
   let flowsDataService: FlowsDataService;
   let loggerService: LoggerService;
+  let flowsService: FlowsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -49,6 +50,7 @@ describe('SilentRenewService  ', () => {
     flowHelper = TestBed.inject(FlowHelper);
     implicitFlowCallbackService = TestBed.inject(ImplicitFlowCallbackService);
     flowsDataService = TestBed.inject(FlowsDataService);
+    flowsService = TestBed.inject(FlowsService);
     loggerService = TestBed.inject(LoggerService);
   });
 
@@ -97,16 +99,50 @@ describe('SilentRenewService  ', () => {
     });
 
     it('adds iframe to body if existing iframe is falsy', () => {
+      const config = { configId: 'configId1' };
       spyOn(silentRenewService as any, 'getExistingIframe').and.returnValue(null);
 
       const spy = spyOn(iFrameService, 'addIFrameToWindowBody').and.returnValue({ name: 'anything' } as HTMLIFrameElement);
 
-      const result = silentRenewService.getOrCreateIframe({ configId: 'configId1' });
+      const result = silentRenewService.getOrCreateIframe(config);
 
       expect(result).toEqual({ name: 'anything' } as HTMLIFrameElement);
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith('myiFrameForSilentRenew', { configId: 'configId1' });
+      expect(spy).toHaveBeenCalledOnceWith('myiFrameForSilentRenew', config);
     });
+  });
+
+  describe('codeFlowCallbackSilentRenewIframe', () => {
+    it(
+      'calls processSilentRenewCodeFlowCallback with correct arguments',
+      waitForAsync(() => {
+        const config = { configId: 'configId1' };
+        const allConfigs = [config];
+
+        const spy = spyOn(flowsService, 'processSilentRenewCodeFlowCallback').and.returnValue(of(null));
+        const expectedContext = {
+          code: 'some-code',
+          refreshToken: null,
+          state: 'some-state',
+          sessionState: 'some-session-state',
+          authResult: null,
+          isRenewProcess: true,
+          jwtKeys: null,
+          validationResult: null,
+          existingIdToken: null,
+        };
+
+        silentRenewService
+          .codeFlowCallbackSilentRenewIframe(
+            ['url-part-1', 'code=some-code&state=some-state&session_state=some-session-state'],
+            config,
+            allConfigs
+          )
+          .subscribe(() => {
+            expect(spy).toHaveBeenCalledOnceWith(expectedContext, config, allConfigs);
+          });
+      })
+    );
   });
 
   describe('silentRenewEventHandler', () => {
@@ -131,7 +167,7 @@ describe('SilentRenewService  ', () => {
       silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
       tick(1000);
       expect(isCurrentFlowCodeFlowSpy).toHaveBeenCalled();
-      expect(authorizedImplicitFlowCallbackSpy).toHaveBeenCalledWith(allConfigs[0], allConfigs, 'detail');
+      expect(authorizedImplicitFlowCallbackSpy).toHaveBeenCalledOnceWith(allConfigs[0], allConfigs, 'detail');
     }));
 
     it('calls codeFlowCallbackSilentRenewIframe if current flow is code flow', fakeAsync(() => {
@@ -142,7 +178,7 @@ describe('SilentRenewService  ', () => {
 
       silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
       tick(1000);
-      expect(codeFlowCallbackSilentRenewIframe).toHaveBeenCalledWith(['detail', 'detail2'], allConfigs[0], allConfigs);
+      expect(codeFlowCallbackSilentRenewIframe).toHaveBeenCalledOnceWith(['detail', 'detail2'], allConfigs[0], allConfigs);
     }));
 
     it('calls authorizedImplicitFlowCallback if current flow is not code flow', fakeAsync(() => {
@@ -153,7 +189,7 @@ describe('SilentRenewService  ', () => {
 
       silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
       tick(1000);
-      expect(codeFlowCallbackSilentRenewIframe).toHaveBeenCalledWith(['detail', 'detail2'], allConfigs[0], allConfigs);
+      expect(codeFlowCallbackSilentRenewIframe).toHaveBeenCalledOnceWith(['detail', 'detail2'], allConfigs[0], allConfigs);
     }));
 
     it('calls next on refreshSessionWithIFrameCompleted with callbackcontext', fakeAsync(() => {

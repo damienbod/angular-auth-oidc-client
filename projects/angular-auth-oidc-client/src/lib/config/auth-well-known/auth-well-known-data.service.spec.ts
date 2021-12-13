@@ -53,7 +53,7 @@ describe('AuthWellKnownDataService', () => {
         const urlWithoutSuffix = 'myUrl';
         const urlWithSuffix = `${urlWithoutSuffix}/.well-known/openid-configuration`;
         (service as any).getWellKnownDocument(urlWithoutSuffix, { configId: 'configId1' }).subscribe(() => {
-          expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix, { configId: 'configId1' });
+          expect(dataServiceSpy).toHaveBeenCalledOnceWith(urlWithSuffix, { configId: 'configId1' });
         });
       })
     );
@@ -66,7 +66,7 @@ describe('AuthWellKnownDataService', () => {
         });
         const urlWithSuffix = `myUrl/.well-known/openid-configuration`;
         (service as any).getWellKnownDocument(urlWithSuffix, { configId: 'configId1' }).subscribe(() => {
-          expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix, { configId: 'configId1' });
+          expect(dataServiceSpy).toHaveBeenCalledOnceWith(urlWithSuffix, { configId: 'configId1' });
         });
       })
     );
@@ -79,7 +79,7 @@ describe('AuthWellKnownDataService', () => {
         });
         const urlWithSuffix = `myUrl/.well-known/openid-configuration/and/some/more/stuff`;
         (service as any).getWellKnownDocument(urlWithSuffix, { configId: 'configId1' }).subscribe(() => {
-          expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix, { configId: 'configId1' });
+          expect(dataServiceSpy).toHaveBeenCalledOnceWith(urlWithSuffix, { configId: 'configId1' });
         });
       })
     );

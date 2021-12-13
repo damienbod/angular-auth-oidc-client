@@ -67,7 +67,7 @@ describe('Logout and Revoke Service', () => {
       // Act
       service.revokeAccessToken(config, paramToken);
       // Assert
-      expect(revocationSpy).toHaveBeenCalledWith(paramToken, config);
+      expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config);
     });
 
     it('uses token parameter from persistence if no param is provided', () => {
@@ -80,7 +80,7 @@ describe('Logout and Revoke Service', () => {
       // Act
       service.revokeAccessToken(config);
       // Assert
-      expect(revocationSpy).toHaveBeenCalledWith(paramToken, config);
+      expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config);
     });
 
     it('returns type observable', () => {
@@ -231,7 +231,7 @@ describe('Logout and Revoke Service', () => {
       // Act
       service.revokeRefreshToken(config, paramToken);
       // Assert
-      expect(revocationSpy).toHaveBeenCalledWith(paramToken, config);
+      expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config);
     });
 
     it('uses refresh token parameter from persistence if no param is provided', () => {
@@ -243,7 +243,7 @@ describe('Logout and Revoke Service', () => {
       // Act
       service.revokeRefreshToken(config);
       // Assert
-      expect(revocationSpy).toHaveBeenCalledWith(paramToken, config);
+      expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config);
     });
 
     it('returns type observable', () => {
@@ -395,7 +395,7 @@ describe('Logout and Revoke Service', () => {
       // Act
       service.getEndSessionUrl(config);
       // Assert
-      expect(revocationSpy).toHaveBeenCalledWith(paramToken, config, {});
+      expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config, {});
     });
   });
 
@@ -441,7 +441,7 @@ describe('Logout and Revoke Service', () => {
 
       // Assert
       expect(redirectSpy).not.toHaveBeenCalled();
-      expect(spy).toHaveBeenCalledWith('someValue');
+      expect(spy).toHaveBeenCalledOnceWith('someValue');
     });
 
     it('calls redirect service if no urlhandler is passed', () => {
@@ -456,7 +456,7 @@ describe('Logout and Revoke Service', () => {
       service.logoff(config, [config]);
 
       // Assert
-      expect(redirectSpy).toHaveBeenCalledWith('someValue');
+      expect(redirectSpy).toHaveBeenCalledOnceWith('someValue');
     });
   });
 
@@ -550,7 +550,7 @@ describe('Logout and Revoke Service', () => {
         // Act
         service.logoffAndRevokeTokens(config, [config], { urlHandler }).subscribe(() => {
           // Assert
-          expect(logoffSpy).toHaveBeenCalledWith(config, [config], { urlHandler });
+          expect(logoffSpy).toHaveBeenCalledOnceWith(config, [config], { urlHandler });
         });
       })
     );
@@ -595,9 +595,8 @@ describe('Logout and Revoke Service', () => {
 
   describe('logoffLocalMultiple', () => {
     it('calls logoffLocal for every config which is present', () => {
-      const allConfigs = [{ configId: 'configId1' }, { configId: 'configId2' }];
-
       // Arrange
+      const allConfigs = [{ configId: 'configId1' }, { configId: 'configId2' }];
       const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
       const checkSessionServiceSpy = spyOn(checkSessionService, 'stop');
 
@@ -607,8 +606,10 @@ describe('Logout and Revoke Service', () => {
       // Assert
       expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(2);
       expect(checkSessionServiceSpy).toHaveBeenCalledTimes(2);
-      expect(resetAuthorizationDataSpy).toHaveBeenCalledWith(allConfigs[0], allConfigs);
-      expect(resetAuthorizationDataSpy).toHaveBeenCalledWith(allConfigs[1], allConfigs);
+      expect(resetAuthorizationDataSpy.calls.allArgs()).toEqual([
+        [allConfigs[0], allConfigs],
+        [allConfigs[1], allConfigs],
+      ]);
     });
   });
 });

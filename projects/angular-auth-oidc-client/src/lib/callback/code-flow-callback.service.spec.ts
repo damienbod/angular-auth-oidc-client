@@ -51,7 +51,7 @@ describe('CodeFlowCallbackService ', () => {
       };
 
       codeFlowCallbackService.authenticatedCallbackWithCode('some-url1', config, [config]);
-      expect(spy).toHaveBeenCalledWith('some-url1', config, [config]);
+      expect(spy).toHaveBeenCalledOnceWith('some-url1', config, [config]);
     });
 
     it(
@@ -76,7 +76,7 @@ describe('CodeFlowCallbackService ', () => {
         };
 
         codeFlowCallbackService.authenticatedCallbackWithCode('some-url2', config, [config]).subscribe(() => {
-          expect(spy).toHaveBeenCalledWith('some-url2', config, [config]);
+          expect(spy).toHaveBeenCalledOnceWith('some-url2', config, [config]);
           expect(routerSpy).not.toHaveBeenCalled();
         });
       })
@@ -105,8 +105,8 @@ describe('CodeFlowCallbackService ', () => {
         };
 
         codeFlowCallbackService.authenticatedCallbackWithCode('some-url3', config, [config]).subscribe(() => {
-          expect(spy).toHaveBeenCalledWith('some-url3', config, [config]);
-          expect(routerSpy).toHaveBeenCalledWith('postLoginRoute');
+          expect(spy).toHaveBeenCalledOnceWith('some-url3', config, [config]);
+          expect(routerSpy).toHaveBeenCalledOnceWith('postLoginRoute');
         });
       })
     );
@@ -155,7 +155,7 @@ describe('CodeFlowCallbackService ', () => {
             expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
             expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
             expect(err).toBeTruthy();
-            expect(routerSpy).toHaveBeenCalledWith('unauthorizedRoute');
+            expect(routerSpy).toHaveBeenCalledOnceWith('unauthorizedRoute');
           },
         });
       })
