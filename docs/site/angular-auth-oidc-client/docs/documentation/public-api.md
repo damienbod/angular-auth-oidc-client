@@ -187,28 +187,28 @@ const allConfigs = this.oidcSecurityService.getConfigurations();
 
 ## getConfiguration(configId?: string)
 
-This method returns one single configuration.
+This method returns an observable of one single configuration.
 If you are running with multiple configs and pass a `configId`, the configuration or `null` is returned. If you are running with multiple configs and do not pass the `configId`, the first one is returned. If you are running with a single config, then this config is returned.
 
 ```ts
 // one config or the first one in case of multiple or null
-const singleConfig = this.oidcSecurityService.getConfiguration();
+this.oidcSecurityService.getConfiguration().subscribe((config)=> ... );
 
 // one config or null
-const singleConfig = this.oidcSecurityService.getConfiguration('configId');
+this.oidcSecurityService.getConfiguration('configId').subscribe((config)=> ... );
 ```
 
 ## getUserData(configId?: string)
 
-This method returns the user data.
+This method returns an observable of the user data.
 If you are running with multiple configs and pass a `configId`, the user data for this config or `null` is returned. If you are running with multiple configs and do not pass the `configId`, the user data for the first config is returned. If you are running with a single config, the user data for this config is returned.
 
 ```ts
 // one config or the first one in case of multiple or null
-const userData = this.oidcSecurityService.getUserData();
+this.oidcSecurityService.getUserData().subscribe((data)=> ... );
 
 // user data for this specific config
-const userData = this.oidcSecurityService.getUserData('configId');
+this.oidcSecurityService.getUserData('configId').subscribe((data)=> ... );
 ```
 
 ## checkAuth(url?: string, configId?: string)
@@ -247,7 +247,7 @@ this.oidcSecurityService.checkAuth(url, configId).subscribe(({ isAuthenticated, 
 });
 ```
 
-## checkAuthMultiple(url?: string, configId?: string)
+## checkAuthMultiple(url?: string)
 
 This method starts the complete authentication flow for multiple configs. Use this method if you are running with multiple configs to check which one is authenticated or not.
 
@@ -278,24 +278,23 @@ You can also pass a `configId` to check for as well as a URL in case you want to
 
 ```ts
 const url = '...';
-const configId = '...';
 
-this.oidcSecurityService.checkAuthMultiple(url, configId).subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
+this.oidcSecurityService.checkAuthMultiple(url).subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
   // ...use data
 });
 ```
 
 ## isAuthenticated(configId?: string)
 
-This method provides information if a config is authenticated or not as a `boolean` return value.
+This method provides information if a config is authenticated or not as an `Observable<boolean>` return value.
 If you are running with multiple configs and pass the `configId` the authentication for this config is checked. If you are running with multiple configs and do not pass the `configId` the authentication for the first config is checked. If you are running with a single config this configuration is checked if you are authenticated.
 
 ```ts
-const isAuthenticated = this.oidcSecurityService.isAuthenticated();
+this.oidcSecurityService.isAuthenticated().subscribe((isAuthenticated)=> ... );
 ```
 
 ```ts
-const isAuthenticated = this.oidcSecurityService.isAuthenticated('configId');
+this.oidcSecurityService.isAuthenticated('configId').subscribe((isAuthenticated)=> ... );
 ```
 
 ## checkAuthIncludingServer(configId?: string)
@@ -327,68 +326,68 @@ this.oidcSecurityService.checkAuthIncludingServer('configId').subscribe(/*...*/)
 
 ## getAccessToken(configId?: string):
 
-Returns the access token for your login scenario as a `string`.
+Returns the access token for your login scenario as an `Observable<string>`.
 If you are running with multiple configs and pass the `configId` the access token for this config is returned. If you are running with multiple configs and do not pass the `configId` the access token for the first config is returned. If you are running with a single config the access token for this config returned.
 
 ```ts
-const accessToken = this.oidcSecurityService.getAccessToken();
+this.oidcSecurityService.getAccessToken().subscribe(/*...*/);
 ```
 
 ```ts
-const accessToken = this.oidcSecurityService.getAccessToken('configId');
+this.oidcSecurityService.getAccessToken('configId').subscribe(/*...*/);
 ```
 
 ## getIdToken(configId?: string):
 
-Returns the id token for your login scenario as a `string`.
+Returns the id token for your login scenario as an `Observable<string>`.
 If you are running with multiple configs and pass the `configId` the id token for this config is returned. If you are running with multiple configs and do not pass the `configId` the id token for the first config is returned. If you are running with a single config the id token for this config returned.
 
 ```ts
-const idToken = this.oidcSecurityService.getIdToken();
+this.oidcSecurityService.getIdToken().subscribe(/*...*/);
 ```
 
 ```ts
-const idToken = this.oidcSecurityService.getIdToken('configId');
+this.oidcSecurityService.getIdToken('configId').subscribe(/*...*/);
 ```
 
 ## getRefreshToken(configId?: string)
 
-Returns the refresh token for your login scenario if there is one.
+Returns the refresh token as an `Observable<string>` for your login scenario if there is one.
 If you are running with multiple configs and pass a `configId`, the refresh token for this config is returned. If you are running with multiple configs and do not pass the `configId`, the refresh token for the first config is returned. If you are running with a single config, the refresh token for this config is returned.
 
 ```ts
-const refreshToken = this.oidcSecurityService.getRefreshToken();
+this.oidcSecurityService.getRefreshToken().subscribe(/*...*/);
 ```
 
 ```ts
-const refreshToken = this.oidcSecurityService.getRefreshToken('configId');
+this.oidcSecurityService.getRefreshToken('configId').subscribe(/*...*/);
 ```
 
 ## getAuthenticationResult(configId?: string)
 
-Returns the authentication result, if present, for the sign-in. The `configId` parameter is used to define which configuration to use. This is only required when using multiple configurations. If not passed, the first config will be taken. An object with the authentication result is returned.
+Returns the authentication result as an `Observable`, if present, for the sign-in. The `configId` parameter is used to define which configuration to use. This is only required when using multiple configurations. If not passed, the first config will be taken. An object with the authentication result is returned.
 
 ```ts
-const authnResult = this.oidcSecurityService.getAuthenticationResult();
+this.oidcSecurityService.getAuthenticationResult().subscribe(/*...*/);
 ```
 
 ```ts
-const authnResult = this.oidcSecurityService.getAuthenticationResult('configId');
+this.oidcSecurityService.getAuthenticationResult('configId').subscribe(/*...*/);
 ```
 
 ## getPayloadFromIdToken(encode = false, configId?: string)
 
-Returns the payload from the id_token. This can be used to get claims from the token.
+Returns the payload from the id_token as an `Observable`. This can be used to get claims from the token.
 If you are running with multiple configs and pass a `configId`, the payload for this config is returned. If you are running with multiple configs and do not pass a `configId`, the payload for the first config is returned. If you are running with a single config, the payload for this config returned.
 
 The `encode` param has to be set to `true` if the payload is base64 encoded.
 
 ```ts
-const payload = this.oidcSecurityService.getPayloadFromIdToken();
+this.oidcSecurityService.getPayloadFromIdToken().subscribe(/*...*/);
 ```
 
 ```ts
-const payload = this.oidcSecurityService.getPayloadFromIdToken(true, 'configId');
+this.oidcSecurityService.getPayloadFromIdToken(true, 'configId').subscribe(/*...*/);
 ```
 
 ## setState(state: string, configId?: string)
@@ -397,24 +396,24 @@ You can set the state value used for the authorize request, if you have `autoCle
 If you are running with multiple configs and pass a `configId`, the passed config is taken. If you are running with multiple configs and do not pass a `configId`, the first config is taken. If you are running with a single config, then this config is taken.
 
 ```ts
-this.oidcSecurityService.setState('some-state');
+this.oidcSecurityService.setState('some-state').subscribe(/*...*/);
 ```
 
 ```ts
-this.oidcSecurityService.setState('some-state', 'configId');
+this.oidcSecurityService.setState('some-state', 'configId').subscribe(/*...*/);
 ```
 
 ## getState(configId?: string)
 
-Returns the state value used for the authorize request.
+Returns the state value used for the authorize request as an `Observable`.
 If you are running with multiple configs and pass a `configId`, the passed config is taken. If you are running with multiple configs and do not pass a `configId`, the first config is taken. If you are running with a single config, then this config is taken.
 
 ```ts
-const state = this.oidcSecurityService.getState();
+this.oidcSecurityService.getState().subscribe(/*...*/);
 ```
 
 ```ts
-const state = this.oidcSecurityService.getState('configId');
+this.oidcSecurityService.getState('configId').subscribe(/*...*/);
 ```
 
 ## authorize(configId?: string, authOptions?: AuthOptions)
@@ -648,7 +647,7 @@ More info: [https://tools.ietf.org/html/rfc7009](https://tools.ietf.org/html/rfc
 Creates the end session URL which can be used to implement your own custom server logout. You can pass custom params directly into the method. This method also takes a `configId`. If you are running with multiple configs and pass a `configId`, the passed config is taken. If you are running with multiple configs and do not pass a `configId`, the first config is taken. If you are running with a single config, then this config is taken.
 
 ```ts
-const endSessionUrl = this.oidcSecurityService.getEndSessionUrl();
+this.oidcSecurityService.getEndSessionUrl().subscribe(/* ... */);
 ```
 
 ```ts
@@ -656,7 +655,7 @@ const customParams = {
   some: 'params',
 };
 
-const endSessionUrl = this.oidcSecurityService.getEndSessionUrl(customParams, 'configId');
+this.oidcSecurityService.getEndSessionUrl(customParams, 'configId').subscribe(/* ... */);
 ```
 
 ## getAuthorizeUrl(customParams?: { ... }, configId?: string)
