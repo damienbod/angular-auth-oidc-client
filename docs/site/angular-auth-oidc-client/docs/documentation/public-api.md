@@ -164,6 +164,19 @@ The `stsCallback$` observable emits _after_ the library has handled the possible
 this.stsCallback$ = this.oidcSecurityService.stsCallback$;
 ```
 
+## preloadAuthWellKnownDocument(configId?: string)
+
+With this method you can explicitly load your auth well-known document to persist it in the configured storage of the lib. This method will perform an http call to load and then save the information. If you do not call this method explicitly, the lib will call it when it is needed for the first time automatically.
+
+```ts
+// single config
+this.oidcSecurityService.preloadAuthWellKnownDocument().subscribe((authWellKnown)=> ... );
+
+// multiple configs
+this.oidcSecurityService.preloadAuthWellKnownDocument('configId').subscribe((authWellKnown)=> ... );
+
+```
+
 ## getConfigurations()
 
 This method returns all configurations you have configured as an `OpenIdConfiguration[]`. The config includes all your values merged with the ones the library created.

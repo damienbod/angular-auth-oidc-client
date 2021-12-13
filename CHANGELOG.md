@@ -485,7 +485,7 @@
 - refactored configuration for module, angular style
 - rename OpenIDImplicitFlowConfiguration to OpenIDConfiguration
 
-## Breaking changes
+### Breaking changes
 
 Before
 
