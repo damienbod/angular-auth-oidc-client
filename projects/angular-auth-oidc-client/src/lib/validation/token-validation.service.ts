@@ -4,6 +4,7 @@ import { from, Observable, of } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
+import { CryptoService } from '../utils/crypto/crypto-service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
 
@@ -56,12 +57,11 @@ export class TokenValidationService {
   static refreshTokenNoncePlaceholder = '--RefreshToken--';
   keyAlgorithms: string[] = ['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'PS256', 'PS384', 'PS512'];
 
-  private cyptoObj: Crypto = window.crypto || (window as any).msCrypto; // for IE11
-
   constructor(
     private tokenHelperService: TokenHelperService,
     private loggerService: LoggerService,
-    private jwtWindowCryptoService: JwtWindowCryptoService
+    private jwtWindowCryptoService: JwtWindowCryptoService,
+    private cryptoService: CryptoService
   ) {}
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
@@ -367,13 +367,15 @@ export class TokenValidationService {
       key.alg = '';
     }
 
-    return from(this.cyptoObj.subtle.importKey('jwk', key, algorithm, false, ['verify'])).pipe(
+    const crypto = this.cryptoService.getCrypto();
+
+    return from(crypto.subtle.importKey('jwk', key, algorithm, false, ['verify'])).pipe(
       mergeMap((cryptoKey: CryptoKey) => {
         const signature: Uint8Array = base64url.parse(rawSignature, { loose: true });
 
         const algorithm: RsaHashedImportParams | EcdsaParams = this.getVerifyAlg(alg);
 
-        return from(this.cyptoObj.subtle.verify(algorithm, cryptoKey, signature, new TextEncoder().encode(signingInput)));
+        return from(crypto.subtle.verify(algorithm, cryptoKey, signature, new TextEncoder().encode(signingInput)));
       }),
       tap((isValid: boolean) => {
         if (!isValid) {
