@@ -3,6 +3,7 @@ import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
+import { CryptoService } from '../utils/crypto/crypto-service';
 import { FlowsDataService } from './flows-data.service';
 import { RandomService } from './random/random.service';
 
@@ -15,6 +16,7 @@ describe('Flows Data Service', () => {
       providers: [
         FlowsDataService,
         RandomService,
+        CryptoService,
         { provide: LoggerService, useClass: LoggerServiceMock },
         { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
       ],
