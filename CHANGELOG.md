@@ -1,5 +1,13 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2021-12-20 14.0.0
+
+In this version the APP_INITIALIZER was removed. ([See PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1307)).
+The library will not do anything until the application interact with it. There is no pre-loading of anything and it does not affect your application's bootstrapping process at all.
+You can however explicitly preload the secure token server well-known endpoints with a new method called [preloadAuthWellKnownDocument()](/docs/documentation/public-api#preloadauthwellknowndocumentconfigid-string). As a side effect because the config has to be loaded first, a lot of APIs become reactive and return an Observable now.
+
+See the migration guide.
+
 ### 2021-12-01 13.1.0
 
 - Using window.crypto for jwt signature validation
