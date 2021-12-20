@@ -1,20 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { APP_INITIALIZER, InjectionToken, ModuleWithProviders, NgModule, Provider } from '@angular/core';
-import { forkJoin, Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { InjectionToken, ModuleWithProviders, NgModule, Provider } from '@angular/core';
 import { DataService } from './api/data.service';
 import { HttpBaseService } from './api/http-base.service';
 import { AuthStateService } from './auth-state/auth-state.service';
+import { CheckAuthService } from './auth-state/check-auth.service';
 import { AutoLoginService } from './auto-login/auto-login.service';
 import { ImplicitFlowCallbackService } from './callback/implicit-flow-callback.service';
-import { CheckAuthService } from './check-auth.service';
 import { AuthWellKnownDataService } from './config/auth-well-known/auth-well-known-data.service';
 import { AuthWellKnownService } from './config/auth-well-known/auth-well-known.service';
-import { OidcConfigService } from './config/config.service';
+import { ConfigurationService } from './config/config.service';
 import { StsConfigLoader, StsConfigStaticLoader } from './config/loader/config-loader';
 import { OpenIdConfiguration } from './config/openid-configuration';
-import { ConfigurationProvider } from './config/provider/config.provider';
 import { ConfigValidationService } from './config/validation/config-validation.service';
 import { CodeFlowCallbackHandlerService } from './flows/callback-handling/code-flow-callback-handler.service';
 import { HistoryJwtKeysCallbackHandlerService } from './flows/callback-handling/history-jwt-keys-callback-handler.service';
@@ -67,19 +64,6 @@ export function createStaticLoader(passedConfig: PassedInitialConfig) {
   return new StsConfigStaticLoader(passedConfig.config);
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function configurationProviderFactory(
-  oidcConfigService: OidcConfigService,
-  loader: StsConfigLoader
-): () => Observable<OpenIdConfiguration[]> {
-  const allConfigs$ = forkJoin(loader.loadConfigs());
-
-  const fn: () => Observable<OpenIdConfiguration[]> = () =>
-    allConfigs$.pipe(switchMap((configs) => oidcConfigService.withConfigs(configs)));
-
-  return fn;
-}
-
 export const PASSED_CONFIG = new InjectionToken<PassedInitialConfig>('PASSED_CONFIG');
 
 @NgModule({
@@ -97,18 +81,9 @@ export class AuthModule {
 
         // Create the loader: Either the one getting passed or a static one
         passedConfig?.loader || { provide: StsConfigLoader, useFactory: createStaticLoader, deps: [PASSED_CONFIG] },
-
-        // Load the config when the app starts
-        {
-          provide: APP_INITIALIZER,
-          multi: true,
-          deps: [OidcConfigService, StsConfigLoader, PASSED_CONFIG],
-          useFactory: configurationProviderFactory,
-        },
-        OidcConfigService,
+        ConfigurationService,
         PublicEventsService,
         FlowHelper,
-        ConfigurationProvider,
         OidcSecurityService,
         TokenValidationService,
         PlatformProvider,

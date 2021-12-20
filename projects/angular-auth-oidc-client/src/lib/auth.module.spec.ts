@@ -1,8 +1,8 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { AuthModule, PASSED_CONFIG } from './auth.module';
-import { OidcConfigService } from './config/config.service';
-import { OidcConfigServiceMock } from './config/config.service.mock';
+import { ConfigurationService } from './config/config.service';
+import { ConfigurationServiceMock } from './config/config.service.mock';
 import { StsConfigHttpLoader, StsConfigLoader, StsConfigStaticLoader } from './config/loader/config-loader';
 
 describe('AuthModule', () => {
@@ -13,7 +13,7 @@ describe('AuthModule', () => {
       waitForAsync(() => {
         TestBed.configureTestingModule({
           imports: [AuthModule.forRoot({ config: { authority: 'something' } })],
-          providers: [{ provide: OidcConfigService, useClass: OidcConfigServiceMock }],
+          providers: [{ provide: ConfigurationService, useClass: ConfigurationServiceMock }],
         }).compileComponents();
       })
     );
@@ -46,7 +46,7 @@ describe('AuthModule', () => {
               },
             }),
           ],
-          providers: [{ provide: OidcConfigService, useClass: OidcConfigServiceMock }],
+          providers: [{ provide: ConfigurationService, useClass: ConfigurationServiceMock }],
         }).compileComponents();
       })
     );

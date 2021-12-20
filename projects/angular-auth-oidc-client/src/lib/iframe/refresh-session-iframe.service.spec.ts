@@ -43,33 +43,10 @@ describe('RefreshSessionIframeService ', () => {
           refreshSessionIframeService as any,
           'sendAuthorizeRequestUsingSilentRenew'
         ).and.returnValue(of(null));
+        const allConfigs = [{ configId: 'configId1' }];
 
-        refreshSessionIframeService.refreshSessionWithIframe('configId').subscribe(() => {
-          expect(sendAuthorizeRequestUsingSilentRenewSpy).toHaveBeenCalledWith('a-url', 'configId');
-        });
-      })
-    );
-
-    it(
-      'returns correct observable',
-      waitForAsync(() => {
-        spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue(of('a-url'));
-        const sessionIFrame = document.createElement('iframe');
-        sessionIFrame.onload = () => {
-          // contentWindow is set!
-        };
-        sessionIFrame.src = 'about:blank';
-        document.body.appendChild(sessionIFrame);
-
-        const addEventListenerSpy = spyOn(sessionIFrame, 'addEventListener');
-
-        spyOn(silentRenewService, 'getOrCreateIframe').and.returnValue(sessionIFrame);
-
-        spyOn(refreshSessionIframeService as any, 'sendAuthorizeRequestUsingSilentRenew').and.callThrough();
-
-        refreshSessionIframeService.refreshSessionWithIframe('configId').subscribe((result) => {
-          expect(result).toBeTrue();
-          expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+        refreshSessionIframeService.refreshSessionWithIframe(allConfigs[0], allConfigs).subscribe(() => {
+          expect(sendAuthorizeRequestUsingSilentRenewSpy).toHaveBeenCalledOnceWith('a-url', allConfigs[0], allConfigs);
         });
       })
     );
@@ -83,7 +60,7 @@ describe('RefreshSessionIframeService ', () => {
 
         (refreshSessionIframeService as any).initSilentRenewRequest();
 
-        expect(dispatchEventSpy).toHaveBeenCalledWith(
+        expect(dispatchEventSpy).toHaveBeenCalledOnceWith(
           new CustomEvent('oidc-silent-renew-init', {
             detail: jasmine.any(Number),
           })

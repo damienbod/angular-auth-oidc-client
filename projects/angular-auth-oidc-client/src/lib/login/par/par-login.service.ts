@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { switchMap, take } from 'rxjs/operators';
 import { AuthOptions } from '../../auth-options';
-import { CheckAuthService } from '../../check-auth.service';
+import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
-import { ConfigurationProvider } from '../../config/provider/config.provider';
+import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
@@ -23,44 +23,35 @@ export class ParLoginService {
     private responseTypeValidationService: ResponseTypeValidationService,
     private urlService: UrlService,
     private redirectService: RedirectService,
-    private configurationProvider: ConfigurationProvider,
     private authWellKnownService: AuthWellKnownService,
     private popupService: PopUpService,
     private checkAuthService: CheckAuthService,
     private parService: ParService
   ) {}
 
-  loginPar(configId: string, authOptions?: AuthOptions): void {
-    if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
-      this.loggerService.logError(configId, 'Invalid response type!');
+  loginPar(configuration: OpenIdConfiguration, authOptions?: AuthOptions): void {
+    if (!this.responseTypeValidationService.hasConfigValidResponseType(configuration)) {
+      this.loggerService.logError(configuration, 'Invalid response type!');
 
       return;
     }
 
-    const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
-
-    if (!authWellknownEndpointUrl) {
-      this.loggerService.logError(configId, 'no authWellknownEndpoint given!');
-
-      return;
-    }
-
-    this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow, no auth data');
+    this.loggerService.logDebug(configuration, 'BEGIN Authorize OIDC Flow, no auth data');
 
     const { urlHandler, customParams } = authOptions || {};
 
     this.authWellKnownService
-      .getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId)
-      .pipe(switchMap(() => this.parService.postParRequest(configId, customParams)))
+      .queryAndStoreAuthWellKnownEndPoints(configuration)
+      .pipe(switchMap(() => this.parService.postParRequest(configuration, customParams)))
       .subscribe((response) => {
-        this.loggerService.logDebug(configId, 'par response: ', response);
+        this.loggerService.logDebug(configuration, 'par response: ', response);
 
-        const url = this.urlService.getAuthorizeParUrl(response.requestUri, configId);
+        const url = this.urlService.getAuthorizeParUrl(response.requestUri, configuration);
 
-        this.loggerService.logDebug(configId, 'par request url: ', url);
+        this.loggerService.logDebug(configuration, 'par request url: ', url);
 
         if (!url) {
-          this.loggerService.logError(configId, `Could not create URL with param ${response.requestUri}: '${url}'`);
+          this.loggerService.logError(configuration, `Could not create URL with param ${response.requestUri}: '${url}'`);
 
           return;
         }
@@ -73,39 +64,37 @@ export class ParLoginService {
       });
   }
 
-  loginWithPopUpPar(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
-    if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
+  loginWithPopUpPar(
+    configuration: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[],
+    authOptions?: AuthOptions,
+    popupOptions?: PopupOptions
+  ): Observable<LoginResponse> {
+    const { configId } = configuration;
+
+    if (!this.responseTypeValidationService.hasConfigValidResponseType(configuration)) {
       const errorMessage = 'Invalid response type!';
-      this.loggerService.logError(configId, errorMessage);
+      this.loggerService.logError(configuration, errorMessage);
 
       return throwError(() => new Error(errorMessage));
     }
 
-    const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
-
-    if (!authWellknownEndpointUrl) {
-      const errorMessage = 'no authWellknownEndpoint given!';
-      this.loggerService.logError(configId, errorMessage);
-
-      return throwError(() => new Error(errorMessage));
-    }
-
-    this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow with popup, no auth data');
+    this.loggerService.logDebug(configuration, 'BEGIN Authorize OIDC Flow with popup, no auth data');
 
     const { customParams } = authOptions || {};
 
-    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).pipe(
-      switchMap(() => this.parService.postParRequest(configId, customParams)),
+    return this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(configuration).pipe(
+      switchMap(() => this.parService.postParRequest(configuration, customParams)),
       switchMap((response: ParResponse) => {
-        this.loggerService.logDebug(configId, 'par response: ', response);
+        this.loggerService.logDebug(configuration, 'par response: ', response);
 
-        const url = this.urlService.getAuthorizeParUrl(response.requestUri, configId);
+        const url = this.urlService.getAuthorizeParUrl(response.requestUri, configuration);
 
-        this.loggerService.logDebug(configId, 'par request url: ', url);
+        this.loggerService.logDebug(configuration, 'par request url: ', url);
 
         if (!url) {
           const errorMessage = `Could not create URL with param ${response.requestUri}: 'url'`;
-          this.loggerService.logError(configId, errorMessage);
+          this.loggerService.logError(configuration, errorMessage);
 
           return throwError(() => new Error(errorMessage));
         }
@@ -128,7 +117,7 @@ export class ParLoginService {
               });
             }
 
-            return this.checkAuthService.checkAuth(configId, receivedUrl);
+            return this.checkAuthService.checkAuth(configuration, allConfigs, receivedUrl);
           })
         );
       })

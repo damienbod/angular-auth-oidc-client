@@ -142,7 +142,7 @@ export class AppComponent implements OnInit {
 You can get the access token by calling the method `getAccessToken()` on the `OidcSecurityService`
 
 ```ts
-const token = this.oidcSecurityService.getAccessToken();
+const token = this.oidcSecurityService.getAccessToken().subscribe(...);
 ```
 
 And then you can use it in the HttpHeaders
@@ -150,13 +150,13 @@ And then you can use it in the HttpHeaders
 ```ts
 import { HttpHeaders } from '@angular/common/http';
 
-const token = this.oidcSecurityServices.getAccessToken();
-
-const httpOptions = {
-  headers: new HttpHeaders({
-    Authorization: 'Bearer ' + token,
-  }),
-};
+const token = this.oidcSecurityServices.getAccessToken().subscribe((token) => {
+  const httpOptions = {
+    headers: new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    }),
+  };
+});
 ```
 
 ## Versions

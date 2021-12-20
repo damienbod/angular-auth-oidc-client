@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
@@ -17,12 +18,12 @@ export class ImplicitFlowCallbackHandlerService {
 
   // STEP 1 Code Flow
   // STEP 1 Implicit Flow
-  implicitFlowCallback(configId: string, hash?: string): Observable<CallbackContext> {
-    const isRenewProcessData = this.flowsDataService.isSilentRenewRunning(configId);
+  implicitFlowCallback(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[], hash?: string): Observable<CallbackContext> {
+    const isRenewProcessData = this.flowsDataService.isSilentRenewRunning(config);
 
-    this.loggerService.logDebug(configId, 'BEGIN callback, no auth data');
+    this.loggerService.logDebug(config, 'BEGIN callback, no auth data');
     if (!isRenewProcessData) {
-      this.resetAuthDataService.resetAuthorizationData(configId);
+      this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
     }
 
     hash = hash || this.doc.location.hash.substr(1);

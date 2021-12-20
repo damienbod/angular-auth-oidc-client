@@ -71,10 +71,15 @@ describe('Flows Service', () => {
           of(null)
         );
         const callbackUserSpy = spyOn(userCallbackHandlerService, 'callbackUser').and.returnValue(of(null));
+        const allConfigs = [
+          {
+            configId: 'configId1',
+          },
+        ];
 
-        service.processCodeFlowCallback('some-url1234', 'configId').subscribe((value) => {
+        service.processCodeFlowCallback('some-url1234', allConfigs[0], allConfigs).subscribe((value) => {
           expect(value).toBeNull();
-          expect(codeFlowCallbackSpy).toHaveBeenCalledOnceWith('some-url1234', 'configId');
+          expect(codeFlowCallbackSpy).toHaveBeenCalledOnceWith('some-url1234', allConfigs[0]);
           expect(codeFlowCodeRequestSpy).toHaveBeenCalledTimes(1);
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalledTimes(1);
           expect(callbackStateValidationSpy).toHaveBeenCalledTimes(1);
@@ -97,8 +102,13 @@ describe('Flows Service', () => {
           of(null)
         );
         const callbackUserSpy = spyOn(userCallbackHandlerService, 'callbackUser').and.returnValue(of(null));
+        const allConfigs = [
+          {
+            configId: 'configId1',
+          },
+        ];
 
-        service.processSilentRenewCodeFlowCallback({} as CallbackContext, 'configId').subscribe((value) => {
+        service.processSilentRenewCodeFlowCallback({} as CallbackContext, allConfigs[0], allConfigs).subscribe((value) => {
           expect(value).toBeNull();
           expect(codeFlowCodeRequestSpy).toHaveBeenCalled();
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
@@ -122,8 +132,13 @@ describe('Flows Service', () => {
           of(null)
         );
         const callbackUserSpy = spyOn(userCallbackHandlerService, 'callbackUser').and.returnValue(of(null));
+        const allConfigs = [
+          {
+            configId: 'configId1',
+          },
+        ];
 
-        (service as any).processImplicitFlowCallback('any-hash').subscribe((value) => {
+        service.processImplicitFlowCallback(allConfigs[0], allConfigs, 'any-hash').subscribe((value) => {
           expect(value).toBeNull();
           expect(implicitFlowCallbackSpy).toHaveBeenCalled();
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
@@ -153,8 +168,13 @@ describe('Flows Service', () => {
           of(null)
         );
         const callbackUserSpy = spyOn(userCallbackHandlerService, 'callbackUser').and.returnValue(of(null));
+        const allConfigs = [
+          {
+            configId: 'configId1',
+          },
+        ];
 
-        (service as any).processRefreshToken().subscribe((value) => {
+        service.processRefreshToken(allConfigs[0], allConfigs).subscribe((value) => {
           expect(value).toBeNull();
           expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalled();
           expect(refreshTokensRequestTokensSpy).toHaveBeenCalled();

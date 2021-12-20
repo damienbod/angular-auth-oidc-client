@@ -1,17 +1,28 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { map, retry } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
+import { OpenIdConfiguration } from '../openid-configuration';
+import { LoggerService } from './../../logging/logger.service';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 
 const WELL_KNOWN_SUFFIX = `/.well-known/openid-configuration`;
 
 @Injectable()
 export class AuthWellKnownDataService {
-  constructor(private readonly http: DataService) {}
+  constructor(private readonly http: DataService, private readonly loggerService: LoggerService) {}
 
-  getWellKnownEndPointsFromUrl(authWellknownEndpoint: string, configId: string): Observable<AuthWellKnownEndpoints> {
-    return this.getWellKnownDocument(authWellknownEndpoint, configId).pipe(
+  getWellKnownEndPointsForConfig(config: OpenIdConfiguration): Observable<AuthWellKnownEndpoints> {
+    const { authWellknownEndpointUrl } = config;
+
+    if (!authWellknownEndpointUrl) {
+      const errorMessage = 'no authWellknownEndpoint given!';
+      this.loggerService.logError(config, errorMessage);
+
+      return throwError(() => new Error(errorMessage));
+    }
+
+    return this.getWellKnownDocument(authWellknownEndpointUrl, config).pipe(
       map(
         (wellKnownEndpoints) =>
           ({
@@ -30,13 +41,13 @@ export class AuthWellKnownDataService {
     );
   }
 
-  private getWellKnownDocument(wellKnownEndpoint: string, configId: string): Observable<any> {
+  private getWellKnownDocument(wellKnownEndpoint: string, config: OpenIdConfiguration): Observable<any> {
     let url = wellKnownEndpoint;
 
     if (!wellKnownEndpoint.includes(WELL_KNOWN_SUFFIX)) {
       url = `${wellKnownEndpoint}${WELL_KNOWN_SUFFIX}`;
     }
 
-    return this.http.get<any>(url, configId).pipe(retry(2));
+    return this.http.get<any>(url, config).pipe(retry(2));
   }
 }

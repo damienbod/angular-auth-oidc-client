@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { AuthenticatedResult } from './auth-result';
+import { OpenIdConfiguration } from '../config/openid-configuration';
+import { AuthResult } from '../flows/callback-context';
+import { AuthStateResult } from './auth-state';
 
 @Injectable()
 export class AuthStateServiceMock {
@@ -11,47 +13,48 @@ export class AuthStateServiceMock {
     return this.authenticatedInternal$.asObservable();
   }
 
-  setAuthenticatedAndFireEvent(): void {}
+  setAuthenticatedAndFireEvent(allConfigs: OpenIdConfiguration[]): void {}
 
-  setUnauthenticatedAndFireEvent(): void {}
+  setUnauthenticatedAndFireEvent(currentConfig: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {}
 
-  initStateFromStorage(): void {}
+  updateAndPublishAuthState(authenticationResult: AuthStateResult): void {}
 
-  updateAndPublishAuthState(authorizationResult: AuthenticatedResult) {}
+  setAuthorizationData(
+    accessToken: string,
+    authResult: AuthResult,
+    currentConfig: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): void {}
 
-  setAuthorizationData(accessToken: any, idToken: any) {}
-
-  getAccessToken(): string {
+  getAccessToken(configuration: OpenIdConfiguration): string {
     return null;
   }
 
-  getIdToken(): string {
+  getIdToken(configuration: OpenIdConfiguration): string {
     return null;
   }
 
-  getRefreshToken(): string {
+  getRefreshToken(configuration: OpenIdConfiguration): string {
     return null;
   }
 
-  areAuthStorageTokensValid() {
-    return true;
+  getAuthenticationResult(configuration: OpenIdConfiguration): any {
+    return null;
   }
 
-  setAuthResultInStorage(authResult: any) {}
-
-  hasIdTokenExpiredAndRenewCheckIsEnabled() {
-    return true;
+  areAuthStorageTokensValid(configuration: OpenIdConfiguration): boolean {
+    return null;
   }
 
-  hasAccessTokenExpiredIfExpiryExists() {
-    return true;
+  hasIdTokenExpiredAndRenewCheckIsEnabled(configuration: OpenIdConfiguration): boolean {
+    return null;
   }
 
-  isAuthenticated(configId: string): boolean {
-    return true;
+  hasAccessTokenExpiredIfExpiryExists(configuration: OpenIdConfiguration): boolean {
+    return null;
   }
 
-  getAuthenticationResult(configId?: string): any {
+  isAuthenticated(configuration: OpenIdConfiguration): boolean {
     return null;
   }
 }

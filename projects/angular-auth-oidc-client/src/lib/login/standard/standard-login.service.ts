@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AuthOptions } from '../../auth-options';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
-import { ConfigurationProvider } from '../../config/provider/config.provider';
 import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
+import { OpenIdConfiguration } from './../../config/openid-configuration';
 
 @Injectable()
 export class StandardLoginService {
@@ -14,33 +14,24 @@ export class StandardLoginService {
     private responseTypeValidationService: ResponseTypeValidationService,
     private urlService: UrlService,
     private redirectService: RedirectService,
-    private configurationProvider: ConfigurationProvider,
     private authWellKnownService: AuthWellKnownService
   ) {}
 
-  loginStandard(configId: string, authOptions?: AuthOptions): void {
-    if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
-      this.loggerService.logError(configId, 'Invalid response type!');
+  loginStandard(configuration: OpenIdConfiguration, authOptions?: AuthOptions): void {
+    if (!this.responseTypeValidationService.hasConfigValidResponseType(configuration)) {
+      this.loggerService.logError(configuration, 'Invalid response type!');
 
       return;
     }
 
-    const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
+    this.loggerService.logDebug(configuration, 'BEGIN Authorize OIDC Flow, no auth data');
 
-    if (!authWellknownEndpointUrl) {
-      this.loggerService.logError(configId, 'no authWellknownEndpoint given!');
-
-      return;
-    }
-
-    this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow, no auth data');
-
-    this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).subscribe(() => {
+    this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(configuration).subscribe(() => {
       const { urlHandler, customParams } = authOptions || {};
 
-      this.urlService.getAuthorizeUrl(configId, customParams).subscribe((url: string) => {
+      this.urlService.getAuthorizeUrl(configuration, customParams).subscribe((url: string) => {
         if (!url) {
-          this.loggerService.logError(configId, 'Could not create URL', url);
+          this.loggerService.logError(configuration, 'Could not create URL', url);
 
           return;
         }

@@ -1,12 +1,8 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { OpenIdConfiguration } from '../openid-configuration';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 
-@Injectable()
 export class AuthWellKnownServiceMock {
-  getAuthWellKnownEndPoints(authWellknownEndpoint: string): Observable<AuthWellKnownEndpoints> {
-    return of(null);
-  }
+  storeWellKnownEndpoints(config: OpenIdConfiguration, mappedWellKnownEndpoints: AuthWellKnownEndpoints): void {}
 
-  storeWellKnownEndpoints(mappedWellKnownEndpoints: AuthWellKnownEndpoints) {}
+  queryAndStoreAuthWellKnownEndPoints(config: OpenIdConfiguration) {}
 }

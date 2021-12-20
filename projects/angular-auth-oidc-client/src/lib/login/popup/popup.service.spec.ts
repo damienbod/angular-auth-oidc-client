@@ -143,7 +143,7 @@ describe('PopUpService', () => {
         tick(200);
 
         expect(popupResult).toEqual({ userClosed: false, receivedUrl: 'some-url1111' });
-        expect(cleanUpSpy).toHaveBeenCalledWith(listener);
+        expect(cleanUpSpy).toHaveBeenCalledOnceWith(listener);
       }));
 
       it('user closed', fakeAsync(() => {
@@ -184,7 +184,7 @@ describe('PopUpService', () => {
         popUpService.sendMessageToMainWindow('someUrl');
 
         expect(sendMessageSpy).toHaveBeenCalledTimes(1);
-        expect(sendMessageSpy).toHaveBeenCalledWith('someUrl', jasmine.any(String));
+        expect(sendMessageSpy).toHaveBeenCalledOnceWith('someUrl', jasmine.any(String));
       })
     );
   });
@@ -199,7 +199,7 @@ describe('PopUpService', () => {
         (popUpService as any).cleanUp(listener);
 
         expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith('message', listener, false);
+        expect(spy).toHaveBeenCalledOnceWith('message', listener, false);
       })
     );
 

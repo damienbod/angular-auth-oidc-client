@@ -12,13 +12,13 @@ The access token can be used by calling the `getAccessToken()` method.
 You can get the access token by calling the method `getAccessToken()` on the `OidcSecurityService`
 
 ```ts
-const token = this.oidcSecurityService.getAccessToken();
+this.oidcSecurityService.getAccessToken().subscribe(at => ...);
 ```
 
 or for a specific config:
 
 ```ts
-const token = this.oidcSecurityService.getAccessToken('configId');
+this.oidcSecurityService.getAccessToken('configId').subscribe(at => ...);
 ```
 
 You can then manually use the token within `HttpHeaders` when performing an HTTP request with Angular's `HttpClient`:
@@ -26,13 +26,13 @@ You can then manually use the token within `HttpHeaders` when performing an HTTP
 ```ts
 import { HttpHeaders } from '@angular/common/http';
 
-const token = this.oidcSecurityServices.getAccessToken();
-
-const httpOptions = {
-  headers: new HttpHeaders({
-    Authorization: 'Bearer ' + token,
-  }),
-};
+this.oidcSecurityServices.getAccessToken().subscribe((token) => {
+  const httpOptions = {
+    headers: new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    }),
+  };
+});
 ```
 
 ## Http Interceptor

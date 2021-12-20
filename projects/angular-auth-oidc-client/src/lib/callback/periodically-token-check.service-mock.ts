@@ -1,3 +1,5 @@
+import { OpenIdConfiguration } from '../config/openid-configuration';
+
 export class PeriodicallyTokenCheckServiceMock {
-  startTokenValidationPeriodically(repeatAfterSeconds: number) {}
+  startTokenValidationPeriodically(allConfigs: OpenIdConfiguration[], currentConfig: OpenIdConfiguration) {}
 }

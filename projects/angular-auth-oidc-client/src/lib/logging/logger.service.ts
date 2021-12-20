@@ -1,79 +1,15 @@
 import { Injectable } from '@angular/core';
-import { ConfigurationProvider } from '../config/provider/config.provider';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LogLevel } from './log-level';
 
 @Injectable()
 export class LoggerService {
-  constructor(private configurationProvider: ConfigurationProvider) {}
-
-  logError(configId: string, message: any, ...args: any[]): void {
-    if (!!configId) {
-      this.logErrorWithConfig(configId, message, ...args);
-    } else {
-      this.logErrorWithoutConfig(message, ...args);
-    }
-  }
-
-  logWarning(configId: string, message: any, ...args: any[]): void {
-    if (!!configId) {
-      this.logWarningWithConfig(configId, message, ...args);
-    } else {
-      this.logWarningWithoutConfig(message, ...args);
-    }
-  }
-
-  logDebug(configId: string, message: any, ...args: any[]): void {
-    if (!this.logLevelIsSet(configId)) {
+  logError(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {
+    if (this.loggingIsTurnedOff(configuration)) {
       return;
     }
 
-    if (this.loggingIsTurnedOff(configId)) {
-      return;
-    }
-
-    if (!this.currentLogLevelIsEqualOrSmallerThan(configId, LogLevel.Debug)) {
-      return;
-    }
-
-    if (!!args && !!args.length) {
-      console.log(`[DEBUG] ${configId} - ${message}`, ...args);
-    } else {
-      console.log(`[DEBUG] ${configId} - ${message}`);
-    }
-  }
-
-  private logWarningWithoutConfig(message: any, ...args: any[]): void {
-    if (!!args && !!args.length) {
-      console.warn(`[WARN] - ${message}`, ...args);
-    } else {
-      console.warn(`[WARN] - ${message}`);
-    }
-  }
-
-  private logWarningWithConfig(configId: string, message: any, ...args: any[]): void {
-    if (!this.logLevelIsSet(configId)) {
-      return;
-    }
-
-    if (this.loggingIsTurnedOff(configId)) {
-      return;
-    }
-
-    if (!this.currentLogLevelIsEqualOrSmallerThan(configId, LogLevel.Warn)) {
-      return;
-    }
-
-    if (!!args && !!args.length) {
-      console.warn(`[WARN] ${configId} - ${message}`, ...args);
-    } else {
-      console.warn(`[WARN] ${configId} - ${message}`);
-    }
-  }
-
-  private logErrorWithConfig(configId: string, message: any, ...args: any[]): void {
-    if (this.loggingIsTurnedOff(configId)) {
-      return;
-    }
+    const { configId } = configuration;
 
     if (!!args && !!args.length) {
       console.error(`[ERROR] ${configId} - ${message}`, ...args);
@@ -82,22 +18,58 @@ export class LoggerService {
     }
   }
 
-  private logErrorWithoutConfig(message: any, ...args: any[]): void {
+  logWarning(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {
+    if (!this.logLevelIsSet(configuration)) {
+      return;
+    }
+
+    if (this.loggingIsTurnedOff(configuration)) {
+      return;
+    }
+
+    if (!this.currentLogLevelIsEqualOrSmallerThan(configuration, LogLevel.Warn)) {
+      return;
+    }
+
+    const { configId } = configuration;
+
     if (!!args && !!args.length) {
-      console.error(`[ERROR] - ${message}`, ...args);
+      console.warn(`[WARN] ${configId} - ${message}`, ...args);
     } else {
-      console.error(`[ERROR] - ${message}`);
+      console.warn(`[WARN] ${configId} - ${message}`);
     }
   }
 
-  private currentLogLevelIsEqualOrSmallerThan(configId: string, logLevelToCompare: LogLevel): boolean {
-    const { logLevel } = this.configurationProvider.getOpenIDConfiguration(configId) || {};
+  logDebug(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {
+    if (!this.logLevelIsSet(configuration)) {
+      return;
+    }
+
+    if (this.loggingIsTurnedOff(configuration)) {
+      return;
+    }
+
+    if (!this.currentLogLevelIsEqualOrSmallerThan(configuration, LogLevel.Debug)) {
+      return;
+    }
+
+    const { configId } = configuration;
+
+    if (!!args && !!args.length) {
+      console.log(`[DEBUG] ${configId} - ${message}`, ...args);
+    } else {
+      console.log(`[DEBUG] ${configId} - ${message}`);
+    }
+  }
+
+  private currentLogLevelIsEqualOrSmallerThan(configuration: OpenIdConfiguration, logLevelToCompare: LogLevel): boolean {
+    const { logLevel } = configuration || {};
 
     return logLevel <= logLevelToCompare;
   }
 
-  private logLevelIsSet(configId: string): boolean {
-    const { logLevel } = this.configurationProvider.getOpenIDConfiguration(configId) || {};
+  private logLevelIsSet(configuration: OpenIdConfiguration): boolean {
+    const { logLevel } = configuration || {};
 
     if (logLevel === null) {
       return false;
@@ -110,8 +82,8 @@ export class LoggerService {
     return true;
   }
 
-  private loggingIsTurnedOff(configId: string): boolean {
-    const { logLevel } = this.configurationProvider.getOpenIDConfiguration(configId) || {};
+  private loggingIsTurnedOff(configuration: OpenIdConfiguration): boolean {
+    const { logLevel } = configuration || {};
 
     return logLevel === LogLevel.None;
   }

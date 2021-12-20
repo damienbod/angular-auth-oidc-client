@@ -10,9 +10,9 @@ import {
   UrlTree,
 } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map, take } from 'rxjs/operators';
-import { CheckAuthService } from '../check-auth.service';
-import { ConfigurationProvider } from '../config/provider/config.provider';
+import { map, switchMap, take } from 'rxjs/operators';
+import { CheckAuthService } from '../auth-state/check-auth.service';
+import { ConfigurationService } from '../config/config.service';
 import { LoginService } from '../login/login.service';
 import { AutoLoginService } from './auto-login.service';
 
@@ -22,7 +22,7 @@ export class AutoLoginAllRoutesGuard implements CanActivate, CanActivateChild, C
     private autoLoginService: AutoLoginService,
     private checkAuthService: CheckAuthService,
     private loginService: LoginService,
-    private configurationProvider: ConfigurationProvider
+    private configurationService: ConfigurationService
   ) {}
 
   canLoad(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree> {
@@ -40,26 +40,26 @@ export class AutoLoginAllRoutesGuard implements CanActivate, CanActivateChild, C
   }
 
   private checkAuth(url: string): Observable<boolean> {
-    const configId = this.getId();
+    return this.configurationService.getOpenIDConfiguration().pipe(
+      switchMap((config) => {
+        const allconfigs = this.configurationService.getAllConfigurations();
 
-    return this.checkAuthService.checkAuth().pipe(
-      take(1),
-      map(({ isAuthenticated }) => {
-        if (isAuthenticated) {
-          this.autoLoginService.checkSavedRedirectRouteAndNavigate(configId);
-        }
+        return this.checkAuthService.checkAuth(config, allconfigs).pipe(
+          take(1),
+          map(({ isAuthenticated }) => {
+            if (isAuthenticated) {
+              this.autoLoginService.checkSavedRedirectRouteAndNavigate(config);
+            }
 
-        if (!isAuthenticated) {
-          this.autoLoginService.saveRedirectRoute(configId, url);
-          this.loginService.login(configId);
-        }
+            if (!isAuthenticated) {
+              this.autoLoginService.saveRedirectRoute(config, url);
+              this.loginService.login(config);
+            }
 
-        return isAuthenticated;
+            return isAuthenticated;
+          })
+        );
       })
     );
-  }
-
-  private getId(): string {
-    return this.configurationProvider.getOpenIDConfiguration().configId;
   }
 }

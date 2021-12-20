@@ -43,14 +43,14 @@ describe('TokenValidationService', () => {
   describe('validateIdTokenAud', () => {
     it('returns true if aud is string and passed aud matches idToken.aud', () => {
       const dataIdToken = { aud: 'banana' };
-      const valueTrue = tokenValidationService.validateIdTokenAud(dataIdToken, 'banana', 'configId');
+      const valueTrue = tokenValidationService.validateIdTokenAud(dataIdToken, 'banana', { configId: 'configId1' });
       expect(valueTrue).toEqual(true);
     });
 
     it('returns false if aud is string and passed aud does not match idToken.aud', () => {
       const dataIdToken = { aud: 'banana' };
 
-      const valueFalse = tokenValidationService.validateIdTokenAud(dataIdToken, 'bananammmm', 'configId');
+      const valueFalse = tokenValidationService.validateIdTokenAud(dataIdToken, 'bananammmm', { configId: 'configId1' });
       expect(valueFalse).toEqual(false);
     });
 
@@ -59,7 +59,7 @@ describe('TokenValidationService', () => {
         aud: ['banana', 'apple', 'https://nice.dom'],
       };
 
-      const audValidTrue = tokenValidationService.validateIdTokenAud(dataIdToken, 'apple', 'configId');
+      const audValidTrue = tokenValidationService.validateIdTokenAud(dataIdToken, 'apple', { configId: 'configId1' });
 
       expect(audValidTrue).toEqual(true);
     });
@@ -69,7 +69,9 @@ describe('TokenValidationService', () => {
         aud: ['banana', 'apple', 'https://nice.dom'],
       };
 
-      const audValidFalse = tokenValidationService.validateIdTokenAud(dataIdToken, 'https://nice.domunnnnnnkoem', 'configId');
+      const audValidFalse = tokenValidationService.validateIdTokenAud(dataIdToken, 'https://nice.domunnnnnnkoem', {
+        configId: 'configId1',
+      });
 
       expect(audValidFalse).toEqual(false);
     });
@@ -77,54 +79,42 @@ describe('TokenValidationService', () => {
 
   describe('validateIdTokenNonce', () => {
     it('should validate id token nonce after code grant when match', () => {
-      expect(tokenValidationService.validateIdTokenNonce({ nonce: 'test1' }, 'test1', false, 'configId')).toBe(true);
+      expect(tokenValidationService.validateIdTokenNonce({ nonce: 'test1' }, 'test1', false, { configId: 'configId1' })).toBe(true);
     });
 
     it('should not validate id token nonce after code grant when no match', () => {
-      expect(tokenValidationService.validateIdTokenNonce({ nonce: 'test1' }, 'test2', false, 'configId')).toBe(false);
+      expect(tokenValidationService.validateIdTokenNonce({ nonce: 'test1' }, 'test2', false, { configId: 'configId1' })).toBe(false);
     });
 
     it('should validate id token nonce after refresh token grant when undefined and no ignore', () => {
       expect(
-        tokenValidationService.validateIdTokenNonce(
-          { nonce: undefined },
-          TokenValidationService.refreshTokenNoncePlaceholder,
-          false,
-          'configId'
-        )
+        tokenValidationService.validateIdTokenNonce({ nonce: undefined }, TokenValidationService.refreshTokenNoncePlaceholder, false, {
+          configId: 'configId1',
+        })
       ).toBe(true);
     });
 
     it('should validate id token nonce after refresh token grant when undefined and ignore', () => {
       expect(
-        tokenValidationService.validateIdTokenNonce(
-          { nonce: undefined },
-          TokenValidationService.refreshTokenNoncePlaceholder,
-          true,
-          'configId'
-        )
+        tokenValidationService.validateIdTokenNonce({ nonce: undefined }, TokenValidationService.refreshTokenNoncePlaceholder, true, {
+          configId: 'configId1',
+        })
       ).toBe(true);
     });
 
     it('should validate id token nonce after refresh token grant when defined and ignore', () => {
       expect(
-        tokenValidationService.validateIdTokenNonce(
-          { nonce: 'test1' },
-          TokenValidationService.refreshTokenNoncePlaceholder,
-          true,
-          'configId'
-        )
+        tokenValidationService.validateIdTokenNonce({ nonce: 'test1' }, TokenValidationService.refreshTokenNoncePlaceholder, true, {
+          configId: 'configId1',
+        })
       ).toBe(true);
     });
 
     it('should not validate id token nonce after refresh token grant when defined and no ignore', () => {
       expect(
-        tokenValidationService.validateIdTokenNonce(
-          { nonce: 'test1' },
-          TokenValidationService.refreshTokenNoncePlaceholder,
-          false,
-          'configId'
-        )
+        tokenValidationService.validateIdTokenNonce({ nonce: 'test1' }, TokenValidationService.refreshTokenNoncePlaceholder, false, {
+          configId: 'configId1',
+        })
       ).toBe(false);
     });
   });
@@ -224,7 +214,7 @@ describe('TokenValidationService', () => {
         // iat: 1589206486,
       };
 
-      const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, 'configId');
+      const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, { configId: 'configId1' });
       expect(result).toEqual(false);
     });
 
@@ -237,7 +227,7 @@ describe('TokenValidationService', () => {
         iat: 1589206486,
       };
 
-      const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, 'configId');
+      const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, { configId: 'configId1' });
       expect(result).toEqual(false);
     });
 
@@ -250,7 +240,7 @@ describe('TokenValidationService', () => {
         iat: 1589206486,
       };
 
-      const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, 'configId');
+      const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, { configId: 'configId1' });
       expect(result).toEqual(false);
     });
 
@@ -263,7 +253,7 @@ describe('TokenValidationService', () => {
         iat: 1589206486,
       };
 
-      const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, 'configId');
+      const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, { configId: 'configId1' });
       expect(result).toEqual(false);
     });
 
@@ -276,7 +266,7 @@ describe('TokenValidationService', () => {
         iat: 1589206486,
       };
 
-      const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, 'configId');
+      const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, { configId: 'configId1' });
       expect(result).toEqual(false);
     });
 
@@ -289,7 +279,7 @@ describe('TokenValidationService', () => {
         iat: 1589206486,
       };
 
-      const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, 'configId');
+      const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, { configId: 'configId1' });
       expect(result).toEqual(true);
     });
   });
@@ -300,7 +290,7 @@ describe('TokenValidationService', () => {
         iss: 'xc',
       };
 
-      const valueTrue = tokenValidationService.validateIdTokenIss(decodedIdToken, 'xc', 'configId');
+      const valueTrue = tokenValidationService.validateIdTokenIss(decodedIdToken, 'xc', { configId: 'configId1' });
       expect(valueTrue).toEqual(true);
     });
 
@@ -309,14 +299,14 @@ describe('TokenValidationService', () => {
         iss: 'xc',
       };
 
-      const valueFalse = tokenValidationService.validateIdTokenIss(decodedIdToken, 'xcjjjj', 'configId');
+      const valueFalse = tokenValidationService.validateIdTokenIss(decodedIdToken, 'xcjjjj', { configId: 'configId1' });
       expect(valueFalse).toEqual(false);
     });
   });
 
   describe('validateIdTokenIatMaxOffset', () => {
     it('returns true if validationIsDisabled', () => {
-      const result = tokenValidationService.validateIdTokenIatMaxOffset(null, 0, true, 'configId');
+      const result = tokenValidationService.validateIdTokenIatMaxOffset(null, 0, true, { configId: 'configId1' });
 
       expect(result).toBe(true);
     });
@@ -325,7 +315,7 @@ describe('TokenValidationService', () => {
       const dataIdToken = {
         notIat: 'test',
       };
-      const result = tokenValidationService.validateIdTokenIatMaxOffset(dataIdToken, 0, false, 'configId');
+      const result = tokenValidationService.validateIdTokenIatMaxOffset(dataIdToken, 0, false, { configId: 'configId1' });
 
       expect(result).toBe(false);
     });
@@ -335,7 +325,7 @@ describe('TokenValidationService', () => {
         iat: 1589206486, // Mon Jan 19 1970 10:26:46 GMT+0100 (Central European Standard Time)
       };
 
-      const valueTrue = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdToken, 500000000000, false, 'configId');
+      const valueTrue = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdToken, 500000000000, false, { configId: 'configId1' });
       expect(valueTrue).toEqual(true);
     });
 
@@ -343,7 +333,7 @@ describe('TokenValidationService', () => {
       const decodedIdTokenNegIat = {
         iat: 500348877430, // Sat Nov 09 1985 02:47:57 GMT+0100 (Central European Standard Time)
       };
-      const valueFalseNeg = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdTokenNegIat, 0, false, 'configId');
+      const valueFalseNeg = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdTokenNegIat, 0, false, { configId: 'configId1' });
       expect(valueFalseNeg).toEqual(false);
     });
 
@@ -351,7 +341,7 @@ describe('TokenValidationService', () => {
       const decodedIdToken = {
         iat: 1589206486, // Mon Jan 19 1970 10:26:46 GMT+0100 (Central European Standard Time)
       };
-      const valueFalse = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdToken, 5, false, 'configId');
+      const valueFalse = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdToken, 5, false, { configId: 'configId1' });
       expect(valueFalse).toEqual(false);
     });
   });
@@ -360,7 +350,7 @@ describe('TokenValidationService', () => {
     it(
       'returns false if null as both parameters is passed',
       waitForAsync(() => {
-        const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, null, 'configId');
+        const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, null, { configId: 'configId1' });
         valueFalse$.subscribe((valueFalse) => {
           expect(valueFalse).toEqual(false);
         });
@@ -370,7 +360,7 @@ describe('TokenValidationService', () => {
     it(
       'returns false if jwtkeys has no keys-property',
       waitForAsync(() => {
-        const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, { notKeys: '' }, 'configId');
+        const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, { notKeys: '' }, { configId: 'configId1' });
         valueFalse$.subscribe((valueFalse) => {
           expect(valueFalse).toEqual(false);
         });
@@ -386,7 +376,7 @@ describe('TokenValidationService', () => {
           keys: 'someThing',
         };
 
-        const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, jwtKeys, 'configId');
+        const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, jwtKeys, { configId: 'configId1' });
         valueFalse$.subscribe((valueFalse) => {
           expect(valueFalse).toEqual(false);
         });
@@ -402,7 +392,7 @@ describe('TokenValidationService', () => {
           keys: 'someThing',
         };
 
-        const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, jwtKeys, 'configId');
+        const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, jwtKeys, { configId: 'configId1' });
         valueFalse$.subscribe((valueFalse) => {
           expect(valueFalse).toEqual(false);
         });
@@ -433,7 +423,7 @@ describe('TokenValidationService', () => {
           ],
         };
 
-        const valueFalse$ = tokenValidationService.validateSignatureIdToken('someNOTMATCHINGIdToken', jwtKeys, 'configId');
+        const valueFalse$ = tokenValidationService.validateSignatureIdToken('someNOTMATCHINGIdToken', jwtKeys, { configId: 'configId1' });
         valueFalse$.subscribe((valueFalse) => {
           expect(valueFalse).toEqual(false);
         });
@@ -476,7 +466,7 @@ describe('TokenValidationService', () => {
         const accessToken = 'iGU3DhbPoDljiYtr0oepxi7zpT8BsjdU7aaXcdq-DPk';
         const atHash = '-ODC_7Go_UIUTC8nP4k2cA';
 
-        const result$ = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '256', 'configId');
+        const result$ = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '256', { configId: 'configId1' });
         result$.subscribe((result) => {
           expect(result).toEqual(true);
         });
@@ -490,7 +480,7 @@ describe('TokenValidationService', () => {
           'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
         const atHash = 'bad';
 
-        const result$ = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '256', 'configId');
+        const result$ = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '256', { configId: 'configId1' });
         result$.subscribe((result) => {
           expect(result).toEqual(false);
         });
@@ -506,7 +496,7 @@ describe('TokenValidationService', () => {
 
         spyOn(jwtWindowCryptoService, 'generateAtHash').and.returnValues(of('notEqualsGood'), of('good'));
 
-        const result$ = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '256', 'configId');
+        const result$ = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '256', { configId: 'configId1' });
 
         result$.subscribe((result) => {
           expect(result).toEqual(true);
@@ -521,7 +511,7 @@ describe('TokenValidationService', () => {
           'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
         const atHash = 'bad';
 
-        const result$ = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '384', 'configId');
+        const result$ = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '384', { configId: 'configId1' });
 
         result$.subscribe((result) => {
           expect(result).toEqual(false);
@@ -536,7 +526,7 @@ describe('TokenValidationService', () => {
           'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
         const atHash = 'bad';
 
-        const result$ = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '512', 'configId');
+        const result$ = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '512', { configId: 'configId1' });
         result$.subscribe((result) => {
           expect(result).toEqual(false);
         });
@@ -546,12 +536,12 @@ describe('TokenValidationService', () => {
 
   describe('validateStateFromHashCallback', () => {
     it('returns true when state and localstate match', () => {
-      const result = tokenValidationService.validateStateFromHashCallback('sssd', 'sssd', 'configId');
+      const result = tokenValidationService.validateStateFromHashCallback('sssd', 'sssd', { configId: 'configId1' });
       expect(result).toEqual(true);
     });
 
     it('returns false when state and local state do not match', () => {
-      const result = tokenValidationService.validateStateFromHashCallback('sssd', 'bad', 'configId');
+      const result = tokenValidationService.validateStateFromHashCallback('sssd', 'bad', { configId: 'configId1' });
       expect(result).toEqual(false);
     });
   });
@@ -559,7 +549,7 @@ describe('TokenValidationService', () => {
   describe('validateIdTokenExpNotExpired', () => {
     it('returns false when tokenExpirationDate is falsy', () => {
       spyOn(tokenHelperService, 'getTokenExpirationDate').and.returnValue(null);
-      const notExpired = tokenValidationService.validateIdTokenExpNotExpired('idToken', 'configId', 0);
+      const notExpired = tokenValidationService.validateIdTokenExpNotExpired('idToken', { configId: 'configId1' }, 0);
       expect(notExpired).toEqual(false);
     });
 
@@ -567,7 +557,7 @@ describe('TokenValidationService', () => {
       const idToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
 
-      const notExpired = tokenValidationService.validateIdTokenExpNotExpired(idToken, 'configId', 0);
+      const notExpired = tokenValidationService.validateIdTokenExpNotExpired(idToken, { configId: 'configId1' }, 0);
       expect(notExpired).toEqual(false);
     });
   });
@@ -595,7 +585,7 @@ describe('TokenValidationService', () => {
 
     testCases.forEach(({ date, offsetSeconds, expectedResult }) => {
       it(`returns ${expectedResult} if ${date} is given with an offset of ${offsetSeconds}`, () => {
-        const notExpired = tokenValidationService.validateAccessTokenNotExpired(date, 'configId', offsetSeconds);
+        const notExpired = tokenValidationService.validateAccessTokenNotExpired(date, { configId: 'configId1' }, offsetSeconds);
 
         expect(notExpired).toEqual(expectedResult);
       });
@@ -607,7 +597,7 @@ describe('TokenValidationService', () => {
       const idToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
 
-      const result = tokenValidationService.hasIdTokenExpired(idToken, 'configId');
+      const result = tokenValidationService.hasIdTokenExpired(idToken, { configId: 'configId1' });
 
       expect(result).toBe(true);
     });
@@ -620,7 +610,7 @@ describe('TokenValidationService', () => {
 
       spyOn(tokenHelperService, 'getTokenExpirationDate').and.returnValue(tokenExpires);
 
-      const result = tokenValidationService.hasIdTokenExpired(idToken, 'configId');
+      const result = tokenValidationService.hasIdTokenExpired(idToken, { configId: 'configId1' });
 
       expect(result).toBe(false);
     });

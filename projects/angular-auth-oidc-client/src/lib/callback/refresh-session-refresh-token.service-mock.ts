@@ -1,3 +1,9 @@
+import { OpenIdConfiguration } from '../config/openid-configuration';
+
 export class RefreshSessionRefreshTokenServiceMock {
-  refreshSessionWithRefreshTokens(customParams?: { [key: string]: string | number | boolean }) {}
+  refreshSessionWithRefreshTokens(
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[],
+    customParamsRefresh?: { [key: string]: string | number | boolean }
+  ) {}
 }

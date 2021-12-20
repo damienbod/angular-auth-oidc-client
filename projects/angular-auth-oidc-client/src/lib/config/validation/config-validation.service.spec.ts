@@ -3,6 +3,7 @@ import { LogLevel } from '../../logging/log-level';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { ConfigValidationService } from './config-validation.service';
+import { allMultipleConfigRules } from './rules';
 
 describe('Config Validation Service', () => {
   let configValidationService: ConfigValidationService;
@@ -116,11 +117,11 @@ describe('Config Validation Service', () => {
       expect(result).toBeTrue();
       expect(loggerErrorSpy).not.toHaveBeenCalled();
       expect(loggerWarningSpy.calls.argsFor(0)).toEqual([
-        undefined,
+        config1,
         'You added multiple configs with the same authority, clientId and scope',
       ]);
       expect(loggerWarningSpy.calls.argsFor(1)).toEqual([
-        undefined,
+        config2,
         'You added multiple configs with the same authority, clientId and scope',
       ]);
     });
@@ -134,9 +135,20 @@ describe('Config Validation Service', () => {
       expect(result).toBeFalse();
       expect(loggerWarningSpy).not.toHaveBeenCalled();
       expect(loggerErrorSpy.calls.argsFor(0)).toEqual([
-        undefined,
+        null,
         `Please make sure you add an object with a 'config' property: ....({ config }) instead of ...(config)`,
       ]);
+    });
+  });
+
+  describe('validateConfigs', () => {
+    it('calls internal method with empty array if something falsy is passed', () => {
+      const spy = spyOn(configValidationService as any, 'validateConfigsInternal').and.callThrough();
+
+      const result = configValidationService.validateConfigs(null);
+
+      expect(result).toBeTrue();
+      expect(spy).toHaveBeenCalledOnceWith([], allMultipleConfigRules);
     });
   });
 });

@@ -3,8 +3,6 @@ import { Observable, of, throwError } from 'rxjs';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
-import { ConfigurationProvider } from '../config/provider/config.provider';
-import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { ResetAuthDataServiceMock } from '../flows/reset-auth-data.service-mock';
 import { CheckSessionService } from '../iframe/check-session.service';
@@ -28,7 +26,6 @@ describe('Logout and Revoke Service', () => {
   let checkSessionService: CheckSessionService;
   let resetAuthDataService: ResetAuthDataService;
   let redirectService: RedirectService;
-  let configurationProvider: ConfigurationProvider;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -41,7 +38,6 @@ describe('Logout and Revoke Service', () => {
         { provide: CheckSessionService, useClass: CheckSessionServiceMock },
         { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
         { provide: RedirectService, useClass: RedirectServiceMock },
-        { provide: ConfigurationProvider, useClass: ConfigurationProviderMock },
       ],
     });
   });
@@ -55,7 +51,6 @@ describe('Logout and Revoke Service', () => {
     checkSessionService = TestBed.inject(CheckSessionService);
     resetAuthDataService = TestBed.inject(ResetAuthDataService);
     redirectService = TestBed.inject(RedirectService);
-    configurationProvider = TestBed.inject(ConfigurationProvider);
   });
 
   it('should create', () => {
@@ -67,10 +62,12 @@ describe('Logout and Revoke Service', () => {
       // Arrange
       const paramToken = 'passedTokenAsParam';
       const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+      const config = { configId: 'configId1' };
+
       // Act
-      service.revokeAccessToken('configId', paramToken);
+      service.revokeAccessToken(config, paramToken);
       // Assert
-      expect(revocationSpy).toHaveBeenCalledWith(paramToken, 'configId');
+      expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config);
     });
 
     it('uses token parameter from persistence if no param is provided', () => {
@@ -78,10 +75,12 @@ describe('Logout and Revoke Service', () => {
       const paramToken = 'damien';
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(paramToken);
       const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+      const config = { configId: 'configId1' };
+
       // Act
-      service.revokeAccessToken('configId');
+      service.revokeAccessToken(config);
       // Assert
-      expect(revocationSpy).toHaveBeenCalledWith(paramToken, 'configId');
+      expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config);
     });
 
     it('returns type observable', () => {
@@ -89,9 +88,10 @@ describe('Logout and Revoke Service', () => {
       const paramToken = 'damien';
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(paramToken);
       spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+      const config = { configId: 'configId1' };
 
       // Act
-      const result = service.revokeAccessToken('configId');
+      const result = service.revokeAccessToken(config);
 
       // Assert
       expect(result).toEqual(jasmine.any(Observable));
@@ -106,9 +106,10 @@ describe('Logout and Revoke Service', () => {
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logDebug');
         spyOn(dataService, 'post').and.returnValue(of({ data: 'anything' }));
+        const config = { configId: 'configId1' };
 
         // Act
-        service.revokeAccessToken('configId').subscribe((result) => {
+        service.revokeAccessToken(config).subscribe((result) => {
           // Assert
           expect(result).toEqual({ data: 'anything' });
           expect(loggerSpy).toHaveBeenCalled();
@@ -124,10 +125,11 @@ describe('Logout and Revoke Service', () => {
         spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(paramToken);
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logError');
+        const config = { configId: 'configId1' };
         spyOn(dataService, 'post').and.returnValue(throwError(() => new Error('Error')));
 
         // Act
-        service.revokeAccessToken('configId').subscribe({
+        service.revokeAccessToken(config).subscribe({
           error: (err) => {
             expect(loggerSpy).toHaveBeenCalled();
             expect(err).toBeTruthy();
@@ -144,6 +146,7 @@ describe('Logout and Revoke Service', () => {
         spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(paramToken);
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logDebug');
+        const config = { configId: 'configId1' };
         spyOn(dataService, 'post').and.returnValue(
           createRetriableStream(
             throwError(() => new Error('Error')),
@@ -151,7 +154,7 @@ describe('Logout and Revoke Service', () => {
           )
         );
 
-        service.revokeAccessToken('configId').subscribe({
+        service.revokeAccessToken(config).subscribe({
           next: (res) => {
             // Assert
             expect(res).toBeTruthy();
@@ -170,6 +173,7 @@ describe('Logout and Revoke Service', () => {
         spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(paramToken);
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logDebug');
+        const config = { configId: 'configId1' };
         spyOn(dataService, 'post').and.returnValue(
           createRetriableStream(
             throwError(() => new Error('Error')),
@@ -178,7 +182,7 @@ describe('Logout and Revoke Service', () => {
           )
         );
 
-        service.revokeAccessToken('configId').subscribe({
+        service.revokeAccessToken(config).subscribe({
           next: (res) => {
             // Assert
             expect(res).toBeTruthy();
@@ -197,6 +201,7 @@ describe('Logout and Revoke Service', () => {
         spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(paramToken);
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logError');
+        const config = { configId: 'configId1' };
         spyOn(dataService, 'post').and.returnValue(
           createRetriableStream(
             throwError(() => new Error('Error')),
@@ -206,7 +211,7 @@ describe('Logout and Revoke Service', () => {
           )
         );
 
-        service.revokeAccessToken('configId').subscribe({
+        service.revokeAccessToken(config).subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
             expect(loggerSpy).toHaveBeenCalled();
@@ -221,21 +226,24 @@ describe('Logout and Revoke Service', () => {
       // Arrange
       const paramToken = 'passedTokenAsParam';
       const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyRefreshToken');
+      const config = { configId: 'configId1' };
+
       // Act
-      service.revokeRefreshToken('configId', paramToken);
+      service.revokeRefreshToken(config, paramToken);
       // Assert
-      expect(revocationSpy).toHaveBeenCalledWith(paramToken, 'configId');
+      expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config);
     });
 
     it('uses refresh token parameter from persistence if no param is provided', () => {
       // Arrange
       const paramToken = 'damien';
       spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
+      const config = { configId: 'configId1' };
       const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyRefreshToken');
       // Act
-      service.revokeRefreshToken('configId');
+      service.revokeRefreshToken(config);
       // Assert
-      expect(revocationSpy).toHaveBeenCalledWith(paramToken, 'configId');
+      expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config);
     });
 
     it('returns type observable', () => {
@@ -243,9 +251,10 @@ describe('Logout and Revoke Service', () => {
       const paramToken = 'damien';
       spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
       spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+      const config = { configId: 'configId1' };
 
       // Act
-      const result = service.revokeRefreshToken('configId');
+      const result = service.revokeRefreshToken(config);
 
       // Assert
       expect(result).toEqual(jasmine.any(Observable));
@@ -260,9 +269,10 @@ describe('Logout and Revoke Service', () => {
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logDebug');
         spyOn(dataService, 'post').and.returnValue(of({ data: 'anything' }));
+        const config = { configId: 'configId1' };
 
         // Act
-        service.revokeRefreshToken('configId').subscribe((result) => {
+        service.revokeRefreshToken(config).subscribe((result) => {
           // Assert
           expect(result).toEqual({ data: 'anything' });
           expect(loggerSpy).toHaveBeenCalled();
@@ -278,10 +288,11 @@ describe('Logout and Revoke Service', () => {
         spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logError');
+        const config = { configId: 'configId1' };
         spyOn(dataService, 'post').and.returnValue(throwError(() => new Error('Error')));
 
         // Act
-        service.revokeRefreshToken('configId').subscribe({
+        service.revokeRefreshToken(config).subscribe({
           error: (err) => {
             expect(loggerSpy).toHaveBeenCalled();
             expect(err).toBeTruthy();
@@ -298,6 +309,7 @@ describe('Logout and Revoke Service', () => {
         spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logDebug');
+        const config = { configId: 'configId1' };
         spyOn(dataService, 'post').and.returnValue(
           createRetriableStream(
             throwError(() => new Error('Error')),
@@ -305,7 +317,7 @@ describe('Logout and Revoke Service', () => {
           )
         );
 
-        service.revokeRefreshToken('configId').subscribe({
+        service.revokeRefreshToken(config).subscribe({
           next: (res) => {
             // Assert
             expect(res).toBeTruthy();
@@ -324,6 +336,7 @@ describe('Logout and Revoke Service', () => {
         spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logDebug');
+        const config = { configId: 'configId1' };
         spyOn(dataService, 'post').and.returnValue(
           createRetriableStream(
             throwError(() => new Error('Error')),
@@ -332,7 +345,7 @@ describe('Logout and Revoke Service', () => {
           )
         );
 
-        service.revokeRefreshToken('configId').subscribe({
+        service.revokeRefreshToken(config).subscribe({
           next: (res) => {
             // Assert
             expect(res).toBeTruthy();
@@ -351,6 +364,7 @@ describe('Logout and Revoke Service', () => {
         spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
         spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
         const loggerSpy = spyOn(loggerService, 'logError');
+        const config = { configId: 'configId1' };
         spyOn(dataService, 'post').and.returnValue(
           createRetriableStream(
             throwError(() => new Error('Error')),
@@ -360,7 +374,7 @@ describe('Logout and Revoke Service', () => {
           )
         );
 
-        service.revokeRefreshToken('configId').subscribe({
+        service.revokeRefreshToken(config).subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
             expect(loggerSpy).toHaveBeenCalled();
@@ -376,10 +390,12 @@ describe('Logout and Revoke Service', () => {
       const paramToken = 'damienId';
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue(paramToken);
       const revocationSpy = spyOn(urlService, 'createEndSessionUrl');
+      const config = { configId: 'configId1' };
+
       // Act
-      service.getEndSessionUrl('configId');
+      service.getEndSessionUrl(config);
       // Assert
-      expect(revocationSpy).toHaveBeenCalledWith(paramToken, 'configId', {});
+      expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config, {});
     });
   });
 
@@ -388,8 +404,10 @@ describe('Logout and Revoke Service', () => {
       // Arrange
       spyOn(service, 'getEndSessionUrl').and.returnValue('');
       const serverStateChangedSpy = spyOn(checkSessionService, 'serverStateChanged');
+      const config = { configId: 'configId1' };
+
       // Act
-      service.logoff('configId');
+      service.logoff(config, [config]);
       // Assert
       expect(serverStateChangedSpy).not.toHaveBeenCalled();
     });
@@ -399,8 +417,10 @@ describe('Logout and Revoke Service', () => {
       spyOn(service, 'getEndSessionUrl').and.returnValue('someValue');
       const redirectSpy = spyOn(redirectService, 'redirectTo');
       spyOn(checkSessionService, 'serverStateChanged').and.returnValue(true);
+      const config = { configId: 'configId1' };
+
       // Act
-      service.logoff('configId');
+      service.logoff(config, [config]);
       // Assert
       expect(redirectSpy).not.toHaveBeenCalled();
     });
@@ -414,11 +434,14 @@ describe('Logout and Revoke Service', () => {
       };
       const redirectSpy = spyOn(redirectService, 'redirectTo');
       spyOn(checkSessionService, 'serverStateChanged').and.returnValue(false);
+      const config = { configId: 'configId1' };
+
       // Act
-      service.logoff('configId', { urlHandler });
+      service.logoff(config, [config], { urlHandler });
+
       // Assert
       expect(redirectSpy).not.toHaveBeenCalled();
-      expect(spy).toHaveBeenCalledWith('someValue');
+      expect(spy).toHaveBeenCalledOnceWith('someValue');
     });
 
     it('calls redirect service if no urlhandler is passed', () => {
@@ -427,10 +450,13 @@ describe('Logout and Revoke Service', () => {
 
       const redirectSpy = spyOn(redirectService, 'redirectTo');
       spyOn(checkSessionService, 'serverStateChanged').and.returnValue(false);
+      const config = { configId: 'configId1' };
+
       // Act
-      service.logoff('configId');
+      service.logoff(config, [config]);
+
       // Assert
-      expect(redirectSpy).toHaveBeenCalledWith('someValue');
+      expect(redirectSpy).toHaveBeenCalledOnceWith('someValue');
     });
   });
 
@@ -438,8 +464,11 @@ describe('Logout and Revoke Service', () => {
     it('calls flowsService.resetAuthorizationData', () => {
       // Arrange
       const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
+      const config = { configId: 'configId1' };
+
       // Act
-      service.logoffLocal('configId');
+      service.logoffLocal(config, [config]);
+
       // Assert
       expect(resetAuthorizationDataSpy).toHaveBeenCalled();
     });
@@ -451,12 +480,16 @@ describe('Logout and Revoke Service', () => {
       waitForAsync(() => {
         // Arrange
         const paramToken = 'damien';
+        const config = { configId: 'configId1' };
+        spyOn(storagePersistenceService, 'read')
+          .withArgs('authWellKnownEndPoints', config)
+          .and.returnValue({ revocationEndpoint: 'revocationEndpoint' });
         spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
         const revokeRefreshTokenSpy = spyOn(service, 'revokeRefreshToken').and.returnValue(of({ any: 'thing' }));
         const revokeAccessTokenSpy = spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
 
         // Act
-        service.logoffAndRevokeTokens('configId').subscribe(() => {
+        service.logoffAndRevokeTokens(config, [config]).subscribe(() => {
           // Assert
           expect(revokeRefreshTokenSpy).toHaveBeenCalled();
           expect(revokeAccessTokenSpy).toHaveBeenCalled();
@@ -469,13 +502,18 @@ describe('Logout and Revoke Service', () => {
       waitForAsync(() => {
         // Arrange
         const paramToken = 'damien';
+        const config = { configId: 'configId1' };
+        spyOn(storagePersistenceService, 'read')
+          .withArgs('authWellKnownEndPoints', config)
+          .and.returnValue({ revocationEndpoint: 'revocationEndpoint' });
         spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
         spyOn(service, 'revokeRefreshToken').and.returnValue(of({ any: 'thing' }));
         const loggerSpy = spyOn(loggerService, 'logError');
+
         spyOn(service, 'revokeAccessToken').and.returnValue(throwError(() => new Error('Error')));
 
         // Act
-        service.logoffAndRevokeTokens('configId').subscribe({
+        service.logoffAndRevokeTokens(config, [config]).subscribe({
           error: (err) => {
             expect(loggerSpy).toHaveBeenCalled();
             expect(err).toBeTruthy();
@@ -493,9 +531,10 @@ describe('Logout and Revoke Service', () => {
         spyOn(service, 'revokeRefreshToken').and.returnValue(of({ any: 'thing' }));
         spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
         const logoffSpy = spyOn(service, 'logoff');
+        const config = { configId: 'configId1' };
 
         // Act
-        service.logoffAndRevokeTokens('configId').subscribe(() => {
+        service.logoffAndRevokeTokens(config, [config]).subscribe(() => {
           // Assert
           expect(logoffSpy).toHaveBeenCalled();
         });
@@ -512,10 +551,12 @@ describe('Logout and Revoke Service', () => {
         spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
         const logoffSpy = spyOn(service, 'logoff');
         const urlHandler = (url) => {};
+        const config = { configId: 'configId1' };
+
         // Act
-        service.logoffAndRevokeTokens('configId', { urlHandler }).subscribe(() => {
+        service.logoffAndRevokeTokens(config, [config], { urlHandler }).subscribe(() => {
           // Assert
-          expect(logoffSpy).toHaveBeenCalledWith('configId', { urlHandler });
+          expect(logoffSpy).toHaveBeenCalledOnceWith(config, [config], { urlHandler });
         });
       })
     );
@@ -524,12 +565,17 @@ describe('Logout and Revoke Service', () => {
       'calls revokeAccessToken when storage does not hold a refreshtoken',
       waitForAsync(() => {
         // Arrange
+        const config = { configId: 'configId1' };
+        spyOn(storagePersistenceService, 'read')
+          .withArgs('authWellKnownEndPoints', config)
+          .and.returnValue({ revocationEndpoint: 'revocationEndpoint' });
+
         spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(null);
         const revokeRefreshTokenSpy = spyOn(service, 'revokeRefreshToken');
         const revokeAccessTokenSpy = spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
 
         // Act
-        service.logoffAndRevokeTokens('configId').subscribe(() => {
+        service.logoffAndRevokeTokens(config, [config]).subscribe(() => {
           // Assert
           expect(revokeRefreshTokenSpy).not.toHaveBeenCalled();
           expect(revokeAccessTokenSpy).toHaveBeenCalled();
@@ -541,12 +587,16 @@ describe('Logout and Revoke Service', () => {
       'loggs error when revokeaccesstoken throws an error',
       waitForAsync(() => {
         // Arrange
+        const config = { configId: 'configId1' };
+        spyOn(storagePersistenceService, 'read')
+          .withArgs('authWellKnownEndPoints', config)
+          .and.returnValue({ revocationEndpoint: 'revocationEndpoint' });
         spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(null);
         const loggerSpy = spyOn(loggerService, 'logError');
         spyOn(service, 'revokeAccessToken').and.returnValue(throwError(() => new Error('Error')));
 
         // Act
-        service.logoffAndRevokeTokens('configId').subscribe({
+        service.logoffAndRevokeTokens(config, [config]).subscribe({
           error: (err) => {
             expect(loggerSpy).toHaveBeenCalled();
             expect(err).toBeTruthy();
@@ -559,18 +609,20 @@ describe('Logout and Revoke Service', () => {
   describe('logoffLocalMultiple', () => {
     it('calls logoffLocal for every config which is present', () => {
       // Arrange
-      spyOn(configurationProvider, 'getAllConfigurations').and.returnValue([{ configId: 'configId1' }, { configId: 'configId2' }]);
+      const allConfigs = [{ configId: 'configId1' }, { configId: 'configId2' }];
       const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
       const checkSessionServiceSpy = spyOn(checkSessionService, 'stop');
 
       // Act
-      service.logoffLocalMultiple();
+      service.logoffLocalMultiple(allConfigs);
 
       // Assert
       expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(2);
       expect(checkSessionServiceSpy).toHaveBeenCalledTimes(2);
-      expect(resetAuthorizationDataSpy).toHaveBeenCalledWith('configId1');
-      expect(resetAuthorizationDataSpy).toHaveBeenCalledWith('configId2');
+      expect(resetAuthorizationDataSpy.calls.allArgs()).toEqual([
+        [allConfigs[0], allConfigs],
+        [allConfigs[1], allConfigs],
+      ]);
     });
   });
 });

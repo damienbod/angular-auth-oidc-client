@@ -1,26 +1,25 @@
-import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 
-@Injectable()
 export class CheckSessionServiceMock {
   private checkSessionChangedInternal$ = new BehaviorSubject<boolean>(false);
   get checkSessionChanged$() {
     return this.checkSessionChangedInternal$.asObservable();
   }
 
-  isCheckSessionConfigured() {
-    return false;
+  isCheckSessionConfigured(configuration: OpenIdConfiguration): boolean {
+    return null;
   }
 
-  start(): void {}
+  start(configuration: OpenIdConfiguration): void {}
 
   stop(): void {}
 
-  serverStateChanged() {
-    return false;
+  serverStateChanged(configuration: OpenIdConfiguration): boolean {
+    return null;
   }
 
-  getExistingIframe() {
+  getExistingIframe(): HTMLIFrameElement {
     return null;
   }
 }

@@ -1,10 +1,14 @@
-import { Injectable } from '@angular/core';
 import { AuthOptions } from '../../auth-options';
+import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { PopupOptions } from '../popup/popup-options';
 
-@Injectable()
 export class ParLoginServiceMock {
-  loginPar(authOptions?: AuthOptions) {}
+  loginPar(configuration: OpenIdConfiguration, authOptions?: AuthOptions) {}
 
-  loginWithPopUpPar(authOptions?: AuthOptions, popupOptions?: PopupOptions) {}
+  loginWithPopUpPar(
+    configuration: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[],
+    authOptions?: AuthOptions,
+    popupOptions?: PopupOptions
+  ) {}
 }

@@ -1,12 +1,11 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { Router, RouterStateSnapshot, UrlSegment } from '@angular/router';
+import { RouterStateSnapshot, UrlSegment } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of } from 'rxjs';
-import { AuthStateService } from '../auth-state/auth-state.service';
-import { CheckAuthService } from '../check-auth.service';
-import { CheckAuthServiceMock } from '../check-auth.service-mock';
-import { ConfigurationProvider } from '../config/provider/config.provider';
-import { ConfigurationProviderMock } from '../config/provider/config.provider-mock';
+import { CheckAuthService } from '../auth-state/check-auth.service';
+import { CheckAuthServiceMock } from '../auth-state/check-auth.service-mock';
+import { ConfigurationService } from '../config/config.service';
+import { ConfigurationServiceMock } from '../config/config.service.mock';
 import { LoginService } from '../login/login.service';
 import { LoginServiceMock } from '../login/login.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -19,10 +18,8 @@ describe(`AutoLoginAllRoutesGuard`, () => {
   let autoLoginAllRoutesGuard: AutoLoginAllRoutesGuard;
   let checkAuthService: CheckAuthService;
   let loginService: LoginService;
-  let authStateService: AuthStateService;
-  let router: Router;
   let storagePersistenceService: StoragePersistenceService;
-  let configurationProvider: ConfigurationProvider;
+  let configurationService: ConfigurationService;
   let autoLoginService: AutoLoginService;
 
   beforeEach(() => {
@@ -43,8 +40,8 @@ describe(`AutoLoginAllRoutesGuard`, () => {
           useClass: StoragePersistenceServiceMock,
         },
         {
-          provide: ConfigurationProvider,
-          useClass: ConfigurationProviderMock,
+          provide: ConfigurationService,
+          useClass: ConfigurationServiceMock,
         },
       ],
     });
@@ -52,12 +49,11 @@ describe(`AutoLoginAllRoutesGuard`, () => {
 
   beforeEach(() => {
     checkAuthService = TestBed.inject(CheckAuthService);
-    router = TestBed.inject(Router);
     loginService = TestBed.inject(LoginService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
-    configurationProvider = TestBed.inject(ConfigurationProvider);
+    configurationService = TestBed.inject(ConfigurationService);
 
-    spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ configId: 'configId' });
+    spyOn(configurationService, 'getOpenIDConfiguration').and.returnValue(of({ configId: 'configId1' }));
 
     autoLoginAllRoutesGuard = TestBed.inject(AutoLoginAllRoutesGuard);
     autoLoginService = TestBed.inject(AutoLoginService);
@@ -82,8 +78,8 @@ describe(`AutoLoginAllRoutesGuard`, () => {
 
         const canActivate$ = autoLoginAllRoutesGuard.canActivate(null, { url: 'some-url1' } as RouterStateSnapshot) as Observable<boolean>;
         canActivate$.subscribe(() => {
-          expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith('configId', 'some-url1');
-          expect(loginSpy).toHaveBeenCalledOnceWith('configId');
+          expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'some-url1');
+          expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
           expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
         });
       })
@@ -101,7 +97,7 @@ describe(`AutoLoginAllRoutesGuard`, () => {
         canActivate$.subscribe(() => {
           expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
           expect(loginSpy).not.toHaveBeenCalled();
-          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledOnceWith('configId');
+          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
         });
       })
     );
@@ -120,8 +116,8 @@ describe(`AutoLoginAllRoutesGuard`, () => {
         } as RouterStateSnapshot) as Observable<boolean>;
 
         canActivateChild$.subscribe(() => {
-          expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith('configId', 'some-url1');
-          expect(loginSpy).toHaveBeenCalledOnceWith('configId');
+          expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'some-url1');
+          expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
           expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
         });
       })
@@ -141,7 +137,7 @@ describe(`AutoLoginAllRoutesGuard`, () => {
         canActivateChild$.subscribe(() => {
           expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
           expect(loginSpy).not.toHaveBeenCalled();
-          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledOnceWith('configId');
+          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
         });
       })
     );
@@ -157,8 +153,8 @@ describe(`AutoLoginAllRoutesGuard`, () => {
         const loginSpy = spyOn(loginService, 'login');
         const canLoad$ = autoLoginAllRoutesGuard.canLoad(null, []) as Observable<boolean>;
         canLoad$.subscribe(() => {
-          expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith('configId', '');
-          expect(loginSpy).toHaveBeenCalledOnceWith('configId');
+          expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, '');
+          expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
           expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
         });
       })
@@ -178,8 +174,8 @@ describe(`AutoLoginAllRoutesGuard`, () => {
         ]) as Observable<boolean>;
 
         canLoad$.subscribe(() => {
-          expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith('configId', 'some-url12/with/some-param');
-          expect(loginSpy).toHaveBeenCalledOnceWith('configId');
+          expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'some-url12/with/some-param');
+          expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
           expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
         });
       })
@@ -197,7 +193,7 @@ describe(`AutoLoginAllRoutesGuard`, () => {
         canLoad$.subscribe(() => {
           expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
           expect(loginSpy).not.toHaveBeenCalled();
-          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledOnceWith('configId');
+          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
         });
       })
     );

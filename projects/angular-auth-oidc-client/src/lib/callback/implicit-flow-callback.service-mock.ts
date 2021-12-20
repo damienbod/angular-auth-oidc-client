@@ -1,6 +1,5 @@
-import { Injectable } from '@angular/core';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 
-@Injectable({ providedIn: 'root' })
 export class ImplicitFlowCallbackServiceMock {
-  authenticatedImplicitFlowCallback(hash?: string) {}
+  authenticatedImplicitFlowCallback(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[], hash?: string) {}
 }

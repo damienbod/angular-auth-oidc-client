@@ -117,6 +117,16 @@ describe('EqualityService Tests', () => {
       const result = equalityHelperService.areEqual(array1, string2);
       expect(result).toBe(false);
     });
+
+    it('boolean and boolean return false', () => {
+      const result = equalityHelperService.areEqual(true, false);
+      expect(result).toBe(false);
+    });
+
+    it('boolean and boolean return false', () => {
+      const result = equalityHelperService.areEqual(true, true);
+      expect(result).toBe(true);
+    });
   });
 
   describe('isStringEqualOrNonOrderedArrayEqual', () => {

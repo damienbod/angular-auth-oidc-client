@@ -38,6 +38,6 @@ describe('Redirect Service Tests', () => {
   it('redirectTo sets window location href', () => {
     const spy = spyOnProperty(myDocument.location, 'href', 'set');
     service.redirectTo('anyurl');
-    expect(spy).toHaveBeenCalledWith('anyurl');
+    expect(spy).toHaveBeenCalledOnceWith('anyurl');
   });
 });

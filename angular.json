@@ -1802,7 +1802,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/",
+            "outputPath": "dist/sample-code-flow-par",
             "index": "projects/sample-code-flow-par/src/index.html",
             "main": "projects/sample-code-flow-par/src/main.ts",
             "polyfills": "projects/sample-code-flow-par/src/polyfills.ts",

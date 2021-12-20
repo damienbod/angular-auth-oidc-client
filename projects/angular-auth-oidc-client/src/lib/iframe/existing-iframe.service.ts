@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
 
 @Injectable()
@@ -20,11 +21,11 @@ export class IFrameService {
     return null;
   }
 
-  addIFrameToWindowBody(identifier: string, configId: string): HTMLIFrameElement {
+  addIFrameToWindowBody(identifier: string, config: OpenIdConfiguration): HTMLIFrameElement {
     const sessionIframe = this.doc.createElement('iframe');
     sessionIframe.id = identifier;
     sessionIframe.title = identifier;
-    this.loggerService.logDebug(configId, sessionIframe);
+    this.loggerService.logDebug(config, sessionIframe);
     sessionIframe.style.display = 'none';
     this.doc.body.appendChild(sessionIframe);
 

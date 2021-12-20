@@ -12,14 +12,14 @@ export class AppComponent {
 
   userData$: Observable<UserDataResult>;
 
-  configuration: OpenIdConfiguration;
+  configuration$: Observable<OpenIdConfiguration>;
 
   isAuthenticated = false;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.configuration = this.oidcSecurityService.getConfiguration();
+    this.configuration$ = this.oidcSecurityService.getConfiguration();
     this.userData$ = this.oidcSecurityService.userData$;
 
     this.oidcSecurityService.isAuthenticated$.subscribe(({ isAuthenticated }) => {

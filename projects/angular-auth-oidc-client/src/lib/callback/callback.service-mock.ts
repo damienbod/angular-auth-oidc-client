@@ -1,4 +1,5 @@
 import { Observable, of, Subject } from 'rxjs';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
 
 export class CallbackServiceMock {
@@ -12,7 +13,11 @@ export class CallbackServiceMock {
     return null;
   }
 
-  handleCallbackAndFireEvents(currentCallbackUrl: string): Observable<CallbackContext> {
+  handleCallbackAndFireEvents(
+    currentCallbackUrl: string,
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): Observable<CallbackContext> {
     return of(null);
   }
 }

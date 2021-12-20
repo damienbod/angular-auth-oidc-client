@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../../auth-state/auth-state.service-mock';
 import { LoggerService } from '../../logging/logger.service';
@@ -12,7 +13,6 @@ import { CallbackContext } from '../callback-context';
 import { ResetAuthDataService } from '../reset-auth-data.service';
 import { ResetAuthDataServiceMock } from '../reset-auth-data.service-mock';
 import { StateValidationCallbackHandlerService } from './state-validation-callback-handler.service';
-import { of } from 'rxjs';
 
 describe('StateValidationCallbackHandlerService', () => {
   let service: StateValidationCallbackHandlerService;
@@ -36,8 +36,7 @@ describe('StateValidationCallbackHandlerService', () => {
               get hash() {
                 return '&anyFakeHash';
               },
-              set hash(v) {
-              },
+              set hash(v) {},
             },
           },
         },
@@ -65,10 +64,11 @@ describe('StateValidationCallbackHandlerService', () => {
           of({
             idToken: 'idTokenJustForTesting',
             authResponseIsValid: true,
-          } as StateValidationResult),
+          } as StateValidationResult)
         );
+        const allConfigs = [{ configId: 'configId1' }];
 
-        service.callbackStateValidation({} as CallbackContext, 'configId').subscribe((newCallbackContext) => {
+        service.callbackStateValidation({} as CallbackContext, allConfigs[0], allConfigs).subscribe((newCallbackContext) => {
           expect(newCallbackContext).toEqual({
             validationResult: {
               idToken: 'idTokenJustForTesting',
@@ -76,7 +76,7 @@ describe('StateValidationCallbackHandlerService', () => {
             },
           } as CallbackContext);
         });
-      }),
+      })
     );
 
     it(
@@ -85,20 +85,21 @@ describe('StateValidationCallbackHandlerService', () => {
         spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
           of({
             authResponseIsValid: false,
-          } as StateValidationResult),
+          } as StateValidationResult)
         );
 
         const loggerSpy = spyOn(loggerService, 'logWarning');
+        const allConfigs = [{ configId: 'configId1' }];
 
-        service.callbackStateValidation({} as CallbackContext, 'configId').subscribe({
+        service.callbackStateValidation({} as CallbackContext, allConfigs[0], allConfigs).subscribe({
           error: (err) => {
             expect(loggerSpy).toHaveBeenCalledOnceWith(
-              'configId',
-              'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash',
+              allConfigs[0],
+              'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
             );
           },
         });
-      }),
+      })
     );
 
     it(
@@ -108,13 +109,14 @@ describe('StateValidationCallbackHandlerService', () => {
           of({
             authResponseIsValid: false,
             state: ValidationResult.LoginRequired,
-          } as StateValidationResult),
+          } as StateValidationResult)
         );
 
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
+        const allConfigs = [{ configId: 'configId1' }];
 
-        service.callbackStateValidation({ isRenewProcess: true } as CallbackContext, 'configId').subscribe({
+        service.callbackStateValidation({ isRenewProcess: true } as CallbackContext, allConfigs[0], allConfigs).subscribe({
           error: (err) => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
@@ -124,7 +126,7 @@ describe('StateValidationCallbackHandlerService', () => {
             });
           },
         });
-      }),
+      })
     );
   });
 });

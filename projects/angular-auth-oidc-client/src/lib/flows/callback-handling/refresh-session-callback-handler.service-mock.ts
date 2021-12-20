@@ -1,9 +1,9 @@
 import { Observable, of } from 'rxjs';
+import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { CallbackContext } from '../callback-context';
 
 export class RefreshSessionCallbackHandlerServiceMock {
-  // STEP 1 Refresh session
-  refreshSessionWithRefreshTokens(): Observable<CallbackContext> {
+  refreshSessionWithRefreshTokens(config: OpenIdConfiguration): Observable<CallbackContext> {
     return of(null);
   }
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthStateService } from '../auth-state/auth-state.service';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { UserService } from '../user-data/user.service';
 import { FlowsDataService } from './flows-data.service';
 
@@ -11,9 +12,9 @@ export class ResetAuthDataService {
     private readonly userService: UserService
   ) {}
 
-  resetAuthorizationData(configId: string): void {
-    this.userService.resetUserDataInStore(configId);
-    this.flowsDataService.resetStorageFlowData(configId);
-    this.authStateService.setUnauthenticatedAndFireEvent(configId);
+  resetAuthorizationData(currentConfiguration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
+    this.userService.resetUserDataInStore(currentConfiguration, allConfigs);
+    this.flowsDataService.resetStorageFlowData(currentConfiguration);
+    this.authStateService.setUnauthenticatedAndFireEvent(currentConfiguration, allConfigs);
   }
 }

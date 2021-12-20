@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { switchMap, take, tap } from 'rxjs/operators';
 import { AuthOptions } from '../../auth-options';
-import { CheckAuthService } from '../../check-auth.service';
+import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
-import { ConfigurationProvider } from '../../config/provider/config.provider';
+import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { UrlService } from '../../utils/url/url.service';
 import { LoginResponse } from '../login-response';
@@ -19,37 +19,33 @@ export class PopUpLoginService {
     private loggerService: LoggerService,
     private responseTypeValidationService: ResponseTypeValidationService,
     private urlService: UrlService,
-    private configurationProvider: ConfigurationProvider,
     private authWellKnownService: AuthWellKnownService,
     private popupService: PopUpService,
-    private checkAuthService: CheckAuthService,
-  ) {
-  }
+    private checkAuthService: CheckAuthService
+  ) {}
 
-  loginWithPopUpStandard(configId: string, authOptions?: AuthOptions, popupOptions?: PopupOptions): Observable<LoginResponse> {
-    if (!this.responseTypeValidationService.hasConfigValidResponseType(configId)) {
+  loginWithPopUpStandard(
+    configuration: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[],
+    authOptions?: AuthOptions,
+    popupOptions?: PopupOptions
+  ): Observable<LoginResponse> {
+    const { configId } = configuration;
+
+    if (!this.responseTypeValidationService.hasConfigValidResponseType(configuration)) {
       const errorMessage = 'Invalid response type!';
-      this.loggerService.logError(configId, errorMessage);
+      this.loggerService.logError(configuration, errorMessage);
 
       return throwError(() => new Error(errorMessage));
     }
 
-    const { authWellknownEndpointUrl } = this.configurationProvider.getOpenIDConfiguration(configId);
+    this.loggerService.logDebug(configuration, 'BEGIN Authorize OIDC Flow with popup, no auth data');
 
-    if (!authWellknownEndpointUrl) {
-      const errorMessage = 'no authWellknownEndpoint given!';
-      this.loggerService.logError(configId, errorMessage);
-
-      return throwError(() => new Error(errorMessage));
-    }
-
-    this.loggerService.logDebug(configId, 'BEGIN Authorize OIDC Flow with popup, no auth data');
-
-    return this.authWellKnownService.getAuthWellKnownEndPoints(authWellknownEndpointUrl, configId).pipe(
+    return this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(configuration).pipe(
       switchMap(() => {
         const { customParams } = authOptions || {};
 
-        return this.urlService.getAuthorizeUrl(configId, customParams);
+        return this.urlService.getAuthorizeUrl(configuration, customParams);
       }),
       tap((authUrl: string) => this.popupService.openPopUp(authUrl, popupOptions)),
       switchMap(() => {
@@ -69,10 +65,10 @@ export class PopUpLoginService {
               });
             }
 
-            return this.checkAuthService.checkAuth(configId, receivedUrl);
-          }),
+            return this.checkAuthService.checkAuth(configuration, allConfigs, receivedUrl);
+          })
         );
-      }),
+      })
     );
   }
 }

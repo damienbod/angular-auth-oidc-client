@@ -1,12 +1,11 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { DataService } from '../../api/data.service';
-import { DataServiceMock } from '../../api/data.service-mock';
 import { EventTypes } from '../../public-events/event-types';
 import { PublicEventsService } from '../../public-events/public-events.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { AuthWellKnownDataService } from './auth-well-known-data.service';
+import { AuthWellKnownDataServiceMock } from './auth-well-known-data.service.mock';
 import { AuthWellKnownService } from './auth-well-known.service';
 
 describe('AuthWellKnownService', () => {
@@ -19,10 +18,9 @@ describe('AuthWellKnownService', () => {
     TestBed.configureTestingModule({
       providers: [
         AuthWellKnownService,
-        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
-        { provide: DataService, useClass: DataServiceMock },
-        AuthWellKnownDataService,
         PublicEventsService,
+        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
+        { provide: AuthWellKnownDataService, useClass: AuthWellKnownDataServiceMock },
       ],
     });
   });
@@ -42,9 +40,12 @@ describe('AuthWellKnownService', () => {
     it(
       'getAuthWellKnownEndPoints return stored endpoints if they exist',
       waitForAsync(() => {
-        const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsFromUrl');
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue({ issuer: 'anything' });
-        service.getAuthWellKnownEndPoints('any-url', 'configId').subscribe((result) => {
+        const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsForConfig');
+        spyOn(storagePersistenceService, 'read')
+          .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
+          .and.returnValue({ issuer: 'anything' });
+
+        service.queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' }).subscribe((result) => {
           expect(dataServiceSpy).not.toHaveBeenCalled();
           expect(result).toEqual({ issuer: 'anything' });
         });
@@ -54,9 +55,9 @@ describe('AuthWellKnownService', () => {
     it(
       'getAuthWellKnownEndPoints calls dataservice if none is stored',
       waitForAsync(() => {
-        const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsFromUrl').and.returnValue(of({ issuer: 'anything' }));
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
-        service.getAuthWellKnownEndPoints('any-url', 'configId').subscribe((result) => {
+        const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsForConfig').and.returnValue(of({ issuer: 'anything' }));
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', { configId: 'configId1' }).and.returnValue(null);
+        service.queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' }).subscribe((result) => {
           expect(dataServiceSpy).toHaveBeenCalled();
           expect(result).toEqual({ issuer: 'anything' });
         });
@@ -66,10 +67,10 @@ describe('AuthWellKnownService', () => {
     it(
       'getAuthWellKnownEndPoints stored the result if http cal is made',
       waitForAsync(() => {
-        const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsFromUrl').and.returnValue(of({ issuer: 'anything' }));
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', 'configId').and.returnValue(null);
+        const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsForConfig').and.returnValue(of({ issuer: 'anything' }));
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', { configId: 'configId1' }).and.returnValue(null);
         const storeSpy = spyOn(service, 'storeWellKnownEndpoints');
-        service.getAuthWellKnownEndPoints('any-url', 'configId').subscribe((result) => {
+        service.queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' }).subscribe((result) => {
           expect(dataServiceSpy).toHaveBeenCalled();
           expect(storeSpy).toHaveBeenCalled();
           expect(result).toEqual({ issuer: 'anything' });
@@ -80,13 +81,13 @@ describe('AuthWellKnownService', () => {
     it(
       'throws `ConfigLoadingFailed` event when error happens from http',
       waitForAsync(() => {
-        spyOn(dataService, 'getWellKnownEndPointsFromUrl').and.returnValue(throwError(() => new Error('error')));
+        spyOn(dataService, 'getWellKnownEndPointsForConfig').and.returnValue(throwError(() => new Error('error')));
         const publicEventsServiceSpy = spyOn(publicEventsService, 'fireEvent');
-        service.getAuthWellKnownEndPoints('any-url', 'configId').subscribe({
+        service.queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' }).subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
             expect(publicEventsServiceSpy).toHaveBeenCalledTimes(1);
-            expect(publicEventsServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoadingFailed, null);
+            expect(publicEventsServiceSpy).toHaveBeenCalledOnceWith(EventTypes.ConfigLoadingFailed, null);
           },
         });
       })

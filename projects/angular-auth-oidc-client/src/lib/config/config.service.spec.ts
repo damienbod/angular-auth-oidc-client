@@ -1,7 +1,5 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { Observable, of, throwError } from 'rxjs';
-import { DataService } from '../api/data.service';
-import { DataServiceMock } from '../api/data.service-mock';
+import { of } from 'rxjs';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { EventTypes } from '../public-events/event-types';
@@ -13,428 +11,301 @@ import { DefaultSessionStorageService } from './../storage/default-sessionstorag
 import { PlatformProviderMock } from './../utils/platform-provider/platform.provider-mock';
 import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
 import { AuthWellKnownServiceMock } from './auth-well-known/auth-well-known.service-mock';
-import { OidcConfigService } from './config.service';
-import { DEFAULT_CONFIG } from './default-config';
+import { ConfigurationService } from './config.service';
+import { StsConfigLoader } from './loader/config-loader';
+import { StsConfigLoaderMock } from './loader/config-loader-mock';
 import { OpenIdConfiguration } from './openid-configuration';
-import { ConfigurationProvider } from './provider/config.provider';
-import { ConfigurationProviderMock } from './provider/config.provider-mock';
 import { ConfigValidationService } from './validation/config-validation.service';
 
 describe('Configuration Service', () => {
-  let oidcConfigService: OidcConfigService;
+  let configService: ConfigurationService;
   let loggerService: LoggerService;
-  let eventsService: PublicEventsService;
+  let publicEventsService: PublicEventsService;
   let authWellKnownService: AuthWellKnownService;
   let storagePersistenceService: StoragePersistenceService;
   let configValidationService: ConfigValidationService;
   let platformProvider: PlatformProvider;
+  let stsConfigLoader: StsConfigLoader;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        OidcConfigService,
+        ConfigurationService,
         {
           provide: LoggerService,
           useClass: LoggerServiceMock,
         },
-        {
-          provide: ConfigurationProvider,
-          useClass: ConfigurationProviderMock,
-        },
-        {
-          provide: DataService,
-          useClass: DataServiceMock,
-        },
-        {
-          provide: AuthWellKnownService,
-          useClass: AuthWellKnownServiceMock,
-        },
+        PublicEventsService,
         {
           provide: StoragePersistenceService,
           useClass: StoragePersistenceServiceMock,
         },
+        ConfigValidationService,
         {
           provide: PlatformProvider,
           useClass: PlatformProviderMock,
         },
-        PublicEventsService,
-        ConfigValidationService,
-        PlatformProvider,
         DefaultSessionStorageService,
+        {
+          provide: AuthWellKnownService,
+          useClass: AuthWellKnownServiceMock,
+        },
+        { provide: StsConfigLoader, useClass: StsConfigLoaderMock },
       ],
     });
   });
 
   beforeEach(() => {
-    oidcConfigService = TestBed.inject(OidcConfigService);
+    configService = TestBed.inject(ConfigurationService);
     loggerService = TestBed.inject(LoggerService);
-    eventsService = TestBed.inject(PublicEventsService);
+    publicEventsService = TestBed.inject(PublicEventsService);
     authWellKnownService = TestBed.inject(AuthWellKnownService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
-    configValidationService = TestBed.inject(ConfigValidationService);
+    stsConfigLoader = TestBed.inject(StsConfigLoader);
     platformProvider = TestBed.inject(PlatformProvider);
+    configValidationService = TestBed.inject(ConfigValidationService);
   });
 
   it('should create', () => {
-    expect(oidcConfigService).toBeTruthy();
+    expect(configService).toBeTruthy();
   });
 
-  it('should return an Observable', () => {
-    expect(oidcConfigService.withConfigs([])).toEqual(jasmine.any(Observable));
+  describe('hasManyConfigs', () => {
+    it('returns true if many configs are stored', () => {
+      (configService as any).configsInternal = { configId1: { configId: 'configId1' }, configId2: { configId: 'configId2' } };
+
+      const result = configService.hasManyConfigs();
+
+      expect(result).toBe(true);
+    });
+
+    it('returns false if only one config is stored', () => {
+      (configService as any).configsInternal = { configId1: { configId: 'configId1' } };
+
+      const result = configService.hasManyConfigs();
+
+      expect(result).toBe(false);
+    });
   });
 
-  describe('withConfigs', () => {
+  describe('getAllConfigurations', () => {
+    it('returns all configs as array', () => {
+      (configService as any).configsInternal = { configId1: { configId: 'configId1' }, configId2: { configId: 'configId2' } };
+
+      const result = configService.getAllConfigurations();
+
+      expect(Array.isArray(result)).toBe(true);
+      expect(result.length).toBe(2);
+    });
+  });
+
+  describe('getOpenIDConfiguration', () => {
     it(
-      'not valid configs does nothing and logs error',
+      `if config is already saved 'loadConfigs' is not called`,
       waitForAsync(() => {
-        const config = {};
-        spyOn(configValidationService, 'validateConfigs').and.returnValue(false);
+        (configService as any).configsInternal = { configId1: { configId: 'configId1' }, configId2: { configId: 'configId2' } };
+        const spy = spyOn(configService as any, 'loadConfigs');
 
-        const configs$ = oidcConfigService.withConfigs([config]);
-
-        configs$.subscribe((result) => {
-          expect(result).toBeNull();
+        configService.getOpenIDConfiguration('configId1').subscribe((config) => {
+          expect(config).toBeTruthy();
+          expect(spy).not.toHaveBeenCalled();
         });
       })
     );
 
     it(
-      'not valid config does nothing and logs error',
+      `if config is NOT already saved 'loadConfigs' is called`,
       waitForAsync(() => {
-        const config = {};
-        spyOn(loggerService, 'logError');
-        spyOn(configValidationService, 'validateConfig').and.returnValue(false);
-
-        const obs$ = oidcConfigService.withConfigs([config]);
-
-        obs$.subscribe(() => {
-          expect(loggerService.logError).toHaveBeenCalled();
-        });
-      })
-    );
-
-    it(
-      'configId is being generated with index and clientId',
-      waitForAsync(() => {
-        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
+        const configs = [{ configId: 'configId1' }, { configId: 'configId2' }];
+        const spy = spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        const obs$ = oidcConfigService.withConfigs([{ authority: 'https://please_set', clientId: 'clientId' }]);
 
-        obs$.subscribe((result) => {
-          expect(result[0].configId).toEqual('0-clientId');
-        });
-      })
-    );
-
-    it(
-      'configId is not being generated (overwritten) when present already',
-      waitForAsync(() => {
-        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
-        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        const obs$ = oidcConfigService.withConfigs([{ authority: 'https://please_set', clientId: 'clientId', configId: 'myConfigId' }]);
-
-        obs$.subscribe((result) => {
-          expect(result[0].configId).toEqual('myConfigId');
-        });
-      })
-    );
-
-    it(
-      'authWellknownEndpointUrl is not being overwritten with authority when present already',
-      waitForAsync(() => {
-        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
-        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        const obs$ = oidcConfigService.withConfigs([
-          { authority: 'https://please_set', clientId: 'clientId', authWellknownEndpointUrl: 'my-auth-url' },
-        ]);
-
-        obs$.subscribe((result) => {
-          expect(result[0].authWellknownEndpointUrl).toEqual('my-auth-url');
-        });
-      })
-    );
-
-    it(
-      'setup defines default openIDConfiguration',
-      waitForAsync(() => {
-        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
-        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
-
-        const obs$ = oidcConfigService.withConfigs([{ authority: 'https://please_set', clientId: 'clientId' }]);
-
-        obs$.subscribe((result) => {
-          expect(result).toEqual([
-            {
-              ...DEFAULT_CONFIG,
-              authority: 'https://please_set',
-              authWellknownEndpointUrl: 'https://please_set',
-              clientId: 'clientId',
-              configId: '0-clientId',
-              storage: jasmine.any(DefaultSessionStorageService),
-            },
-          ]);
-        });
-      })
-    );
-
-    it(
-      'if authWellKnownEndPointsAlreadyStored the events are fired and resolve',
-      waitForAsync(() => {
-        const config = {
-          authority: 'authorityForTesting',
-          clientId: 'clientId',
-        };
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue({ any: 'thing' });
-        const eventServiceSpy = spyOn(eventsService, 'fireEvent');
-        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
-
-        const obs$ = oidcConfigService.withConfigs([config]);
-
-        obs$.subscribe((result) => {
-          expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
-            ...DEFAULT_CONFIG,
-            authority: 'authorityForTesting',
-            authWellknownEndpointUrl: 'authorityForTesting',
-            clientId: 'clientId',
-            configId: '0-clientId',
-            authWellknownEndpoints: {
-              any: 'thing',
-            },
-            storage: jasmine.any(DefaultSessionStorageService),
-          });
-        });
-      })
-    );
-
-    it(
-      'if passedAuthWellKnownEndpoints are passed, set these, fire event and resolve',
-      waitForAsync(() => {
-        const authWellKnown = { issuer: 'issuerForTesting' };
-        const config = { authority: 'authorityForTesting', authWellknownEndpoints: authWellKnown, clientId: 'clientId' };
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue(null);
-        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        const eventServiceSpy = spyOn(eventsService, 'fireEvent');
-        const storeWellKnownEndpointsSpy = spyOn(authWellKnownService, 'storeWellKnownEndpoints');
-        spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
-
-        const obs$ = oidcConfigService.withConfigs([config]);
-
-        obs$.subscribe(() => {
-          expect(storeWellKnownEndpointsSpy).toHaveBeenCalledWith('0-clientId', authWellKnown);
-          expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
-            ...DEFAULT_CONFIG,
-            authority: 'authorityForTesting',
-            configId: '0-clientId',
-            clientId: 'clientId',
-            authWellknownEndpointUrl: 'authorityForTesting',
-            authWellknownEndpoints: { issuer: 'issuerForTesting' },
-            storage: jasmine.any(DefaultSessionStorageService),
-          });
-        });
-      })
-    );
-
-    it(
-      'if eagerLoadAuthWellKnownEndpoints is true: call getAuthWellKnownEndPoints',
-      waitForAsync(() => {
-        const config = { authority: 'authorityForTesting', clientId: 'clientId', eagerLoadAuthWellKnownEndpoints: true };
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue(null);
-        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        const getWellKnownEndPointsFromUrlSpy = spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
-        const obs$ = oidcConfigService.withConfigs([config]);
-        obs$.subscribe(() => {
-          expect(getWellKnownEndPointsFromUrlSpy).toHaveBeenCalledWith('authorityForTesting', '0-clientId');
-        });
-      })
-    );
-
-    it(
-      'if eagerLoadAuthWellKnownEndpoints is true but call throws error --> Error is thrown',
-      waitForAsync(() => {
-        const config = { authority: 'authorityForTesting', clientId: 'clientId', eagerLoadAuthWellKnownEndpoints: true };
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue(null);
-        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(throwError(() => new Error('ErrorError')));
-
-        const obs$ = oidcConfigService.withConfigs([config]);
-
-        obs$.subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-            expect(err.message).toEqual('Error: ErrorError');
-          },
-        });
-      })
-    );
-
-    it(
-      'if eagerLoadAuthWellKnownEndpoints is false: DO NOT call getAuthWellKnownEndPoints',
-      waitForAsync(() => {
-        const config = { authority: 'authorityForTesting', clientId: 'clientId', eagerLoadAuthWellKnownEndpoints: false };
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue(null);
-        const storeWellKnownEndpointsSpy = spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of(null));
-        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        const obs$ = oidcConfigService.withConfigs([config]);
-        obs$.subscribe(() => {
-          expect(storeWellKnownEndpointsSpy).not.toHaveBeenCalled();
-        });
-      })
-    );
-
-    it(
-      'silent_renew and start_checksession are always false when not using the browser platform',
-      waitForAsync(() => {
-        const config: OpenIdConfiguration = {
-          silentRenew: true,
-          authority: '',
-          startCheckSession: true,
-          useRefreshToken: false,
-          usePushedAuthorisationRequests: false,
-          eagerLoadAuthWellKnownEndpoints: false,
-        };
-
-        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
-
-        oidcConfigService.withConfigs([config]).subscribe((result) => {
-          expect(result[0].silentRenew).toEqual(false);
-          expect(result[0].startCheckSession).toEqual(false);
-        });
-      })
-    );
-
-    it(
-      'silent_renew and start_checksession stay on true when true is passed and using the browser platform',
-      waitForAsync(() => {
-        const config: OpenIdConfiguration = {
-          silentRenew: true,
-          authority: '',
-          startCheckSession: true,
-          useRefreshToken: false,
-          usePushedAuthorisationRequests: false,
-        };
-
-        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        spyOnProperty(platformProvider, 'isBrowser').and.returnValue(true);
-        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
-
-        oidcConfigService.withConfigs([config]).subscribe(([{ silentRenew, startCheckSession }]) => {
-          expect(silentRenew).toEqual(true);
-          expect(startCheckSession).toEqual(true);
-        });
-      })
-    );
-
-    it(
-      'setup calls setSpecialCases',
-      waitForAsync(() => {
-        const config = {
-          authority: 'authority',
-          startCheckSession: true,
-          silentRenew: true,
-          useRefreshToken: false,
-          usePushedAuthorisationRequests: false,
-        };
-
-        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        const spy = spyOn(oidcConfigService as any, 'setSpecialCases');
-        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
-
-        oidcConfigService.withConfigs([config]).subscribe(() => {
+        configService.getOpenIDConfiguration('configId1').subscribe((config) => {
+          expect(config).toBeTruthy();
           expect(spy).toHaveBeenCalled();
         });
       })
     );
 
     it(
-      'if eagerLoadAuthWellKnownEndpoints is true: fire event',
+      `returns null if config is not valid`,
       waitForAsync(() => {
-        const config = {
-          authority: 'authorityForTesting',
-          clientId: 'clientId',
-          eagerLoadAuthWellKnownEndpoints: true,
-          storage: jasmine.any(DefaultSessionStorageService),
-        };
+        const configs = [{ configId: 'configId1' }];
+        spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
+        spyOn(configValidationService, 'validateConfig').and.returnValue(false);
 
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', '0-clientId').and.returnValue(null);
-        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
-        const eventServiceSpy = spyOn(eventsService, 'fireEvent');
-        const obs$ = oidcConfigService.withConfigs([config]);
-        obs$.subscribe(() => {
-          expect(eventServiceSpy).toHaveBeenCalledWith(EventTypes.ConfigLoaded, {
-            ...DEFAULT_CONFIG,
-            ...config,
-            authWellknownEndpointUrl: 'authorityForTesting',
-            authWellknownEndpoints: { issuer: 'issuerForTesting' },
-          });
+        configService.getOpenIDConfiguration('configId1').subscribe((config) => {
+          expect(config).toBeNull();
         });
       })
     );
 
     it(
-      'setup merges default and passed config',
+      `returns null if configs are stored but not existing ID is passed`,
       waitForAsync(() => {
-        const config = {
-          authority: 'authority',
-          clientId: 'clientId',
-        };
+        (configService as any).configsInternal = { configId1: { configId: 'configId1' }, configId2: { configId: 'configId2' } };
 
-        const expected = {
-          ...DEFAULT_CONFIG,
-          ...config,
-          configId: '0-clientId',
-          authWellknownEndpointUrl: 'authority',
-          authWellknownEndpoints: { issuer: 'issuerForTesting' },
-          storage: new DefaultSessionStorageService(),
-        };
-
-        spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
-        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
-
-        oidcConfigService.withConfigs([config]).subscribe((result) => {
-          expect(result).toEqual([expected]);
+        configService.getOpenIDConfiguration('notExisting').subscribe((config) => {
+          expect(config).toBeNull();
         });
       })
     );
 
     it(
-      'setup sets special cases',
+      `sets authWellKnownEndPoints on config if authWellKnownEndPoints is stored`,
       waitForAsync(() => {
-        const config = {
-          authority: 'authority',
-          startCheckSession: true,
-          silentRenew: true,
-          clientId: 'clientId',
-        };
-
-        const expected = {
-          ...DEFAULT_CONFIG,
-          ...config,
-          configId: '0-clientId',
-          authWellknownEndpointUrl: 'authority',
-          authWellknownEndpoints: { issuer: 'issuerForTesting' },
-
-          startCheckSession: false,
-          silentRenew: false,
-          useRefreshToken: false,
-          usePushedAuthorisationRequests: false,
-          storage: new DefaultSessionStorageService(),
-        } as OpenIdConfiguration;
-
-        spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
-
+        const configs = [{ configId: 'configId1' }];
+        spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
         spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-        spyOn(oidcConfigService as any, 'hasBrowserStorage').and.returnValue(true);
-        spyOn(authWellKnownService, 'getAuthWellKnownEndPoints').and.returnValue(of({ issuer: 'issuerForTesting' }));
 
-        oidcConfigService.withConfigs([config]).subscribe((result) => {
-          expect(result[0]).toEqual(expected);
+        spyOn(storagePersistenceService, 'read').and.returnValue({ issuer: 'auth-well-known' });
+
+        configService.getOpenIDConfiguration('configId1').subscribe((config) => {
+          expect(config.authWellknownEndpoints).toEqual({ issuer: 'auth-well-known' });
         });
       })
     );
+
+    it(
+      `fires ConfigLoaded if authWellKnownEndPoints is stored`,
+      waitForAsync(() => {
+        const configs = [{ configId: 'configId1' }];
+        spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
+        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+        spyOn(storagePersistenceService, 'read').and.returnValue({ issuer: 'auth-well-known' });
+
+        const spy = spyOn(publicEventsService, 'fireEvent');
+
+        configService.getOpenIDConfiguration('configId1').subscribe((config) => {
+          expect(spy).toHaveBeenCalledOnceWith(EventTypes.ConfigLoaded, jasmine.anything());
+        });
+      })
+    );
+
+    it(
+      `stores, uses and fires event when authwellknownendpoints are passed`,
+      waitForAsync(() => {
+        const configs = [{ configId: 'configId1', authWellknownEndpoints: { issuer: 'auth-well-known' } }];
+        spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
+        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+        spyOn(storagePersistenceService, 'read').and.returnValue(null);
+
+        const fireEventSpy = spyOn(publicEventsService, 'fireEvent');
+        const storeWellKnownEndpointsSpy = spyOn(authWellKnownService, 'storeWellKnownEndpoints');
+
+        configService.getOpenIDConfiguration('configId1').subscribe((config) => {
+          expect(config).toBeTruthy();
+          expect(fireEventSpy).toHaveBeenCalledOnceWith(EventTypes.ConfigLoaded, jasmine.anything());
+          expect(storeWellKnownEndpointsSpy).toHaveBeenCalledOnceWith(config, { issuer: 'auth-well-known' });
+        });
+      })
+    );
+  });
+
+  describe('getOpenIDConfigurations', () => {
+    it(
+      `returns correct result`,
+      waitForAsync(() => {
+        spyOn(stsConfigLoader, 'loadConfigs').and.returnValue([
+          of({ configId: 'configId1' } as OpenIdConfiguration),
+          of({ configId: 'configId2' } as OpenIdConfiguration),
+        ]);
+
+        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+
+        configService.getOpenIDConfigurations('configId1').subscribe((result) => {
+          expect(result.allConfigs.length).toEqual(2);
+          expect(result.currentConfig).toBeTruthy();
+        });
+      })
+    );
+
+    it(
+      `created configId when configId is not set`,
+      waitForAsync(() => {
+        spyOn(stsConfigLoader, 'loadConfigs').and.returnValue([
+          of({ clientId: 'clientId1' } as OpenIdConfiguration),
+          of({ clientId: 'clientId2' } as OpenIdConfiguration),
+        ]);
+
+        spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+
+        configService.getOpenIDConfigurations().subscribe((result) => {
+          expect(result.allConfigs.length).toEqual(2);
+          const allConfigIds = result.allConfigs.map((x) => x.configId);
+          expect(allConfigIds).toEqual(['0-clientId1', '1-clientId2']);
+
+          expect(result.currentConfig).toBeTruthy();
+          expect(result.currentConfig.configId).toBeTruthy();
+        });
+      })
+    );
+
+    it(
+      `returns null if config is not valid`,
+      waitForAsync(() => {
+        spyOn(stsConfigLoader, 'loadConfigs').and.returnValue([
+          of({ clientId: 'clientId1' } as OpenIdConfiguration),
+          of({ clientId: 'clientId2' } as OpenIdConfiguration),
+        ]);
+
+        spyOn(configValidationService, 'validateConfigs').and.returnValue(false);
+
+        configService.getOpenIDConfigurations().subscribe(({ allConfigs, currentConfig }) => {
+          expect(allConfigs).toBeNull();
+          expect(currentConfig).toBeNull();
+        });
+      })
+    );
+  });
+
+  describe('setSpecialCases', () => {
+    it(`should set special cases when current platform is browser`, () => {
+      spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
+
+      const config = { configId: 'configId1' } as OpenIdConfiguration;
+
+      (configService as any).setSpecialCases(config);
+
+      expect(config).toEqual({
+        configId: 'configId1',
+        startCheckSession: false,
+        silentRenew: false,
+        useRefreshToken: false,
+        usePushedAuthorisationRequests: false,
+      });
+    });
+  });
+
+  describe('setStorage', () => {
+    it(`does nothing if storage is already set`, () => {
+      spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
+
+      const config = { configId: 'configId1', storage: 'something' } as OpenIdConfiguration;
+
+      (configService as any).setStorage(config);
+
+      expect(config).toEqual({ configId: 'configId1', storage: 'something' });
+    });
+
+    it(`sets storage to null if there is no browserstorage and storage is not set`, () => {
+      spyOn(configService as any, 'hasBrowserStorage').and.returnValue(false);
+
+      const config = { configId: 'configId1' } as OpenIdConfiguration;
+
+      (configService as any).setStorage(config);
+
+      expect(config).toEqual({ configId: 'configId1', storage: null });
+    });
+
+    it(`sets storage to defaultSessionStorageService if there is a browserstorage and storage is not set`, () => {
+      spyOn(configService as any, 'hasBrowserStorage').and.returnValue(true);
+
+      const config = { configId: 'configId1' } as OpenIdConfiguration;
+
+      (configService as any).setStorage(config);
+
+      expect(config.storage).toBeInstanceOf(DefaultSessionStorageService);
+    });
   });
 });
