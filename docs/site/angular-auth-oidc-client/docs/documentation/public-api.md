@@ -166,7 +166,7 @@ this.stsCallback$ = this.oidcSecurityService.stsCallback$;
 
 ## preloadAuthWellKnownDocument(configId?: string)
 
-With this method you can explicitly load your auth well-known document to persist it in the configured storage of the lib. This method will perform an http call to load and then save the information. If you do not call this method explicitly, the lib will call it when it is needed for the first time automatically.
+This method allows you to explicitly load the secure token servers well-known endpoints and persist the settings to the configured storage of this library. This method will perform an http call to load and save the information. If you do not call this method explicitly, the lib will call it when it is needed for the first time automatically.
 
 ```ts
 // single config
