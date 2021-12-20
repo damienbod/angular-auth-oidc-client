@@ -1,5 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { TestScheduler } from 'rxjs/testing';
+import { CryptoService } from '../utils/crypto/crypto-service';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
 
 describe('JwtWindowCryptoService', () => {
@@ -9,7 +10,7 @@ describe('JwtWindowCryptoService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [],
-      providers: [JwtWindowCryptoService],
+      providers: [JwtWindowCryptoService, CryptoService],
     });
   });
 

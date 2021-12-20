@@ -2,6 +2,7 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
+import { CryptoService } from '../utils/crypto/crypto-service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { TokenHelperServiceMock } from '../utils/tokenHelper/token-helper.service-mock';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
@@ -26,6 +27,7 @@ describe('TokenValidationService', () => {
           useClass: TokenHelperServiceMock,
         },
         JwtWindowCryptoService,
+        CryptoService,
       ],
     });
   });

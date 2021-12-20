@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { CryptoService } from '../utils/crypto/crypto-service';
 
 @Injectable()
 export class JwtWindowCryptoService {
-  private crypto: Crypto = window.crypto || (window as any).msCrypto; // for IE11
+  constructor(private cryptoService: CryptoService) {}
 
   generateCodeChallenge(codeVerifier: string): Observable<string> {
-    return this.calcHash(codeVerifier).pipe(map((challengeRaw: string) => base64UrlEncode(challengeRaw)));
+    return this.calcHash(codeVerifier).pipe(map((challengeRaw: string) => this.base64UrlEncode(challengeRaw)));
   }
 
   generateAtHash(accessToken: string, algorithm: string): Observable<string> {
@@ -24,7 +25,7 @@ export class JwtWindowCryptoService {
   private calcHash(valueToHash: string, algorithm: string = 'SHA-256'): Observable<string> {
     const msgBuffer: Uint8Array = new TextEncoder().encode(valueToHash);
 
-    return from(this.crypto.subtle.digest(algorithm, msgBuffer)).pipe(
+    return from(this.cryptoService.getCrypto().subtle.digest(algorithm, msgBuffer)).pipe(
       map((hashBuffer: ArrayBuffer) => {
         const hashArray: number[] = Array.from(new Uint8Array(hashBuffer));
 
@@ -41,10 +42,10 @@ export class JwtWindowCryptoService {
 
     return result;
   }
-}
 
-export function base64UrlEncode(str): string {
-  const base64: string = btoa(str);
+  private base64UrlEncode(str): string {
+    const base64: string = btoa(str);
 
-  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+  }
 }

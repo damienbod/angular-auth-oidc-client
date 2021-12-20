@@ -43,6 +43,7 @@ import { BrowserStorageService } from './storage/browser-storage.service';
 import { DefaultSessionStorageService } from './storage/default-sessionstorage.service';
 import { StoragePersistenceService } from './storage/storage-persistence.service';
 import { UserService } from './user-data/user.service';
+import { CryptoService } from './utils/crypto/crypto-service';
 import { EqualityService } from './utils/equality/equality.service';
 import { FlowHelper } from './utils/flowHelper/flow-helper.service';
 import { PlatformProvider } from './utils/platform-provider/platform.provider';
@@ -130,6 +131,7 @@ export class AuthModule {
         ClosestMatchingRouteService,
         DefaultSessionStorageService,
         BrowserStorageService,
+        CryptoService,
       ],
     };
   }
