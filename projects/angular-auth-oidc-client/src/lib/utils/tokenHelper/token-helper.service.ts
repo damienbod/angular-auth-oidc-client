@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 
@@ -6,7 +7,7 @@ const PARTS_OF_TOKEN = 3;
 
 @Injectable()
 export class TokenHelperService {
-  constructor(private readonly loggerService: LoggerService) {}
+  constructor(private readonly loggerService: LoggerService, @Inject(DOCUMENT) private document: Document) {}
 
   getTokenExpirationDate(dataIdToken: any): Date {
     if (!dataIdToken.hasOwnProperty('exp')) {
@@ -81,8 +82,11 @@ export class TokenHelperService {
       default:
         throw Error('Illegal base64url string!');
     }
-
-    const decoded = typeof window !== 'undefined' ? window.atob(output) : Buffer.from(output, 'base64').toString('binary');
+    console.log('this.document', this.document);
+    const decoded =
+      typeof this.document.defaultView !== 'undefined'
+        ? this.document.defaultView.atob(output)
+        : Buffer.from(output, 'base64').toString('binary');
 
     try {
       // Going backwards: from byte stream, to percent-encoding, to original string.

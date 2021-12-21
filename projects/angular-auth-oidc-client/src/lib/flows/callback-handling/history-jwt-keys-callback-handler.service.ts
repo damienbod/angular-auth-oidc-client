@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../../auth-state/auth-state.service';
@@ -22,7 +23,8 @@ export class HistoryJwtKeysCallbackHandlerService {
     private readonly flowsDataService: FlowsDataService,
     private readonly signInKeyDataService: SigninKeyDataService,
     private readonly storagePersistenceService: StoragePersistenceService,
-    private readonly resetAuthDataService: ResetAuthDataService
+    private readonly resetAuthDataService: ResetAuthDataService,
+    @Inject(DOCUMENT) private document: any
   ) {}
 
   // STEP 3 Code Flow, STEP 2 Implicit Flow, STEP 3 Refresh Token
@@ -110,7 +112,11 @@ export class HistoryJwtKeysCallbackHandlerService {
   }
 
   private resetBrowserHistory(): void {
-    window.history.replaceState({}, window.document.title, window.location.origin + window.location.pathname);
+    this.document.defaultView.history.replaceState(
+      {},
+      this.document.defaultView.title,
+      this.document.defaultView.location.origin + this.document.defaultView.location.pathname
+    );
   }
 
   private storeSigningKeys(jwtKeys: JwtKeys, config: OpenIdConfiguration): void {
