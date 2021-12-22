@@ -82,7 +82,7 @@ export class TokenHelperService {
       default:
         throw Error('Illegal base64url string!');
     }
-    console.log('this.document', this.document);
+
     const decoded =
       typeof this.document.defaultView !== 'undefined'
         ? this.document.defaultView.atob(output)
