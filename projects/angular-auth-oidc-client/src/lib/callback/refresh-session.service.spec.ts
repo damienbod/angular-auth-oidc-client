@@ -14,7 +14,6 @@ import { SilentRenewServiceMock } from '../iframe/silent-renew.service-mock';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
-import { UserServiceMock } from '../user-data/user-service-mock';
 import { UserService } from '../user-data/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
@@ -52,7 +51,7 @@ describe('RefreshSessionService ', () => {
           provide: RefreshSessionRefreshTokenService,
           useClass: RefreshSessionRefreshTokenServiceMock,
         },
-        { provide: UserService, useClass: UserServiceMock },
+        { provide: UserService, useClass: mockClass(UserService) },
       ],
     });
   });
@@ -321,7 +320,7 @@ describe('RefreshSessionService ', () => {
               idToken: 'some-id_token',
               accessToken: 'some-access_token',
               isAuthenticated: true,
-              userData: null,
+              userData: undefined,
               configId: 'configId1',
             });
             expect(spyInsideMap).toHaveBeenCalledTimes(1);

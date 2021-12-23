@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
+import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
-import { UserServiceMock } from '../user-data/user-service-mock';
 import { UserService } from '../user-data/user.service';
 import { FlowsDataService } from './flows-data.service';
 import { FlowsDataServiceMock } from './flows-data.service-mock';
@@ -19,7 +19,7 @@ describe('ResetAuthDataService', () => {
         ResetAuthDataService,
         { provide: AuthStateService, useClass: AuthStateServiceMock },
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
-        { provide: UserService, useClass: UserServiceMock },
+        { provide: UserService, useClass: mockClass(UserService) },
       ],
     });
   });

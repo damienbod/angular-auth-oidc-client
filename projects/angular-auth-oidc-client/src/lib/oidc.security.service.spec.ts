@@ -12,7 +12,6 @@ import { RefreshSessionServiceMock } from './callback/refresh-session.service.mo
 import { AuthWellKnownService } from './config/auth-well-known/auth-well-known.service';
 import { AuthWellKnownServiceMock } from './config/auth-well-known/auth-well-known.service-mock';
 import { ConfigurationService } from './config/config.service';
-import { ConfigurationServiceMock } from './config/config.service.mock';
 import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsDataServiceMock } from './flows/flows-data.service-mock';
 import { CheckSessionService } from './iframe/check-session.service';
@@ -22,7 +21,6 @@ import { LoginServiceMock } from './login/login.service-mock';
 import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.service';
 import { LogoffRevocationServiceMock } from './logoff-revoke/logoff-revocation.service-mock';
 import { OidcSecurityService } from './oidc.security.service';
-import { UserServiceMock } from './user-data/user-service-mock';
 import { UserService } from './user-data/user.service';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
 import { UrlService } from './utils/url/url.service';
@@ -57,7 +55,7 @@ describe('OidcSecurityService', () => {
         },
         {
           provide: UserService,
-          useClass: UserServiceMock,
+          useClass: mockClass(UserService),
         },
         {
           provide: TokenHelperService,
@@ -65,7 +63,7 @@ describe('OidcSecurityService', () => {
         },
         {
           provide: ConfigurationService,
-          useClass: ConfigurationServiceMock,
+          useClass: mockClass(ConfigurationService),
         },
         {
           provide: AuthStateService,
@@ -100,12 +98,6 @@ describe('OidcSecurityService', () => {
 
   it('should create', () => {
     expect(oidcSecurityService).toBeTruthy();
-  });
-
-  describe('userData$', () => {
-    it('is of type observable', () => {
-      expect(oidcSecurityService.userData$).toEqual(jasmine.any(Observable));
-    });
   });
 
   describe('isAuthenticated$', () => {

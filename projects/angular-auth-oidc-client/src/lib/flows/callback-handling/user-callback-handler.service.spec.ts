@@ -4,7 +4,6 @@ import { mockClass } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../../auth-state/auth-state.service-mock';
 import { LoggerService } from '../../logging/logger.service';
-import { UserServiceMock } from '../../user-data/user-service-mock';
 import { UserService } from '../../user-data/user.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
 import { ValidationResult } from '../../validation/validation-result';
@@ -28,7 +27,7 @@ describe('UserCallbackHandlerService', () => {
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: AuthStateService, useClass: AuthStateServiceMock },
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
-        { provide: UserService, useClass: UserServiceMock },
+        { provide: UserService, useClass: mockClass(UserService) },
         { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
       ],
     });

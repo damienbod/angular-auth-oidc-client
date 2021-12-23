@@ -5,7 +5,6 @@ import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { ConfigurationService } from '../config/config.service';
-import { ConfigurationServiceMock } from '../config/config.service.mock';
 import { LoggerService } from '../logging/logger.service';
 import { AuthInterceptor } from './auth.interceptor';
 import { ClosestMatchingRouteService } from './closest-matching-route.service';
@@ -34,7 +33,7 @@ describe(`AuthHttpInterceptor`, () => {
         },
         {
           provide: ConfigurationService,
-          useClass: ConfigurationServiceMock,
+          useClass: mockClass(ConfigurationService),
         },
       ],
     });

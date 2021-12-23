@@ -4,7 +4,6 @@ import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { ConfigurationService } from '../config/config.service';
-import { ConfigurationServiceMock } from '../config/config.service.mock';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
@@ -17,7 +16,6 @@ import { LoggerService } from '../logging/logger.service';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
-import { UserServiceMock } from '../user-data/user-service-mock';
 import { UserService } from '../user-data/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { IntervalService } from './interval.service';
@@ -45,7 +43,7 @@ describe('PeriodicallyTokenCheckService', () => {
         FlowHelper,
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: UserService, useClass: UserServiceMock },
+        { provide: UserService, useClass: mockClass(UserService) },
         { provide: AuthStateService, useClass: AuthStateServiceMock },
         {
           provide: RefreshSessionIframeService,
@@ -55,7 +53,7 @@ describe('PeriodicallyTokenCheckService', () => {
         IntervalService,
         { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
         PublicEventsService,
-        { provide: ConfigurationService, useClass: ConfigurationServiceMock },
+        { provide: ConfigurationService, useClass: mockClass(ConfigurationService) },
       ],
     });
   });

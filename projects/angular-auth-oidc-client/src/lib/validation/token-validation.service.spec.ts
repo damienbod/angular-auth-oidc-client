@@ -400,7 +400,7 @@ describe('TokenValidationService', () => {
       })
     );
 
-    fit(
+    it(
       'returns false if header data has kid property and jwtKeys has same kid property but they are not valid with the token',
       waitForAsync(() => {
         const kid = '5626CE6A8F4F5FCD79C6642345282CA76D337548';
