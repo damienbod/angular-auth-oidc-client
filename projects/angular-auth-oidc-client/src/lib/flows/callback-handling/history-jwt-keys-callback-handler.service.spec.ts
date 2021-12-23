@@ -11,7 +11,6 @@ import { ValidationResult } from '../../validation/validation-result';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { ResetAuthDataService } from '../reset-auth-data.service';
-import { ResetAuthDataServiceMock } from '../reset-auth-data.service-mock';
 import { SigninKeyDataService } from '../signin-key-data.service';
 import { SigninKeyDataServiceMock } from '../signin-key-data.service-mock';
 import { HistoryJwtKeysCallbackHandlerService } from './history-jwt-keys-callback-handler.service';
@@ -47,7 +46,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         { provide: SigninKeyDataService, useClass: SigninKeyDataServiceMock },
         { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
-        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
+        { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
       ],
     });
   });

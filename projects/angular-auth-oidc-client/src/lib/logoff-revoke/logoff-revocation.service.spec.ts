@@ -5,7 +5,6 @@ import { createRetriableStream } from '../../test/create-retriable-stream.helper
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
-import { ResetAuthDataServiceMock } from '../flows/reset-auth-data.service-mock';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -34,7 +33,7 @@ describe('Logout and Revoke Service', () => {
         { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: CheckSessionService, useClass: mockClass(CheckSessionService) },
-        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
+        { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
         { provide: RedirectService, useClass: RedirectServiceMock },
       ],
     });

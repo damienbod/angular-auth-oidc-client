@@ -5,7 +5,6 @@ import { LoggerService } from '../../logging/logger.service';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { ResetAuthDataService } from '../reset-auth-data.service';
-import { ResetAuthDataServiceMock } from '../reset-auth-data.service-mock';
 import { ImplicitFlowCallbackHandlerService } from './implicit-flow-callback-handler.service';
 
 describe('ImplicitFlowCallbackHandlerService', () => {
@@ -17,7 +16,7 @@ describe('ImplicitFlowCallbackHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         ImplicitFlowCallbackHandlerService,
-        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
+        { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         {

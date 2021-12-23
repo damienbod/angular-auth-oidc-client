@@ -11,7 +11,6 @@ import { StateValidationServiceMock } from '../../validation/state-validation.se
 import { ValidationResult } from '../../validation/validation-result';
 import { CallbackContext } from '../callback-context';
 import { ResetAuthDataService } from '../reset-auth-data.service';
-import { ResetAuthDataServiceMock } from '../reset-auth-data.service-mock';
 import { StateValidationCallbackHandlerService } from './state-validation-callback-handler.service';
 
 describe('StateValidationCallbackHandlerService', () => {
@@ -28,7 +27,7 @@ describe('StateValidationCallbackHandlerService', () => {
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: StateValidationService, useClass: StateValidationServiceMock },
         { provide: AuthStateService, useClass: AuthStateServiceMock },
-        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
+        { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
         {
           provide: DOCUMENT,
           useValue: {

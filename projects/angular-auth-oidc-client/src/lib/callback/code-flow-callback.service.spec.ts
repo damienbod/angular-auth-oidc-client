@@ -5,7 +5,6 @@ import { of, throwError } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
-import { FlowsServiceMock } from '../flows/flows.service-mock';
 import { CodeFlowCallbackService } from './code-flow-callback.service';
 import { IntervalService } from './interval.service';
 
@@ -21,7 +20,7 @@ describe('CodeFlowCallbackService ', () => {
       imports: [RouterTestingModule],
       providers: [
         CodeFlowCallbackService,
-        { provide: FlowsService, useClass: FlowsServiceMock },
+        { provide: FlowsService, useClass: mockClass(FlowsService) },
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         IntervalService,
       ],

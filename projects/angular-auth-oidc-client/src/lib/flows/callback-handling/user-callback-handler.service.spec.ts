@@ -9,7 +9,6 @@ import { StateValidationResult } from '../../validation/state-validation-result'
 import { ValidationResult } from '../../validation/validation-result';
 import { FlowsDataService } from '../flows-data.service';
 import { ResetAuthDataService } from '../reset-auth-data.service';
-import { ResetAuthDataServiceMock } from '../reset-auth-data.service-mock';
 import { UserCallbackHandlerService } from './user-callback-handler.service';
 
 describe('UserCallbackHandlerService', () => {
@@ -27,7 +26,7 @@ describe('UserCallbackHandlerService', () => {
         { provide: AuthStateService, useClass: AuthStateServiceMock },
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         { provide: UserService, useClass: mockClass(UserService) },
-        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
+        { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
       ],
     });
   });

@@ -4,7 +4,6 @@ import { mockClass } from '../../test/auto-mock';
 import { FlowsService } from '../flows/flows.service';
 import { FlowsServiceMock } from '../flows/flows.service-mock';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
-import { ResetAuthDataServiceMock } from '../flows/reset-auth-data.service-mock';
 import { LoggerService } from '../logging/logger.service';
 import { IntervalService } from './interval.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
@@ -22,7 +21,7 @@ describe('RefreshSessionRefreshTokenService', () => {
         RefreshSessionRefreshTokenService,
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: FlowsService, useClass: FlowsServiceMock },
-        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
+        { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
         IntervalService,
       ],
     });

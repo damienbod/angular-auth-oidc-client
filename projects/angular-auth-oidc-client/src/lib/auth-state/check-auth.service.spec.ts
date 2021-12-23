@@ -6,8 +6,7 @@ import { AutoLoginService } from '../auto-login/auto-login.service';
 import { CallbackService } from '../callback/callback.service';
 import { PeriodicallyTokenCheckService } from '../callback/periodically-token-check.service';
 import { RefreshSessionService } from '../callback/refresh-session.service';
-import { StsConfigLoader } from '../config/loader/config-loader';
-import { StsConfigLoaderMock } from '../config/loader/config-loader-mock';
+import { StsConfigLoader, StsConfigStaticLoader } from '../config/loader/config-loader';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
@@ -45,7 +44,7 @@ describe('CheckAuthService', () => {
         { provide: RefreshSessionService, useClass: mockClass(RefreshSessionService) },
         { provide: PeriodicallyTokenCheckService, useClass: mockClass(PeriodicallyTokenCheckService) },
         { provide: PopUpService, useClass: mockClass(PopUpService) },
-        { provide: StsConfigLoader, useClass: StsConfigLoaderMock },
+        { provide: StsConfigLoader, useClass: mockClass(StsConfigStaticLoader) },
         {
           provide: StoragePersistenceService,
           useClass: mockClass(StoragePersistenceService),

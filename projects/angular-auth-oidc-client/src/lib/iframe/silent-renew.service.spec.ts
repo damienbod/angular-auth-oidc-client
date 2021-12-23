@@ -4,14 +4,12 @@ import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
-import { ImplicitFlowCallbackServiceMock } from '../callback/implicit-flow-callback.service-mock';
 import { IntervalService } from '../callback/interval.service';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { FlowsServiceMock } from '../flows/flows.service-mock';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
-import { ResetAuthDataServiceMock } from '../flows/reset-auth-data.service-mock';
 import { LoggerService } from '../logging/logger.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { IFrameService } from './existing-iframe.service';
@@ -32,12 +30,12 @@ describe('SilentRenewService  ', () => {
         SilentRenewService,
         IFrameService,
         { provide: FlowsService, useClass: FlowsServiceMock },
-        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
+        { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         { provide: AuthStateService, useClass: AuthStateServiceMock },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         FlowHelper,
-        { provide: ImplicitFlowCallbackService, useClass: ImplicitFlowCallbackServiceMock },
+        { provide: ImplicitFlowCallbackService, useClass: mockClass(ImplicitFlowCallbackService) },
         IntervalService,
       ],
     });

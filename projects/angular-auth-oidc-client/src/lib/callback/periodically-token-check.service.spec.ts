@@ -8,7 +8,6 @@ import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
-import { ResetAuthDataServiceMock } from '../flows/reset-auth-data.service-mock';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { RefreshSessionIframeServiceMock } from '../iframe/refresh-session-iframe.service-mock';
 import { LoggerService } from '../logging/logger.service';
@@ -38,7 +37,7 @@ describe('PeriodicallyTokenCheckService', () => {
     TestBed.configureTestingModule({
       imports: [],
       providers: [
-        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
+        { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
         FlowHelper,
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
