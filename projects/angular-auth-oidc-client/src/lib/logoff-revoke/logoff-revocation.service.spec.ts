@@ -3,7 +3,6 @@ import { Observable, of, throwError } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
-import { DataServiceMock } from '../api/data.service-mock';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { LoggerService } from '../logging/logger.service';
@@ -27,7 +26,7 @@ describe('Logout and Revoke Service', () => {
     TestBed.configureTestingModule({
       providers: [
         LogoffRevocationService,
-        { provide: DataService, useClass: DataServiceMock },
+        { provide: DataService, useClass: mockClass(DataService) },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
         { provide: UrlService, useClass: mockClass(UrlService) },
@@ -59,6 +58,7 @@ describe('Logout and Revoke Service', () => {
       const paramToken = 'passedTokenAsParam';
       const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
       const config = { configId: 'configId1' };
+      spyOn(dataService, 'post').and.returnValue(of(null));
 
       // Act
       service.revokeAccessToken(config, paramToken);
@@ -71,6 +71,7 @@ describe('Logout and Revoke Service', () => {
       const paramToken = 'damien';
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(paramToken);
       const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+      spyOn(dataService, 'post').and.returnValue(of(null));
       const config = { configId: 'configId1' };
 
       // Act
@@ -84,6 +85,7 @@ describe('Logout and Revoke Service', () => {
       const paramToken = 'damien';
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(paramToken);
       spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+      spyOn(dataService, 'post').and.returnValue(of(null));
       const config = { configId: 'configId1' };
 
       // Act
@@ -222,6 +224,7 @@ describe('Logout and Revoke Service', () => {
       // Arrange
       const paramToken = 'passedTokenAsParam';
       const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyRefreshToken');
+      spyOn(dataService, 'post').and.returnValue(of(null));
       const config = { configId: 'configId1' };
 
       // Act
@@ -236,6 +239,7 @@ describe('Logout and Revoke Service', () => {
       spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
       const config = { configId: 'configId1' };
       const revocationSpy = spyOn(urlService, 'createRevocationEndpointBodyRefreshToken');
+      spyOn(dataService, 'post').and.returnValue(of(null));
       // Act
       service.revokeRefreshToken(config);
       // Assert
@@ -247,6 +251,7 @@ describe('Logout and Revoke Service', () => {
       const paramToken = 'damien';
       spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
       spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
+      spyOn(dataService, 'post').and.returnValue(of(null));
       const config = { configId: 'configId1' };
 
       // Act
