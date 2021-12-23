@@ -6,10 +6,9 @@ import { LoggerService } from '../logging/logger.service';
 import { OidcSecurityService } from '../oidc.security.service';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { AbstractSecurityStorage } from '../storage/abstract-security-storage';
-import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
-import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
+import { DefaultSessionStorageService } from './../storage/default-sessionstorage.service';
 import { CheckSessionService } from './check-session.service';
 import { IFrameService } from './existing-iframe.service';
 
@@ -31,8 +30,8 @@ describe('CheckSessionService', () => {
           useClass: mockClass(StoragePersistenceService),
         },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: AbstractSecurityStorage, useClass: BrowserStorageMock },
-        { provide: PlatformProvider, useClass: PlatformProviderMock },
+        { provide: AbstractSecurityStorage, useClass: mockClass(DefaultSessionStorageService) },
+        { provide: PlatformProvider, useClass: mockClass(PlatformProvider) },
       ],
     });
   });
@@ -274,6 +273,29 @@ describe('CheckSessionService', () => {
 
         const serviceAsAny = checkSessionService as any;
         serviceAsAny.checkSessionChangedInternal$.next(true);
+      })
+    );
+
+    it(
+      'emits false initially',
+      waitForAsync(() => {
+        checkSessionService.checkSessionChanged$.subscribe((result) => {
+          expect(result).toBe(false);
+        });
+      })
+    );
+
+    it(
+      'emits false then true when emitted',
+      waitForAsync(() => {
+        const expectedResultsInOrder = [false, true];
+        let counter = 0;
+        checkSessionService.checkSessionChanged$.subscribe((result) => {
+          expect(result).toBe(expectedResultsInOrder[counter]);
+          counter++;
+        });
+
+        (checkSessionService as any).checkSessionChangedInternal$.next(true);
       })
     );
   });

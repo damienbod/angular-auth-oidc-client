@@ -15,7 +15,6 @@ import { ConfigurationService } from './config/config.service';
 import { FlowsDataService } from './flows/flows-data.service';
 import { FlowsDataServiceMock } from './flows/flows-data.service-mock';
 import { CheckSessionService } from './iframe/check-session.service';
-import { CheckSessionServiceMock } from './iframe/check-session.service-mock';
 import { LoginService } from './login/login.service';
 import { LoginServiceMock } from './login/login.service-mock';
 import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.service';
@@ -47,7 +46,7 @@ describe('OidcSecurityService', () => {
         OidcSecurityService,
         {
           provide: CheckSessionService,
-          useClass: CheckSessionServiceMock,
+          useClass: mockClass(CheckSessionService),
         },
         {
           provide: CheckAuthService,
@@ -101,10 +100,6 @@ describe('OidcSecurityService', () => {
   });
 
   describe('isAuthenticated$', () => {
-    it('is of type observable', () => {
-      expect(oidcSecurityService.isAuthenticated$).toEqual(jasmine.any(Observable));
-    });
-
     it(
       'returns authStateService.authenticated$',
       waitForAsync(() => {
@@ -114,42 +109,6 @@ describe('OidcSecurityService', () => {
         });
       })
     );
-  });
-
-  describe('checkSessionChanged$', () => {
-    it('is of type observable', () => {
-      expect(oidcSecurityService.checkSessionChanged$).toEqual(jasmine.any(Observable));
-    });
-
-    it(
-      'emits false initially',
-      waitForAsync(() => {
-        spyOnProperty(oidcSecurityService, 'checkSessionChanged$', 'get').and.callThrough();
-        oidcSecurityService.checkSessionChanged$.subscribe((result) => {
-          expect(result).toBe(false);
-        });
-      })
-    );
-
-    it(
-      'emits false then true when emitted',
-      waitForAsync(() => {
-        const expectedResultsInOrder = [false, true];
-        let counter = 0;
-        oidcSecurityService.checkSessionChanged$.subscribe((result) => {
-          expect(result).toBe(expectedResultsInOrder[counter]);
-          counter++;
-        });
-
-        (checkSessionService as any).checkSessionChangedInternal$.next(true);
-      })
-    );
-  });
-
-  describe('stsCallback', () => {
-    it('is of type observable', () => {
-      expect(oidcSecurityService.stsCallback$).toEqual(jasmine.any(Observable));
-    });
   });
 
   describe('preloadAuthWellKnownDocument', () => {
