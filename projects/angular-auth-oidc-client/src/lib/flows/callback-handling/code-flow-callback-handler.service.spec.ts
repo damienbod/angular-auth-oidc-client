@@ -13,7 +13,6 @@ import { TokenValidationService } from '../../validation/token-validation.servic
 import { TokenValidationServiceMock } from '../../validation/token-validation.service-mock';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
-import { FlowsDataServiceMock } from '../flows-data.service-mock';
 import { CodeFlowCallbackHandlerService } from './code-flow-callback-handler.service';
 
 describe('CodeFlowCallbackHandlerService', () => {
@@ -30,7 +29,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: TokenValidationService, useClass: TokenValidationServiceMock },
-        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
+        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
         { provide: DataService, useClass: DataServiceMock },
       ],

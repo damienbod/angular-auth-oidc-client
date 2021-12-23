@@ -8,7 +8,6 @@ import { UserService } from '../../user-data/user.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
 import { ValidationResult } from '../../validation/validation-result';
 import { FlowsDataService } from '../flows-data.service';
-import { FlowsDataServiceMock } from '../flows-data.service-mock';
 import { ResetAuthDataService } from '../reset-auth-data.service';
 import { ResetAuthDataServiceMock } from '../reset-auth-data.service-mock';
 import { UserCallbackHandlerService } from './user-callback-handler.service';
@@ -26,7 +25,7 @@ describe('UserCallbackHandlerService', () => {
         UserCallbackHandlerService,
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: AuthStateService, useClass: AuthStateServiceMock },
-        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
+        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         { provide: UserService, useClass: mockClass(UserService) },
         { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
       ],

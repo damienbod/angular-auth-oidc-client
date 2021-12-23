@@ -4,7 +4,6 @@ import { mockClass } from '../../../test/auto-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
-import { FlowsDataServiceMock } from '../flows-data.service-mock';
 import { ResetAuthDataService } from '../reset-auth-data.service';
 import { ResetAuthDataServiceMock } from '../reset-auth-data.service-mock';
 import { ImplicitFlowCallbackHandlerService } from './implicit-flow-callback-handler.service';
@@ -20,7 +19,7 @@ describe('ImplicitFlowCallbackHandlerService', () => {
         ImplicitFlowCallbackHandlerService,
         { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
+        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         {
           provide: DOCUMENT,
           useValue: {

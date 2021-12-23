@@ -4,7 +4,6 @@ import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { UserService } from '../user-data/user.service';
 import { FlowsDataService } from './flows-data.service';
-import { FlowsDataServiceMock } from './flows-data.service-mock';
 import { ResetAuthDataService } from './reset-auth-data.service';
 
 describe('ResetAuthDataService', () => {
@@ -18,7 +17,7 @@ describe('ResetAuthDataService', () => {
       providers: [
         ResetAuthDataService,
         { provide: AuthStateService, useClass: AuthStateServiceMock },
-        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
+        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         { provide: UserService, useClass: mockClass(UserService) },
       ],
     });

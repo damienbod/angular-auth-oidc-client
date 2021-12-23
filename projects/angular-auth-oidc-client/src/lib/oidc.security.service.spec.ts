@@ -2,23 +2,18 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { mockClass } from '../test/auto-mock';
 import { AuthStateService } from './auth-state/auth-state.service';
-import { AuthStateServiceMock } from './auth-state/auth-state.service-mock';
 import { CheckAuthService } from './auth-state/check-auth.service';
-import { CheckAuthServiceMock } from './auth-state/check-auth.service-mock';
 import { CallbackService } from './callback/callback.service';
-import { CallbackServiceMock } from './callback/callback.service-mock';
 import { RefreshSessionService } from './callback/refresh-session.service';
 import { RefreshSessionServiceMock } from './callback/refresh-session.service.mock';
 import { AuthWellKnownService } from './config/auth-well-known/auth-well-known.service';
 import { AuthWellKnownServiceMock } from './config/auth-well-known/auth-well-known.service-mock';
 import { ConfigurationService } from './config/config.service';
 import { FlowsDataService } from './flows/flows-data.service';
-import { FlowsDataServiceMock } from './flows/flows-data.service-mock';
 import { CheckSessionService } from './iframe/check-session.service';
 import { LoginService } from './login/login.service';
 import { LoginServiceMock } from './login/login.service-mock';
 import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.service';
-import { LogoffRevocationServiceMock } from './logoff-revoke/logoff-revocation.service-mock';
 import { OidcSecurityService } from './oidc.security.service';
 import { UserService } from './user-data/user.service';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
@@ -50,7 +45,7 @@ describe('OidcSecurityService', () => {
         },
         {
           provide: CheckAuthService,
-          useClass: CheckAuthServiceMock,
+          useClass: mockClass(CheckAuthService),
         },
         {
           provide: UserService,
@@ -66,11 +61,11 @@ describe('OidcSecurityService', () => {
         },
         {
           provide: AuthStateService,
-          useClass: AuthStateServiceMock,
+          useClass: mockClass(AuthStateService),
         },
-        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
-        { provide: CallbackService, useClass: CallbackServiceMock },
-        { provide: LogoffRevocationService, useClass: LogoffRevocationServiceMock },
+        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
+        { provide: CallbackService, useClass: mockClass(CallbackService) },
+        { provide: LogoffRevocationService, useClass: mockClass(LogoffRevocationService) },
         { provide: LoginService, useClass: LoginServiceMock },
         { provide: RefreshSessionService, useClass: RefreshSessionServiceMock },
         { provide: UrlService, useClass: mockClass(UrlService) },
@@ -97,18 +92,6 @@ describe('OidcSecurityService', () => {
 
   it('should create', () => {
     expect(oidcSecurityService).toBeTruthy();
-  });
-
-  describe('isAuthenticated$', () => {
-    it(
-      'returns authStateService.authenticated$',
-      waitForAsync(() => {
-        const spy = spyOnProperty(authStateService, 'authenticated$', 'get').and.returnValue(of(null));
-        oidcSecurityService.isAuthenticated$.subscribe(() => {
-          expect(spy).toHaveBeenCalled();
-        });
-      })
-    );
   });
 
   describe('preloadAuthWellKnownDocument', () => {

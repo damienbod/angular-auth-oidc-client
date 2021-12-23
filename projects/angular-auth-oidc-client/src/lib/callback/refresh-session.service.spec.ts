@@ -6,7 +6,6 @@ import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.service';
 import { AuthWellKnownServiceMock } from '../config/auth-well-known/auth-well-known.service-mock';
 import { FlowsDataService } from '../flows/flows-data.service';
-import { FlowsDataServiceMock } from '../flows/flows-data.service-mock';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { RefreshSessionIframeServiceMock } from '../iframe/refresh-session-iframe.service-mock';
 import { SilentRenewService } from '../iframe/silent-renew.service';
@@ -36,7 +35,7 @@ describe('RefreshSessionService ', () => {
       imports: [],
       providers: [
         FlowHelper,
-        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
+        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         RefreshSessionService,
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: SilentRenewService, useClass: SilentRenewServiceMock },

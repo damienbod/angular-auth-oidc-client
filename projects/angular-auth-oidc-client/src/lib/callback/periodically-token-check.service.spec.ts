@@ -7,7 +7,6 @@ import { ConfigurationService } from '../config/config.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
-import { FlowsDataServiceMock } from '../flows/flows-data.service-mock';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { ResetAuthDataServiceMock } from '../flows/reset-auth-data.service-mock';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
@@ -41,7 +40,7 @@ describe('PeriodicallyTokenCheckService', () => {
       providers: [
         { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
         FlowHelper,
-        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
+        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: UserService, useClass: mockClass(UserService) },
         { provide: AuthStateService, useClass: AuthStateServiceMock },
