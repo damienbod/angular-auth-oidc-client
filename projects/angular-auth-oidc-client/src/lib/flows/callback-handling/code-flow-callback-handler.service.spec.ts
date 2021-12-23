@@ -8,7 +8,6 @@ import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
 import { TokenValidationService } from '../../validation/token-validation.service';
-import { TokenValidationServiceMock } from '../../validation/token-validation.service-mock';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { CodeFlowCallbackHandlerService } from './code-flow-callback-handler.service';
@@ -26,7 +25,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         CodeFlowCallbackHandlerService,
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: TokenValidationService, useClass: TokenValidationServiceMock },
+        { provide: TokenValidationService, useClass: mockClass(TokenValidationService) },
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
         { provide: DataService, useClass: mockClass(DataService) },
@@ -140,6 +139,8 @@ describe('CodeFlowCallbackHandlerService', () => {
           .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
+        spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+
         service.codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' }).subscribe(() => {
           expect(postSpy).toHaveBeenCalledOnceWith('tokenEndpoint', undefined, { configId: 'configId1' }, jasmine.any(HttpHeaders));
         });
@@ -157,6 +158,8 @@ describe('CodeFlowCallbackHandlerService', () => {
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+
+        spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
 
@@ -178,6 +181,8 @@ describe('CodeFlowCallbackHandlerService', () => {
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+
+        spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
         service.codeFlowCodeRequest({} as CallbackContext, config).subscribe(() => {
           const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
@@ -227,6 +232,8 @@ describe('CodeFlowCallbackHandlerService', () => {
           .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
+        spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+
         service.codeFlowCodeRequest({} as CallbackContext, config).subscribe({
           next: (res) => {
             expect(res).toBeTruthy();
@@ -257,6 +264,8 @@ describe('CodeFlowCallbackHandlerService', () => {
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+
+        spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
         service.codeFlowCodeRequest({} as CallbackContext, config).subscribe({
           next: (res) => {
