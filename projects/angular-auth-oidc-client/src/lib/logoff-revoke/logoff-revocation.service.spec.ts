@@ -9,7 +9,6 @@ import { ResetAuthDataServiceMock } from '../flows/reset-auth-data.service-mock'
 import { CheckSessionService } from '../iframe/check-session.service';
 import { CheckSessionServiceMock } from '../iframe/check-session.service-mock';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { RedirectServiceMock } from '../utils/redirect/redirect.service-mock';
@@ -32,7 +31,7 @@ describe('Logout and Revoke Service', () => {
       providers: [
         LogoffRevocationService,
         { provide: DataService, useClass: DataServiceMock },
-        { provide: LoggerService, useClass: LoggerServiceMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: CheckSessionService, useClass: CheckSessionServiceMock },

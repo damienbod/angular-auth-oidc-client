@@ -1,11 +1,11 @@
 import { HttpResponse } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { isObservable, of, throwError } from 'rxjs';
+import { mockClass } from '../../test/auto-mock';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { SigninKeyDataService } from './signin-key-data.service';
@@ -37,7 +37,7 @@ describe('Signin Key Data Service', () => {
       providers: [
         SigninKeyDataService,
         { provide: DataService, useClass: DataServiceMock },
-        { provide: LoggerService, useClass: LoggerServiceMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
       ],
     });

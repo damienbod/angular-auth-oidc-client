@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { mockClass } from '../../../test/auto-mock';
 import { FlowsDataService } from '../../flows/flows-data.service';
 import { FlowsDataServiceMock } from '../../flows/flows-data.service-mock';
 import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { JwtWindowCryptoService } from '../../validation/jwt-window-crypto.service';
@@ -25,7 +25,7 @@ describe('UrlService Tests', () => {
         UrlService,
         {
           provide: LoggerService,
-          useClass: LoggerServiceMock,
+          useClass: mockClass(LoggerService),
         },
         {
           provide: FlowsDataService,

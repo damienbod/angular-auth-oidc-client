@@ -6,7 +6,6 @@ import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -36,7 +35,7 @@ describe('User Service', () => {
           provide: StoragePersistenceService,
           useClass: mockClass(StoragePersistenceService),
         },
-        { provide: LoggerService, useClass: LoggerServiceMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: DataService, useClass: DataServiceMock },
         { provide: PlatformProvider, useClass: PlatformProviderMock },
         PublicEventsService,

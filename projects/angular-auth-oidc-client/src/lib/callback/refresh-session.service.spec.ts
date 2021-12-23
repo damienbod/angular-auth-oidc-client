@@ -1,5 +1,6 @@
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.service';
@@ -11,7 +12,6 @@ import { RefreshSessionIframeServiceMock } from '../iframe/refresh-session-ifram
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { SilentRenewServiceMock } from '../iframe/silent-renew.service-mock';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { UserServiceMock } from '../user-data/user-service-mock';
@@ -39,7 +39,7 @@ describe('RefreshSessionService ', () => {
         FlowHelper,
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
         RefreshSessionService,
-        { provide: LoggerService, useClass: LoggerServiceMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: SilentRenewService, useClass: SilentRenewServiceMock },
         { provide: AuthStateService, useClass: AuthStateServiceMock },
         { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },

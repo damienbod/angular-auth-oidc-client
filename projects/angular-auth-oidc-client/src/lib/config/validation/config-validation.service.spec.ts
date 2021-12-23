@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
+import { mockClass } from '../../../test/auto-mock';
 import { LogLevel } from '../../logging/log-level';
 import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { ConfigValidationService } from './config-validation.service';
 import { allMultipleConfigRules } from './rules';
 
@@ -11,7 +11,7 @@ describe('Config Validation Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ConfigValidationService, { provide: LoggerService, useClass: LoggerServiceMock }],
+      providers: [ConfigValidationService, { provide: LoggerService, useClass: mockClass(LoggerService) }],
     });
   });
 

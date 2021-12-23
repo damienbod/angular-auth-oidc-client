@@ -6,7 +6,6 @@ import { createRetriableStream } from '../../../test/create-retriable-stream.hel
 import { DataService } from '../../api/data.service';
 import { DataServiceMock } from '../../api/data.service-mock';
 import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
 import { ParService } from './par.service';
@@ -24,7 +23,7 @@ describe('ParService', () => {
         ParService,
         {
           provide: LoggerService,
-          useClass: LoggerServiceMock,
+          useClass: mockClass(LoggerService),
         },
         {
           provide: UrlService,

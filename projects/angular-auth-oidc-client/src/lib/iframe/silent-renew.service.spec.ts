@@ -1,5 +1,6 @@
 ﻿import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
+import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
@@ -13,7 +14,6 @@ import { FlowsServiceMock } from '../flows/flows.service-mock';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { ResetAuthDataServiceMock } from '../flows/reset-auth-data.service-mock';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { IFrameService } from './existing-iframe.service';
 import { SilentRenewService } from './silent-renew.service';
@@ -36,7 +36,7 @@ describe('SilentRenewService  ', () => {
         { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
         { provide: AuthStateService, useClass: AuthStateServiceMock },
-        { provide: LoggerService, useClass: LoggerServiceMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         FlowHelper,
         { provide: ImplicitFlowCallbackService, useClass: ImplicitFlowCallbackServiceMock },
         IntervalService,

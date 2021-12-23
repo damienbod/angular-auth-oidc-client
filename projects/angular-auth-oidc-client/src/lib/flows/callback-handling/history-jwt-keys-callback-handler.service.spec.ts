@@ -1,9 +1,9 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { mockClass } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../../auth-state/auth-state.service-mock';
 import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { JwtKey, JwtKeys } from '../../validation/jwtkeys';
@@ -43,7 +43,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         HistoryJwtKeysCallbackHandlerService,
-        { provide: LoggerService, useClass: LoggerServiceMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: AuthStateService, useClass: AuthStateServiceMock },
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
         { provide: SigninKeyDataService, useClass: SigninKeyDataServiceMock },

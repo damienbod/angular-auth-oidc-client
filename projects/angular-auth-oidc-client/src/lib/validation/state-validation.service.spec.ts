@@ -6,7 +6,6 @@ import { AuthWellKnownEndpoints } from '../config/auth-well-known/auth-well-know
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LogLevel } from '../logging/log-level';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { EqualityService } from '../utils/equality/equality.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
@@ -40,7 +39,7 @@ describe('State Validation Service', () => {
         },
         {
           provide: LoggerService,
-          useClass: LoggerServiceMock,
+          useClass: mockClass(LoggerService),
         },
         TokenHelperService,
         EqualityService,

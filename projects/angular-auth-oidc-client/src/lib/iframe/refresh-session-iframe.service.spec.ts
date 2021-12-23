@@ -2,7 +2,6 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { UrlService } from '../utils/url/url.service';
 import { RefreshSessionIframeService } from './refresh-session-iframe.service';
 import { SilentRenewService } from './silent-renew.service';
@@ -17,7 +16,7 @@ describe('RefreshSessionIframeService ', () => {
     TestBed.configureTestingModule({
       providers: [
         RefreshSessionIframeService,
-        { provide: LoggerService, useClass: LoggerServiceMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: SilentRenewService, useClass: SilentRenewServiceMock },
       ],

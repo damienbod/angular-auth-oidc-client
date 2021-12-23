@@ -1,5 +1,6 @@
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { ConfigurationService } from '../config/config.service';
@@ -13,7 +14,6 @@ import { ResetAuthDataServiceMock } from '../flows/reset-auth-data.service-mock'
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { RefreshSessionIframeServiceMock } from '../iframe/refresh-session-iframe.service-mock';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
@@ -44,7 +44,7 @@ describe('PeriodicallyTokenCheckService', () => {
         { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
         FlowHelper,
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
-        { provide: LoggerService, useClass: LoggerServiceMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: UserService, useClass: UserServiceMock },
         { provide: AuthStateService, useClass: AuthStateServiceMock },
         {

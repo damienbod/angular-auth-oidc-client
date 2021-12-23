@@ -2,7 +2,6 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -19,7 +18,6 @@ import { ConfigValidationService } from './validation/config-validation.service'
 
 describe('Configuration Service', () => {
   let configService: ConfigurationService;
-  let loggerService: LoggerService;
   let publicEventsService: PublicEventsService;
   let authWellKnownService: AuthWellKnownService;
   let storagePersistenceService: StoragePersistenceService;
@@ -33,7 +31,7 @@ describe('Configuration Service', () => {
         ConfigurationService,
         {
           provide: LoggerService,
-          useClass: LoggerServiceMock,
+          useClass: mockClass(LoggerService),
         },
         PublicEventsService,
         {
@@ -57,7 +55,6 @@ describe('Configuration Service', () => {
 
   beforeEach(() => {
     configService = TestBed.inject(ConfigurationService);
-    loggerService = TestBed.inject(LoggerService);
     publicEventsService = TestBed.inject(PublicEventsService);
     authWellKnownService = TestBed.inject(AuthWellKnownService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);

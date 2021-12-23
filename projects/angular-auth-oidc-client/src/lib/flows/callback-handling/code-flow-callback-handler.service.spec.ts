@@ -6,7 +6,6 @@ import { createRetriableStream } from '../../../test/create-retriable-stream.hel
 import { DataService } from '../../api/data.service';
 import { DataServiceMock } from '../../api/data.service-mock';
 import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { UrlService } from '../../utils/url/url.service';
@@ -29,7 +28,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       providers: [
         CodeFlowCallbackHandlerService,
         { provide: UrlService, useClass: mockClass(UrlService) },
-        { provide: LoggerService, useClass: LoggerServiceMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: TokenValidationService, useClass: TokenValidationServiceMock },
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
         { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },

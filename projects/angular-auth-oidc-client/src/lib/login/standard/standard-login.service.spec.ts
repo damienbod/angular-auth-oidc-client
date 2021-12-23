@@ -4,7 +4,6 @@ import { mockClass } from '../../../test/auto-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
 import { AuthWellKnownServiceMock } from '../../config/auth-well-known/auth-well-known.service-mock';
 import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { RedirectServiceMock } from '../../utils/redirect/redirect.service-mock';
 import { UrlService } from '../../utils/url/url.service';
@@ -25,7 +24,7 @@ describe('StandardLoginService', () => {
       imports: [],
       providers: [
         StandardLoginService,
-        { provide: LoggerService, useClass: LoggerServiceMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: ResponseTypeValidationService, useClass: ResponseTypeValidationServiceMock },
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: RedirectService, useClass: RedirectServiceMock },
