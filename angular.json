@@ -1696,11 +1696,7 @@
             "polyfills": "projects/sample-code-flow-popup/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-popup/tsconfig.app.json",
             "aot": true,
-            "assets": [
-              "projects/sample-code-flow-popup/src/favicon.ico",
-              "projects/sample-code-flow-popup/src/silent-renew.html",
-              "projects/sample-code-flow-popup/src/assets"
-            ],
+            "assets": ["projects/sample-code-flow-popup/src/favicon.ico", "projects/sample-code-flow-popup/src/assets"],
             "styles": ["projects/sample-code-flow-popup/src/styles.css"],
             "scripts": []
           },
@@ -1748,7 +1744,7 @@
             "browserTarget": "sample-code-flow-popup:build",
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
-            "port": 4205
+            "port": 4204
           },
           "configurations": {
             "production": {
