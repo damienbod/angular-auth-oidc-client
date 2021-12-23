@@ -3,7 +3,6 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockClass } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
-import { AuthStateServiceMock } from '../../auth-state/auth-state.service-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
 import { StateValidationService } from '../../validation/state-validation.service';
@@ -26,7 +25,7 @@ describe('StateValidationCallbackHandlerService', () => {
         StateValidationCallbackHandlerService,
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: StateValidationService, useClass: StateValidationServiceMock },
-        { provide: AuthStateService, useClass: AuthStateServiceMock },
+        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
         { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
         {
           provide: DOCUMENT,

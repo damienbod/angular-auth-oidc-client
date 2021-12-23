@@ -2,20 +2,16 @@ import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
-import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.service';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
-import { RefreshSessionIframeServiceMock } from '../iframe/refresh-session-iframe.service-mock';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { SilentRenewServiceMock } from '../iframe/silent-renew.service-mock';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { UserService } from '../user-data/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
-import { RefreshSessionRefreshTokenServiceMock } from './refresh-session-refresh-token.service-mock';
 import { MAX_RETRY_ATTEMPTS, RefreshSessionService } from './refresh-session.service';
 
 describe('RefreshSessionService ', () => {
@@ -38,16 +34,16 @@ describe('RefreshSessionService ', () => {
         RefreshSessionService,
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: SilentRenewService, useClass: SilentRenewServiceMock },
-        { provide: AuthStateService, useClass: AuthStateServiceMock },
+        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
         { provide: AuthWellKnownService, useClass: mockClass(AuthWellKnownService) },
         {
           provide: RefreshSessionIframeService,
-          useClass: RefreshSessionIframeServiceMock,
+          useClass: mockClass(RefreshSessionIframeService),
         },
-        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
+        { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
         {
           provide: RefreshSessionRefreshTokenService,
-          useClass: RefreshSessionRefreshTokenServiceMock,
+          useClass: mockClass(RefreshSessionRefreshTokenService),
         },
         { provide: UserService, useClass: mockClass(UserService) },
       ],
@@ -144,6 +140,8 @@ describe('RefreshSessionService ', () => {
         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
         spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+        spyOn(authStateService, 'getIdToken').and.returnValue('id-token');
+        spyOn(authStateService, 'getAccessToken').and.returnValue('access-token');
         const allConfigs = [
           {
             configId: 'configId1',
@@ -152,8 +150,8 @@ describe('RefreshSessionService ', () => {
         ];
 
         refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs).subscribe((result) => {
-          expect(result.idToken).not.toBeUndefined();
-          expect(result.accessToken).not.toBeUndefined();
+          expect(result.idToken).toEqual('id-token');
+          expect(result.accessToken).toEqual('access-token');
         });
       })
     );

@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
-import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { UserService } from '../user-data/user.service';
 import { FlowsDataService } from './flows-data.service';
 import { ResetAuthDataService } from './reset-auth-data.service';
@@ -16,7 +15,7 @@ describe('ResetAuthDataService', () => {
     TestBed.configureTestingModule({
       providers: [
         ResetAuthDataService,
-        { provide: AuthStateService, useClass: AuthStateServiceMock },
+        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         { provide: UserService, useClass: mockClass(UserService) },
       ],

@@ -2,7 +2,6 @@
 import { Observable, of, throwError } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
-import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
 import { IntervalService } from '../callback/interval.service';
 import { CallbackContext } from '../flows/callback-context';
@@ -32,7 +31,7 @@ describe('SilentRenewService  ', () => {
         { provide: FlowsService, useClass: FlowsServiceMock },
         { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
-        { provide: AuthStateService, useClass: AuthStateServiceMock },
+        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         FlowHelper,
         { provide: ImplicitFlowCallbackService, useClass: mockClass(ImplicitFlowCallbackService) },

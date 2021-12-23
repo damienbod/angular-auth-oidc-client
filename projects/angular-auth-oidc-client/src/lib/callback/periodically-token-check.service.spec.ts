@@ -2,7 +2,6 @@ import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
-import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { ConfigurationService } from '../config/config.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
@@ -42,7 +41,7 @@ describe('PeriodicallyTokenCheckService', () => {
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: UserService, useClass: mockClass(UserService) },
-        { provide: AuthStateService, useClass: AuthStateServiceMock },
+        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
         {
           provide: RefreshSessionIframeService,
           useClass: RefreshSessionIframeServiceMock,
