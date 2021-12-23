@@ -1,31 +1,21 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
+import { mockClass } from '../../test/auto-mock';
 import { AutoLoginService } from '../auto-login/auto-login.service';
 import { CallbackService } from '../callback/callback.service';
-import { CallbackServiceMock } from '../callback/callback.service-mock';
 import { PeriodicallyTokenCheckService } from '../callback/periodically-token-check.service';
-import { PeriodicallyTokenCheckServiceMock } from '../callback/periodically-token-check.service-mock';
 import { RefreshSessionService } from '../callback/refresh-session.service';
-import { RefreshSessionServiceMock } from '../callback/refresh-session.service.mock';
 import { StsConfigLoader } from '../config/loader/config-loader';
 import { StsConfigLoaderMock } from '../config/loader/config-loader-mock';
 import { CheckSessionService } from '../iframe/check-session.service';
-import { CheckSessionServiceMock } from '../iframe/check-session.service-mock';
 import { SilentRenewService } from '../iframe/silent-renew.service';
-import { SilentRenewServiceMock } from '../iframe/silent-renew.service-mock';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { PopUpService } from '../login/popup/popup.service';
-import { PopUpServiceMock } from '../login/popup/popup.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
-import { UserServiceMock } from '../user-data/user-service-mock';
 import { UserService } from '../user-data/user.service';
 import { CurrentUrlService } from '../utils/url/current-url.service';
-import { CurrentUrlServiceMock } from '../utils/url/current-url.service-mock';
 import { AuthStateService } from './auth-state.service';
-import { AuthStateServiceMock } from './auth-state.service-mock';
 import { CheckAuthService } from './check-auth.service';
 
 describe('CheckAuthService', () => {
@@ -46,25 +36,25 @@ describe('CheckAuthService', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       providers: [
-        { provide: CheckSessionService, useClass: CheckSessionServiceMock },
-        { provide: SilentRenewService, useClass: SilentRenewServiceMock },
-        { provide: UserService, useClass: UserServiceMock },
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: AuthStateService, useClass: AuthStateServiceMock },
-        { provide: CallbackService, useClass: CallbackServiceMock },
-        { provide: RefreshSessionService, useClass: RefreshSessionServiceMock },
-        { provide: PeriodicallyTokenCheckService, useClass: PeriodicallyTokenCheckServiceMock },
-        { provide: PopUpService, useClass: PopUpServiceMock },
+        { provide: CheckSessionService, useClass: mockClass(CheckSessionService) },
+        { provide: SilentRenewService, useClass: mockClass(SilentRenewService) },
+        { provide: UserService, useClass: mockClass(UserService) },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
+        { provide: CallbackService, useClass: mockClass(CallbackService) },
+        { provide: RefreshSessionService, useClass: mockClass(RefreshSessionService) },
+        { provide: PeriodicallyTokenCheckService, useClass: mockClass(PeriodicallyTokenCheckService) },
+        { provide: PopUpService, useClass: mockClass(PopUpService) },
         { provide: StsConfigLoader, useClass: StsConfigLoaderMock },
         {
           provide: StoragePersistenceService,
-          useClass: StoragePersistenceServiceMock,
+          useClass: mockClass(StoragePersistenceService),
         },
         AutoLoginService,
         CheckAuthService,
         {
           provide: CurrentUrlService,
-          useClass: CurrentUrlServiceMock,
+          useClass: mockClass(CurrentUrlService),
         },
       ],
     });
@@ -190,7 +180,13 @@ describe('CheckAuthService', () => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
-          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null, configId: 'configId1', idToken: null });
+          expect(result).toEqual({
+            isAuthenticated: true,
+            userData: undefined,
+            accessToken: undefined,
+            configId: 'configId1',
+            idToken: undefined,
+          });
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -204,7 +200,13 @@ describe('CheckAuthService', () => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
-          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null, configId: 'configId1', idToken: null });
+          expect(result).toEqual({
+            isAuthenticated: true,
+            userData: undefined,
+            accessToken: undefined,
+            configId: 'configId1',
+            idToken: undefined,
+          });
           expect(spy).not.toHaveBeenCalled();
         });
       })
@@ -221,7 +223,13 @@ describe('CheckAuthService', () => {
         const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthenticatedAndFireEvent');
         const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
         checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
-          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null, configId: 'configId1', idToken: null });
+          expect(result).toEqual({
+            isAuthenticated: true,
+            userData: undefined,
+            accessToken: undefined,
+            configId: 'configId1',
+            idToken: undefined,
+          });
           expect(setAuthorizedAndFireEventSpy).toHaveBeenCalled();
           expect(userServiceSpy).toHaveBeenCalled();
         });
@@ -239,7 +247,13 @@ describe('CheckAuthService', () => {
         const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthenticatedAndFireEvent');
         const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
         checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
-          expect(result).toEqual({ isAuthenticated: false, userData: null, accessToken: null, configId: 'configId1', idToken: null });
+          expect(result).toEqual({
+            isAuthenticated: false,
+            userData: undefined,
+            accessToken: undefined,
+            configId: 'configId1',
+            idToken: undefined,
+          });
           expect(setAuthorizedAndFireEventSpy).not.toHaveBeenCalled();
           expect(userServiceSpy).not.toHaveBeenCalled();
         });
@@ -254,7 +268,13 @@ describe('CheckAuthService', () => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
         checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
-          expect(result).toEqual({ isAuthenticated: true, userData: null, accessToken: null, configId: 'configId1', idToken: null });
+          expect(result).toEqual({
+            isAuthenticated: true,
+            userData: undefined,
+            accessToken: undefined,
+            configId: 'configId1',
+            idToken: undefined,
+          });
         });
       })
     );

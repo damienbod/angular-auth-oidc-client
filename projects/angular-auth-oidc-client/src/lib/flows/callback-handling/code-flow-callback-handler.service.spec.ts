@@ -1,6 +1,7 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { mockClass } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
 import { DataServiceMock } from '../../api/data.service-mock';
@@ -9,7 +10,6 @@ import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { UrlService } from '../../utils/url/url.service';
-import { UrlServiceMock } from '../../utils/url/url.service-mock';
 import { TokenValidationService } from '../../validation/token-validation.service';
 import { TokenValidationServiceMock } from '../../validation/token-validation.service-mock';
 import { CallbackContext } from '../callback-context';
@@ -28,7 +28,7 @@ describe('CodeFlowCallbackHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         CodeFlowCallbackHandlerService,
-        { provide: UrlService, useClass: UrlServiceMock },
+        { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: LoggerService, useClass: LoggerServiceMock },
         { provide: TokenValidationService, useClass: TokenValidationServiceMock },
         { provide: FlowsDataService, useClass: FlowsDataServiceMock },
@@ -145,7 +145,7 @@ describe('CodeFlowCallbackHandlerService', () => {
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
         service.codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' }).subscribe(() => {
-          expect(postSpy).toHaveBeenCalledOnceWith('tokenEndpoint', '', { configId: 'configId1' }, jasmine.any(HttpHeaders));
+          expect(postSpy).toHaveBeenCalledOnceWith('tokenEndpoint', undefined, { configId: 'configId1' }, jasmine.any(HttpHeaders));
         });
       })
     );

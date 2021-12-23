@@ -1,15 +1,14 @@
 import { HttpHeaders } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { mockClass } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
+import { DataServiceMock } from '../../api/data.service-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { UrlService } from '../../utils/url/url.service';
-import { DataServiceMock } from '../../api/data.service-mock';
-import { UrlServiceMock } from '../../utils/url/url.service-mock';
 import { ParService } from './par.service';
 
 describe('ParService', () => {
@@ -29,7 +28,7 @@ describe('ParService', () => {
         },
         {
           provide: UrlService,
-          useClass: UrlServiceMock,
+          useClass: mockClass(UrlService),
         },
         {
           provide: DataService,
@@ -37,7 +36,7 @@ describe('ParService', () => {
         },
         {
           provide: StoragePersistenceService,
-          useClass: StoragePersistenceServiceMock,
+          useClass: mockClass(StoragePersistenceService),
         },
       ],
     });
@@ -66,7 +65,7 @@ describe('ParService', () => {
             expect(err.message).toBe('Could not read PAR endpoint because authWellKnownEndPoints are not given');
           },
         });
-      }),
+      })
     );
 
     it(
@@ -81,7 +80,7 @@ describe('ParService', () => {
             expect(err.message).toBe('Could not read PAR endpoint from authWellKnownEndpoints');
           },
         });
-      }),
+      })
     );
 
     it(
@@ -101,7 +100,7 @@ describe('ParService', () => {
             jasmine.any(HttpHeaders)
           );
         });
-      }),
+      })
     );
 
     it(
@@ -115,7 +114,7 @@ describe('ParService', () => {
         service.postParRequest({ configId: 'configId1' }).subscribe((result) => {
           expect(result).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
         });
-      }),
+      })
     );
 
     it(
@@ -138,7 +137,7 @@ describe('ParService', () => {
             );
           },
         });
-      }),
+      })
     );
 
     it(
@@ -151,8 +150,8 @@ describe('ParService', () => {
         spyOn(dataService, 'post').and.returnValue(
           createRetriableStream(
             throwError(() => new Error('ERROR')),
-            of({ expires_in: 123, request_uri: 'request_uri' }),
-          ),
+            of({ expires_in: 123, request_uri: 'request_uri' })
+          )
         );
 
         service.postParRequest({ configId: 'configId1' }).subscribe({
@@ -161,7 +160,7 @@ describe('ParService', () => {
             expect(res).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
           },
         });
-      }),
+      })
     );
 
     it(
@@ -175,8 +174,8 @@ describe('ParService', () => {
           createRetriableStream(
             throwError(() => new Error('ERROR')),
             throwError(() => new Error('ERROR')),
-            of({ expires_in: 123, request_uri: 'request_uri' }),
-          ),
+            of({ expires_in: 123, request_uri: 'request_uri' })
+          )
         );
 
         service.postParRequest({ configId: 'configId1' }).subscribe({
@@ -185,7 +184,7 @@ describe('ParService', () => {
             expect(res).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
           },
         });
-      }),
+      })
     );
 
     it(
@@ -200,8 +199,8 @@ describe('ParService', () => {
             throwError(() => new Error('ERROR')),
             throwError(() => new Error('ERROR')),
             throwError(() => new Error('ERROR')),
-            of({ expires_in: 123, request_uri: 'request_uri' }),
-          ),
+            of({ expires_in: 123, request_uri: 'request_uri' })
+          )
         );
 
         service.postParRequest({ configId: 'configId1' }).subscribe({
@@ -209,7 +208,7 @@ describe('ParService', () => {
             expect(err).toBeTruthy();
           },
         });
-      }),
+      })
     );
   });
 });

@@ -2,16 +2,12 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterStateSnapshot, UrlSegment } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
+import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
-import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { CheckAuthService } from '../auth-state/check-auth.service';
-import { CheckAuthServiceMock } from '../auth-state/check-auth.service-mock';
 import { ConfigurationService } from '../config/config.service';
-import { ConfigurationServiceMock } from '../config/config.service.mock';
 import { LoginService } from '../login/login.service';
-import { LoginServiceMock } from '../login/login.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { AutoLoginPartialRoutesGuard } from './auto-login-partial-routes.guard';
 import { AutoLoginService } from './auto-login.service';
 
@@ -28,22 +24,22 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
       imports: [RouterTestingModule],
       providers: [
         AutoLoginService,
-        { provide: AuthStateService, useClass: AuthStateServiceMock },
+        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
         {
           provide: LoginService,
-          useClass: LoginServiceMock,
+          useClass: mockClass(LoginService),
         },
         {
           provide: StoragePersistenceService,
-          useClass: StoragePersistenceServiceMock,
+          useClass: mockClass(StoragePersistenceService),
         },
         {
           provide: CheckAuthService,
-          useClass: CheckAuthServiceMock,
+          useClass: mockClass(CheckAuthService),
         },
         {
           provide: ConfigurationService,
-          useClass: ConfigurationServiceMock,
+          useClass: mockClass(ConfigurationService),
         },
       ],
     });

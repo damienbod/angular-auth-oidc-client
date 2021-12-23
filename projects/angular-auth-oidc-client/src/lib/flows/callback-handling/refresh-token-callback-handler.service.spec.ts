@@ -1,6 +1,7 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { mockClass } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
 import { DataServiceMock } from '../../api/data.service-mock';
@@ -9,7 +10,6 @@ import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { UrlService } from '../../utils/url/url.service';
-import { UrlServiceMock } from '../../utils/url/url.service-mock';
 import { CallbackContext } from '../callback-context';
 import { RefreshTokenCallbackHandlerService } from './refresh-token-callback-handler.service';
 
@@ -22,7 +22,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         RefreshTokenCallbackHandlerService,
-        { provide: UrlService, useClass: UrlServiceMock },
+        { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: LoggerService, useClass: LoggerServiceMock },
         { provide: DataService, useClass: DataServiceMock },
         { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
@@ -69,7 +69,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
         service.refreshTokensRequestTokens({} as CallbackContext, { configId: 'configId1' }).subscribe((callbackContext) => {
-          expect(postSpy).toHaveBeenCalledOnceWith('tokenEndpoint', '', { configId: 'configId1' }, jasmine.any(HttpHeaders));
+          expect(postSpy).toHaveBeenCalledOnceWith('tokenEndpoint', undefined, { configId: 'configId1' }, jasmine.any(HttpHeaders));
           const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
           expect(httpHeaders.has('Content-Type')).toBeTrue();
           expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');

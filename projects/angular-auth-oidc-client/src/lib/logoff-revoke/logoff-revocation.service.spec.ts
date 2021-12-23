@@ -1,5 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
+import { mockClass } from '../../test/auto-mock';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
 import { DataServiceMock } from '../api/data.service-mock';
@@ -14,7 +15,6 @@ import { StoragePersistenceServiceMock } from '../storage/storage-persistence.se
 import { RedirectServiceMock } from '../utils/redirect/redirect.service-mock';
 import { UrlService } from '../utils/url/url.service';
 import { RedirectService } from './../utils/redirect/redirect.service';
-import { UrlServiceMock } from './../utils/url/url.service-mock';
 import { LogoffRevocationService } from './logoff-revocation.service';
 
 describe('Logout and Revoke Service', () => {
@@ -34,7 +34,7 @@ describe('Logout and Revoke Service', () => {
         { provide: DataService, useClass: DataServiceMock },
         { provide: LoggerService, useClass: LoggerServiceMock },
         { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
-        { provide: UrlService, useClass: UrlServiceMock },
+        { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: CheckSessionService, useClass: CheckSessionServiceMock },
         { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
         { provide: RedirectService, useClass: RedirectServiceMock },

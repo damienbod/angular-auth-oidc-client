@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { mockClass } from '../../test/auto-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { AutoLoginService } from './auto-login.service';
 
 describe('AutoLoginService ', () => {
@@ -13,7 +13,7 @@ describe('AutoLoginService ', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
-      providers: [AutoLoginService, { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock }],
+      providers: [AutoLoginService, { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) }],
     });
   });
 

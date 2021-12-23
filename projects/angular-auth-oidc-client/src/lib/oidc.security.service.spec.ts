@@ -1,5 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
+import { mockClass } from '../test/auto-mock';
 import { AuthStateService } from './auth-state/auth-state.service';
 import { AuthStateServiceMock } from './auth-state/auth-state.service-mock';
 import { CheckAuthService } from './auth-state/check-auth.service';
@@ -26,7 +27,6 @@ import { UserService } from './user-data/user.service';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
 import { TokenHelperServiceMock } from './utils/tokenHelper/token-helper.service-mock';
 import { UrlService } from './utils/url/url.service';
-import { UrlServiceMock } from './utils/url/url.service-mock';
 
 describe('OidcSecurityService', () => {
   let oidcSecurityService: OidcSecurityService;
@@ -77,7 +77,7 @@ describe('OidcSecurityService', () => {
         { provide: LogoffRevocationService, useClass: LogoffRevocationServiceMock },
         { provide: LoginService, useClass: LoginServiceMock },
         { provide: RefreshSessionService, useClass: RefreshSessionServiceMock },
-        { provide: UrlService, useClass: UrlServiceMock },
+        { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
       ],
     });

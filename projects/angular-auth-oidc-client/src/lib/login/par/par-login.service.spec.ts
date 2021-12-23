@@ -1,5 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { mockClass } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { CheckAuthServiceMock } from '../../auth-state/check-auth.service-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
@@ -8,7 +9,6 @@ import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
-import { UrlServiceMock } from '../../utils/url/url.service-mock';
 import { PopupResult } from '../popup/popup-result';
 import { PopUpService } from '../popup/popup.service';
 import { PopUpServiceMock } from '../popup/popup.service-mock';
@@ -45,7 +45,7 @@ describe('ParLoginService', () => {
         },
         {
           provide: UrlService,
-          useClass: UrlServiceMock,
+          useClass: mockClass(UrlService),
         },
         {
           provide: RedirectService,

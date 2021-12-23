@@ -1,14 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
 import { EventTypes, PublicEventsService } from '../../public-api';
+import { mockClass } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
-import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
 import { TokenValidationService } from '../validation/token-validation.service';
-import { TokenValidationServiceMock } from '../validation/token-validation.service-mock';
 import { AuthStateService } from './auth-state.service';
 
 describe('Auth State Service', () => {
@@ -22,12 +19,12 @@ describe('Auth State Service', () => {
       providers: [
         AuthStateService,
         PublicEventsService,
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: TokenValidationService, useClass: TokenValidationServiceMock },
-        { provide: PlatformProvider, useClass: PlatformProviderMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: TokenValidationService, useClass: mockClass(TokenValidationService) },
+        { provide: PlatformProvider, useClass: mockClass(PlatformProvider) },
         {
           provide: StoragePersistenceService,
-          useClass: StoragePersistenceServiceMock,
+          useClass: mockClass(StoragePersistenceService),
         },
       ],
     });

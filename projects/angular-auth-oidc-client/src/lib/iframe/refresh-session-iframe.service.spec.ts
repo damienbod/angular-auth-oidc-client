@@ -1,9 +1,9 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { mockClass } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
 import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { UrlService } from '../utils/url/url.service';
-import { UrlServiceMock } from '../utils/url/url.service-mock';
 import { RefreshSessionIframeService } from './refresh-session-iframe.service';
 import { SilentRenewService } from './silent-renew.service';
 import { SilentRenewServiceMock } from './silent-renew.service-mock';
@@ -18,7 +18,7 @@ describe('RefreshSessionIframeService ', () => {
       providers: [
         RefreshSessionIframeService,
         { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: UrlService, useClass: UrlServiceMock },
+        { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: SilentRenewService, useClass: SilentRenewServiceMock },
       ],
     });

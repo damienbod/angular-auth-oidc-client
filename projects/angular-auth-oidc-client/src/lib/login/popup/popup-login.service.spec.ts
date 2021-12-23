@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { mockClass } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { CheckAuthServiceMock } from '../../auth-state/check-auth.service-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
@@ -8,7 +9,6 @@ import { AuthWellKnownServiceMock } from '../../config/auth-well-known/auth-well
 import { LoggerService } from '../../logging/logger.service';
 import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { UrlService } from '../../utils/url/url.service';
-import { UrlServiceMock } from '../../utils/url/url.service-mock';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
 import { ResponseTypeValidationServiceMock } from '../response-type-validation/response-type-validation.service.mock';
 import { PopUpLoginService } from './popup-login.service';
@@ -32,7 +32,7 @@ describe('PopUpLoginService', () => {
         PopUpLoginService,
         { provide: LoggerService, useClass: LoggerServiceMock },
         { provide: ResponseTypeValidationService, useClass: ResponseTypeValidationServiceMock },
-        { provide: UrlService, useClass: UrlServiceMock },
+        { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
         { provide: PopUpService, useClass: PopUpServiceMock },
         { provide: CheckAuthService, useClass: CheckAuthServiceMock },
