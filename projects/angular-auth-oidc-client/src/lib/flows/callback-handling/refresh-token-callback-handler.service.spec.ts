@@ -4,10 +4,8 @@ import { of, throwError } from 'rxjs';
 import { mockClass } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
-import { DataServiceMock } from '../../api/data.service-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { UrlService } from '../../utils/url/url.service';
 import { CallbackContext } from '../callback-context';
 import { RefreshTokenCallbackHandlerService } from './refresh-token-callback-handler.service';
@@ -23,8 +21,8 @@ describe('RefreshTokenCallbackHandlerService', () => {
         RefreshTokenCallbackHandlerService,
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: DataService, useClass: DataServiceMock },
-        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
+        { provide: DataService, useClass: mockClass(DataService) },
+        { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
       ],
     });
   });

@@ -3,7 +3,6 @@ import { Observable, of, throwError } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
-import { DataServiceMock } from '../api/data.service-mock';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
@@ -11,7 +10,6 @@ import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
-import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { UserService } from './user.service';
 
@@ -36,8 +34,8 @@ describe('User Service', () => {
           useClass: mockClass(StoragePersistenceService),
         },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: DataService, useClass: DataServiceMock },
-        { provide: PlatformProvider, useClass: PlatformProviderMock },
+        { provide: DataService, useClass: mockClass(DataService) },
+        { provide: PlatformProvider, useClass: mockClass(PlatformProvider) },
         PublicEventsService,
         TokenHelperService,
         UserService,

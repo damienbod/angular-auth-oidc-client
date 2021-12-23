@@ -4,9 +4,7 @@ import { mockClass } from '../../../test/auto-mock';
 import { FlowsDataService } from '../../flows/flows-data.service';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { JwtWindowCryptoService } from '../../validation/jwt-window-crypto.service';
-import { JwtWindowCryptoServiceMock } from '../../validation/jwt-window-crypto.service-mock';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
 import { OpenIdConfiguration } from './../../config/openid-configuration';
 import { UrlService } from './url.service';
@@ -31,8 +29,8 @@ describe('UrlService Tests', () => {
           useClass: mockClass(FlowsDataService),
         },
         FlowHelper,
-        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
-        { provide: JwtWindowCryptoService, useClass: JwtWindowCryptoServiceMock },
+        { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
+        { provide: JwtWindowCryptoService, useClass: mockClass(JwtWindowCryptoService) },
       ],
     });
   });

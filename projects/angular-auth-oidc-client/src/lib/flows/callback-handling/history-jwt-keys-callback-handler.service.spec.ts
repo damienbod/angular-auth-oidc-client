@@ -4,14 +4,12 @@ import { mockClass } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { JwtKey, JwtKeys } from '../../validation/jwtkeys';
 import { ValidationResult } from '../../validation/validation-result';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { ResetAuthDataService } from '../reset-auth-data.service';
 import { SigninKeyDataService } from '../signin-key-data.service';
-import { SigninKeyDataServiceMock } from '../signin-key-data.service-mock';
 import { HistoryJwtKeysCallbackHandlerService } from './history-jwt-keys-callback-handler.service';
 
 const DUMMY_JWT_KEYS: JwtKeys = {
@@ -43,8 +41,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: AuthStateService, useClass: mockClass(AuthStateService) },
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
-        { provide: SigninKeyDataService, useClass: SigninKeyDataServiceMock },
-        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
+        { provide: SigninKeyDataService, useClass: mockClass(SigninKeyDataService) },
+        { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
         { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
       ],
     });

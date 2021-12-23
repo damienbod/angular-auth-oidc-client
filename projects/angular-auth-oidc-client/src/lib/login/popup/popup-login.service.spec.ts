@@ -8,7 +8,6 @@ import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-kno
 import { LoggerService } from '../../logging/logger.service';
 import { UrlService } from '../../utils/url/url.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
-import { ResponseTypeValidationServiceMock } from '../response-type-validation/response-type-validation.service.mock';
 import { PopUpLoginService } from './popup-login.service';
 import { PopupResult } from './popup-result';
 import { PopUpService } from './popup.service';
@@ -29,7 +28,7 @@ describe('PopUpLoginService', () => {
       providers: [
         PopUpLoginService,
         { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: ResponseTypeValidationService, useClass: ResponseTypeValidationServiceMock },
+        { provide: ResponseTypeValidationService, useClass: mockClass(ResponseTypeValidationService) },
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: AuthWellKnownService, useClass: mockClass(AuthWellKnownService) },
         { provide: PopUpService, useClass: PopUpServiceMock },

@@ -7,7 +7,6 @@ import { IntervalService } from '../callback/interval.service';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
-import { FlowsServiceMock } from '../flows/flows.service-mock';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { LoggerService } from '../logging/logger.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
@@ -28,7 +27,7 @@ describe('SilentRenewService  ', () => {
       providers: [
         SilentRenewService,
         IFrameService,
-        { provide: FlowsService, useClass: FlowsServiceMock },
+        { provide: FlowsService, useClass: mockClass(FlowsService) },
         { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         { provide: AuthStateService, useClass: mockClass(AuthStateService) },
