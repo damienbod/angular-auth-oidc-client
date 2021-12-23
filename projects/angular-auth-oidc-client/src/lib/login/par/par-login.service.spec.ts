@@ -2,7 +2,6 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockClass } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
-import { CheckAuthServiceMock } from '../../auth-state/check-auth.service-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
 import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
@@ -56,7 +55,7 @@ describe('ParLoginService', () => {
         },
         {
           provide: CheckAuthService,
-          useClass: CheckAuthServiceMock,
+          useClass: mockClass(CheckAuthService),
         },
         {
           provide: ParService,
@@ -308,6 +307,7 @@ describe('ParLoginService', () => {
 
         spyOn(parService, 'postParRequest').and.returnValue(of({ requestUri: 'requestUri' } as ParResponse));
         spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
         spyOnProperty(popupService, 'result$').and.returnValue(of({}));
         const spy = spyOn(popupService, 'openPopUp');
 

@@ -3,7 +3,6 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockClass } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
-import { CheckAuthServiceMock } from '../../auth-state/check-auth.service-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
 import { LoggerService } from '../../logging/logger.service';
 import { UrlService } from '../../utils/url/url.service';
@@ -32,7 +31,7 @@ describe('PopUpLoginService', () => {
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: AuthWellKnownService, useClass: mockClass(AuthWellKnownService) },
         { provide: PopUpService, useClass: PopUpServiceMock },
-        { provide: CheckAuthService, useClass: CheckAuthServiceMock },
+        { provide: CheckAuthService, useClass: mockClass(CheckAuthService) },
       ],
     });
   });
@@ -79,6 +78,7 @@ describe('PopUpLoginService', () => {
         spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOnProperty(popupService, 'result$').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
 
         popUpLoginService.loginWithPopUpStandard(config, [config]).subscribe(() => {
           expect(urlService.getAuthorizeUrl).toHaveBeenCalled();
@@ -97,6 +97,7 @@ describe('PopUpLoginService', () => {
         spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
         spyOnProperty(popupService, 'result$').and.returnValue(of({}));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
         const popupSpy = spyOn(popupService, 'openPopUp');
 
         popUpLoginService.loginWithPopUpStandard(config, [config]).subscribe(() => {
@@ -154,7 +155,7 @@ describe('PopUpLoginService', () => {
         spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
         spyOn(popupService, 'openPopUp');
-        const checkAuthSpy = spyOn(checkAuthService, 'checkAuth');
+        const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
         const popupResult: PopupResult = { userClosed: true };
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
