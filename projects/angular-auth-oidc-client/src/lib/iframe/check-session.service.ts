@@ -1,4 +1,5 @@
-import { Injectable, NgZone } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
@@ -31,7 +32,8 @@ export class CheckSessionService {
     private loggerService: LoggerService,
     private iFrameService: IFrameService,
     private eventService: PublicEventsService,
-    private zone: NgZone
+    private zone: NgZone,
+    @Inject(DOCUMENT) private document: any
   ) {}
 
   isCheckSessionConfigured(configuration: OpenIdConfiguration): boolean {
@@ -182,7 +184,7 @@ export class CheckSessionService {
 
   private bindMessageEventToIframe(configId: string): void {
     const iframeMessageEvent = this.messageHandler.bind(this, configId);
-    window.addEventListener('message', iframeMessageEvent, false);
+    this.document.addEventListener('message', iframeMessageEvent, false);
   }
 
   private getOrCreateIframe(configuration: OpenIdConfiguration): HTMLIFrameElement {

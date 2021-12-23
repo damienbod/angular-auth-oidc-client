@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { PopupOptions } from './popup-options';
 import { PopupResult } from './popup-result';
@@ -14,11 +15,17 @@ export class PopUpService {
     return this.resultInternal$.asObservable();
   }
 
+  private get windowInternal(): Window {
+    return this.document.defaultView;
+  }
+
+  constructor(@Inject(DOCUMENT) private document: Document) {}
+
   isCurrentlyInPopup(): boolean {
     if (this.canAccessSessionStorage()) {
       const popup = sessionStorage.getItem(this.STORAGE_IDENTIFIER);
 
-      return !!window.opener && window.opener !== window && !!popup;
+      return !!this.windowInternal.opener && this.windowInternal.opener !== this.windowInternal && !!popup;
     }
 
     return false;
@@ -26,7 +33,7 @@ export class PopUpService {
 
   openPopUp(url: string, popupOptions?: PopupOptions): void {
     const optionsToPass = this.getOptions(popupOptions);
-    this.popUp = window.open(url, '_blank', optionsToPass);
+    this.popUp = this.windowInternal.open(url, '_blank', optionsToPass);
     this.popUp.sessionStorage.setItem(this.STORAGE_IDENTIFIER, 'true');
 
     const listener = (event: MessageEvent): void => {
@@ -39,9 +46,9 @@ export class PopUpService {
       this.cleanUp(listener);
     };
 
-    window.addEventListener('message', listener, false);
+    this.windowInternal.addEventListener('message', listener, false);
 
-    this.handle = window.setInterval(() => {
+    this.handle = this.windowInternal.setInterval(() => {
       if (this.popUp.closed) {
         this.resultInternal$.next({ userClosed: true });
 
@@ -51,15 +58,17 @@ export class PopUpService {
   }
 
   sendMessageToMainWindow(url: string): void {
-    if (window.opener) {
-      this.sendMessage(url, window.location.href);
+    if (this.windowInternal.opener) {
+      const href = this.windowInternal.location.href;
+
+      this.sendMessage(url, href);
     }
   }
 
   private cleanUp(listener: any): void {
-    window.removeEventListener('message', listener, false);
+    this.windowInternal.removeEventListener('message', listener, false);
 
-    window.clearInterval(this.handle);
+    this.windowInternal.clearInterval(this.handle);
 
     if (this.popUp) {
       this.popUp.sessionStorage?.removeItem(this.STORAGE_IDENTIFIER);
@@ -69,15 +78,15 @@ export class PopUpService {
   }
 
   private sendMessage(url: string, href: string): void {
-    window.opener.postMessage(url, href);
+    this.windowInternal.opener.postMessage(url, href);
   }
 
   private getOptions(popupOptions?: PopupOptions): string {
     const popupDefaultOptions: PopupOptions = { width: 500, height: 500, left: 50, top: 50 };
 
     const options: PopupOptions = { ...popupDefaultOptions, ...(popupOptions || {}) };
-    const left: number = window.screenLeft + (window.outerWidth - options.width) / 2;
-    const top: number = window.screenTop + (window.outerHeight - options.height) / 2;
+    const left: number = this.windowInternal.screenLeft + (this.windowInternal.outerWidth - options.width) / 2;
+    const top: number = this.windowInternal.screenTop + (this.windowInternal.outerHeight - options.height) / 2;
     options.left = left;
     options.top = top;
 
