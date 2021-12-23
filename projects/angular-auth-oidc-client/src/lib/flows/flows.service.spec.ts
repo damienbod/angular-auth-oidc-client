@@ -1,20 +1,14 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { mockClass } from '../../test/auto-mock';
 import { CallbackContext } from './callback-context';
 import { CodeFlowCallbackHandlerService } from './callback-handling/code-flow-callback-handler.service';
-import { CodeFlowCallbackHandlerServiceMock } from './callback-handling/code-flow-callback-handler.service-mock';
 import { HistoryJwtKeysCallbackHandlerService } from './callback-handling/history-jwt-keys-callback-handler.service';
-import { HistoryJwtKeysCallbackHandlerServiceMock } from './callback-handling/history-jwt-keys-callback-handler.service-mock';
 import { ImplicitFlowCallbackHandlerService } from './callback-handling/implicit-flow-callback-handler.service';
-import { ImplicitFlowCallbackHandlerServiceMock } from './callback-handling/implicit-flow-callback-handler.service.mock';
 import { RefreshSessionCallbackHandlerService } from './callback-handling/refresh-session-callback-handler.service';
-import { RefreshSessionCallbackHandlerServiceMock } from './callback-handling/refresh-session-callback-handler.service-mock';
 import { RefreshTokenCallbackHandlerService } from './callback-handling/refresh-token-callback-handler.service';
-import { RefreshTokenCallbackHandlerServiceMock } from './callback-handling/refresh-token-callback-handler.service-mock';
 import { StateValidationCallbackHandlerService } from './callback-handling/state-validation-callback-handler.service';
-import { StateValidationCallbackHandlerServiceMock } from './callback-handling/state-validation-callback-handler.service-mock';
 import { UserCallbackHandlerService } from './callback-handling/user-callback-handler.service';
-import { UserCallbackHandlerServiceMock } from './callback-handling/user-callback-handler.service-mock';
 import { FlowsService } from './flows.service';
 
 describe('Flows Service', () => {
@@ -31,13 +25,13 @@ describe('Flows Service', () => {
     TestBed.configureTestingModule({
       providers: [
         FlowsService,
-        { provide: CodeFlowCallbackHandlerService, useClass: CodeFlowCallbackHandlerServiceMock },
-        { provide: ImplicitFlowCallbackHandlerService, useClass: ImplicitFlowCallbackHandlerServiceMock },
-        { provide: HistoryJwtKeysCallbackHandlerService, useClass: HistoryJwtKeysCallbackHandlerServiceMock },
-        { provide: UserCallbackHandlerService, useClass: UserCallbackHandlerServiceMock },
-        { provide: StateValidationCallbackHandlerService, useClass: StateValidationCallbackHandlerServiceMock },
-        { provide: RefreshSessionCallbackHandlerService, useClass: RefreshSessionCallbackHandlerServiceMock },
-        { provide: RefreshTokenCallbackHandlerService, useClass: RefreshTokenCallbackHandlerServiceMock },
+        { provide: CodeFlowCallbackHandlerService, useClass: mockClass(CodeFlowCallbackHandlerService) },
+        { provide: ImplicitFlowCallbackHandlerService, useClass: mockClass(ImplicitFlowCallbackHandlerService) },
+        { provide: HistoryJwtKeysCallbackHandlerService, useClass: mockClass(HistoryJwtKeysCallbackHandlerService) },
+        { provide: UserCallbackHandlerService, useClass: mockClass(UserCallbackHandlerService) },
+        { provide: StateValidationCallbackHandlerService, useClass: mockClass(StateValidationCallbackHandlerService) },
+        { provide: RefreshSessionCallbackHandlerService, useClass: mockClass(RefreshSessionCallbackHandlerService) },
+        { provide: RefreshTokenCallbackHandlerService, useClass: mockClass(RefreshTokenCallbackHandlerService) },
       ],
     });
   });

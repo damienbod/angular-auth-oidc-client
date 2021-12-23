@@ -4,10 +4,8 @@ import { isObservable, of, throwError } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
-import { DataServiceMock } from '../api/data.service-mock';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { SigninKeyDataService } from './signin-key-data.service';
 
 const DUMMY_JWKS = {
@@ -36,9 +34,9 @@ describe('Signin Key Data Service', () => {
     TestBed.configureTestingModule({
       providers: [
         SigninKeyDataService,
-        { provide: DataService, useClass: DataServiceMock },
+        { provide: DataService, useClass: mockClass(DataService) },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
+        { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
       ],
     });
   });
