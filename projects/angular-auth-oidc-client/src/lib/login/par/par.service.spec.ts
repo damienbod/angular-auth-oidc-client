@@ -4,7 +4,6 @@ import { of, throwError } from 'rxjs';
 import { mockClass } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
-import { DataServiceMock } from '../../api/data.service-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
@@ -31,7 +30,7 @@ describe('ParService', () => {
         },
         {
           provide: DataService,
-          useClass: DataServiceMock,
+          useClass: mockClass(DataService),
         },
         {
           provide: StoragePersistenceService,

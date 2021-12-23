@@ -9,7 +9,6 @@ import { CheckSessionService } from '../iframe/check-session.service';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
-import { RedirectServiceMock } from '../utils/redirect/redirect.service-mock';
 import { UrlService } from '../utils/url/url.service';
 import { RedirectService } from './../utils/redirect/redirect.service';
 import { LogoffRevocationService } from './logoff-revocation.service';
@@ -34,7 +33,7 @@ describe('Logout and Revoke Service', () => {
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: CheckSessionService, useClass: mockClass(CheckSessionService) },
         { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
-        { provide: RedirectService, useClass: RedirectServiceMock },
+        { provide: RedirectService, useClass: mockClass(RedirectService) },
       ],
     });
   });

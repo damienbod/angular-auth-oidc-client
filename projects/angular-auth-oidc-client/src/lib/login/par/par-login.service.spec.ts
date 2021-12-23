@@ -11,12 +11,9 @@ import { PopupResult } from '../popup/popup-result';
 import { PopUpService } from '../popup/popup.service';
 import { PopUpServiceMock } from '../popup/popup.service-mock';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
-import { ResponseTypeValidationServiceMock } from '../response-type-validation/response-type-validation.service.mock';
-import { RedirectServiceMock } from './../../utils/redirect/redirect.service-mock';
 import { ParLoginService } from './par-login.service';
 import { ParResponse } from './par-response';
 import { ParService } from './par.service';
-import { ParServiceMock } from './par.service-mock';
 
 describe('ParLoginService', () => {
   let service: ParLoginService;
@@ -39,7 +36,7 @@ describe('ParLoginService', () => {
         },
         {
           provide: ResponseTypeValidationService,
-          useClass: ResponseTypeValidationServiceMock,
+          useClass: mockClass(ResponseTypeValidationService),
         },
         {
           provide: UrlService,
@@ -47,7 +44,7 @@ describe('ParLoginService', () => {
         },
         {
           provide: RedirectService,
-          useClass: RedirectServiceMock,
+          useClass: mockClass(RedirectService),
         },
         {
           provide: AuthWellKnownService,
@@ -63,7 +60,7 @@ describe('ParLoginService', () => {
         },
         {
           provide: ParService,
-          useClass: ParServiceMock,
+          useClass: mockClass(ParService),
         },
       ],
     });
