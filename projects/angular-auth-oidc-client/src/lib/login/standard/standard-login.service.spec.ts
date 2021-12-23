@@ -6,7 +6,6 @@ import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
-import { ResponseTypeValidationServiceMock } from '../response-type-validation/response-type-validation.service.mock';
 import { StandardLoginService } from './standard-login.service';
 
 describe('StandardLoginService', () => {
@@ -23,7 +22,7 @@ describe('StandardLoginService', () => {
       providers: [
         StandardLoginService,
         { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: ResponseTypeValidationService, useClass: ResponseTypeValidationServiceMock },
+        { provide: ResponseTypeValidationService, useClass: mockClass(ResponseTypeValidationService) },
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: RedirectService, useClass: mockClass(RedirectService) },
         { provide: AuthWellKnownService, useClass: mockClass(AuthWellKnownService) },
