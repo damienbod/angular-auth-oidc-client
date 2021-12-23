@@ -2,7 +2,6 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { FlowsService } from '../flows/flows.service';
-import { FlowsServiceMock } from '../flows/flows.service-mock';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { LoggerService } from '../logging/logger.service';
 import { IntervalService } from './interval.service';
@@ -20,7 +19,7 @@ describe('RefreshSessionRefreshTokenService', () => {
       providers: [
         RefreshSessionRefreshTokenService,
         { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: FlowsService, useClass: FlowsServiceMock },
+        { provide: FlowsService, useClass: mockClass(FlowsService) },
         { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
         IntervalService,
       ],

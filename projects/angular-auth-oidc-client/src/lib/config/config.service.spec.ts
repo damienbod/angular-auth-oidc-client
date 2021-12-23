@@ -7,7 +7,6 @@ import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { DefaultSessionStorageService } from './../storage/default-sessionstorage.service';
-import { PlatformProviderMock } from './../utils/platform-provider/platform.provider-mock';
 import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
 import { ConfigurationService } from './config.service';
 import { StsConfigLoader } from './loader/config-loader';
@@ -40,7 +39,7 @@ describe('Configuration Service', () => {
         ConfigValidationService,
         {
           provide: PlatformProvider,
-          useClass: PlatformProviderMock,
+          useClass: mockClass(PlatformProvider),
         },
         DefaultSessionStorageService,
         {
@@ -257,7 +256,7 @@ describe('Configuration Service', () => {
 
   describe('setSpecialCases', () => {
     it(`should set special cases when current platform is browser`, () => {
-      spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
+      spyOn(platformProvider, 'isBrowser').and.returnValue(false);
 
       const config = { configId: 'configId1' } as OpenIdConfiguration;
 
@@ -275,7 +274,7 @@ describe('Configuration Service', () => {
 
   describe('setStorage', () => {
     it(`does nothing if storage is already set`, () => {
-      spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
+      spyOn(platformProvider, 'isBrowser').and.returnValue(false);
 
       const config = { configId: 'configId1', storage: 'something' } as OpenIdConfiguration;
 

@@ -18,7 +18,7 @@ describe('PlatformProvider Tests', () => {
     });
 
     const service = TestBed.inject(PlatformProvider);
-    expect(service.isBrowser).toBe(true);
+    expect(service.isBrowser()).toBe(true);
   });
 
   it('isBrowser equals true if "isPlatformBrowser" is true', () => {
@@ -27,6 +27,6 @@ describe('PlatformProvider Tests', () => {
     });
 
     const service = TestBed.inject(PlatformProvider);
-    expect(service.isBrowser).toBe(false);
+    expect(service.isBrowser()).toBe(false);
   });
 });

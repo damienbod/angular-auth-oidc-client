@@ -8,17 +8,14 @@ import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
-import { RefreshSessionIframeServiceMock } from '../iframe/refresh-session-iframe.service-mock';
 import { LoggerService } from '../logging/logger.service';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { UserService } from '../user-data/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { IntervalService } from './interval.service';
 import { PeriodicallyTokenCheckService } from './periodically-token-check.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
-import { RefreshSessionRefreshTokenServiceMock } from './refresh-session-refresh-token.service-mock';
 
 describe('PeriodicallyTokenCheckService', () => {
   let periodicallyTokenCheckService: PeriodicallyTokenCheckService;
@@ -44,11 +41,11 @@ describe('PeriodicallyTokenCheckService', () => {
         { provide: AuthStateService, useClass: mockClass(AuthStateService) },
         {
           provide: RefreshSessionIframeService,
-          useClass: RefreshSessionIframeServiceMock,
+          useClass: mockClass(RefreshSessionIframeService),
         },
-        { provide: RefreshSessionRefreshTokenService, useClass: RefreshSessionRefreshTokenServiceMock },
+        { provide: RefreshSessionRefreshTokenService, useClass: mockClass(RefreshSessionRefreshTokenService) },
         IntervalService,
-        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
+        { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
         PublicEventsService,
         { provide: ConfigurationService, useClass: mockClass(ConfigurationService) },
       ],
