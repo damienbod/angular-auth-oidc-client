@@ -5,7 +5,6 @@ import { LoggerService } from '../logging/logger.service';
 import { UrlService } from '../utils/url/url.service';
 import { RefreshSessionIframeService } from './refresh-session-iframe.service';
 import { SilentRenewService } from './silent-renew.service';
-import { SilentRenewServiceMock } from './silent-renew.service-mock';
 
 describe('RefreshSessionIframeService ', () => {
   let refreshSessionIframeService: RefreshSessionIframeService;
@@ -18,7 +17,7 @@ describe('RefreshSessionIframeService ', () => {
         RefreshSessionIframeService,
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: UrlService, useClass: mockClass(UrlService) },
-        { provide: SilentRenewService, useClass: SilentRenewServiceMock },
+        { provide: SilentRenewService, useClass: mockClass(SilentRenewService) },
       ],
     });
   });

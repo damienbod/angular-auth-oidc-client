@@ -126,33 +126,26 @@ describe('State Validation Service', () => {
     });
   });
 
-  fit('access_token should equal result.access_token and is valid if response_type is "id_token token"', () => {
-    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
-
-    config.responseType = 'id_token token';
+  it('access_token should equal result.access_token and is valid if response_type is "id_token token"', () => {
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
     spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
-
+    spyOn(tokenValidationService, 'hasIdTokenExpired').and.returnValue(false);
     spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
-
     spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
-
-    config.maxIdTokenIatOffsetAllowedInSeconds = 0;
-
-    config.clientId = '';
-
+    spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(true);
     spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
-
     spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(true);
-
     spyOn(tokenValidationService, 'validateIdTokenExpNotExpired').and.returnValue(true);
-
     spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(true);
-
     spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(of(true));
 
+    config.maxIdTokenIatOffsetAllowedInSeconds = 0;
+    config.clientId = '';
     config.autoCleanStateAfterAuthentication = false;
+    config.responseType = 'id_token token';
 
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
@@ -462,17 +455,17 @@ describe('State Validation Service', () => {
 
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
+    spyOn(tokenValidationService, 'hasIdTokenExpired').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(of(true));
     spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
-
     spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
-
     spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
-
     spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
-
     config.maxIdTokenIatOffsetAllowedInSeconds = 0;
     spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(true);
-
     spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(true);
 
     config.clientId = '';
@@ -510,6 +503,11 @@ describe('State Validation Service', () => {
   });
 
   it('Reponse is valid if authConfiguration.response_type does not equal "id_token token"', () => {
+    spyOn(tokenValidationService, 'hasIdTokenExpired').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(of(true));
     spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
     spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
@@ -574,6 +572,11 @@ describe('State Validation Service', () => {
     config.autoCleanStateAfterAuthentication = false;
     spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(of(false));
 
+    spyOn(tokenValidationService, 'hasIdTokenExpired').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(true);
+
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
@@ -610,6 +613,11 @@ describe('State Validation Service', () => {
   it('should return valid result if validateIdTokenIss is false and iss_validation_off is true', () => {
     config.issValidationOff = true;
     spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(false);
+
+    spyOn(tokenValidationService, 'hasIdTokenExpired').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(true);
 
     spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
