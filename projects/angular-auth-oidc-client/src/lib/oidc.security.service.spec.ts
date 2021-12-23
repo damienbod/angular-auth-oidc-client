@@ -5,14 +5,11 @@ import { AuthStateService } from './auth-state/auth-state.service';
 import { CheckAuthService } from './auth-state/check-auth.service';
 import { CallbackService } from './callback/callback.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
-import { RefreshSessionServiceMock } from './callback/refresh-session.service.mock';
 import { AuthWellKnownService } from './config/auth-well-known/auth-well-known.service';
-import { AuthWellKnownServiceMock } from './config/auth-well-known/auth-well-known.service-mock';
 import { ConfigurationService } from './config/config.service';
 import { FlowsDataService } from './flows/flows-data.service';
 import { CheckSessionService } from './iframe/check-session.service';
 import { LoginService } from './login/login.service';
-import { LoginServiceMock } from './login/login.service-mock';
 import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.service';
 import { OidcSecurityService } from './oidc.security.service';
 import { UserService } from './user-data/user.service';
@@ -66,10 +63,10 @@ describe('OidcSecurityService', () => {
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         { provide: CallbackService, useClass: mockClass(CallbackService) },
         { provide: LogoffRevocationService, useClass: mockClass(LogoffRevocationService) },
-        { provide: LoginService, useClass: LoginServiceMock },
-        { provide: RefreshSessionService, useClass: RefreshSessionServiceMock },
+        { provide: LoginService, useClass: mockClass(LoginService) },
+        { provide: RefreshSessionService, useClass: mockClass(RefreshSessionService) },
         { provide: UrlService, useClass: mockClass(UrlService) },
-        { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
+        { provide: AuthWellKnownService, useClass: mockClass(AuthWellKnownService) },
       ],
     });
   });

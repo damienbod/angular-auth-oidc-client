@@ -9,7 +9,6 @@ import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { DefaultSessionStorageService } from './../storage/default-sessionstorage.service';
 import { PlatformProviderMock } from './../utils/platform-provider/platform.provider-mock';
 import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
-import { AuthWellKnownServiceMock } from './auth-well-known/auth-well-known.service-mock';
 import { ConfigurationService } from './config.service';
 import { StsConfigLoader } from './loader/config-loader';
 import { StsConfigLoaderMock } from './loader/config-loader-mock';
@@ -46,7 +45,7 @@ describe('Configuration Service', () => {
         DefaultSessionStorageService,
         {
           provide: AuthWellKnownService,
-          useClass: AuthWellKnownServiceMock,
+          useClass: mockClass(AuthWellKnownService),
         },
         { provide: StsConfigLoader, useClass: StsConfigLoaderMock },
       ],

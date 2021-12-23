@@ -5,7 +5,6 @@ import { mockClass } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { CheckAuthServiceMock } from '../../auth-state/check-auth.service-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
-import { AuthWellKnownServiceMock } from '../../config/auth-well-known/auth-well-known.service-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { UrlService } from '../../utils/url/url.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
@@ -32,7 +31,7 @@ describe('PopUpLoginService', () => {
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: ResponseTypeValidationService, useClass: ResponseTypeValidationServiceMock },
         { provide: UrlService, useClass: mockClass(UrlService) },
-        { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
+        { provide: AuthWellKnownService, useClass: mockClass(AuthWellKnownService) },
         { provide: PopUpService, useClass: PopUpServiceMock },
         { provide: CheckAuthService, useClass: CheckAuthServiceMock },
       ],

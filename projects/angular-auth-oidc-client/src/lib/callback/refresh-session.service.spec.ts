@@ -4,7 +4,6 @@ import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.service';
-import { AuthWellKnownServiceMock } from '../config/auth-well-known/auth-well-known.service-mock';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { RefreshSessionIframeServiceMock } from '../iframe/refresh-session-iframe.service-mock';
@@ -40,7 +39,7 @@ describe('RefreshSessionService ', () => {
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: SilentRenewService, useClass: SilentRenewServiceMock },
         { provide: AuthStateService, useClass: AuthStateServiceMock },
-        { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
+        { provide: AuthWellKnownService, useClass: mockClass(AuthWellKnownService) },
         {
           provide: RefreshSessionIframeService,
           useClass: RefreshSessionIframeServiceMock,

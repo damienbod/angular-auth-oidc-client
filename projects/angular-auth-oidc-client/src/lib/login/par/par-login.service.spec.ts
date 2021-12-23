@@ -4,7 +4,6 @@ import { mockClass } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { CheckAuthServiceMock } from '../../auth-state/check-auth.service-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
-import { AuthWellKnownServiceMock } from '../../config/auth-well-known/auth-well-known.service-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
@@ -52,7 +51,7 @@ describe('ParLoginService', () => {
         },
         {
           provide: AuthWellKnownService,
-          useClass: AuthWellKnownServiceMock,
+          useClass: mockClass(AuthWellKnownService),
         },
         {
           provide: PopUpService,
