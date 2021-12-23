@@ -9,8 +9,7 @@ import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { DefaultSessionStorageService } from './../storage/default-sessionstorage.service';
 import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
 import { ConfigurationService } from './config.service';
-import { StsConfigLoader } from './loader/config-loader';
-import { StsConfigLoaderMock } from './loader/config-loader-mock';
+import { StsConfigLoader, StsConfigStaticLoader } from './loader/config-loader';
 import { OpenIdConfiguration } from './openid-configuration';
 import { ConfigValidationService } from './validation/config-validation.service';
 
@@ -46,7 +45,7 @@ describe('Configuration Service', () => {
           provide: AuthWellKnownService,
           useClass: mockClass(AuthWellKnownService),
         },
-        { provide: StsConfigLoader, useClass: StsConfigLoaderMock },
+        { provide: StsConfigLoader, useClass: mockClass(StsConfigStaticLoader) },
       ],
     });
   });
