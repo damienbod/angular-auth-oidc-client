@@ -25,7 +25,6 @@ import { OidcSecurityService } from './oidc.security.service';
 import { UserServiceMock } from './user-data/user-service-mock';
 import { UserService } from './user-data/user.service';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
-import { TokenHelperServiceMock } from './utils/tokenHelper/token-helper.service-mock';
 import { UrlService } from './utils/url/url.service';
 
 describe('OidcSecurityService', () => {
@@ -62,7 +61,7 @@ describe('OidcSecurityService', () => {
         },
         {
           provide: TokenHelperService,
-          useClass: TokenHelperServiceMock,
+          useClass: mockClass(TokenHelperService),
         },
         {
           provide: ConfigurationService,

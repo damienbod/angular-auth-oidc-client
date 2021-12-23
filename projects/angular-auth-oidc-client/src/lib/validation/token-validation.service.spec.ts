@@ -4,7 +4,6 @@ import { mockClass } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
 import { CryptoService } from '../utils/crypto/crypto-service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
-import { TokenHelperServiceMock } from '../utils/tokenHelper/token-helper.service-mock';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
 import { TokenValidationService } from './token-validation.service';
 
@@ -24,7 +23,7 @@ describe('TokenValidationService', () => {
         },
         {
           provide: TokenHelperService,
-          useClass: TokenHelperServiceMock,
+          useClass: mockClass(TokenHelperService),
         },
         JwtWindowCryptoService,
         CryptoService,
@@ -401,12 +400,13 @@ describe('TokenValidationService', () => {
       })
     );
 
-    it(
-      'returns false if header data has kid property and jwtKeys has same kid property but they are not valid with' + ' the token',
+    fit(
+      'returns false if header data has kid property and jwtKeys has same kid property but they are not valid with the token',
       waitForAsync(() => {
         const kid = '5626CE6A8F4F5FCD79C6642345282CA76D337548';
 
         spyOn(tokenHelperService, 'getHeaderFromToken').and.returnValue({ alg: 'RS256', kid });
+        spyOn(tokenHelperService, 'getSignatureFromToken').and.returnValue('');
 
         const jwtKeys = {
           keys: [
