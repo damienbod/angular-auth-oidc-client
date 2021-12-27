@@ -23,10 +23,10 @@ describe('ImplicitFlowCallbackHandlerService', () => {
           provide: DOCUMENT,
           useValue: {
             location: {
-              get hash() {
+              get hash(): string {
                 return '&anyFakeHash';
               },
-              set hash(v) {},
+              set hash(_value) {},
             },
           },
         },

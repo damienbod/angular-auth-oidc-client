@@ -9,7 +9,6 @@ import { SilentRenewService } from './silent-renew.service';
 describe('RefreshSessionIframeService ', () => {
   let refreshSessionIframeService: RefreshSessionIframeService;
   let urlService: UrlService;
-  let silentRenewService: SilentRenewService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -24,7 +23,6 @@ describe('RefreshSessionIframeService ', () => {
 
   beforeEach(() => {
     refreshSessionIframeService = TestBed.inject(RefreshSessionIframeService);
-    silentRenewService = TestBed.inject(SilentRenewService);
     urlService = TestBed.inject(UrlService);
   });
 

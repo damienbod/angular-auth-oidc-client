@@ -85,7 +85,7 @@ describe('RefreshSessionService ', () => {
         ];
 
         const extraCustomParams = { extra: 'custom' };
-        refreshSessionService.userForceRefreshSession(allConfigs[0], allConfigs, extraCustomParams).subscribe((result) => {
+        refreshSessionService.userForceRefreshSession(allConfigs[0], allConfigs, extraCustomParams).subscribe(() => {
           expect(writeSpy).toHaveBeenCalledOnceWith('storageCustomParamsRefresh', extraCustomParams, allConfigs[0]);
         });
       })
@@ -107,7 +107,7 @@ describe('RefreshSessionService ', () => {
         const writeSpy = spyOn(storagePersistenceService, 'write');
 
         const extraCustomParams = { extra: 'custom' };
-        refreshSessionService.userForceRefreshSession(allConfigs[0], allConfigs, extraCustomParams).subscribe((result) => {
+        refreshSessionService.userForceRefreshSession(allConfigs[0], allConfigs, extraCustomParams).subscribe(() => {
           expect(writeSpy).toHaveBeenCalledOnceWith('storageCustomParamsAuthRequest', extraCustomParams, allConfigs[0]);
         });
       })
@@ -128,7 +128,7 @@ describe('RefreshSessionService ', () => {
         ];
         const writeSpy = spyOn(storagePersistenceService, 'write');
 
-        refreshSessionService.userForceRefreshSession(allConfigs[0], allConfigs).subscribe((result) => {
+        refreshSessionService.userForceRefreshSession(allConfigs[0], allConfigs).subscribe(() => {
           expect(writeSpy).not.toHaveBeenCalled();
         });
       })

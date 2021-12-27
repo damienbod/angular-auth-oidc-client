@@ -20,17 +20,17 @@ describe('PopUpService', () => {
     getItem: (key: string): string => {
       return key in store ? store[key] : null;
     },
-    setItem: (key: string, value: string) => {
+    setItem: (key: string, value: string): void => {
       store[key] = `${value}`;
     },
-    removeItem: (key: string) => {
+    removeItem: (key: string): void => {
       delete store[key];
     },
-    clear: () => {
+    clear: (): void => {
       store = {};
     },
     length: 1,
-    key: (i) => '',
+    key: (_i): string => '',
   };
 
   it('should create', () => {
@@ -206,7 +206,7 @@ describe('PopUpService', () => {
     it(
       'removes popup from sessionstorage, closes and nulls when popup is opened',
       waitForAsync(() => {
-        const popupMock = { anyThing: 'truthy', sessionStorage: mockStorage, close: () => {} };
+        const popupMock = { anyThing: 'truthy', sessionStorage: mockStorage, close: (): void => {} };
         const removeItemSpy = spyOn(mockStorage, 'removeItem');
         const closeSpy = spyOn(popupMock, 'close');
         (popUpService as any).popUp = popupMock;

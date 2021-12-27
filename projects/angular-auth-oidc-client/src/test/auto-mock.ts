@@ -1,4 +1,4 @@
-export function mockClass<T>(obj: new (...args: any[]) => T) {
+export function mockClass<T>(obj: new (...args: any[]) => T): any {
   const keys = Object.getOwnPropertyNames(obj.prototype);
   const allMethods = keys.filter((key) => {
     try {
@@ -11,7 +11,7 @@ export function mockClass<T>(obj: new (...args: any[]) => T) {
 
   const mockedClass = class T {};
 
-  allMethods.forEach((method) => (mockedClass.prototype[method] = () => {}));
+  allMethods.forEach((method) => (mockedClass.prototype[method] = (): void => {}));
 
   allProperties.forEach((method) => {
     Object.defineProperty(mockedClass.prototype, method, {

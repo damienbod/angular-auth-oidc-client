@@ -65,7 +65,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
           .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
-        service.refreshTokensRequestTokens({} as CallbackContext, { configId: 'configId1' }).subscribe((callbackContext) => {
+        service.refreshTokensRequestTokens({} as CallbackContext, { configId: 'configId1' }).subscribe(() => {
           expect(postSpy).toHaveBeenCalledOnceWith('tokenEndpoint', undefined, { configId: 'configId1' }, jasmine.any(HttpHeaders));
           const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
           expect(httpHeaders.has('Content-Type')).toBeTrue();
@@ -82,7 +82,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
           .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
-        service.refreshTokensRequestTokens({} as CallbackContext, { configId: 'configId1' }).subscribe((callbackContext) => {
+        service.refreshTokensRequestTokens({} as CallbackContext, { configId: 'configId1' }).subscribe(() => {
           const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
           expect(httpHeaders.has('Content-Type')).toBeTrue();
           expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');

@@ -94,7 +94,7 @@ export class SilentRenewService {
     };
 
     return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext, config, allConfigs).pipe(
-      catchError((errorFromFlow) => {
+      catchError(() => {
         this.intervalService.stopPeriodicTokenCheck();
         this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
 

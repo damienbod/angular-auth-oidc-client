@@ -20,7 +20,6 @@ describe('OidcSecurityService', () => {
   let oidcSecurityService: OidcSecurityService;
   let configurationService: ConfigurationService;
   let authStateService: AuthStateService;
-  let checkSessionService: CheckSessionService;
   let authWellKnownService: AuthWellKnownService;
   let tokenHelperService: TokenHelperService;
   let flowsDataService: FlowsDataService;
@@ -73,7 +72,6 @@ describe('OidcSecurityService', () => {
 
   beforeEach(() => {
     oidcSecurityService = TestBed.inject(OidcSecurityService);
-    checkSessionService = TestBed.inject(CheckSessionService);
     tokenHelperService = TestBed.inject(TokenHelperService);
     configurationService = TestBed.inject(ConfigurationService);
     authStateService = TestBed.inject(AuthStateService);

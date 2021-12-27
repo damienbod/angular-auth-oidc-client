@@ -429,7 +429,7 @@ describe('Logout and Revoke Service', () => {
       // Arrange
       spyOn(service, 'getEndSessionUrl').and.returnValue('someValue');
       const spy = jasmine.createSpy();
-      const urlHandler = (url) => {
+      const urlHandler = (url): void => {
         spy(url);
       };
       const redirectSpy = spyOn(redirectService, 'redirectTo');
@@ -550,7 +550,7 @@ describe('Logout and Revoke Service', () => {
         spyOn(service, 'revokeRefreshToken').and.returnValue(of({ any: 'thing' }));
         spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
         const logoffSpy = spyOn(service, 'logoff');
-        const urlHandler = (url) => {};
+        const urlHandler = (_url): void => {};
         const config = { configId: 'configId1' };
 
         // Act

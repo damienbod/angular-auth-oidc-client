@@ -27,7 +27,7 @@ export class UserCallbackHandlerService {
     allConfigs: OpenIdConfiguration[]
   ): Observable<CallbackContext> {
     const { isRenewProcess, validationResult, authResult, refreshToken } = callbackContext;
-    const { autoUserInfo, renewUserInfoAfterTokenRenew, configId } = configuration;
+    const { autoUserInfo, renewUserInfoAfterTokenRenew } = configuration;
 
     if (!autoUserInfo) {
       if (!isRenewProcess || renewUserInfoAfterTokenRenew) {

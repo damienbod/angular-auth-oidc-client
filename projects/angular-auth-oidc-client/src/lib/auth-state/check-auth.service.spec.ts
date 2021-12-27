@@ -287,7 +287,7 @@ describe('CheckAuthService', () => {
 
         const spy = spyOn(authStateService, 'setAuthenticatedAndFireEvent');
 
-        checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
+        checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -302,7 +302,7 @@ describe('CheckAuthService', () => {
 
         const spy = spyOn(userService, 'publishUserDataIfExists');
 
-        checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
+        checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -322,7 +322,7 @@ describe('CheckAuthService', () => {
 
         const spy = spyOn(periodicallyTokenCheckService, 'startTokenValidationPeriodically');
 
-        checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
+        checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -337,7 +337,7 @@ describe('CheckAuthService', () => {
         spyOn(checkSessionService, 'isCheckSessionConfigured').and.returnValue(true);
         const spy = spyOn(checkSessionService, 'start');
 
-        checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
+        checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -352,7 +352,7 @@ describe('CheckAuthService', () => {
         spyOn(silentRenewService, 'isSilentRenewConfigured').and.returnValue(true);
         const spy = spyOn(silentRenewService, 'getOrCreateIframe');
 
-        checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
+        checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -366,7 +366,7 @@ describe('CheckAuthService', () => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const spy = spyOn(autoLoginService, 'checkSavedRedirectRouteAndNavigate');
 
-        checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
+        checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
           expect(spy).toHaveBeenCalledTimes(1);
           expect(spy).toHaveBeenCalledOnceWith(allConfigs[0]);
         });
@@ -381,7 +381,7 @@ describe('CheckAuthService', () => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         const spy = spyOn(autoLoginService, 'checkSavedRedirectRouteAndNavigate');
 
-        checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
+        checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
           expect(spy).toHaveBeenCalledTimes(0);
         });
       })
@@ -399,7 +399,7 @@ describe('CheckAuthService', () => {
         spyOn(silentRenewService, 'isSilentRenewConfigured').and.returnValue(true);
         const spy = spyOn(silentRenewService, 'getOrCreateIframe');
 
-        checkAuthService.checkAuthIncludingServer(allConfigs[0], allConfigs).subscribe((result) => {
+        checkAuthService.checkAuthIncludingServer(allConfigs[0], allConfigs).subscribe(() => {
           expect(spy).toHaveBeenCalled();
         });
       })
@@ -453,7 +453,7 @@ describe('CheckAuthService', () => {
           })
         );
 
-        checkAuthService.checkAuthIncludingServer(allConfigs[0], allConfigs).subscribe((result) => {
+        checkAuthService.checkAuthIncludingServer(allConfigs[0], allConfigs).subscribe(() => {
           expect(checkSessionServiceStartSpy).toHaveBeenCalledOnceWith(allConfigs[0]);
           expect(periodicallyTokenCheckServiceSpy).toHaveBeenCalledTimes(1);
           expect(getOrCreateIframeSpy).toHaveBeenCalledOnceWith(allConfigs[0]);
@@ -485,7 +485,7 @@ describe('CheckAuthService', () => {
           })
         );
 
-        checkAuthService.checkAuthIncludingServer(allConfigs[0], allConfigs).subscribe((result) => {
+        checkAuthService.checkAuthIncludingServer(allConfigs[0], allConfigs).subscribe(() => {
           expect(checkSessionServiceStartSpy).toHaveBeenCalledOnceWith(allConfigs[0]);
           expect(periodicallyTokenCheckServiceSpy).toHaveBeenCalledTimes(1);
           expect(getOrCreateIframeSpy).not.toHaveBeenCalled();

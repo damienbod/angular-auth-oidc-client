@@ -30,10 +30,10 @@ describe('StateValidationCallbackHandlerService', () => {
           provide: DOCUMENT,
           useValue: {
             location: {
-              get hash() {
+              get hash(): string {
                 return '&anyFakeHash';
               },
-              set hash(v) {},
+              set hash(_value) {},
             },
           },
         },
@@ -89,7 +89,7 @@ describe('StateValidationCallbackHandlerService', () => {
         const allConfigs = [{ configId: 'configId1' }];
 
         service.callbackStateValidation({} as CallbackContext, allConfigs[0], allConfigs).subscribe({
-          error: (err) => {
+          error: () => {
             expect(loggerSpy).toHaveBeenCalledOnceWith(
               allConfigs[0],
               'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
@@ -114,7 +114,7 @@ describe('StateValidationCallbackHandlerService', () => {
         const allConfigs = [{ configId: 'configId1' }];
 
         service.callbackStateValidation({ isRenewProcess: true } as CallbackContext, allConfigs[0], allConfigs).subscribe({
-          error: (err) => {
+          error: () => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
               isAuthenticated: false,

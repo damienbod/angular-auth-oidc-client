@@ -99,7 +99,7 @@ describe('StandardLoginService', () => {
       spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
       const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
       const spy = jasmine.createSpy();
-      const urlHandler = (url) => {
+      const urlHandler = (url): void => {
         spy(url);
       };
       standardLoginService.loginStandard(config, { urlHandler });

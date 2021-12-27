@@ -14,10 +14,10 @@ describe('Redirect Service Tests', () => {
           provide: DOCUMENT,
           useValue: {
             location: {
-              get href() {
+              get href(): string {
                 return 'fakeUrl';
               },
-              set href(v) {},
+              set href(_value) {},
             },
           },
         },

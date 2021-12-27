@@ -107,7 +107,7 @@ describe('CheckSessionService', () => {
   it('start() does not call pollServerSession() if scheduledHeartBeatRunning is set', () => {
     const config = { configId: 'configId1' };
     const spy = spyOn<any>(checkSessionService, 'pollServerSession');
-    (checkSessionService as any).scheduledHeartBeatRunning = () => {};
+    (checkSessionService as any).scheduledHeartBeatRunning = (): void => {};
     checkSessionService.start(config);
     expect(spy).not.toHaveBeenCalled();
   });

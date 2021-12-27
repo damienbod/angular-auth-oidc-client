@@ -203,7 +203,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
 
         service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe({
-          error: (err) => {
+          error: () => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(setNonceSpy).toHaveBeenCalledTimes(1);
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
@@ -232,7 +232,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
 
         service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe({
-          error: (err) => {
+          error: () => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(setNonceSpy).toHaveBeenCalledTimes(1);
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({

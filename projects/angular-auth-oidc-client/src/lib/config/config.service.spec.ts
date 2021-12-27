@@ -170,7 +170,7 @@ describe('Configuration Service', () => {
 
         const spy = spyOn(publicEventsService, 'fireEvent');
 
-        configService.getOpenIDConfiguration('configId1').subscribe((config) => {
+        configService.getOpenIDConfiguration('configId1').subscribe(() => {
           expect(spy).toHaveBeenCalledOnceWith(EventTypes.ConfigLoaded, jasmine.anything());
         });
       })

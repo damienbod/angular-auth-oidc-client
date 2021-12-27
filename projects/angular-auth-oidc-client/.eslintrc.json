@@ -1,6 +1,6 @@
 {
   "extends": "../../.eslintrc.json",
-  "ignorePatterns": ["!**/*", "**/*.spec.ts", "**/*mock.ts"],
+  "ignorePatterns": ["!**/*"],
   "overrides": [
     {
       "files": ["*.ts"],
@@ -27,7 +27,15 @@
         ],
         "@typescript-eslint/typedef": ["error"],
         "@typescript-eslint/explicit-function-return-type": ["error"],
-        "newline-before-return": ["error"]
+        "newline-before-return": ["error"],
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            "argsIgnorePattern": "^_",
+            "varsIgnorePattern": "^_",
+            "caughtErrorsIgnorePattern": "^_"
+          }
+        ]
       }
     },
     {

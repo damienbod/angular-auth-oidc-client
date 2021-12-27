@@ -191,7 +191,7 @@ describe('ParLoginService', () => {
         spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
         const redirectToSpy = spyOn(redirectService, 'redirectTo');
         const spy = jasmine.createSpy();
-        const urlHandler = (url) => {
+        const urlHandler = (url): void => {
           spy(url);
         };
 
@@ -310,7 +310,7 @@ describe('ParLoginService', () => {
         spyOnProperty(popupService, 'result$').and.returnValue(of({}));
         const spy = spyOn(popupService, 'openPopUp');
 
-        service.loginWithPopUpPar(config, allConfigs).subscribe((result) => {
+        service.loginWithPopUpPar(config, allConfigs).subscribe(() => {
           expect(spy).toHaveBeenCalledOnceWith('some-par-url', undefined);
         });
       })
