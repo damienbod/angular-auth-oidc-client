@@ -10,7 +10,6 @@ import { ResponseTypeValidationService } from '../response-type-validation/respo
 import { PopUpLoginService } from './popup-login.service';
 import { PopupResult } from './popup-result';
 import { PopUpService } from './popup.service';
-import { PopUpServiceMock } from './popup.service-mock';
 
 describe('PopUpLoginService', () => {
   let popUpLoginService: PopUpLoginService;
@@ -30,7 +29,7 @@ describe('PopUpLoginService', () => {
         { provide: ResponseTypeValidationService, useClass: mockClass(ResponseTypeValidationService) },
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: AuthWellKnownService, useClass: mockClass(AuthWellKnownService) },
-        { provide: PopUpService, useClass: PopUpServiceMock },
+        { provide: PopUpService, useClass: mockClass(PopUpService) },
         { provide: CheckAuthService, useClass: mockClass(CheckAuthService) },
       ],
     });

@@ -8,7 +8,6 @@ import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
 import { PopupResult } from '../popup/popup-result';
 import { PopUpService } from '../popup/popup.service';
-import { PopUpServiceMock } from '../popup/popup.service-mock';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
 import { ParLoginService } from './par-login.service';
 import { ParResponse } from './par-response';
@@ -51,7 +50,7 @@ describe('ParLoginService', () => {
         },
         {
           provide: PopUpService,
-          useClass: PopUpServiceMock,
+          useClass: mockClass(PopUpService),
         },
         {
           provide: CheckAuthService,

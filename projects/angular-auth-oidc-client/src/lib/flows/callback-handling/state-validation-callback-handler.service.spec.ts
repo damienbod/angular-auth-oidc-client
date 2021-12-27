@@ -6,7 +6,6 @@ import { AuthStateService } from '../../auth-state/auth-state.service';
 import { LoggerService } from '../../logging/logger.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
 import { StateValidationService } from '../../validation/state-validation.service';
-import { StateValidationServiceMock } from '../../validation/state-validation.service-mock';
 import { ValidationResult } from '../../validation/validation-result';
 import { CallbackContext } from '../callback-context';
 import { ResetAuthDataService } from '../reset-auth-data.service';
@@ -24,7 +23,7 @@ describe('StateValidationCallbackHandlerService', () => {
       providers: [
         StateValidationCallbackHandlerService,
         { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: StateValidationService, useClass: StateValidationServiceMock },
+        { provide: StateValidationService, useClass: mockClass(StateValidationService) },
         { provide: AuthStateService, useClass: mockClass(AuthStateService) },
         { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
         {
