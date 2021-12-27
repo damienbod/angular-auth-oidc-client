@@ -27,8 +27,10 @@ describe('OidcSecurityService', () => {
   let loginService: LoginService;
   let refreshSessionService: RefreshSessionService;
   let checkAuthService: CheckAuthService;
+  let checkSessionService: CheckSessionService;
   let userService: UserService;
   let urlService: UrlService;
+  let callbackService: CallbackService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -83,10 +85,64 @@ describe('OidcSecurityService', () => {
     userService = TestBed.inject(UserService);
     urlService = TestBed.inject(UrlService);
     authWellKnownService = TestBed.inject(AuthWellKnownService);
+    checkSessionService = TestBed.inject(CheckSessionService);
+    callbackService = TestBed.inject(CallbackService);
   });
 
   it('should create', () => {
     expect(oidcSecurityService).toBeTruthy();
+  });
+
+  describe('userData$', () => {
+    it(
+      'calls userService.userData$',
+      waitForAsync(() => {
+        const spy = spyOnProperty(userService, 'userData$').and.returnValue(of({ some: 'data' }));
+
+        oidcSecurityService.userData$.subscribe(() => {
+          expect(spy).toHaveBeenCalledTimes(1);
+        });
+      })
+    );
+  });
+
+  describe('isAuthenticated$', () => {
+    it(
+      'calls authStateService.isAuthenticated$',
+      waitForAsync(() => {
+        const spy = spyOnProperty(authStateService, 'authenticated$').and.returnValue(of({ some: 'data' }));
+
+        oidcSecurityService.isAuthenticated$.subscribe(() => {
+          expect(spy).toHaveBeenCalledTimes(1);
+        });
+      })
+    );
+  });
+
+  describe('checkSessionChanged$', () => {
+    it(
+      'calls checkSessionService.checkSessionChanged$',
+      waitForAsync(() => {
+        const spy = spyOnProperty(checkSessionService, 'checkSessionChanged$').and.returnValue(of(true));
+
+        oidcSecurityService.checkSessionChanged$.subscribe(() => {
+          expect(spy).toHaveBeenCalledTimes(1);
+        });
+      })
+    );
+  });
+
+  describe('stsCallback$', () => {
+    it(
+      'calls callbackService.stsCallback$',
+      waitForAsync(() => {
+        const spy = spyOnProperty(callbackService, 'stsCallback$').and.returnValue(of({ some: 'data' }));
+
+        oidcSecurityService.stsCallback$.subscribe(() => {
+          expect(spy).toHaveBeenCalledTimes(1);
+        });
+      })
+    );
   });
 
   describe('preloadAuthWellKnownDocument', () => {

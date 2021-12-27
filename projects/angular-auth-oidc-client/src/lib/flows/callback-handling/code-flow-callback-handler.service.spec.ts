@@ -121,8 +121,27 @@ describe('CodeFlowCallbackHandlerService', () => {
     );
 
     it(
-      'throws error if no tokenEndpoint is given',
+      'throws error if authWellknownEndpoints is null is given',
       waitForAsync(() => {
+        spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', { configId: 'configId1' }).and.returnValue(null);
+
+        service.codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' }).subscribe({
+          error: (err) => {
+            expect(err).toBeTruthy();
+          },
+        });
+      })
+    );
+
+    it(
+      'throws error if tokenendpoint is null is given',
+      waitForAsync(() => {
+        spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+        spyOn(storagePersistenceService, 'read')
+          .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
+          .and.returnValue({ tokenEndpoint: null });
+
         service.codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' }).subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
