@@ -1,5 +1,5 @@
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { delay, of, throwError } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.service';
@@ -219,11 +219,12 @@ describe('RefreshSessionService ', () => {
       })
     );
 
-    xit('occurs timeout error and retry mechanism exhausted max retry count throws error', fakeAsync(() => {
+    it('occurs timeout error and retry mechanism exhausted max retry count throws error', fakeAsync(() => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
       spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
+      spyOnProperty(silentRenewService, 'refreshSessionWithIFrameCompleted$').and.returnValue(of(null).pipe(delay(11000)));
+
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
-      spyOnProperty(silentRenewService, 'refreshSessionWithIFrameCompleted$').and.returnValue(of());
       const allConfigs = [
         {
           configId: 'configId1',
@@ -247,7 +248,7 @@ describe('RefreshSessionService ', () => {
       tick(allConfigs[0].silentRenewTimeoutInSeconds * 10000);
     }));
 
-    xit('occurs unknown error throws it to subscriber', fakeAsync(() => {
+    it('occurs unknown error throws it to subscriber', fakeAsync(() => {
       const allConfigs = [
         {
           configId: 'configId1',
@@ -258,6 +259,7 @@ describe('RefreshSessionService ', () => {
       const expectedErrorMessage = 'Test error message';
 
       spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
+      spyOnProperty(silentRenewService, 'refreshSessionWithIFrameCompleted$').and.returnValue(of(null));
       spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(throwError(() => new Error(expectedErrorMessage)));
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
 
