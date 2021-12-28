@@ -7,7 +7,7 @@ sidebar_position: 8
 
 The library supports route-based automatic login thanks to the two included route guards: `AutoLoginPartialRoutesGuard` and `AutoLoginAllRoutesGuard`. The guards implement the necessary handlers for both `canActivate` and `canLoad`, and they will preserve the route upon completing a successful login.
 
-*IMPORTANT: If you are using multiple configurations, the guards currently select the first provided configuration to perform the login.*
+_IMPORTANT: If you are using multiple configurations, the guards currently select the first provided configuration to perform the login._
 
 ## Common Scenarios
 
@@ -79,4 +79,4 @@ const appRoutes: Routes = [
 ];
 ```
 
-[Source Code](../projects/sample-code-flow-auto-login)
+[Source Code](../../../../../projects/sample-code-flow-auto-login)
