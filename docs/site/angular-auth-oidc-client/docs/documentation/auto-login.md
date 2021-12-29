@@ -79,4 +79,4 @@ const appRoutes: Routes = [
 ];
 ```
 
-[Source Code](../../../../../projects/sample-code-flow-auto-login)
+[Source Code](../../../../../projects/sample-code-flow-auto-login/src/app/app.routes.ts)
