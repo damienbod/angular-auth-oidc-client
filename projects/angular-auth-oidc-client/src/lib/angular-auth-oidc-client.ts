@@ -13,6 +13,7 @@ export * from './interceptor/auth.interceptor';
 export * from './logging/log-level';
 export * from './login/login-response';
 export * from './login/popup/popup-options';
+export * from './login/popup/popup.service';
 export * from './oidc.security.service';
 export * from './public-events/event-types';
 export * from './public-events/notification';
