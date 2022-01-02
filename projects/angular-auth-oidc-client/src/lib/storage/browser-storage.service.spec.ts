@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
+import { mockClass } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { BrowserStorageService } from './browser-storage.service';
 
 describe('Browser Service', () => {
@@ -8,7 +8,7 @@ describe('Browser Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [BrowserStorageService, { provide: LoggerService, useClass: LoggerServiceMock }],
+      providers: [BrowserStorageService, { provide: LoggerService, useClass: mockClass(LoggerService) }],
     });
   });
 
@@ -88,7 +88,7 @@ describe('Browser Service', () => {
       const config = { configId: 'configId1' };
       spyOn(service as any, 'hasStorage').and.returnValue(true);
       const serviceObject = {
-        write: (a, b) => {},
+        write: (_a, _b): void => {},
       };
       const writeSpy = spyOn(serviceObject, 'write').and.callThrough();
       spyOn(service as any, 'getStorage').and.returnValue(serviceObject);
@@ -103,7 +103,7 @@ describe('Browser Service', () => {
       const config = { configId: 'configId1' };
       spyOn(service as any, 'hasStorage').and.returnValue(true);
       const serviceObject = {
-        write: (a, b) => {},
+        write: (_a, _b): void => {},
       };
       const writeSpy = spyOn(serviceObject, 'write').and.callThrough();
       const somethingFalsy = '';
@@ -134,7 +134,7 @@ describe('Browser Service', () => {
       spyOn(service as any, 'hasStorage').and.returnValue(true);
       const config = { configId: 'configId1' };
       const serviceObject = {
-        remove: (a) => {},
+        remove: (_a): void => {},
       };
       const setItemSpy = spyOn(serviceObject, 'remove').and.callThrough();
       spyOn(service as any, 'getStorage').and.returnValue(serviceObject);
@@ -165,7 +165,7 @@ describe('Browser Service', () => {
       spyOn(service as any, 'hasStorage').and.returnValue(true);
 
       const serviceObject = {
-        clear: () => {},
+        clear: (): void => {},
       };
 
       const setItemSpy = spyOn(serviceObject, 'clear').and.callThrough();

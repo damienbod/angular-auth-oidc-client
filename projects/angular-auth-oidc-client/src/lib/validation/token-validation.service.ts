@@ -360,8 +360,8 @@ export class TokenValidationService {
 
     const algorithm: RsaHashedImportParams | EcKeyImportParams = this.getImportAlg(alg);
 
-    const signingInput: string = this.tokenHelperService.getSigningInputFromToken(idToken, true, configuration);
-    const rawSignature: string = this.tokenHelperService.getSignatureFromToken(idToken, true, configuration);
+    const signingInput = this.tokenHelperService.getSigningInputFromToken(idToken, true, configuration);
+    const rawSignature = this.tokenHelperService.getSignatureFromToken(idToken, true, configuration);
 
     const agent: string = this.document.defaultView.navigator.userAgent.toLowerCase();
 

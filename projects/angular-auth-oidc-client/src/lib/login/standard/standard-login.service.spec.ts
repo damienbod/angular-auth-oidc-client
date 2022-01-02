@@ -1,15 +1,11 @@
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { mockClass } from '../../../test/auto-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
-import { AuthWellKnownServiceMock } from '../../config/auth-well-known/auth-well-known.service-mock';
 import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { RedirectService } from '../../utils/redirect/redirect.service';
-import { RedirectServiceMock } from '../../utils/redirect/redirect.service-mock';
 import { UrlService } from '../../utils/url/url.service';
-import { UrlServiceMock } from '../../utils/url/url.service-mock';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
-import { ResponseTypeValidationServiceMock } from '../response-type-validation/response-type-validation.service.mock';
 import { StandardLoginService } from './standard-login.service';
 
 describe('StandardLoginService', () => {
@@ -25,11 +21,11 @@ describe('StandardLoginService', () => {
       imports: [],
       providers: [
         StandardLoginService,
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: ResponseTypeValidationService, useClass: ResponseTypeValidationServiceMock },
-        { provide: UrlService, useClass: UrlServiceMock },
-        { provide: RedirectService, useClass: RedirectServiceMock },
-        { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: ResponseTypeValidationService, useClass: mockClass(ResponseTypeValidationService) },
+        { provide: UrlService, useClass: mockClass(UrlService) },
+        { provide: RedirectService, useClass: mockClass(RedirectService) },
+        { provide: AuthWellKnownService, useClass: mockClass(AuthWellKnownService) },
       ],
     });
   });
@@ -103,7 +99,7 @@ describe('StandardLoginService', () => {
       spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
       const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
       const spy = jasmine.createSpy();
-      const urlHandler = (url) => {
+      const urlHandler = (url): void => {
         spy(url);
       };
       standardLoginService.loginStandard(config, { urlHandler });

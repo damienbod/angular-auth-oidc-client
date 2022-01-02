@@ -1,11 +1,9 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { TestScheduler } from 'rxjs/testing';
 import { CryptoService } from '../utils/crypto/crypto-service';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
 
 describe('JwtWindowCryptoService', () => {
   let service: JwtWindowCryptoService;
-  let testScheduler: TestScheduler;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -16,9 +14,6 @@ describe('JwtWindowCryptoService', () => {
 
   beforeEach(() => {
     service = TestBed.inject(JwtWindowCryptoService);
-    testScheduler = new TestScheduler((actual, expected) => {
-      expect(actual).toBe(expected);
-    });
   });
 
   it('should create', () => {

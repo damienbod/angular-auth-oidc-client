@@ -1,10 +1,9 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { mockClass } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { CryptoService } from '../utils/crypto/crypto-service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
-import { TokenHelperServiceMock } from '../utils/tokenHelper/token-helper.service-mock';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
 import { TokenValidationService } from './token-validation.service';
 
@@ -20,11 +19,11 @@ describe('TokenValidationService', () => {
         TokenValidationService,
         {
           provide: LoggerService,
-          useClass: LoggerServiceMock,
+          useClass: mockClass(LoggerService),
         },
         {
           provide: TokenHelperService,
-          useClass: TokenHelperServiceMock,
+          useClass: mockClass(TokenHelperService),
         },
         JwtWindowCryptoService,
         CryptoService,
@@ -407,6 +406,7 @@ describe('TokenValidationService', () => {
         const kid = '5626CE6A8F4F5FCD79C6642345282CA76D337548';
 
         spyOn(tokenHelperService, 'getHeaderFromToken').and.returnValue({ alg: 'RS256', kid });
+        spyOn(tokenHelperService, 'getSignatureFromToken').and.returnValue('');
 
         const jwtKeys = {
           keys: [

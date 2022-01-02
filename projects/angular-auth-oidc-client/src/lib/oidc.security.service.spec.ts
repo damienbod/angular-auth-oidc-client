@@ -1,38 +1,25 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
+import { mockClass } from '../test/auto-mock';
 import { AuthStateService } from './auth-state/auth-state.service';
-import { AuthStateServiceMock } from './auth-state/auth-state.service-mock';
 import { CheckAuthService } from './auth-state/check-auth.service';
-import { CheckAuthServiceMock } from './auth-state/check-auth.service-mock';
 import { CallbackService } from './callback/callback.service';
-import { CallbackServiceMock } from './callback/callback.service-mock';
 import { RefreshSessionService } from './callback/refresh-session.service';
-import { RefreshSessionServiceMock } from './callback/refresh-session.service.mock';
 import { AuthWellKnownService } from './config/auth-well-known/auth-well-known.service';
-import { AuthWellKnownServiceMock } from './config/auth-well-known/auth-well-known.service-mock';
 import { ConfigurationService } from './config/config.service';
-import { ConfigurationServiceMock } from './config/config.service.mock';
 import { FlowsDataService } from './flows/flows-data.service';
-import { FlowsDataServiceMock } from './flows/flows-data.service-mock';
 import { CheckSessionService } from './iframe/check-session.service';
-import { CheckSessionServiceMock } from './iframe/check-session.service-mock';
 import { LoginService } from './login/login.service';
-import { LoginServiceMock } from './login/login.service-mock';
 import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.service';
-import { LogoffRevocationServiceMock } from './logoff-revoke/logoff-revocation.service-mock';
 import { OidcSecurityService } from './oidc.security.service';
-import { UserServiceMock } from './user-data/user-service-mock';
 import { UserService } from './user-data/user.service';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
-import { TokenHelperServiceMock } from './utils/tokenHelper/token-helper.service-mock';
 import { UrlService } from './utils/url/url.service';
-import { UrlServiceMock } from './utils/url/url.service-mock';
 
 describe('OidcSecurityService', () => {
   let oidcSecurityService: OidcSecurityService;
   let configurationService: ConfigurationService;
   let authStateService: AuthStateService;
-  let checkSessionService: CheckSessionService;
   let authWellKnownService: AuthWellKnownService;
   let tokenHelperService: TokenHelperService;
   let flowsDataService: FlowsDataService;
@@ -40,8 +27,10 @@ describe('OidcSecurityService', () => {
   let loginService: LoginService;
   let refreshSessionService: RefreshSessionService;
   let checkAuthService: CheckAuthService;
+  let checkSessionService: CheckSessionService;
   let userService: UserService;
   let urlService: UrlService;
+  let callbackService: CallbackService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -50,42 +39,41 @@ describe('OidcSecurityService', () => {
         OidcSecurityService,
         {
           provide: CheckSessionService,
-          useClass: CheckSessionServiceMock,
+          useClass: mockClass(CheckSessionService),
         },
         {
           provide: CheckAuthService,
-          useClass: CheckAuthServiceMock,
+          useClass: mockClass(CheckAuthService),
         },
         {
           provide: UserService,
-          useClass: UserServiceMock,
+          useClass: mockClass(UserService),
         },
         {
           provide: TokenHelperService,
-          useClass: TokenHelperServiceMock,
+          useClass: mockClass(TokenHelperService),
         },
         {
           provide: ConfigurationService,
-          useClass: ConfigurationServiceMock,
+          useClass: mockClass(ConfigurationService),
         },
         {
           provide: AuthStateService,
-          useClass: AuthStateServiceMock,
+          useClass: mockClass(AuthStateService),
         },
-        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
-        { provide: CallbackService, useClass: CallbackServiceMock },
-        { provide: LogoffRevocationService, useClass: LogoffRevocationServiceMock },
-        { provide: LoginService, useClass: LoginServiceMock },
-        { provide: RefreshSessionService, useClass: RefreshSessionServiceMock },
-        { provide: UrlService, useClass: UrlServiceMock },
-        { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
+        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
+        { provide: CallbackService, useClass: mockClass(CallbackService) },
+        { provide: LogoffRevocationService, useClass: mockClass(LogoffRevocationService) },
+        { provide: LoginService, useClass: mockClass(LoginService) },
+        { provide: RefreshSessionService, useClass: mockClass(RefreshSessionService) },
+        { provide: UrlService, useClass: mockClass(UrlService) },
+        { provide: AuthWellKnownService, useClass: mockClass(AuthWellKnownService) },
       ],
     });
   });
 
   beforeEach(() => {
     oidcSecurityService = TestBed.inject(OidcSecurityService);
-    checkSessionService = TestBed.inject(CheckSessionService);
     tokenHelperService = TestBed.inject(TokenHelperService);
     configurationService = TestBed.inject(ConfigurationService);
     authStateService = TestBed.inject(AuthStateService);
@@ -97,6 +85,8 @@ describe('OidcSecurityService', () => {
     userService = TestBed.inject(UserService);
     urlService = TestBed.inject(UrlService);
     authWellKnownService = TestBed.inject(AuthWellKnownService);
+    checkSessionService = TestBed.inject(CheckSessionService);
+    callbackService = TestBed.inject(CallbackService);
   });
 
   it('should create', () => {
@@ -104,61 +94,55 @@ describe('OidcSecurityService', () => {
   });
 
   describe('userData$', () => {
-    it('is of type observable', () => {
-      expect(oidcSecurityService.userData$).toEqual(jasmine.any(Observable));
-    });
+    it(
+      'calls userService.userData$',
+      waitForAsync(() => {
+        const spy = spyOnProperty(userService, 'userData$').and.returnValue(of({ some: 'data' }));
+
+        oidcSecurityService.userData$.subscribe(() => {
+          expect(spy).toHaveBeenCalledTimes(1);
+        });
+      })
+    );
   });
 
   describe('isAuthenticated$', () => {
-    it('is of type observable', () => {
-      expect(oidcSecurityService.isAuthenticated$).toEqual(jasmine.any(Observable));
-    });
-
     it(
-      'returns authStateService.authenticated$',
+      'calls authStateService.isAuthenticated$',
       waitForAsync(() => {
-        const spy = spyOnProperty(authStateService, 'authenticated$', 'get').and.returnValue(of(null));
+        const spy = spyOnProperty(authStateService, 'authenticated$').and.returnValue(of({ some: 'data' }));
+
         oidcSecurityService.isAuthenticated$.subscribe(() => {
-          expect(spy).toHaveBeenCalled();
+          expect(spy).toHaveBeenCalledTimes(1);
         });
       })
     );
   });
 
   describe('checkSessionChanged$', () => {
-    it('is of type observable', () => {
-      expect(oidcSecurityService.checkSessionChanged$).toEqual(jasmine.any(Observable));
-    });
-
     it(
-      'emits false initially',
+      'calls checkSessionService.checkSessionChanged$',
       waitForAsync(() => {
-        spyOnProperty(oidcSecurityService, 'checkSessionChanged$', 'get').and.callThrough();
-        oidcSecurityService.checkSessionChanged$.subscribe((result) => {
-          expect(result).toBe(false);
-        });
-      })
-    );
+        const spy = spyOnProperty(checkSessionService, 'checkSessionChanged$').and.returnValue(of(true));
 
-    it(
-      'emits false then true when emitted',
-      waitForAsync(() => {
-        const expectedResultsInOrder = [false, true];
-        let counter = 0;
-        oidcSecurityService.checkSessionChanged$.subscribe((result) => {
-          expect(result).toBe(expectedResultsInOrder[counter]);
-          counter++;
+        oidcSecurityService.checkSessionChanged$.subscribe(() => {
+          expect(spy).toHaveBeenCalledTimes(1);
         });
-
-        (checkSessionService as any).checkSessionChangedInternal$.next(true);
       })
     );
   });
 
-  describe('stsCallback', () => {
-    it('is of type observable', () => {
-      expect(oidcSecurityService.stsCallback$).toEqual(jasmine.any(Observable));
-    });
+  describe('stsCallback$', () => {
+    it(
+      'calls callbackService.stsCallback$',
+      waitForAsync(() => {
+        const spy = spyOnProperty(callbackService, 'stsCallback$').and.returnValue(of({ some: 'data' }));
+
+        oidcSecurityService.stsCallback$.subscribe(() => {
+          expect(spy).toHaveBeenCalledTimes(1);
+        });
+      })
+    );
   });
 
   describe('preloadAuthWellKnownDocument', () => {

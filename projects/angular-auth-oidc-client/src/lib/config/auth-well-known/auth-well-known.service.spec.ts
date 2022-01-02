@@ -1,11 +1,10 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { mockClass } from '../../../test/auto-mock';
 import { EventTypes } from '../../public-events/event-types';
 import { PublicEventsService } from '../../public-events/public-events.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { AuthWellKnownDataService } from './auth-well-known-data.service';
-import { AuthWellKnownDataServiceMock } from './auth-well-known-data.service.mock';
 import { AuthWellKnownService } from './auth-well-known.service';
 
 describe('AuthWellKnownService', () => {
@@ -19,8 +18,8 @@ describe('AuthWellKnownService', () => {
       providers: [
         AuthWellKnownService,
         PublicEventsService,
-        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
-        { provide: AuthWellKnownDataService, useClass: AuthWellKnownDataServiceMock },
+        { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
+        { provide: AuthWellKnownDataService, useClass: mockClass(AuthWellKnownDataService) },
       ],
     });
   });

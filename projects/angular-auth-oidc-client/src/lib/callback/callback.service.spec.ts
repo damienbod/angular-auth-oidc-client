@@ -1,13 +1,11 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
+import { mockClass } from '../../test/auto-mock';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { UrlService } from '../utils/url/url.service';
-import { UrlServiceMock } from '../utils/url/url.service-mock';
 import { CallbackService } from './callback.service';
 import { CodeFlowCallbackService } from './code-flow-callback.service';
-import { CodeFlowCallbackServiceMock } from './code-flow-callback.service-mock';
 import { ImplicitFlowCallbackService } from './implicit-flow-callback.service';
-import { ImplicitFlowCallbackServiceMock } from './implicit-flow-callback.service-mock';
 
 describe('CallbackService ', () => {
   let callbackService: CallbackService;
@@ -21,10 +19,10 @@ describe('CallbackService ', () => {
       imports: [],
       providers: [
         CallbackService,
-        { provide: UrlService, useClass: UrlServiceMock },
+        { provide: UrlService, useClass: mockClass(UrlService) },
         FlowHelper,
-        { provide: ImplicitFlowCallbackService, useClass: ImplicitFlowCallbackServiceMock },
-        { provide: CodeFlowCallbackService, useClass: CodeFlowCallbackServiceMock },
+        { provide: ImplicitFlowCallbackService, useClass: mockClass(ImplicitFlowCallbackService) },
+        { provide: CodeFlowCallbackService, useClass: mockClass(CodeFlowCallbackService) },
       ],
     });
   });

@@ -1,20 +1,15 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { mockClass } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
-import { DataServiceMock } from '../../api/data.service-mock';
 import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { UrlService } from '../../utils/url/url.service';
-import { UrlServiceMock } from '../../utils/url/url.service-mock';
 import { TokenValidationService } from '../../validation/token-validation.service';
-import { TokenValidationServiceMock } from '../../validation/token-validation.service-mock';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
-import { FlowsDataServiceMock } from '../flows-data.service-mock';
 import { CodeFlowCallbackHandlerService } from './code-flow-callback-handler.service';
 
 describe('CodeFlowCallbackHandlerService', () => {
@@ -28,12 +23,12 @@ describe('CodeFlowCallbackHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         CodeFlowCallbackHandlerService,
-        { provide: UrlService, useClass: UrlServiceMock },
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: TokenValidationService, useClass: TokenValidationServiceMock },
-        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
-        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
-        { provide: DataService, useClass: DataServiceMock },
+        { provide: UrlService, useClass: mockClass(UrlService) },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: TokenValidationService, useClass: mockClass(TokenValidationService) },
+        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
+        { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
+        { provide: DataService, useClass: mockClass(DataService) },
       ],
     });
   });
@@ -126,8 +121,27 @@ describe('CodeFlowCallbackHandlerService', () => {
     );
 
     it(
-      'throws error if no tokenEndpoint is given',
+      'throws error if authWellknownEndpoints is null is given',
       waitForAsync(() => {
+        spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', { configId: 'configId1' }).and.returnValue(null);
+
+        service.codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' }).subscribe({
+          error: (err) => {
+            expect(err).toBeTruthy();
+          },
+        });
+      })
+    );
+
+    it(
+      'throws error if tokenendpoint is null is given',
+      waitForAsync(() => {
+        spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+        spyOn(storagePersistenceService, 'read')
+          .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
+          .and.returnValue({ tokenEndpoint: null });
+
         service.codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' }).subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
@@ -144,8 +158,10 @@ describe('CodeFlowCallbackHandlerService', () => {
           .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
+        spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+
         service.codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' }).subscribe(() => {
-          expect(postSpy).toHaveBeenCalledOnceWith('tokenEndpoint', '', { configId: 'configId1' }, jasmine.any(HttpHeaders));
+          expect(postSpy).toHaveBeenCalledOnceWith('tokenEndpoint', undefined, { configId: 'configId1' }, jasmine.any(HttpHeaders));
         });
       })
     );
@@ -161,6 +177,8 @@ describe('CodeFlowCallbackHandlerService', () => {
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+
+        spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
 
@@ -182,6 +200,8 @@ describe('CodeFlowCallbackHandlerService', () => {
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+
+        spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
         service.codeFlowCodeRequest({} as CallbackContext, config).subscribe(() => {
           const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
@@ -231,6 +251,8 @@ describe('CodeFlowCallbackHandlerService', () => {
           .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
+        spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+
         service.codeFlowCodeRequest({} as CallbackContext, config).subscribe({
           next: (res) => {
             expect(res).toBeTruthy();
@@ -261,6 +283,8 @@ describe('CodeFlowCallbackHandlerService', () => {
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+
+        spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
         service.codeFlowCodeRequest({} as CallbackContext, config).subscribe({
           next: (res) => {

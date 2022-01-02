@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
+import { mockClass } from '../../../test/auto-mock';
 import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { CryptoService } from '../../utils/crypto/crypto-service';
 import { RandomService } from './random.service';
 
@@ -9,7 +9,7 @@ describe('RandomService Tests', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [RandomService, { provide: LoggerService, useClass: LoggerServiceMock }, CryptoService],
+      providers: [RandomService, { provide: LoggerService, useClass: mockClass(LoggerService) }, CryptoService],
     });
   });
 

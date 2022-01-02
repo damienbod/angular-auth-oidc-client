@@ -3,7 +3,7 @@ import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 
 @Injectable()
 export class PlatformProvider {
-  get isBrowser(): boolean {
+  isBrowser(): boolean {
     return isPlatformBrowser(this.platformId);
   }
 

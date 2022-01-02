@@ -1,29 +1,21 @@
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
-import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { ConfigurationService } from '../config/config.service';
-import { ConfigurationServiceMock } from '../config/config.service.mock';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
-import { FlowsDataServiceMock } from '../flows/flows-data.service-mock';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
-import { ResetAuthDataServiceMock } from '../flows/reset-auth-data.service-mock';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
-import { RefreshSessionIframeServiceMock } from '../iframe/refresh-session-iframe.service-mock';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
-import { UserServiceMock } from '../user-data/user-service-mock';
 import { UserService } from '../user-data/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { IntervalService } from './interval.service';
 import { PeriodicallyTokenCheckService } from './periodically-token-check.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
-import { RefreshSessionRefreshTokenServiceMock } from './refresh-session-refresh-token.service-mock';
 
 describe('PeriodicallyTokenCheckService', () => {
   let periodicallyTokenCheckService: PeriodicallyTokenCheckService;
@@ -41,21 +33,21 @@ describe('PeriodicallyTokenCheckService', () => {
     TestBed.configureTestingModule({
       imports: [],
       providers: [
-        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
+        { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
         FlowHelper,
-        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: UserService, useClass: UserServiceMock },
-        { provide: AuthStateService, useClass: AuthStateServiceMock },
+        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: UserService, useClass: mockClass(UserService) },
+        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
         {
           provide: RefreshSessionIframeService,
-          useClass: RefreshSessionIframeServiceMock,
+          useClass: mockClass(RefreshSessionIframeService),
         },
-        { provide: RefreshSessionRefreshTokenService, useClass: RefreshSessionRefreshTokenServiceMock },
+        { provide: RefreshSessionRefreshTokenService, useClass: mockClass(RefreshSessionRefreshTokenService) },
         IntervalService,
-        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
+        { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
         PublicEventsService,
-        { provide: ConfigurationService, useClass: ConfigurationServiceMock },
+        { provide: ConfigurationService, useClass: mockClass(ConfigurationService) },
       ],
     });
   });

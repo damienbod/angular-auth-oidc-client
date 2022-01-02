@@ -1,10 +1,9 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { mockClass } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
-import { DataServiceMock } from '../../api/data.service-mock';
 import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { AuthWellKnownDataService } from './auth-well-known-data.service';
 
 const DUMMY_WELL_KNOWN_DOCUMENT = {
@@ -27,8 +26,8 @@ describe('AuthWellKnownDataService', () => {
     TestBed.configureTestingModule({
       providers: [
         AuthWellKnownDataService,
-        { provide: DataService, useClass: DataServiceMock },
-        { provide: LoggerService, useClass: LoggerServiceMock },
+        { provide: DataService, useClass: mockClass(DataService) },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
       ],
     });
   });
@@ -47,7 +46,7 @@ describe('AuthWellKnownDataService', () => {
     it(
       'should add suffix if it does not exist on current URL',
       waitForAsync(() => {
-        const dataServiceSpy = spyOn(dataService, 'get').and.callFake((url) => {
+        const dataServiceSpy = spyOn(dataService, 'get').and.callFake(() => {
           return of(null);
         });
         const urlWithoutSuffix = 'myUrl';
@@ -61,7 +60,7 @@ describe('AuthWellKnownDataService', () => {
     it(
       'should not add suffix if it does exist on current url',
       waitForAsync(() => {
-        const dataServiceSpy = spyOn(dataService, 'get').and.callFake((url) => {
+        const dataServiceSpy = spyOn(dataService, 'get').and.callFake(() => {
           return of(null);
         });
         const urlWithSuffix = `myUrl/.well-known/openid-configuration`;
@@ -74,7 +73,7 @@ describe('AuthWellKnownDataService', () => {
     it(
       'should not add suffix if it does exist in the middle of current url',
       waitForAsync(() => {
-        const dataServiceSpy = spyOn(dataService, 'get').and.callFake((url) => {
+        const dataServiceSpy = spyOn(dataService, 'get').and.callFake(() => {
           return of(null);
         });
         const urlWithSuffix = `myUrl/.well-known/openid-configuration/and/some/more/stuff`;

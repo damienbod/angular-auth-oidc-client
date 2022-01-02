@@ -1,58 +1,53 @@
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { delay, of, throwError } from 'rxjs';
+import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
-import { AuthStateServiceMock } from '../auth-state/auth-state.service-mock';
 import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.service';
-import { AuthWellKnownServiceMock } from '../config/auth-well-known/auth-well-known.service-mock';
 import { FlowsDataService } from '../flows/flows-data.service';
-import { FlowsDataServiceMock } from '../flows/flows-data.service-mock';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
-import { RefreshSessionIframeServiceMock } from '../iframe/refresh-session-iframe.service-mock';
 import { SilentRenewService } from '../iframe/silent-renew.service';
-import { SilentRenewServiceMock } from '../iframe/silent-renew.service-mock';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
-import { UserServiceMock } from '../user-data/user-service-mock';
 import { UserService } from '../user-data/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
-import { RefreshSessionRefreshTokenServiceMock } from './refresh-session-refresh-token.service-mock';
 import { MAX_RETRY_ATTEMPTS, RefreshSessionService } from './refresh-session.service';
 
 describe('RefreshSessionService ', () => {
   let refreshSessionService: RefreshSessionService;
-  let flowsDataService: FlowsDataService;
   let flowHelper: FlowHelper;
   let authStateService: AuthStateService;
+  let silentRenewService: SilentRenewService;
+  let storagePersistenceService: StoragePersistenceService;
+  let flowsDataService: FlowsDataService;
   let refreshSessionIframeService: RefreshSessionIframeService;
   let refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService;
-  let silentRenewService: SilentRenewService;
   let authWellKnownService: AuthWellKnownService;
-  let storagePersistenceService: StoragePersistenceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [],
       providers: [
         FlowHelper,
-        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
+        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         RefreshSessionService,
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: SilentRenewService, useClass: SilentRenewServiceMock },
-        { provide: AuthStateService, useClass: AuthStateServiceMock },
-        { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        {
+          provide: SilentRenewService,
+          useClass: mockClass(SilentRenewService),
+        },
+        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
+        { provide: AuthWellKnownService, useClass: mockClass(AuthWellKnownService) },
         {
           provide: RefreshSessionIframeService,
-          useClass: RefreshSessionIframeServiceMock,
+          useClass: mockClass(RefreshSessionIframeService),
         },
-        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
+        { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
         {
           provide: RefreshSessionRefreshTokenService,
-          useClass: RefreshSessionRefreshTokenServiceMock,
+          useClass: mockClass(RefreshSessionRefreshTokenService),
         },
-        { provide: UserService, useClass: UserServiceMock },
+        { provide: UserService, useClass: mockClass(UserService) },
       ],
     });
   });
@@ -90,7 +85,7 @@ describe('RefreshSessionService ', () => {
         ];
 
         const extraCustomParams = { extra: 'custom' };
-        refreshSessionService.userForceRefreshSession(allConfigs[0], allConfigs, extraCustomParams).subscribe((result) => {
+        refreshSessionService.userForceRefreshSession(allConfigs[0], allConfigs, extraCustomParams).subscribe(() => {
           expect(writeSpy).toHaveBeenCalledOnceWith('storageCustomParamsRefresh', extraCustomParams, allConfigs[0]);
         });
       })
@@ -112,7 +107,7 @@ describe('RefreshSessionService ', () => {
         const writeSpy = spyOn(storagePersistenceService, 'write');
 
         const extraCustomParams = { extra: 'custom' };
-        refreshSessionService.userForceRefreshSession(allConfigs[0], allConfigs, extraCustomParams).subscribe((result) => {
+        refreshSessionService.userForceRefreshSession(allConfigs[0], allConfigs, extraCustomParams).subscribe(() => {
           expect(writeSpy).toHaveBeenCalledOnceWith('storageCustomParamsAuthRequest', extraCustomParams, allConfigs[0]);
         });
       })
@@ -133,7 +128,7 @@ describe('RefreshSessionService ', () => {
         ];
         const writeSpy = spyOn(storagePersistenceService, 'write');
 
-        refreshSessionService.userForceRefreshSession(allConfigs[0], allConfigs).subscribe((result) => {
+        refreshSessionService.userForceRefreshSession(allConfigs[0], allConfigs).subscribe(() => {
           expect(writeSpy).not.toHaveBeenCalled();
         });
       })
@@ -147,6 +142,8 @@ describe('RefreshSessionService ', () => {
         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
         spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+        spyOn(authStateService, 'getIdToken').and.returnValue('id-token');
+        spyOn(authStateService, 'getAccessToken').and.returnValue('access-token');
         const allConfigs = [
           {
             configId: 'configId1',
@@ -155,8 +152,8 @@ describe('RefreshSessionService ', () => {
         ];
 
         refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs).subscribe((result) => {
-          expect(result.idToken).not.toBeUndefined();
-          expect(result.accessToken).not.toBeUndefined();
+          expect(result.idToken).toEqual('id-token');
+          expect(result.accessToken).toEqual('access-token');
         });
       })
     );
@@ -225,6 +222,8 @@ describe('RefreshSessionService ', () => {
     it('occurs timeout error and retry mechanism exhausted max retry count throws error', fakeAsync(() => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
       spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
+      spyOnProperty(silentRenewService, 'refreshSessionWithIFrameCompleted$').and.returnValue(of(null).pipe(delay(11000)));
+
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
       const allConfigs = [
         {
@@ -260,6 +259,7 @@ describe('RefreshSessionService ', () => {
       const expectedErrorMessage = 'Test error message';
 
       spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
+      spyOnProperty(silentRenewService, 'refreshSessionWithIFrameCompleted$').and.returnValue(of(null));
       spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(throwError(() => new Error(expectedErrorMessage)));
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
 
@@ -321,7 +321,7 @@ describe('RefreshSessionService ', () => {
               idToken: 'some-id_token',
               accessToken: 'some-access_token',
               isAuthenticated: true,
-              userData: null,
+              userData: undefined,
               configId: 'configId1',
             });
             expect(spyInsideMap).toHaveBeenCalledTimes(1);

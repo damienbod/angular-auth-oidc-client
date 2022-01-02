@@ -142,7 +142,7 @@ export class ConfigurationService {
   }
 
   private setSpecialCases(currentConfig: OpenIdConfiguration): void {
-    if (!this.platformProvider.isBrowser) {
+    if (!this.platformProvider.isBrowser()) {
       currentConfig.startCheckSession = false;
       currentConfig.silentRenew = false;
       currentConfig.useRefreshToken = false;

@@ -1,24 +1,17 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { mockClass } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
-import { CheckAuthServiceMock } from '../../auth-state/check-auth.service-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
-import { AuthWellKnownServiceMock } from '../../config/auth-well-known/auth-well-known.service-mock';
 import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
-import { UrlServiceMock } from '../../utils/url/url.service-mock';
 import { PopupResult } from '../popup/popup-result';
 import { PopUpService } from '../popup/popup.service';
-import { PopUpServiceMock } from '../popup/popup.service-mock';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
-import { ResponseTypeValidationServiceMock } from '../response-type-validation/response-type-validation.service.mock';
-import { RedirectServiceMock } from './../../utils/redirect/redirect.service-mock';
 import { ParLoginService } from './par-login.service';
 import { ParResponse } from './par-response';
 import { ParService } from './par.service';
-import { ParServiceMock } from './par.service-mock';
 
 describe('ParLoginService', () => {
   let service: ParLoginService;
@@ -37,35 +30,35 @@ describe('ParLoginService', () => {
         ParLoginService,
         {
           provide: LoggerService,
-          useClass: LoggerServiceMock,
+          useClass: mockClass(LoggerService),
         },
         {
           provide: ResponseTypeValidationService,
-          useClass: ResponseTypeValidationServiceMock,
+          useClass: mockClass(ResponseTypeValidationService),
         },
         {
           provide: UrlService,
-          useClass: UrlServiceMock,
+          useClass: mockClass(UrlService),
         },
         {
           provide: RedirectService,
-          useClass: RedirectServiceMock,
+          useClass: mockClass(RedirectService),
         },
         {
           provide: AuthWellKnownService,
-          useClass: AuthWellKnownServiceMock,
+          useClass: mockClass(AuthWellKnownService),
         },
         {
           provide: PopUpService,
-          useClass: PopUpServiceMock,
+          useClass: mockClass(PopUpService),
         },
         {
           provide: CheckAuthService,
-          useClass: CheckAuthServiceMock,
+          useClass: mockClass(CheckAuthService),
         },
         {
           provide: ParService,
-          useClass: ParServiceMock,
+          useClass: mockClass(ParService),
         },
       ],
     });
@@ -198,7 +191,7 @@ describe('ParLoginService', () => {
         spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
         const redirectToSpy = spyOn(redirectService, 'redirectTo');
         const spy = jasmine.createSpy();
-        const urlHandler = (url) => {
+        const urlHandler = (url): void => {
           spy(url);
         };
 
@@ -313,10 +306,11 @@ describe('ParLoginService', () => {
 
         spyOn(parService, 'postParRequest').and.returnValue(of({ requestUri: 'requestUri' } as ParResponse));
         spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
         spyOnProperty(popupService, 'result$').and.returnValue(of({}));
         const spy = spyOn(popupService, 'openPopUp');
 
-        service.loginWithPopUpPar(config, allConfigs).subscribe((result) => {
+        service.loginWithPopUpPar(config, allConfigs).subscribe(() => {
           expect(spy).toHaveBeenCalledOnceWith('some-par-url', undefined);
         });
       })

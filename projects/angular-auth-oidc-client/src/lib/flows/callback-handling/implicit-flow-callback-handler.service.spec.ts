@@ -1,12 +1,10 @@
 import { DOCUMENT } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
+import { mockClass } from '../../../test/auto-mock';
 import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
-import { FlowsDataServiceMock } from '../flows-data.service-mock';
 import { ResetAuthDataService } from '../reset-auth-data.service';
-import { ResetAuthDataServiceMock } from '../reset-auth-data.service-mock';
 import { ImplicitFlowCallbackHandlerService } from './implicit-flow-callback-handler.service';
 
 describe('ImplicitFlowCallbackHandlerService', () => {
@@ -18,17 +16,17 @@ describe('ImplicitFlowCallbackHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         ImplicitFlowCallbackHandlerService,
-        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
+        { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         {
           provide: DOCUMENT,
           useValue: {
             location: {
-              get hash() {
+              get hash(): string {
                 return '&anyFakeHash';
               },
-              set hash(v) {},
+              set hash(_value) {},
             },
           },
         },

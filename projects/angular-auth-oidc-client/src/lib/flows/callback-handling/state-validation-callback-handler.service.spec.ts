@@ -1,17 +1,14 @@
 import { DOCUMENT } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { mockClass } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
-import { AuthStateServiceMock } from '../../auth-state/auth-state.service-mock';
 import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StateValidationResult } from '../../validation/state-validation-result';
 import { StateValidationService } from '../../validation/state-validation.service';
-import { StateValidationServiceMock } from '../../validation/state-validation.service-mock';
 import { ValidationResult } from '../../validation/validation-result';
 import { CallbackContext } from '../callback-context';
 import { ResetAuthDataService } from '../reset-auth-data.service';
-import { ResetAuthDataServiceMock } from '../reset-auth-data.service-mock';
 import { StateValidationCallbackHandlerService } from './state-validation-callback-handler.service';
 
 describe('StateValidationCallbackHandlerService', () => {
@@ -25,18 +22,18 @@ describe('StateValidationCallbackHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         StateValidationCallbackHandlerService,
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: StateValidationService, useClass: StateValidationServiceMock },
-        { provide: AuthStateService, useClass: AuthStateServiceMock },
-        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: StateValidationService, useClass: mockClass(StateValidationService) },
+        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
+        { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
         {
           provide: DOCUMENT,
           useValue: {
             location: {
-              get hash() {
+              get hash(): string {
                 return '&anyFakeHash';
               },
-              set hash(v) {},
+              set hash(_value) {},
             },
           },
         },
@@ -92,7 +89,7 @@ describe('StateValidationCallbackHandlerService', () => {
         const allConfigs = [{ configId: 'configId1' }];
 
         service.callbackStateValidation({} as CallbackContext, allConfigs[0], allConfigs).subscribe({
-          error: (err) => {
+          error: () => {
             expect(loggerSpy).toHaveBeenCalledOnceWith(
               allConfigs[0],
               'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
@@ -117,7 +114,7 @@ describe('StateValidationCallbackHandlerService', () => {
         const allConfigs = [{ configId: 'configId1' }];
 
         service.callbackStateValidation({ isRenewProcess: true } as CallbackContext, allConfigs[0], allConfigs).subscribe({
-          error: (err) => {
+          error: () => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
               isAuthenticated: false,

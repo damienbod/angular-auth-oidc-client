@@ -1,20 +1,15 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { mockClass } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
-import { AuthStateServiceMock } from '../../auth-state/auth-state.service-mock';
 import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../../storage/storage-persistence.service-mock';
 import { JwtKey, JwtKeys } from '../../validation/jwtkeys';
 import { ValidationResult } from '../../validation/validation-result';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
-import { FlowsDataServiceMock } from '../flows-data.service-mock';
 import { ResetAuthDataService } from '../reset-auth-data.service';
-import { ResetAuthDataServiceMock } from '../reset-auth-data.service-mock';
 import { SigninKeyDataService } from '../signin-key-data.service';
-import { SigninKeyDataServiceMock } from '../signin-key-data.service-mock';
 import { HistoryJwtKeysCallbackHandlerService } from './history-jwt-keys-callback-handler.service';
 
 const DUMMY_JWT_KEYS: JwtKeys = {
@@ -43,12 +38,12 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         HistoryJwtKeysCallbackHandlerService,
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: AuthStateService, useClass: AuthStateServiceMock },
-        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
-        { provide: SigninKeyDataService, useClass: SigninKeyDataServiceMock },
-        { provide: StoragePersistenceService, useClass: StoragePersistenceServiceMock },
-        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
+        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
+        { provide: SigninKeyDataService, useClass: mockClass(SigninKeyDataService) },
+        { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
+        { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
       ],
     });
   });
@@ -208,7 +203,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
 
         service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe({
-          error: (err) => {
+          error: () => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(setNonceSpy).toHaveBeenCalledTimes(1);
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
@@ -237,7 +232,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
 
         service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe({
-          error: (err) => {
+          error: () => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(setNonceSpy).toHaveBeenCalledTimes(1);
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({

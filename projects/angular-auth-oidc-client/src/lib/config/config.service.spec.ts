@@ -1,25 +1,20 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { mockClass } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { DefaultSessionStorageService } from './../storage/default-sessionstorage.service';
-import { PlatformProviderMock } from './../utils/platform-provider/platform.provider-mock';
 import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
-import { AuthWellKnownServiceMock } from './auth-well-known/auth-well-known.service-mock';
 import { ConfigurationService } from './config.service';
-import { StsConfigLoader } from './loader/config-loader';
-import { StsConfigLoaderMock } from './loader/config-loader-mock';
+import { StsConfigLoader, StsConfigStaticLoader } from './loader/config-loader';
 import { OpenIdConfiguration } from './openid-configuration';
 import { ConfigValidationService } from './validation/config-validation.service';
 
 describe('Configuration Service', () => {
   let configService: ConfigurationService;
-  let loggerService: LoggerService;
   let publicEventsService: PublicEventsService;
   let authWellKnownService: AuthWellKnownService;
   let storagePersistenceService: StoragePersistenceService;
@@ -33,31 +28,30 @@ describe('Configuration Service', () => {
         ConfigurationService,
         {
           provide: LoggerService,
-          useClass: LoggerServiceMock,
+          useClass: mockClass(LoggerService),
         },
         PublicEventsService,
         {
           provide: StoragePersistenceService,
-          useClass: StoragePersistenceServiceMock,
+          useClass: mockClass(StoragePersistenceService),
         },
         ConfigValidationService,
         {
           provide: PlatformProvider,
-          useClass: PlatformProviderMock,
+          useClass: mockClass(PlatformProvider),
         },
         DefaultSessionStorageService,
         {
           provide: AuthWellKnownService,
-          useClass: AuthWellKnownServiceMock,
+          useClass: mockClass(AuthWellKnownService),
         },
-        { provide: StsConfigLoader, useClass: StsConfigLoaderMock },
+        { provide: StsConfigLoader, useClass: mockClass(StsConfigStaticLoader) },
       ],
     });
   });
 
   beforeEach(() => {
     configService = TestBed.inject(ConfigurationService);
-    loggerService = TestBed.inject(LoggerService);
     publicEventsService = TestBed.inject(PublicEventsService);
     authWellKnownService = TestBed.inject(AuthWellKnownService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
@@ -176,7 +170,7 @@ describe('Configuration Service', () => {
 
         const spy = spyOn(publicEventsService, 'fireEvent');
 
-        configService.getOpenIDConfiguration('configId1').subscribe((config) => {
+        configService.getOpenIDConfiguration('configId1').subscribe(() => {
           expect(spy).toHaveBeenCalledOnceWith(EventTypes.ConfigLoaded, jasmine.anything());
         });
       })
@@ -261,7 +255,7 @@ describe('Configuration Service', () => {
 
   describe('setSpecialCases', () => {
     it(`should set special cases when current platform is browser`, () => {
-      spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
+      spyOn(platformProvider, 'isBrowser').and.returnValue(false);
 
       const config = { configId: 'configId1' } as OpenIdConfiguration;
 
@@ -279,7 +273,7 @@ describe('Configuration Service', () => {
 
   describe('setStorage', () => {
     it(`does nothing if storage is already set`, () => {
-      spyOnProperty(platformProvider, 'isBrowser').and.returnValue(false);
+      spyOn(platformProvider, 'isBrowser').and.returnValue(false);
 
       const config = { configId: 'configId1', storage: 'something' } as OpenIdConfiguration;
 

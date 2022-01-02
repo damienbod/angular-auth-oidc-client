@@ -1,20 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { mockClass } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
-import { CheckAuthServiceMock } from '../../auth-state/check-auth.service-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
-import { AuthWellKnownServiceMock } from '../../config/auth-well-known/auth-well-known.service-mock';
 import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
 import { UrlService } from '../../utils/url/url.service';
-import { UrlServiceMock } from '../../utils/url/url.service-mock';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
-import { ResponseTypeValidationServiceMock } from '../response-type-validation/response-type-validation.service.mock';
 import { PopUpLoginService } from './popup-login.service';
 import { PopupResult } from './popup-result';
 import { PopUpService } from './popup.service';
-import { PopUpServiceMock } from './popup.service-mock';
 
 describe('PopUpLoginService', () => {
   let popUpLoginService: PopUpLoginService;
@@ -30,12 +25,12 @@ describe('PopUpLoginService', () => {
       imports: [CommonModule],
       providers: [
         PopUpLoginService,
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: ResponseTypeValidationService, useClass: ResponseTypeValidationServiceMock },
-        { provide: UrlService, useClass: UrlServiceMock },
-        { provide: AuthWellKnownService, useClass: AuthWellKnownServiceMock },
-        { provide: PopUpService, useClass: PopUpServiceMock },
-        { provide: CheckAuthService, useClass: CheckAuthServiceMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: ResponseTypeValidationService, useClass: mockClass(ResponseTypeValidationService) },
+        { provide: UrlService, useClass: mockClass(UrlService) },
+        { provide: AuthWellKnownService, useClass: mockClass(AuthWellKnownService) },
+        { provide: PopUpService, useClass: mockClass(PopUpService) },
+        { provide: CheckAuthService, useClass: mockClass(CheckAuthService) },
       ],
     });
   });
@@ -82,6 +77,7 @@ describe('PopUpLoginService', () => {
         spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOnProperty(popupService, 'result$').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
 
         popUpLoginService.loginWithPopUpStandard(config, [config]).subscribe(() => {
           expect(urlService.getAuthorizeUrl).toHaveBeenCalled();
@@ -100,6 +96,7 @@ describe('PopUpLoginService', () => {
         spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
         spyOnProperty(popupService, 'result$').and.returnValue(of({}));
+        spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
         const popupSpy = spyOn(popupService, 'openPopUp');
 
         popUpLoginService.loginWithPopUpStandard(config, [config]).subscribe(() => {
@@ -157,7 +154,7 @@ describe('PopUpLoginService', () => {
         spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
         spyOn(popupService, 'openPopUp');
-        const checkAuthSpy = spyOn(checkAuthService, 'checkAuth');
+        const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
         const popupResult: PopupResult = { userClosed: true };
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 

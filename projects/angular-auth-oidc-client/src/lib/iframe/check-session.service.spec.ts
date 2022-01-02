@@ -1,16 +1,14 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { skip } from 'rxjs/operators';
+import { mockClass } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { OidcSecurityService } from '../oidc.security.service';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { AbstractSecurityStorage } from '../storage/abstract-security-storage';
-import { BrowserStorageMock } from '../storage/browser-storage.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
-import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
+import { DefaultSessionStorageService } from './../storage/default-sessionstorage.service';
 import { CheckSessionService } from './check-session.service';
 import { IFrameService } from './existing-iframe.service';
 
@@ -29,11 +27,11 @@ describe('CheckSessionService', () => {
         PublicEventsService,
         {
           provide: StoragePersistenceService,
-          useClass: StoragePersistenceServiceMock,
+          useClass: mockClass(StoragePersistenceService),
         },
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: AbstractSecurityStorage, useClass: BrowserStorageMock },
-        { provide: PlatformProvider, useClass: PlatformProviderMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: AbstractSecurityStorage, useClass: mockClass(DefaultSessionStorageService) },
+        { provide: PlatformProvider, useClass: mockClass(PlatformProvider) },
       ],
     });
   });
@@ -109,7 +107,7 @@ describe('CheckSessionService', () => {
   it('start() does not call pollServerSession() if scheduledHeartBeatRunning is set', () => {
     const config = { configId: 'configId1' };
     const spy = spyOn<any>(checkSessionService, 'pollServerSession');
-    (checkSessionService as any).scheduledHeartBeatRunning = () => {};
+    (checkSessionService as any).scheduledHeartBeatRunning = (): void => {};
     checkSessionService.start(config);
     expect(spy).not.toHaveBeenCalled();
   });
@@ -275,6 +273,29 @@ describe('CheckSessionService', () => {
 
         const serviceAsAny = checkSessionService as any;
         serviceAsAny.checkSessionChangedInternal$.next(true);
+      })
+    );
+
+    it(
+      'emits false initially',
+      waitForAsync(() => {
+        checkSessionService.checkSessionChanged$.subscribe((result) => {
+          expect(result).toBe(false);
+        });
+      })
+    );
+
+    it(
+      'emits false then true when emitted',
+      waitForAsync(() => {
+        const expectedResultsInOrder = [false, true];
+        let counter = 0;
+        checkSessionService.checkSessionChanged$.subscribe((result) => {
+          expect(result).toBe(expectedResultsInOrder[counter]);
+          counter++;
+        });
+
+        (checkSessionService as any).checkSessionChangedInternal$.next(true);
       })
     );
   });

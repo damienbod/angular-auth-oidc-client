@@ -1,24 +1,22 @@
 /* eslint-disable max-len */
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { mockClass } from '../../test/auto-mock';
 import { AuthWellKnownEndpoints } from '../config/auth-well-known/auth-well-known-endpoints';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LogLevel } from '../logging/log-level';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { EqualityService } from '../utils/equality/equality.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { StateValidationService } from './state-validation.service';
 import { TokenValidationService } from './token-validation.service';
-import { TokenValidationServiceMock } from './token-validation.service-mock';
 import { ValidationResult } from './validation-result';
 
 describe('State Validation Service', () => {
   let stateValidationService: StateValidationService;
-  let oidcSecurityValidation: TokenValidationService;
+  let tokenValidationService: TokenValidationService;
   let tokenHelperService: TokenHelperService;
   let loggerService: LoggerService;
   let config: OpenIdConfiguration;
@@ -32,15 +30,15 @@ describe('State Validation Service', () => {
         StateValidationService,
         {
           provide: StoragePersistenceService,
-          useClass: StoragePersistenceServiceMock,
+          useClass: mockClass(StoragePersistenceService),
         },
         {
           provide: TokenValidationService,
-          useClass: TokenValidationServiceMock,
+          useClass: mockClass(TokenValidationService),
         },
         {
           provide: LoggerService,
-          useClass: LoggerServiceMock,
+          useClass: mockClass(LoggerService),
         },
         TokenHelperService,
         EqualityService,
@@ -51,7 +49,7 @@ describe('State Validation Service', () => {
 
   beforeEach(() => {
     stateValidationService = TestBed.inject(StateValidationService);
-    oidcSecurityValidation = TestBed.inject(TokenValidationService);
+    tokenValidationService = TestBed.inject(TokenValidationService);
     tokenHelperService = TestBed.inject(TokenHelperService);
     loggerService = TestBed.inject(LoggerService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
@@ -90,14 +88,14 @@ describe('State Validation Service', () => {
 
   it('should create', () => {
     expect(stateValidationService).toBeTruthy();
-    expect(oidcSecurityValidation).toBeTruthy();
+    expect(tokenValidationService).toBeTruthy();
   });
 
   it('should return invalid result if validateStateFromHashCallback is false', () => {
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
 
     const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => {});
 
@@ -117,7 +115,7 @@ describe('State Validation Service', () => {
     };
     const stateObs$ = stateValidationService.validateState(callbackContext, config);
 
-    expect(oidcSecurityValidation.validateStateFromHashCallback).toHaveBeenCalled();
+    expect(tokenValidationService.validateStateFromHashCallback).toHaveBeenCalled();
 
     stateObs$.subscribe((state) => {
       expect(logWarningSpy).toHaveBeenCalledOnceWith(config, 'authCallback incorrect state');
@@ -129,32 +127,25 @@ describe('State Validation Service', () => {
   });
 
   it('access_token should equal result.access_token and is valid if response_type is "id_token token"', () => {
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
-
-    config.responseType = 'id_token token';
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
-
-    spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
-
-    spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
+    spyOn(tokenValidationService, 'hasIdTokenExpired').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenExpNotExpired').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(of(true));
 
     config.maxIdTokenIatOffsetAllowedInSeconds = 0;
-
     config.clientId = '';
-
-    spyOn(oidcSecurityValidation, 'validateIdTokenIatMaxOffset').and.returnValue(true);
-
-    spyOn(oidcSecurityValidation, 'validateIdTokenAud').and.returnValue(true);
-
-    spyOn(oidcSecurityValidation, 'validateIdTokenExpNotExpired').and.returnValue(true);
-
-    spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(true);
-
-    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(of(true));
-
     config.autoCleanStateAfterAuthentication = false;
+    config.responseType = 'id_token token';
 
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
@@ -186,10 +177,10 @@ describe('State Validation Service', () => {
   });
 
   it('should return invalid result if validateSignatureIdToken is false', () => {
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
     config.responseType = 'id_token token';
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(false));
+    spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(false));
 
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
@@ -227,11 +218,11 @@ describe('State Validation Service', () => {
   });
 
   it('should return invalid result if validateIdTokenNonce is false', () => {
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
     config.responseType = 'id_token token';
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
-    spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
+    spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(false);
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
@@ -268,17 +259,17 @@ describe('State Validation Service', () => {
   });
 
   it('should return invalid result if validateRequiredIdToken is false', () => {
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
     config.responseType = 'id_token token';
 
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
+    spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
 
-    spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
 
-    spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(false);
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
@@ -312,15 +303,15 @@ describe('State Validation Service', () => {
   });
 
   it('should return invalid result if validateIdTokenIatMaxOffset is false', () => {
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
     config.responseType = 'id_token token';
 
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
-    spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
-    spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(true);
-    spyOn(oidcSecurityValidation, 'validateIdTokenIatMaxOffset').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
+    spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(false);
 
     config.maxIdTokenIatOffsetAllowedInSeconds = 0;
     const readSpy = spyOn(storagePersistenceService, 'read');
@@ -358,22 +349,22 @@ describe('State Validation Service', () => {
   });
 
   it('should return invalid result if validateIdTokenIss is false', () => {
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
     config.responseType = 'id_token token';
 
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
+    spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
 
-    spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
 
-    spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
 
-    spyOn(oidcSecurityValidation, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
 
     config.maxIdTokenIatOffsetAllowedInSeconds = 0;
-    spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(false);
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
@@ -406,24 +397,24 @@ describe('State Validation Service', () => {
   });
 
   it('should return invalid result if validateIdTokenAud is false', () => {
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
     config.responseType = 'id_token token';
 
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
+    spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
 
-    spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
 
-    spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
 
-    spyOn(oidcSecurityValidation, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
 
     config.maxIdTokenIatOffsetAllowedInSeconds = 0;
-    spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(true);
 
-    spyOn(oidcSecurityValidation, 'validateIdTokenAud').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(false);
 
     config.clientId = '';
     const readSpy = spyOn(storagePersistenceService, 'read');
@@ -458,27 +449,27 @@ describe('State Validation Service', () => {
   });
 
   it('should return invalid result if validateIdTokenExpNotExpired is false', () => {
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
     config.responseType = 'id_token token';
 
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
-
-    spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
-
-    spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(true);
-
-    spyOn(oidcSecurityValidation, 'validateIdTokenIatMaxOffset').and.returnValue(true);
-
+    spyOn(tokenValidationService, 'hasIdTokenExpired').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(of(true));
+    spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
+    spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
     config.maxIdTokenIatOffsetAllowedInSeconds = 0;
-    spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(true);
-
-    spyOn(oidcSecurityValidation, 'validateIdTokenAud').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(true);
 
     config.clientId = '';
-    spyOn(oidcSecurityValidation, 'validateIdTokenExpNotExpired').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateIdTokenExpNotExpired').and.returnValue(false);
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
     readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
@@ -512,17 +503,22 @@ describe('State Validation Service', () => {
   });
 
   it('Reponse is valid if authConfiguration.response_type does not equal "id_token token"', () => {
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
+    spyOn(tokenValidationService, 'hasIdTokenExpired').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(of(true));
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
-    spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
-    spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(true);
-    spyOn(oidcSecurityValidation, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
+    spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
     config.maxIdTokenIatOffsetAllowedInSeconds = 0;
-    spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(true);
-    spyOn(oidcSecurityValidation, 'validateIdTokenAud').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(true);
     config.clientId = '';
-    spyOn(oidcSecurityValidation, 'validateIdTokenExpNotExpired').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenExpNotExpired').and.returnValue(true);
     config.responseType = 'NOT id_token token';
     config.autoCleanStateAfterAuthentication = false;
     const readSpy = spyOn(storagePersistenceService, 'read');
@@ -561,20 +557,25 @@ describe('State Validation Service', () => {
   });
 
   it('Response is invalid if validateIdTokenAtHash is false', () => {
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
-    spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
-    spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(true);
-    spyOn(oidcSecurityValidation, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
+    spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
     config.maxIdTokenIatOffsetAllowedInSeconds = 0;
-    spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(true);
-    spyOn(oidcSecurityValidation, 'validateIdTokenAud').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(true);
     config.clientId = '';
-    spyOn(oidcSecurityValidation, 'validateIdTokenExpNotExpired').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenExpNotExpired').and.returnValue(true);
     config.responseType = 'id_token token';
     config.autoCleanStateAfterAuthentication = false;
-    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(of(false));
+    spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(of(false));
+
+    spyOn(tokenValidationService, 'hasIdTokenExpired').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(true);
 
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
@@ -611,17 +612,22 @@ describe('State Validation Service', () => {
 
   it('should return valid result if validateIdTokenIss is false and iss_validation_off is true', () => {
     config.issValidationOff = true;
-    spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(false);
 
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
+    spyOn(tokenValidationService, 'hasIdTokenExpired').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(true);
+
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
-    spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
-    spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(true);
-    spyOn(oidcSecurityValidation, 'validateIdTokenIatMaxOffset').and.returnValue(true);
-    spyOn(oidcSecurityValidation, 'validateIdTokenAud').and.returnValue(true);
-    spyOn(oidcSecurityValidation, 'validateIdTokenExpNotExpired').and.returnValue(true);
-    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(of(true));
+    spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
+    spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenExpNotExpired').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(of(true));
     config.responseType = 'id_token token';
     const readSpy = spyOn(storagePersistenceService, 'read');
     readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
@@ -660,30 +666,30 @@ describe('State Validation Service', () => {
   });
 
   it('should return valid if there is no id_token', () => {
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
     config.responseType = 'code';
     spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
 
-    spyOn(oidcSecurityValidation, 'validateSignatureIdToken').and.returnValue(of(true));
+    spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
 
-    spyOn(oidcSecurityValidation, 'validateIdTokenNonce').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
 
-    spyOn(oidcSecurityValidation, 'validateRequiredIdToken').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
 
     config.maxIdTokenIatOffsetAllowedInSeconds = 0;
 
     config.clientId = '';
 
-    spyOn(oidcSecurityValidation, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
 
-    spyOn(oidcSecurityValidation, 'validateIdTokenAud').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(true);
 
-    spyOn(oidcSecurityValidation, 'validateIdTokenExpNotExpired').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenExpNotExpired').and.returnValue(true);
 
-    spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(true);
 
-    spyOn(oidcSecurityValidation, 'validateIdTokenAtHash').and.returnValue(of(true));
+    spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(of(true));
 
     config.autoCleanStateAfterAuthentication = false;
 
@@ -746,7 +752,7 @@ describe('State Validation Service', () => {
       enableIdTokenExpiredValidationInRenew: true,
     };
 
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -812,7 +818,7 @@ describe('State Validation Service', () => {
       enableIdTokenExpiredValidationInRenew: true,
     };
 
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -878,7 +884,7 @@ describe('State Validation Service', () => {
       enableIdTokenExpiredValidationInRenew: true,
     };
 
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -944,7 +950,7 @@ describe('State Validation Service', () => {
       enableIdTokenExpiredValidationInRenew: true,
     };
 
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -1010,7 +1016,7 @@ describe('State Validation Service', () => {
       enableIdTokenExpiredValidationInRenew: true,
     };
 
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -1076,7 +1082,7 @@ describe('State Validation Service', () => {
       enableIdTokenExpiredValidationInRenew: true,
     };
 
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -1142,7 +1148,7 @@ describe('State Validation Service', () => {
       enableIdTokenExpiredValidationInRenew: true,
     };
 
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -1208,7 +1214,7 @@ describe('State Validation Service', () => {
       enableIdTokenExpiredValidationInRenew: true,
     };
 
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
 
     const callbackContext = {
       code: 'fdffsdfsdf',
@@ -1247,12 +1253,12 @@ describe('State Validation Service', () => {
   });
 
   it('should return invalid context error', () => {
-    spyOn(oidcSecurityValidation, 'validateStateFromHashCallback').and.returnValue(true);
+    spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
     config.responseType = 'id_token token';
 
     config.maxIdTokenIatOffsetAllowedInSeconds = 0;
-    spyOn(oidcSecurityValidation, 'validateIdTokenIss').and.returnValue(false);
+    spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(false);
 
     const callbackContext = {
       code: 'fdffsdfsdf',

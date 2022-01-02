@@ -1,17 +1,13 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { mockClass } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
-import { AuthStateServiceMock } from '../../auth-state/auth-state.service-mock';
 import { LoggerService } from '../../logging/logger.service';
-import { LoggerServiceMock } from '../../logging/logger.service-mock';
-import { UserServiceMock } from '../../user-data/user-service-mock';
 import { UserService } from '../../user-data/user.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
 import { ValidationResult } from '../../validation/validation-result';
 import { FlowsDataService } from '../flows-data.service';
-import { FlowsDataServiceMock } from '../flows-data.service-mock';
 import { ResetAuthDataService } from '../reset-auth-data.service';
-import { ResetAuthDataServiceMock } from '../reset-auth-data.service-mock';
 import { UserCallbackHandlerService } from './user-callback-handler.service';
 
 describe('UserCallbackHandlerService', () => {
@@ -25,11 +21,11 @@ describe('UserCallbackHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         UserCallbackHandlerService,
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: AuthStateService, useClass: AuthStateServiceMock },
-        { provide: FlowsDataService, useClass: FlowsDataServiceMock },
-        { provide: UserService, useClass: UserServiceMock },
-        { provide: ResetAuthDataService, useClass: ResetAuthDataServiceMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
+        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
+        { provide: UserService, useClass: mockClass(UserService) },
+        { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
       ],
     });
   });

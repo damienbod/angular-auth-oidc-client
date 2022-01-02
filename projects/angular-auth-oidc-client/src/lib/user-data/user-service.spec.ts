@@ -1,18 +1,15 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
+import { mockClass } from '../../test/auto-mock';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
-import { DataServiceMock } from '../api/data.service-mock';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
-import { LoggerServiceMock } from '../logging/logger.service-mock';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { StoragePersistenceServiceMock } from '../storage/storage-persistence.service-mock';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
-import { PlatformProviderMock } from '../utils/platform-provider/platform.provider-mock';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { UserService } from './user.service';
 
@@ -34,11 +31,11 @@ describe('User Service', () => {
       providers: [
         {
           provide: StoragePersistenceService,
-          useClass: StoragePersistenceServiceMock,
+          useClass: mockClass(StoragePersistenceService),
         },
-        { provide: LoggerService, useClass: LoggerServiceMock },
-        { provide: DataService, useClass: DataServiceMock },
-        { provide: PlatformProvider, useClass: PlatformProviderMock },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: DataService, useClass: mockClass(DataService) },
+        { provide: PlatformProvider, useClass: mockClass(PlatformProvider) },
         PublicEventsService,
         TokenHelperService,
         UserService,
