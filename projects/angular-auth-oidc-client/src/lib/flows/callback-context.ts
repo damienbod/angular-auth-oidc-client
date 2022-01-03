@@ -18,6 +18,8 @@ export interface AuthResult {
   id_token?: string;
   // eslint-disable-next-line @typescript-eslint/naming-convention
   access_token?: string;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  refresh_token?: string;
   error?: any;
   // eslint-disable-next-line @typescript-eslint/naming-convention
   session_state?: any;
