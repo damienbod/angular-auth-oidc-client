@@ -87,6 +87,35 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     );
 
     it(
+      'writes refresh_token into the storage',
+      waitForAsync(() => {
+        const DUMMY_AUTH_RESULT = {
+          refresh_token: 'dummy_refresh_token',
+        };
+
+        const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'write');
+        const callbackContext = { authResult: DUMMY_AUTH_RESULT } as unknown as CallbackContext;
+        const allconfigs = [
+          {
+            configId: 'configId1',
+            historyCleanupOff: true,
+          },
+        ];
+
+        spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of({ keys: [] } as JwtKeys));
+        service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe(() => {
+          expect(storagePersistenceServiceSpy.calls.allArgs()).toEqual([
+            ['authnResult', DUMMY_AUTH_RESULT, allconfigs[0]],
+            ['refresh_token', 'dummy_refresh_token', allconfigs[0]],
+            ['jwtKeys', { keys: [] }, allconfigs[0]],
+          ]);
+          // write authnResult & refresh_token & jwtKeys
+          expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(3);
+        });
+      })
+    );
+
+    it(
       'resetBrowserHistory if historyCleanup is turned on and is not in a renewProcess',
       waitForAsync(() => {
         const callbackContext = { isRenewProcess: false, authResult: 'authResult' } as unknown as CallbackContext;
