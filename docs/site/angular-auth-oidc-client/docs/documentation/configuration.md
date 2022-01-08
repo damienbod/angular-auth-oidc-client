@@ -106,8 +106,7 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
           /* Your config mapping here */
         };
       })
-    )
-    .toPromise();
+    );
 
   return new StsConfigHttpLoader(config$);
 };
@@ -144,8 +143,7 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
           /* Your config mapping here */
         };
       })
-    )
-    .toPromise();
+    );
 
   const config2$ = httpClient
     .get<any>(`https://...`)
@@ -156,8 +154,7 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
           /* Your config mapping here */
         };
       })
-    )
-    .toPromise();
+    );
 
   return new StsConfigHttpLoader([config1$, config2$]);
 };
