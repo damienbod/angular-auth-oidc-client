@@ -11,7 +11,7 @@ export type StorageKeys =
   | 'authNonce'
   | 'codeVerifier'
   | 'authStateControl'
-  | 'refresh_token'
+  | 'reusable_refresh_token'
   | 'session_state'
   | 'storageSilentRenewRunning'
   | 'storageCustomParamsAuthRequest'
@@ -60,12 +60,12 @@ export class StoragePersistenceService {
     this.remove('access_token_expires_at', config);
     this.remove('storageCustomParamsRefresh', config);
     this.remove('storageCustomParamsEndSession', config);
-    this.remove('refresh_token', config);
+    this.remove('reusable_refresh_token', config);
   }
 
   resetAuthStateInStorage(config: OpenIdConfiguration): void {
     this.remove('authzData', config);
-    this.remove('refresh_token', config);
+    this.remove('reusable_refresh_token', config);
     this.remove('authnResult', config);
   }
 
@@ -78,7 +78,12 @@ export class StoragePersistenceService {
   }
 
   getRefreshToken(config: OpenIdConfiguration): string {
-    return this.read('refresh_token', config);
+    let refreshToken = this.read('authnResult', config)?.refresh_token;
+    if (!refreshToken && config.allowUnsafeReuseRefreshToken) {
+      return this.read('reusable_refresh_token', config);
+    }
+
+    return refreshToken;
   }
 
   getAuthenticationResult(config: OpenIdConfiguration): any {

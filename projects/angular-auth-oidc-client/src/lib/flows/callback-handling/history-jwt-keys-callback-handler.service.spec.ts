@@ -87,7 +87,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     );
 
     it(
-      'writes refresh_token into the storage',
+      'writes refresh_token into the storage without reuse (refresh token rotation)',
       waitForAsync(() => {
         const DUMMY_AUTH_RESULT = {
           refresh_token: 'dummy_refresh_token',
@@ -106,7 +106,36 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe(() => {
           expect(storagePersistenceServiceSpy.calls.allArgs()).toEqual([
             ['authnResult', DUMMY_AUTH_RESULT, allconfigs[0]],
-            ['refresh_token', 'dummy_refresh_token', allconfigs[0]],
+            ['jwtKeys', { keys: [] }, allconfigs[0]],
+          ]);
+          // write authnResult & refresh_token & jwtKeys
+          expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(2);
+        });
+      })
+    );
+
+    it(
+      'writes refresh_token into the storage with reuse (without refresh token rotation)',
+      waitForAsync(() => {
+        const DUMMY_AUTH_RESULT = {
+          refresh_token: 'dummy_refresh_token',
+        };
+
+        const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'write');
+        const callbackContext = { authResult: DUMMY_AUTH_RESULT } as unknown as CallbackContext;
+        const allconfigs = [
+          {
+            configId: 'configId1',
+            historyCleanupOff: true,
+            allowUnsafeReuseRefreshToken: true,
+          },
+        ];
+
+        spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of({ keys: [] } as JwtKeys));
+        service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe(() => {
+          expect(storagePersistenceServiceSpy.calls.allArgs()).toEqual([
+            ['authnResult', DUMMY_AUTH_RESULT, allconfigs[0]],
+            ['reusable_refresh_token', 'dummy_refresh_token', allconfigs[0]],
             ['jwtKeys', { keys: [] }, allconfigs[0]],
           ]);
           // write authnResult & refresh_token & jwtKeys
