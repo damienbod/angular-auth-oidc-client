@@ -465,3 +465,13 @@ Default = _3_. <br/>
 - Required: `false`
 
 Adds the `ngsw-bypass` param to all requests ([Angular Documentation](https://angular.io/guide/service-worker-devops#bypassing-the-service-worker)).
+
+### `allowUnsafeReuseRefreshToken`
+
+- Type: `boolean`
+- Required: `false`
+
+Allows the refresh token reuse. Refresh tokens are typically longer-lived and RFC6749 allows their reuse nevertheless this is strongly discourage.
+Activate this property only if your OIDC provider cannot be configured to rotate refresh tokens.
+
+Default = _false_
