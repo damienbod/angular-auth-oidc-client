@@ -1,5 +1,5 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { Observable, of } from 'rxjs';
+import { catchError, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { mockClass } from '../test/auto-mock';
 import { AuthStateService } from './auth-state/auth-state.service';
 import { CheckAuthService } from './auth-state/check-auth.service';
@@ -629,6 +629,131 @@ describe('OidcSecurityService', () => {
       oidcSecurityService.getAuthorizeUrl({ custom: 'params' }).subscribe(() => {
         expect(spy).toHaveBeenCalledOnceWith(config, { custom: 'params' });
       });
+    });
+  });
+
+  describe('test isLoading$', () => {
+    it('should emit true', () => {
+      oidcSecurityService.isLoading$.subscribe((x) => {
+        expect(x).toBeTrue();
+      });
+    });
+
+    it('isloading should emit false after checkauth is called', (done) => {
+      const config = { configId: 'configId1' };
+      spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
+      spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+
+      oidcSecurityService
+        .checkAuth()
+        .pipe(
+          switchMap(() =>
+            oidcSecurityService.isLoading$.pipe(
+              tap((x) => {
+                expect(x).toBeFalse();
+                done();
+              })
+            )
+          )
+        )
+        .subscribe();
+    });
+
+    it('isloading should emit false on error in checkauth', (done) => {
+      const config = { configId: 'configId1' };
+      spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
+      const spy = spyOn(checkAuthService, 'checkAuth').and.returnValue(throwError(() => new Error('Error')));
+      oidcSecurityService
+        .checkAuth()
+        .pipe(
+          catchError((err) =>
+            oidcSecurityService.isLoading$.pipe(
+              tap((x) => {
+                expect(x).toBeFalse();
+                done();
+              })
+            )
+          )
+        )
+        .subscribe();
+    });
+
+    it('isloading should emit false after checkauthMultiple is called', (done) => {
+      const config = { configId: 'configId1' };
+      spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
+      spyOn(checkAuthService, 'checkAuthMultiple').and.returnValue(of(null));
+
+      oidcSecurityService
+        .checkAuthMultiple()
+        .pipe(
+          switchMap(() =>
+            oidcSecurityService.isLoading$.pipe(
+              tap((x) => {
+                expect(x).toBeFalse();
+                done();
+              })
+            )
+          )
+        )
+        .subscribe();
+    });
+
+    it('isloading should emit false on error in checkauthMultiple', (done) => {
+      const config = { configId: 'configId1' };
+      spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
+      const spy = spyOn(checkAuthService, 'checkAuthMultiple').and.returnValue(throwError(() => new Error('Error')));
+      oidcSecurityService
+        .checkAuthMultiple()
+        .pipe(
+          catchError((err) =>
+            oidcSecurityService.isLoading$.pipe(
+              tap((x) => {
+                expect(x).toBeFalse();
+                done();
+              })
+            )
+          )
+        )
+        .subscribe();
+    });
+
+    it('isloading should emit false after checkAuthIncludingServer is called', (done) => {
+      const config = { configId: 'configId1' };
+      spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
+      spyOn(checkAuthService, 'checkAuthIncludingServer').and.returnValue(of(null));
+
+      oidcSecurityService
+        .checkAuthIncludingServer()
+        .pipe(
+          switchMap(() =>
+            oidcSecurityService.isLoading$.pipe(
+              tap((x) => {
+                expect(x).toBeFalse();
+                done();
+              })
+            )
+          )
+        )
+        .subscribe();
+    });
+
+    it('isloading should emit false on error in checkAuthIncludingServer', (done) => {
+      const config = { configId: 'configId1' };
+      spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
+      spyOn(checkAuthService, 'checkAuthIncludingServer').and.returnValue(throwError(() => new Error('Error')));
+      oidcSecurityService
+        .checkAuthIncludingServer()
+        .pipe(
+          catchError((err) =>
+            oidcSecurityService.isLoading$.pipe(
+              tap((x) => {
+                expect(x).toBeFalse();
+                done();
+              })
+            )
+          )
+        )
+        .subscribe();
     });
   });
 });
