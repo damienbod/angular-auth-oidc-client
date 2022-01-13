@@ -92,7 +92,7 @@ describe('Storage Persistence Service', () => {
 
       service.resetStorageFlowData(config);
 
-      expect(spy).toHaveBeenCalledTimes(8);
+      expect(spy).toHaveBeenCalledTimes(9);
       expect(spy.calls.argsFor(0)).toEqual(['session_state', config]);
       expect(spy.calls.argsFor(1)).toEqual(['storageSilentRenewRunning', config]);
       expect(spy.calls.argsFor(2)).toEqual(['codeVerifier', config]);
@@ -101,6 +101,7 @@ describe('Storage Persistence Service', () => {
       expect(spy.calls.argsFor(5)).toEqual(['access_token_expires_at', config]);
       expect(spy.calls.argsFor(6)).toEqual(['storageCustomParamsRefresh', config]);
       expect(spy.calls.argsFor(7)).toEqual(['storageCustomParamsEndSession', config]);
+      expect(spy.calls.argsFor(8)).toEqual(['reusable_refresh_token', config]);
     });
   });
 
@@ -112,7 +113,8 @@ describe('Storage Persistence Service', () => {
       service.resetAuthStateInStorage(config);
 
       expect(spy.calls.argsFor(0)).toEqual(['authzData', config]);
-      expect(spy.calls.argsFor(1)).toEqual(['authnResult', config]);
+      expect(spy.calls.argsFor(1)).toEqual(['reusable_refresh_token', config]);
+      expect(spy.calls.argsFor(2)).toEqual(['authnResult', config]);
     });
   });
 
@@ -180,7 +182,7 @@ describe('Storage Persistence Service', () => {
   });
 
   describe('getRefreshToken', () => {
-    it('get calls oidcSecurityStorage.read with correct key and returns the value', () => {
+    it('get calls oidcSecurityStorage.read with correct key and returns the value (refresh token with mandatory rotation - default)', () => {
       const returnValue = { authnResult: { refresh_token: 'someValue' } };
       const spy = spyOn(securityStorage, 'read').and.returnValue(returnValue);
       const config = { configId: 'configId1' };
@@ -188,6 +190,20 @@ describe('Storage Persistence Service', () => {
 
       expect(result).toBe('someValue');
       expect(spy).toHaveBeenCalledOnceWith('authnResult', config);
+    });
+
+    it('get calls oidcSecurityStorage.read with correct key and returns the value (refresh token without rotation)', () => {
+      const returnValue = { reusable_refresh_token: 'test_refresh_token' };
+      const config = { configId: 'configId1', allowUnsafeReuseRefreshToken: true };
+      let spy = spyOn(securityStorage, 'read');
+      spy.withArgs('reusable_refresh_token', config).and.returnValue(returnValue);
+      spy.withArgs('authnResult', config).and.returnValue(undefined);
+      const result = service.getRefreshToken(config);
+
+      expect(result).toBe(returnValue.reusable_refresh_token);
+      expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy).toHaveBeenCalledWith('authnResult', config);
+      expect(spy).toHaveBeenCalledWith('reusable_refresh_token', config);
     });
 
     it('get calls oidcSecurityStorage.read with correct key and returns null', () => {

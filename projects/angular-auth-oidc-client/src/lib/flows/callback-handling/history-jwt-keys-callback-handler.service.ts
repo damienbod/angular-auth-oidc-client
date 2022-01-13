@@ -35,6 +35,10 @@ export class HistoryJwtKeysCallbackHandlerService {
   ): Observable<CallbackContext> {
     this.storagePersistenceService.write('authnResult', callbackContext.authResult, config);
 
+    if (config.allowUnsafeReuseRefreshToken && callbackContext.authResult.refresh_token) {
+      this.storagePersistenceService.write('reusable_refresh_token', callbackContext.authResult.refresh_token, config);
+    }
+
     if (this.historyCleanUpTurnedOn(config) && !callbackContext.isRenewProcess) {
       this.resetBrowserHistory();
     } else {

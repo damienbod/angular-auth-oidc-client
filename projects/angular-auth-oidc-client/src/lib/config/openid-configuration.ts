@@ -172,4 +172,8 @@ export interface OpenIdConfiguration {
   refreshTokenRetryInSeconds?: number;
   /** Adds the ngsw-bypass param to all requests */
   ngswBypass?: boolean;
+  /** Allow refresh token reuse (refresh without rotation), default value is false.
+   * The refresh token rotation is optional (rfc6749) but is more safe and hence encouraged.
+   */
+  allowUnsafeReuseRefreshToken?: boolean;
 }
