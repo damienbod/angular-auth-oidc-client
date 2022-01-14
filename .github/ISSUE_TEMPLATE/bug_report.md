@@ -6,7 +6,7 @@ labels: ''
 assignees: ''
 ---
 
-**What Version of the libraray are you using?**
+**What Version of the library are you using?**
 ...
 
 **Describe the bug**
