@@ -62,13 +62,13 @@ export class OidcSecurityService {
   }
 
   /**
-   * Emits false when checkAuth observable emits a value, or errors. Initial value: true.
+   * Emits false when the observable, returned by one of the checkAuth() methods, emits a value, or errors. Initial value: true.
    */
   get isLoading$(): Observable<boolean> {
-    return this.isLoadingBehaviorSubject.asObservable();
+    return this.isLoading.asObservable();
   }
 
-  private readonly isLoadingBehaviorSubject: BehaviorSubject<boolean> = new BehaviorSubject(true);
+  private readonly isLoading: BehaviorSubject<boolean> = new BehaviorSubject(true);
 
   constructor(
     private checkSessionService: CheckSessionService,
@@ -431,11 +431,12 @@ export class OidcSecurityService {
   }
 
   private finishLoading = (): void => {
-    this.isLoadingBehaviorSubject.next(false);
+    this.isLoading.next(false);
   };
 
   private finishLoadingOnError = (err: any): Observable<never> => {
-    this.isLoadingBehaviorSubject.next(false);
+    this.isLoading.next(false);
+    
     return throwError(() => err);
   };
 }
