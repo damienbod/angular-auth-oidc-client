@@ -632,7 +632,7 @@ describe('OidcSecurityService', () => {
     });
   });
 
-  describe('test isLoading$', () => {
+  describe('isLoading$', () => {
     it(
       'should emit true',
       waitForAsync(() => {
@@ -643,7 +643,7 @@ describe('OidcSecurityService', () => {
     );
 
     it(
-      'isloading should emit false after checkauth is called',
+      'should emit false after checkauth is called',
       waitForAsync(() => {
         const config = { configId: 'configId1' };
         spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
@@ -665,7 +665,7 @@ describe('OidcSecurityService', () => {
     );
 
     it(
-      'isloading should emit false on error in checkauth',
+      'should emit false on error in checkauth',
       waitForAsync(() => {
         const config = { configId: 'configId1' };
         spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
@@ -686,7 +686,7 @@ describe('OidcSecurityService', () => {
     );
 
     it(
-      'isloading should emit false after checkauthMultiple is called',
+      'should emit false after checkauthMultiple is called',
       waitForAsync(() => {
         const config = { configId: 'configId1' };
         spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
@@ -708,7 +708,7 @@ describe('OidcSecurityService', () => {
     );
 
     it(
-      'isloading should emit false on error in checkauthMultiple',
+      'should emit false on error in checkauthMultiple',
       waitForAsync(() => {
         const config = { configId: 'configId1' };
         spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
@@ -729,7 +729,7 @@ describe('OidcSecurityService', () => {
     );
 
     it(
-      'isloading should emit false after checkAuthIncludingServer is called',
+      'should emit false after checkAuthIncludingServer is called',
       waitForAsync(() => {
         const config = { configId: 'configId1' };
         spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
@@ -751,7 +751,7 @@ describe('OidcSecurityService', () => {
     );
 
     it(
-      'isloading should emit false on error in checkAuthIncludingServer',
+      'should emit false on error in checkAuthIncludingServer',
       waitForAsync(() => {
         const config = { configId: 'configId1' };
         spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
