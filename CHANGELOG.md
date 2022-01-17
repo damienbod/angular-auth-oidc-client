@@ -8,7 +8,7 @@ You can however explicitly preload the secure token server well-known endpoints 
 
 See the [migration guide](https://nice-hill-002425310.azurestaticapps.net/docs/migrations/v13-to-v14).
 
-- refresh token rotation optional cna be be activated using allowUnsafeReuseRefreshToken
+- refresh token rotation optional can be be activated using allowUnsafeReuseRefreshToken
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1342)
 
 ### 2021-12-01 13.1.0
