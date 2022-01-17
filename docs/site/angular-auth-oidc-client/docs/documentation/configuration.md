@@ -468,7 +468,9 @@ Adds the `ngsw-bypass` param to all requests ([Angular Documentation](https://an
 - Type: `boolean`
 - Required: `false`
 
-Allows the refresh token reuse. Refresh tokens are typically longer-lived and RFC6749 allows their reuse nevertheless this is strongly discourage.
+Allows multiple usage of refresh token. Refresh tokens which can be stored safely are typically longer-lived and RFC6749 allows their reuse. When the specification was written, it was not recommended to use refresh tokens in the browser. This is now required in SPAs because modern browsers block cookies required for iframe refresh. When using refresh tokens in the browser, the refresh tokens should be rotated, relatively short lived and only used once. Re-using refresh tokens is strongly discouraged. This configuration is required for older IDPs.
+
 Activate this property only if your OIDC provider cannot be configured to rotate refresh tokens.
+
 
 Default = _false_
