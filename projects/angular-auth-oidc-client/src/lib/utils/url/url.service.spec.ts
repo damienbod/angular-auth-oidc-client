@@ -118,6 +118,16 @@ describe('UrlService Tests', () => {
       expect(code).toBe('thisisacode');
       expect(state).toBe('0000.1234.000');
     });
+
+    it('gets correct params when response_mode=fragment', () => {
+      // Note: This is the example access token response from the RFC: https://datatracker.ietf.org/doc/html/rfc6749#section-4.2.2
+      const urlToCheck = 'https://www.example.com/signin#state=thisisastate&ui_locales=fr&code=thisisacode';
+      const code = service.getUrlParameter(urlToCheck, 'code');
+      const state = service.getUrlParameter(urlToCheck, 'state');
+
+      expect(code).toBe('thisisacode');
+      expect(state).toBe('thisisastate');
+    });
   });
 
   describe('createAuthorizeUrl', () => {
