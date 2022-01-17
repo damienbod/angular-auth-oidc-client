@@ -10,6 +10,8 @@ See the [migration guide](https://nice-hill-002425310.azurestaticapps.net/docs/m
 
 - refresh token rotation is now optional and can be activated using allowUnsafeReuseRefreshToken
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1342)
+- Fixed getUrlParameter's handling of fragment response
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1359)
 
 ### 2021-12-01 13.1.0
 
