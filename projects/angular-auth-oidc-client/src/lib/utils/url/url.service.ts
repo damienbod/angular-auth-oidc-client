@@ -33,7 +33,7 @@ export class UrlService {
     }
 
     name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-    const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    const regex = new RegExp('[\\?&#]' + name + '=([^&#]*)');
     const results = regex.exec(urlToCheck);
 
     return results === null ? '' : decodeURIComponent(results[1]);
