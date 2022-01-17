@@ -120,6 +120,7 @@ describe('UrlService Tests', () => {
     });
 
     it('gets correct params when response_mode=fragment', () => {
+      // Test url taken from an example in the RFC: https://datatracker.ietf.org/doc/html/rfc6749#section-4.2.2
       const urlToCheck = 'http://example.com/cb#access_token=2YotnFZFEjr1zCsicMWpAA&state=xyz&token_type=example&expires_in=3600';
       const accessToken = service.getUrlParameter(urlToCheck, 'access_token');
       const state = service.getUrlParameter(urlToCheck, 'state');
