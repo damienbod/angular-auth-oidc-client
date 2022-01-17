@@ -120,13 +120,16 @@ describe('UrlService Tests', () => {
     });
 
     it('gets correct params when response_mode=fragment', () => {
-      // Note: This is the example access token response from the RFC: https://datatracker.ietf.org/doc/html/rfc6749#section-4.2.2
-      const urlToCheck = 'https://www.example.com/signin#state=thisisastate&ui_locales=fr&code=thisisacode';
-      const code = service.getUrlParameter(urlToCheck, 'code');
+      const urlToCheck = 'http://example.com/cb#access_token=2YotnFZFEjr1zCsicMWpAA&state=xyz&token_type=example&expires_in=3600';
+      const accessToken = service.getUrlParameter(urlToCheck, 'access_token');
       const state = service.getUrlParameter(urlToCheck, 'state');
+      const tokenType = service.getUrlParameter(urlToCheck, 'token_type');
+      const expiresIn = service.getUrlParameter(urlToCheck, 'expires_in');
 
-      expect(code).toBe('thisisacode');
-      expect(state).toBe('thisisastate');
+      expect(accessToken).toBe('2YotnFZFEjr1zCsicMWpAA');
+      expect(state).toBe('xyz');
+      expect(tokenType).toBe('example');
+      expect(expiresIn).toBe('3600');
     });
   });
 
