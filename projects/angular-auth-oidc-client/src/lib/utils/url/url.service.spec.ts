@@ -132,6 +132,19 @@ describe('UrlService Tests', () => {
       expect(tokenType).toBe('example');
       expect(expiresIn).toBe('3600');
     });
+
+    it('gets correct params when square brackets are present', () => {
+      const urlToCheck = 'http://example.com/cb#state=abc[&code=abc&arr[]=1&some_param=abc]&arr[]=2&arr[]=3';
+      const state = service.getUrlParameter(urlToCheck, 'state');
+      const code = service.getUrlParameter(urlToCheck, 'code');
+      const someParam = service.getUrlParameter(urlToCheck, 'some_param');
+      const array = service.getUrlParameter(urlToCheck, 'arr[]');
+
+      expect(state).toBe('abc[');
+      expect(code).toBe('abc');
+      expect(someParam).toBe('abc]');
+      expect(['1', '2', '3']).toContain(array);
+    });
   });
 
   describe('createAuthorizeUrl', () => {
