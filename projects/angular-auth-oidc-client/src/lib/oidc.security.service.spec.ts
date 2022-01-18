@@ -1,5 +1,5 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { catchError, Observable, of, switchMap, tap, throwError } from 'rxjs';
+import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
 import { mockClass } from '../test/auto-mock';
 import { AuthStateService } from './auth-state/auth-state.service';
 import { CheckAuthService } from './auth-state/check-auth.service';
@@ -636,9 +636,7 @@ describe('OidcSecurityService', () => {
     it(
       'should emit true',
       waitForAsync(() => {
-        oidcSecurityService.isLoading$.subscribe((x) => {
-          expect(x).toBeTrue();
-        });
+        oidcSecurityService.isLoading$.subscribe((x) => expect(x).toBeTrue());
       })
     );
 
@@ -651,16 +649,8 @@ describe('OidcSecurityService', () => {
 
         oidcSecurityService
           .checkAuth()
-          .pipe(
-            switchMap(() =>
-              oidcSecurityService.isLoading$.pipe(
-                tap((x) => {
-                  expect(x).toBeFalse();
-                })
-              )
-            )
-          )
-          .subscribe();
+          .pipe(switchMap(() => oidcSecurityService.isLoading$))
+          .subscribe((x) => expect(x).toBeFalse());
       })
     );
 
@@ -670,18 +660,11 @@ describe('OidcSecurityService', () => {
         const config = { configId: 'configId1' };
         spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
         spyOn(checkAuthService, 'checkAuth').and.returnValue(throwError(() => new Error('Error')));
+
         oidcSecurityService
           .checkAuth()
-          .pipe(
-            catchError(() =>
-              oidcSecurityService.isLoading$.pipe(
-                tap((x) => {
-                  expect(x).toBeFalse();
-                })
-              )
-            )
-          )
-          .subscribe();
+          .pipe(catchError(() => oidcSecurityService.isLoading$))
+          .subscribe((x) => expect(x).toBeFalse());
       })
     );
 
@@ -694,16 +677,8 @@ describe('OidcSecurityService', () => {
 
         oidcSecurityService
           .checkAuthMultiple()
-          .pipe(
-            switchMap(() =>
-              oidcSecurityService.isLoading$.pipe(
-                tap((x) => {
-                  expect(x).toBeFalse();
-                })
-              )
-            )
-          )
-          .subscribe();
+          .pipe(switchMap(() => oidcSecurityService.isLoading$))
+          .subscribe((x) => expect(x).toBeFalse());
       })
     );
 
@@ -713,18 +688,11 @@ describe('OidcSecurityService', () => {
         const config = { configId: 'configId1' };
         spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
         spyOn(checkAuthService, 'checkAuthMultiple').and.returnValue(throwError(() => new Error('Error')));
+
         oidcSecurityService
           .checkAuthMultiple()
-          .pipe(
-            catchError(() =>
-              oidcSecurityService.isLoading$.pipe(
-                tap((x) => {
-                  expect(x).toBeFalse();
-                })
-              )
-            )
-          )
-          .subscribe();
+          .pipe(catchError(() => oidcSecurityService.isLoading$))
+          .subscribe((x) => expect(x).toBeFalse());
       })
     );
 
@@ -737,16 +705,8 @@ describe('OidcSecurityService', () => {
 
         oidcSecurityService
           .checkAuthIncludingServer()
-          .pipe(
-            switchMap(() =>
-              oidcSecurityService.isLoading$.pipe(
-                tap((x) => {
-                  expect(x).toBeFalse();
-                })
-              )
-            )
-          )
-          .subscribe();
+          .pipe(switchMap(() => oidcSecurityService.isLoading$))
+          .subscribe((x) => expect(x).toBeFalse());
       })
     );
 
@@ -756,18 +716,11 @@ describe('OidcSecurityService', () => {
         const config = { configId: 'configId1' };
         spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
         spyOn(checkAuthService, 'checkAuthIncludingServer').and.returnValue(throwError(() => new Error('Error')));
+
         oidcSecurityService
           .checkAuthIncludingServer()
-          .pipe(
-            catchError(() =>
-              oidcSecurityService.isLoading$.pipe(
-                tap((x) => {
-                  expect(x).toBeFalse();
-                })
-              )
-            )
-          )
-          .subscribe();
+          .pipe(catchError(() => oidcSecurityService.isLoading$))
+          .subscribe((x) => expect(x).toBeFalse());
       })
     );
   });
