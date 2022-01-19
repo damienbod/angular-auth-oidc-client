@@ -12,6 +12,8 @@ See the [migration guide](https://nice-hill-002425310.azurestaticapps.net/docs/m
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1342)
 - Fixed getUrlParameter's handling of fragment response
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1359)
+- isLoading observable in OidcSecurityService
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1353)
 
 ### 2021-12-01 13.1.0
 
