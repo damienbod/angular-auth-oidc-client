@@ -148,6 +148,20 @@ this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
 }
 ```
 
+## isLoading$
+
+The `isLoading$` property returns an `Observable<boolean>`. Emits false when the observable, returned by either of the `checkAuth()` methods, emits a value, or errors. Initial value: true.
+
+### Example
+
+```ts
+this.isLoading$ = this.oidcSecurityService.isLoading$;
+```
+
+#### Example use case
+
+An auth guard subscribes to `isAuthenticated$` before the observable, returned by `checkAuth()`, emits a value. The `isAuthenticated$` emits false, and prompts an `authorize`, causing an infinite redirect loop. Use the `isLoading$` in combination with the `isAuthenticated$` to ensure that there is no race condition.
+
 ## checkSessionChanged$
 
 The `checkSessionChanged$` observable emits values every time the server comes back with a check session and the value `changed`. If you want to get information about when the `CheckSession` Event has been received, please take a look at the [public events](public-events.md).
