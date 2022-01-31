@@ -120,7 +120,7 @@ describe('StandardLoginService', () => {
       standardLoginService.loginStandard(config, { customParams: { to: 'add', as: 'well' } });
       tick();
       expect(redirectSpy).toHaveBeenCalledOnceWith('someUrl');
-      expect(getAuthorizeUrlSpy).toHaveBeenCalledOnceWith(config, { to: 'add', as: 'well' });
+      expect(getAuthorizeUrlSpy).toHaveBeenCalledOnceWith(config, { customParams: { to: 'add', as: 'well' } });
     }));
 
     it('does nothing, logs only if getAuthorizeUrl returns falsy', fakeAsync(() => {

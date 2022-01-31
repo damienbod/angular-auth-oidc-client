@@ -427,7 +427,7 @@ export class OidcSecurityService {
   getAuthorizeUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): Observable<string | null> {
     return this.configurationService
       .getOpenIDConfiguration(configId)
-      .pipe(switchMap((config) => this.urlService.getAuthorizeUrl(config, customParams)));
+      .pipe(switchMap((config) => this.urlService.getAuthorizeUrl(config, customParams ? { customParams: customParams } : undefined)));
   }
 
   private finishLoading = (): void => {
@@ -436,7 +436,7 @@ export class OidcSecurityService {
 
   private finishLoadingOnError = (err: any): Observable<never> => {
     this.isLoading.next(false);
-    
+
     return throwError(() => err);
   };
 }
