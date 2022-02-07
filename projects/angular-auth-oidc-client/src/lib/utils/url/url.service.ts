@@ -491,7 +491,7 @@ export class UrlService {
   private getRedirectUrl(configuration: OpenIdConfiguration, authOptions?: AuthOptions): string {
     let { redirectUrl } = configuration;
 
-    if (authOptions && authOptions.redirectUrl) {
+    if (authOptions?.redirectUrl) {
       // override by redirectUrl from authOptions
       redirectUrl = authOptions.redirectUrl;
     }
