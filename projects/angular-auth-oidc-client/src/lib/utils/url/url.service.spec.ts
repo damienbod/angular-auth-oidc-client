@@ -773,6 +773,20 @@ describe('UrlService Tests', () => {
     });
   });
 
+  describe('getRedirectUrl', () => {
+    it('returns configured redirectUrl', () => {
+      let config = { configId: 'configId1', redirectUrl: 'one-url' };
+      let url = (service as any).getRedirectUrl(config);
+      expect(url).toEqual('one-url');
+    });
+
+    it('returns redefined redirectUrl in AuthOptions', () => {
+      let config = { configId: 'configId1', redirectUrl: 'one-url' };
+      let url = (service as any).getRedirectUrl(config, { redirectUrl: 'other-url' });
+      expect(url).toEqual('other-url');
+    });
+  });
+
   describe('getAuthorizeUrl', () => {
     it('calls createUrlCodeFlowAuthorize if current flow is code flow', () => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
@@ -1330,7 +1344,7 @@ describe('UrlService Tests', () => {
 
       const serviceAsAny = service as any;
 
-      const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config, { to: 'add', as: 'well' });
+      const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config, { customParams: { to: 'add', as: 'well' } });
       resultObs$.subscribe((result) => {
         expect(result).toBe(
           `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com` +

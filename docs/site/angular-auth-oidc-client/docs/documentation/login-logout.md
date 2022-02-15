@@ -35,7 +35,11 @@ login() {
 
 ### AuthOptions
 
-You can pass options to manipulate the behavior of the login with a custom `urlHandler` or custom parameters for this request.
+You can pass in AuthOptions following optional parameters:
+
+- `urlHandler` - to manipulate the behavior of the login with a custom `urlHandler`
+- `customParams` - to send custom parameters to OIDC Provider
+- `redirectUrl` - to override the redirectUrl defined in the configuration
 
 ```ts
 login() {
@@ -46,6 +50,7 @@ login() {
     urlHandler: () => {
       // ...
     },
+    redirectUrl: "/assets/login-popup-page.html"
   };
 
   const configIdOrNull = // ...
@@ -106,6 +111,29 @@ loginWithPopup() {
     /* ... */
     });
 }
+```
+
+### Using custom popup login page
+
+You can pass a custom login page in AuthOptions (_authOptions.redirectUrl_).
+
+A simplified page (instead of the application url) can be used. Here's an example:
+
+```html
+<html>
+  <head>
+    <script>
+      function sendMessage() {
+        // post url containing oidc response (redirected from OP)
+        const urlWithOidcResp = window.location.href;
+        window.opener.postMessage(urlWithOidcResp, window.opener.location.href);
+      }
+    </script>
+  </head>
+  <body onload="sendMessage()">
+    Transmitting authentication result ... (this popup will be closed automatically).
+  </body>
+</html>
 ```
 
 ### Popup Sample

@@ -627,7 +627,7 @@ describe('OidcSecurityService', () => {
       const spy = spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of(null));
 
       oidcSecurityService.getAuthorizeUrl({ custom: 'params' }).subscribe(() => {
-        expect(spy).toHaveBeenCalledOnceWith(config, { custom: 'params' });
+        expect(spy).toHaveBeenCalledOnceWith(config, { customParams: { custom: 'params' } });
       });
     });
   });

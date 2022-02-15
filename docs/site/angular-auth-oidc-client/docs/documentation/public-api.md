@@ -432,7 +432,7 @@ this.oidcSecurityService.getState('configId').subscribe(/*...*/);
 
 ## authorize(configId?: string, authOptions?: AuthOptions)
 
-This method must be called when you want to redirect to the authority and sign in the identity. This method takes a `configId` as parameter if you want to use a specific config and it also takes `authOptions` adding `customParams` which can change every time you want to login.
+This method must be called when you want to redirect to the authority and sign in the identity. This method takes a `configId` as parameter if you want to use a specific config and it also takes `authOptions` adding `customParams` or `redirectUrl` which can change every time you want to login.
 It also accepts an `urlHandler` which is getting called instead of the redirect.
 
 See also: [Custom parameters](custom-parameters.md).
@@ -441,6 +441,7 @@ See also: [Custom parameters](custom-parameters.md).
 export interface AuthOptions {
   customParams?: { [key: string]: string | number | boolean };
   urlHandler?(url: string): any;
+  redirectUrl?: string;
 }
 ```
 
@@ -462,7 +463,7 @@ this.oidcSecurityService.authorize('configId', authOptions);
 
 ## authorizeWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions, configId?: string)
 
-This method must be called when you want to redirect to the Security Token Service in a popup and login your user. This method takes a `configId` as parameter if you want to use a specific config and it also takes `authOptions` adding `customParams` which can change every time you want to login.
+This method must be called when you want to redirect to the Security Token Service in a popup and login your user. This method takes a `configId` as parameter if you want to use a specific config and it also takes `authOptions` adding `customParams` or `redirectUrl` which can change every time you want to login.
 It also accepts an `urlHandler` which is getting called instead of the redirect. You can pass additional `PopupOptions` to define where and how the popup should open.
 
 The method returns an `Observable<LoginResponse>` containing
@@ -491,6 +492,7 @@ export interface PopupOptions {
 export interface AuthOptions {
   customParams?: { [key: string]: string | number | boolean };
   urlHandler?(url: string): any;
+  redirectUrl?: string;
 }
 ```
 
@@ -510,6 +512,7 @@ const authOptions = {
   urlHandler: () => {
     /* ... */
   },
+  redirectUrl: '/path-to/custom-popup-login-page.html',
 };
 
 this.oidcSecurityService

@@ -2,6 +2,7 @@ import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AuthOptions } from '../../auth-options';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { FlowsDataService } from '../../flows/flows-data.service';
 import { LoggerService } from '../../logging/logger.service';
@@ -93,12 +94,12 @@ export class UrlService {
     return `${authorizationUrl}?${params}`;
   }
 
-  getAuthorizeUrl(config: OpenIdConfiguration, customParams?: { [key: string]: string | number | boolean }): Observable<string> {
+  getAuthorizeUrl(config: OpenIdConfiguration, authOptions?: AuthOptions): Observable<string> {
     if (this.flowHelper.isCurrentFlowCodeFlow(config)) {
-      return this.createUrlCodeFlowAuthorize(config, customParams);
+      return this.createUrlCodeFlowAuthorize(config, authOptions);
     }
 
-    return of(this.createUrlImplicitFlowAuthorize(config, customParams) || '');
+    return of(this.createUrlImplicitFlowAuthorize(config, authOptions) || '');
   }
 
   createEndSessionUrl(
@@ -434,15 +435,12 @@ export class UrlService {
     );
   }
 
-  private createUrlImplicitFlowAuthorize(
-    configuration: OpenIdConfiguration,
-    customParams?: { [key: string]: string | number | boolean }
-  ): string {
+  private createUrlImplicitFlowAuthorize(configuration: OpenIdConfiguration, authOptions?: AuthOptions): string {
     const state = this.flowsDataService.getExistingOrCreateAuthStateControl(configuration);
     const nonce = this.flowsDataService.createNonce(configuration);
     this.loggerService.logDebug(configuration, 'Authorize created. adding myautostate: ' + state);
 
-    const redirectUrl = this.getRedirectUrl(configuration);
+    const redirectUrl = this.getRedirectUrl(configuration, authOptions);
 
     if (!redirectUrl) {
       return null;
@@ -450,6 +448,8 @@ export class UrlService {
 
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
     if (authWellKnownEndPoints) {
+      const { customParams } = authOptions || {};
+
       return this.createAuthorizeUrl('', redirectUrl, nonce, state, configuration, null, customParams);
     }
 
@@ -458,15 +458,12 @@ export class UrlService {
     return null;
   }
 
-  private createUrlCodeFlowAuthorize(
-    config: OpenIdConfiguration,
-    customParams?: { [key: string]: string | number | boolean }
-  ): Observable<string> {
+  private createUrlCodeFlowAuthorize(config: OpenIdConfiguration, authOptions?: AuthOptions): Observable<string> {
     const state = this.flowsDataService.getExistingOrCreateAuthStateControl(config);
     const nonce = this.flowsDataService.createNonce(config);
     this.loggerService.logDebug(config, 'Authorize created. adding myautostate: ' + state);
 
-    const redirectUrl = this.getRedirectUrl(config);
+    const redirectUrl = this.getRedirectUrl(config, authOptions);
 
     if (!redirectUrl) {
       return of(null);
@@ -479,6 +476,8 @@ export class UrlService {
       map((codeChallenge: string) => {
         const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', config);
         if (authWellKnownEndPoints) {
+          const { customParams } = authOptions || {};
+
           return this.createAuthorizeUrl(codeChallenge, redirectUrl, nonce, state, config, null, customParams);
         }
 
@@ -489,8 +488,13 @@ export class UrlService {
     );
   }
 
-  private getRedirectUrl(configuration: OpenIdConfiguration): string {
-    const { redirectUrl } = configuration;
+  private getRedirectUrl(configuration: OpenIdConfiguration, authOptions?: AuthOptions): string {
+    let { redirectUrl } = configuration;
+
+    if (authOptions?.redirectUrl) {
+      // override by redirectUrl from authOptions
+      redirectUrl = authOptions.redirectUrl;
+    }
 
     if (!redirectUrl) {
       this.loggerService.logError(configuration, `could not get redirectUrl, was: `, redirectUrl);

@@ -27,9 +27,9 @@ export class StandardLoginService {
     this.loggerService.logDebug(configuration, 'BEGIN Authorize OIDC Flow, no auth data');
 
     this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(configuration).subscribe(() => {
-      const { urlHandler, customParams } = authOptions || {};
+      const { urlHandler } = authOptions || {};
 
-      this.urlService.getAuthorizeUrl(configuration, customParams).subscribe((url: string) => {
+      this.urlService.getAuthorizeUrl(configuration, authOptions).subscribe((url: string) => {
         if (!url) {
           this.loggerService.logError(configuration, 'Could not create URL', url);
 
