@@ -14,6 +14,8 @@ See the [migration guide](https://nice-hill-002425310.azurestaticapps.net/docs/m
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1359)
 - isLoading observable in OidcSecurityService
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1353)
+- Add redirectUrl customization (via AuthOptions)
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1372)
 
 ### 2021-12-01 13.1.0
 
