@@ -8,7 +8,7 @@ import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
 import { TokenValidationService } from '../../validation/token-validation.service';
-import { CallbackContext } from '../callback-context';
+import { AuthResult, CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 
 @Injectable()
@@ -78,11 +78,12 @@ export class CodeFlowCallbackHandlerService {
     const bodyForCodeFlow = this.urlService.createBodyForCodeFlowCodeRequest(callbackContext.code, config, config?.customParamsCodeRequest);
 
     return this.dataService.post(tokenEndpoint, bodyForCodeFlow, config, headers).pipe(
-      switchMap((response) => {
-        let authResult: any = new Object();
-        authResult = response;
-        authResult.state = callbackContext.state;
-        authResult.session_state = callbackContext.sessionState;
+      switchMap((response: AuthResult) => {
+        let authResult: AuthResult = {
+          ...response,
+          state: callbackContext.state,
+          session_state: callbackContext.sessionState,
+        };
 
         callbackContext.authResult = authResult;
 
