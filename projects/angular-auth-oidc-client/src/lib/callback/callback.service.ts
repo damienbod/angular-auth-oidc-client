@@ -37,7 +37,12 @@ export class CallbackService {
     if (this.flowHelper.isCurrentFlowCodeFlow(config)) {
       callback$ = this.codeFlowCallbackService.authenticatedCallbackWithCode(currentCallbackUrl, config, allConfigs);
     } else if (this.flowHelper.isCurrentFlowAnyImplicitFlow(config)) {
-      callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(config, allConfigs);
+      if (currentCallbackUrl?.includes('#')) {
+        let hash = currentCallbackUrl.substring(currentCallbackUrl.indexOf('#') + 1);
+        callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(config, allConfigs, hash);
+      } else {
+        callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(config, allConfigs);
+      }
     }
 
     return callback$.pipe(tap(() => this.stsCallbackInternal$.next()));
