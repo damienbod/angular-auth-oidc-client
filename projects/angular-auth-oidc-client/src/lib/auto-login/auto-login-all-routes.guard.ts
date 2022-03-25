@@ -1,14 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  CanActivate,
-  CanActivateChild,
-  CanLoad,
-  Route,
-  RouterStateSnapshot,
-  UrlSegment,
-  UrlTree,
-} from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, CanLoad, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, switchMap, take } from 'rxjs/operators';
 import { CheckAuthService } from '../auth-state/check-auth.service';
@@ -22,13 +13,12 @@ export class AutoLoginAllRoutesGuard implements CanActivate, CanActivateChild, C
     private autoLoginService: AutoLoginService,
     private checkAuthService: CheckAuthService,
     private loginService: LoginService,
-    private configurationService: ConfigurationService
+    private configurationService: ConfigurationService,
+    private router: Router
   ) {}
 
-  canLoad(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree> {
-    const routeToRedirect = segments.join('/');
-
-    return this.checkAuth(routeToRedirect);
+  canLoad(): Observable<boolean | UrlTree> {
+    return this.checkAuth(this.router.getCurrentNavigation()?.extractedUrl.toString().substring(1) ?? '');
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {

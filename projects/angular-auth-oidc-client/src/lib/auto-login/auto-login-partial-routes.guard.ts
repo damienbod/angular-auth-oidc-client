@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, CanLoad, Route, RouterStateSnapshot, UrlSegment } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, CanLoad, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthStateService } from '../auth-state/auth-state.service';
@@ -13,13 +13,12 @@ export class AutoLoginPartialRoutesGuard implements CanActivate, CanActivateChil
     private autoLoginService: AutoLoginService,
     private authStateService: AuthStateService,
     private loginService: LoginService,
-    private configurationService: ConfigurationService
+    private configurationService: ConfigurationService,
+    private router: Router
   ) {}
 
-  canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> {
-    const routeToRedirect = segments.join('/');
-
-    return this.checkAuth(routeToRedirect);
+  canLoad(): Observable<boolean> {
+    return this.checkAuth(this.router.getCurrentNavigation()?.extractedUrl.toString().substring(1) ?? '');
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
