@@ -1,5 +1,5 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { RouterStateSnapshot, UrlSegment } from '@angular/router';
+import { Router, RouterStateSnapshot } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
@@ -18,6 +18,7 @@ describe(`AutoLoginAllRoutesGuard`, () => {
   let storagePersistenceService: StoragePersistenceService;
   let configurationService: ConfigurationService;
   let autoLoginService: AutoLoginService;
+  let router: Router;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -54,6 +55,7 @@ describe(`AutoLoginAllRoutesGuard`, () => {
 
     autoLoginAllRoutesGuard = TestBed.inject(AutoLoginAllRoutesGuard);
     autoLoginService = TestBed.inject(AutoLoginService);
+    router = TestBed.inject(Router);
   });
 
   afterEach(() => {
@@ -148,7 +150,7 @@ describe(`AutoLoginAllRoutesGuard`, () => {
         const checkSavedRedirectRouteAndNavigateSpy = spyOn(autoLoginService, 'checkSavedRedirectRouteAndNavigate');
         const saveRedirectRouteSpy = spyOn(autoLoginService, 'saveRedirectRoute');
         const loginSpy = spyOn(loginService, 'login');
-        const canLoad$ = autoLoginAllRoutesGuard.canLoad(null, []) as Observable<boolean>;
+        const canLoad$ = autoLoginAllRoutesGuard.canLoad();
         canLoad$.subscribe(() => {
           expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, '');
           expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
@@ -158,20 +160,24 @@ describe(`AutoLoginAllRoutesGuard`, () => {
     );
 
     it(
-      'should save current route (with Segments)  and call `login` if not authenticated already',
+      'should save current route (with router extractedUrl) and call `login` if not authenticated already',
       waitForAsync(() => {
         spyOn(checkAuthService, 'checkAuth').and.returnValue(of({ isAuthenticated: false } as LoginResponse));
         const checkSavedRedirectRouteAndNavigateSpy = spyOn(autoLoginService, 'checkSavedRedirectRouteAndNavigate');
         const saveRedirectRouteSpy = spyOn(autoLoginService, 'saveRedirectRoute');
         const loginSpy = spyOn(loginService, 'login');
-        const canLoad$ = autoLoginAllRoutesGuard.canLoad(null, [
-          new UrlSegment('some-url12', {}),
-          new UrlSegment('with', {}),
-          new UrlSegment('some-param', {}),
-        ]) as Observable<boolean>;
+        const _routerSpy = spyOn(router, 'getCurrentNavigation').and.returnValue({
+          extractedUrl: router.parseUrl('some-url12/with/some-param?queryParam=true'),
+          extras: {},
+          id: 1,
+          initialUrl: router.parseUrl(''),
+          previousNavigation: null,
+          trigger: 'imperative',
+        });
+        const canLoad$ = autoLoginAllRoutesGuard.canLoad();
 
         canLoad$.subscribe(() => {
-          expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'some-url12/with/some-param');
+          expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'some-url12/with/some-param?queryParam=true');
           expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
           expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
         });
@@ -185,7 +191,7 @@ describe(`AutoLoginAllRoutesGuard`, () => {
         const checkSavedRedirectRouteAndNavigateSpy = spyOn(autoLoginService, 'checkSavedRedirectRouteAndNavigate');
         const saveRedirectRouteSpy = spyOn(autoLoginService, 'saveRedirectRoute');
         const loginSpy = spyOn(loginService, 'login');
-        const canLoad$ = autoLoginAllRoutesGuard.canLoad(null, []) as Observable<boolean>;
+        const canLoad$ = autoLoginAllRoutesGuard.canLoad() as Observable<boolean>;
 
         canLoad$.subscribe(() => {
           expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
