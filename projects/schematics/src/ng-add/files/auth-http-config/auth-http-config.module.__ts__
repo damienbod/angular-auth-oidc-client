@@ -27,8 +27,7 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
           // autoUserInfo: false,
         };
       })
-    )
-    .toPromise();
+    );
 
   return new StsConfigHttpLoader(config$);
 };
