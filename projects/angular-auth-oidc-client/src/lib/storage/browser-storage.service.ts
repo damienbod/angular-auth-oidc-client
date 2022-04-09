@@ -5,7 +5,7 @@ import { AbstractSecurityStorage } from './abstract-security-storage';
 
 @Injectable()
 export class BrowserStorageService {
-  constructor(private loggerService: LoggerService) {}
+  constructor(private loggerService: LoggerService, private abstractSecurityStorage: AbstractSecurityStorage) {}
 
   read(key: string, configuration: OpenIdConfiguration): any {
     const { configId } = configuration;
@@ -16,15 +16,15 @@ export class BrowserStorageService {
       return null;
     }
 
-    const storage = this.getStorage(configuration);
+    // const storage = this.getStorage(configuration);
 
-    if (!storage) {
-      this.loggerService.logDebug(configuration, `Wanted to read config for '${configId}' but Storage was falsy`);
+    // if (!storage) {
+    //   this.loggerService.logDebug(configuration, `Wanted to read config for '${configId}' but Storage was falsy`);
 
-      return null;
-    }
+    //   return null;
+    // }
 
-    const storedConfig = storage.read(configId);
+    const storedConfig = this.abstractSecurityStorage.read(configId);
 
     if (!storedConfig) {
       return null;
@@ -42,16 +42,16 @@ export class BrowserStorageService {
       return false;
     }
 
-    const storage = this.getStorage(configuration);
-    if (!storage) {
-      this.loggerService.logDebug(configuration, `Wanted to write '${value}' but Storage was falsy`);
+    // const storage = this.getStorage(configuration);
+    // if (!storage) {
+    //   this.loggerService.logDebug(configuration, `Wanted to write '${value}' but Storage was falsy`);
 
-      return false;
-    }
+    //   return false;
+    // }
 
     value = value || null;
 
-    storage.write(configId, JSON.stringify(value));
+    this.abstractSecurityStorage.write(configId, JSON.stringify(value));
 
     return true;
   }
@@ -63,14 +63,14 @@ export class BrowserStorageService {
       return false;
     }
 
-    const storage = this.getStorage(configuration);
-    if (!storage) {
-      this.loggerService.logDebug(configuration, `Wanted to write '${key}' but Storage was falsy`);
+    // const storage = this.getStorage(configuration);
+    // if (!storage) {
+    //   this.loggerService.logDebug(configuration, `Wanted to write '${key}' but Storage was falsy`);
 
-      return false;
-    }
+    //   return false;
+    // }
 
-    storage.remove(key);
+    this.abstractSecurityStorage.remove(key);
 
     return true;
   }
@@ -83,22 +83,16 @@ export class BrowserStorageService {
       return false;
     }
 
-    const storage = this.getStorage(configuration);
-    if (!storage) {
-      this.loggerService.logDebug(configuration, `Wanted to clear storage but Storage was falsy`);
+    // const storage = this.getStorage(configuration);
+    // if (!storage) {
+    //   this.loggerService.logDebug(configuration, `Wanted to clear storage but Storage was falsy`);
 
-      return false;
-    }
+    //   return false;
+    // }
 
-    storage.clear();
+    this.abstractSecurityStorage.clear();
 
     return true;
-  }
-
-  private getStorage(configuration: OpenIdConfiguration): AbstractSecurityStorage {
-    const { storage } = configuration || {};
-
-    return storage;
   }
 
   private hasStorage(): boolean {

@@ -39,6 +39,7 @@ import { StandardLoginService } from './login/standard/standard-login.service';
 import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.service';
 import { OidcSecurityService } from './oidc.security.service';
 import { PublicEventsService } from './public-events/public-events.service';
+import { AbstractSecurityStorage } from './storage/abstract-security-storage';
 import { BrowserStorageService } from './storage/browser-storage.service';
 import { DefaultSessionStorageService } from './storage/default-sessionstorage.service';
 import { StoragePersistenceService } from './storage/storage-persistence.service';
@@ -132,6 +133,8 @@ export class AuthModule {
         DefaultSessionStorageService,
         BrowserStorageService,
         CryptoService,
+
+        { provide: AbstractSecurityStorage, useClass: DefaultSessionStorageService },
       ],
     };
   }

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../config/openid-configuration';
+import { AbstractLoggerService } from './abstract-logger.service';
 import { LogLevel } from './log-level';
 
 @Injectable()
-export class LoggerService {
+export class LoggerService implements AbstractLoggerService {
   logError(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {
     if (this.loggingIsTurnedOff(configuration)) {
       return;

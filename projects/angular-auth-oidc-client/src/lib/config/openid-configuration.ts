@@ -131,8 +131,7 @@ export interface OpenIdConfiguration {
    * The acceptable range is client specific.
    */
   disableIatOffsetValidation?: boolean;
-  /** The storage mechanism to use */
-  storage?: any;
+
   /** Extra parameters to add to the authorization URL request */
   customParamsAuthRequest?: { [key: string]: string | number | boolean };
 

@@ -30,7 +30,6 @@ export const DEFAULT_CONFIG: OpenIdConfiguration = {
   historyCleanupOff: false,
   maxIdTokenIatOffsetAllowedInSeconds: 120,
   disableIatOffsetValidation: false,
-  storage: null,
   customParamsAuthRequest: {},
   customParamsRefreshTokenRequest: {},
   customParamsEndSessionRequest: {},

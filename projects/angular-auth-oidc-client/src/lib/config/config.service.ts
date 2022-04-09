@@ -136,7 +136,6 @@ export class ConfigurationService {
   private prepareConfig(configuration: OpenIdConfiguration): OpenIdConfiguration {
     const openIdConfigurationInternal = { ...DEFAULT_CONFIG, ...configuration };
     this.setSpecialCases(openIdConfigurationInternal);
-    this.setStorage(openIdConfigurationInternal);
 
     return openIdConfigurationInternal;
   }
@@ -147,18 +146,6 @@ export class ConfigurationService {
       currentConfig.silentRenew = false;
       currentConfig.useRefreshToken = false;
       currentConfig.usePushedAuthorisationRequests = false;
-    }
-  }
-
-  private setStorage(currentConfig: OpenIdConfiguration): void {
-    if (currentConfig.storage) {
-      return;
-    }
-
-    if (this.hasBrowserStorage()) {
-      currentConfig.storage = this.defaultSessionStorageService;
-    } else {
-      currentConfig.storage = null;
     }
   }
 

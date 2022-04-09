@@ -1,5 +1,23 @@
 import { NgModule } from '@angular/core';
-import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
+import { AbstractSecurityStorage, AuthModule, LogLevel } from 'angular-auth-oidc-client';
+
+export class MyStorageService extends AbstractSecurityStorage {
+  read(key: string) {
+    throw new Error('Method not implemented.');
+  }
+  write(key: string, value: any): void {
+    throw new Error('Method not implemented.');
+  }
+  remove(key: string): void {
+    throw new Error('Method not implemented.');
+  }
+  clear(): void {
+    throw new Error('Method not implemented.');
+  }
+  constructor() {
+    super();
+  }
+}
 
 @NgModule({
   imports: [
@@ -22,6 +40,10 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
         },
       },
     }),
+  ],
+  providers: [
+    // { provide: AbstractSecurityStorage, useClass: MyStorageService },
+    //{ provide: LoggerService, useClass: MyLoggerService },
   ],
   exports: [AuthModule],
 })
