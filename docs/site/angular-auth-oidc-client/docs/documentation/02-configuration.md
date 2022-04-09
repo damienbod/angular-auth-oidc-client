@@ -97,16 +97,14 @@ If you want to load the config from HTTP and then map it to the interface the li
 import { AuthModule, StsConfigHttpLoader, StsConfigLoader } from 'angular-auth-oidc-client';
 
 export const httpLoaderFactory = (httpClient: HttpClient) => {
-  const config$ = httpClient
-    .get<any>(`https://...`)
-    .pipe(
-      map((customConfig: any) => {
-        return {
-          authority: customConfig.authority,
-          /* Your config mapping here */
-        };
-      })
-    );
+  const config$ = httpClient.get<any>(`https://...`).pipe(
+    map((customConfig: any) => {
+      return {
+        authority: customConfig.authority,
+        /* Your config mapping here */
+      };
+    })
+  );
 
   return new StsConfigHttpLoader(config$);
 };
@@ -134,27 +132,23 @@ The HTTP loader also supports multiple configs.
 import { AuthModule, StsConfigHttpLoader, StsConfigLoader } from 'angular-auth-oidc-client';
 
 export const httpLoaderFactory = (httpClient: HttpClient) => {
-  const config1$ = httpClient
-    .get<any>(`https://...`)
-    .pipe(
-      map((customConfig: any) => {
-        return {
-          authority: customConfig.authority,
-          /* Your config mapping here */
-        };
-      })
-    );
+  const config1$ = httpClient.get<any>(`https://...`).pipe(
+    map((customConfig: any) => {
+      return {
+        authority: customConfig.authority,
+        /* Your config mapping here */
+      };
+    })
+  );
 
-  const config2$ = httpClient
-    .get<any>(`https://...`)
-    .pipe(
-      map((customConfig: any) => {
-        return {
-          authority: customConfig.authority,
-          /* Your config mapping here */
-        };
-      })
-    );
+  const config2$ = httpClient.get<any>(`https://...`).pipe(
+    map((customConfig: any) => {
+      return {
+        authority: customConfig.authority,
+        /* Your config mapping here */
+      };
+    })
+  );
 
   return new StsConfigHttpLoader([config1$, config2$]);
 };
@@ -266,7 +260,7 @@ Indicates that the library should renew the client's tokens after the `token_id`
 - Type: `string`
 - Required: `false`
 
-If you are using the silent renew process and set this parameter, the supplied URL will be used for lightweight silent renew callbacks. See [Silent Renew](silent-renew.md).
+If you are using the silent renew process and set this parameter, the supplied URL will be used for lightweight silent renew callbacks. See [Silent Renew](12-silent-renew.md).
 
 ### `silentRenewTimeoutInSeconds`
 
@@ -437,7 +431,7 @@ Default = _3_
 - Required: `false`
 
 An array of secure urls to which the token should be sent if the interceptor is added to the `HTTP_INTERCEPTORS`. <br/>
-See [Http Interceptor](./using-access-tokens.md/#http-interceptor)
+See [Http Interceptor](./10-using-access-tokens.md/#http-interceptor)
 
 ### `usePushedAuthorisationRequests`
 
@@ -471,6 +465,5 @@ Adds the `ngsw-bypass` param to all requests ([Angular Documentation](https://an
 Allows multiple usage of refresh token. Refresh tokens which can be stored safely are typically longer-lived and RFC6749 allows their reuse. When the specification was written, it was not recommended to use refresh tokens in the browser. This is now required in SPAs because modern browsers block cookies required for iframe refresh. When using refresh tokens in the browser, the refresh tokens should be rotated, relatively short lived and only used once. Re-using refresh tokens is strongly discouraged. This configuration is required for older IDPs.
 
 Activate this property only if your OIDC provider cannot be configured to rotate refresh tokens.
-
 
 Default = _false_
