@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { ConfigurationService } from '../config/config.service';
-import { LoggerService } from '../logging/logger.service';
+import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { ClosestMatchingRouteService } from './closest-matching-route.service';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(
     private authStateService: AuthStateService,
     private configurationService: ConfigurationService,
-    private loggerService: LoggerService,
+    private loggerService: AbstractLoggerService,
     private closestMatchingRouteService: ClosestMatchingRouteService
   ) {}
 

@@ -4,7 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map, retry, switchMap } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { LoggerService } from '../../logging/logger.service';
+import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
 import { ParResponse } from './par-response';
@@ -12,7 +12,7 @@ import { ParResponse } from './par-response';
 @Injectable()
 export class ParService {
   constructor(
-    private loggerService: LoggerService,
+    private loggerService: AbstractLoggerService,
     private urlService: UrlService,
     private dataService: DataService,
     private storagePersistenceService: StoragePersistenceService

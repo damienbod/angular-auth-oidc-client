@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { LoggerService } from '../../logging/logger.service';
+import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { CryptoService } from '../../utils/crypto/crypto-service';
 import { OpenIdConfiguration } from './../../config/openid-configuration';
 
 @Injectable()
 export class RandomService {
-  constructor(private cryptoService: CryptoService, private loggerService: LoggerService) {}
+  constructor(private cryptoService: CryptoService, private loggerService: AbstractLoggerService) {}
 
   createRandom(requiredLength: number, configuration: OpenIdConfiguration): string {
     if (requiredLength <= 0) {

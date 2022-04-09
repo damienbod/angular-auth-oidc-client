@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LoggerService } from '../logging/logger.service';
+import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { OpenIdConfiguration } from './../config/openid-configuration';
 import { RandomService } from './random/random.service';
@@ -9,7 +9,7 @@ export class FlowsDataService {
   constructor(
     private storagePersistenceService: StoragePersistenceService,
     private randomService: RandomService,
-    private loggerService: LoggerService
+    private loggerService: AbstractLoggerService
   ) {}
 
   createNonce(configuration: OpenIdConfiguration): string {

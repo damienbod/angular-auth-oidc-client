@@ -1,12 +1,11 @@
 ﻿import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
-import { LoggerService } from '../logging/logger.service';
+import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
-import { DefaultSessionStorageService } from './../storage/default-sessionstorage.service';
 import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
 import { DEFAULT_CONFIG } from './default-config';
 import { StsConfigLoader } from './loader/config-loader';
@@ -18,12 +17,11 @@ export class ConfigurationService {
   private configsInternal: Record<string, OpenIdConfiguration> = {};
 
   constructor(
-    private loggerService: LoggerService,
+    private loggerService: AbstractLoggerService,
     private publicEventsService: PublicEventsService,
     private storagePersistenceService: StoragePersistenceService,
     private configValidationService: ConfigValidationService,
     private platformProvider: PlatformProvider,
-    private defaultSessionStorageService: DefaultSessionStorageService,
     private authWellKnownService: AuthWellKnownService,
     private loader: StsConfigLoader
   ) {}

@@ -29,6 +29,7 @@ import { CheckSessionService } from './iframe/check-session.service';
 import { IFrameService } from './iframe/existing-iframe.service';
 import { SilentRenewService } from './iframe/silent-renew.service';
 import { ClosestMatchingRouteService } from './interceptor/closest-matching-route.service';
+import { AbstractLoggerService } from './logging/abstract-logger.service';
 import { LoggerService } from './logging/logger.service';
 import { LoginService } from './login/login.service';
 import { ParLoginService } from './login/par/par-login.service';
@@ -102,7 +103,6 @@ export class AuthModule {
         SigninKeyDataService,
         StoragePersistenceService,
         TokenHelperService,
-        LoggerService,
         IFrameService,
         EqualityService,
         LoginService,
@@ -135,6 +135,7 @@ export class AuthModule {
         CryptoService,
 
         { provide: AbstractSecurityStorage, useClass: DefaultSessionStorageService },
+        { provide: AbstractLoggerService, useClass: LoggerService },
       ],
     };
   }

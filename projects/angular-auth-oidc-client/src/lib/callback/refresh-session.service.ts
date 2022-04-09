@@ -8,7 +8,7 @@ import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
-import { LoggerService } from '../logging/logger.service';
+import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LoginResponse } from '../login/login-response';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UserService } from '../user-data/user.service';
@@ -21,7 +21,7 @@ export class RefreshSessionService {
   constructor(
     private flowHelper: FlowHelper,
     private flowsDataService: FlowsDataService,
-    private loggerService: LoggerService,
+    private loggerService: AbstractLoggerService,
     private silentRenewService: SilentRenewService,
     private authStateService: AuthStateService,
     private authWellKnownService: AuthWellKnownService,

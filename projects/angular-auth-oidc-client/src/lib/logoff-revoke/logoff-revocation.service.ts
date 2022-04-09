@@ -7,7 +7,7 @@ import { AuthOptions } from '../auth-options';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
-import { LoggerService } from '../logging/logger.service';
+import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { RedirectService } from '../utils/redirect/redirect.service';
 import { UrlService } from '../utils/url/url.service';
@@ -17,7 +17,7 @@ export class LogoffRevocationService {
   constructor(
     private dataService: DataService,
     private storagePersistenceService: StoragePersistenceService,
-    private loggerService: LoggerService,
+    private loggerService: AbstractLoggerService,
     private urlService: UrlService,
     private checkSessionService: CheckSessionService,
     private resetAuthDataService: ResetAuthDataService,

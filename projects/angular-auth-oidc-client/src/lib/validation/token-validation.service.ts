@@ -4,7 +4,7 @@ import { base64url } from 'rfc4648';
 import { from, Observable, of } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
-import { LoggerService } from '../logging/logger.service';
+import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { CryptoService } from '../utils/crypto/crypto-service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
@@ -60,7 +60,7 @@ export class TokenValidationService {
 
   constructor(
     private tokenHelperService: TokenHelperService,
-    private loggerService: LoggerService,
+    private loggerService: AbstractLoggerService,
     private jwtWindowCryptoService: JwtWindowCryptoService,
     private cryptoService: CryptoService,
     @Inject(DOCUMENT) private document: any

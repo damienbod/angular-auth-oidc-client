@@ -6,7 +6,6 @@ import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
-import { DefaultSessionStorageService } from './../storage/default-sessionstorage.service';
 import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
 import { ConfigurationService } from './config.service';
 import { StsConfigLoader, StsConfigStaticLoader } from './loader/config-loader';
@@ -40,7 +39,6 @@ describe('Configuration Service', () => {
           provide: PlatformProvider,
           useClass: mockClass(PlatformProvider),
         },
-        DefaultSessionStorageService,
         {
           provide: AuthWellKnownService,
           useClass: mockClass(AuthWellKnownService),
@@ -268,38 +266,6 @@ describe('Configuration Service', () => {
         useRefreshToken: false,
         usePushedAuthorisationRequests: false,
       });
-    });
-  });
-
-  describe('setStorage', () => {
-    it(`does nothing if storage is already set`, () => {
-      spyOn(platformProvider, 'isBrowser').and.returnValue(false);
-
-      const config = { configId: 'configId1', storage: 'something' } as OpenIdConfiguration;
-
-      (configService as any).setStorage(config);
-
-      expect(config).toEqual({ configId: 'configId1', storage: 'something' });
-    });
-
-    it(`sets storage to null if there is no browserstorage and storage is not set`, () => {
-      spyOn(configService as any, 'hasBrowserStorage').and.returnValue(false);
-
-      const config = { configId: 'configId1' } as OpenIdConfiguration;
-
-      (configService as any).setStorage(config);
-
-      expect(config).toEqual({ configId: 'configId1', storage: null });
-    });
-
-    it(`sets storage to defaultSessionStorageService if there is a browserstorage and storage is not set`, () => {
-      spyOn(configService as any, 'hasBrowserStorage').and.returnValue(true);
-
-      const config = { configId: 'configId1' } as OpenIdConfiguration;
-
-      (configService as any).setStorage(config);
-
-      expect(config.storage).toBeInstanceOf(DefaultSessionStorageService);
     });
   });
 });

@@ -3,7 +3,7 @@ import { Inject, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
-import { LoggerService } from '../logging/logger.service';
+import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { UrlService } from '../utils/url/url.service';
 import { SilentRenewService } from './silent-renew.service';
 
@@ -13,7 +13,7 @@ export class RefreshSessionIframeService {
 
   constructor(
     @Inject(DOCUMENT) private readonly doc: any,
-    private loggerService: LoggerService,
+    private loggerService: AbstractLoggerService,
     private urlService: UrlService,
     private silentRenewService: SilentRenewService,
     rendererFactory: RendererFactory2

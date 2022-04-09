@@ -5,7 +5,7 @@ import { AuthOptions } from '../../auth-options';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { LoggerService } from '../../logging/logger.service';
+import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { UrlService } from '../../utils/url/url.service';
 import { LoginResponse } from '../login-response';
 import { PopupOptions } from '../popup/popup-options';
@@ -16,7 +16,7 @@ import { PopupResultReceivedUrl } from './popup-result';
 @Injectable()
 export class PopUpLoginService {
   constructor(
-    private loggerService: LoggerService,
+    private loggerService: AbstractLoggerService,
     private responseTypeValidationService: ResponseTypeValidationService,
     private urlService: UrlService,
     private authWellKnownService: AuthWellKnownService,

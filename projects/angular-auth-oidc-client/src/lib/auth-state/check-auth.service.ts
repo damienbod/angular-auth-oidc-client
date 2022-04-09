@@ -9,7 +9,7 @@ import { RefreshSessionService } from '../callback/refresh-session.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
-import { LoggerService } from '../logging/logger.service';
+import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LoginResponse } from '../login/login-response';
 import { PopUpService } from '../login/popup/popup.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -23,7 +23,7 @@ export class CheckAuthService {
     private currentUrlService: CurrentUrlService,
     private silentRenewService: SilentRenewService,
     private userService: UserService,
-    private loggerService: LoggerService,
+    private loggerService: AbstractLoggerService,
     private authStateService: AuthStateService,
     private callbackService: CallbackService,
     private refreshSessionService: RefreshSessionService,
