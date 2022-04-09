@@ -25,7 +25,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
   ],
   providers: [
     // { provide: AbstractSecurityStorage, useClass: MyStorageService },
-    // { provide: LoggerService, useClass: MyLoggerService },
+    // { provide: AbstractLoggerService, useClass: MyLoggerService },
   ],
   exports: [AuthModule],
 })
