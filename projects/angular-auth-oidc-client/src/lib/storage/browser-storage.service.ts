@@ -16,14 +16,6 @@ export class BrowserStorageService {
       return null;
     }
 
-    // const storage = this.getStorage(configuration);
-
-    // if (!storage) {
-    //   this.loggerService.logDebug(configuration, `Wanted to read config for '${configId}' but Storage was falsy`);
-
-    //   return null;
-    // }
-
     const storedConfig = this.abstractSecurityStorage.read(configId);
 
     if (!storedConfig) {
@@ -41,13 +33,6 @@ export class BrowserStorageService {
 
       return false;
     }
-
-    // const storage = this.getStorage(configuration);
-    // if (!storage) {
-    //   this.loggerService.logDebug(configuration, `Wanted to write '${value}' but Storage was falsy`);
-
-    //   return false;
-    // }
 
     value = value || null;
 
