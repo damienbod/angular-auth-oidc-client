@@ -2,6 +2,7 @@ import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockClass } from '../../../test/auto-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
+import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
@@ -10,7 +11,7 @@ import { StandardLoginService } from './standard-login.service';
 
 describe('StandardLoginService', () => {
   let standardLoginService: StandardLoginService;
-  let loggerService: LoggerService;
+  let loggerService: AbstractLoggerService;
   let responseTypeValidationService: ResponseTypeValidationService;
   let urlService: UrlService;
   let redirectService: RedirectService;
@@ -21,7 +22,7 @@ describe('StandardLoginService', () => {
       imports: [],
       providers: [
         StandardLoginService,
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: AbstractLoggerService, useClass: mockClass(LoggerService) },
         { provide: ResponseTypeValidationService, useClass: mockClass(ResponseTypeValidationService) },
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: RedirectService, useClass: mockClass(RedirectService) },
@@ -32,7 +33,7 @@ describe('StandardLoginService', () => {
 
   beforeEach(() => {
     standardLoginService = TestBed.inject(StandardLoginService);
-    loggerService = TestBed.inject(LoggerService);
+    loggerService = TestBed.inject(AbstractLoggerService);
     responseTypeValidationService = TestBed.inject(ResponseTypeValidationService);
     standardLoginService = TestBed.inject(StandardLoginService);
     urlService = TestBed.inject(UrlService);

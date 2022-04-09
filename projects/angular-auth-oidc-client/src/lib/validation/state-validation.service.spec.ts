@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { AuthWellKnownEndpoints } from '../config/auth-well-known/auth-well-known-endpoints';
 import { OpenIdConfiguration } from '../config/openid-configuration';
+import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LogLevel } from '../logging/log-level';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -18,7 +19,7 @@ describe('State Validation Service', () => {
   let stateValidationService: StateValidationService;
   let tokenValidationService: TokenValidationService;
   let tokenHelperService: TokenHelperService;
-  let loggerService: LoggerService;
+  let loggerService: AbstractLoggerService;
   let config: OpenIdConfiguration;
   let authWellKnownEndpoints: AuthWellKnownEndpoints;
   let storagePersistenceService: StoragePersistenceService;
@@ -37,7 +38,7 @@ describe('State Validation Service', () => {
           useClass: mockClass(TokenValidationService),
         },
         {
-          provide: LoggerService,
+          provide: AbstractLoggerService,
           useClass: mockClass(LoggerService),
         },
         TokenHelperService,
@@ -51,7 +52,7 @@ describe('State Validation Service', () => {
     stateValidationService = TestBed.inject(StateValidationService);
     tokenValidationService = TestBed.inject(TokenValidationService);
     tokenHelperService = TestBed.inject(TokenHelperService);
-    loggerService = TestBed.inject(LoggerService);
+    loggerService = TestBed.inject(AbstractLoggerService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
   });
 

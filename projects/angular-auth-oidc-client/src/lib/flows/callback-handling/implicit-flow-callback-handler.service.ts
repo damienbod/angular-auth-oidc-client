@@ -2,7 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { LoggerService } from '../../logging/logger.service';
+import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { ResetAuthDataService } from '../reset-auth-data.service';
@@ -11,7 +11,7 @@ import { ResetAuthDataService } from '../reset-auth-data.service';
 export class ImplicitFlowCallbackHandlerService {
   constructor(
     private readonly resetAuthDataService: ResetAuthDataService,
-    private readonly loggerService: LoggerService,
+    private readonly loggerService: AbstractLoggerService,
     private readonly flowsDataService: FlowsDataService,
     @Inject(DOCUMENT) private readonly doc: any
   ) {}

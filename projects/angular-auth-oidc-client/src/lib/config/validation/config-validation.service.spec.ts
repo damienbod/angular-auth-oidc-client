@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { mockClass } from '../../../test/auto-mock';
+import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { LogLevel } from '../../logging/log-level';
 import { LoggerService } from '../../logging/logger.service';
 import { ConfigValidationService } from './config-validation.service';
@@ -7,11 +8,11 @@ import { allMultipleConfigRules } from './rules';
 
 describe('Config Validation Service', () => {
   let configValidationService: ConfigValidationService;
-  let loggerService: LoggerService;
+  let loggerService: AbstractLoggerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ConfigValidationService, { provide: LoggerService, useClass: mockClass(LoggerService) }],
+      providers: [ConfigValidationService, { provide: AbstractLoggerService, useClass: mockClass(LoggerService) }],
     });
   });
 
@@ -30,7 +31,7 @@ describe('Config Validation Service', () => {
 
   beforeEach(() => {
     configValidationService = TestBed.inject(ConfigValidationService);
-    loggerService = TestBed.inject(LoggerService);
+    loggerService = TestBed.inject(AbstractLoggerService);
   });
 
   it('should create', () => {

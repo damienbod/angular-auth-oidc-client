@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 import { mockClass } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
+import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { LoggerService } from '../../logging/logger.service';
 import { UrlService } from '../../utils/url/url.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
@@ -14,7 +15,7 @@ import { PopUpService } from './popup.service';
 describe('PopUpLoginService', () => {
   let popUpLoginService: PopUpLoginService;
   let urlService: UrlService;
-  let loggerService: LoggerService;
+  let loggerService: AbstractLoggerService;
   let responseTypValidationService: ResponseTypeValidationService;
   let authWellKnownService: AuthWellKnownService;
   let popupService: PopUpService;
@@ -25,7 +26,7 @@ describe('PopUpLoginService', () => {
       imports: [CommonModule],
       providers: [
         PopUpLoginService,
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: AbstractLoggerService, useClass: mockClass(LoggerService) },
         { provide: ResponseTypeValidationService, useClass: mockClass(ResponseTypeValidationService) },
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: AuthWellKnownService, useClass: mockClass(AuthWellKnownService) },
@@ -38,7 +39,7 @@ describe('PopUpLoginService', () => {
   beforeEach(() => {
     popUpLoginService = TestBed.inject(PopUpLoginService);
     urlService = TestBed.inject(UrlService);
-    loggerService = TestBed.inject(LoggerService);
+    loggerService = TestBed.inject(AbstractLoggerService);
     responseTypValidationService = TestBed.inject(ResponseTypeValidationService);
     authWellKnownService = TestBed.inject(AuthWellKnownService);
     popupService = TestBed.inject(PopUpService);

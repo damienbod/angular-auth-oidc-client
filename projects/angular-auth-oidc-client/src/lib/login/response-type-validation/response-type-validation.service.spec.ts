@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { mockClass } from '../../../test/auto-mock';
+import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { LoggerService } from '../../logging/logger.service';
 import { FlowHelper } from '../../utils/flowHelper/flow-helper.service';
 import { ResponseTypeValidationService } from './response-type-validation.service';
@@ -14,7 +15,7 @@ describe('ResponseTypeValidationService', () => {
       providers: [
         ResponseTypeValidationService,
         {
-          provide: LoggerService,
+          provide: AbstractLoggerService,
           useClass: mockClass(LoggerService),
         },
         {

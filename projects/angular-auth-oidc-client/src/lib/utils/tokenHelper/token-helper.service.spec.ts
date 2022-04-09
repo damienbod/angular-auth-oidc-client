@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { mockClass } from '../../../test/auto-mock';
+import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { LoggerService } from '../../logging/logger.service';
 import { TokenHelperService } from './token-helper.service';
 
@@ -8,7 +9,7 @@ describe('Token Helper Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [TokenHelperService, { provide: LoggerService, useClass: mockClass(LoggerService) }],
+      providers: [TokenHelperService, { provide: AbstractLoggerService, useClass: mockClass(LoggerService) }],
     });
   });
 

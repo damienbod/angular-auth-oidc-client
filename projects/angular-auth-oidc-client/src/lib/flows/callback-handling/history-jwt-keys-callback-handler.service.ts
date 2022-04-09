@@ -4,7 +4,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { LoggerService } from '../../logging/logger.service';
+import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { JwtKeys } from '../../validation/jwtkeys';
 import { ValidationResult } from '../../validation/validation-result';
@@ -18,7 +18,7 @@ const JWT_KEYS = 'jwtKeys';
 @Injectable()
 export class HistoryJwtKeysCallbackHandlerService {
   constructor(
-    private readonly loggerService: LoggerService,
+    private readonly loggerService: AbstractLoggerService,
     private readonly authStateService: AuthStateService,
     private readonly flowsDataService: FlowsDataService,
     private readonly signInKeyDataService: SigninKeyDataService,

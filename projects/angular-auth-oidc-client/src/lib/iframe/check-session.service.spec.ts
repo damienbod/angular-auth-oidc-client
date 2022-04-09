@@ -2,6 +2,7 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { skip } from 'rxjs/operators';
 import { mockClass } from '../../test/auto-mock';
+import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LoggerService } from '../logging/logger.service';
 import { OidcSecurityService } from '../oidc.security.service';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -14,7 +15,7 @@ import { IFrameService } from './existing-iframe.service';
 
 describe('CheckSessionService', () => {
   let checkSessionService: CheckSessionService;
-  let loggerService: LoggerService;
+  let loggerService: AbstractLoggerService;
   let iFrameService: IFrameService;
   let storagePersistenceService: StoragePersistenceService;
 
@@ -29,7 +30,7 @@ describe('CheckSessionService', () => {
           provide: StoragePersistenceService,
           useClass: mockClass(StoragePersistenceService),
         },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: AbstractLoggerService, useClass: mockClass(LoggerService) },
         { provide: AbstractSecurityStorage, useClass: mockClass(DefaultSessionStorageService) },
         { provide: PlatformProvider, useClass: mockClass(PlatformProvider) },
       ],
@@ -38,7 +39,7 @@ describe('CheckSessionService', () => {
 
   beforeEach(() => {
     checkSessionService = TestBed.inject(CheckSessionService);
-    loggerService = TestBed.inject(LoggerService);
+    loggerService = TestBed.inject(AbstractLoggerService);
     iFrameService = TestBed.inject(IFrameService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
   });

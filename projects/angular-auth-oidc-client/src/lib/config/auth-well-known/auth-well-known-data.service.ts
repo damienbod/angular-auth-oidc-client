@@ -2,15 +2,15 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { map, retry } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
+import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { OpenIdConfiguration } from '../openid-configuration';
-import { LoggerService } from './../../logging/logger.service';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 
 const WELL_KNOWN_SUFFIX = `/.well-known/openid-configuration`;
 
 @Injectable()
 export class AuthWellKnownDataService {
-  constructor(private readonly http: DataService, private readonly loggerService: LoggerService) {}
+  constructor(private readonly http: DataService, private readonly loggerService: AbstractLoggerService) {}
 
   getWellKnownEndPointsForConfig(config: OpenIdConfiguration): Observable<AuthWellKnownEndpoints> {
     const { authWellknownEndpointUrl } = config;

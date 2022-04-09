@@ -5,6 +5,7 @@ import { createRetriableStream } from '../../test/create-retriable-stream.helper
 import { DataService } from '../api/data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
+import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UrlService } from '../utils/url/url.service';
@@ -14,7 +15,7 @@ import { LogoffRevocationService } from './logoff-revocation.service';
 describe('Logout and Revoke Service', () => {
   let service: LogoffRevocationService;
   let dataService: DataService;
-  let loggerService: LoggerService;
+  let loggerService: AbstractLoggerService;
   let storagePersistenceService: StoragePersistenceService;
   let urlService: UrlService;
   let checkSessionService: CheckSessionService;
@@ -26,7 +27,7 @@ describe('Logout and Revoke Service', () => {
       providers: [
         LogoffRevocationService,
         { provide: DataService, useClass: mockClass(DataService) },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: AbstractLoggerService, useClass: mockClass(LoggerService) },
         { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: CheckSessionService, useClass: mockClass(CheckSessionService) },
@@ -39,7 +40,7 @@ describe('Logout and Revoke Service', () => {
   beforeEach(() => {
     service = TestBed.inject(LogoffRevocationService);
     dataService = TestBed.inject(DataService);
-    loggerService = TestBed.inject(LoggerService);
+    loggerService = TestBed.inject(AbstractLoggerService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
     urlService = TestBed.inject(UrlService);
     checkSessionService = TestBed.inject(CheckSessionService);
@@ -498,7 +499,7 @@ describe('Logout and Revoke Service', () => {
     );
 
     it(
-      'loggs error when revokeaccesstoken throws an error',
+      'logs error when revokeaccesstoken throws an error',
       waitForAsync(() => {
         // Arrange
         const paramToken = 'damien';
@@ -584,7 +585,7 @@ describe('Logout and Revoke Service', () => {
     );
 
     it(
-      'loggs error when revokeaccesstoken throws an error',
+      'logs error when revokeaccesstoken throws an error',
       waitForAsync(() => {
         // Arrange
         const config = { configId: 'configId1' };

@@ -8,6 +8,7 @@ import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
+import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LoggerService } from '../logging/logger.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { IFrameService } from './existing-iframe.service';
@@ -19,7 +20,7 @@ describe('SilentRenewService  ', () => {
   let implicitFlowCallbackService: ImplicitFlowCallbackService;
   let iFrameService: IFrameService;
   let flowsDataService: FlowsDataService;
-  let loggerService: LoggerService;
+  let loggerService: AbstractLoggerService;
   let flowsService: FlowsService;
 
   beforeEach(() => {
@@ -31,7 +32,7 @@ describe('SilentRenewService  ', () => {
         { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         { provide: AuthStateService, useClass: mockClass(AuthStateService) },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: AbstractLoggerService, useClass: mockClass(LoggerService) },
         FlowHelper,
         { provide: ImplicitFlowCallbackService, useClass: mockClass(ImplicitFlowCallbackService) },
         IntervalService,
@@ -46,7 +47,7 @@ describe('SilentRenewService  ', () => {
     implicitFlowCallbackService = TestBed.inject(ImplicitFlowCallbackService);
     flowsDataService = TestBed.inject(FlowsDataService);
     flowsService = TestBed.inject(FlowsService);
-    loggerService = TestBed.inject(LoggerService);
+    loggerService = TestBed.inject(AbstractLoggerService);
   });
 
   it('should create', () => {

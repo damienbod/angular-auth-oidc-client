@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { mockClass } from '../../test/auto-mock';
+import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LoggerService } from '../logging/logger.service';
 import { BrowserStorageService } from './browser-storage.service';
 
@@ -8,7 +9,7 @@ describe('Browser Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [BrowserStorageService, { provide: LoggerService, useClass: mockClass(LoggerService) }],
+      providers: [BrowserStorageService, { provide: AbstractLoggerService, useClass: mockClass(LoggerService) }],
     });
   });
 

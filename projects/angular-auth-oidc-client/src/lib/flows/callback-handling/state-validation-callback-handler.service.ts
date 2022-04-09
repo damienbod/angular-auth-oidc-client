@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { LoggerService } from '../../logging/logger.service';
+import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
 import { StateValidationService } from '../../validation/state-validation.service';
 import { CallbackContext } from '../callback-context';
@@ -13,7 +13,7 @@ import { ResetAuthDataService } from '../reset-auth-data.service';
 @Injectable()
 export class StateValidationCallbackHandlerService {
   constructor(
-    private readonly loggerService: LoggerService,
+    private readonly loggerService: AbstractLoggerService,
     private readonly stateValidationService: StateValidationService,
     private readonly authStateService: AuthStateService,
     private readonly resetAuthDataService: ResetAuthDataService,

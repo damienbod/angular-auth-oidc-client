@@ -6,6 +6,7 @@ import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.
 import { FlowsDataService } from '../flows/flows-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
+import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UserService } from '../user-data/user.service';
@@ -31,7 +32,7 @@ describe('RefreshSessionService ', () => {
         FlowHelper,
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         RefreshSessionService,
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        { provide: AbstractLoggerService, useClass: mockClass(LoggerService) },
         {
           provide: SilentRenewService,
           useClass: mockClass(SilentRenewService),

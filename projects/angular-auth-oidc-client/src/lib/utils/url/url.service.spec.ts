@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockClass } from '../../../test/auto-mock';
 import { FlowsDataService } from '../../flows/flows-data.service';
+import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { JwtWindowCryptoService } from '../../validation/jwt-window-crypto.service';
@@ -21,7 +22,7 @@ describe('UrlService Tests', () => {
       providers: [
         UrlService,
         {
-          provide: LoggerService,
+          provide: AbstractLoggerService,
           useClass: mockClass(LoggerService),
         },
         {
