@@ -4,7 +4,9 @@ import { AbstractLoggerService } from './abstract-logger.service';
 import { LogLevel } from './log-level';
 
 @Injectable()
-export class LoggerService implements AbstractLoggerService {
+export class LoggerService {
+  constructor(private abstractLoggerService: AbstractLoggerService) {}
+
   logError(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {
     if (this.loggingIsTurnedOff(configuration)) {
       return;
@@ -13,9 +15,9 @@ export class LoggerService implements AbstractLoggerService {
     const { configId } = configuration;
 
     if (!!args && !!args.length) {
-      console.error(`[ERROR] ${configId} - ${message}`, ...args);
+      this.abstractLoggerService.logError(`[ERROR] ${configId} - ${message}`, ...args);
     } else {
-      console.error(`[ERROR] ${configId} - ${message}`);
+      this.abstractLoggerService.logError(`[ERROR] ${configId} - ${message}`);
     }
   }
 
@@ -35,9 +37,9 @@ export class LoggerService implements AbstractLoggerService {
     const { configId } = configuration;
 
     if (!!args && !!args.length) {
-      console.warn(`[WARN] ${configId} - ${message}`, ...args);
+      this.abstractLoggerService.logWarning(`[WARN] ${configId} - ${message}`, ...args);
     } else {
-      console.warn(`[WARN] ${configId} - ${message}`);
+      this.abstractLoggerService.logWarning(`[WARN] ${configId} - ${message}`);
     }
   }
 
@@ -57,9 +59,9 @@ export class LoggerService implements AbstractLoggerService {
     const { configId } = configuration;
 
     if (!!args && !!args.length) {
-      console.log(`[DEBUG] ${configId} - ${message}`, ...args);
+      this.abstractLoggerService.logDebug(`[DEBUG] ${configId} - ${message}`, ...args);
     } else {
-      console.log(`[DEBUG] ${configId} - ${message}`);
+      this.abstractLoggerService.logDebug(`[DEBUG] ${configId} - ${message}`);
     }
   }
 
