@@ -1,5 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { LoggerService } from '../logging/logger.service';
+import { AbstractLoggerService } from './abstract-logger.service';
+import { ConsoleLoggerService } from './console-logger.service';
 import { LogLevel } from './log-level';
 
 describe('Logger Service', () => {
@@ -7,7 +9,7 @@ describe('Logger Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [LoggerService],
+      providers: [LoggerService, { provide: AbstractLoggerService, useClass: ConsoleLoggerService }],
     });
   });
 

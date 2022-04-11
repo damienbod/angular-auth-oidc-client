@@ -498,7 +498,7 @@ describe('Logout and Revoke Service', () => {
     );
 
     it(
-      'loggs error when revokeaccesstoken throws an error',
+      'logs error when revokeaccesstoken throws an error',
       waitForAsync(() => {
         // Arrange
         const paramToken = 'damien';
@@ -584,7 +584,7 @@ describe('Logout and Revoke Service', () => {
     );
 
     it(
-      'loggs error when revokeaccesstoken throws an error',
+      'logs error when revokeaccesstoken throws an error',
       waitForAsync(() => {
         // Arrange
         const config = { configId: 'configId1' };

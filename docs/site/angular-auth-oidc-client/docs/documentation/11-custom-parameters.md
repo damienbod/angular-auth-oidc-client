@@ -1,6 +1,6 @@
 ---
 sidebar_label: Custom Parameters
-sidebar_position: 9
+sidebar_position: 11
 ---
 
 # Custom Parameters
@@ -40,4 +40,4 @@ login() {
 
 ```
 
-> If you want to pass static parameters to the Security Token Service every time please use the custom parameters in the [Configuration](configuration.md) instead!
+> If you want to pass static parameters to the Security Token Service every time please use the custom parameters in the [Configuration](02-configuration.md) instead!

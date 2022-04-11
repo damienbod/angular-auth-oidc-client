@@ -1,18 +1,26 @@
 import { TestBed } from '@angular/core/testing';
 import { mockClass } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
+import { AbstractSecurityStorage } from './abstract-security-storage';
 import { BrowserStorageService } from './browser-storage.service';
+import { DefaultSessionStorageService } from './default-sessionstorage.service';
 
 describe('Browser Service', () => {
   let service: BrowserStorageService;
+  let abstractSecurityStorage: AbstractSecurityStorage;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [BrowserStorageService, { provide: LoggerService, useClass: mockClass(LoggerService) }],
+      providers: [
+        { provide: AbstractSecurityStorage, useClass: mockClass(DefaultSessionStorageService) },
+        BrowserStorageService,
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
+      ],
     });
   });
 
   beforeEach(() => {
+    abstractSecurityStorage = TestBed.inject(AbstractSecurityStorage);
     service = TestBed.inject(BrowserStorageService);
   });
 
@@ -28,23 +36,9 @@ describe('Browser Service', () => {
       expect(service.read('anything', config)).toBeNull();
     });
 
-    it('returns null if getStorage returns null', () => {
-      const config = { configId: 'configId1' };
-      spyOn(service as any, 'hasStorage').and.returnValue(true);
-      spyOn(service as any, 'getStorage').and.returnValue(null);
-      expect(service.read('anything', config)).toBeNull();
-    });
-
     it('returns null if getItem returns null', () => {
       const config = { configId: 'configId1' };
       spyOn(service as any, 'hasStorage').and.returnValue(true);
-      const returnValue = null;
-
-      spyOn(service as any, 'getStorage').and.returnValue({
-        read: () => {
-          return returnValue;
-        },
-      });
 
       const result = service.read('anything', config);
 
@@ -55,13 +49,7 @@ describe('Browser Service', () => {
       const config = { configId: 'configId1' };
       spyOn(service as any, 'hasStorage').and.returnValue(true);
       const returnValue = `{ "name":"John", "age":30, "city":"New York"}`;
-
-      spyOn(service as any, 'getStorage').and.returnValue({
-        read: () => {
-          return returnValue;
-        },
-      });
-
+      spyOn(abstractSecurityStorage, 'read').and.returnValue(returnValue);
       const result = service.read('anything', config);
 
       expect(result).toEqual(JSON.parse(returnValue));
@@ -76,22 +64,10 @@ describe('Browser Service', () => {
       expect(service.write('anyvalue', config)).toBeFalse();
     });
 
-    it('returns false if getStorage returns null', () => {
-      const config = { configId: 'configId1' };
-      spyOn(service as any, 'hasStorage').and.returnValue(true);
-      spyOn(service as any, 'getStorage').and.returnValue(null);
-
-      expect(service.write('anyvalue', config)).toBeFalse();
-    });
-
     it('writes object correctly with configId', () => {
       const config = { configId: 'configId1' };
       spyOn(service as any, 'hasStorage').and.returnValue(true);
-      const serviceObject = {
-        write: (_a, _b): void => {},
-      };
-      const writeSpy = spyOn(serviceObject, 'write').and.callThrough();
-      spyOn(service as any, 'getStorage').and.returnValue(serviceObject);
+      const writeSpy = spyOn(abstractSecurityStorage, 'write').and.callThrough();
 
       const result = service.write({ anyKey: 'anyvalue' }, config);
 
@@ -102,12 +78,9 @@ describe('Browser Service', () => {
     it('writes null if item is falsy', () => {
       const config = { configId: 'configId1' };
       spyOn(service as any, 'hasStorage').and.returnValue(true);
-      const serviceObject = {
-        write: (_a, _b): void => {},
-      };
-      const writeSpy = spyOn(serviceObject, 'write').and.callThrough();
+
+      const writeSpy = spyOn(abstractSecurityStorage, 'write').and.callThrough();
       const somethingFalsy = '';
-      spyOn(service as any, 'getStorage').and.returnValue(serviceObject);
 
       const result = service.write(somethingFalsy, config);
 
@@ -123,21 +96,11 @@ describe('Browser Service', () => {
       expect(service.remove('anything', config)).toBeFalse();
     });
 
-    it('returns false if getStorage returns null', () => {
-      const config = { configId: 'configId1' };
-      spyOn(service as any, 'hasStorage').and.returnValue(true);
-      spyOn(service as any, 'getStorage').and.returnValue(null);
-      expect(service.remove('anything', config)).toBeFalse();
-    });
-
     it('returns true if removeItem is called', () => {
       spyOn(service as any, 'hasStorage').and.returnValue(true);
       const config = { configId: 'configId1' };
-      const serviceObject = {
-        remove: (_a): void => {},
-      };
-      const setItemSpy = spyOn(serviceObject, 'remove').and.callThrough();
-      spyOn(service as any, 'getStorage').and.returnValue(serviceObject);
+
+      const setItemSpy = spyOn(abstractSecurityStorage, 'remove').and.callThrough();
 
       const result = service.remove('anyKey', config);
 
@@ -153,41 +116,16 @@ describe('Browser Service', () => {
       expect(service.clear(config)).toBeFalse();
     });
 
-    it('returns false if getStorage returns null', () => {
-      spyOn(service as any, 'hasStorage').and.returnValue(true);
-      spyOn(service as any, 'getStorage').and.returnValue(null);
-      const config = { configId: 'configId1' };
-
-      expect(service.clear(config)).toBeFalse();
-    });
-
     it('returns true if clear is called', () => {
       spyOn(service as any, 'hasStorage').and.returnValue(true);
 
-      const serviceObject = {
-        clear: (): void => {},
-      };
-
-      const setItemSpy = spyOn(serviceObject, 'clear').and.callThrough();
+      const setItemSpy = spyOn(abstractSecurityStorage, 'clear').and.callThrough();
       const config = { configId: 'configId1' };
-
-      spyOn(service as any, 'getStorage').and.returnValue(serviceObject);
 
       const result = service.clear(config);
 
       expect(result).toBe(true);
       expect(setItemSpy).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('getStorage', () => {
-    it('returns null if there is no storage', () => {
-      const config = { configId: 'configId1', storage: null };
-      expect((service as any).getStorage(config)).toBeNull();
-    });
-
-    it('returns null if there is no openIDConfiguration', () => {
-      expect((service as any).getStorage(null)).toBeFalsy();
     });
   });
 

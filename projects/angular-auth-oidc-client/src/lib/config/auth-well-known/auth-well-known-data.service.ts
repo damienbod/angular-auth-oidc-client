@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { map, retry } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
+import { LoggerService } from '../../logging/logger.service';
 import { OpenIdConfiguration } from '../openid-configuration';
-import { LoggerService } from './../../logging/logger.service';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 
 const WELL_KNOWN_SUFFIX = `/.well-known/openid-configuration`;

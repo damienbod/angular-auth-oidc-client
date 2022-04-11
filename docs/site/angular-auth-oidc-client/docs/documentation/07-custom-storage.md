@@ -13,7 +13,7 @@ The following example shows a custom storage that uses `localStorage`:
 import { AbstractSecurityStorage } from 'angular-auth-oidc-client';
 
 @Injectable()
-export class CustomStorage implements AbstractSecurityStorage {
+export class MyStorageService implements AbstractSecurityStorage {
   read(key: string) {
     return localStorage.getItem(key);
   }
@@ -37,9 +37,14 @@ Then provide the class in the module:
 ```ts
 @NgModule({
   imports: [
-      // ...
-      AuthModule.forRoot({ config: { storage: new CustomStorage() } })
+    AuthModule.forRoot({
+      config: {
+        // ...
+      },
+    }),
   ],
-  // ...
+  providers: [{ provide: AbstractSecurityStorage, useClass: MyStorageService }],
+  exports: [AuthModule],
 })
+export class AuthConfigModule {}
 ```

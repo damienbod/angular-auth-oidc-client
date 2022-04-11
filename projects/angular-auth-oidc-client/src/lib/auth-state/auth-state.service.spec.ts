@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
-import { EventTypes, PublicEventsService } from '../../public-api';
 import { mockClass } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
+import { EventTypes } from '../public-events/event-types';
+import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { TokenValidationService } from '../validation/token-validation.service';

@@ -1,6 +1,6 @@
 ---
 sidebar_label: Usage in module or Angular lib
-sidebar_position: 10
+sidebar_position: 13
 ---
 
 # Usage in module or Angular lib
