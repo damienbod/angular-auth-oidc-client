@@ -3,7 +3,6 @@ import { of, throwError } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { FlowsService } from '../flows/flows.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LoggerService } from '../logging/logger.service';
 import { IntervalService } from './interval.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
@@ -19,7 +18,7 @@ describe('RefreshSessionRefreshTokenService', () => {
       imports: [],
       providers: [
         RefreshSessionRefreshTokenService,
-        { provide: AbstractLoggerService, useClass: mockClass(LoggerService) },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: FlowsService, useClass: mockClass(FlowsService) },
         { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
         IntervalService,

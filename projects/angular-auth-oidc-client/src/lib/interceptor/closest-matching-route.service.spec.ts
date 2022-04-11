@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { mockClass } from '../../test/auto-mock';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LoggerService } from './../logging/logger.service';
 import { ClosestMatchingRouteService } from './closest-matching-route.service';
 
@@ -12,7 +11,7 @@ describe('ClosestMatchingRouteService', () => {
       providers: [
         ClosestMatchingRouteService,
         {
-          provide: AbstractLoggerService,
+          provide: LoggerService,
           useClass: mockClass(LoggerService),
         },
       ],

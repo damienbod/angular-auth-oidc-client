@@ -8,7 +8,7 @@ import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
+import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -23,7 +23,7 @@ export class PeriodicallyTokenCheckService {
     private resetAuthDataService: ResetAuthDataService,
     private flowHelper: FlowHelper,
     private flowsDataService: FlowsDataService,
-    private loggerService: AbstractLoggerService,
+    private loggerService: LoggerService,
     private userService: UserService,
     private authStateService: AuthStateService,
     private refreshSessionIframeService: RefreshSessionIframeService,

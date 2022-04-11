@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
+import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { EqualityService } from '../utils/equality/equality.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
@@ -18,7 +18,7 @@ export class StateValidationService {
     private storagePersistenceService: StoragePersistenceService,
     private tokenValidationService: TokenValidationService,
     private tokenHelperService: TokenHelperService,
-    private loggerService: AbstractLoggerService,
+    private loggerService: LoggerService,
     private equalityService: EqualityService,
     private flowHelper: FlowHelper
   ) {}

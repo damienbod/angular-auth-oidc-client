@@ -31,6 +31,7 @@ import { SilentRenewService } from './iframe/silent-renew.service';
 import { ClosestMatchingRouteService } from './interceptor/closest-matching-route.service';
 import { AbstractLoggerService } from './logging/abstract-logger.service';
 import { ConsoleLoggerService } from './logging/console-logger.service';
+import { LoggerService } from './logging/logger.service';
 import { LoginService } from './login/login.service';
 import { ParLoginService } from './login/par/par-login.service';
 import { ParService } from './login/par/par.service';
@@ -133,6 +134,7 @@ export class AuthModule {
         DefaultSessionStorageService,
         BrowserStorageService,
         CryptoService,
+        LoggerService,
 
         { provide: AbstractSecurityStorage, useClass: DefaultSessionStorageService },
         { provide: AbstractLoggerService, useClass: ConsoleLoggerService },

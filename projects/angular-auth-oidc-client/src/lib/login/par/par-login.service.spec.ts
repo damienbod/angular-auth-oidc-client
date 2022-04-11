@@ -3,7 +3,6 @@ import { of } from 'rxjs';
 import { mockClass } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
-import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
@@ -17,7 +16,7 @@ import { ParService } from './par.service';
 describe('ParLoginService', () => {
   let service: ParLoginService;
   let responseTypeValidationService: ResponseTypeValidationService;
-  let loggerService: AbstractLoggerService;
+  let loggerService: LoggerService;
   let authWellKnownService: AuthWellKnownService;
   let parService: ParService;
   let urlService: UrlService;
@@ -30,7 +29,7 @@ describe('ParLoginService', () => {
       providers: [
         ParLoginService,
         {
-          provide: AbstractLoggerService,
+          provide: LoggerService,
           useClass: mockClass(LoggerService),
         },
         {
@@ -67,7 +66,7 @@ describe('ParLoginService', () => {
 
   beforeEach(() => {
     service = TestBed.inject(ParLoginService);
-    loggerService = TestBed.inject(AbstractLoggerService);
+    loggerService = TestBed.inject(LoggerService);
     responseTypeValidationService = TestBed.inject(ResponseTypeValidationService);
     authWellKnownService = TestBed.inject(AuthWellKnownService);
     parService = TestBed.inject(ParService);

@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map, retry, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
+import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -24,7 +24,7 @@ export class UserService {
     private oidcDataService: DataService,
     private storagePersistenceService: StoragePersistenceService,
     private eventService: PublicEventsService,
-    private loggerService: AbstractLoggerService,
+    private loggerService: LoggerService,
     private tokenHelperService: TokenHelperService,
     private flowHelper: FlowHelper
   ) {}

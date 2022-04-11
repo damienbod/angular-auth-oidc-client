@@ -1,7 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -27,7 +26,7 @@ describe('Configuration Service', () => {
       providers: [
         ConfigurationService,
         {
-          provide: AbstractLoggerService,
+          provide: LoggerService,
           useClass: mockClass(LoggerService),
         },
         PublicEventsService,

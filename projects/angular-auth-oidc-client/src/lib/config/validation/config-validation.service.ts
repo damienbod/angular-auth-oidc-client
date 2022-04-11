@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AbstractLoggerService } from '../../logging/abstract-logger.service';
+import { LoggerService } from '../../logging/logger.service';
 import { OpenIdConfiguration } from '../openid-configuration';
 import { Level, RuleValidationResult } from './rule';
 import { allRules } from './rules';
@@ -7,7 +7,7 @@ import { allMultipleConfigRules } from './rules/index';
 
 @Injectable()
 export class ConfigValidationService {
-  constructor(private loggerService: AbstractLoggerService) {}
+  constructor(private loggerService: LoggerService) {}
 
   validateConfigs(passedConfigs: OpenIdConfiguration[]): boolean {
     return this.validateConfigsInternal(passedConfigs ?? [], allMultipleConfigRules);

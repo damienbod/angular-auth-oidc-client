@@ -4,7 +4,6 @@ import { of, throwError } from 'rxjs';
 import { mockClass } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
-import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
@@ -25,7 +24,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       providers: [
         CodeFlowCallbackHandlerService,
         { provide: UrlService, useClass: mockClass(UrlService) },
-        { provide: AbstractLoggerService, useClass: mockClass(LoggerService) },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: TokenValidationService, useClass: mockClass(TokenValidationService) },
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },

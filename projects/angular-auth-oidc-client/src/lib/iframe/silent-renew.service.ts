@@ -9,7 +9,7 @@ import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
+import { LoggerService } from '../logging/logger.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { ValidationResult } from '../validation/validation-result';
 import { OpenIdConfiguration } from './../config/openid-configuration';
@@ -31,7 +31,7 @@ export class SilentRenewService {
     private resetAuthDataService: ResetAuthDataService,
     private flowsDataService: FlowsDataService,
     private authStateService: AuthStateService,
-    private loggerService: AbstractLoggerService,
+    private loggerService: LoggerService,
     private flowHelper: FlowHelper,
     private implicitFlowCallbackService: ImplicitFlowCallbackService,
     private intervalService: IntervalService

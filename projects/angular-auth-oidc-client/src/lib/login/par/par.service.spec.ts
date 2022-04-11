@@ -4,7 +4,6 @@ import { of, throwError } from 'rxjs';
 import { mockClass } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
-import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
@@ -12,7 +11,7 @@ import { ParService } from './par.service';
 
 describe('ParService', () => {
   let service: ParService;
-  let loggerService: AbstractLoggerService;
+  let loggerService: LoggerService;
   let urlService: UrlService;
   let dataService: DataService;
   let storagePersistenceService: StoragePersistenceService;
@@ -22,7 +21,7 @@ describe('ParService', () => {
       providers: [
         ParService,
         {
-          provide: AbstractLoggerService,
+          provide: LoggerService,
           useClass: mockClass(LoggerService),
         },
         {
@@ -44,7 +43,7 @@ describe('ParService', () => {
   beforeEach(() => {
     service = TestBed.inject(ParService);
     dataService = TestBed.inject(DataService);
-    loggerService = TestBed.inject(AbstractLoggerService);
+    loggerService = TestBed.inject(LoggerService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
     urlService = TestBed.inject(UrlService);
   });

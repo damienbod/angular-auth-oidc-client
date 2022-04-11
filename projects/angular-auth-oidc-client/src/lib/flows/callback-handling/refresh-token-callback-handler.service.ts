@@ -4,7 +4,7 @@ import { Observable, of, throwError, timer } from 'rxjs';
 import { catchError, mergeMap, retryWhen, switchMap } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { AbstractLoggerService } from '../../logging/abstract-logger.service';
+import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
 import { CallbackContext } from '../callback-context';
@@ -13,7 +13,7 @@ import { CallbackContext } from '../callback-context';
 export class RefreshTokenCallbackHandlerService {
   constructor(
     private readonly urlService: UrlService,
-    private readonly loggerService: AbstractLoggerService,
+    private readonly loggerService: LoggerService,
     private readonly dataService: DataService,
     private readonly storagePersistenceService: StoragePersistenceService
   ) {}

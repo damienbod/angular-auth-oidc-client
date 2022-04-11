@@ -1,7 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
+import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -17,7 +17,7 @@ export class ConfigurationService {
   private configsInternal: Record<string, OpenIdConfiguration> = {};
 
   constructor(
-    private loggerService: AbstractLoggerService,
+    private loggerService: LoggerService,
     private publicEventsService: PublicEventsService,
     private storagePersistenceService: StoragePersistenceService,
     private configValidationService: ConfigValidationService,

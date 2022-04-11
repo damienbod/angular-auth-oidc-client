@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { AuthOptions } from '../../auth-options';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { FlowsDataService } from '../../flows/flows-data.service';
-import { AbstractLoggerService } from '../../logging/abstract-logger.service';
+import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { JwtWindowCryptoService } from '../../validation/jwt-window-crypto.service';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
@@ -17,7 +17,7 @@ const AUTH0_ENDPOINT = 'auth0.com';
 @Injectable()
 export class UrlService {
   constructor(
-    private readonly loggerService: AbstractLoggerService,
+    private readonly loggerService: LoggerService,
     private readonly flowsDataService: FlowsDataService,
     private readonly flowHelper: FlowHelper,
     private readonly storagePersistenceService: StoragePersistenceService,

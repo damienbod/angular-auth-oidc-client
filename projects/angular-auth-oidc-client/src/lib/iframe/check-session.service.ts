@@ -2,7 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
+import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -29,7 +29,7 @@ export class CheckSessionService {
 
   constructor(
     private storagePersistenceService: StoragePersistenceService,
-    private loggerService: AbstractLoggerService,
+    private loggerService: LoggerService,
     private iFrameService: IFrameService,
     private eventService: PublicEventsService,
     private zone: NgZone,

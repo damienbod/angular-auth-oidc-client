@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { AbstractLoggerService } from '../../logging/abstract-logger.service';
+import { LoggerService } from '../../logging/logger.service';
 import { TokenValidationService } from '../../validation/token-validation.service';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
@@ -10,7 +10,7 @@ import { FlowsDataService } from '../flows-data.service';
 @Injectable()
 export class RefreshSessionCallbackHandlerService {
   constructor(
-    private readonly loggerService: AbstractLoggerService,
+    private readonly loggerService: LoggerService,
     private readonly authStateService: AuthStateService,
     private readonly flowsDataService: FlowsDataService
   ) {}

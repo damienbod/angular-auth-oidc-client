@@ -4,7 +4,6 @@ import { isObservable, of, throwError } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { SigninKeyDataService } from './signin-key-data.service';
@@ -29,14 +28,14 @@ describe('Signin Key Data Service', () => {
   let service: SigninKeyDataService;
   let storagePersistenceService: StoragePersistenceService;
   let dataService: DataService;
-  let loggerService: AbstractLoggerService;
+  let loggerService: LoggerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         SigninKeyDataService,
         { provide: DataService, useClass: mockClass(DataService) },
-        { provide: AbstractLoggerService, useClass: mockClass(LoggerService) },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
       ],
     });
@@ -46,7 +45,7 @@ describe('Signin Key Data Service', () => {
     service = TestBed.inject(SigninKeyDataService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
     dataService = TestBed.inject(DataService);
-    loggerService = TestBed.inject(AbstractLoggerService);
+    loggerService = TestBed.inject(LoggerService);
   });
 
   it('should create', () => {

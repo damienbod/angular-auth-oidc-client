@@ -8,7 +8,6 @@ import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LoggerService } from '../logging/logger.service';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -37,7 +36,7 @@ describe('PeriodicallyTokenCheckService', () => {
         { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
         FlowHelper,
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
-        { provide: AbstractLoggerService, useClass: mockClass(LoggerService) },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: UserService, useClass: mockClass(UserService) },
         { provide: AuthStateService, useClass: mockClass(AuthStateService) },
         {

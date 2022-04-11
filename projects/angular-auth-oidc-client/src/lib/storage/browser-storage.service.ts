@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../config/openid-configuration';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
+import { LoggerService } from '../logging/logger.service';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 
 @Injectable()
 export class BrowserStorageService {
-  constructor(private loggerService: AbstractLoggerService, private abstractSecurityStorage: AbstractSecurityStorage) {}
+  constructor(private loggerService: LoggerService, private abstractSecurityStorage: AbstractSecurityStorage) {}
 
   read(key: string, configuration: OpenIdConfiguration): any {
     const { configId } = configuration;

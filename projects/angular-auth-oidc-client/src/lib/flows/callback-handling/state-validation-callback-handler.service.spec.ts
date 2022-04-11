@@ -3,7 +3,6 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockClass } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
-import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { LoggerService } from '../../logging/logger.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
 import { StateValidationService } from '../../validation/state-validation.service';
@@ -15,7 +14,7 @@ import { StateValidationCallbackHandlerService } from './state-validation-callba
 describe('StateValidationCallbackHandlerService', () => {
   let service: StateValidationCallbackHandlerService;
   let stateValidationService: StateValidationService;
-  let loggerService: AbstractLoggerService;
+  let loggerService: LoggerService;
   let authStateService: AuthStateService;
   let resetAuthDataService: ResetAuthDataService;
 
@@ -23,7 +22,7 @@ describe('StateValidationCallbackHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         StateValidationCallbackHandlerService,
-        { provide: AbstractLoggerService, useClass: mockClass(LoggerService) },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: StateValidationService, useClass: mockClass(StateValidationService) },
         { provide: AuthStateService, useClass: mockClass(AuthStateService) },
         { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
@@ -45,7 +44,7 @@ describe('StateValidationCallbackHandlerService', () => {
   beforeEach(() => {
     service = TestBed.inject(StateValidationCallbackHandlerService);
     stateValidationService = TestBed.inject(StateValidationService);
-    loggerService = TestBed.inject(AbstractLoggerService);
+    loggerService = TestBed.inject(LoggerService);
     authStateService = TestBed.inject(AuthStateService);
     resetAuthDataService = TestBed.inject(ResetAuthDataService);
   });

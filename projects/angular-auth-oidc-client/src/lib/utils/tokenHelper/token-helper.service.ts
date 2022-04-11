@@ -1,13 +1,13 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { AbstractLoggerService } from '../../logging/abstract-logger.service';
+import { LoggerService } from '../../logging/logger.service';
 
 const PARTS_OF_TOKEN = 3;
 
 @Injectable()
 export class TokenHelperService {
-  constructor(private readonly loggerService: AbstractLoggerService, @Inject(DOCUMENT) private document: Document) {}
+  constructor(private readonly loggerService: LoggerService, @Inject(DOCUMENT) private document: Document) {}
 
   getTokenExpirationDate(dataIdToken: any): Date {
     if (!dataIdToken.hasOwnProperty('exp')) {

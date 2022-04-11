@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { mockClass } from '../../test/auto-mock';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LoggerService } from '../logging/logger.service';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 import { BrowserStorageService } from './browser-storage.service';
@@ -15,7 +14,7 @@ describe('Browser Service', () => {
       providers: [
         { provide: AbstractSecurityStorage, useClass: mockClass(DefaultSessionStorageService) },
         BrowserStorageService,
-        { provide: AbstractLoggerService, useClass: mockClass(LoggerService) },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
       ],
     });
   });

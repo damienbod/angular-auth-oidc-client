@@ -3,7 +3,6 @@ import { of, throwError } from 'rxjs';
 import { mockClass } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
-import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { LoggerService } from '../../logging/logger.service';
 import { AuthWellKnownDataService } from './auth-well-known-data.service';
 
@@ -21,21 +20,21 @@ const DUMMY_WELL_KNOWN_DOCUMENT = {
 describe('AuthWellKnownDataService', () => {
   let service: AuthWellKnownDataService;
   let dataService: DataService;
-  let loggerService: AbstractLoggerService;
+  let loggerService: LoggerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         AuthWellKnownDataService,
         { provide: DataService, useClass: mockClass(DataService) },
-        { provide: AbstractLoggerService, useClass: mockClass(LoggerService) },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
       ],
     });
   });
 
   beforeEach(() => {
     service = TestBed.inject(AuthWellKnownDataService);
-    loggerService = TestBed.inject(AbstractLoggerService);
+    loggerService = TestBed.inject(LoggerService);
     dataService = TestBed.inject(DataService);
   });
 

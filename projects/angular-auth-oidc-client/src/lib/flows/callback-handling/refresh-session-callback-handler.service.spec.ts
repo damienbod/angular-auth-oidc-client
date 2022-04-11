@@ -1,7 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { mockClass } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
-import { AbstractLoggerService } from '../../logging/abstract-logger.service';
 import { LoggerService } from '../../logging/logger.service';
 import { FlowsDataService } from '../flows-data.service';
 import { RefreshSessionCallbackHandlerService } from './refresh-session-callback-handler.service';
@@ -16,7 +15,7 @@ describe('RefreshSessionCallbackHandlerService', () => {
       providers: [
         RefreshSessionCallbackHandlerService,
         { provide: AuthStateService, useClass: mockClass(AuthStateService) },
-        { provide: AbstractLoggerService, useClass: mockClass(LoggerService) },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
       ],
     });

@@ -4,7 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
+import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { JwtKeys } from '../validation/jwtkeys';
 
@@ -12,7 +12,7 @@ import { JwtKeys } from '../validation/jwtkeys';
 export class SigninKeyDataService {
   constructor(
     private storagePersistenceService: StoragePersistenceService,
-    private loggerService: AbstractLoggerService,
+    private loggerService: LoggerService,
     private dataService: DataService
   ) {}
 

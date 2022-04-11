@@ -5,7 +5,6 @@ import { createRetriableStream } from '../../test/create-retriable-stream.helper
 import { DataService } from '../api/data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UrlService } from '../utils/url/url.service';
@@ -15,7 +14,7 @@ import { LogoffRevocationService } from './logoff-revocation.service';
 describe('Logout and Revoke Service', () => {
   let service: LogoffRevocationService;
   let dataService: DataService;
-  let loggerService: AbstractLoggerService;
+  let loggerService: LoggerService;
   let storagePersistenceService: StoragePersistenceService;
   let urlService: UrlService;
   let checkSessionService: CheckSessionService;
@@ -27,7 +26,7 @@ describe('Logout and Revoke Service', () => {
       providers: [
         LogoffRevocationService,
         { provide: DataService, useClass: mockClass(DataService) },
-        { provide: AbstractLoggerService, useClass: mockClass(LoggerService) },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: CheckSessionService, useClass: mockClass(CheckSessionService) },
@@ -40,7 +39,7 @@ describe('Logout and Revoke Service', () => {
   beforeEach(() => {
     service = TestBed.inject(LogoffRevocationService);
     dataService = TestBed.inject(DataService);
-    loggerService = TestBed.inject(AbstractLoggerService);
+    loggerService = TestBed.inject(LoggerService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
     urlService = TestBed.inject(UrlService);
     checkSessionService = TestBed.inject(CheckSessionService);

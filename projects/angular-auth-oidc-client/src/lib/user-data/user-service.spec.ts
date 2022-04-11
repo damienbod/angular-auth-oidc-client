@@ -4,7 +4,6 @@ import { mockClass } from '../../test/auto-mock';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -21,7 +20,7 @@ const DUMMY_USER_DATA = {
 };
 
 describe('User Service', () => {
-  let loggerService: AbstractLoggerService;
+  let loggerService: LoggerService;
   let userService: UserService;
   let storagePersistenceService: StoragePersistenceService;
   let eventsService: PublicEventsService;
@@ -34,7 +33,7 @@ describe('User Service', () => {
           provide: StoragePersistenceService,
           useClass: mockClass(StoragePersistenceService),
         },
-        { provide: AbstractLoggerService, useClass: mockClass(LoggerService) },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: DataService, useClass: mockClass(DataService) },
         { provide: PlatformProvider, useClass: mockClass(PlatformProvider) },
         PublicEventsService,
@@ -46,7 +45,7 @@ describe('User Service', () => {
   });
 
   beforeEach(() => {
-    loggerService = TestBed.inject(AbstractLoggerService);
+    loggerService = TestBed.inject(LoggerService);
     userService = TestBed.inject(UserService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
     eventsService = TestBed.inject(PublicEventsService);

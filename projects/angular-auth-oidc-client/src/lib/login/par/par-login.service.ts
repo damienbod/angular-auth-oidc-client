@@ -5,7 +5,7 @@ import { AuthOptions } from '../../auth-options';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { AbstractLoggerService } from '../../logging/abstract-logger.service';
+import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
 import { LoginResponse } from '../login-response';
@@ -19,7 +19,7 @@ import { ParService } from './par.service';
 @Injectable()
 export class ParLoginService {
   constructor(
-    private loggerService: AbstractLoggerService,
+    private loggerService: LoggerService,
     private responseTypeValidationService: ResponseTypeValidationService,
     private urlService: UrlService,
     private redirectService: RedirectService,

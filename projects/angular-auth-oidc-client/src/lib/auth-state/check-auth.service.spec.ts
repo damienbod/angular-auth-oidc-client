@@ -9,7 +9,6 @@ import { RefreshSessionService } from '../callback/refresh-session.service';
 import { StsConfigLoader, StsConfigStaticLoader } from '../config/loader/config-loader';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LoggerService } from '../logging/logger.service';
 import { PopUpService } from '../login/popup/popup.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -39,7 +38,7 @@ describe('CheckAuthService', () => {
         { provide: CheckSessionService, useClass: mockClass(CheckSessionService) },
         { provide: SilentRenewService, useClass: mockClass(SilentRenewService) },
         { provide: UserService, useClass: mockClass(UserService) },
-        { provide: AbstractLoggerService, useClass: mockClass(LoggerService) },
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: AuthStateService, useClass: mockClass(AuthStateService) },
         { provide: CallbackService, useClass: mockClass(CallbackService) },
         { provide: RefreshSessionService, useClass: mockClass(RefreshSessionService) },

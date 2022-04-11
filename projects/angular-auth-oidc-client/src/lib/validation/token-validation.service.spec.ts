@@ -1,7 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
-import { AbstractLoggerService } from '../logging/abstract-logger.service';
 import { LoggerService } from '../logging/logger.service';
 import { CryptoService } from '../utils/crypto/crypto-service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
@@ -19,7 +18,7 @@ describe('TokenValidationService', () => {
       providers: [
         TokenValidationService,
         {
-          provide: AbstractLoggerService,
+          provide: LoggerService,
           useClass: mockClass(LoggerService),
         },
         {
