@@ -1,6 +1,6 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
-### 2022-01-17 14.0.0
+### 2022-04-18 14.0.0
 
 In this version the APP_INITIALIZER was removed. ([See PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1307)).
 The library will not do anything until the application interact with it. There is no pre-loading of anything and it does not affect your application's bootstrapping process at all.
@@ -16,8 +16,16 @@ See the [migration guide](https://nice-hill-002425310.azurestaticapps.net/docs/m
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1353)
 - Add redirectUrl customization (via AuthOptions)
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1372)
-- Fix: implicit flow in popup window error (fixes #1385) 
+- Fix: implicit flow in popup window error (fixes #1385)
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1390)
+- Enhancement: Improved abstract services
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1422)
+- Remove double quotes in info messages
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1420)
+- Fix: implicit flow in popup window error (fixes #1385)
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1390)
+- Enhancement: Added auth result
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1386)
 
 ### 2021-12-01 13.1.0
 
