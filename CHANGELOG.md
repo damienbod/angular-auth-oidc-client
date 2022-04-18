@@ -22,8 +22,6 @@ See the [migration guide](https://nice-hill-002425310.azurestaticapps.net/docs/m
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1422)
 - Remove double quotes in info messages
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1420)
-- Fix: implicit flow in popup window error (fixes #1385)
-  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1390)
 - Enhancement: Added auth result
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1386)
 
