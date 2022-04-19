@@ -103,3 +103,9 @@ The example uses the implicit flow with silent renew with google. This flow is n
 The example uses the code flow with silent renew but you authenticate in a lazy loaded module
 
 [Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-lazy-loaded)
+
+## Mobile Sample using Cordova
+
+This sample is a sample application using Cordova and the Angular Auth OIDC Client.
+
+[Code](https://github.com/FabianGosebrink/cordova-angular-oauth2-oidc)
