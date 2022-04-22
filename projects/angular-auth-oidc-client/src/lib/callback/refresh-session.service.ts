@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { forkJoin, Observable, of, throwError, TimeoutError, timer } from 'rxjs';
+import { forkJoin, Observable, of, tap, throwError, TimeoutError, timer } from 'rxjs';
 import { map, mergeMap, retryWhen, switchMap, take, timeout } from 'rxjs/operators';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.service';
@@ -38,7 +38,11 @@ export class RefreshSessionService {
   ): Observable<LoginResponse> {
     this.persistCustomParams(extraCustomParams, config);
 
-    return this.forceRefreshSession(config, allConfigs, extraCustomParams);
+    return this.forceRefreshSession(config, allConfigs, extraCustomParams).pipe(
+      tap(() => {
+        this.flowsDataService.resetSilentRenewRunning(config);
+      })
+    );
   }
 
   forceRefreshSession(
