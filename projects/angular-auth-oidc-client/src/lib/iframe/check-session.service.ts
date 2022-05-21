@@ -184,7 +184,7 @@ export class CheckSessionService {
 
   private bindMessageEventToIframe(configId: string): void {
     const iframeMessageEvent = this.messageHandler.bind(this, configId);
-    this.document.addEventListener('message', iframeMessageEvent, false);
+    this.document.defaultView.addEventListener('message', iframeMessageEvent, false);
   }
 
   private getOrCreateIframe(configuration: OpenIdConfiguration): HTMLIFrameElement {
