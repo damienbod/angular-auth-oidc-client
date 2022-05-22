@@ -1,5 +1,10 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2022-05-22 14.0.1
+
+- Fix regression in the check session service
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1440)
+  
 ### 2022-04-18 14.0.0
 
 In this version the APP_INITIALIZER was removed. ([See PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1307)).
