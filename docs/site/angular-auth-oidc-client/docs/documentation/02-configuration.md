@@ -182,7 +182,7 @@ In multi-configuration use-cases, each configuration must be assigned a unique `
 - Type: `string`
 - Required: `true`
 
-This is the `redirect_url` which was configured on the security token service (STS) server.
+This is the url to the Security Token Service (STS). The authority issues tokens.
 
 ### `authWellknownEndpointUrl`
 
