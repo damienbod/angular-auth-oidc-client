@@ -68,15 +68,17 @@ export class TokenValidationService {
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
   // (possibly allowing for some small leeway to account for clock skew).
-  hasIdTokenExpired(token: string, configuration: OpenIdConfiguration, offsetSeconds?: number): boolean {
+  hasIdTokenExpired(token: string, configuration: OpenIdConfiguration, offsetSeconds?: number, disableIdTokenValidation?: boolean): boolean {
     const decoded = this.tokenHelperService.getPayloadFromToken(token, false, configuration);
 
-    return !this.validateIdTokenExpNotExpired(decoded, configuration, offsetSeconds);
+    return !this.validateIdTokenExpNotExpired(decoded, configuration, offsetSeconds, disableIdTokenValidation);
   }
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
   // (possibly allowing for some small leeway to account for clock skew).
-  validateIdTokenExpNotExpired(decodedIdToken: string, configuration: OpenIdConfiguration, offsetSeconds?: number): boolean {
+  validateIdTokenExpNotExpired(decodedIdToken: string, configuration: OpenIdConfiguration, offsetSeconds?: number, disableIdTokenValidation?: boolean): boolean {
+    if (disableIdTokenValidation) return true;
+
     const tokenExpirationDate = this.tokenHelperService.getTokenExpirationDate(decodedIdToken);
     offsetSeconds = offsetSeconds || 0;
 

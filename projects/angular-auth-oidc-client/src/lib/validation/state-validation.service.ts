@@ -51,7 +51,7 @@ export class StateValidationService {
     }
 
     if (callbackContext.authResult.id_token) {
-      const { clientId, issValidationOff, maxIdTokenIatOffsetAllowedInSeconds, disableIatOffsetValidation, ignoreNonceAfterRefresh } =
+      const { clientId, issValidationOff, maxIdTokenIatOffsetAllowedInSeconds, disableIatOffsetValidation, ignoreNonceAfterRefresh, disableIdTokenValidation } =
         configuration;
 
       toReturn.idToken = callbackContext.authResult.id_token;
@@ -164,7 +164,7 @@ export class StateValidationService {
             return of(toReturn);
           }
 
-          if (!this.tokenValidationService.validateIdTokenExpNotExpired(toReturn.decodedIdToken, configuration)) {
+          if (!this.tokenValidationService.validateIdTokenExpNotExpired(toReturn.decodedIdToken, configuration, maxIdTokenIatOffsetAllowedInSeconds, disableIdTokenValidation)) {
             this.loggerService.logWarning(configuration, 'authCallback id token expired');
             toReturn.state = ValidationResult.TokenExpired;
             this.handleUnsuccessfulValidation(configuration);
