@@ -230,7 +230,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createAuthorizeUrl with code flow adds "code_challenge" and "code_challenge_method" param', () => {
+    it('createAuthorizeUrl with code flow and codeChallenge adds "code_challenge" and "code_challenge_method" param', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'code';
@@ -245,7 +245,7 @@ describe('UrlService Tests', () => {
         .and.returnValue({ authorizationEndpoint: 'http://example' });
 
       const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
+        'codeChallenge', // Code Flow
         config.redirectUrl,
         'nonce',
         'state',
@@ -259,7 +259,7 @@ describe('UrlService Tests', () => {
         '&scope=openid%20email%20profile' +
         '&nonce=nonce' +
         '&state=state' +
-        '&code_challenge=&code_challenge_method=S256' +
+        '&code_challenge=codeChallenge&code_challenge_method=S256' +
         '&testcustom=customvalue';
 
       expect(value).toEqual(expectValue);

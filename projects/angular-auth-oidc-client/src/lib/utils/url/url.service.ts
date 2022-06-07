@@ -356,7 +356,7 @@ export class UrlService {
     params = params.append('nonce', nonce);
     params = params.append('state', state);
 
-    if (this.flowHelper.isCurrentFlowCodeFlow(configuration)) {
+    if (this.flowHelper.isCurrentFlowCodeFlow(configuration) && codeChallenge != null) {
       params = params.append('code_challenge', codeChallenge);
       params = params.append('code_challenge_method', 'S256');
     }
@@ -469,10 +469,7 @@ export class UrlService {
       return of(null);
     }
 
-    // code_challenge with "S256"
-    const codeVerifier = this.flowsDataService.createCodeVerifier(config);
-
-    return this.jwtWindowCryptoService.generateCodeChallenge(codeVerifier).pipe(
+    return this.getCodeChallenge(config).pipe(
       map((codeChallenge: string) => {
         const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', config);
         if (authWellKnownEndPoints) {
@@ -486,6 +483,13 @@ export class UrlService {
         return '';
       })
     );
+  }
+
+  private getCodeChallenge(config: OpenIdConfiguration): Observable<string> {
+    if (config.disablePkce) return of(null);
+    // code_challenge with "S256"
+    const codeVerifier = this.flowsDataService.createCodeVerifier(config);
+    return this.jwtWindowCryptoService.generateCodeChallenge(codeVerifier);
   }
 
   private getRedirectUrl(configuration: OpenIdConfiguration, authOptions?: AuthOptions): string {
