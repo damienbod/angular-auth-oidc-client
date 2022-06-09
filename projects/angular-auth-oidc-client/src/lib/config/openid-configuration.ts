@@ -177,7 +177,7 @@ export interface OpenIdConfiguration {
   allowUnsafeReuseRefreshToken?: boolean;
   /** Disable validation for id_token expiry time */
   disableIdTokenValidation?: boolean;
-  /** Disabled PKCE support.
+  /** Disables PKCE support.
    * Authorize request will be sent without code challenge.
    */
   disablePkce?: boolean;

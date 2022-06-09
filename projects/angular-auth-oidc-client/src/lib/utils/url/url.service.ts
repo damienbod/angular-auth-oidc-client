@@ -486,9 +486,14 @@ export class UrlService {
   }
 
   private getCodeChallenge(config: OpenIdConfiguration): Observable<string> {
-    if (config.disablePkce) return of(null);
+
+    if (config.disablePkce) {
+      return of(null);
+    }
+
     // code_challenge with "S256"
     const codeVerifier = this.flowsDataService.createCodeVerifier(config);
+
     return this.jwtWindowCryptoService.generateCodeChallenge(codeVerifier);
   }
 
