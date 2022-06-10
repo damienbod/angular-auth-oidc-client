@@ -1,5 +1,10 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2022-06-10 14.0.2
+
+- Disable id_token time validation 
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1451)
+  
 ### 2022-05-22 14.0.1
 
 - Fix regression in the check session service
