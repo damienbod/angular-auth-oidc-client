@@ -2004,6 +2004,5 @@
   },
   "cli": {
     "analytics": "b91d4847-f3d9-4b77-91da-efc9e14ed237"
-  },
-  "defaultProject": "angular-auth-oidc-client"
+  }
 }
