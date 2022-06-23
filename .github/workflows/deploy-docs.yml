@@ -33,7 +33,8 @@ jobs:
         working-directory: docs/site/angular-auth-oidc-client
 
       - name: Building Documentation
-        run: sudo npm run build-docs
+        run: sudo npm run build
+        working-directory: docs/site/angular-auth-oidc-client
 
       - name: Build And Deploy
         id: builddeploy
