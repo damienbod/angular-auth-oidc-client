@@ -16,7 +16,7 @@
     "watch-lib": "ng build angular-auth-oidc-client --watch --configuration development",
     "build-lib": "ng build angular-auth-oidc-client --configuration development && npm run copy",
     "build-all-samples": "node ./tools/build-all-angular-projects.js",
-    "build-lib-prod": "ng build angular-auth-oidc-client --configuration production && npm run schematics-build",
+    "build-lib-prod": "ng build angular-auth-oidc-client --configuration production",
     "test-lib": "ng test angular-auth-oidc-client --code-coverage",
     "test-lib-ci": "ng test angular-auth-oidc-client --watch=false --browsers=ChromeHeadlessNoSandbox --code-coverage",
     "lint-lib": "ng lint angular-auth-oidc-client",
