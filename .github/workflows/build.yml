@@ -49,8 +49,8 @@ jobs:
       - name: Building Frontend
         run: npm run build-lib-prod
 
-      # - name: Copying essential additional files
-      #   run: npm run copy
+      - name: Copying essential additional files
+        run: npm run copy2
 
       - name: Create new Angular Project and install lib in it, test it and build it
         run: |

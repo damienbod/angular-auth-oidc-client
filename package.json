@@ -52,7 +52,8 @@
     "schematics-copy": "npm run schematics-ngadd-copy && copyfiles -f ./projects/schematics/src/collection.json ./dist/angular-auth-oidc-client/schematics",
     "schematics-ngadd-copy": "ncp projects/schematics/src/ng-add/files ./dist/angular-auth-oidc-client/schematics/ng-add/files && ncp projects/schematics/src/ng-add/schema.json ./dist/angular-auth-oidc-client/schematics/ng-add/schema.json",
     "schematics-build": "tsc -p projects/schematics/tsconfig.json && npm run schematics-copy",
-    "copy": "npm run copy-readme-to-lib-folder && npm run copy-license-to-lib-folder"
+    "copy": "npm run copy-readme-to-lib-folder && npm run copy-license-to-lib-folder",
+    "copy2": "node ./tools/post-build-copies.js"
   },
   "private": true,
   "dependencies": {
@@ -66,6 +67,7 @@
     "@angular/router": "^14.0.2",
     "@schematics/angular": "^13.0.1",
     "rxjs": "^7.4.0",
+    "shelljs": "^0.8.5",
     "tslib": "^2.1.0",
     "zone.js": "~0.11.4"
   },
