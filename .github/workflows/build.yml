@@ -49,6 +49,9 @@ jobs:
       - name: Building Frontend
         run: sudo npm run build-lib-prod
 
+      - name: Copying essential additional files
+        run: sudo npm run copy
+
       - name: Create new Angular Project and install lib in it, test it and build it
         run: |
           cd ..
