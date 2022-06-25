@@ -50,7 +50,7 @@ jobs:
         run: npm run build-lib-prod
 
       - name: Copying essential additional files
-        run: npm run copy2
+        run: npm run copy-files
 
       - name: Create new Angular Project and install lib in it, test it and build it
         run: |

@@ -1,29 +1,44 @@
 const shell = require('shelljs');
-// "schematics-ngadd-copy": "ncp projects/schematics/src/ng-add/files ./dist/angular-auth-oidc-client/schematics/ng-add/files && ncp projects/schematics/src/ng-add/schema.json ./dist/angular-auth-oidc-client/schematics/ng-add/schema.json",
 
-// const BASE_HREF = './';
-// const OUTPUT_TEMP_PATH = '.temp/desktop';
-// const OUTPUT_DIST_PATH = 'dist/apps/desktop';
-// const ICON_PATH = 'assets/desktop/icon';
-const NG_ADD_FILES_SOURCE = './projects/schematics/src/ng-add/files/*';
-const NG_ADD_FILES_TARGET = './dist/angular-auth-oidc-client/schematics/ng-add/files';
-// const ELECTRON_VERSION = '11.1.1';
+const toCopy = {
+  readme: {
+    source: './README.md',
+    target: './dist/angular-auth-oidc-client',
+  },
+  license: {
+    source: './LICENSE',
+    target: './dist/angular-auth-oidc-client',
+  },
+  ngAdd: {
+    source: './projects/schematics/src/ng-add/files/*',
+    target: './dist/angular-auth-oidc-client/schematics/ng-add/files',
+    createFirectoryFirst: true,
+  },
+  collectionJson: {
+    source: './projects/schematics/src/collection.json',
+    target: './dist/angular-auth-oidc-client/schematics',
+  },
+  jsonSchema: {
+    source: './projects/schematics/src/ng-add/schema.json',
+    target: './dist/angular-auth-oidc-client/schematics/ng-add/schema.json',
+  },
+};
 
-// shell.echo('Start copying files');
+shell.echo('Start copying files...');
 
-// // DELETE TEMP FOLDER
-// shell.rm('-rf', `${OUTPUT_TEMP_PATH}`);
-// shell.rm('-rf', `${OUTPUT_DIST_PATH}`);
-// shell.echo('Deleted temp and dist folders...');
+Object.entries(toCopy).forEach(([_, value]) => {
+  const { source, target, createFirectoryFirst } = value;
 
-// // BUILD ANGULAR
-// console.log(chalk.green('build angular'));
-// const angularBuildCommand = `ng build --base-href ${BASE_HREF} --output-path=${OUTPUT_TEMP_PATH}`;
-// shell.exec(angularBuildCommand);
+  if (!!createFirectoryFirst) {
+    shell.mkdir('-p', `${target}`);
+  }
 
-// // COPY ASSETS
-shell.mkdir('-p', `${NG_ADD_FILES_TARGET}`);
-shell.cp('-r', `${NG_ADD_FILES_SOURCE}`, `${NG_ADD_FILES_TARGET}`);
+  shell.echo(`Copying from ${source} to ${target}`);
+  shell.cp('-r', `${source}`, `${target}`);
+});
+
+// shell.cp('-r', `${NG_ADD_FILES_SOURCE}`, `${NG_ADD_FILES_TARGET}`);
+// shell.cp('-r', `${SCHEMA_JSON_SOURCE}`, `${SCHEMA_JSON_TARGET}`);
 
 // // BUILD DESKTOP
 // console.log(chalk.green('build desktop'));
@@ -31,4 +46,4 @@ shell.cp('-r', `${NG_ADD_FILES_SOURCE}`, `${NG_ADD_FILES_TARGET}`);
 //   `npx electron-packager ${OUTPUT_TEMP_PATH} --electronVersion=${ELECTRON_VERSION} --overwrite --icon=${ICON_PATH} --platform=win32,linux --out=${OUTPUT_DIST_PATH}`
 // );
 
-// console.log(chalk.green('DONE'));
+shell.echo('...DONE');
