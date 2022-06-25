@@ -20,19 +20,19 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup Node.js 14.15.5
-        uses: actions/setup-node@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
-          node-version: 14.15.5
+          node-version: 16
 
       - name: Installing Dependencies
-        run: sudo npm install
+        run: npm install
 
       - name: Linting Frontend
-        run: sudo npm run lint-lib
+        run: npm run lint-lib
 
       - name: Testing Frontend
-        run: sudo npm run test-lib-ci
+        run: npm run test-lib-ci
 
       - name: Coveralls
         uses: coverallsapp/github-action@master
@@ -47,10 +47,10 @@ jobs:
           parallel-finished: true
 
       - name: Building Frontend
-        run: sudo npm run build-lib-prod
+        run: npm run build-lib-prod
 
-      - name: Copying essential additional files
-        run: sudo npm run copy
+      # - name: Copying essential additional files
+      #   run: npm run copy
 
       - name: Create new Angular Project and install lib in it, test it and build it
         run: |
