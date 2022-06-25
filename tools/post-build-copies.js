@@ -37,13 +37,4 @@ Object.entries(toCopy).forEach(([_, value]) => {
   shell.cp('-r', `${source}`, `${target}`);
 });
 
-// shell.cp('-r', `${NG_ADD_FILES_SOURCE}`, `${NG_ADD_FILES_TARGET}`);
-// shell.cp('-r', `${SCHEMA_JSON_SOURCE}`, `${SCHEMA_JSON_TARGET}`);
-
-// // BUILD DESKTOP
-// console.log(chalk.green('build desktop'));
-// shell.exec(
-//   `npx electron-packager ${OUTPUT_TEMP_PATH} --electronVersion=${ELECTRON_VERSION} --overwrite --icon=${ICON_PATH} --platform=win32,linux --out=${OUTPUT_DIST_PATH}`
-// );
-
 shell.echo('...DONE');
