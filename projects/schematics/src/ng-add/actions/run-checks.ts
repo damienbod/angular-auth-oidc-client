@@ -14,6 +14,7 @@ export function runChecks(): Rule {
         No default project given in the workspace - ${JSON.stringify(workspace, null, 2)}`);
     }
 
+    context.logger.info(`✅️ Project found, working with '${projectName}'`);
 
     return host;
   };
