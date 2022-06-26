@@ -14,9 +14,7 @@ export function updateProjectInAngularJson(tree: Tree, content: WorkspaceProject
   projectName = projectName || getDefaultProjectName(tree);
 
   if (!projectName) {
-    const workspace = getAngularWorkspace(tree);
-    throw new SchematicsException(`Could not Update Project in Angular.json. Searched for '${projectName}',
-        but it could not be found and no default project is given in workspace - ${JSON.stringify(workspace.projects, null, 2)}`);
+    throw new SchematicsException(`Could not Update Project in Angular.json because no project name was found.`);
   }
 
   const workspaceContent = getAngularJsonContent(tree);
@@ -27,13 +25,12 @@ export function updateProjectInAngularJson(tree: Tree, content: WorkspaceProject
 
 export function getProject(tree: Tree, projectName?: string): WorkspaceProject {
   const workspace = getAngularWorkspace(tree);
-  const hasProjectName = !!projectName;
-  const hasDefaultProject = !!workspace.defaultProject;
+  const defaultProject = getDefaultProjectName(tree);
 
-  if (hasProjectName) {
+  if (!!projectName) {
     return workspace.projects[projectName as string] || null;
-  } else if (hasDefaultProject) {
-    return workspace.projects[workspace.defaultProject as string];
+  } else if (!!defaultProject) {
+    return workspace.projects[defaultProject as string];
   }
 
   throw new SchematicsException(`Could not get project. Searched for '${projectName}',
