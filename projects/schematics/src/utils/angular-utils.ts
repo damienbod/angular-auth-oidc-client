@@ -46,7 +46,12 @@ export function readIntoSourceFile(host: Tree, fileName: string): ts.SourceFile 
   return ts.createSourceFile(fileName, buffer.toString('utf-8'), ts.ScriptTarget.Latest, true);
 }
 
-function getAngularJsonContent(tree: Tree) {
+export function getDefaultProjectName(tree: Tree) {
+  const workspace = getAngularWorkspace(tree);
+  return workspace.defaultProject;
+}
+
+export function getAngularJsonContent(tree: Tree) {
   const workspaceConfig = tree.read(ANGULAR_JSON_FILENAME);
 
   if (!workspaceConfig) {
@@ -56,7 +61,3 @@ function getAngularJsonContent(tree: Tree) {
   return workspaceConfig.toString();
 }
 
-function getDefaultProjectName(tree: Tree) {
-  const workspace = getAngularWorkspace(tree);
-  return workspace.defaultProject;
-}
