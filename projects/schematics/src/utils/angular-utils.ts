@@ -14,7 +14,9 @@ export function updateProjectInAngularJson(tree: Tree, content: WorkspaceProject
   projectName = projectName || getDefaultProjectName(tree);
 
   if (!projectName) {
-    throw new SchematicsException(`project '${projectName}' could not be found and no default project is given in workspace`);
+    const workspace = getAngularWorkspace(tree);
+    throw new SchematicsException(`Could not Update Project in Angular.json. Searched for '${projectName}',
+        but it could not be found and no default project is given in workspace - ${JSON.stringify(workspace.projects, null, 2)}`);
   }
 
   const workspaceContent = getAngularJsonContent(tree);
@@ -34,7 +36,8 @@ export function getProject(tree: Tree, projectName?: string): WorkspaceProject {
     return workspace.projects[workspace.defaultProject as string];
   }
 
-  throw new SchematicsException(`project '${projectName}' could not be found and no default project is given in workspace`);
+  throw new SchematicsException(`Could not get project. Searched for '${projectName}',
+        but it could not be found and no default project is given in workspace - ${JSON.stringify(workspace.projects, null, 2)}`);
 }
 
 export function readIntoSourceFile(host: Tree, fileName: string): ts.SourceFile {
