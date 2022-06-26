@@ -1,8 +1,6 @@
 import { Rule, SchematicContext, SchematicsException, Tree } from '@angular-devkit/schematics';
 import { getAngularWorkspace, getProject } from '../../utils/angular-utils';
 
-
-
 export function runChecks(): Rule {
   return (host: Tree, context: SchematicContext) => {
 
