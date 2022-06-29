@@ -14,7 +14,7 @@ export function updateProjectInAngularJson(tree: Tree, content: WorkspaceProject
   projectName = projectName || getDefaultProjectName(tree);
 
   if (!projectName) {
-    throw new SchematicsException(`project '${projectName}' could not be found and no default project is given in workspace`);
+    throw new SchematicsException(`Could not Update Project in Angular.json because no project name was found.`);
   }
 
   const workspaceContent = getAngularJsonContent(tree);
@@ -25,16 +25,16 @@ export function updateProjectInAngularJson(tree: Tree, content: WorkspaceProject
 
 export function getProject(tree: Tree, projectName?: string): WorkspaceProject {
   const workspace = getAngularWorkspace(tree);
-  const hasProjectName = !!projectName;
-  const hasDefaultProject = !!workspace.defaultProject;
+  const defaultProject = getDefaultProjectName(tree);
 
-  if (hasProjectName) {
+  if (!!projectName) {
     return workspace.projects[projectName as string] || null;
-  } else if (hasDefaultProject) {
-    return workspace.projects[workspace.defaultProject as string];
+  } else if (!!defaultProject) {
+    return workspace.projects[defaultProject as string];
   }
 
-  throw new SchematicsException(`project '${projectName}' could not be found and no default project is given in workspace`);
+  throw new SchematicsException(`Could not get project. Searched for '${projectName}',
+        but it could not be found and no default project is given in workspace - ${JSON.stringify(workspace.projects, null, 2)}`);
 }
 
 export function readIntoSourceFile(host: Tree, fileName: string): ts.SourceFile {
@@ -46,7 +46,14 @@ export function readIntoSourceFile(host: Tree, fileName: string): ts.SourceFile 
   return ts.createSourceFile(fileName, buffer.toString('utf-8'), ts.ScriptTarget.Latest, true);
 }
 
-function getAngularJsonContent(tree: Tree) {
+export function getDefaultProjectName(tree: Tree) {
+  const workspace = getAngularWorkspace(tree);
+  const allProjects = Object.keys(workspace.projects);
+
+  return workspace.defaultProject || allProjects[0];
+}
+
+export function getAngularJsonContent(tree: Tree) {
   const workspaceConfig = tree.read(ANGULAR_JSON_FILENAME);
 
   if (!workspaceConfig) {
@@ -56,7 +63,3 @@ function getAngularJsonContent(tree: Tree) {
   return workspaceConfig.toString();
 }
 
-function getDefaultProjectName(tree: Tree) {
-  const workspace = getAngularWorkspace(tree);
-  return workspace.defaultProject;
-}
