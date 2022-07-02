@@ -3,9 +3,9 @@
   "author": "Damien Bowden & Fabian Gosebrink",
   "peerDependencies": {
     "rxjs": "^6.5.3 || ^7.4.0",
-    "@angular/core": "^13.0.0",
-    "@angular/common": "^13.0.0",
-    "@angular/router": "^13.0.0"
+    "@angular/core": ">=13.0.0",
+    "@angular/common": ">=13.0.0",
+    "@angular/router": ">=13.0.0"
   },
   "dependencies": {
     "tslib": "^2.3.0",
