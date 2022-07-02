@@ -87,7 +87,7 @@ export class TokenValidationService {
     }
 
     const tokenExpirationValue = tokenExpirationDate.valueOf();
-    const nowWithOffset = new Date(new Date().toUTCString()).valueOf() + offsetSeconds * 1000;
+    const nowWithOffset = new Date(new Date().toUTCString()).valueOf() - offsetSeconds * 1000;
     const tokenNotExpired = tokenExpirationValue > nowWithOffset;
 
     this.loggerService.logDebug(
