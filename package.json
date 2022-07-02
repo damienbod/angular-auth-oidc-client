@@ -48,7 +48,8 @@
     "start-sample-code-flow-lazy-loaded": "ng serve sample-code-flow-lazy-loaded --ssl --port=4204 -o",
     "e2e": "ng e2e",
     "schematics-build": "tsc -p projects/schematics/tsconfig.json",
-    "copy-files": "node ./tools/post-build-copies.js"
+    "copy-files": "node ./tools/post-build-copies.js",
+    "lint": "ng lint"
   },
   "private": true,
   "dependencies": {
@@ -80,10 +81,11 @@
     "@evilmartians/lefthook": "^1.0.3",
     "@types/jasmine": "~3.6.0",
     "@types/node": "^12.11.1",
-    "@typescript-eslint/eslint-plugin": "^5.30.3",
-    "@typescript-eslint/parser": "^5.30.3",
+    "@typescript-eslint/eslint-plugin": "5.29.0",
+    "@typescript-eslint/parser": "5.29.0",
+    "copyfiles": "^2.4.1",
     "coveralls": "^3.1.0",
-    "eslint": "^8.12.0",
+    "eslint": "^8.18.0",
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-jsdoc": "^38.1.6",
     "eslint-plugin-prefer-arrow": "1.2.2",
@@ -96,7 +98,6 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
     "ncp": "^2.0.0",
-    "copyfiles": "^2.4.1",
     "ng-packagr": "^14.0.2",
     "prettier": "^2.2.1",
     "protractor": "~7.0.0",
