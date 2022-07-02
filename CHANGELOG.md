@@ -1,5 +1,9 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2022-07-02 14.1.0
+
+- Support Angular 14
+
 ### 2022-06-10 14.0.2
 
 - Disable id_token time validation 
