@@ -14,7 +14,7 @@
     "build": "npm run build-lib",
     "build-app": "ng build sample-code-flow",
     "watch-lib": "ng build angular-auth-oidc-client --watch --configuration development",
-    "build-lib": "ng build angular-auth-oidc-client --configuration development && npm run copy",
+    "build-lib": "ng build angular-auth-oidc-client --configuration development && npm run copy-files",
     "build-all-samples": "node ./tools/build-all-angular-projects.js",
     "build-lib-prod": "ng build angular-auth-oidc-client --configuration production && npm run schematics-build && npm run copy-files",
     "test-lib": "ng test angular-auth-oidc-client --code-coverage",
