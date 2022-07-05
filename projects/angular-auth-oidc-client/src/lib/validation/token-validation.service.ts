@@ -68,7 +68,12 @@ export class TokenValidationService {
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
   // (possibly allowing for some small leeway to account for clock skew).
-  hasIdTokenExpired(token: string, configuration: OpenIdConfiguration, offsetSeconds?: number, disableIdTokenValidation?: boolean): boolean {
+  hasIdTokenExpired(
+    token: string,
+    configuration: OpenIdConfiguration,
+    offsetSeconds?: number,
+    disableIdTokenValidation?: boolean
+  ): boolean {
     const decoded = this.tokenHelperService.getPayloadFromToken(token, false, configuration);
 
     return !this.validateIdTokenExpNotExpired(decoded, configuration, offsetSeconds, disableIdTokenValidation);
@@ -76,7 +81,12 @@ export class TokenValidationService {
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
   // (possibly allowing for some small leeway to account for clock skew).
-  validateIdTokenExpNotExpired(decodedIdToken: string, configuration: OpenIdConfiguration, offsetSeconds?: number, disableIdTokenValidation?: boolean): boolean {
+  validateIdTokenExpNotExpired(
+    decodedIdToken: string,
+    configuration: OpenIdConfiguration,
+    offsetSeconds?: number,
+    disableIdTokenValidation?: boolean
+  ): boolean {
     if (disableIdTokenValidation) return true;
 
     const tokenExpirationDate = this.tokenHelperService.getTokenExpirationDate(decodedIdToken);
@@ -87,7 +97,7 @@ export class TokenValidationService {
     }
 
     const tokenExpirationValue = tokenExpirationDate.valueOf();
-    const nowWithOffset = new Date(new Date().toUTCString()).valueOf() + offsetSeconds * 1000;
+    const nowWithOffset = this.calculateNowWithOffset(offsetSeconds);
     const tokenNotExpired = tokenExpirationValue > nowWithOffset;
 
     this.loggerService.logDebug(
@@ -97,7 +107,6 @@ export class TokenValidationService {
       )} , ${new Date(tokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`
     );
 
-    // Token not expired?
     return tokenNotExpired;
   }
 
@@ -109,7 +118,7 @@ export class TokenValidationService {
 
     offsetSeconds = offsetSeconds || 0;
     const accessTokenExpirationValue = accessTokenExpiresAt.valueOf();
-    const nowWithOffset = new Date(new Date().toUTCString()).valueOf() + offsetSeconds * 1000;
+    const nowWithOffset = this.calculateNowWithOffset(offsetSeconds);
     const tokenNotExpired = accessTokenExpirationValue > nowWithOffset;
 
     this.loggerService.logDebug(
@@ -119,7 +128,6 @@ export class TokenValidationService {
       )} , ${new Date(accessTokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`
     );
 
-    // access token not expired?
     return tokenNotExpired;
   }
 
@@ -522,5 +530,9 @@ export class TokenValidationService {
     const seconds = ((millis % 60000) / 1000).toFixed(0);
 
     return minutes + ':' + (+seconds < 10 ? '0' : '') + seconds;
+  }
+
+  private calculateNowWithOffset(offsetSeconds: number): number {
+    return new Date(new Date().toUTCString()).valueOf() + offsetSeconds * 1000;
   }
 }
