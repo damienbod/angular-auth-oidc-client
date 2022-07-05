@@ -116,9 +116,7 @@ export class OidcSecurityService {
    * @param configId The configId to identify the config. If not passed, the first one is being used
    */
   getUserData(configId?: string): Observable<any> {
-    return this.configurationService
-      .getOpenIDConfiguration(configId)
-      .pipe(switchMap((config) => this.userService.getUserDataFromStore(config)));
+    return this.configurationService.getOpenIDConfiguration(configId).pipe(map((config) => this.userService.getUserDataFromStore(config)));
   }
 
   /**
