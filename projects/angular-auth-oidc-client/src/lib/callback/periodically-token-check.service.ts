@@ -154,14 +154,15 @@ export class PeriodicallyTokenCheckService {
   private shouldStartPeriodicallyCheckForConfig(config: OpenIdConfiguration): boolean {
     const idToken = this.authStateService.getIdToken(config);
     const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning(config);
+    const isCodeFlowinProgress = this.flowsDataService.isCodeFlowInProgress(config);
     const userDataFromStore = this.userService.getUserDataFromStore(config);
 
     this.loggerService.logDebug(
       config,
-      `Checking: silentRenewRunning: ${isSilentRenewRunning} - has idToken: ${!!idToken} - has userData: ${!!userDataFromStore}`
+      `Checking: silentRenewRunning: ${isSilentRenewRunning}, isCodeFlowInProgress: ${isCodeFlowinProgress} - has idToken: ${!!idToken} - has userData: ${!!userDataFromStore}`
     );
 
-    const shouldBeExecuted = !!userDataFromStore && !isSilentRenewRunning && !!idToken;
+    const shouldBeExecuted = !!userDataFromStore && !isSilentRenewRunning && !!idToken && !isCodeFlowinProgress;
 
     if (!shouldBeExecuted) {
       return false;

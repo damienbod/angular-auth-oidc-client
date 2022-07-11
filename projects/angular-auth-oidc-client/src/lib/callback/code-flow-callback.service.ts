@@ -27,12 +27,14 @@ export class CodeFlowCallbackService {
 
     return this.flowsService.processCodeFlowCallback(urlToCheck, config, allConfigs).pipe(
       tap((callbackContext) => {
+        this.flowsDataService.resetCodeFlowInProgress(config);
         if (!triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
           this.router.navigateByUrl(postLoginRoute);
         }
       }),
       catchError((error) => {
         this.flowsDataService.resetSilentRenewRunning(config);
+        this.flowsDataService.resetCodeFlowInProgress(config);
         this.intervalService.stopPeriodicTokenCheck();
         if (!triggerAuthorizationResultEvent && !isRenewProcess) {
           this.router.navigateByUrl(unauthorizedRoute);

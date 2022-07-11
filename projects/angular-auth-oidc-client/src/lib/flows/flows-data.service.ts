@@ -61,6 +61,38 @@ export class FlowsDataService {
     return codeVerifier;
   }
 
+  isCodeFlowInProgress(configuration: OpenIdConfiguration): boolean {
+    const storageObject = this.getCodeFlowInProgressStorageEntry(configuration);
+
+    if (!storageObject) {
+      return false;
+    }
+
+    return storageObject.state === 'in progress';
+  }
+
+  setCodeFlowInProgress(configuration: OpenIdConfiguration): void {
+    const storageObject = {
+      state: 'in progress',
+    };
+
+    this.storagePersistenceService.write('storageCodeFlowInProgress', JSON.stringify(storageObject), configuration);
+  }
+
+  resetCodeFlowInProgress(configuration: OpenIdConfiguration): void {
+    this.storagePersistenceService.write('storageCodeFlowInProgress', '', configuration);
+  }
+
+  private getCodeFlowInProgressStorageEntry(configuration: OpenIdConfiguration): any {
+    const storageEntry = this.storagePersistenceService.read('storageCodeFlowInProgress', configuration);
+
+    if (!storageEntry) {
+      return null;
+    }
+
+    return JSON.parse(storageEntry);
+  }
+
   isSilentRenewRunning(configuration: OpenIdConfiguration): boolean {
     const { configId, silentRenewTimeoutInSeconds } = configuration;
     const storageObject = this.getSilentRenewRunningStorageEntry(configuration);
