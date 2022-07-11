@@ -2,6 +2,7 @@ import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockClass } from '../../../test/auto-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
+import { FlowsDataService } from '../../flows/flows-data.service';
 import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
@@ -26,6 +27,7 @@ describe('StandardLoginService', () => {
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: RedirectService, useClass: mockClass(RedirectService) },
         { provide: AuthWellKnownService, useClass: mockClass(AuthWellKnownService) },
+        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
       ],
     });
   });
@@ -45,35 +47,29 @@ describe('StandardLoginService', () => {
   });
 
   describe('login', () => {
-    it(
-      'does nothing if it has an invalid response type',
-      waitForAsync(() => {
-        spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(false);
-        const loggerSpy = spyOn(loggerService, 'logError');
+    it('does nothing if it has an invalid response type', waitForAsync(() => {
+      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(false);
+      const loggerSpy = spyOn(loggerService, 'logError');
 
-        const result = standardLoginService.loginStandard({ configId: 'configId1' });
+      const result = standardLoginService.loginStandard({ configId: 'configId1' });
 
-        expect(result).toBeUndefined();
-        expect(loggerSpy).toHaveBeenCalled();
-      })
-    );
+      expect(result).toBeUndefined();
+      expect(loggerSpy).toHaveBeenCalled();
+    }));
 
-    it(
-      'calls urlService.getAuthorizeUrl() if everything fits',
-      waitForAsync(() => {
-        const config = {
-          authWellknownEndpointUrl: 'authWellknownEndpoint',
-          responseType: 'stubValue',
-        };
-        spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-        spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
-        spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
+    it('calls urlService.getAuthorizeUrl() if everything fits', waitForAsync(() => {
+      const config = {
+        authWellknownEndpointUrl: 'authWellknownEndpoint',
+        responseType: 'stubValue',
+      };
+      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
+      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
 
-        const result = standardLoginService.loginStandard(config);
+      const result = standardLoginService.loginStandard(config);
 
-        expect(result).toBeUndefined();
-      })
-    );
+      expect(result).toBeUndefined();
+    }));
 
     it('redirects to URL with no URL handler', fakeAsync(() => {
       const config = {
