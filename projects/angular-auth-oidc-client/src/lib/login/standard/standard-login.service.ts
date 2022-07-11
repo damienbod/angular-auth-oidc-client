@@ -16,7 +16,7 @@ export class StandardLoginService {
     private urlService: UrlService,
     private redirectService: RedirectService,
     private authWellKnownService: AuthWellKnownService,
-    private flowService: FlowsDataService
+    private flowsDataService: FlowsDataService
   ) {}
 
   loginStandard(configuration: OpenIdConfiguration, authOptions?: AuthOptions): void {
@@ -27,12 +27,12 @@ export class StandardLoginService {
     }
 
     this.loggerService.logDebug(configuration, 'BEGIN Authorize OIDC Flow, no auth data');
-    this.flowService.setCodeFlowInProgress(configuration);
+    this.flowsDataService.setCodeFlowInProgress(configuration);
 
     this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(configuration).subscribe(() => {
       const { urlHandler } = authOptions || {};
 
-      this.flowService.resetSilentRenewRunning(configuration);
+      this.flowsDataService.resetSilentRenewRunning(configuration);
 
       this.urlService.getAuthorizeUrl(configuration, authOptions).subscribe((url: string) => {
         if (!url) {

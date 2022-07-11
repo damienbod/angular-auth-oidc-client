@@ -131,6 +131,63 @@ describe('Flows Data Service', () => {
     });
   });
 
+  describe('isCodeFlowInProgress', () => {
+    it('checks code flow is in progress and returns result', () => {
+      const config = {
+        configId: 'configId1',
+      };
+
+      jasmine.clock().uninstall();
+      jasmine.clock().install();
+      const baseTime = new Date();
+      jasmine.clock().mockDate(baseTime);
+
+      const storageObject = {
+        state: 'in progress',
+      };
+
+      spyOn(storagePersistenceService, 'read').withArgs('storageCodeFlowInProgress', config).and.returnValue(JSON.stringify(storageObject));
+      const spyWrite = spyOn(storagePersistenceService, 'write');
+
+      const isCodeFlowInProgressResult = service.isCodeFlowInProgress(config);
+
+      expect(spyWrite).not.toHaveBeenCalled();
+      expect(isCodeFlowInProgressResult).toBeTrue();
+    });
+
+    it('state object does not exist returns false result', () => {
+      spyOn(storagePersistenceService, 'read').withArgs('storageCodeFlowInProgress', { configId: 'configId1' }).and.returnValue(null);
+
+      const isCodeFlowInProgressResult = service.isCodeFlowInProgress({ configId: 'configId1' });
+      expect(isCodeFlowInProgressResult).toBeFalse();
+    });
+  });
+
+  describe('setCodeFlowInProgress', () => {
+    it('set setCodeFlowInProgress to `in progress` when called', () => {
+      jasmine.clock().uninstall();
+      jasmine.clock().install();
+      const baseTime = new Date();
+      jasmine.clock().mockDate(baseTime);
+
+      const storageObject = {
+        state: 'in progress',
+      };
+
+      const spy = spyOn(storagePersistenceService, 'write');
+      service.setCodeFlowInProgress({ configId: 'configId1' });
+      expect(spy).toHaveBeenCalledOnceWith('storageCodeFlowInProgress', JSON.stringify(storageObject), { configId: 'configId1' });
+    });
+  });
+
+  describe('resetCodeFlowInProgress', () => {
+    it('set resetCodeFlowInProgress to empty string when called', () => {
+      const spy = spyOn(storagePersistenceService, 'write');
+      service.resetCodeFlowInProgress({ configId: 'configId1' });
+      expect(spy).toHaveBeenCalledOnceWith('storageCodeFlowInProgress', '', { configId: 'configId1' });
+    });
+  });
+
   describe('isSilentRenewRunning', () => {
     it('silent renew process timeout exceeded reset state object and returns false result', () => {
       const config = {
