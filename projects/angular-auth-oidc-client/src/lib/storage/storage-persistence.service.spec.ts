@@ -92,16 +92,17 @@ describe('Storage Persistence Service', () => {
 
       service.resetStorageFlowData(config);
 
-      expect(spy).toHaveBeenCalledTimes(9);
+      expect(spy).toHaveBeenCalledTimes(10);
       expect(spy.calls.argsFor(0)).toEqual(['session_state', config]);
       expect(spy.calls.argsFor(1)).toEqual(['storageSilentRenewRunning', config]);
-      expect(spy.calls.argsFor(2)).toEqual(['codeVerifier', config]);
-      expect(spy.calls.argsFor(3)).toEqual(['userData', config]);
-      expect(spy.calls.argsFor(4)).toEqual(['storageCustomParamsAuthRequest', config]);
-      expect(spy.calls.argsFor(5)).toEqual(['access_token_expires_at', config]);
-      expect(spy.calls.argsFor(6)).toEqual(['storageCustomParamsRefresh', config]);
-      expect(spy.calls.argsFor(7)).toEqual(['storageCustomParamsEndSession', config]);
-      expect(spy.calls.argsFor(8)).toEqual(['reusable_refresh_token', config]);
+      expect(spy.calls.argsFor(2)).toEqual(['storageCodeFlowInProgress', config]);
+      expect(spy.calls.argsFor(3)).toEqual(['codeVerifier', config]);
+      expect(spy.calls.argsFor(4)).toEqual(['userData', config]);
+      expect(spy.calls.argsFor(5)).toEqual(['storageCustomParamsAuthRequest', config]);
+      expect(spy.calls.argsFor(6)).toEqual(['access_token_expires_at', config]);
+      expect(spy.calls.argsFor(7)).toEqual(['storageCustomParamsRefresh', config]);
+      expect(spy.calls.argsFor(8)).toEqual(['storageCustomParamsEndSession', config]);
+      expect(spy.calls.argsFor(9)).toEqual(['reusable_refresh_token', config]);
     });
   });
 
