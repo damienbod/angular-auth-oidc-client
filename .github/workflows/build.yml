@@ -8,7 +8,6 @@ on:
     types: [opened, synchronize, reopened, closed]
     branches:
       - main
-      - releaseV12-WIP
 
 jobs:
   build_job:
@@ -20,19 +19,19 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup Node.js 14.15
-        uses: actions/setup-node@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
-          node-version: 14.15
+          node-version: 16
 
       - name: Installing Dependencies
-        run: sudo npm install
+        run: npm install
 
       - name: Linting Frontend
-        run: sudo npm run lint-lib
+        run: npm run lint-lib
 
       - name: Testing Frontend
-        run: sudo npm run test-lib-ci
+        run: npm run test-lib-ci
 
       - name: Coveralls
         uses: coverallsapp/github-action@master
@@ -47,7 +46,10 @@ jobs:
           parallel-finished: true
 
       - name: Building Frontend
-        run: sudo npm run build-lib-prod
+        run: npm run build-lib-prod
+
+      - name: Copying essential additional files
+        run: npm run copy-files
 
       - name: Create new Angular Project and install lib in it, test it and build it
         run: |
@@ -65,24 +67,7 @@ jobs:
           npm test -- --watch=false --browsers=ChromeHeadless
           sudo npm run build
 
-      - name: Create new Angular Project (RxJs 6) and use the schematics to add a module
-        run: |
-          cd ..
-          echo '=== Current Directory ==='
-          ls
-          sudo npm install -g @angular/cli
-          echo 'Creating new angular project'
-          sudo ng new testProjectSchematicRxJs6 --skip-git --skip-install
-          cd testProjectSchematicRxJs6
-          echo '=== Current Directory ==='
-          ls
-          sudo npm install --unsafe-perm=true
-          sudo npm install rxjs@6.5.3
-          sudo ng add ../angular-auth-oidc-client/dist/angular-auth-oidc-client --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using iframe silent renew" --use-local-package=true --skip-confirmation
-          npm test -- --watch=false --browsers=ChromeHeadless
-          sudo npm run build
-
-      - name: Create new Angular Project (RxJs 7) and use the schematics to add a module
+      - name: Create new Angular Project and use the schematics to add a module
         run: |
           cd ..
           echo '=== Current Directory ==='

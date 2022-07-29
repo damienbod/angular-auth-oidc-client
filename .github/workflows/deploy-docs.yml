@@ -8,11 +8,10 @@ on:
     types: [opened, synchronize, reopened, closed]
     branches:
       - main
-      - releaseV12-WIP
 
 jobs:
   build_and_deploy_job:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed') && github.repository_owner == 'damienbod'
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
@@ -20,10 +19,10 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup Node.js 14
+      - name: Setup Node.js 14.15.5
         uses: actions/setup-node@v1
         with:
-          node-version: 14.15.1
+          node-version: 14.15.5
 
       - name: Installing Dependencies
         run: sudo npm install
@@ -33,9 +32,11 @@ jobs:
         working-directory: docs/site/angular-auth-oidc-client
 
       - name: Building Documentation
-        run: sudo npm run build-docs
+        run: sudo npm run build
+        working-directory: docs/site/angular-auth-oidc-client
 
       - name: Build And Deploy
+        if: ${{ github.actor == 'damienbod' || github.actor == 'FabianGosebrink' }}
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:

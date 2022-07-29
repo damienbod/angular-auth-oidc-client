@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, map, Observable, switchMap, tap, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AuthOptions } from './auth-options';
 import { AuthenticatedResult } from './auth-state/auth-result';
 import { AuthStateService } from './auth-state/auth-state.service';
@@ -116,9 +117,7 @@ export class OidcSecurityService {
    * @param configId The configId to identify the config. If not passed, the first one is being used
    */
   getUserData(configId?: string): Observable<any> {
-    return this.configurationService
-      .getOpenIDConfiguration(configId)
-      .pipe(switchMap((config) => this.userService.getUserDataFromStore(config)));
+    return this.configurationService.getOpenIDConfiguration(configId).pipe(map((config) => this.userService.getUserDataFromStore(config)));
   }
 
   /**

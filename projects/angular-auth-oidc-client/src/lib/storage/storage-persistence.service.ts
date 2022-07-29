@@ -14,6 +14,7 @@ export type StorageKeys =
   | 'reusable_refresh_token'
   | 'session_state'
   | 'storageSilentRenewRunning'
+  | 'storageCodeFlowInProgress'
   | 'storageCustomParamsAuthRequest'
   | 'storageCustomParamsRefresh'
   | 'storageCustomParamsEndSession'
@@ -54,6 +55,7 @@ export class StoragePersistenceService {
   resetStorageFlowData(config: OpenIdConfiguration): void {
     this.remove('session_state', config);
     this.remove('storageSilentRenewRunning', config);
+    this.remove('storageCodeFlowInProgress', config);
     this.remove('codeVerifier', config);
     this.remove('userData', config);
     this.remove('storageCustomParamsAuthRequest', config);

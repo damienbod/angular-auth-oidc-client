@@ -195,10 +195,24 @@ describe('OidcSecurityService', () => {
         const config = { configId: 'configId1' };
         spyOn(configurationService, 'getOpenIDConfiguration').and.returnValue(of(config));
 
-        const spy = spyOn(userService, 'getUserDataFromStore').and.returnValue(of(null));
+        const spy = spyOn(userService, 'getUserDataFromStore').and.returnValue({ some: 'thing' });
 
         oidcSecurityService.getUserData('configId').subscribe(() => {
           expect(spy).toHaveBeenCalledOnceWith(config);
+        });
+      })
+    );
+
+    it(
+      'returns userdata',
+      waitForAsync(() => {
+        const config = { configId: 'configId1' };
+        spyOn(configurationService, 'getOpenIDConfiguration').and.returnValue(of(config));
+
+        spyOn(userService, 'getUserDataFromStore').and.returnValue({ some: 'thing' });
+
+        oidcSecurityService.getUserData('configId').subscribe((result) => {
+          expect(result).toEqual({ some: 'thing' });
         });
       })
     );
