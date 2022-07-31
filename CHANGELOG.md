@@ -8,7 +8,7 @@
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1488)
 - Bugfix concurrent issue with renew and normal code flow
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1483)
-- add disablePkce config parameter
+- Add disablePkce config parameter
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1455)
   
 ### 2022-07-05 14.1.1
