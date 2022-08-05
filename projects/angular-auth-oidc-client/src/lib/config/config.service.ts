@@ -62,7 +62,7 @@ export class ConfigurationService {
   }
 
   private loadConfigs(): Observable<OpenIdConfiguration[]> {
-    return forkJoin(this.loader.loadConfigs());
+    return this.loader.loadConfigs();
   }
 
   private configsAlreadySaved(): boolean {
