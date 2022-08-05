@@ -62,7 +62,7 @@ export class ConfigurationService {
   }
 
   private loadConfigs(): Observable<OpenIdConfiguration[]> {
-    return forkJoin(this.loader.loadConfigs());
+    return this.loader.loadConfigs();
   }
 
   private configsAlreadySaved(): boolean {
@@ -152,9 +152,5 @@ export class ConfigurationService {
       currentConfig.useRefreshToken = false;
       currentConfig.usePushedAuthorisationRequests = false;
     }
-  }
-
-  private hasBrowserStorage(): boolean {
-    return typeof navigator !== 'undefined' && navigator.cookieEnabled && typeof Storage !== 'undefined';
   }
 }
