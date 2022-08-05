@@ -1,5 +1,5 @@
 import { Provider } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { forkJoin, Observable, of, switchMap } from 'rxjs';
 import { OpenIdConfiguration } from '../openid-configuration';
 
 export class OpenIdConfigLoader {
@@ -25,9 +25,19 @@ export class StsConfigStaticLoader implements StsConfigLoader {
 }
 
 export class StsConfigHttpLoader implements StsConfigLoader {
-  constructor(private configs$: Observable<OpenIdConfiguration> | Observable<OpenIdConfiguration>[]) {}
+  constructor(private configs$: Observable<OpenIdConfiguration[]>) {}
 
   loadConfigs(): Observable<OpenIdConfiguration>[] {
-    return Array.isArray(this.configs$) ? this.configs$ : [this.configs$];
+    // if (Array.isArray(this.configs$)) {
+    //   return this.configs$;
+    // }
+
+    return this.configs$.pipe(
+      switchMap((configs: OpenIdConfiguration[]) => {
+        const asd = forkJoin(...configs) as Observable<OpenIdConfiguration>[];
+
+        return asd;
+      })
+    );
   }
 }
