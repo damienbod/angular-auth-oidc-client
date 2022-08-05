@@ -13,11 +13,12 @@ export class LoggerService {
     }
 
     const { configId } = configuration;
+    const messageToLog = this.isObject(message) ? JSON.stringify(message) : message;
 
     if (!!args && !!args.length) {
-      this.abstractLoggerService.logError(`[ERROR] ${configId} - ${message}`, ...args);
+      this.abstractLoggerService.logError(`[ERROR] ${configId} - ${messageToLog}`, ...args);
     } else {
-      this.abstractLoggerService.logError(`[ERROR] ${configId} - ${message}`);
+      this.abstractLoggerService.logError(`[ERROR] ${configId} - ${messageToLog}`);
     }
   }
 
@@ -35,11 +36,12 @@ export class LoggerService {
     }
 
     const { configId } = configuration;
+    const messageToLog = this.isObject(message) ? JSON.stringify(message) : message;
 
     if (!!args && !!args.length) {
-      this.abstractLoggerService.logWarning(`[WARN] ${configId} - ${message}`, ...args);
+      this.abstractLoggerService.logWarning(`[WARN] ${configId} - ${messageToLog}`, ...args);
     } else {
-      this.abstractLoggerService.logWarning(`[WARN] ${configId} - ${message}`);
+      this.abstractLoggerService.logWarning(`[WARN] ${configId} - ${messageToLog}`);
     }
   }
 
@@ -57,11 +59,12 @@ export class LoggerService {
     }
 
     const { configId } = configuration;
+    const messageToLog = this.isObject(message) ? JSON.stringify(message) : message;
 
     if (!!args && !!args.length) {
-      this.abstractLoggerService.logDebug(`[DEBUG] ${configId} - ${message}`, ...args);
+      this.abstractLoggerService.logDebug(`[DEBUG] ${configId} - ${messageToLog}`, ...args);
     } else {
-      this.abstractLoggerService.logDebug(`[DEBUG] ${configId} - ${message}`);
+      this.abstractLoggerService.logDebug(`[DEBUG] ${configId} - ${messageToLog}`);
     }
   }
 
@@ -89,5 +92,9 @@ export class LoggerService {
     const { logLevel } = configuration || {};
 
     return logLevel === LogLevel.None;
+  }
+
+  private isObject(possibleObject: any): boolean {
+    return Object.prototype.toString.call(possibleObject) === '[object Object]';
   }
 }
