@@ -189,7 +189,7 @@ describe('Configuration Service', () => {
 
     it(`created configId when configId is not set`, waitForAsync(() => {
       spyOn(stsConfigLoader, 'loadConfigs').and.returnValue(
-        of([{ configId: 'configId1' } as OpenIdConfiguration, { configId: 'configId2' } as OpenIdConfiguration])
+        of([{ clientId: 'clientId1' } as OpenIdConfiguration, { clientId: 'clientId2' } as OpenIdConfiguration])
       );
 
       spyOn(configValidationService, 'validateConfig').and.returnValue(true);
@@ -197,7 +197,7 @@ describe('Configuration Service', () => {
       configService.getOpenIDConfigurations().subscribe((result) => {
         expect(result.allConfigs.length).toEqual(2);
         const allConfigIds = result.allConfigs.map((x) => x.configId);
-        expect(allConfigIds).toEqual(['configId1', 'configId2']);
+        expect(allConfigIds).toEqual(['0-clientId1', '1-clientId2']);
 
         expect(result.currentConfig).toBeTruthy();
         expect(result.currentConfig.configId).toBeTruthy();
