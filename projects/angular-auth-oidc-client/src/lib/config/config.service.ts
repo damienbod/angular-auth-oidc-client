@@ -112,23 +112,30 @@ export class ConfigurationService {
     const usedConfig = this.prepareConfig(passedConfig);
     this.saveConfig(usedConfig);
 
-    const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', usedConfig);
-    if (!!alreadyExistingAuthWellKnownEndpoints) {
-      usedConfig.authWellknownEndpoints = alreadyExistingAuthWellKnownEndpoints;
-      this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
+    const configWithAuthWellKnown = this.addWellKnownEndpoint(usedConfig);
 
-      return of(usedConfig);
-    }
-
-    const passedAuthWellKnownEndpoints = usedConfig.authWellknownEndpoints;
-
-    if (!!passedAuthWellKnownEndpoints) {
-      this.authWellKnownService.storeWellKnownEndpoints(usedConfig, passedAuthWellKnownEndpoints);
-      usedConfig.authWellknownEndpoints = passedAuthWellKnownEndpoints;
-      this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, usedConfig);
-    }
+    this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, configWithAuthWellKnown);
 
     return of(usedConfig);
+  }
+
+  private addWellKnownEndpoint(configuration: OpenIdConfiguration): OpenIdConfiguration {
+    const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
+    if (!!alreadyExistingAuthWellKnownEndpoints) {
+      configuration.authWellknownEndpoints = alreadyExistingAuthWellKnownEndpoints;
+
+      return configuration;
+    }
+
+    const passedAuthWellKnownEndpoints = configuration.authWellknownEndpoints;
+    if (!!passedAuthWellKnownEndpoints) {
+      this.authWellKnownService.storeWellKnownEndpoints(configuration, passedAuthWellKnownEndpoints);
+      configuration.authWellknownEndpoints = passedAuthWellKnownEndpoints;
+
+      return configuration;
+    }
+
+    return configuration;
   }
 
   private prepareConfig(configuration: OpenIdConfiguration): OpenIdConfiguration {
