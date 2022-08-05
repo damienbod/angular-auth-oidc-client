@@ -146,8 +146,4 @@ export class ConfigurationService {
       currentConfig.usePushedAuthorisationRequests = false;
     }
   }
-
-  private hasBrowserStorage(): boolean {
-    return typeof navigator !== 'undefined' && navigator.cookieEnabled && typeof Storage !== 'undefined';
-  }
 }
