@@ -87,7 +87,9 @@ export class TokenValidationService {
     offsetSeconds?: number,
     disableIdTokenValidation?: boolean
   ): boolean {
-    if (disableIdTokenValidation) return true;
+    if (disableIdTokenValidation) {
+      return true;
+    }
 
     const tokenExpirationDate = this.tokenHelperService.getTokenExpirationDate(decodedIdToken);
     offsetSeconds = offsetSeconds || 0;
