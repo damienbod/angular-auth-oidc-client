@@ -112,14 +112,14 @@ export class ConfigurationService {
     const usedConfig = this.prepareConfig(passedConfig);
     this.saveConfig(usedConfig);
 
-    const configWithAuthWellKnown = this.addWellKnownEndpoint(usedConfig);
+    const configWithAuthWellKnown = this.enhanceConfigWithWellKnownEndpoint(usedConfig);
 
     this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, configWithAuthWellKnown);
 
     return of(usedConfig);
   }
 
-  private addWellKnownEndpoint(configuration: OpenIdConfiguration): OpenIdConfiguration {
+  private enhanceConfigWithWellKnownEndpoint(configuration: OpenIdConfiguration): OpenIdConfiguration {
     const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
     if (!!alreadyExistingAuthWellKnownEndpoints) {
       configuration.authWellknownEndpoints = alreadyExistingAuthWellKnownEndpoints;
