@@ -49,6 +49,14 @@ describe('PopUpService', () => {
     });
 
     it('returns false if there is no opener', () => {
+      spyOnProperty(navigator, 'cookieEnabled').and.returnValue(false);
+
+      const result = popUpService.isCurrentlyInPopup();
+
+      expect(result).toBe(false);
+    });
+
+    it('returns false if can not access Session Storage', () => {
       spyOnProperty(window, 'opener').and.returnValue(null);
 
       const result = popUpService.isCurrentlyInPopup();
