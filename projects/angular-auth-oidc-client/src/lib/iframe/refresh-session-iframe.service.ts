@@ -9,13 +9,13 @@ import { SilentRenewService } from './silent-renew.service';
 
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionIframeService {
-  private renderer: Renderer2;
+  private readonly renderer: Renderer2;
 
   constructor(
     @Inject(DOCUMENT) private readonly doc: any,
-    private loggerService: LoggerService,
-    private urlService: UrlService,
-    private silentRenewService: SilentRenewService,
+    private readonly loggerService: LoggerService,
+    private readonly urlService: UrlService,
+    private readonly silentRenewService: SilentRenewService,
     rendererFactory: RendererFactory2
   ) {
     this.renderer = rendererFactory.createRenderer(null, null);
@@ -41,6 +41,7 @@ export class RefreshSessionIframeService {
     allConfigs: OpenIdConfiguration[]
   ): Observable<boolean> {
     const sessionIframe = this.silentRenewService.getOrCreateIframe(config);
+
     this.initSilentRenewRequest(config, allConfigs);
     this.loggerService.logDebug(config, 'sendAuthorizeRequestUsingSilentRenew for URL:' + url);
 
@@ -51,6 +52,7 @@ export class RefreshSessionIframeService {
         observer.next(true);
         observer.complete();
       };
+
       sessionIframe.addEventListener('load', onLoadHandler);
       sessionIframe.contentWindow.location.replace(url);
     });

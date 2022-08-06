@@ -25,10 +25,12 @@ export class RefreshTokenCallbackHandlerService {
     customParamsRefresh?: { [key: string]: string | number | boolean }
   ): Observable<CallbackContext> {
     let headers: HttpHeaders = new HttpHeaders();
+
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
     const authWellknownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', config);
     const tokenEndpoint = authWellknownEndpoints?.tokenEndpoint;
+
     if (!tokenEndpoint) {
       return throwError(() => new Error('Token Endpoint not defined'));
     }
@@ -40,6 +42,7 @@ export class RefreshTokenCallbackHandlerService {
         this.loggerService.logDebug(config, 'token refresh response: ', response);
         // TODO FGO LOOK AT THIS
         let authResult: any = new Object();
+
         authResult = response;
         authResult.state = callbackContext.state;
 
@@ -51,6 +54,7 @@ export class RefreshTokenCallbackHandlerService {
       catchError((error) => {
         const { authority } = config;
         const errorMessage = `OidcService code request ${authority}`;
+
         this.loggerService.logError(config, errorMessage, error);
 
         return throwError(() => new Error(errorMessage));
@@ -65,6 +69,7 @@ export class RefreshTokenCallbackHandlerService {
         if (error && error instanceof HttpErrorResponse && error.error instanceof ProgressEvent && error.error.type === 'error') {
           const { authority, refreshTokenRetryInSeconds } = config;
           const errorMessage = `OidcService code request ${authority} - no internet connection`;
+
           this.loggerService.logWarning(config, errorMessage, error);
 
           return timer(refreshTokenRetryInSeconds * 1000);

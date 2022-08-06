@@ -342,6 +342,7 @@ describe('ParLoginService', () => {
           })
         );
         const popupResult: PopupResult = { userClosed: false, receivedUrl: 'someUrl' };
+
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
         service.loginWithPopUpPar(config, allConfigs).subscribe((result) => {
@@ -376,6 +377,7 @@ describe('ParLoginService', () => {
 
         const checkAuthSpy = spyOn(checkAuthService, 'checkAuth');
         const popupResult: PopupResult = { userClosed: true };
+
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
         service.loginWithPopUpPar(config, allConfigs).subscribe((result) => {

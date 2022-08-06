@@ -62,6 +62,7 @@ export class UserCallbackHandlerService {
             this.resetAuthDataService.resetAuthorizationData(configuration, allConfigs);
             this.publishUnauthenticatedState(validationResult, isRenewProcess);
             const errorMessage = `Called for userData but they were ${userData}`;
+
             this.loggerService.logWarning(configuration, errorMessage);
 
             return throwError(() => new Error(errorMessage));
@@ -69,6 +70,7 @@ export class UserCallbackHandlerService {
         }),
         catchError((err) => {
           const errorMessage = `Failed to retrieve user info with error:  ${err}`;
+
           this.loggerService.logWarning(configuration, errorMessage);
 
           return throwError(() => new Error(errorMessage));

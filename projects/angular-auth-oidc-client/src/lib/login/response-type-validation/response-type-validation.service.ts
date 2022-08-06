@@ -5,7 +5,7 @@ import { FlowHelper } from '../../utils/flowHelper/flow-helper.service';
 
 @Injectable()
 export class ResponseTypeValidationService {
-  constructor(private loggerService: LoggerService, private flowHelper: FlowHelper) {}
+  constructor(private readonly loggerService: LoggerService, private readonly flowHelper: FlowHelper) {}
 
   hasConfigValidResponseType(configuration: OpenIdConfiguration): boolean {
     if (this.flowHelper.isCurrentFlowAnyImplicitFlow(configuration)) {

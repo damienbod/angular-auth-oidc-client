@@ -7,7 +7,7 @@ import { allMultipleConfigRules } from './rules/index';
 
 @Injectable()
 export class ConfigValidationService {
-  constructor(private loggerService: LoggerService) {}
+  constructor(private readonly loggerService: LoggerService) {}
 
   validateConfigs(passedConfigs: OpenIdConfiguration[]): boolean {
     return this.validateConfigsInternal(passedConfigs ?? [], allMultipleConfigRules);
@@ -21,8 +21,10 @@ export class ConfigValidationService {
     const allValidationResults = allRulesToUse.map((rule) => rule(passedConfigs));
 
     let overallErrorCount = 0;
+
     passedConfigs.forEach((passedConfig) => {
       const errorCount = this.processValidationResultsAndGetErrorCount(allValidationResults, passedConfig);
+
       overallErrorCount += errorCount;
     });
 
@@ -41,6 +43,7 @@ export class ConfigValidationService {
     const allMessages = allValidationResults.filter((x) => x.messages.length > 0);
     const allErrorMessages = this.getAllMessagesOfType('error', allMessages);
     const allWarnings = this.getAllMessagesOfType('warning', allMessages);
+
     allErrorMessages.forEach((message) => this.loggerService.logError(config, message));
     allWarnings.forEach((message) => this.loggerService.logWarning(config, message));
 

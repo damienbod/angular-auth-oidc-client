@@ -11,10 +11,10 @@ import { IntervalService } from './interval.service';
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionRefreshTokenService {
   constructor(
-    private loggerService: LoggerService,
-    private resetAuthDataService: ResetAuthDataService,
-    private flowsService: FlowsService,
-    private intervalService: IntervalService
+    private readonly loggerService: LoggerService,
+    private readonly resetAuthDataService: ResetAuthDataService,
+    private readonly flowsService: FlowsService,
+    private readonly intervalService: IntervalService
   ) {}
 
   refreshSessionWithRefreshTokens(

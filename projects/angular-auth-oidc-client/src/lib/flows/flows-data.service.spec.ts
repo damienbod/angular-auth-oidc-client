@@ -140,6 +140,7 @@ describe('Flows Data Service', () => {
       jasmine.clock().uninstall();
       jasmine.clock().install();
       const baseTime = new Date();
+
       jasmine.clock().mockDate(baseTime);
 
       const storageObject = {
@@ -159,6 +160,7 @@ describe('Flows Data Service', () => {
       spyOn(storagePersistenceService, 'read').withArgs('storageCodeFlowInProgress', { configId: 'configId1' }).and.returnValue(null);
 
       const isCodeFlowInProgressResult = service.isCodeFlowInProgress({ configId: 'configId1' });
+
       expect(isCodeFlowInProgressResult).toBeFalse();
     });
   });
@@ -168,6 +170,7 @@ describe('Flows Data Service', () => {
       jasmine.clock().uninstall();
       jasmine.clock().install();
       const baseTime = new Date();
+
       jasmine.clock().mockDate(baseTime);
 
       const storageObject = {
@@ -175,6 +178,7 @@ describe('Flows Data Service', () => {
       };
 
       const spy = spyOn(storagePersistenceService, 'write');
+
       service.setCodeFlowInProgress({ configId: 'configId1' });
       expect(spy).toHaveBeenCalledOnceWith('storageCodeFlowInProgress', JSON.stringify(storageObject), { configId: 'configId1' });
     });
@@ -183,6 +187,7 @@ describe('Flows Data Service', () => {
   describe('resetCodeFlowInProgress', () => {
     it('set resetCodeFlowInProgress to empty string when called', () => {
       const spy = spyOn(storagePersistenceService, 'write');
+
       service.resetCodeFlowInProgress({ configId: 'configId1' });
       expect(spy).toHaveBeenCalledOnceWith('storageCodeFlowInProgress', '', { configId: 'configId1' });
     });
@@ -198,6 +203,7 @@ describe('Flows Data Service', () => {
       jasmine.clock().uninstall();
       jasmine.clock().install();
       const baseTime = new Date();
+
       jasmine.clock().mockDate(baseTime);
 
       const storageObject = {
@@ -225,6 +231,7 @@ describe('Flows Data Service', () => {
       jasmine.clock().uninstall();
       jasmine.clock().install();
       const baseTime = new Date();
+
       jasmine.clock().mockDate(baseTime);
 
       const storageObject = {
@@ -245,6 +252,7 @@ describe('Flows Data Service', () => {
       spyOn(storagePersistenceService, 'read').withArgs('storageSilentRenewRunning', { configId: 'configId1' }).and.returnValue(null);
 
       const isSilentRenewRunningResult = service.isSilentRenewRunning({ configId: 'configId1' });
+
       expect(isSilentRenewRunningResult).toBeFalse();
     });
   });
@@ -254,6 +262,7 @@ describe('Flows Data Service', () => {
       jasmine.clock().uninstall();
       jasmine.clock().install();
       const baseTime = new Date();
+
       jasmine.clock().mockDate(baseTime);
 
       const storageObject = {
@@ -262,6 +271,7 @@ describe('Flows Data Service', () => {
       };
 
       const spy = spyOn(storagePersistenceService, 'write');
+
       service.setSilentRenewRunning({ configId: 'configId1' });
       expect(spy).toHaveBeenCalledOnceWith('storageSilentRenewRunning', JSON.stringify(storageObject), { configId: 'configId1' });
     });
@@ -270,6 +280,7 @@ describe('Flows Data Service', () => {
   describe('resetSilentRenewRunning', () => {
     it('set resetSilentRenewRunning to empty string when called', () => {
       const spy = spyOn(storagePersistenceService, 'write');
+
       service.resetSilentRenewRunning({ configId: 'configId1' });
       expect(spy).toHaveBeenCalledOnceWith('storageSilentRenewRunning', '', { configId: 'configId1' });
     });

@@ -15,21 +15,22 @@ const DEFAULT_AUTHRESULT = { isAuthenticated: false, allConfigsAuthenticated: []
 
 @Injectable()
 export class AuthStateService {
-  private authenticatedInternal$ = new BehaviorSubject<AuthenticatedResult>(DEFAULT_AUTHRESULT);
+  private readonly authenticatedInternal$ = new BehaviorSubject<AuthenticatedResult>(DEFAULT_AUTHRESULT);
 
   get authenticated$(): Observable<AuthenticatedResult> {
     return this.authenticatedInternal$.asObservable().pipe(distinctUntilChanged());
   }
 
   constructor(
-    private storagePersistenceService: StoragePersistenceService,
-    private loggerService: LoggerService,
-    private publicEventsService: PublicEventsService,
-    private tokenValidationService: TokenValidationService
+    private readonly storagePersistenceService: StoragePersistenceService,
+    private readonly loggerService: LoggerService,
+    private readonly publicEventsService: PublicEventsService,
+    private readonly tokenValidationService: TokenValidationService
   ) {}
 
   setAuthenticatedAndFireEvent(allConfigs: OpenIdConfiguration[]): void {
     const result = this.composeAuthenticatedResult(allConfigs);
+
     this.authenticatedInternal$.next(result);
   }
 
@@ -37,6 +38,7 @@ export class AuthStateService {
     this.storagePersistenceService.resetAuthStateInStorage(currentConfig);
 
     const result = this.composeUnAuthenticatedResult(allConfigs);
+
     this.authenticatedInternal$.next(result);
   }
 
@@ -170,6 +172,7 @@ export class AuthStateService {
   private persistAccessTokenExpirationTime(authResult: any, configuration: OpenIdConfiguration): void {
     if (authResult?.expires_in) {
       const accessTokenExpiryTime = new Date(new Date().toUTCString()).valueOf() + authResult.expires_in * 1000;
+
       this.storagePersistenceService.write('access_token_expires_at', accessTokenExpiryTime, configuration);
     }
   }

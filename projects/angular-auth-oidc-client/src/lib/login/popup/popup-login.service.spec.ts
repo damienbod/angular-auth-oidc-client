@@ -54,6 +54,7 @@ describe('PopUpLoginService', () => {
       'does nothing if it has an invalid response type',
       waitForAsync(() => {
         const config = { responseType: 'stubValue' };
+
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(false);
         const loggerSpy = spyOn(loggerService, 'logError');
 
@@ -73,6 +74,7 @@ describe('PopUpLoginService', () => {
           authWellknownEndpointUrl: 'authWellknownEndpoint',
           responseType: 'stubValue',
         };
+
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOnProperty(popupService, 'result$').and.returnValue(of({}));
@@ -92,6 +94,7 @@ describe('PopUpLoginService', () => {
           authWellknownEndpointUrl: 'authWellknownEndpoint',
           responseType: 'stubValue',
         };
+
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
@@ -112,6 +115,7 @@ describe('PopUpLoginService', () => {
           authWellknownEndpointUrl: 'authWellknownEndpoint',
           responseType: 'stubValue',
         };
+
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
@@ -126,6 +130,7 @@ describe('PopUpLoginService', () => {
           })
         );
         const popupResult: PopupResult = { userClosed: false, receivedUrl: 'someUrl' };
+
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
         popUpLoginService.loginWithPopUpStandard(config, [config]).subscribe((result) => {
@@ -150,12 +155,14 @@ describe('PopUpLoginService', () => {
           responseType: 'stubValue',
           configId: 'configId1',
         };
+
         spyOn(responseTypValidationService, 'hasConfigValidResponseType').and.returnValue(true);
         spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
         spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
         spyOn(popupService, 'openPopUp');
         const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
         const popupResult: PopupResult = { userClosed: true };
+
         spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
         popUpLoginService.loginWithPopUpStandard(config, [config]).subscribe((result) => {

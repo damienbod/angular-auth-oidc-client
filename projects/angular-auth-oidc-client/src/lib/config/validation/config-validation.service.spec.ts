@@ -40,20 +40,24 @@ describe('Config Validation Service', () => {
   it('should return false for empty config', () => {
     const config = {};
     const result = configValidationService.validateConfig(config);
+
     expect(result).toBeFalse();
   });
 
   it('should return true for valid config', () => {
     const result = configValidationService.validateConfig(VALID_CONFIG);
+
     expect(result).toBeTrue();
   });
 
   it('calls `logWarning` if one rule has warning level', () => {
     const loggerWarningSpy = spyOn(loggerService, 'logWarning');
     const messageTypeSpy = spyOn(configValidationService as any, 'getAllMessagesOfType');
+
     messageTypeSpy.withArgs('warning', jasmine.any(Array)).and.returnValue(['A warning message']);
     messageTypeSpy.withArgs('error', jasmine.any(Array)).and.callThrough();
     const anyConfig = VALID_CONFIG;
+
     configValidationService.validateConfig(anyConfig);
     expect(loggerWarningSpy).toHaveBeenCalled();
   });
@@ -62,6 +66,7 @@ describe('Config Validation Service', () => {
     it('return false when no clientId is set', () => {
       const config = { ...VALID_CONFIG, clientId: null };
       const result = configValidationService.validateConfig(config);
+
       expect(result).toBeFalse();
     });
   });
@@ -70,6 +75,7 @@ describe('Config Validation Service', () => {
     it('return false when no security token service is set', () => {
       const config = { ...VALID_CONFIG, authority: null };
       const result = configValidationService.validateConfig(config);
+
       expect(result).toBeFalse();
     });
   });
@@ -78,6 +84,7 @@ describe('Config Validation Service', () => {
     it('return false for no redirect Url', () => {
       const config = { ...VALID_CONFIG, redirectUrl: '' };
       const result = configValidationService.validateConfig(config);
+
       expect(result).toBeFalse();
     });
   });
@@ -86,6 +93,7 @@ describe('Config Validation Service', () => {
     it('return false when silent renew is used with no useRefreshToken and no silentrenewUrl', () => {
       const config = { ...VALID_CONFIG, silentRenew: true, useRefreshToken: false, silentRenewUrl: null };
       const result = configValidationService.validateConfig(config);
+
       expect(result).toBeFalse();
     });
   });
@@ -98,6 +106,7 @@ describe('Config Validation Service', () => {
       const loggerWarningSpy = spyOn(loggerService, 'logWarning');
 
       const result = configValidationService.validateConfig(config);
+
       expect(result).toBeTrue();
       expect(loggerSpy).not.toHaveBeenCalled();
       expect(loggerWarningSpy).toHaveBeenCalled();

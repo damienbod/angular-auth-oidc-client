@@ -12,10 +12,10 @@ import { StandardLoginService } from './standard/standard-login.service';
 @Injectable()
 export class LoginService {
   constructor(
-    private parLoginService: ParLoginService,
-    private popUpLoginService: PopUpLoginService,
-    private standardLoginService: StandardLoginService,
-    private storagePersistenceService: StoragePersistenceService
+    private readonly parLoginService: ParLoginService,
+    private readonly popUpLoginService: PopUpLoginService,
+    private readonly standardLoginService: StandardLoginService,
+    private readonly storagePersistenceService: StoragePersistenceService
   ) {}
 
   login(configuration: OpenIdConfiguration, authOptions?: AuthOptions): void {

@@ -17,6 +17,7 @@ export class AuthWellKnownDataService {
 
     if (!authWellknownEndpointUrl) {
       const errorMessage = 'no authWellknownEndpoint given!';
+
       this.loggerService.logError(config, errorMessage);
 
       return throwError(() => new Error(errorMessage));

@@ -81,6 +81,7 @@ export class StoragePersistenceService {
 
   getRefreshToken(config: OpenIdConfiguration): string {
     let refreshToken = this.read('authnResult', config)?.refresh_token;
+
     if (!refreshToken && config.allowUnsafeReuseRefreshToken) {
       return this.read('reusable_refresh_token', config);
     }

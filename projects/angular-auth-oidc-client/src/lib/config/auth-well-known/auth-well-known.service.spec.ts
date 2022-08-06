@@ -40,6 +40,7 @@ describe('AuthWellKnownService', () => {
       'getAuthWellKnownEndPoints return stored endpoints if they exist',
       waitForAsync(() => {
         const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsForConfig');
+
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
           .and.returnValue({ issuer: 'anything' });
@@ -55,6 +56,7 @@ describe('AuthWellKnownService', () => {
       'getAuthWellKnownEndPoints calls dataservice if none is stored',
       waitForAsync(() => {
         const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsForConfig').and.returnValue(of({ issuer: 'anything' }));
+
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', { configId: 'configId1' }).and.returnValue(null);
         service.queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' }).subscribe((result) => {
           expect(dataServiceSpy).toHaveBeenCalled();
@@ -67,8 +69,10 @@ describe('AuthWellKnownService', () => {
       'getAuthWellKnownEndPoints stored the result if http cal is made',
       waitForAsync(() => {
         const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsForConfig').and.returnValue(of({ issuer: 'anything' }));
+
         spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', { configId: 'configId1' }).and.returnValue(null);
         const storeSpy = spyOn(service, 'storeWellKnownEndpoints');
+
         service.queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' }).subscribe((result) => {
           expect(dataServiceSpy).toHaveBeenCalled();
           expect(storeSpy).toHaveBeenCalled();
@@ -82,6 +86,7 @@ describe('AuthWellKnownService', () => {
       waitForAsync(() => {
         spyOn(dataService, 'getWellKnownEndPointsForConfig').and.returnValue(throwError(() => new Error('error')));
         const publicEventsServiceSpy = spyOn(publicEventsService, 'fireEvent');
+
         service.queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' }).subscribe({
           error: (err) => {
             expect(err).toBeTruthy();

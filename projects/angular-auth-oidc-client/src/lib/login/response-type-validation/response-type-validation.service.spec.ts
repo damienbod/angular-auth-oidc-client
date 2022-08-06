@@ -39,6 +39,7 @@ describe('ResponseTypeValidationService', () => {
       spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(true);
 
       const result = responseTypeValidationService.hasConfigValidResponseType({ configId: 'configId1' });
+
       expect(result).toEqual(true);
     });
 
@@ -47,6 +48,7 @@ describe('ResponseTypeValidationService', () => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
 
       const result = responseTypeValidationService.hasConfigValidResponseType({ configId: 'configId1' });
+
       expect(result).toEqual(true);
     });
 
@@ -55,6 +57,7 @@ describe('ResponseTypeValidationService', () => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
 
       const result = responseTypeValidationService.hasConfigValidResponseType({ configId: 'configId1' });
+
       expect(result).toEqual(false);
     });
   });

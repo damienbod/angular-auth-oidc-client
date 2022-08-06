@@ -90,6 +90,7 @@ describe('ParService', () => {
           .and.returnValue({ parEndpoint: 'parEndpoint' });
 
         const dataServiceSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+
         service.postParRequest({ configId: 'configId1' }).subscribe(() => {
           expect(dataServiceSpy).toHaveBeenCalledOnceWith(
             'parEndpoint',

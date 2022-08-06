@@ -72,19 +72,19 @@ export class OidcSecurityService {
   private readonly isLoading: BehaviorSubject<boolean> = new BehaviorSubject(true);
 
   constructor(
-    private checkSessionService: CheckSessionService,
-    private checkAuthService: CheckAuthService,
-    private userService: UserService,
-    private tokenHelperService: TokenHelperService,
-    private configurationService: ConfigurationService,
-    private authStateService: AuthStateService,
-    private flowsDataService: FlowsDataService,
-    private callbackService: CallbackService,
-    private logoffRevocationService: LogoffRevocationService,
-    private loginService: LoginService,
-    private refreshSessionService: RefreshSessionService,
-    private urlService: UrlService,
-    private authWellKnownService: AuthWellKnownService
+    private readonly checkSessionService: CheckSessionService,
+    private readonly checkAuthService: CheckAuthService,
+    private readonly userService: UserService,
+    private readonly tokenHelperService: TokenHelperService,
+    private readonly configurationService: ConfigurationService,
+    private readonly authStateService: AuthStateService,
+    private readonly flowsDataService: FlowsDataService,
+    private readonly callbackService: CallbackService,
+    private readonly logoffRevocationService: LogoffRevocationService,
+    private readonly loginService: LoginService,
+    private readonly refreshSessionService: RefreshSessionService,
+    private readonly urlService: UrlService,
+    private readonly authWellKnownService: AuthWellKnownService
   ) {}
 
   preloadAuthWellKnownDocument(configId?: string): Observable<AuthWellKnownEndpoints> {
@@ -426,14 +426,14 @@ export class OidcSecurityService {
   getAuthorizeUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): Observable<string | null> {
     return this.configurationService
       .getOpenIDConfiguration(configId)
-      .pipe(switchMap((config) => this.urlService.getAuthorizeUrl(config, customParams ? { customParams: customParams } : undefined)));
+      .pipe(switchMap((config) => this.urlService.getAuthorizeUrl(config, customParams ? { customParams } : undefined)));
   }
 
-  private finishLoading = (): void => {
+  private readonly finishLoading = (): void => {
     this.isLoading.next(false);
   };
 
-  private finishLoadingOnError = (err: any): Observable<never> => {
+  private readonly finishLoadingOnError = (err: any): Observable<never> => {
     this.isLoading.next(false);
 
     return throwError(() => err);

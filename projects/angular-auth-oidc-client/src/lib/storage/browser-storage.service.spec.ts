@@ -31,6 +31,7 @@ describe('Browser Service', () => {
   describe('read', () => {
     it('returns null if there is no storage', () => {
       const config = { configId: 'configId1' };
+
       spyOn(service as any, 'hasStorage').and.returnValue(false);
 
       expect(service.read('anything', config)).toBeNull();
@@ -38,6 +39,7 @@ describe('Browser Service', () => {
 
     it('returns null if getItem returns null', () => {
       const config = { configId: 'configId1' };
+
       spyOn(service as any, 'hasStorage').and.returnValue(true);
 
       const result = service.read('anything', config);
@@ -47,8 +49,10 @@ describe('Browser Service', () => {
 
     it('returns the item if getItem returns an item', () => {
       const config = { configId: 'configId1' };
+
       spyOn(service as any, 'hasStorage').and.returnValue(true);
       const returnValue = `{ "name":"John", "age":30, "city":"New York"}`;
+
       spyOn(abstractSecurityStorage, 'read').and.returnValue(returnValue);
       const result = service.read('anything', config);
 
@@ -59,6 +63,7 @@ describe('Browser Service', () => {
   describe('write', () => {
     it('returns false if there is no storage', () => {
       const config = { configId: 'configId1' };
+
       spyOn(service as any, 'hasStorage').and.returnValue(false);
 
       expect(service.write('anyvalue', config)).toBeFalse();
@@ -66,6 +71,7 @@ describe('Browser Service', () => {
 
     it('writes object correctly with configId', () => {
       const config = { configId: 'configId1' };
+
       spyOn(service as any, 'hasStorage').and.returnValue(true);
       const writeSpy = spyOn(abstractSecurityStorage, 'write').and.callThrough();
 
@@ -77,6 +83,7 @@ describe('Browser Service', () => {
 
     it('writes null if item is falsy', () => {
       const config = { configId: 'configId1' };
+
       spyOn(service as any, 'hasStorage').and.returnValue(true);
 
       const writeSpy = spyOn(abstractSecurityStorage, 'write').and.callThrough();
@@ -92,6 +99,7 @@ describe('Browser Service', () => {
   describe('remove', () => {
     it('returns false if there is no storage', () => {
       const config = { configId: 'configId1' };
+
       spyOn(service as any, 'hasStorage').and.returnValue(false);
       expect(service.remove('anything', config)).toBeFalse();
     });
@@ -113,6 +121,7 @@ describe('Browser Service', () => {
     it('returns false if there is no storage', () => {
       spyOn(service as any, 'hasStorage').and.returnValue(false);
       const config = { configId: 'configId1' };
+
       expect(service.clear(config)).toBeFalse();
     });
 

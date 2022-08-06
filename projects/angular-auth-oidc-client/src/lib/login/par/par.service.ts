@@ -12,14 +12,15 @@ import { ParResponse } from './par-response';
 @Injectable()
 export class ParService {
   constructor(
-    private loggerService: LoggerService,
-    private urlService: UrlService,
-    private dataService: DataService,
-    private storagePersistenceService: StoragePersistenceService
+    private readonly loggerService: LoggerService,
+    private readonly urlService: UrlService,
+    private readonly dataService: DataService,
+    private readonly storagePersistenceService: StoragePersistenceService
   ) {}
 
   postParRequest(configuration: OpenIdConfiguration, customParams?: { [key: string]: string | number | boolean }): Observable<ParResponse> {
     let headers: HttpHeaders = new HttpHeaders();
+
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
     const authWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
@@ -29,6 +30,7 @@ export class ParService {
     }
 
     const parEndpoint = authWellKnownEndpoints.parEndpoint;
+
     if (!parEndpoint) {
       return throwError(() => new Error('Could not read PAR endpoint from authWellKnownEndpoints'));
     }
@@ -47,6 +49,7 @@ export class ParService {
           }),
           catchError((error) => {
             const errorMessage = `There was an error on ParService postParRequest`;
+
             this.loggerService.logError(configuration, errorMessage, error);
 
             return throwError(() => new Error(errorMessage));

@@ -5,7 +5,7 @@ import { AbstractSecurityStorage } from './abstract-security-storage';
 
 @Injectable()
 export class BrowserStorageService {
-  constructor(private loggerService: LoggerService, private abstractSecurityStorage: AbstractSecurityStorage) {}
+  constructor(private readonly loggerService: LoggerService, private readonly abstractSecurityStorage: AbstractSecurityStorage) {}
 
   read(key: string, configuration: OpenIdConfiguration): any {
     const { configId } = configuration;

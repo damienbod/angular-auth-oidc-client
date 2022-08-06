@@ -26,7 +26,9 @@ describe('ImplicitFlowCallbackHandlerService', () => {
               get hash(): string {
                 return '&anyFakeHash';
               },
-              set hash(_value) {},
+              set hash(_value) {
+                // ...
+              },
             },
           },
         },
@@ -45,94 +47,82 @@ describe('ImplicitFlowCallbackHandlerService', () => {
   });
 
   describe('implicitFlowCallback', () => {
-    it(
-      'calls "resetAuthorizationData" if silent renew is not running',
-      waitForAsync(() => {
-        spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-        const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
-        const allconfigs = [
-          {
-            configId: 'configId1',
-          },
-        ];
+    it('calls "resetAuthorizationData" if silent renew is not running', waitForAsync(() => {
+      spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
+      const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
+      const allconfigs = [
+        {
+          configId: 'configId1',
+        },
+      ];
 
-        service.implicitFlowCallback(allconfigs[0], allconfigs, 'any-hash').subscribe(() => {
-          expect(resetAuthorizationDataSpy).toHaveBeenCalled();
-        });
-      })
-    );
+      service.implicitFlowCallback(allconfigs[0], allconfigs, 'any-hash').subscribe(() => {
+        expect(resetAuthorizationDataSpy).toHaveBeenCalled();
+      });
+    }));
 
-    it(
-      'does NOT calls "resetAuthorizationData" if silent renew is running',
-      waitForAsync(() => {
-        spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-        const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
-        const allconfigs = [
-          {
-            configId: 'configId1',
-          },
-        ];
+    it('does NOT calls "resetAuthorizationData" if silent renew is running', waitForAsync(() => {
+      spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
+      const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
+      const allconfigs = [
+        {
+          configId: 'configId1',
+        },
+      ];
 
-        service.implicitFlowCallback(allconfigs[0], allconfigs, 'any-hash').subscribe(() => {
-          expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
-        });
-      })
-    );
+      service.implicitFlowCallback(allconfigs[0], allconfigs, 'any-hash').subscribe(() => {
+        expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
+      });
+    }));
 
-    it(
-      'returns callbackContext if all params are good',
-      waitForAsync(() => {
-        spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-        const expectedCallbackContext = {
-          code: null,
-          refreshToken: null,
-          state: null,
-          sessionState: null,
-          authResult: { anyHash: '' },
-          isRenewProcess: true,
-          jwtKeys: null,
-          validationResult: null,
-          existingIdToken: null,
-        } as CallbackContext;
+    it('returns callbackContext if all params are good', waitForAsync(() => {
+      spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
+      const expectedCallbackContext = {
+        code: null,
+        refreshToken: null,
+        state: null,
+        sessionState: null,
+        authResult: { anyHash: '' },
+        isRenewProcess: true,
+        jwtKeys: null,
+        validationResult: null,
+        existingIdToken: null,
+      } as CallbackContext;
 
-        const allconfigs = [
-          {
-            configId: 'configId1',
-          },
-        ];
+      const allconfigs = [
+        {
+          configId: 'configId1',
+        },
+      ];
 
-        service.implicitFlowCallback(allconfigs[0], allconfigs, 'anyHash').subscribe((callbackContext) => {
-          expect(callbackContext).toEqual(expectedCallbackContext);
-        });
-      })
-    );
+      service.implicitFlowCallback(allconfigs[0], allconfigs, 'anyHash').subscribe((callbackContext) => {
+        expect(callbackContext).toEqual(expectedCallbackContext);
+      });
+    }));
 
-    it(
-      'uses window location hash if no hash is passed',
-      waitForAsync(() => {
-        spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
-        const expectedCallbackContext = {
-          code: null,
-          refreshToken: null,
-          state: null,
-          sessionState: null,
-          authResult: { anyFakeHash: '' },
-          isRenewProcess: true,
-          jwtKeys: null,
-          validationResult: null,
-          existingIdToken: null,
-        } as CallbackContext;
+    it('uses window location hash if no hash is passed', waitForAsync(() => {
+      spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
+      const expectedCallbackContext = {
+        code: null,
+        refreshToken: null,
+        state: null,
+        sessionState: null,
+        authResult: { anyFakeHash: '' },
+        isRenewProcess: true,
+        jwtKeys: null,
+        validationResult: null,
+        existingIdToken: null,
+      } as CallbackContext;
 
-        const allconfigs = [
-          {
-            configId: 'configId1',
-          },
-        ];
+      const allconfigs = [
+        {
+          configId: 'configId1',
+        },
+      ];
 
-        service.implicitFlowCallback(allconfigs[0], allconfigs).subscribe((callbackContext) => {
-          expect(callbackContext).toEqual(expectedCallbackContext);
-        });
-      })
-    );
+      service.implicitFlowCallback(allconfigs[0], allconfigs).subscribe((callbackContext) => {
+        expect(callbackContext).toEqual(expectedCallbackContext);
+      });
+    }));
   });
 });

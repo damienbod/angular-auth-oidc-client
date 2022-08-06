@@ -11,12 +11,12 @@ import { OpenIdConfiguration } from './../../config/openid-configuration';
 @Injectable()
 export class StandardLoginService {
   constructor(
-    private loggerService: LoggerService,
-    private responseTypeValidationService: ResponseTypeValidationService,
-    private urlService: UrlService,
-    private redirectService: RedirectService,
-    private authWellKnownService: AuthWellKnownService,
-    private flowsDataService: FlowsDataService
+    private readonly loggerService: LoggerService,
+    private readonly responseTypeValidationService: ResponseTypeValidationService,
+    private readonly urlService: UrlService,
+    private readonly redirectService: RedirectService,
+    private readonly authWellKnownService: AuthWellKnownService,
+    private readonly flowsDataService: FlowsDataService
   ) {}
 
   loginStandard(configuration: OpenIdConfiguration, authOptions?: AuthOptions): void {

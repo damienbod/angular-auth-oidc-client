@@ -10,17 +10,17 @@ import { ImplicitFlowCallbackService } from './implicit-flow-callback.service';
 
 @Injectable({ providedIn: 'root' })
 export class CallbackService {
-  private stsCallbackInternal$ = new Subject<void>();
+  private readonly stsCallbackInternal$ = new Subject<void>();
 
   get stsCallback$(): Observable<unknown> {
     return this.stsCallbackInternal$.asObservable();
   }
 
   constructor(
-    private urlService: UrlService,
-    private flowHelper: FlowHelper,
-    private implicitFlowCallbackService: ImplicitFlowCallbackService,
-    private codeFlowCallbackService: CodeFlowCallbackService
+    private readonly urlService: UrlService,
+    private readonly flowHelper: FlowHelper,
+    private readonly implicitFlowCallbackService: ImplicitFlowCallbackService,
+    private readonly codeFlowCallbackService: CodeFlowCallbackService
   ) {}
 
   isCallback(currentUrl: string): boolean {
@@ -39,6 +39,7 @@ export class CallbackService {
     } else if (this.flowHelper.isCurrentFlowAnyImplicitFlow(config)) {
       if (currentCallbackUrl?.includes('#')) {
         let hash = currentCallbackUrl.substring(currentCallbackUrl.indexOf('#') + 1);
+
         callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(config, allConfigs, hash);
       } else {
         callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(config, allConfigs);

@@ -15,12 +15,12 @@ import { ValidationResult } from './validation-result';
 @Injectable()
 export class StateValidationService {
   constructor(
-    private storagePersistenceService: StoragePersistenceService,
-    private tokenValidationService: TokenValidationService,
-    private tokenHelperService: TokenHelperService,
-    private loggerService: LoggerService,
-    private equalityService: EqualityService,
-    private flowHelper: FlowHelper
+    private readonly storagePersistenceService: StoragePersistenceService,
+    private readonly tokenValidationService: TokenValidationService,
+    private readonly tokenHelperService: TokenHelperService,
+    private readonly loggerService: LoggerService,
+    private readonly equalityService: EqualityService,
+    private readonly flowHelper: FlowHelper
   ) {}
 
   getValidatedStateResult(callbackContext: CallbackContext, configuration: OpenIdConfiguration): Observable<StateValidationResult> {
@@ -51,8 +51,14 @@ export class StateValidationService {
     }
 
     if (callbackContext.authResult.id_token) {
-      const { clientId, issValidationOff, maxIdTokenIatOffsetAllowedInSeconds, disableIatOffsetValidation, ignoreNonceAfterRefresh, disableIdTokenValidation } =
-        configuration;
+      const {
+        clientId,
+        issValidationOff,
+        maxIdTokenIatOffsetAllowedInSeconds,
+        disableIatOffsetValidation,
+        ignoreNonceAfterRefresh,
+        disableIdTokenValidation,
+      } = configuration;
 
       toReturn.idToken = callbackContext.authResult.id_token;
 
@@ -164,7 +170,14 @@ export class StateValidationService {
             return of(toReturn);
           }
 
-          if (!this.tokenValidationService.validateIdTokenExpNotExpired(toReturn.decodedIdToken, configuration, maxIdTokenIatOffsetAllowedInSeconds, disableIdTokenValidation)) {
+          if (
+            !this.tokenValidationService.validateIdTokenExpNotExpired(
+              toReturn.decodedIdToken,
+              configuration,
+              maxIdTokenIatOffsetAllowedInSeconds,
+              disableIdTokenValidation
+            )
+          ) {
             this.loggerService.logWarning(configuration, 'authCallback id token expired');
             toReturn.state = ValidationResult.TokenExpired;
             this.handleUnsuccessfulValidation(configuration);
@@ -208,6 +221,7 @@ export class StateValidationService {
     // only do check if id_token returned, no always the case when using refresh tokens
     if (callbackContext.authResult.id_token) {
       const idTokenHeader = this.tokenHelperService.getHeaderFromToken(toReturn.idToken, false, configuration);
+
       if (isCurrentFlowCodeFlow && !(toReturn.decodedIdToken.at_hash as string)) {
         this.loggerService.logDebug(configuration, 'Code Flow active, and no at_hash in the id_token, skipping check!');
       } else {
@@ -251,6 +265,7 @@ export class StateValidationService {
     configuration: OpenIdConfiguration
   ): boolean {
     const { useRefreshToken, disableRefreshIdTokenAuthTimeValidation } = configuration;
+
     if (!useRefreshToken) {
       return true;
     }
@@ -312,6 +327,7 @@ export class StateValidationService {
 
   private handleSuccessfulValidation(configuration: OpenIdConfiguration): void {
     const { autoCleanStateAfterAuthentication } = configuration;
+
     this.storagePersistenceService.write('authNonce', null, configuration);
 
     if (autoCleanStateAfterAuthentication) {
@@ -322,6 +338,7 @@ export class StateValidationService {
 
   private handleUnsuccessfulValidation(configuration: OpenIdConfiguration): void {
     const { autoCleanStateAfterAuthentication } = configuration;
+
     this.storagePersistenceService.write('authNonce', null, configuration);
 
     if (autoCleanStateAfterAuthentication) {

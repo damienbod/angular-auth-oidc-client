@@ -19,22 +19,22 @@ const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 
 @Injectable()
 export class SilentRenewService {
-  private refreshSessionWithIFrameCompletedInternal$ = new Subject<CallbackContext>();
+  private readonly refreshSessionWithIFrameCompletedInternal$ = new Subject<CallbackContext>();
 
   get refreshSessionWithIFrameCompleted$(): Observable<CallbackContext> {
     return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
   }
 
   constructor(
-    private iFrameService: IFrameService,
-    private flowsService: FlowsService,
-    private resetAuthDataService: ResetAuthDataService,
-    private flowsDataService: FlowsDataService,
-    private authStateService: AuthStateService,
-    private loggerService: LoggerService,
-    private flowHelper: FlowHelper,
-    private implicitFlowCallbackService: ImplicitFlowCallbackService,
-    private intervalService: IntervalService
+    private readonly iFrameService: IFrameService,
+    private readonly flowsService: FlowsService,
+    private readonly resetAuthDataService: ResetAuthDataService,
+    private readonly flowsDataService: FlowsDataService,
+    private readonly authStateService: AuthStateService,
+    private readonly loggerService: LoggerService,
+    private readonly flowHelper: FlowHelper,
+    private readonly implicitFlowCallbackService: ImplicitFlowCallbackService,
+    private readonly intervalService: IntervalService
   ) {}
 
   getOrCreateIframe(config: OpenIdConfiguration): HTMLIFrameElement {
@@ -114,6 +114,7 @@ export class SilentRenewService {
 
     if (isCodeFlow) {
       const urlParts = e.detail.toString().split('?');
+
       callback$ = this.codeFlowCallbackSilentRenewIframe(urlParts, config, allConfigs);
     } else {
       callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(config, allConfigs, e.detail);

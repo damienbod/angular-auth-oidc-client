@@ -64,6 +64,7 @@ describe('StandardLoginService', () => {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
+
       spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
       spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
       spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
@@ -80,6 +81,7 @@ describe('StandardLoginService', () => {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
+
       spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
       spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
       spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
@@ -94,10 +96,12 @@ describe('StandardLoginService', () => {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
+
       spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
       spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
       spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
       const redirectSpy = spyOn(redirectService, 'redirectTo').and.callThrough();
+
       standardLoginService.loginStandard(config);
       tick();
       expect(redirectSpy).toHaveBeenCalledOnceWith('someUrl');
@@ -108,14 +112,16 @@ describe('StandardLoginService', () => {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
+
       spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
       spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
       spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
-      const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
+      const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => undefined);
       const spy = jasmine.createSpy();
       const urlHandler = (url): void => {
         spy(url);
       };
+
       standardLoginService.loginStandard(config, { urlHandler });
       tick();
       expect(spy).toHaveBeenCalledOnceWith('someUrl');
@@ -127,10 +133,12 @@ describe('StandardLoginService', () => {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
+
       spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
       spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
       spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
       const flowsDataSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
+
       standardLoginService.loginStandard(config, {});
       tick();
 
@@ -142,10 +150,12 @@ describe('StandardLoginService', () => {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
+
       spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
       spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
       const getAuthorizeUrlSpy = spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
-      const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
+      const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => undefined);
+
       standardLoginService.loginStandard(config, { customParams: { to: 'add', as: 'well' } });
       tick();
       expect(redirectSpy).toHaveBeenCalledOnceWith('someUrl');
@@ -157,11 +167,14 @@ describe('StandardLoginService', () => {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
+
       spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
       spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
       const loggerSpy = spyOn(loggerService, 'logError');
+
       spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of(''));
-      const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => {});
+      const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => undefined);
+
       standardLoginService.loginStandard(config);
       tick();
       expect(loggerSpy).toHaveBeenCalledOnceWith(config, 'Could not create URL', '');

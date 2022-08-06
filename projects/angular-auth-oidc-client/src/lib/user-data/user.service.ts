@@ -12,21 +12,22 @@ import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { ConfigUserDataResult, UserDataResult } from './userdata-result';
 
 const DEFAULT_USERRESULT = { userData: null, allUserData: [] };
+
 @Injectable()
 export class UserService {
-  private userDataInternal$ = new BehaviorSubject<UserDataResult>(DEFAULT_USERRESULT);
+  private readonly userDataInternal$ = new BehaviorSubject<UserDataResult>(DEFAULT_USERRESULT);
 
   get userData$(): Observable<UserDataResult> {
     return this.userDataInternal$.asObservable();
   }
 
   constructor(
-    private oidcDataService: DataService,
-    private storagePersistenceService: StoragePersistenceService,
-    private eventService: PublicEventsService,
-    private loggerService: LoggerService,
-    private tokenHelperService: TokenHelperService,
-    private flowHelper: FlowHelper
+    private readonly oidcDataService: DataService,
+    private readonly storagePersistenceService: StoragePersistenceService,
+    private readonly eventService: PublicEventsService,
+    private readonly loggerService: LoggerService,
+    private readonly tokenHelperService: TokenHelperService,
+    private readonly flowHelper: FlowHelper
   ) {}
 
   getAndPersistUserDataInStore(
@@ -45,6 +46,7 @@ export class UserService {
     const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow(currentConfiguration);
 
     const accessToken = this.storagePersistenceService.getAccessToken(currentConfiguration);
+
     if (!(isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow)) {
       this.loggerService.logDebug(currentConfiguration, `authCallback idToken flow with accessToken ${accessToken}`);
 
@@ -166,6 +168,7 @@ export class UserService {
     this.userDataInternal$.next(userData);
 
     const { configId } = currentConfiguration;
+
     this.eventService.fireEvent(EventTypes.UserDataChanged, { configId, userData: passedUserData });
   }
 

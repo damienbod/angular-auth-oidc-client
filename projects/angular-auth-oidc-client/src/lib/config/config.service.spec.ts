@@ -105,6 +105,7 @@ describe('Configuration Service', () => {
     it(`if config is NOT already saved 'loadConfigs' is called`, waitForAsync(() => {
       const configs = [{ configId: 'configId1' }, { configId: 'configId2' }];
       const spy = spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
+
       spyOn(configValidationService, 'validateConfig').and.returnValue(true);
 
       configService.getOpenIDConfiguration('configId1').subscribe((config) => {
@@ -115,6 +116,7 @@ describe('Configuration Service', () => {
 
     it(`returns null if config is not valid`, waitForAsync(() => {
       const configs = [{ configId: 'configId1' }];
+
       spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
       spyOn(configValidationService, 'validateConfig').and.returnValue(false);
 
@@ -133,6 +135,7 @@ describe('Configuration Service', () => {
 
     it(`sets authWellKnownEndPoints on config if authWellKnownEndPoints is stored`, waitForAsync(() => {
       const configs = [{ configId: 'configId1' }];
+
       spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
       spyOn(configValidationService, 'validateConfig').and.returnValue(true);
 
@@ -145,6 +148,7 @@ describe('Configuration Service', () => {
 
     it(`fires ConfigLoaded if authWellKnownEndPoints is stored`, waitForAsync(() => {
       const configs = [{ configId: 'configId1' }];
+
       spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
       spyOn(configValidationService, 'validateConfig').and.returnValue(true);
       spyOn(storagePersistenceService, 'read').and.returnValue({ issuer: 'auth-well-known' });
@@ -158,6 +162,7 @@ describe('Configuration Service', () => {
 
     it(`stores, uses and fires event when authwellknownendpoints are passed`, waitForAsync(() => {
       const configs = [{ configId: 'configId1', authWellknownEndpoints: { issuer: 'auth-well-known' } }];
+
       spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
       spyOn(configValidationService, 'validateConfig').and.returnValue(true);
       spyOn(storagePersistenceService, 'read').and.returnValue(null);
@@ -197,6 +202,7 @@ describe('Configuration Service', () => {
       configService.getOpenIDConfigurations().subscribe((result) => {
         expect(result.allConfigs.length).toEqual(2);
         const allConfigIds = result.allConfigs.map((x) => x.configId);
+
         expect(allConfigIds).toEqual(['0-clientId1', '1-clientId2']);
 
         expect(result.currentConfig).toBeTruthy();

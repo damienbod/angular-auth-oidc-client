@@ -24,24 +24,28 @@ describe('RandomService Tests', () => {
   it('should be not equal', () => {
     const r1 = randomService.createRandom(45, { configId: 'configId1' });
     const r2 = randomService.createRandom(45, { configId: 'configId1' });
+
     expect(r1).not.toEqual(r2);
   });
 
   it('correct length with high number', () => {
     const r1 = randomService.createRandom(79, { configId: 'configId1' });
     const result = r1.length;
+
     expect(result).toBe(79);
   });
 
   it('correct length with small number', () => {
     const r1 = randomService.createRandom(7, { configId: 'configId1' });
     const result = r1.length;
+
     expect(result).toBe(7);
   });
 
   it('correct length with 0', () => {
     const r1 = randomService.createRandom(0, { configId: 'configId1' });
     const result = r1.length;
+
     expect(result).toBe(0);
     expect(r1).toBe('');
   });
@@ -51,6 +55,7 @@ describe('RandomService Tests', () => {
       const requiredLengthSmallerThenSeven = index;
       const fallbackLength = 10;
       const r1 = randomService.createRandom(requiredLengthSmallerThenSeven, { configId: 'configId1' });
+
       expect(r1.length).toBeGreaterThanOrEqual(fallbackLength);
     });
   }

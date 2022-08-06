@@ -18,6 +18,7 @@ export class RefreshSessionCallbackHandlerService {
   // STEP 1 Refresh session
   refreshSessionWithRefreshTokens(config: OpenIdConfiguration): Observable<CallbackContext> {
     const stateData = this.flowsDataService.getExistingOrCreateAuthStateControl(config);
+
     this.loggerService.logDebug(config, 'RefreshSession created. Adding myautostate: ' + stateData);
     const refreshToken = this.authStateService.getRefreshToken(config);
     const idToken = this.authStateService.getIdToken(config);
@@ -42,6 +43,7 @@ export class RefreshSessionCallbackHandlerService {
       return of(callbackContext);
     } else {
       const errorMessage = 'no refresh token found, please login';
+
       this.loggerService.logError(config, errorMessage);
 
       return throwError(() => new Error(errorMessage));

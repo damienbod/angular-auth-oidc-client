@@ -52,6 +52,7 @@ describe(`AuthHttpInterceptor`, () => {
     'should add an Authorization header when route matches and token is present',
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
+
       spyOn(configurationService, 'getAllConfigurations').and.returnValue([
         {
           secureRoutes: [actionUrl],
@@ -67,6 +68,7 @@ describe(`AuthHttpInterceptor`, () => {
       });
 
       const httpRequest = httpTestingController.expectOne(actionUrl);
+
       expect(httpRequest.request.headers.has('Authorization')).toEqual(true);
 
       httpRequest.flush('something');
@@ -78,6 +80,7 @@ describe(`AuthHttpInterceptor`, () => {
     'should not add an Authorization header when `secureRoutes` is not given',
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
+
       spyOn(configurationService, 'getAllConfigurations').and.returnValue([
         {
           configId: 'configId1',
@@ -91,6 +94,7 @@ describe(`AuthHttpInterceptor`, () => {
       });
 
       const httpRequest = httpTestingController.expectOne(actionUrl);
+
       expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
 
       httpRequest.flush('something');
@@ -113,6 +117,7 @@ describe(`AuthHttpInterceptor`, () => {
       });
 
       const httpRequest = httpTestingController.expectOne(actionUrl);
+
       expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
 
       httpRequest.flush('something');
@@ -124,6 +129,7 @@ describe(`AuthHttpInterceptor`, () => {
     'should not add an Authorization header when no routes configured',
     waitForAsync(() => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
+
       spyOn(configurationService, 'getAllConfigurations').and.returnValue([{ secureRoutes: [], configId: 'configId1' }]);
 
       spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(true);
@@ -133,6 +139,7 @@ describe(`AuthHttpInterceptor`, () => {
       });
 
       const httpRequest = httpTestingController.expectOne(actionUrl);
+
       expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
 
       httpRequest.flush('something');
@@ -155,6 +162,7 @@ describe(`AuthHttpInterceptor`, () => {
       });
 
       const httpRequest = httpTestingController.expectOne(actionUrl);
+
       expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
 
       httpRequest.flush('something');
@@ -174,6 +182,7 @@ describe(`AuthHttpInterceptor`, () => {
       });
 
       const httpRequest = httpTestingController.expectOne(actionUrl);
+
       expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
 
       httpRequest.flush('something');
@@ -198,6 +207,7 @@ describe(`AuthHttpInterceptor`, () => {
       });
 
       const httpRequest = httpTestingController.expectOne(actionUrl);
+
       expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
 
       httpRequest.flush('something');
@@ -227,9 +237,11 @@ describe(`AuthHttpInterceptor`, () => {
       });
 
       const httpRequest = httpTestingController.expectOne(actionUrl);
+
       expect(httpRequest.request.headers.has('Authorization')).toEqual(true);
 
       const httpRequest2 = httpTestingController.expectOne(actionUrl2);
+
       expect(httpRequest2.request.headers.has('Authorization')).toEqual(true);
 
       httpRequest.flush('something');

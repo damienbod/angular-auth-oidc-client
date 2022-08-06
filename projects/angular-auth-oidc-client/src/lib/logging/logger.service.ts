@@ -5,7 +5,7 @@ import { LogLevel } from './log-level';
 
 @Injectable()
 export class LoggerService {
-  constructor(private abstractLoggerService: AbstractLoggerService) {}
+  constructor(private readonly abstractLoggerService: AbstractLoggerService) {}
 
   logError(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {
     if (this.loggingIsTurnedOff(configuration)) {

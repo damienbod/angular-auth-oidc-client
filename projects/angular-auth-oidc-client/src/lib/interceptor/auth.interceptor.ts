@@ -9,10 +9,10 @@ import { ClosestMatchingRouteService } from './closest-matching-route.service';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   constructor(
-    private authStateService: AuthStateService,
-    private configurationService: ConfigurationService,
-    private loggerService: LoggerService,
-    private closestMatchingRouteService: ClosestMatchingRouteService
+    private readonly authStateService: AuthStateService,
+    private readonly configurationService: ConfigurationService,
+    private readonly loggerService: LoggerService,
+    private readonly closestMatchingRouteService: ClosestMatchingRouteService
   ) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -22,7 +22,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     const allConfigurations = this.configurationService.getAllConfigurations();
     const allRoutesConfigured = allConfigurations.map((x) => x.secureRoutes || []);
-    const allRoutesConfiguredFlat = [].concat.apply([], allRoutesConfigured);
+    const allRoutesConfiguredFlat = [].concat(...allRoutesConfigured) as string[];
 
     if (allRoutesConfiguredFlat.length === 0) {
       this.loggerService.logDebug(allConfigurations[0], `No routes to check configured`);

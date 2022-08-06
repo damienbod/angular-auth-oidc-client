@@ -11,10 +11,10 @@ import { IntervalService } from './interval.service';
 @Injectable({ providedIn: 'root' })
 export class ImplicitFlowCallbackService {
   constructor(
-    private flowsService: FlowsService,
-    private router: Router,
-    private flowsDataService: FlowsDataService,
-    private intervalService: IntervalService
+    private readonly flowsService: FlowsService,
+    private readonly router: Router,
+    private readonly flowsDataService: FlowsDataService,
+    private readonly intervalService: IntervalService
   ) {}
 
   authenticatedImplicitFlowCallback(
