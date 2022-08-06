@@ -85,6 +85,7 @@ describe('RefreshSessionService ', () => {
         ];
 
         const extraCustomParams = { extra: 'custom' };
+
         refreshSessionService.userForceRefreshSession(allConfigs[0], allConfigs, extraCustomParams).subscribe(() => {
           expect(writeSpy).toHaveBeenCalledOnceWith('storageCustomParamsRefresh', extraCustomParams, allConfigs[0]);
         });
@@ -107,6 +108,7 @@ describe('RefreshSessionService ', () => {
         const writeSpy = spyOn(storagePersistenceService, 'write');
 
         const extraCustomParams = { extra: 'custom' };
+
         refreshSessionService.userForceRefreshSession(allConfigs[0], allConfigs, extraCustomParams).subscribe(() => {
           expect(writeSpy).toHaveBeenCalledOnceWith('storageCustomParamsAuthRequest', extraCustomParams, allConfigs[0]);
         });
@@ -192,6 +194,7 @@ describe('RefreshSessionService ', () => {
             silentRenewTimeoutInSeconds: 10,
           },
         ];
+
         refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs).subscribe((result) => {
           expect(result.idToken).toBeDefined();
           expect(result.accessToken).toBeDefined();

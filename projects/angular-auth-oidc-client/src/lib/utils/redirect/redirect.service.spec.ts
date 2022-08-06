@@ -17,7 +17,9 @@ describe('Redirect Service Tests', () => {
               get href(): string {
                 return 'fakeUrl';
               },
-              set href(_value) {},
+              set href(_value) {
+                // ...
+              },
             },
           },
         },
@@ -37,6 +39,7 @@ describe('Redirect Service Tests', () => {
 
   it('redirectTo sets window location href', () => {
     const spy = spyOnProperty(myDocument.location, 'href', 'set');
+
     service.redirectTo('anyurl');
     expect(spy).toHaveBeenCalledOnceWith('anyurl');
   });

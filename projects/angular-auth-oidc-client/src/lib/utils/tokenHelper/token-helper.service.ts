@@ -7,14 +7,15 @@ const PARTS_OF_TOKEN = 3;
 
 @Injectable()
 export class TokenHelperService {
-  constructor(private readonly loggerService: LoggerService, @Inject(DOCUMENT) private document: Document) {}
+  constructor(private readonly loggerService: LoggerService, @Inject(DOCUMENT) private readonly document: Document) {}
 
   getTokenExpirationDate(dataIdToken: any): Date {
-    if (!dataIdToken.hasOwnProperty('exp')) {
+    if (!Object.prototype.hasOwnProperty.call(dataIdToken, 'exp')) {
       return new Date(new Date().toUTCString());
     }
 
     const date = new Date(0); // The 0 here is the key, which sets the date to the epoch
+
     date.setUTCSeconds(dataIdToken.exp);
 
     return date;

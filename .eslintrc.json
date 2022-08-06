@@ -16,7 +16,26 @@
             "selector": "enumMember",
             "format": ["PascalCase"]
           }
-        ]
+        ],
+        "newline-before-return": "error",
+        "max-len": "off",
+        "no-useless-constructor": "off",
+        "lines-between-class-members": ["error", "always"],
+        "newline-after-var": ["error", "always"],
+        "one-var": ["error", "never"],
+        "@typescript-eslint/no-useless-constructor": ["error"],
+        "@typescript-eslint/prefer-readonly": ["error"],
+        "@typescript-eslint/no-shadow": ["error"],
+        "@typescript-eslint/no-inferrable-types": ["error"],
+        "object-shorthand": ["error", "always"],
+        "no-case-declarations": ["error"],
+        "no-empty": ["error"],
+        "@typescript-eslint/no-empty-function": ["error"],
+        "@typescript-eslint/no-unused-vars": ["error"],
+        "@typescript-eslint/ban-types": ["error"],
+        "no-useless-escape": ["error"],
+        "no-prototype-builtins": ["error"],
+        "prefer-spread": ["error"]
       }
     },
     {

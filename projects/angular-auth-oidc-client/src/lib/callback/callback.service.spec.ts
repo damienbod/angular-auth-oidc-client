@@ -80,6 +80,7 @@ describe('CallbackService ', () => {
 
     it('emits callbackinternal no matter which flow it is', () => {
       const callbackSpy = spyOn((callbackService as any).stsCallbackInternal$, 'next');
+
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
       const authenticatedCallbackWithCodeSpy = spyOn(codeFlowCallbackService, 'authenticatedCallbackWithCode').and.returnValue(of(null));
 

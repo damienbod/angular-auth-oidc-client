@@ -24,7 +24,7 @@ export class HistoryJwtKeysCallbackHandlerService {
     private readonly signInKeyDataService: SigninKeyDataService,
     private readonly storagePersistenceService: StoragePersistenceService,
     private readonly resetAuthDataService: ResetAuthDataService,
-    @Inject(DOCUMENT) private document: any
+    @Inject(DOCUMENT) private readonly document: any
   ) {}
 
   // STEP 3 Code Flow, STEP 2 Implicit Flow, STEP 3 Refresh Token
@@ -47,6 +47,7 @@ export class HistoryJwtKeysCallbackHandlerService {
 
     if (callbackContext.authResult.error) {
       const errorMessage = `AuthCallback AuthResult came with error: ${callbackContext.authResult.error}`;
+
       this.loggerService.logDebug(config, errorMessage);
       this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
       this.flowsDataService.setNonce('', config);
@@ -66,6 +67,7 @@ export class HistoryJwtKeysCallbackHandlerService {
       catchError((err) => {
         // fallback: try to load jwtKeys from storage
         const storedJwtKeys = this.readSigningKeys(config);
+
         if (!!storedJwtKeys) {
           this.loggerService.logWarning(config, `Failed to retrieve signing keys, fallback to stored keys`);
 
@@ -82,12 +84,14 @@ export class HistoryJwtKeysCallbackHandlerService {
         }
 
         const errorMessage = `Failed to retrieve signing key`;
+
         this.loggerService.logWarning(config, errorMessage);
 
         return throwError(() => new Error(errorMessage));
       }),
       catchError((err) => {
         const errorMessage = `Failed to retrieve signing key with error: ${err}`;
+
         this.loggerService.logWarning(config, errorMessage);
 
         return throwError(() => new Error(errorMessage));

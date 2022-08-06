@@ -59,6 +59,7 @@ describe('UrlService Tests', () => {
     testingValues.forEach(({ param, isCallbackFromSts }) => {
       it(`should return ${isCallbackFromSts} when param is ${param}`, () => {
         const result = service.isCallbackFromSts(`https://any.url/?${param}=anyvalue`);
+
         expect(result).toBe(isCallbackFromSts);
       });
     });
@@ -179,6 +180,7 @@ describe('UrlService Tests', () => {
     it('returns null when clientId is null', () => {
       const config = { configId: 'configId1', clientId: null };
       const authorizationEndpoint = 'authorizationEndpoint';
+
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({ authorizationEndpoint });
 
       const value = (service as any).createAuthorizeUrl(
@@ -197,6 +199,7 @@ describe('UrlService Tests', () => {
     it('returns null when responseType is null', () => {
       const config = { configId: 'configId1', clientId: 'something', responseType: null };
       const authorizationEndpoint = 'authorizationEndpoint';
+
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({ authorizationEndpoint });
 
       const value = (service as any).createAuthorizeUrl(
@@ -215,6 +218,7 @@ describe('UrlService Tests', () => {
     it('returns null when scope is null', () => {
       const config = { configId: 'configId1', clientId: 'something', responseType: 'responsetype', scope: null };
       const authorizationEndpoint = 'authorizationEndpoint';
+
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({ authorizationEndpoint });
 
       const value = (service as any).createAuthorizeUrl(
@@ -232,6 +236,7 @@ describe('UrlService Tests', () => {
 
     it('createAuthorizeUrl with code flow and codeChallenge adds "code_challenge" and "code_challenge_method" param', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
+
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'code';
       config.scope = 'openid email profile';
@@ -267,6 +272,7 @@ describe('UrlService Tests', () => {
 
     it('createAuthorizeUrl with prompt adds prompt value', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
+
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -300,6 +306,7 @@ describe('UrlService Tests', () => {
 
     it('createAuthorizeUrl with prompt and custom values adds prompt value and custom values', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
+
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -335,6 +342,7 @@ describe('UrlService Tests', () => {
 
     it('createAuthorizeUrl with hdParam adds hdparam value', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
+
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -368,6 +376,7 @@ describe('UrlService Tests', () => {
 
     it('createAuthorizeUrl with custom value', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
+
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -404,6 +413,7 @@ describe('UrlService Tests', () => {
 
     it('createAuthorizeUrl with custom values', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
+
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -559,6 +569,7 @@ describe('UrlService Tests', () => {
     // https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-reference-oidc
     it('createAuthorizeUrl with custom URL like active-directory-b2c', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
+
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = 'myid';
       config.responseType = 'id_token token';
@@ -590,6 +601,7 @@ describe('UrlService Tests', () => {
 
     it('createAuthorizeUrl default', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
+
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -621,6 +633,7 @@ describe('UrlService Tests', () => {
 
     it('should add the prompt only once even if it is configured AND passed with `none` in silent renew case, taking the passed one', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
+
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'code';
       config.scope = 'openid email profile';
@@ -661,6 +674,7 @@ describe('UrlService Tests', () => {
   describe('createRevocationEndpointBodyAccessToken', () => {
     it('createRevocationBody access_token default', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
+
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -668,6 +682,7 @@ describe('UrlService Tests', () => {
       config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
 
       const revocationEndpoint = 'http://example?cod=ddd';
+
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
         revocationEndpoint,
       });
@@ -690,6 +705,7 @@ describe('UrlService Tests', () => {
   describe('createRevocationEndpointBodyRefreshToken', () => {
     it('createRevocationBody refresh_token default', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
+
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -697,6 +713,7 @@ describe('UrlService Tests', () => {
       config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
 
       const revocationEndpoint = 'http://example?cod=ddd';
+
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
         revocationEndpoint,
       });
@@ -719,6 +736,7 @@ describe('UrlService Tests', () => {
   describe('getRevocationEndpointUrl', () => {
     it('getRevocationEndpointUrl with params', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
+
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -726,6 +744,7 @@ describe('UrlService Tests', () => {
       config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
 
       const revocationEndpoint = 'http://example?cod=ddd';
+
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
         revocationEndpoint,
       });
@@ -739,6 +758,7 @@ describe('UrlService Tests', () => {
 
     it('getRevocationEndpointUrl default', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
+
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -746,6 +766,7 @@ describe('UrlService Tests', () => {
       config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
 
       const revocationEndpoint = 'http://example';
+
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
         revocationEndpoint,
       });
@@ -777,12 +798,14 @@ describe('UrlService Tests', () => {
     it('returns configured redirectUrl', () => {
       let config = { configId: 'configId1', redirectUrl: 'one-url' };
       let url = (service as any).getRedirectUrl(config);
+
       expect(url).toEqual('one-url');
     });
 
     it('returns redefined redirectUrl in AuthOptions', () => {
       let config = { configId: 'configId1', redirectUrl: 'one-url' };
       let url = (service as any).getRedirectUrl(config, { redirectUrl: 'other-url' });
+
       expect(url).toEqual('other-url');
     });
   });
@@ -791,6 +814,7 @@ describe('UrlService Tests', () => {
     it('calls createUrlCodeFlowAuthorize if current flow is code flow', () => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
       const spy = spyOn(service as any, 'createUrlCodeFlowAuthorize');
+
       service.getAuthorizeUrl({ configId: 'configId1' });
       expect(spy).toHaveBeenCalled();
     });
@@ -799,6 +823,7 @@ describe('UrlService Tests', () => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
       const spyCreateUrlCodeFlowAuthorize = spyOn(service as any, 'createUrlCodeFlowAuthorize');
       const spyCreateUrlImplicitFlowAuthorize = spyOn(service as any, 'createUrlImplicitFlowAuthorize');
+
       service.getAuthorizeUrl({ configId: 'configId1' });
       expect(spyCreateUrlCodeFlowAuthorize).not.toHaveBeenCalled();
       expect(spyCreateUrlImplicitFlowAuthorize).toHaveBeenCalled();
@@ -808,6 +833,7 @@ describe('UrlService Tests', () => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
       const spy = spyOn(service as any, 'createUrlImplicitFlowAuthorize').and.returnValue('');
       const resultObs$ = service.getAuthorizeUrl({ configId: 'configId1' });
+
       resultObs$.subscribe((result) => {
         expect(spy).toHaveBeenCalled();
         expect(result).toBe('');
@@ -819,6 +845,7 @@ describe('UrlService Tests', () => {
     it('calls createUrlCodeFlowWithSilentRenew if current flow is code flow', () => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
       const spy = spyOn(service as any, 'createUrlCodeFlowWithSilentRenew');
+
       service.getRefreshSessionSilentRenewUrl({ configId: 'configId1' });
       expect(spy).toHaveBeenCalled();
     });
@@ -827,6 +854,7 @@ describe('UrlService Tests', () => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
       const spyCreateUrlCodeFlowWithSilentRenew = spyOn(service as any, 'createUrlCodeFlowWithSilentRenew');
       const spyCreateUrlImplicitFlowWithSilentRenew = spyOn(service as any, 'createUrlImplicitFlowWithSilentRenew');
+
       service.getRefreshSessionSilentRenewUrl({ configId: 'configId1' });
       expect(spyCreateUrlCodeFlowWithSilentRenew).not.toHaveBeenCalled();
       expect(spyCreateUrlImplicitFlowWithSilentRenew).toHaveBeenCalled();
@@ -836,6 +864,7 @@ describe('UrlService Tests', () => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
       const spy = spyOn(service as any, 'createUrlImplicitFlowWithSilentRenew').and.returnValue('');
       const resultObs$ = service.getRefreshSessionSilentRenewUrl({ configId: 'configId1' });
+
       resultObs$.subscribe((result) => {
         expect(spy).toHaveBeenCalled();
         expect(result).toBe('');
@@ -847,14 +876,17 @@ describe('UrlService Tests', () => {
     it('returns null if no code verifier is set', () => {
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(null);
       const result = service.createBodyForCodeFlowCodeRequest('notRelevantParam', { configId: 'configId1' });
+
       expect(result).toBeNull();
     });
 
     it('returns null if no clientId is set', () => {
       const codeVerifier = 'codeverifier';
+
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       const clientId = null;
       const result = service.createBodyForCodeFlowCodeRequest('notRelevantParam', { clientId });
+
       expect(result).toBeNull();
     });
 
@@ -863,6 +895,7 @@ describe('UrlService Tests', () => {
       const code = 'code';
       const redirectUrl = null;
       const clientId = 'clientId';
+
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
 
@@ -876,6 +909,7 @@ describe('UrlService Tests', () => {
       const code = 'code';
       const redirectUrl = 'redirectUrl';
       const clientId = 'clientId';
+
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
 
@@ -890,6 +924,7 @@ describe('UrlService Tests', () => {
       const code = 'code';
       const silentRenewUrl = 'silentRenewUrl';
       const clientId = 'clientId';
+
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
 
@@ -905,6 +940,7 @@ describe('UrlService Tests', () => {
       const silentRenewUrl = 'silentRenewUrl';
       const clientId = 'clientId';
       const customTokenParams = { foo: 'bar' };
+
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
 
@@ -920,6 +956,7 @@ describe('UrlService Tests', () => {
       const clientId = 'clientId';
       const refreshToken = 'refreshToken';
       const result = service.createBodyForCodeFlowRefreshTokensRequest(refreshToken, { clientId });
+
       expect(result).toBe(`grant_type=refresh_token&client_id=${clientId}&refresh_token=${refreshToken}`);
     });
 
@@ -927,6 +964,7 @@ describe('UrlService Tests', () => {
       const clientId = 'clientId';
       const refreshToken = 'refreshToken';
       const result = service.createBodyForCodeFlowRefreshTokensRequest(refreshToken, { clientId }, { any: 'thing' });
+
       expect(result).toBe(`grant_type=refresh_token&client_id=${clientId}&refresh_token=${refreshToken}&any=thing`);
     });
 
@@ -934,6 +972,7 @@ describe('UrlService Tests', () => {
       const clientId = '';
       const refreshToken = 'refreshToken';
       const result = service.createBodyForCodeFlowRefreshTokensRequest(refreshToken, { clientId });
+
       expect(result).toBe(null);
     });
   });
@@ -941,6 +980,7 @@ describe('UrlService Tests', () => {
   describe('createBodyForParCodeFlowRequest', () => {
     it('returns null redirectUrl is falsy', () => {
       const resultObs$ = service.createBodyForParCodeFlowRequest({ redirectUrl: '' });
+
       resultObs$.subscribe((result) => {
         expect(result).toBe(null);
       });
@@ -955,12 +995,14 @@ describe('UrlService Tests', () => {
         customParamsAuthRequest: null,
         redirectUrl: 'testRedirectUrl',
       };
+
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('testState');
       spyOn(flowsDataService, 'createNonce').and.returnValue('testNonce');
       spyOn(flowsDataService, 'createCodeVerifier').and.returnValue('testCodeVerifier');
       spyOn(jwtWindowCryptoService, 'generateCodeChallenge').and.returnValue(of('testCodeChallenge'));
 
       const resultObs$ = service.createBodyForParCodeFlowRequest(config);
+
       resultObs$.subscribe((result) => {
         expect(result).toBe(
           `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256`
@@ -977,12 +1019,14 @@ describe('UrlService Tests', () => {
         customParamsAuthRequest: null,
         redirectUrl: 'testRedirectUrl',
       };
+
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('testState');
       spyOn(flowsDataService, 'createNonce').and.returnValue('testNonce');
       spyOn(flowsDataService, 'createCodeVerifier').and.returnValue('testCodeVerifier');
       spyOn(jwtWindowCryptoService, 'generateCodeChallenge').and.returnValue(of('testCodeChallenge'));
 
       const resultObs$ = service.createBodyForParCodeFlowRequest(config);
+
       resultObs$.subscribe((result) => {
         expect(result).toBe(
           `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam`
@@ -999,12 +1043,14 @@ describe('UrlService Tests', () => {
         customParamsAuthRequest: { any: 'thing' },
         redirectUrl: 'testRedirectUrl',
       };
+
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('testState');
       spyOn(flowsDataService, 'createNonce').and.returnValue('testNonce');
       spyOn(flowsDataService, 'createCodeVerifier').and.returnValue('testCodeVerifier');
       spyOn(jwtWindowCryptoService, 'generateCodeChallenge').and.returnValue(of('testCodeChallenge'));
 
       const resultObs$ = service.createBodyForParCodeFlowRequest(config);
+
       resultObs$.subscribe((result) => {
         expect(result).toBe(
           `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam&any=thing`
@@ -1021,12 +1067,14 @@ describe('UrlService Tests', () => {
         customParamsAuthRequest: { any: 'thing' },
         redirectUrl: 'testRedirectUrl',
       };
+
       spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('testState');
       spyOn(flowsDataService, 'createNonce').and.returnValue('testNonce');
       spyOn(flowsDataService, 'createCodeVerifier').and.returnValue('testCodeVerifier');
       spyOn(jwtWindowCryptoService, 'generateCodeChallenge').and.returnValue(of('testCodeChallenge'));
 
       const resultObs$ = service.createBodyForParCodeFlowRequest(config, { any: 'otherThing' });
+
       resultObs$.subscribe((result) => {
         expect(result).toBe(
           `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam&any=thing&any=otherThing`
@@ -1051,6 +1099,7 @@ describe('UrlService Tests', () => {
       const serviceAsAny = service as any;
 
       const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew(config);
+
       expect(result).toBeNull();
     });
 
@@ -1079,6 +1128,7 @@ describe('UrlService Tests', () => {
       const serviceAsAny = service as any;
 
       const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew(config);
+
       expect(result).toBe(
         `authorizationEndpoint?client_id=${clientId}&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&prompt=none`
       );
@@ -1104,6 +1154,7 @@ describe('UrlService Tests', () => {
       const serviceAsAny = service as any;
 
       const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew(config);
+
       expect(result).toBe(null);
     });
   });
@@ -1128,6 +1179,7 @@ describe('UrlService Tests', () => {
       const serviceAsAny = service as any;
 
       const resultObs$ = serviceAsAny.createUrlCodeFlowWithSilentRenew(config);
+
       resultObs$.subscribe((result) => {
         expect(result).toBe('');
       });
@@ -1160,6 +1212,7 @@ describe('UrlService Tests', () => {
       const serviceAsAny = service as any;
 
       const resultObs$ = serviceAsAny.createUrlCodeFlowWithSilentRenew(config);
+
       resultObs$.subscribe((result) => {
         expect(result).toBe(
           `authorizationEndpoint?client_id=${clientId}&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&prompt=none`
@@ -1190,6 +1243,7 @@ describe('UrlService Tests', () => {
       const serviceAsAny = service as any;
 
       const resultObs$ = serviceAsAny.createUrlCodeFlowWithSilentRenew(config);
+
       resultObs$.subscribe((result) => {
         expect(result).toBe(null);
       });
@@ -1220,6 +1274,7 @@ describe('UrlService Tests', () => {
       const serviceAsAny = service as any;
 
       const result = serviceAsAny.createUrlImplicitFlowAuthorize(config);
+
       expect(result).toBe(
         `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}`
       );
@@ -1241,6 +1296,7 @@ describe('UrlService Tests', () => {
       const serviceAsAny = service as any;
 
       const result = serviceAsAny.createUrlImplicitFlowAuthorize(config);
+
       expect(result).toBe(null);
     });
 
@@ -1259,6 +1315,7 @@ describe('UrlService Tests', () => {
       const serviceAsAny = service as any;
 
       const result = serviceAsAny.createUrlImplicitFlowAuthorize(config);
+
       expect(result).toBe(null);
     });
   });
@@ -1278,6 +1335,7 @@ describe('UrlService Tests', () => {
       const serviceAsAny = service as any;
 
       const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config);
+
       resultObs$.subscribe((result) => {
         expect(result).toBeNull();
       });
@@ -1309,6 +1367,7 @@ describe('UrlService Tests', () => {
       const serviceAsAny = service as any;
 
       const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config);
+
       resultObs$.subscribe((result) => {
         expect(result).toBe(
           `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}`
@@ -1345,6 +1404,7 @@ describe('UrlService Tests', () => {
       const serviceAsAny = service as any;
 
       const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config, { customParams: { to: 'add', as: 'well' } });
+
       resultObs$.subscribe((result) => {
         expect(result).toBe(
           `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com` +
@@ -1372,6 +1432,7 @@ describe('UrlService Tests', () => {
       const serviceAsAny = service as any;
 
       const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config);
+
       resultObs$.subscribe((result) => {
         expect(result).toBe('');
       });
@@ -1424,6 +1485,7 @@ describe('UrlService Tests', () => {
 
     it('with azure-ad-b2c policy parameter', () => {
       const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
+
       config.redirectUrl = 'https://localhost:44386';
       config.clientId = 'myid';
       config.responseType = 'id_token token';

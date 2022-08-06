@@ -33,7 +33,9 @@ describe('StateValidationCallbackHandlerService', () => {
               get hash(): string {
                 return '&anyFakeHash';
               },
-              set hash(_value) {},
+              set hash(_value) {
+                // ...
+              },
             },
           },
         },
@@ -54,76 +56,67 @@ describe('StateValidationCallbackHandlerService', () => {
   });
 
   describe('callbackStateValidation', () => {
-    it(
-      'returns callbackContext with validationResult if validationResult is valid',
-      waitForAsync(() => {
-        spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
-          of({
+    it('returns callbackContext with validationResult if validationResult is valid', waitForAsync(() => {
+      spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
+        of({
+          idToken: 'idTokenJustForTesting',
+          authResponseIsValid: true,
+        } as StateValidationResult)
+      );
+      const allConfigs = [{ configId: 'configId1' }];
+
+      service.callbackStateValidation({} as CallbackContext, allConfigs[0], allConfigs).subscribe((newCallbackContext) => {
+        expect(newCallbackContext).toEqual({
+          validationResult: {
             idToken: 'idTokenJustForTesting',
             authResponseIsValid: true,
-          } as StateValidationResult)
-        );
-        const allConfigs = [{ configId: 'configId1' }];
-
-        service.callbackStateValidation({} as CallbackContext, allConfigs[0], allConfigs).subscribe((newCallbackContext) => {
-          expect(newCallbackContext).toEqual({
-            validationResult: {
-              idToken: 'idTokenJustForTesting',
-              authResponseIsValid: true,
-            },
-          } as CallbackContext);
-        });
-      })
-    );
-
-    it(
-      'logs error in case of an error',
-      waitForAsync(() => {
-        spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
-          of({
-            authResponseIsValid: false,
-          } as StateValidationResult)
-        );
-
-        const loggerSpy = spyOn(loggerService, 'logWarning');
-        const allConfigs = [{ configId: 'configId1' }];
-
-        service.callbackStateValidation({} as CallbackContext, allConfigs[0], allConfigs).subscribe({
-          error: () => {
-            expect(loggerSpy).toHaveBeenCalledOnceWith(
-              allConfigs[0],
-              'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
-            );
           },
-        });
-      })
-    );
+        } as CallbackContext);
+      });
+    }));
 
-    it(
-      'calls resetAuthDataService.resetAuthorizationData and authStateService.updateAndPublishAuthState in case of an error',
-      waitForAsync(() => {
-        spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
-          of({
-            authResponseIsValid: false,
-            state: ValidationResult.LoginRequired,
-          } as StateValidationResult)
-        );
+    it('logs error in case of an error', waitForAsync(() => {
+      spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
+        of({
+          authResponseIsValid: false,
+        } as StateValidationResult)
+      );
 
-        const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
-        const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
-        const allConfigs = [{ configId: 'configId1' }];
+      const loggerSpy = spyOn(loggerService, 'logWarning');
+      const allConfigs = [{ configId: 'configId1' }];
 
-        service.callbackStateValidation({ isRenewProcess: true } as CallbackContext, allConfigs[0], allConfigs).subscribe({
-          error: () => {
-            expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
-            expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
-              isAuthenticated: false,
-              validationResult: ValidationResult.LoginRequired,
-              isRenewProcess: true,
-            });
-          },
-        });
-      })
-    );
+      service.callbackStateValidation({} as CallbackContext, allConfigs[0], allConfigs).subscribe({
+        error: () => {
+          expect(loggerSpy).toHaveBeenCalledOnceWith(
+            allConfigs[0],
+            'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
+          );
+        },
+      });
+    }));
+
+    it('calls resetAuthDataService.resetAuthorizationData and authStateService.updateAndPublishAuthState in case of an error', waitForAsync(() => {
+      spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
+        of({
+          authResponseIsValid: false,
+          state: ValidationResult.LoginRequired,
+        } as StateValidationResult)
+      );
+
+      const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
+      const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
+      const allConfigs = [{ configId: 'configId1' }];
+
+      service.callbackStateValidation({ isRenewProcess: true } as CallbackContext, allConfigs[0], allConfigs).subscribe({
+        error: () => {
+          expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
+          expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
+            isAuthenticated: false,
+            validationResult: ValidationResult.LoginRequired,
+            isRenewProcess: true,
+          });
+        },
+      });
+    }));
   });
 });

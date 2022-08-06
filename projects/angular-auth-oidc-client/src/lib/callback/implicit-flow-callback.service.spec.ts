@@ -66,6 +66,7 @@ describe('ImplicitFlowCallbackService ', () => {
         const spy = spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(of(callbackContext));
         const routerSpy = spyOn(router, 'navigateByUrl');
         const config = { configId: 'configId1', triggerAuthorizationResultEvent: true };
+
         implicitFlowCallbackService.authenticatedImplicitFlowCallback(config, [config], 'some-hash').subscribe(() => {
           expect(spy).toHaveBeenCalledOnceWith(config, [config], 'some-hash');
           expect(routerSpy).not.toHaveBeenCalled();

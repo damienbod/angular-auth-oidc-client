@@ -11,10 +11,10 @@ import { IntervalService } from './interval.service';
 @Injectable({ providedIn: 'root' })
 export class CodeFlowCallbackService {
   constructor(
-    private flowsService: FlowsService,
-    private flowsDataService: FlowsDataService,
-    private intervalService: IntervalService,
-    private router: Router
+    private readonly flowsService: FlowsService,
+    private readonly flowsDataService: FlowsDataService,
+    private readonly intervalService: IntervalService,
+    private readonly router: Router
   ) {}
 
   authenticatedCallbackWithCode(

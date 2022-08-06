@@ -56,14 +56,15 @@ import { JwtWindowCryptoService } from './jwt-window-crypto.service';
 @Injectable()
 export class TokenValidationService {
   static refreshTokenNoncePlaceholder = '--RefreshToken--';
+
   keyAlgorithms: string[] = ['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'PS256', 'PS384', 'PS512'];
 
   constructor(
-    private tokenHelperService: TokenHelperService,
-    private loggerService: LoggerService,
-    private jwtWindowCryptoService: JwtWindowCryptoService,
-    private cryptoService: CryptoService,
-    @Inject(DOCUMENT) private document: any
+    private readonly tokenHelperService: TokenHelperService,
+    private readonly loggerService: LoggerService,
+    private readonly jwtWindowCryptoService: JwtWindowCryptoService,
+    private readonly cryptoService: CryptoService,
+    @Inject(DOCUMENT) private readonly document: any
   ) {}
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
@@ -92,6 +93,7 @@ export class TokenValidationService {
     }
 
     const tokenExpirationDate = this.tokenHelperService.getTokenExpirationDate(decodedIdToken);
+
     offsetSeconds = offsetSeconds || 0;
 
     if (!tokenExpirationDate) {
@@ -163,27 +165,28 @@ export class TokenValidationService {
   // in UTC until the date/ time.
   validateRequiredIdToken(dataIdToken: any, configuration: OpenIdConfiguration): boolean {
     let validated = true;
-    if (!dataIdToken.hasOwnProperty('iss')) {
+
+    if (!Object.prototype.hasOwnProperty.call(dataIdToken, 'iss')) {
       validated = false;
       this.loggerService.logWarning(configuration, 'iss is missing, this is required in the id_token');
     }
 
-    if (!dataIdToken.hasOwnProperty('sub')) {
+    if (!Object.prototype.hasOwnProperty.call(dataIdToken, 'sub')) {
       validated = false;
       this.loggerService.logWarning(configuration, 'sub is missing, this is required in the id_token');
     }
 
-    if (!dataIdToken.hasOwnProperty('aud')) {
+    if (!Object.prototype.hasOwnProperty.call(dataIdToken, 'aud')) {
       validated = false;
       this.loggerService.logWarning(configuration, 'aud is missing, this is required in the id_token');
     }
 
-    if (!dataIdToken.hasOwnProperty('exp')) {
+    if (!Object.prototype.hasOwnProperty.call(dataIdToken, 'exp')) {
       validated = false;
       this.loggerService.logWarning(configuration, 'exp is missing, this is required in the id_token');
     }
 
-    if (!dataIdToken.hasOwnProperty('iat')) {
+    if (!Object.prototype.hasOwnProperty.call(dataIdToken, 'iat')) {
       validated = false;
       this.loggerService.logWarning(configuration, 'iat is missing, this is required in the id_token');
     }
@@ -203,11 +206,12 @@ export class TokenValidationService {
       return true;
     }
 
-    if (!dataIdToken.hasOwnProperty('iat')) {
+    if (!Object.prototype.hasOwnProperty.call(dataIdToken, 'iat')) {
       return false;
     }
 
     const dateTimeIatIdToken = new Date(0); // The 0 here is the key, which sets the date to the epoch
+
     dateTimeIatIdToken.setUTCSeconds(dataIdToken.iat);
     maxOffsetAllowedInSeconds = maxOffsetAllowedInSeconds || 0;
 
@@ -234,6 +238,7 @@ export class TokenValidationService {
   validateIdTokenNonce(dataIdToken: any, localNonce: any, ignoreNonceAfterRefresh: boolean, configuration: OpenIdConfiguration): boolean {
     const isFromRefreshToken =
       (dataIdToken.nonce === undefined || ignoreNonceAfterRefresh) && localNonce === TokenValidationService.refreshTokenNoncePlaceholder;
+
     if (!isFromRefreshToken && dataIdToken.nonce !== localNonce) {
       this.loggerService.logDebug(
         configuration,
@@ -336,6 +341,7 @@ export class TokenValidationService {
     }
 
     const headerData = this.tokenHelperService.getHeaderFromToken(idToken, false, configuration);
+
     if (Object.keys(headerData).length === 0 && headerData.constructor === Object) {
       this.loggerService.logWarning(configuration, 'id token has no header data');
 
@@ -362,6 +368,7 @@ export class TokenValidationService {
 
       if (matchingKeys.length > 1) {
         let error = 'More than one matching key found. Please specify a kid in the id_token header.';
+
         this.loggerService.logError(configuration, error);
 
         return of(false);
@@ -387,9 +394,9 @@ export class TokenValidationService {
       mergeMap((cryptoKey: CryptoKey) => {
         const signature: Uint8Array = base64url.parse(rawSignature, { loose: true });
 
-        const algorithm: RsaHashedImportParams | EcdsaParams = this.getVerifyAlg(alg);
+        const verifyAlgorithm: RsaHashedImportParams | EcdsaParams = this.getVerifyAlg(alg);
 
-        return from(crypto.subtle.verify(algorithm, cryptoKey, signature, new TextEncoder().encode(signingInput)));
+        return from(crypto.subtle.verify(verifyAlgorithm, cryptoKey, signature, new TextEncoder().encode(signingInput)));
       }),
       tap((isValid: boolean) => {
         if (!isValid) {
@@ -503,6 +510,7 @@ export class TokenValidationService {
 
     // 'sha256' 'sha384' 'sha512'
     let sha = 'SHA-256';
+
     if (idTokenAlg.includes('384')) {
       sha = 'SHA-384';
     } else if (idTokenAlg.includes('512')) {

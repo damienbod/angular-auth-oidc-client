@@ -26,14 +26,17 @@ describe('Storage Persistence Service', () => {
     it('reads from oidcSecurityStorage with configId', () => {
       const config = { configId: 'configId1' };
       const spy = spyOn(securityStorage, 'read');
+
       service.read('authNonce', config);
       expect(spy).toHaveBeenCalledOnceWith('authNonce', config);
     });
 
     it('returns undefined (not throws exception) if key to read is not present on config', () => {
       const config = { configId: 'configId1' };
+
       spyOn(securityStorage, 'read').and.returnValue({ some: 'thing' });
       const result = service.read('authNonce', config);
+
       expect(result).toBeUndefined();
     });
   });
@@ -197,6 +200,7 @@ describe('Storage Persistence Service', () => {
       const returnValue = { reusable_refresh_token: 'test_refresh_token' };
       const config = { configId: 'configId1', allowUnsafeReuseRefreshToken: true };
       let spy = spyOn(securityStorage, 'read');
+
       spy.withArgs('reusable_refresh_token', config).and.returnValue(returnValue);
       spy.withArgs('authnResult', config).and.returnValue(undefined);
       const result = service.getRefreshToken(config);

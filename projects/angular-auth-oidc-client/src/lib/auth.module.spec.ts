@@ -30,6 +30,7 @@ describe('AuthModule', () => {
 
     it('should create StsConfigStaticLoader if config is passed', () => {
       const configLoader = TestBed.inject(StsConfigLoader);
+
       expect(configLoader instanceof StsConfigStaticLoader).toBe(true);
     });
   });
@@ -53,6 +54,7 @@ describe('AuthModule', () => {
 
     it('should create StsConfigStaticLoader if config is passed', () => {
       const configLoader = TestBed.inject(StsConfigLoader);
+
       expect(configLoader instanceof StsConfigHttpLoader).toBe(true);
     });
   });

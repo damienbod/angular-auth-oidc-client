@@ -16,12 +16,12 @@ import { PopupResultReceivedUrl } from './popup-result';
 @Injectable()
 export class PopUpLoginService {
   constructor(
-    private loggerService: LoggerService,
-    private responseTypeValidationService: ResponseTypeValidationService,
-    private urlService: UrlService,
-    private authWellKnownService: AuthWellKnownService,
-    private popupService: PopUpService,
-    private checkAuthService: CheckAuthService
+    private readonly loggerService: LoggerService,
+    private readonly responseTypeValidationService: ResponseTypeValidationService,
+    private readonly urlService: UrlService,
+    private readonly authWellKnownService: AuthWellKnownService,
+    private readonly popupService: PopUpService,
+    private readonly checkAuthService: CheckAuthService
   ) {}
 
   loginWithPopUpStandard(
@@ -34,6 +34,7 @@ export class PopUpLoginService {
 
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configuration)) {
       const errorMessage = 'Invalid response type!';
+
       this.loggerService.logError(configuration, errorMessage);
 
       return throwError(() => new Error(errorMessage));

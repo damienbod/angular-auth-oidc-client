@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 export class IntervalService {
   runTokenValidationRunning = null;
 
-  constructor(private zone: NgZone) {}
+  constructor(private readonly zone: NgZone) {}
 
   isTokenValidationRunning(): boolean {
     return !!this.runTokenValidationRunning;
@@ -23,6 +23,7 @@ export class IntervalService {
 
     return new Observable((subscriber) => {
       let intervalId;
+
       this.zone.runOutsideAngular(() => {
         intervalId = setInterval(() => this.zone.run(() => subscriber.next()), millisecondsDelayBetweenTokenCheck);
       });

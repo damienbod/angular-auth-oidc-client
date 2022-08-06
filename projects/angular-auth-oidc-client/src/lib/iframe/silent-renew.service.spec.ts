@@ -95,6 +95,7 @@ describe('SilentRenewService  ', () => {
 
     it('adds iframe to body if existing iframe is falsy', () => {
       const config = { configId: 'configId1' };
+
       spyOn(silentRenewService as any, 'getExistingIframe').and.returnValue(null);
 
       const spy = spyOn(iFrameService, 'addIFrameToWindowBody').and.returnValue({ name: 'anything' } as HTMLIFrameElement);
@@ -143,9 +144,11 @@ describe('SilentRenewService  ', () => {
   describe('silentRenewEventHandler', () => {
     it('returns if no details is given', fakeAsync(() => {
       const isCurrentFlowCodeFlowSpy = spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
+
       spyOn(implicitFlowCallbackService, 'authenticatedImplicitFlowCallback').and.returnValue(of(null));
       const eventData = { detail: null } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
+
       silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
       tick(1000);
       expect(isCurrentFlowCodeFlowSpy).not.toHaveBeenCalled();

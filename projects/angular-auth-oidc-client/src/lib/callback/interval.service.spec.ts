@@ -33,6 +33,7 @@ describe('IntervalService', () => {
     it('does nothing if `runTokenValidationRunning` is null', () => {
       intervalService.runTokenValidationRunning = new Subscription();
       const spy = spyOn(intervalService.runTokenValidationRunning, 'unsubscribe');
+
       intervalService.runTokenValidationRunning = null;
       intervalService.stopPeriodicTokenCheck();
 

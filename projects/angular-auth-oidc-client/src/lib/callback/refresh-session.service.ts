@@ -19,16 +19,16 @@ export const MAX_RETRY_ATTEMPTS = 3;
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionService {
   constructor(
-    private flowHelper: FlowHelper,
-    private flowsDataService: FlowsDataService,
-    private loggerService: LoggerService,
-    private silentRenewService: SilentRenewService,
-    private authStateService: AuthStateService,
-    private authWellKnownService: AuthWellKnownService,
-    private refreshSessionIframeService: RefreshSessionIframeService,
-    private storagePersistenceService: StoragePersistenceService,
-    private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService,
-    private userService: UserService
+    private readonly flowHelper: FlowHelper,
+    private readonly flowsDataService: FlowsDataService,
+    private readonly loggerService: LoggerService,
+    private readonly silentRenewService: SilentRenewService,
+    private readonly authStateService: AuthStateService,
+    private readonly authWellKnownService: AuthWellKnownService,
+    private readonly refreshSessionIframeService: RefreshSessionIframeService,
+    private readonly storagePersistenceService: StoragePersistenceService,
+    private readonly refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService,
+    private readonly userService: UserService
   ) {}
 
   userForceRefreshSession(
@@ -53,6 +53,7 @@ export class RefreshSessionService {
       return this.startRefreshSession(config, allConfigs, mergedParams).pipe(
         map(() => {
           const isAuthenticated = this.authStateService.areAuthStorageTokensValid(config);
+
           if (isAuthenticated) {
             return {
               idToken: this.authStateService.getIdToken(config),
@@ -79,6 +80,7 @@ export class RefreshSessionService {
       retryWhen(this.timeoutRetryStrategy.bind(this)),
       map(([_, callbackContext]) => {
         const isAuthenticated = this.authStateService.areAuthStorageTokensValid(config);
+
         if (isAuthenticated) {
           return {
             idToken: callbackContext?.authResult?.id_token,
@@ -112,6 +114,7 @@ export class RefreshSessionService {
     extraCustomParams?: { [key: string]: string | number | boolean }
   ): Observable<boolean | CallbackContext | null> {
     const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning(config);
+
     this.loggerService.logDebug(config, `Checking: silentRenewRunning: ${isSilentRenewRunning}`);
     const shouldBeExecuted = !isSilentRenewRunning;
 

@@ -61,6 +61,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
       'calls data service if all params are good',
       waitForAsync(() => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
@@ -68,6 +69,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
         service.refreshTokensRequestTokens({} as CallbackContext, { configId: 'configId1' }).subscribe(() => {
           expect(postSpy).toHaveBeenCalledOnceWith('tokenEndpoint', undefined, { configId: 'configId1' }, jasmine.any(HttpHeaders));
           const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
+
           expect(httpHeaders.has('Content-Type')).toBeTrue();
           expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
         });
@@ -78,12 +80,14 @@ describe('RefreshTokenCallbackHandlerService', () => {
       'calls data service with correct headers if all params are good',
       waitForAsync(() => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
 
         service.refreshTokensRequestTokens({} as CallbackContext, { configId: 'configId1' }).subscribe(() => {
           const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
+
           expect(httpHeaders.has('Content-Type')).toBeTrue();
           expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
         });
@@ -95,6 +99,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
       waitForAsync(() => {
         spyOn(dataService, 'post').and.returnValue(throwError(() => HTTP_ERROR));
         const config = { configId: 'configId1', authority: 'authority' };
+
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
@@ -117,6 +122,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
           )
         );
         const config = { configId: 'configId1', authority: 'authority' };
+
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
@@ -144,6 +150,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
           )
         );
         const config = { configId: 'configId1', authority: 'authority' };
+
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });

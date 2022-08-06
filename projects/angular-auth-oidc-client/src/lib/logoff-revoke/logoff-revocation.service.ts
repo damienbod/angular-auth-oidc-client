@@ -15,13 +15,13 @@ import { UrlService } from '../utils/url/url.service';
 @Injectable()
 export class LogoffRevocationService {
   constructor(
-    private dataService: DataService,
-    private storagePersistenceService: StoragePersistenceService,
-    private loggerService: LoggerService,
-    private urlService: UrlService,
-    private checkSessionService: CheckSessionService,
-    private resetAuthDataService: ResetAuthDataService,
-    private redirectService: RedirectService
+    private readonly dataService: DataService,
+    private readonly storagePersistenceService: StoragePersistenceService,
+    private readonly loggerService: LoggerService,
+    private readonly urlService: UrlService,
+    private readonly checkSessionService: CheckSessionService,
+    private readonly resetAuthDataService: ResetAuthDataService,
+    private readonly redirectService: RedirectService
   ) {}
 
   // Logs out on the server and the local client.
@@ -76,6 +76,7 @@ export class LogoffRevocationService {
         switchMap((result) => this.revokeAccessToken(config, result)),
         catchError((error) => {
           const errorMessage = `revoke token failed`;
+
           this.loggerService.logError(config, errorMessage, error);
 
           return throwError(() => new Error(errorMessage));
@@ -86,6 +87,7 @@ export class LogoffRevocationService {
       return this.revokeAccessToken(config).pipe(
         catchError((error) => {
           const errorMessage = `revoke accessToken failed`;
+
           this.loggerService.logError(config, errorMessage, error);
 
           return throwError(() => new Error(errorMessage));
@@ -130,6 +132,7 @@ export class LogoffRevocationService {
     const url = this.urlService.getRevocationEndpointUrl(configuration);
 
     let headers: HttpHeaders = new HttpHeaders();
+
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
     return this.dataService.post(url, body, configuration, headers).pipe(
@@ -141,6 +144,7 @@ export class LogoffRevocationService {
       }),
       catchError((error) => {
         const errorMessage = `Revocation request failed`;
+
         this.loggerService.logError(configuration, errorMessage, error);
 
         return throwError(() => new Error(errorMessage));

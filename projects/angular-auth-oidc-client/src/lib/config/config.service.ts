@@ -17,13 +17,13 @@ export class ConfigurationService {
   private configsInternal: Record<string, OpenIdConfiguration> = {};
 
   constructor(
-    private loggerService: LoggerService,
-    private publicEventsService: PublicEventsService,
-    private storagePersistenceService: StoragePersistenceService,
-    private configValidationService: ConfigValidationService,
-    private platformProvider: PlatformProvider,
-    private authWellKnownService: AuthWellKnownService,
-    private loader: StsConfigLoader
+    private readonly loggerService: LoggerService,
+    private readonly publicEventsService: PublicEventsService,
+    private readonly storagePersistenceService: StoragePersistenceService,
+    private readonly configValidationService: ConfigValidationService,
+    private readonly platformProvider: PlatformProvider,
+    private readonly authWellKnownService: AuthWellKnownService,
+    private readonly loader: StsConfigLoader
   ) {}
 
   hasManyConfigs(): boolean {
@@ -58,6 +58,7 @@ export class ConfigurationService {
 
   private saveConfig(readyConfig: OpenIdConfiguration): void {
     const { configId } = readyConfig;
+
     this.configsInternal[configId] = readyConfig;
   }
 
@@ -110,6 +111,7 @@ export class ConfigurationService {
     }
 
     const usedConfig = this.prepareConfig(passedConfig);
+
     this.saveConfig(usedConfig);
 
     const configWithAuthWellKnown = this.enhanceConfigWithWellKnownEndpoint(usedConfig);
@@ -121,6 +123,7 @@ export class ConfigurationService {
 
   private enhanceConfigWithWellKnownEndpoint(configuration: OpenIdConfiguration): OpenIdConfiguration {
     const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
+
     if (!!alreadyExistingAuthWellKnownEndpoints) {
       configuration.authWellknownEndpoints = alreadyExistingAuthWellKnownEndpoints;
 
@@ -128,6 +131,7 @@ export class ConfigurationService {
     }
 
     const passedAuthWellKnownEndpoints = configuration.authWellknownEndpoints;
+
     if (!!passedAuthWellKnownEndpoints) {
       this.authWellKnownService.storeWellKnownEndpoints(configuration, passedAuthWellKnownEndpoints);
       configuration.authWellknownEndpoints = passedAuthWellKnownEndpoints;
@@ -140,6 +144,7 @@ export class ConfigurationService {
 
   private prepareConfig(configuration: OpenIdConfiguration): OpenIdConfiguration {
     const openIdConfigurationInternal = { ...DEFAULT_CONFIG, ...configuration };
+
     this.setSpecialCases(openIdConfigurationInternal);
 
     return openIdConfigurationInternal;

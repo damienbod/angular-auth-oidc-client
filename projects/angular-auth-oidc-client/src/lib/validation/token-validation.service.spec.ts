@@ -45,6 +45,7 @@ describe('TokenValidationService', () => {
     it('returns true if aud is string and passed aud matches idToken.aud', () => {
       const dataIdToken = { aud: 'banana' };
       const valueTrue = tokenValidationService.validateIdTokenAud(dataIdToken, 'banana', { configId: 'configId1' });
+
       expect(valueTrue).toEqual(true);
     });
 
@@ -52,6 +53,7 @@ describe('TokenValidationService', () => {
       const dataIdToken = { aud: 'banana' };
 
       const valueFalse = tokenValidationService.validateIdTokenAud(dataIdToken, 'bananammmm', { configId: 'configId1' });
+
       expect(valueFalse).toEqual(false);
     });
 
@@ -126,11 +128,13 @@ describe('TokenValidationService', () => {
         aud: ['one', 'two'],
       };
       const result = tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken);
+
       expect(result).toBe(false);
     });
 
     it('returns false if aud is array, ength is bigger than 1 and has no azp property', () => {
       const result = tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(null);
+
       expect(result).toBe(false);
     });
   });
@@ -138,6 +142,7 @@ describe('TokenValidationService', () => {
   describe('validateIdTokenAzpValid', () => {
     it('returns true dataIdToken param is null', () => {
       const result = tokenValidationService.validateIdTokenAzpValid(null, '');
+
       expect(result).toBe(true);
     });
 
@@ -148,6 +153,7 @@ describe('TokenValidationService', () => {
       };
 
       const azpInvalid = tokenValidationService.validateIdTokenAzpValid(dataIdToken, 'bananammmm');
+
       expect(azpInvalid).toEqual(false);
     });
 
@@ -161,6 +167,7 @@ describe('TokenValidationService', () => {
         dataIdToken,
         '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com'
       );
+
       expect(azpValid).toEqual(true);
     });
 
@@ -170,6 +177,7 @@ describe('TokenValidationService', () => {
       };
 
       const azpValid = tokenValidationService.validateIdTokenAzpValid(dataIdToken, 'bananammmm');
+
       expect(azpValid).toEqual(true);
     });
   });
@@ -201,6 +209,7 @@ describe('TokenValidationService', () => {
         aud: 'banana',
       };
       const valueTrue = tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(dataIdToken);
+
       expect(valueTrue).toEqual(true);
     });
   });
@@ -216,6 +225,7 @@ describe('TokenValidationService', () => {
       };
 
       const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, { configId: 'configId1' });
+
       expect(result).toEqual(false);
     });
 
@@ -229,6 +239,7 @@ describe('TokenValidationService', () => {
       };
 
       const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, { configId: 'configId1' });
+
       expect(result).toEqual(false);
     });
 
@@ -242,6 +253,7 @@ describe('TokenValidationService', () => {
       };
 
       const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, { configId: 'configId1' });
+
       expect(result).toEqual(false);
     });
 
@@ -255,6 +267,7 @@ describe('TokenValidationService', () => {
       };
 
       const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, { configId: 'configId1' });
+
       expect(result).toEqual(false);
     });
 
@@ -268,6 +281,7 @@ describe('TokenValidationService', () => {
       };
 
       const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, { configId: 'configId1' });
+
       expect(result).toEqual(false);
     });
 
@@ -281,6 +295,7 @@ describe('TokenValidationService', () => {
       };
 
       const result = tokenValidationService.validateRequiredIdToken(decodedIdToken, { configId: 'configId1' });
+
       expect(result).toEqual(true);
     });
   });
@@ -292,6 +307,7 @@ describe('TokenValidationService', () => {
       };
 
       const valueTrue = tokenValidationService.validateIdTokenIss(decodedIdToken, 'xc', { configId: 'configId1' });
+
       expect(valueTrue).toEqual(true);
     });
 
@@ -301,6 +317,7 @@ describe('TokenValidationService', () => {
       };
 
       const valueFalse = tokenValidationService.validateIdTokenIss(decodedIdToken, 'xcjjjj', { configId: 'configId1' });
+
       expect(valueFalse).toEqual(false);
     });
   });
@@ -327,6 +344,7 @@ describe('TokenValidationService', () => {
       };
 
       const valueTrue = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdToken, 500000000000, false, { configId: 'configId1' });
+
       expect(valueTrue).toEqual(true);
     });
 
@@ -335,6 +353,7 @@ describe('TokenValidationService', () => {
         iat: 500348877430, // Sat Nov 09 1985 02:47:57 GMT+0100 (Central European Standard Time)
       };
       const valueFalseNeg = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdTokenNegIat, 0, false, { configId: 'configId1' });
+
       expect(valueFalseNeg).toEqual(false);
     });
 
@@ -343,6 +362,7 @@ describe('TokenValidationService', () => {
         iat: 1589206486, // Mon Jan 19 1970 10:26:46 GMT+0100 (Central European Standard Time)
       };
       const valueFalse = tokenValidationService.validateIdTokenIatMaxOffset(decodedIdToken, 5, false, { configId: 'configId1' });
+
       expect(valueFalse).toEqual(false);
     });
   });
@@ -350,6 +370,7 @@ describe('TokenValidationService', () => {
   describe('validateSignatureIdToken', () => {
     it('returns false if null as both parameters is passed', waitForAsync(() => {
       const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, null, { configId: 'configId1' });
+
       valueFalse$.subscribe((valueFalse) => {
         expect(valueFalse).toEqual(false);
       });
@@ -357,6 +378,7 @@ describe('TokenValidationService', () => {
 
     it('returns false if jwtkeys has no keys-property', waitForAsync(() => {
       const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, { notKeys: '' }, { configId: 'configId1' });
+
       valueFalse$.subscribe((valueFalse) => {
         expect(valueFalse).toEqual(false);
       });
@@ -370,6 +392,7 @@ describe('TokenValidationService', () => {
       };
 
       const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, jwtKeys, { configId: 'configId1' });
+
       valueFalse$.subscribe((valueFalse) => {
         expect(valueFalse).toEqual(false);
       });
@@ -383,6 +406,7 @@ describe('TokenValidationService', () => {
       };
 
       const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, jwtKeys, { configId: 'configId1' });
+
       valueFalse$.subscribe((valueFalse) => {
         expect(valueFalse).toEqual(false);
       });
@@ -412,6 +436,7 @@ describe('TokenValidationService', () => {
       };
 
       const valueFalse$ = tokenValidationService.validateSignatureIdToken('someNOTMATCHINGIdToken', jwtKeys, { configId: 'configId1' });
+
       valueFalse$.subscribe((valueFalse) => {
         expect(valueFalse).toEqual(false);
       });
@@ -424,6 +449,7 @@ describe('TokenValidationService', () => {
       const atHash = '-ODC_7Go_UIUTC8nP4k2cA';
 
       const result$ = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '256', { configId: 'configId1' });
+
       result$.subscribe((result) => {
         expect(result).toEqual(true);
       });
@@ -435,6 +461,7 @@ describe('TokenValidationService', () => {
       const atHash = 'bad';
 
       const result$ = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '256', { configId: 'configId1' });
+
       result$.subscribe((result) => {
         expect(result).toEqual(false);
       });
@@ -472,6 +499,7 @@ describe('TokenValidationService', () => {
       const atHash = 'bad';
 
       const result$ = tokenValidationService.validateIdTokenAtHash(accessToken, atHash, '512', { configId: 'configId1' });
+
       result$.subscribe((result) => {
         expect(result).toEqual(false);
       });
@@ -481,11 +509,13 @@ describe('TokenValidationService', () => {
   describe('validateStateFromHashCallback', () => {
     it('returns true when state and localstate match', () => {
       const result = tokenValidationService.validateStateFromHashCallback('sssd', 'sssd', { configId: 'configId1' });
+
       expect(result).toEqual(true);
     });
 
     it('returns false when state and local state do not match', () => {
       const result = tokenValidationService.validateStateFromHashCallback('sssd', 'bad', { configId: 'configId1' });
+
       expect(result).toEqual(false);
     });
   });
@@ -494,6 +524,7 @@ describe('TokenValidationService', () => {
     it('returns false when tokenExpirationDate is falsy', () => {
       spyOn(tokenHelperService, 'getTokenExpirationDate').and.returnValue(null);
       const notExpired = tokenValidationService.validateIdTokenExpNotExpired('idToken', { configId: 'configId1' }, 0);
+
       expect(notExpired).toEqual(false);
     });
 
@@ -502,6 +533,7 @@ describe('TokenValidationService', () => {
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
 
       const notExpired = tokenValidationService.validateIdTokenExpNotExpired(idToken, { configId: 'configId1' }, 0);
+
       expect(notExpired).toEqual(false);
     });
   });

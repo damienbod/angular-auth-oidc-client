@@ -3,7 +3,7 @@ import { Inject, Injectable } from '@angular/core';
 
 @Injectable()
 export class CurrentUrlService {
-  constructor(@Inject(DOCUMENT) private doc: any) {}
+  constructor(@Inject(DOCUMENT) private readonly doc: any) {}
 
   getStateParamFromCurrentUrl(): string {
     const currentUrl = this.getCurrentUrl();

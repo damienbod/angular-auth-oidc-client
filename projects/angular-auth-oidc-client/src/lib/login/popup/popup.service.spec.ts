@@ -58,54 +58,47 @@ describe('PopUpService', () => {
   });
 
   describe('result$', () => {
-    it(
-      'emits when internal subject is called',
-      waitForAsync(() => {
-        const popupResult: PopupResult = { userClosed: false, receivedUrl: 'some-url1111' };
+    it('emits when internal subject is called', waitForAsync(() => {
+      const popupResult: PopupResult = { userClosed: false, receivedUrl: 'some-url1111' };
 
-        popUpService.result$.subscribe((result) => {
-          expect(result).toBe(popupResult);
-        });
+      popUpService.result$.subscribe((result) => {
+        expect(result).toBe(popupResult);
+      });
 
-        (popUpService as any).resultInternal$.next(popupResult);
-      })
-    );
+      (popUpService as any).resultInternal$.next(popupResult);
+    }));
   });
 
   describe('openPopup', () => {
-    it(
-      'popup opens with parameters and default options',
-      waitForAsync(() => {
-        const popupSpy = spyOn(window, 'open').and.callFake(
-          () =>
-            ({
-              sessionStorage: mockStorage,
-              closed: true,
-              close: () => {},
-            } as Window)
-        );
-        popUpService.openPopUp('url');
+    it('popup opens with parameters and default options', waitForAsync(() => {
+      const popupSpy = spyOn(window, 'open').and.callFake(
+        () =>
+          ({
+            sessionStorage: mockStorage,
+            closed: true,
+            close: () => undefined,
+          } as Window)
+      );
 
-        expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', jasmine.any(String));
-      })
-    );
+      popUpService.openPopUp('url');
 
-    it(
-      'popup opens with parameters and passed options',
-      waitForAsync(() => {
-        const popupSpy = spyOn(window, 'open').and.callFake(
-          () =>
-            ({
-              sessionStorage: mockStorage,
-              closed: true,
-              close: () => {},
-            } as Window)
-        );
-        popUpService.openPopUp('url', { width: 100 });
+      expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', jasmine.any(String));
+    }));
 
-        expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', jasmine.any(String));
-      })
-    );
+    it('popup opens with parameters and passed options', waitForAsync(() => {
+      const popupSpy = spyOn(window, 'open').and.callFake(
+        () =>
+          ({
+            sessionStorage: mockStorage,
+            closed: true,
+            close: () => undefined,
+          } as Window)
+      );
+
+      popUpService.openPopUp('url', { width: 100 });
+
+      expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', jasmine.any(String));
+    }));
 
     describe('popup closed', () => {
       let popup: Window;
@@ -116,7 +109,7 @@ describe('PopUpService', () => {
         popup = {
           sessionStorage: mockStorage,
           closed: false,
-          close: () => {},
+          close: () => undefined,
         } as Window;
 
         spyOn(window, 'open').and.returnValue(popup);
@@ -163,59 +156,50 @@ describe('PopUpService', () => {
   });
 
   describe('sendMessageToMainWindow', () => {
-    it(
-      'does nothing if window.opener is null',
-      waitForAsync(() => {
-        spyOnProperty(window, 'opener').and.returnValue(null);
+    it('does nothing if window.opener is null', waitForAsync(() => {
+      spyOnProperty(window, 'opener').and.returnValue(null);
 
-        const sendMessageSpy = spyOn(popUpService as any, 'sendMessage');
-        popUpService.sendMessageToMainWindow('');
+      const sendMessageSpy = spyOn(popUpService as any, 'sendMessage');
 
-        expect(sendMessageSpy).not.toHaveBeenCalled();
-      })
-    );
+      popUpService.sendMessageToMainWindow('');
 
-    it(
-      'calls postMessage when window opener is given',
-      waitForAsync(() => {
-        spyOnProperty(window, 'opener').and.returnValue({ postMessage: () => {} });
-        const sendMessageSpy = spyOn(window.opener, 'postMessage');
+      expect(sendMessageSpy).not.toHaveBeenCalled();
+    }));
 
-        popUpService.sendMessageToMainWindow('someUrl');
+    it('calls postMessage when window opener is given', waitForAsync(() => {
+      spyOnProperty(window, 'opener').and.returnValue({ postMessage: () => undefined });
+      const sendMessageSpy = spyOn(window.opener, 'postMessage');
 
-        expect(sendMessageSpy).toHaveBeenCalledTimes(1);
-        expect(sendMessageSpy).toHaveBeenCalledOnceWith('someUrl', jasmine.any(String));
-      })
-    );
+      popUpService.sendMessageToMainWindow('someUrl');
+
+      expect(sendMessageSpy).toHaveBeenCalledTimes(1);
+      expect(sendMessageSpy).toHaveBeenCalledOnceWith('someUrl', jasmine.any(String));
+    }));
   });
 
   describe('cleanUp', () => {
-    it(
-      'calls removeEventListener on window with correct params',
-      waitForAsync(() => {
-        const spy = spyOn(window, 'removeEventListener').and.callFake(() => {});
+    it('calls removeEventListener on window with correct params', waitForAsync(() => {
+      const spy = spyOn(window, 'removeEventListener').and.callFake(() => undefined);
 
-        const listener = null;
-        (popUpService as any).cleanUp(listener);
+      const listener = null;
 
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledOnceWith('message', listener, false);
-      })
-    );
+      (popUpService as any).cleanUp(listener);
 
-    it(
-      'removes popup from sessionstorage, closes and nulls when popup is opened',
-      waitForAsync(() => {
-        const popupMock = { anyThing: 'truthy', sessionStorage: mockStorage, close: (): void => {} };
-        const removeItemSpy = spyOn(mockStorage, 'removeItem');
-        const closeSpy = spyOn(popupMock, 'close');
-        (popUpService as any).popUp = popupMock;
-        (popUpService as any).cleanUp(null);
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledOnceWith('message', listener, false);
+    }));
 
-        expect(removeItemSpy).toHaveBeenCalledOnceWith('popupauth');
-        expect(closeSpy).toHaveBeenCalledTimes(1);
-        expect((popUpService as any).popUp).toBeNull();
-      })
-    );
+    it('removes popup from sessionstorage, closes and nulls when popup is opened', waitForAsync(() => {
+      const popupMock = { anyThing: 'truthy', sessionStorage: mockStorage, close: (): void => undefined };
+      const removeItemSpy = spyOn(mockStorage, 'removeItem');
+      const closeSpy = spyOn(popupMock, 'close');
+
+      (popUpService as any).popUp = popupMock;
+      (popUpService as any).cleanUp(null);
+
+      expect(removeItemSpy).toHaveBeenCalledOnceWith('popupauth');
+      expect(closeSpy).toHaveBeenCalledTimes(1);
+      expect((popUpService as any).popUp).toBeNull();
+    }));
   });
 });

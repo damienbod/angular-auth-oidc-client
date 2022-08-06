@@ -5,7 +5,7 @@ import { CryptoService } from '../utils/crypto/crypto-service';
 
 @Injectable()
 export class JwtWindowCryptoService {
-  constructor(private cryptoService: CryptoService) {}
+  constructor(private readonly cryptoService: CryptoService) {}
 
   generateCodeChallenge(codeVerifier: string): Observable<string> {
     return this.calcHash(codeVerifier).pipe(map((challengeRaw: string) => this.base64UrlEncode(challengeRaw)));
@@ -22,7 +22,7 @@ export class JwtWindowCryptoService {
     );
   }
 
-  private calcHash(valueToHash: string, algorithm: string = 'SHA-256'): Observable<string> {
+  private calcHash(valueToHash: string, algorithm = 'SHA-256'): Observable<string> {
     const msgBuffer: Uint8Array = new TextEncoder().encode(valueToHash);
 
     return from(this.cryptoService.getCrypto().subtle.digest(algorithm, msgBuffer)).pipe(
@@ -36,6 +36,7 @@ export class JwtWindowCryptoService {
 
   private toHashString(byteArray: number[]): string {
     let result = '';
+
     for (let e of byteArray) {
       result += String.fromCharCode(e);
     }

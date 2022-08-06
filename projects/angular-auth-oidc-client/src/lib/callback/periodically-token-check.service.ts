@@ -20,22 +20,23 @@ import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-tok
 @Injectable({ providedIn: 'root' })
 export class PeriodicallyTokenCheckService {
   constructor(
-    private resetAuthDataService: ResetAuthDataService,
-    private flowHelper: FlowHelper,
-    private flowsDataService: FlowsDataService,
-    private loggerService: LoggerService,
-    private userService: UserService,
-    private authStateService: AuthStateService,
-    private refreshSessionIframeService: RefreshSessionIframeService,
-    private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService,
+    private readonly resetAuthDataService: ResetAuthDataService,
+    private readonly flowHelper: FlowHelper,
+    private readonly flowsDataService: FlowsDataService,
+    private readonly loggerService: LoggerService,
+    private readonly userService: UserService,
+    private readonly authStateService: AuthStateService,
+    private readonly refreshSessionIframeService: RefreshSessionIframeService,
+    private readonly refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService,
     private intervalService: IntervalService,
-    private storagePersistenceService: StoragePersistenceService,
-    private publicEventsService: PublicEventsService,
-    private configurationService: ConfigurationService
+    private readonly storagePersistenceService: StoragePersistenceService,
+    private readonly publicEventsService: PublicEventsService,
+    private readonly configurationService: ConfigurationService
   ) {}
 
   startTokenValidationPeriodically(allConfigs: OpenIdConfiguration[], currentConfig: OpenIdConfiguration): void {
     const configsWithSilentRenewEnabled = this.getConfigsWithSilentRenewEnabled(allConfigs);
+
     if (configsWithSilentRenewEnabled.length <= 0) {
       return;
     }
@@ -48,6 +49,7 @@ export class PeriodicallyTokenCheckService {
     const periodicallyCheck$ = this.intervalService.startPeriodicTokenCheck(refreshTimeInSeconds).pipe(
       switchMap(() => {
         const objectWithConfigIdsAndRefreshEvent = {};
+
         configsWithSilentRenewEnabled.forEach((config) => {
           objectWithConfigIdsAndRefreshEvent[config.configId] = this.getRefreshEvent(config, allConfigs);
         });

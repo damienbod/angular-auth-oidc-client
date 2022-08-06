@@ -7,13 +7,14 @@ import { RandomService } from './random/random.service';
 @Injectable()
 export class FlowsDataService {
   constructor(
-    private storagePersistenceService: StoragePersistenceService,
-    private randomService: RandomService,
-    private loggerService: LoggerService
+    private readonly storagePersistenceService: StoragePersistenceService,
+    private readonly randomService: RandomService,
+    private readonly loggerService: LoggerService
   ) {}
 
   createNonce(configuration: OpenIdConfiguration): string {
     const nonce = this.randomService.createRandom(40, configuration);
+
     this.loggerService.logDebug(configuration, 'Nonce created. nonce:' + nonce);
     this.setNonce(nonce, configuration);
 
@@ -34,6 +35,7 @@ export class FlowsDataService {
 
   getExistingOrCreateAuthStateControl(configuration: OpenIdConfiguration): any {
     let state = this.storagePersistenceService.read('authStateControl', configuration);
+
     if (!state) {
       state = this.randomService.createRandom(40, configuration);
       this.storagePersistenceService.write('authStateControl', state, configuration);
@@ -56,6 +58,7 @@ export class FlowsDataService {
 
   createCodeVerifier(configuration: OpenIdConfiguration): string {
     const codeVerifier = this.randomService.createRandom(67, configuration);
+
     this.storagePersistenceService.write('codeVerifier', codeVerifier, configuration);
 
     return codeVerifier;

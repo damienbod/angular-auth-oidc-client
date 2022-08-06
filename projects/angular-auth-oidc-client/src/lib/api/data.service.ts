@@ -8,7 +8,7 @@ const NGSW_CUSTOM_PARAM = 'ngsw-bypass';
 
 @Injectable()
 export class DataService {
-  constructor(private httpClient: HttpBaseService) {}
+  constructor(private readonly httpClient: HttpBaseService) {}
 
   get<T>(url: string, config: OpenIdConfiguration, token?: string): Observable<T> {
     const headers = this.prepareHeaders(token);
@@ -29,6 +29,7 @@ export class DataService {
 
   private prepareHeaders(token?: string): HttpHeaders {
     let headers = new HttpHeaders();
+
     headers = headers.set('Accept', 'application/json');
 
     if (!!token) {

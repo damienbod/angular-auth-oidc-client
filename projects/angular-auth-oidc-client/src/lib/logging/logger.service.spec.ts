@@ -31,18 +31,21 @@ describe('Logger Service', () => {
 
     it('should log error as default if error is string', () => {
       const spy = spyOn(console, 'error');
+
       loggerService.logError({ configId: 'configId1' }, 'some message');
       expect(spy).toHaveBeenCalledOnceWith('[ERROR] configId1 - some message');
     });
 
     it('should log error as default if error is object', () => {
       const spy = spyOn(console, 'error');
+
       loggerService.logError({ configId: 'configId1' }, { some: 'message' });
       expect(spy).toHaveBeenCalledOnceWith('[ERROR] configId1 - {"some":"message"}');
     });
 
     it('should always log error with args', () => {
       const spy = spyOn(console, 'error');
+
       loggerService.logError({ configId: 'configId1' }, 'some message', 'arg1', 'arg2');
       expect(spy).toHaveBeenCalledOnceWith('[ERROR] configId1 - some message', 'arg1', 'arg2');
     });

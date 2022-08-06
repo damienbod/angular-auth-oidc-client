@@ -76,6 +76,7 @@ describe(`AutoLoginAllRoutesGuard`, () => {
         const loginSpy = spyOn(loginService, 'login');
 
         const canActivate$ = autoLoginAllRoutesGuard.canActivate(null, { url: 'some-url1' } as RouterStateSnapshot) as Observable<boolean>;
+
         canActivate$.subscribe(() => {
           expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'some-url1');
           expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
@@ -151,6 +152,7 @@ describe(`AutoLoginAllRoutesGuard`, () => {
         const saveRedirectRouteSpy = spyOn(autoLoginService, 'saveRedirectRoute');
         const loginSpy = spyOn(loginService, 'login');
         const canLoad$ = autoLoginAllRoutesGuard.canLoad();
+
         canLoad$.subscribe(() => {
           expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, '');
           expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });

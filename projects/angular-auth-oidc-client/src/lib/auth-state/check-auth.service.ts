@@ -19,18 +19,18 @@ import { CurrentUrlService } from '../utils/url/current-url.service';
 @Injectable()
 export class CheckAuthService {
   constructor(
-    private checkSessionService: CheckSessionService,
-    private currentUrlService: CurrentUrlService,
-    private silentRenewService: SilentRenewService,
-    private userService: UserService,
-    private loggerService: LoggerService,
-    private authStateService: AuthStateService,
-    private callbackService: CallbackService,
-    private refreshSessionService: RefreshSessionService,
-    private periodicallyTokenCheckService: PeriodicallyTokenCheckService,
-    private popupService: PopUpService,
-    private autoLoginService: AutoLoginService,
-    private storagePersistenceService: StoragePersistenceService
+    private readonly checkSessionService: CheckSessionService,
+    private readonly currentUrlService: CurrentUrlService,
+    private readonly silentRenewService: SilentRenewService,
+    private readonly userService: UserService,
+    private readonly loggerService: LoggerService,
+    private readonly authStateService: AuthStateService,
+    private readonly callbackService: CallbackService,
+    private readonly refreshSessionService: RefreshSessionService,
+    private readonly periodicallyTokenCheckService: PeriodicallyTokenCheckService,
+    private readonly popupService: PopUpService,
+    private readonly autoLoginService: AutoLoginService,
+    private readonly storagePersistenceService: StoragePersistenceService
   ) {}
 
   checkAuth(configuration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[], url?: string): Observable<LoginResponse> {
@@ -89,6 +89,7 @@ export class CheckAuthService {
   private checkAuthWithConfig(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[], url?: string): Observable<LoginResponse> {
     if (!config) {
       const errorMessage = 'Please provide at least one configuration before setting up the module';
+
       this.loggerService.logError(config, errorMessage);
 
       return of({ isAuthenticated: false, errorMessage, userData: null, idToken: null, accessToken: null, configId: null });
@@ -114,6 +115,7 @@ export class CheckAuthService {
     return callback$.pipe(
       map(() => {
         const isAuthenticated = this.authStateService.areAuthStorageTokensValid(config);
+
         if (isAuthenticated) {
           this.startCheckSessionAndValidation(config, allConfigs);
 

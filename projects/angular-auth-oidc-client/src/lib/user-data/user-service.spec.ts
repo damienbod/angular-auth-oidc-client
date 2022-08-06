@@ -61,197 +61,181 @@ describe('User Service', () => {
   });
 
   describe('getAndPersistUserDataInStore', () => {
-    it(
-      'if not currentFlow is NOT id Token or Code flow, return decoded ID Token - passed as argument',
-      waitForAsync(() => {
-        const isRenewProcess = false;
-        const idToken = false;
-        const decodedIdToken = 'decodedIdToken';
-        const userDataInstore = '';
+    it('if not currentFlow is NOT id Token or Code flow, return decoded ID Token - passed as argument', waitForAsync(() => {
+      const isRenewProcess = false;
+      const idToken = false;
+      const decodedIdToken = 'decodedIdToken';
+      const userDataInstore = '';
 
-        const config = {
-          responseType: 'notcode',
-          configId: 'configId1',
-        } as OpenIdConfiguration;
+      const config = {
+        responseType: 'notcode',
+        configId: 'configId1',
+      } as OpenIdConfiguration;
 
-        spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
+      spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
 
-        userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
-          expect(decodedIdToken).toBe(token);
-        });
-      })
-    );
+      userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
+        expect(decodedIdToken).toBe(token);
+      });
+    }));
 
-    it(
-      'if not currentFlow is NOT id Token or Code flow, "setUserDataToStore" is called with the decodedIdToken',
-      waitForAsync(() => {
-        const isRenewProcess = false;
-        const idToken = false;
-        const decodedIdToken = 'decodedIdToken';
-        const userDataInstore = '';
+    it('if not currentFlow is NOT id Token or Code flow, "setUserDataToStore" is called with the decodedIdToken', waitForAsync(() => {
+      const isRenewProcess = false;
+      const idToken = false;
+      const decodedIdToken = 'decodedIdToken';
+      const userDataInstore = '';
 
-        const config = {
-          responseType: 'notcode',
-          configId: 'configId1',
-        } as OpenIdConfiguration;
+      const config = {
+        responseType: 'notcode',
+        configId: 'configId1',
+      } as OpenIdConfiguration;
 
-        spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
-        spyOn(userService, 'setUserDataToStore');
+      spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
+      spyOn(userService, 'setUserDataToStore');
 
-        userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
-          expect(decodedIdToken).toBe(token);
-        });
+      userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
+        expect(decodedIdToken).toBe(token);
+      });
 
-        expect(userService.setUserDataToStore).toHaveBeenCalled();
-      })
-    );
+      expect(userService.setUserDataToStore).toHaveBeenCalled();
+    }));
 
-    it(
-      'if not currentFlow is id token or code flow with renewProcess going -> return existing data from storage',
-      waitForAsync(() => {
-        const isRenewProcess = true;
-        const idToken = false;
-        const decodedIdToken = 'decodedIdToken';
-        const userDataInstore = 'userDataInstore';
+    it('if not currentFlow is id token or code flow with renewProcess going -> return existing data from storage', waitForAsync(() => {
+      const isRenewProcess = true;
+      const idToken = false;
+      const decodedIdToken = 'decodedIdToken';
+      const userDataInstore = 'userDataInstore';
 
-        const config = {
-          responseType: 'code',
-          configId: 'configId1',
-        } as OpenIdConfiguration;
+      const config = {
+        responseType: 'code',
+        configId: 'configId1',
+      } as OpenIdConfiguration;
 
-        spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
+      spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
 
-        userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
-          expect(userDataInstore).toBe(token);
-        });
-      })
-    );
+      userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
+        expect(userDataInstore).toBe(token);
+      });
+    }));
 
-    it(
-      'if not currentFlow is id token or code flow and not renewProcess --> ask server for data',
-      waitForAsync(() => {
-        const isRenewProcess = false;
-        const idToken = false;
-        const decodedIdToken = 'decodedIdToken';
-        const userDataInstore = '';
-        const userDataFromSts = 'userDataFromSts';
+    it('if not currentFlow is id token or code flow and not renewProcess --> ask server for data', waitForAsync(() => {
+      const isRenewProcess = false;
+      const idToken = false;
+      const decodedIdToken = 'decodedIdToken';
+      const userDataInstore = '';
+      const userDataFromSts = 'userDataFromSts';
 
-        const config = {
-          responseType: 'code',
-          configId: 'configId1',
-        } as OpenIdConfiguration;
+      const config = {
+        responseType: 'code',
+        configId: 'configId1',
+      } as OpenIdConfiguration;
 
-        spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
-        const spy = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
+      spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
+      const spy = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
 
-        userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
-          expect(userDataFromSts).toEqual(token);
-        });
+      userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
+        expect(userDataFromSts).toEqual(token);
+      });
 
-        expect(spy).toHaveBeenCalled();
-      })
-    );
+      expect(spy).toHaveBeenCalled();
+    }));
 
-    it(
-      `if not currentFlow is id token or code flow and not renewprocess
+    it(`if not currentFlow is id token or code flow and not renewprocess
           --> ask server for data
-          --> logging if it has userdata`,
-      waitForAsync(() => {
-        const isRenewProcess = false;
-        const idToken = false;
-        const decodedIdToken = 'decodedIdToken';
-        const userDataInstore = '';
-        const userDataFromSts = 'userDataFromSts';
+          --> logging if it has userdata`, waitForAsync(() => {
+      const isRenewProcess = false;
+      const idToken = false;
+      const decodedIdToken = 'decodedIdToken';
+      const userDataInstore = '';
+      const userDataFromSts = 'userDataFromSts';
 
-        const config = {
-          responseType: 'code',
-          configId: 'configId1',
-        } as OpenIdConfiguration;
+      const config = {
+        responseType: 'code',
+        configId: 'configId1',
+      } as OpenIdConfiguration;
 
-        spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
-        const spy = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
-        spyOn(loggerService, 'logDebug');
-        spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+      spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
+      const spy = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
 
-        userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
-          expect(userDataFromSts).toEqual(token);
-        });
+      spyOn(loggerService, 'logDebug');
+      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
 
-        expect(spy).toHaveBeenCalled();
-        expect(loggerService.logDebug).toHaveBeenCalled();
-      })
-    );
+      userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
+        expect(userDataFromSts).toEqual(token);
+      });
 
-    it(
-      `if not currentFlow is id token or code flow and not renewprocess
+      expect(spy).toHaveBeenCalled();
+      expect(loggerService.logDebug).toHaveBeenCalled();
+    }));
+
+    it(`if not currentFlow is id token or code flow and not renewprocess
           --> ask server for data
-          --> throwing Error if it has no userdata `,
-      waitForAsync(() => {
-        const isRenewProcess = false;
-        const idToken = false;
-        const decodedIdToken = { sub: 'decodedIdToken' };
-        const userDataInstore = '';
-        const userDataFromSts = null;
+          --> throwing Error if it has no userdata `, waitForAsync(() => {
+      const isRenewProcess = false;
+      const idToken = false;
+      const decodedIdToken = { sub: 'decodedIdToken' };
+      const userDataInstore = '';
+      const userDataFromSts = null;
 
-        const config = {
-          responseType: 'code',
-          configId: 'configId1',
-        } as OpenIdConfiguration;
+      const config = {
+        responseType: 'code',
+        configId: 'configId1',
+      } as OpenIdConfiguration;
 
-        spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
-        const spyGetIdentityUserData = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
-        spyOn(loggerService, 'logDebug');
-        spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+      spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
+      const spyGetIdentityUserData = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
 
-        userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe({
-          error: (err) => {
-            expect(err.message).toEqual('Received no user data, request failed');
-          },
-        });
+      spyOn(loggerService, 'logDebug');
+      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
 
-        expect(spyGetIdentityUserData).toHaveBeenCalled();
-      })
-    );
+      userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe({
+        error: (err) => {
+          expect(err.message).toEqual('Received no user data, request failed');
+        },
+      });
 
-    it(
-      `if not currentFlow is id token or code flow and renewprocess and renewUserInfoAfterTokenRenew
-          --> ask server for data`,
-      waitForAsync(() => {
-        const isRenewProcess = true;
-        const idToken = false;
-        const decodedIdToken = 'decodedIdToken';
-        const userDataInstore = 'userDataInStore';
-        const userDataFromSts = 'userDataFromSts';
+      expect(spyGetIdentityUserData).toHaveBeenCalled();
+    }));
 
-        const config = {
-          responseType: 'code',
-          renewUserInfoAfterTokenRenew: true,
-          configId: 'configId1',
-        } as OpenIdConfiguration;
+    it(`if not currentFlow is id token or code flow and renewprocess and renewUserInfoAfterTokenRenew
+          --> ask server for data`, waitForAsync(() => {
+      const isRenewProcess = true;
+      const idToken = false;
+      const decodedIdToken = 'decodedIdToken';
+      const userDataInstore = 'userDataInStore';
+      const userDataFromSts = 'userDataFromSts';
 
-        spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
-        const spy = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
+      const config = {
+        responseType: 'code',
+        renewUserInfoAfterTokenRenew: true,
+        configId: 'configId1',
+      } as OpenIdConfiguration;
 
-        userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
-          expect(userDataFromSts).toEqual(token);
-        });
+      spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
+      const spy = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
 
-        expect(spy).toHaveBeenCalled();
-      })
-    );
+      userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
+        expect(userDataFromSts).toEqual(token);
+      });
+
+      expect(spy).toHaveBeenCalled();
+    }));
   });
 
   describe('getUserDataFromStore', () => {
     it('returns null if there is not data', () => {
       const config = { configId: 'configId1' };
       const result = userService.getUserDataFromStore(config);
+
       expect(result).toBeNull();
     });
 
     it('returns value if there is data', () => {
       const config = { configId: 'configId1' };
+
       spyOn(storagePersistenceService, 'read').withArgs('userData', config).and.returnValue('userData');
       const result = userService.getUserDataFromStore(config);
+
       expect(result).toBeTruthy();
     });
   });
@@ -260,6 +244,7 @@ describe('User Service', () => {
     it('sets userData in storagePersistenceService', () => {
       const config = { configId: 'configId1' };
       const spy = spyOn(storagePersistenceService, 'write');
+
       userService.setUserDataToStore('userDataForTest', config, [config]);
       expect(spy).toHaveBeenCalledOnceWith('userData', 'userDataForTest', config);
     });
@@ -348,6 +333,7 @@ describe('User Service', () => {
     it('userDataInternal is fired if userData exists with multiple configs', () => {
       const allConfigs = [{ configId: 'configId1' }, { configId: 'configId2' }];
       const observableSpy = spyOn((userService as any).userDataInternal$, 'next');
+
       spyOn(storagePersistenceService, 'read')
         .withArgs('userData', allConfigs[0])
         .and.returnValue('somethingForConfig1')
@@ -367,6 +353,7 @@ describe('User Service', () => {
 
     it('event service UserDataChanged is fired if userData exists', () => {
       const allConfigs = [{ configId: 'configId1' }, { configId: 'configId2' }];
+
       spyOn(userService, 'getUserDataFromStore').and.returnValue('something');
       const eventSpy = spyOn(eventsService, 'fireEvent');
 
@@ -408,124 +395,112 @@ describe('User Service', () => {
   });
 
   describe('getIdentityUserData', () => {
-    it(
-      'does nothing if no authWellKnownEndPoints are set',
-      waitForAsync(() => {
-        const config = { configId: 'configId1' };
-        const serviceAsAny = userService as any;
-        spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue(null);
-        serviceAsAny.getIdentityUserData(config).subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-          },
-        });
-      })
-    );
-
-    it(
-      'does nothing if no userInfoEndpoint is set',
-      waitForAsync(() => {
-        const config = { configId: 'configId1' };
-        const serviceAsAny = userService as any;
-        spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
-        spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({ userInfoEndpoint: null });
-        serviceAsAny.getIdentityUserData(config).subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-          },
-        });
-      })
-    );
-
-    it(
-      'gets userData if authwell and userInfoEndpoint is set',
-      waitForAsync(() => {
-        const config = { configId: 'configId1' };
-        const serviceAsAny = userService as any;
-        const spy = spyOn(dataService, 'get').and.returnValue(of({}));
-        spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
-        spyOn(storagePersistenceService, 'read')
-          .withArgs('authWellKnownEndPoints', config)
-          .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
-        serviceAsAny.getIdentityUserData(config).subscribe(() => {
-          expect(spy).toHaveBeenCalledOnceWith('userInfoEndpoint', config, 'accessToken');
-        });
-      })
-    );
-  });
-
-  it(
-    'should retry once',
-    waitForAsync(() => {
+    it('does nothing if no authWellKnownEndPoints are set', waitForAsync(() => {
       const config = { configId: 'configId1' };
+      const serviceAsAny = userService as any;
+
       spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
-      spyOn(dataService, 'get').and.returnValue(
-        createRetriableStream(
-          throwError(() => new Error('Error')),
-          of(DUMMY_USER_DATA)
-        )
-      );
-
-      (userService as any).getIdentityUserData(config).subscribe({
-        next: (res) => {
-          expect(res).toBeTruthy();
-          expect(res).toEqual(DUMMY_USER_DATA);
-        },
-      });
-    })
-  );
-
-  it(
-    'should retry twice',
-    waitForAsync(() => {
-      const config = { configId: 'configId1' };
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
-      spyOn(dataService, 'get').and.returnValue(
-        createRetriableStream(
-          throwError(() => new Error('Error')),
-          throwError(() => new Error('Error')),
-          of(DUMMY_USER_DATA)
-        )
-      );
-
-      (userService as any).getIdentityUserData(config).subscribe({
-        next: (res) => {
-          expect(res).toBeTruthy();
-          expect(res).toEqual(DUMMY_USER_DATA);
-        },
-      });
-    })
-  );
-
-  it(
-    'should fail after three tries',
-    waitForAsync(() => {
-      const config = { configId: 'configId1' };
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
-      spyOn(dataService, 'get').and.returnValue(
-        createRetriableStream(
-          throwError(() => new Error('Error')),
-          throwError(() => new Error('Error')),
-          throwError(() => new Error('Error')),
-          of(DUMMY_USER_DATA)
-        )
-      );
-
-      (userService as any).getIdentityUserData(config).subscribe({
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue(null);
+      serviceAsAny.getIdentityUserData(config).subscribe({
         error: (err) => {
           expect(err).toBeTruthy();
         },
       });
-    })
-  );
+    }));
+
+    it('does nothing if no userInfoEndpoint is set', waitForAsync(() => {
+      const config = { configId: 'configId1' };
+      const serviceAsAny = userService as any;
+
+      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({ userInfoEndpoint: null });
+      serviceAsAny.getIdentityUserData(config).subscribe({
+        error: (err) => {
+          expect(err).toBeTruthy();
+        },
+      });
+    }));
+
+    it('gets userData if authwell and userInfoEndpoint is set', waitForAsync(() => {
+      const config = { configId: 'configId1' };
+      const serviceAsAny = userService as any;
+      const spy = spyOn(dataService, 'get').and.returnValue(of({}));
+
+      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
+      serviceAsAny.getIdentityUserData(config).subscribe(() => {
+        expect(spy).toHaveBeenCalledOnceWith('userInfoEndpoint', config, 'accessToken');
+      });
+    }));
+  });
+
+  it('should retry once', waitForAsync(() => {
+    const config = { configId: 'configId1' };
+
+    spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+    spyOn(storagePersistenceService, 'read')
+      .withArgs('authWellKnownEndPoints', config)
+      .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
+    spyOn(dataService, 'get').and.returnValue(
+      createRetriableStream(
+        throwError(() => new Error('Error')),
+        of(DUMMY_USER_DATA)
+      )
+    );
+
+    (userService as any).getIdentityUserData(config).subscribe({
+      next: (res) => {
+        expect(res).toBeTruthy();
+        expect(res).toEqual(DUMMY_USER_DATA);
+      },
+    });
+  }));
+
+  it('should retry twice', waitForAsync(() => {
+    const config = { configId: 'configId1' };
+
+    spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+    spyOn(storagePersistenceService, 'read')
+      .withArgs('authWellKnownEndPoints', config)
+      .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
+    spyOn(dataService, 'get').and.returnValue(
+      createRetriableStream(
+        throwError(() => new Error('Error')),
+        throwError(() => new Error('Error')),
+        of(DUMMY_USER_DATA)
+      )
+    );
+
+    (userService as any).getIdentityUserData(config).subscribe({
+      next: (res) => {
+        expect(res).toBeTruthy();
+        expect(res).toEqual(DUMMY_USER_DATA);
+      },
+    });
+  }));
+
+  it('should fail after three tries', waitForAsync(() => {
+    const config = { configId: 'configId1' };
+
+    spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+    spyOn(storagePersistenceService, 'read')
+      .withArgs('authWellKnownEndPoints', config)
+      .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
+    spyOn(dataService, 'get').and.returnValue(
+      createRetriableStream(
+        throwError(() => new Error('Error')),
+        throwError(() => new Error('Error')),
+        throwError(() => new Error('Error')),
+        of(DUMMY_USER_DATA)
+      )
+    );
+
+    (userService as any).getIdentityUserData(config).subscribe({
+      error: (err) => {
+        expect(err).toBeTruthy();
+      },
+    });
+  }));
 });

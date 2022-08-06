@@ -9,6 +9,7 @@ describe('PlatformProvider Tests', () => {
     });
 
     const service = TestBed.inject(PlatformProvider);
+
     expect(service).toBeTruthy();
   });
 
@@ -18,6 +19,7 @@ describe('PlatformProvider Tests', () => {
     });
 
     const service = TestBed.inject(PlatformProvider);
+
     expect(service.isBrowser()).toBe(true);
   });
 
@@ -27,6 +29,7 @@ describe('PlatformProvider Tests', () => {
     });
 
     const service = TestBed.inject(PlatformProvider);
+
     expect(service.isBrowser()).toBe(false);
   });
 });

@@ -19,14 +19,14 @@ import { ParService } from './par.service';
 @Injectable()
 export class ParLoginService {
   constructor(
-    private loggerService: LoggerService,
-    private responseTypeValidationService: ResponseTypeValidationService,
-    private urlService: UrlService,
-    private redirectService: RedirectService,
-    private authWellKnownService: AuthWellKnownService,
-    private popupService: PopUpService,
-    private checkAuthService: CheckAuthService,
-    private parService: ParService
+    private readonly loggerService: LoggerService,
+    private readonly responseTypeValidationService: ResponseTypeValidationService,
+    private readonly urlService: UrlService,
+    private readonly redirectService: RedirectService,
+    private readonly authWellKnownService: AuthWellKnownService,
+    private readonly popupService: PopUpService,
+    private readonly checkAuthService: CheckAuthService,
+    private readonly parService: ParService
   ) {}
 
   loginPar(configuration: OpenIdConfiguration, authOptions?: AuthOptions): void {
@@ -74,6 +74,7 @@ export class ParLoginService {
 
     if (!this.responseTypeValidationService.hasConfigValidResponseType(configuration)) {
       const errorMessage = 'Invalid response type!';
+
       this.loggerService.logError(configuration, errorMessage);
 
       return throwError(() => new Error(errorMessage));
@@ -94,6 +95,7 @@ export class ParLoginService {
 
         if (!url) {
           const errorMessage = `Could not create URL with param ${response.requestUri}: 'url'`;
+
           this.loggerService.logError(configuration, errorMessage);
 
           return throwError(() => new Error(errorMessage));

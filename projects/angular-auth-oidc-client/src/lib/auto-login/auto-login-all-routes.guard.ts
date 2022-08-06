@@ -10,11 +10,11 @@ import { AutoLoginService } from './auto-login.service';
 @Injectable({ providedIn: 'root' })
 export class AutoLoginAllRoutesGuard implements CanActivate, CanActivateChild, CanLoad {
   constructor(
-    private autoLoginService: AutoLoginService,
-    private checkAuthService: CheckAuthService,
-    private loginService: LoginService,
-    private configurationService: ConfigurationService,
-    private router: Router
+    private readonly autoLoginService: AutoLoginService,
+    private readonly checkAuthService: CheckAuthService,
+    private readonly loginService: LoginService,
+    private readonly configurationService: ConfigurationService,
+    private readonly router: Router
   ) {}
 
   canLoad(): Observable<boolean | UrlTree> {

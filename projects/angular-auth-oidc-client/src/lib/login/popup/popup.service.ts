@@ -6,10 +6,13 @@ import { PopupResult } from './popup-result';
 
 @Injectable({ providedIn: 'root' })
 export class PopUpService {
-  private STORAGE_IDENTIFIER = 'popupauth';
+  private readonly STORAGE_IDENTIFIER = 'popupauth';
+
   private popUp: Window;
+
   private handle: number;
-  private resultInternal$ = new Subject<PopupResult>();
+
+  private readonly resultInternal$ = new Subject<PopupResult>();
 
   get result$(): Observable<PopupResult> {
     return this.resultInternal$.asObservable();
@@ -19,7 +22,7 @@ export class PopUpService {
     return this.document.defaultView;
   }
 
-  constructor(@Inject(DOCUMENT) private document: Document) {}
+  constructor(@Inject(DOCUMENT) private readonly document: Document) {}
 
   isCurrentlyInPopup(): boolean {
     if (this.canAccessSessionStorage()) {
@@ -33,6 +36,7 @@ export class PopUpService {
 
   openPopUp(url: string, popupOptions?: PopupOptions): void {
     const optionsToPass = this.getOptions(popupOptions);
+
     this.popUp = this.windowInternal.open(url, '_blank', optionsToPass);
     this.popUp.sessionStorage.setItem(this.STORAGE_IDENTIFIER, 'true');
 
@@ -87,6 +91,7 @@ export class PopUpService {
     const options: PopupOptions = { ...popupDefaultOptions, ...(popupOptions || {}) };
     const left: number = this.windowInternal.screenLeft + (this.windowInternal.outerWidth - options.width) / 2;
     const top: number = this.windowInternal.screenTop + (this.windowInternal.outerHeight - options.height) / 2;
+
     options.left = left;
     options.top = top;
 

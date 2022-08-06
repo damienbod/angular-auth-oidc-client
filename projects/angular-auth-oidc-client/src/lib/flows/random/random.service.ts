@@ -5,7 +5,7 @@ import { OpenIdConfiguration } from './../../config/openid-configuration';
 
 @Injectable()
 export class RandomService {
-  constructor(private cryptoService: CryptoService, private loggerService: LoggerService) {}
+  constructor(private readonly cryptoService: CryptoService, private readonly loggerService: LoggerService) {}
 
   createRandom(requiredLength: number, configuration: OpenIdConfiguration): string {
     if (requiredLength <= 0) {

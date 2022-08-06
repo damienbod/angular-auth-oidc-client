@@ -258,6 +258,7 @@ describe('UserCallbackHandlerService', () => {
             autoUserInfo: true,
           },
         ];
+
         spyOn(userService, 'getAndPersistUserDataInStore').and.returnValue(of({ user: 'some_data' }));
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
 
@@ -294,6 +295,7 @@ describe('UserCallbackHandlerService', () => {
             autoUserInfo: true,
           },
         ];
+
         spyOn(userService, 'getAndPersistUserDataInStore').and.returnValue(of({ user: 'some_data' }));
         const setSessionStateSpy = spyOn(flowsDataService, 'setSessionState');
 
@@ -326,6 +328,7 @@ describe('UserCallbackHandlerService', () => {
             autoUserInfo: true,
           },
         ];
+
         spyOn(userService, 'getAndPersistUserDataInStore').and.returnValue(of(null));
         const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
 
@@ -364,6 +367,7 @@ describe('UserCallbackHandlerService', () => {
             autoUserInfo: true,
           },
         ];
+
         spyOn(userService, 'getAndPersistUserDataInStore').and.returnValue(of(null));
         const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
 

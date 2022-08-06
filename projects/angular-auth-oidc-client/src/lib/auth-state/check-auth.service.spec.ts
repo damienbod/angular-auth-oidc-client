@@ -87,6 +87,7 @@ describe('CheckAuthService', () => {
       spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
       spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
       const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
       spyOn(storagePersistenceService, 'read').withArgs('authStateControl', allConfigs[0]).and.returnValue('the-state-param');
       const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
 
@@ -99,6 +100,7 @@ describe('CheckAuthService', () => {
       spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
       spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
       const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
       spyOn(storagePersistenceService, 'read').withArgs('authStateControl', allConfigs[0]).and.returnValue('not-matching-state-param');
       const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
 
@@ -124,6 +126,7 @@ describe('CheckAuthService', () => {
       'returns isAuthenticated: false with error message when config is not valid',
       waitForAsync(() => {
         const allConfigs = [];
+
         checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) =>
           expect(result).toEqual({
             isAuthenticated: false,
@@ -141,8 +144,10 @@ describe('CheckAuthService', () => {
       'returns null and sendMessageToMainWindow if currently in a popup',
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
         spyOn(popUpService, 'isCurrentlyInPopup').and.returnValue(true);
         const popupSpy = spyOn(popUpService, 'sendMessageToMainWindow');
+
         checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
           expect(result).toBeNull();
           expect(popupSpy).toHaveBeenCalled();
@@ -154,9 +159,11 @@ describe('CheckAuthService', () => {
       'returns isAuthenticated: false with error message in case handleCallbackAndFireEvents throws an error',
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
         spyOn(callBackService, 'isCallback').and.returnValue(true);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(throwError(() => new Error('ERROR')));
+
         checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
           expect(result).toEqual({
             isAuthenticated: false,
@@ -175,9 +182,11 @@ describe('CheckAuthService', () => {
       'calls callbackService.handlePossibleStsCallback with current url when callback is true',
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
         spyOn(callBackService, 'isCallback').and.returnValue(true);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
+
         checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
           expect(result).toEqual({
             isAuthenticated: true,
@@ -195,9 +204,11 @@ describe('CheckAuthService', () => {
       'does NOT call handleCallbackAndFireEvents with current url when callback is false',
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const spy = spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
+
         checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
           expect(result).toEqual({
             isAuthenticated: true,
@@ -215,12 +226,14 @@ describe('CheckAuthService', () => {
       'does fire the auth and user data events when it is not a callback from the security token service and is authenticated',
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
 
         const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthenticatedAndFireEvent');
         const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
+
         checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
           expect(result).toEqual({
             isAuthenticated: true,
@@ -239,12 +252,14 @@ describe('CheckAuthService', () => {
       'does NOT fire the auth and user data events when it is not a callback from the security token service and is NOT authenticated',
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
 
         const setAuthorizedAndFireEventSpy = spyOn(authStateService, 'setAuthenticatedAndFireEvent');
         const userServiceSpy = spyOn(userService, 'publishUserDataIfExists');
+
         checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
           expect(result).toEqual({
             isAuthenticated: false,
@@ -263,6 +278,7 @@ describe('CheckAuthService', () => {
       'if authenticated return true',
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
@@ -282,6 +298,7 @@ describe('CheckAuthService', () => {
       'if authenticated set auth and fires event ',
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
@@ -297,6 +314,7 @@ describe('CheckAuthService', () => {
       'if authenticated publishUserdataIfExists',
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
@@ -332,6 +350,7 @@ describe('CheckAuthService', () => {
       'if isCheckSessionConfigured call checkSessionService.start()',
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         spyOn(checkSessionService, 'isCheckSessionConfigured').and.returnValue(true);
@@ -347,6 +366,7 @@ describe('CheckAuthService', () => {
       'if isSilentRenewConfigured call getOrCreateIframe()',
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         spyOn(silentRenewService, 'isSilentRenewConfigured').and.returnValue(true);
@@ -362,6 +382,7 @@ describe('CheckAuthService', () => {
       'calls checkSavedRedirectRouteAndNavigate if authenticated',
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
         const spy = spyOn(autoLoginService, 'checkSavedRedirectRouteAndNavigate');
@@ -377,6 +398,7 @@ describe('CheckAuthService', () => {
       'does not call checkSavedRedirectRouteAndNavigate if not authenticated',
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         const spy = spyOn(autoLoginService, 'checkSavedRedirectRouteAndNavigate');
@@ -393,6 +415,7 @@ describe('CheckAuthService', () => {
       'if isSilentRenewConfigured call getOrCreateIframe()',
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
@@ -409,6 +432,7 @@ describe('CheckAuthService', () => {
       'does forceRefreshSession get called and is NOT authenticated',
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
@@ -433,6 +457,7 @@ describe('CheckAuthService', () => {
       'should start check session and validation after forceRefreshSession has been called and is authenticated after forcing with silentrenew',
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
@@ -465,6 +490,7 @@ describe('CheckAuthService', () => {
       'should start check session and validation after forceRefreshSession has been called and is authenticated after forcing without silentrenew',
       waitForAsync(() => {
         const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+
         spyOn(callBackService, 'isCallback').and.returnValue(false);
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(of(null));
@@ -502,6 +528,7 @@ describe('CheckAuthService', () => {
           { configId: 'configId1', authority: 'some-authority1' },
           { configId: 'configId2', authority: 'some-authority2' },
         ];
+
         spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
         spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
         spyOn(storagePersistenceService, 'read').withArgs('authStateControl', allConfigs[0]).and.returnValue('the-state-param');

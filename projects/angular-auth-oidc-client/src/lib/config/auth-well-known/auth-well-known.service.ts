@@ -11,9 +11,9 @@ import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 @Injectable()
 export class AuthWellKnownService {
   constructor(
-    private dataService: AuthWellKnownDataService,
-    private publicEventsService: PublicEventsService,
-    private storagePersistenceService: StoragePersistenceService
+    private readonly dataService: AuthWellKnownDataService,
+    private readonly publicEventsService: PublicEventsService,
+    private readonly storagePersistenceService: StoragePersistenceService
   ) {}
 
   storeWellKnownEndpoints(config: OpenIdConfiguration, mappedWellKnownEndpoints: AuthWellKnownEndpoints): void {

@@ -11,16 +11,18 @@ import { JwtKeys } from '../validation/jwtkeys';
 @Injectable()
 export class SigninKeyDataService {
   constructor(
-    private storagePersistenceService: StoragePersistenceService,
-    private loggerService: LoggerService,
-    private dataService: DataService
+    private readonly storagePersistenceService: StoragePersistenceService,
+    private readonly loggerService: LoggerService,
+    private readonly dataService: DataService
   ) {}
 
   getSigningKeys(currentConfiguration: OpenIdConfiguration): Observable<JwtKeys> {
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', currentConfiguration);
     const jwksUri = authWellKnownEndPoints?.jwksUri;
+
     if (!jwksUri) {
       const error = `getSigningKeys: authWellKnownEndpoints.jwksUri is: '${jwksUri}'`;
+
       this.loggerService.logWarning(currentConfiguration, error);
 
       return throwError(() => new Error(error));
@@ -36,13 +38,16 @@ export class SigninKeyDataService {
 
   private handleErrorGetSigningKeys(errorResponse: HttpResponse<any> | any, currentConfiguration: OpenIdConfiguration): Observable<never> {
     let errMsg = '';
+
     if (errorResponse instanceof HttpResponse) {
       const body = errorResponse.body || {};
       const err = JSON.stringify(body);
       const { status, statusText } = errorResponse;
+
       errMsg = `${status || ''} - ${statusText || ''} ${err || ''}`;
     } else {
       const { message } = errorResponse;
+
       errMsg = !!message ? message : `${errorResponse}`;
     }
     this.loggerService.logError(currentConfiguration, errMsg);

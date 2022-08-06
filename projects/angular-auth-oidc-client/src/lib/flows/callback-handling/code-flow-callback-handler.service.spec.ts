@@ -50,6 +50,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       'throws error if no state is given',
       waitForAsync(() => {
         const getUrlParameterSpy = spyOn(urlService, 'getUrlParameter').and.returnValue('params');
+
         getUrlParameterSpy.withArgs('any-url', 'state').and.returnValue(null);
 
         service.codeFlowCallback('any-url', { configId: 'configId1' }).subscribe({
@@ -64,6 +65,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       'throws error if no code is given',
       waitForAsync(() => {
         const getUrlParameterSpy = spyOn(urlService, 'getUrlParameter').and.returnValue('params');
+
         getUrlParameterSpy.withArgs('any-url', 'code').and.returnValue(null);
 
         service.codeFlowCallback('any-url', { configId: 'configId1' }).subscribe({
@@ -154,6 +156,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       'calls dataService if all params are good',
       waitForAsync(() => {
         const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
@@ -174,6 +177,7 @@ describe('CodeFlowCallbackHandlerService', () => {
           configId: 'configId1',
           customParamsCodeRequest: { foo: 'bar' },
         };
+
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
@@ -197,6 +201,7 @@ describe('CodeFlowCallbackHandlerService', () => {
           configId: 'configId1',
           customParamsCodeRequest: { foo: 'bar' },
         };
+
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
@@ -205,6 +210,7 @@ describe('CodeFlowCallbackHandlerService', () => {
 
         service.codeFlowCodeRequest({} as CallbackContext, config).subscribe(() => {
           const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
+
           expect(httpHeaders.has('Content-Type')).toBeTrue();
           expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
         });
@@ -220,6 +226,7 @@ describe('CodeFlowCallbackHandlerService', () => {
           customParamsCodeRequest: { foo: 'bar' },
           authority: 'authority',
         };
+
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
@@ -280,6 +287,7 @@ describe('CodeFlowCallbackHandlerService', () => {
           customParamsCodeRequest: { foo: 'bar' },
           authority: 'authority',
         };
+
         spyOn(storagePersistenceService, 'read')
           .withArgs('authWellKnownEndPoints', config)
           .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });

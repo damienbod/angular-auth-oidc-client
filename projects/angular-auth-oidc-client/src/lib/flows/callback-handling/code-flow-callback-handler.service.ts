@@ -68,11 +68,13 @@ export class CodeFlowCallbackHandlerService {
 
     const authWellknownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', config);
     const tokenEndpoint = authWellknownEndpoints?.tokenEndpoint;
+
     if (!tokenEndpoint) {
       return throwError(() => new Error('Token Endpoint not defined'));
     }
 
     let headers: HttpHeaders = new HttpHeaders();
+
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
     const bodyForCodeFlow = this.urlService.createBodyForCodeFlowCodeRequest(callbackContext.code, config, config?.customParamsCodeRequest);
@@ -93,6 +95,7 @@ export class CodeFlowCallbackHandlerService {
       catchError((error) => {
         const { authority } = config;
         const errorMessage = `OidcService code request ${authority}`;
+
         this.loggerService.logError(config, errorMessage, error);
 
         return throwError(() => new Error(errorMessage));
@@ -107,6 +110,7 @@ export class CodeFlowCallbackHandlerService {
         if (error && error instanceof HttpErrorResponse && error.error instanceof ProgressEvent && error.error.type === 'error') {
           const { authority, refreshTokenRetryInSeconds } = config;
           const errorMessage = `OidcService code request ${authority} - no internet connection`;
+
           this.loggerService.logWarning(config, errorMessage, error);
 
           return timer(refreshTokenRetryInSeconds * 1000);

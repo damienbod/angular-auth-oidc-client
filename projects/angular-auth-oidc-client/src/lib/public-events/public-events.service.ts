@@ -5,7 +5,7 @@ import { OidcClientNotification } from './notification';
 
 @Injectable()
 export class PublicEventsService {
-  private notify = new ReplaySubject<OidcClientNotification<any>>(1);
+  private readonly notify = new ReplaySubject<OidcClientNotification<any>>(1);
 
   /**
    * Fires a new event.
