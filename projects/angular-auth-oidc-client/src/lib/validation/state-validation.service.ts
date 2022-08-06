@@ -31,7 +31,7 @@ export class StateValidationService {
     return this.validateState(callbackContext, configuration);
   }
 
-  validateState(callbackContext: CallbackContext, configuration: OpenIdConfiguration): Observable<StateValidationResult> {
+  private validateState(callbackContext: CallbackContext, configuration: OpenIdConfiguration): Observable<StateValidationResult> {
     const toReturn = new StateValidationResult();
     const authStateControl = this.storagePersistenceService.read('authStateControl', configuration);
 
