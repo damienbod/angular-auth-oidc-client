@@ -12,8 +12,6 @@ pre-push:
 pre-commit:
   commands:
     check-blockwords:
-      tags: frontend security
-      glob: '*.spec.{js,ts}'
       run: npm run check-blockwords
 #
 # pre-commit:

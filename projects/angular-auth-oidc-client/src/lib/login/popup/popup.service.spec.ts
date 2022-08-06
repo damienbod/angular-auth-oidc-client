@@ -38,7 +38,7 @@ describe('PopUpService', () => {
   });
 
   fdescribe('isCurrentlyInPopup', () => {
-    it('returns true if window has opener, opener does not equal the window and session storage has item', () => {
+    it('returns true2 if window has opener, opener does not equal the window and session storage has item', () => {
       spyOnProperty(window, 'opener').and.returnValue({ some: 'thing' });
       spyOn(window.sessionStorage, 'getItem').and.returnValue('thing');
       spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(true);
