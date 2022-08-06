@@ -1,5 +1,11 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2022-08-06 14.1.3
+
+- Bugfix RxJS imports to be compatible with RxJS 6
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1491)
+  -
+
 ### 2022-07-31 14.1.2
 
 - Bugfix RxJS imports to be compatible with RxJS 6
@@ -10,7 +16,7 @@
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1483)
 - Add disablePkce config parameter
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1455)
-  
+
 ### 2022-07-05 14.1.1
 
 - Bugfix getUserData - You provided an invalid object where a stream was expected.
