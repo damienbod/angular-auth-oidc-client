@@ -13,7 +13,7 @@ const words = {
   fit: { matcher: '\\s*fit\\(', extension: fileExtensions.spec },
   '.skip': { matcher: '\\.skip\\(', extension: fileExtensions.spec },
   '.only': { matcher: '\\.only\\(', extension: fileExtensions.spec },
-  // fdescribe: { matcher: '\\s*fdescribe\\(', extension: fileExtensions.spec },
+  fdescribe: { matcher: '\\s*fdescribe\\(', extension: fileExtensions.spec },
   xdescribe: { matcher: '\\s*xdescribe\\(', extension: fileExtensions.spec },
   xit: { matcher: '\\sxit\\(', extension: fileExtensions.spec },
 };
