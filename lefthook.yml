@@ -9,17 +9,12 @@ pre-push:
       glob: '*.{js,ts}'
       run: npm run fix-prettier {staged_files}
 
-    check-blockwords:
-      tags: frontend security
-      glob: '*.spec.{js,ts}'
-      run: node tools/check-blockwords
-
 pre-commit:
   commands:
     check-blockwords:
       tags: frontend security
       glob: '*.spec.{js,ts}'
-      run: node tools/check-blockwords
+      run: npm run check-blockwords
 #
 # pre-commit:
 #   parallel: true

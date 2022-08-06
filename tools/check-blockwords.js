@@ -1,6 +1,5 @@
 /* eslint-env es6 */
 const { execSync } = require('child_process');
-const chalk = require('chalk');
 
 const fileExtensions = {
   ts: /\.ts$/,
@@ -29,8 +28,8 @@ for (let [word, { extension, matcher }] of Object.entries(words)) {
 
   if (supportedFiles.length) {
     status = 1;
-    console.log(chalk.bgRed.whiteBright('Error:'), `The following files contains '${word}' in them:`);
-    console.log(chalk.white(supportedFiles.join('\n')));
+    console.log(`The following files contains '${word}' in them:`);
+    console.log(supportedFiles.join('\n'));
   }
 }
 process.exit(status);
