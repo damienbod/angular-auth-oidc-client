@@ -12,6 +12,6 @@ export class ConsoleLoggerService implements AbstractLoggerService {
   }
 
   logDebug(message?: any, ...args: any[]): void {
-    console.log(message, ...args);
+    console.debug(message, ...args);
   }
 }
