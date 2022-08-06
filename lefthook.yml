@@ -8,9 +8,18 @@ pre-push:
       tags: frontend security
       glob: '*.{js,ts}'
       run: npm run fix-prettier {staged_files}
-    # gems-audit:
-    #   tags: backend security
-    #   run: bundle audit
+
+    check-blockwords:
+      tags: frontend security
+      glob: '*.spec.{js,ts}'
+      run: node tools/check-blockwords
+
+pre-commit:
+  commands:
+    check-blockwords:
+      tags: frontend security
+      glob: '*.spec.{js,ts}'
+      run: node tools/check-blockwords
 #
 # pre-commit:
 #   parallel: true
