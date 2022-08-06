@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockClass } from '../../../test/auto-mock';
 import { FlowsDataService } from '../../flows/flows-data.service';
@@ -811,25 +811,60 @@ describe('UrlService Tests', () => {
   });
 
   describe('getAuthorizeUrl', () => {
-    it('calls createUrlCodeFlowAuthorize if current flow is code flow', () => {
+    it('returns null if current flow is code flow and no redirect url is defined', waitForAsync(() => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-      const spy = spyOn(service as any, 'createUrlCodeFlowAuthorize');
 
-      service.getAuthorizeUrl({ configId: 'configId1' });
-      expect(spy).toHaveBeenCalled();
-    });
+      service.getAuthorizeUrl({ configId: 'configId1' }).subscribe((result) => {
+        expect(result).toBeNull();
+      });
+    }));
 
-    it('calls createUrlImplicitFlowAuthorize if current flow is NOT code flow', () => {
+    it('returns empty string if current flow is code flow, config disabled pkce and there is a redirecturl', waitForAsync(() => {
+      spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
+      const config = { configId: 'configId1', disablePkce: true, redirectUrl: 'some-redirectUrl' } as OpenIdConfiguration;
+
+      service.getAuthorizeUrl(config).subscribe((result) => {
+        expect(result).toBe('');
+      });
+    }));
+
+    it('returns url if current flow is code flow, config disabled pkce, there is a redirecturl and awkep are given', waitForAsync(() => {
+      spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
+      const config = {
+        configId: 'configId1',
+        disablePkce: false,
+        redirectUrl: 'some-redirectUrl',
+        clientId: 'some-clientId',
+        responseType: 'testResponseType',
+        scope: 'testScope',
+        hdParam: null,
+        customParamsAuthRequest: null,
+      } as OpenIdConfiguration;
+
+      const authorizationEndpoint = 'authorizationEndpoint';
+
+      spyOn(jwtWindowCryptoService, 'generateCodeChallenge').and.returnValue(of('some-code-challenge'));
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({ authorizationEndpoint });
+
+      service.getAuthorizeUrl(config).subscribe((result) => {
+        expect(result).toBe(
+          'authorizationEndpoint?client_id=some-clientId&redirect_uri=some-redirectUrl&response_type=testResponseType&scope=testScope&nonce=undefined&state=undefined&code_challenge=some-code-challenge&code_challenge_method=S256'
+        );
+      });
+    }));
+
+    it('calls createUrlImplicitFlowAuthorize if current flow is NOT code flow', waitForAsync(() => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
       const spyCreateUrlCodeFlowAuthorize = spyOn(service as any, 'createUrlCodeFlowAuthorize');
       const spyCreateUrlImplicitFlowAuthorize = spyOn(service as any, 'createUrlImplicitFlowAuthorize');
 
-      service.getAuthorizeUrl({ configId: 'configId1' });
-      expect(spyCreateUrlCodeFlowAuthorize).not.toHaveBeenCalled();
-      expect(spyCreateUrlImplicitFlowAuthorize).toHaveBeenCalled();
-    });
+      service.getAuthorizeUrl({ configId: 'configId1' }).subscribe(() => {
+        expect(spyCreateUrlCodeFlowAuthorize).not.toHaveBeenCalled();
+        expect(spyCreateUrlImplicitFlowAuthorize).toHaveBeenCalled();
+      });
+    }));
 
-    it('return empty string if flow is not code flow and createUrlImplicitFlowAuthorize returns falsy', () => {
+    it('return empty string if flow is not code flow and createUrlImplicitFlowAuthorize returns falsy', waitForAsync(() => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
       const spy = spyOn(service as any, 'createUrlImplicitFlowAuthorize').and.returnValue('');
       const resultObs$ = service.getAuthorizeUrl({ configId: 'configId1' });
@@ -838,7 +873,7 @@ describe('UrlService Tests', () => {
         expect(spy).toHaveBeenCalled();
         expect(result).toBe('');
       });
-    });
+    }));
   });
 
   describe('getRefreshSessionSilentRenewUrl', () => {
