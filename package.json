@@ -25,6 +25,7 @@
     "start-docs": "cd \"docs/site/angular-auth-oidc-client\" && npm start",
     "build-docs": "cd \"docs/site/angular-auth-oidc-client\" && npm run build",
     "check-prettier": "prettier --check \"projects/angular-auth-oidc-client/**/*.*\"",
+    "check-blockwords": "node ./tools/check-blockwords.js",
     "fix-prettier": "prettier --write  \"projects/**/*.*\"",
     "coveralls": "cat ./coverage/angular-auth-oidc-client/lcov.info | coveralls",
     "start": "ng serve sample-code-flow-refresh-tokens --ssl -o",

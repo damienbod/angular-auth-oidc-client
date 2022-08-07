@@ -42,6 +42,8 @@ export class PopUpService {
 
     const listener = (event: MessageEvent): void => {
       if (!event?.data || typeof event.data !== 'string') {
+        this.cleanUp(listener);
+
         return;
       }
 
