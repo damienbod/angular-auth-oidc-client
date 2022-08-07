@@ -129,7 +129,7 @@ describe('PopUpService', () => {
         popUpService.result$.subscribe((result) => (popupResult = result));
       });
 
-      it('message received', fakeAsync(() => {
+      it('message received with data', fakeAsync(() => {
         let listener: (event: MessageEvent) => void;
 
         spyOn(window, 'addEventListener').and.callFake((_, func) => (listener = func));
@@ -145,6 +145,26 @@ describe('PopUpService', () => {
 
         expect(popupResult).toEqual({ userClosed: false, receivedUrl: 'some-url1111' });
         expect(cleanUpSpy).toHaveBeenCalledOnceWith(listener);
+      }));
+
+      it('message received without data does return but cleanup does not throw event', fakeAsync(() => {
+        let listener: (event: MessageEvent) => void;
+
+        spyOn(window, 'addEventListener').and.callFake((_, func) => (listener = func));
+        const nextSpy = spyOn((popUpService as any).resultInternal$, 'next');
+
+        popUpService.openPopUp('url');
+
+        expect(popupResult).toBeUndefined();
+        expect(cleanUpSpy).not.toHaveBeenCalled();
+
+        listener(new MessageEvent('message', { data: null }));
+
+        tick(200);
+
+        expect(popupResult).toBeUndefined();
+        expect(cleanUpSpy).toHaveBeenCalled();
+        expect(nextSpy).not.toHaveBeenCalled();
       }));
 
       it('user closed', fakeAsync(() => {
