@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 export enum ValidationResult {
   NotSet = 'NotSet',
   StatesDoNotMatch = 'StatesDoNotMatch',
