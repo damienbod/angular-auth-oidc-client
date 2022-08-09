@@ -4,9 +4,9 @@ export enum EventTypes {
    *  This only works in the AppModule Constructor
    */
   ConfigLoaded,
-  Loading,
-  LoadingFinished,
-  LoadingFinishedWithError,
+  CheckingAuth,
+  CheckingAuthFinished,
+  CheckingAuthFinishedWithError,
   ConfigLoadingFailed,
   CheckSessionReceived,
   UserDataChanged,

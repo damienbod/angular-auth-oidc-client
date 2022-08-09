@@ -37,7 +37,7 @@ export class CheckAuthService {
   ) {}
 
   checkAuth(configuration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[], url?: string): Observable<LoginResponse> {
-    this.publicEventsService.fireEvent(EventTypes.Loading);
+    this.publicEventsService.fireEvent(EventTypes.CheckingAuth);
 
     if (this.currentUrlService.currentUrlHasStateParam()) {
       const stateParamFromUrl = this.currentUrlService.getStateParamFromCurrentUrl();
@@ -50,9 +50,9 @@ export class CheckAuthService {
     }
 
     return this.checkAuthWithConfig(configuration, allConfigs, url).pipe(
-      tap(() => this.publicEventsService.fireEvent(EventTypes.LoadingFinished)),
+      tap(() => this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinished)),
       catchError((error) => {
-        this.publicEventsService.fireEvent(EventTypes.LoadingFinishedWithError, error);
+        this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinishedWithError, error);
 
         return throwError(() => error);
       })
@@ -75,9 +75,9 @@ export class CheckAuthService {
     const allChecks$ = configs.map((x) => this.checkAuthWithConfig(x, configs, url));
 
     return forkJoin(allChecks$).pipe(
-      tap(() => this.publicEventsService.fireEvent(EventTypes.LoadingFinished)),
+      tap(() => this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinished)),
       catchError((error) => {
-        this.publicEventsService.fireEvent(EventTypes.LoadingFinishedWithError, error);
+        this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinishedWithError, error);
 
         return throwError(() => error);
       })
@@ -101,9 +101,9 @@ export class CheckAuthService {
           })
         );
       }),
-      tap(() => this.publicEventsService.fireEvent(EventTypes.LoadingFinished)),
+      tap(() => this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinished)),
       catchError((error) => {
-        this.publicEventsService.fireEvent(EventTypes.LoadingFinishedWithError, error);
+        this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinishedWithError, error);
 
         return throwError(() => error);
       })
