@@ -150,6 +150,8 @@ this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
 
 ## isLoading$
 
+> The property is disabled and will be removed in future versions. Please use the `PublicEventsService` with the events `EventTypes.Loading`, `EventTypes.LoadingFinished`, `EventTypes.LoadingFinishedWithError` instead
+
 The `isLoading$` property returns an `Observable<boolean>`. Emits false when the observable, returned by either of the `checkAuth()` methods, emits a value, or errors. Initial value: true.
 
 ### Example

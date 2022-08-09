@@ -12,6 +12,8 @@ import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
 import { LoginResponse } from '../login/login-response';
 import { PopUpService } from '../login/popup/popup.service';
+import { EventTypes } from '../public-events/event-types';
+import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UserService } from '../user-data/user.service';
 import { CurrentUrlService } from '../utils/url/current-url.service';
@@ -30,22 +32,31 @@ export class CheckAuthService {
     private readonly periodicallyTokenCheckService: PeriodicallyTokenCheckService,
     private readonly popupService: PopUpService,
     private readonly autoLoginService: AutoLoginService,
-    private readonly storagePersistenceService: StoragePersistenceService
+    private readonly storagePersistenceService: StoragePersistenceService,
+    private readonly publicEventsService: PublicEventsService
   ) {}
 
   checkAuth(configuration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[], url?: string): Observable<LoginResponse> {
+    this.publicEventsService.fireEvent(EventTypes.Loading);
+
     if (this.currentUrlService.currentUrlHasStateParam()) {
       const stateParamFromUrl = this.currentUrlService.getStateParamFromCurrentUrl();
-      const config = this.getConfigurationWithUrlState([configuration], stateParamFromUrl);
 
-      if (!config) {
+      configuration = this.getConfigurationWithUrlState([configuration], stateParamFromUrl);
+
+      if (!configuration) {
         return throwError(() => new Error(`could not find matching config for state ${stateParamFromUrl}`));
       }
-
-      return this.checkAuthWithConfig(config, allConfigs, url);
     }
 
-    return this.checkAuthWithConfig(configuration, allConfigs, url);
+    return this.checkAuthWithConfig(configuration, allConfigs, url).pipe(
+      tap(() => this.publicEventsService.fireEvent(EventTypes.LoadingFinished)),
+      catchError((error) => {
+        this.publicEventsService.fireEvent(EventTypes.LoadingFinishedWithError, error);
+
+        return throwError(() => error);
+      })
+    );
   }
 
   checkAuthMultiple(allConfigs: OpenIdConfiguration[], url?: string): Observable<LoginResponse[]> {
@@ -63,7 +74,14 @@ export class CheckAuthService {
     const configs = allConfigs ?? [];
     const allChecks$ = configs.map((x) => this.checkAuthWithConfig(x, configs, url));
 
-    return forkJoin(allChecks$);
+    return forkJoin(allChecks$).pipe(
+      tap(() => this.publicEventsService.fireEvent(EventTypes.LoadingFinished)),
+      catchError((error) => {
+        this.publicEventsService.fireEvent(EventTypes.LoadingFinishedWithError, error);
+
+        return throwError(() => error);
+      })
+    );
   }
 
   checkAuthIncludingServer(configuration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): Observable<LoginResponse> {
@@ -82,6 +100,12 @@ export class CheckAuthService {
             }
           })
         );
+      }),
+      tap(() => this.publicEventsService.fireEvent(EventTypes.LoadingFinished)),
+      catchError((error) => {
+        this.publicEventsService.fireEvent(EventTypes.LoadingFinishedWithError, error);
+
+        return throwError(() => error);
       })
     );
   }
