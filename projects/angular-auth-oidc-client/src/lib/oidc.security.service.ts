@@ -17,6 +17,8 @@ import { LoginResponse } from './login/login-response';
 import { LoginService } from './login/login.service';
 import { PopupOptions } from './login/popup/popup-options';
 import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.service';
+import { EventTypes } from './public-events/event-types';
+import { PublicEventsService } from './public-events/public-events.service';
 import { UserService } from './user-data/user.service';
 import { UserDataResult } from './user-data/userdata-result';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
@@ -63,6 +65,7 @@ export class OidcSecurityService {
   }
 
   /**
+   * @deprecated This property should not be used. Please use the `PublicEventsService` instead. This property is removed in future versions
    * Emits false when the observable, returned by one of the checkAuth() methods, emits a value, or errors. Initial value: true.
    */
   get isLoading$(): Observable<boolean> {
@@ -84,7 +87,8 @@ export class OidcSecurityService {
     private readonly loginService: LoginService,
     private readonly refreshSessionService: RefreshSessionService,
     private readonly urlService: UrlService,
-    private readonly authWellKnownService: AuthWellKnownService
+    private readonly authWellKnownService: AuthWellKnownService,
+    private readonly publicEventsService: PublicEventsService
   ) {}
 
   preloadAuthWellKnownDocument(configId?: string): Observable<AuthWellKnownEndpoints> {
@@ -131,6 +135,8 @@ export class OidcSecurityService {
    * @returns An object `LoginResponse` containing all information about the login
    */
   checkAuth(url?: string, configId?: string): Observable<LoginResponse> {
+    this.publicEventsService.fireEvent(EventTypes.Loading);
+
     return this.configurationService.getOpenIDConfigurations(configId).pipe(
       switchMap(({ allConfigs, currentConfig }) => this.checkAuthService.checkAuth(currentConfig, allConfigs, url)),
       tap(this.finishLoading),
@@ -430,11 +436,13 @@ export class OidcSecurityService {
   }
 
   private readonly finishLoading = (): void => {
+    this.publicEventsService.fireEvent(EventTypes.LoadingFinished);
     this.isLoading.next(false);
   };
 
   private readonly finishLoadingOnError = (err: any): Observable<never> => {
     this.isLoading.next(false);
+    this.publicEventsService.fireEvent(EventTypes.LoadingFinishedWithError, err);
 
     return throwError(() => err);
   };
