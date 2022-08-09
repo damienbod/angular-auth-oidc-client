@@ -9,14 +9,12 @@ describe('AuthModule', () => {
   describe('APP_CONFIG', () => {
     let config: any;
 
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [AuthModule.forRoot({ config: { authority: 'something' } })],
-          providers: [{ provide: ConfigurationService, useClass: mockClass(ConfigurationService) }],
-        }).compileComponents();
-      })
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [AuthModule.forRoot({ config: { authority: 'something' } })],
+        providers: [{ provide: ConfigurationService, useClass: mockClass(ConfigurationService) }],
+      }).compileComponents();
+    }));
 
     it('should create', () => {
       expect(AuthModule).toBeDefined();
@@ -36,21 +34,19 @@ describe('AuthModule', () => {
   });
 
   describe('StsConfigHttpLoader', () => {
-    beforeEach(
-      waitForAsync(() => {
-        TestBed.configureTestingModule({
-          imports: [
-            AuthModule.forRoot({
-              loader: {
-                provide: StsConfigLoader,
-                useFactory: () => new StsConfigHttpLoader(of(null)),
-              },
-            }),
-          ],
-          providers: [{ provide: ConfigurationService, useClass: mockClass(ConfigurationService) }],
-        }).compileComponents();
-      })
-    );
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [
+          AuthModule.forRoot({
+            loader: {
+              provide: StsConfigLoader,
+              useFactory: () => new StsConfigHttpLoader(of(null)),
+            },
+          }),
+        ],
+        providers: [{ provide: ConfigurationService, useClass: mockClass(ConfigurationService) }],
+      }).compileComponents();
+    }));
 
     it('should create StsConfigStaticLoader if config is passed', () => {
       const configLoader = TestBed.inject(StsConfigLoader);
