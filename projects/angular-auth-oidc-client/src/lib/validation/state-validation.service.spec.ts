@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { AuthWellKnownEndpoints } from '../config/auth-well-known/auth-well-known-endpoints';
@@ -654,15 +654,15 @@ describe('State Validation Service', () => {
   });
 
   describe('getValidatedStateResult', () => {
-    it('should return authResponseIsValid false when null is passed', () => {
+    it('should return authResponseIsValid false when null is passed', waitForAsync(() => {
       const isValidObs$ = stateValidationService.getValidatedStateResult(null, config);
 
       isValidObs$.subscribe((isValid) => {
         expect(isValid.authResponseIsValid).toBe(false);
       });
-    });
+    }));
 
-    it('should return invalid context error', () => {
+    it('should return invalid context error', waitForAsync(() => {
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
       config.responseType = 'id_token token';
@@ -689,9 +689,9 @@ describe('State Validation Service', () => {
       isValidObs$.subscribe((isValid) => {
         expect(isValid.authResponseIsValid).toBe(false);
       });
-    });
+    }));
 
-    it('should return invalid result if validateIdTokenExpNotExpired is false', () => {
+    it('should return invalid result if validateIdTokenExpNotExpired is false', waitForAsync(() => {
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
       config.responseType = 'id_token token';
@@ -744,9 +744,9 @@ describe('State Validation Service', () => {
         expect(state.decodedIdToken).toBe('decoded_id_token');
         expect(state.authResponseIsValid).toBe(false);
       });
-    });
+    }));
 
-    it('should return invalid result if validateStateFromHashCallback is false', () => {
+    it('should return invalid result if validateStateFromHashCallback is false', waitForAsync(() => {
       const readSpy = spyOn(storagePersistenceService, 'read');
 
       readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
@@ -780,9 +780,9 @@ describe('State Validation Service', () => {
         expect(state.decodedIdToken).toBeDefined();
         expect(state.idToken).toBe('');
       });
-    });
+    }));
 
-    it('access_token should equal result.access_token and is valid if response_type is "id_token token"', () => {
+    it('access_token should equal result.access_token and is valid if response_type is "id_token token"', waitForAsync(() => {
       spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
       spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
@@ -831,9 +831,9 @@ describe('State Validation Service', () => {
         expect(state.decodedIdToken).toBe('decoded_id_token');
         expect(state.authResponseIsValid).toBe(true);
       });
-    });
+    }));
 
-    it('should return invalid result if validateSignatureIdToken is false', () => {
+    it('should return invalid result if validateSignatureIdToken is false', waitForAsync(() => {
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
       config.responseType = 'id_token token';
       spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
@@ -873,9 +873,9 @@ describe('State Validation Service', () => {
         expect(state.decodedIdToken).toBe('decoded_id_token');
         expect(state.authResponseIsValid).toBe(false);
       });
-    });
+    }));
 
-    it('should return invalid result if validateIdTokenNonce is false', () => {
+    it('should return invalid result if validateIdTokenNonce is false', waitForAsync(() => {
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
       config.responseType = 'id_token token';
       spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
@@ -915,9 +915,9 @@ describe('State Validation Service', () => {
         expect(state.decodedIdToken).toBe('decoded_id_token');
         expect(state.authResponseIsValid).toBe(false);
       });
-    });
+    }));
 
-    it('should return invalid result if validateRequiredIdToken is false', () => {
+    it('should return invalid result if validateRequiredIdToken is false', waitForAsync(() => {
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
       config.responseType = 'id_token token';
@@ -960,9 +960,9 @@ describe('State Validation Service', () => {
         expect(state.decodedIdToken).toBe('decoded_id_token');
         expect(state.authResponseIsValid).toBe(false);
       });
-    });
+    }));
 
-    it('should return invalid result if validateIdTokenIatMaxOffset is false', () => {
+    it('should return invalid result if validateIdTokenIatMaxOffset is false', waitForAsync(() => {
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
       config.responseType = 'id_token token';
@@ -1007,9 +1007,9 @@ describe('State Validation Service', () => {
         expect(state.decodedIdToken).toBe('decoded_id_token');
         expect(state.authResponseIsValid).toBe(false);
       });
-    });
+    }));
 
-    it('should return invalid result if validateIdTokenIss is false and has authWellKnownEndPoints', () => {
+    it('should return invalid result if validateIdTokenIss is false and has authWellKnownEndPoints', waitForAsync(() => {
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
       config.responseType = 'id_token token';
@@ -1056,9 +1056,9 @@ describe('State Validation Service', () => {
         expect(state.decodedIdToken).toBe('decoded_id_token');
         expect(state.authResponseIsValid).toBe(false);
       });
-    });
+    }));
 
-    it('should return invalid result if validateIdTokenIss is false and has no authWellKnownEndPoints', () => {
+    it('should return invalid result if validateIdTokenIss is false and has no authWellKnownEndPoints', waitForAsync(() => {
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
       config.responseType = 'id_token token';
       spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
@@ -1099,9 +1099,9 @@ describe('State Validation Service', () => {
         expect(state.authResponseIsValid).toBe(false);
         expect(state.state).toBe(ValidationResult.NoAuthWellKnownEndPoints);
       });
-    });
+    }));
 
-    it('should return invalid result if validateIdTokenAud is false', () => {
+    it('should return invalid result if validateIdTokenAud is false', waitForAsync(() => {
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
       config.responseType = 'id_token token';
       spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
@@ -1144,9 +1144,9 @@ describe('State Validation Service', () => {
         expect(state.decodedIdToken).toBe('decoded_id_token');
         expect(state.authResponseIsValid).toBe(false);
       });
-    });
+    }));
 
-    it('should return invalid result if validateIdTokenAzpExistsIfMoreThanOneAud is false', () => {
+    it('should return invalid result if validateIdTokenAzpExistsIfMoreThanOneAud is false', waitForAsync(() => {
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
       config.responseType = 'id_token token';
       spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
@@ -1191,9 +1191,9 @@ describe('State Validation Service', () => {
         expect(state.authResponseIsValid).toBe(false);
         expect(state.state).toBe(ValidationResult.IncorrectAzp);
       });
-    });
+    }));
 
-    it('should return invalid result if validateIdTokenAzpValid is false', () => {
+    it('should return invalid result if validateIdTokenAzpValid is false', waitForAsync(() => {
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
       config.responseType = 'id_token token';
       spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
@@ -1239,9 +1239,9 @@ describe('State Validation Service', () => {
         expect(state.authResponseIsValid).toBe(false);
         expect(state.state).toBe(ValidationResult.IncorrectAzp);
       });
-    });
+    }));
 
-    it('should return invalid result if isIdTokenAfterRefreshTokenRequestValid is false', () => {
+    it('should return invalid result if isIdTokenAfterRefreshTokenRequestValid is false', waitForAsync(() => {
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
       config.responseType = 'id_token token';
       spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
@@ -1288,9 +1288,9 @@ describe('State Validation Service', () => {
         expect(state.authResponseIsValid).toBe(false);
         expect(state.state).toBe(ValidationResult.IncorrectIdTokenClaimsAfterRefresh);
       });
-    });
+    }));
 
-    it('Reponse is valid if authConfiguration.response_type does not equal "id_token token"', () => {
+    it('Reponse is valid if authConfiguration.response_type does not equal "id_token token"', waitForAsync(() => {
       spyOn(tokenValidationService, 'hasIdTokenExpired').and.returnValue(false);
       spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(true);
       spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
@@ -1342,9 +1342,9 @@ describe('State Validation Service', () => {
         expect(state.decodedIdToken).toBe('decoded_id_token');
         expect(state.authResponseIsValid).toBe(true);
       });
-    });
+    }));
 
-    it('Response is invalid if validateIdTokenAtHash is false', () => {
+    it('Response is invalid if validateIdTokenAtHash is false', waitForAsync(() => {
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
       spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
       spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
@@ -1389,7 +1389,6 @@ describe('State Validation Service', () => {
       };
       const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
 
-      // CAN THIS BE DONE VIA IF/ELSE IN THE BEGINNING?
       stateObs$.subscribe((state) => {
         expect(logWarningSpy).toHaveBeenCalledOnceWith(config, 'authCallback incorrect at_hash');
         expect(state.accessToken).toBe('access_tokenTEST');
@@ -1397,9 +1396,9 @@ describe('State Validation Service', () => {
         expect(state.decodedIdToken).toBe('decoded_id_token');
         expect(state.authResponseIsValid).toBe(false);
       });
-    });
+    }));
 
-    it('should return valid result if validateIdTokenIss is false and iss_validation_off is true', () => {
+    it('should return valid result if validateIdTokenIss is false and iss_validation_off is true', waitForAsync(() => {
       config.issValidationOff = true;
       spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(false);
 
@@ -1453,9 +1452,9 @@ describe('State Validation Service', () => {
         expect(state.decodedIdToken).toBeDefined();
         expect(state.idToken).toBe('id_tokenTEST');
       });
-    });
+    }));
 
-    it('should return valid if there is no id_token', () => {
+    it('should return valid if there is no id_token', waitForAsync(() => {
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
 
       config.responseType = 'code';
@@ -1502,6 +1501,6 @@ describe('State Validation Service', () => {
         expect(state.decodedIdToken).toBeDefined();
         expect(state.authResponseIsValid).toBe(true);
       });
-    });
+    }));
   });
 });

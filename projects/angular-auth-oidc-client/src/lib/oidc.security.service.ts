@@ -63,6 +63,7 @@ export class OidcSecurityService {
   }
 
   /**
+   * @deprecated This property should not be used. Please use the `PublicEventsService` instead. This property is removed in future versions
    * Emits false when the observable, returned by one of the checkAuth() methods, emits a value, or errors. Initial value: true.
    */
   get isLoading$(): Observable<boolean> {
