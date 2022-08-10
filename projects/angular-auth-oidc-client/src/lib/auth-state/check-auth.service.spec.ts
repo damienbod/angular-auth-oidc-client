@@ -11,6 +11,7 @@ import { CheckSessionService } from '../iframe/check-session.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
 import { PopUpService } from '../login/popup/popup.service';
+import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UserService } from '../user-data/user.service';
@@ -31,6 +32,7 @@ describe('CheckAuthService', () => {
   let autoLoginService: AutoLoginService;
   let storagePersistenceService: StoragePersistenceService;
   let currentUrlService: CurrentUrlService;
+  let publicEventsService: PublicEventsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -77,6 +79,7 @@ describe('CheckAuthService', () => {
     autoLoginService = TestBed.inject(AutoLoginService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
     currentUrlService = TestBed.inject(CurrentUrlService);
+    publicEventsService = TestBed.inject(PublicEventsService);
   });
 
   afterEach(() => {
@@ -366,6 +369,27 @@ describe('CheckAuthService', () => {
 
       checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
         expect(spy).toHaveBeenCalledTimes(0);
+      });
+    }));
+
+    it('fires CheckingAuth-Event on start and finished event on end', waitForAsync(() => {
+      const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+      const fireEventSpy = spyOn(publicEventsService, 'fireEvent');
+
+      checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
+        expect(fireEventSpy.calls.allArgs()).toEqual([[EventTypes.CheckingAuth], [EventTypes.CheckingAuthFinished]]);
+      });
+    }));
+
+    it('fires CheckingAuth-Event on start and CheckingAuthFinishedWithError event on end if exception occurs', waitForAsync(() => {
+      const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
+      const fireEventSpy = spyOn(publicEventsService, 'fireEvent');
+
+      spyOn(callBackService, 'isCallback').and.returnValue(true);
+      spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(throwError(() => new Error('ERROR')));
+
+      checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
+        expect(fireEventSpy.calls.allArgs()).toEqual([[EventTypes.CheckingAuth], [EventTypes.CheckingAuthFinishedWithError, 'ERROR']]);
       });
     }));
   });

@@ -49,14 +49,7 @@ export class CheckAuthService {
       }
     }
 
-    return this.checkAuthWithConfig(configuration, allConfigs, url).pipe(
-      tap(() => this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinished)),
-      catchError((error) => {
-        this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinishedWithError, error);
-
-        return throwError(() => error);
-      })
-    );
+    return this.checkAuthWithConfig(configuration, allConfigs, url);
   }
 
   checkAuthMultiple(allConfigs: OpenIdConfiguration[], url?: string): Observable<LoginResponse[]> {
@@ -71,17 +64,10 @@ export class CheckAuthService {
       return this.composeMultipleLoginResults(allConfigs, config, url);
     }
 
-    const configs = allConfigs ?? [];
+    const configs = allConfigs;
     const allChecks$ = configs.map((x) => this.checkAuthWithConfig(x, configs, url));
 
-    return forkJoin(allChecks$).pipe(
-      tap(() => this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinished)),
-      catchError((error) => {
-        this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinishedWithError, error);
-
-        return throwError(() => error);
-      })
-    );
+    return forkJoin(allChecks$);
   }
 
   checkAuthIncludingServer(configuration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): Observable<LoginResponse> {
@@ -100,12 +86,6 @@ export class CheckAuthService {
             }
           })
         );
-      }),
-      tap(() => this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinished)),
-      catchError((error) => {
-        this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinishedWithError, error);
-
-        return throwError(() => error);
       })
     );
   }
@@ -160,12 +140,15 @@ export class CheckAuthService {
         };
       }),
       tap(({ isAuthenticated }) => {
+        this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinished);
+
         if (isAuthenticated) {
           this.autoLoginService.checkSavedRedirectRouteAndNavigate(config);
         }
       }),
       catchError(({ message }) => {
         this.loggerService.logError(config, message);
+        this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinishedWithError, message);
 
         return of({ isAuthenticated: false, errorMessage: message, userData: null, idToken: null, accessToken: null, configId });
       })
