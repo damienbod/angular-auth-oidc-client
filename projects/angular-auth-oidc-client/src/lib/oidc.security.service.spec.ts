@@ -536,7 +536,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('getEndSessionUrl', () => {
-    it('calls logoffRevocationService.getEndSessionUrl ', () => {
+    it('calls logoffRevocationService.getEndSessionUrl ', waitForAsync(() => {
       const config = { configId: 'configId1' };
 
       spyOn(configurationService, 'getOpenIDConfiguration').and.returnValue(of(config));
@@ -546,9 +546,9 @@ describe('OidcSecurityService', () => {
       oidcSecurityService.getEndSessionUrl().subscribe(() => {
         expect(spy).toHaveBeenCalledOnceWith(config, undefined);
       });
-    });
+    }));
 
-    it('calls logoffRevocationService.getEndSessionUrl with customparams', () => {
+    it('calls logoffRevocationService.getEndSessionUrl with customparams', waitForAsync(() => {
       const config = { configId: 'configId1' };
 
       spyOn(configurationService, 'getOpenIDConfiguration').and.returnValue(of(config));
@@ -558,11 +558,11 @@ describe('OidcSecurityService', () => {
       oidcSecurityService.getEndSessionUrl({ custom: 'params' }).subscribe(() => {
         expect(spy).toHaveBeenCalledOnceWith(config, { custom: 'params' });
       });
-    });
+    }));
   });
 
   describe('getAuthorizeUrl', () => {
-    it('calls urlService.getAuthorizeUrl ', () => {
+    it('calls urlService.getAuthorizeUrl ', waitForAsync(() => {
       const config = { configId: 'configId1' };
 
       spyOn(configurationService, 'getOpenIDConfiguration').and.returnValue(of(config));
@@ -572,9 +572,9 @@ describe('OidcSecurityService', () => {
       oidcSecurityService.getAuthorizeUrl().subscribe(() => {
         expect(spy).toHaveBeenCalledOnceWith(config, undefined);
       });
-    });
+    }));
 
-    it('calls urlService.getAuthorizeUrl with customparams', () => {
+    it('calls urlService.getAuthorizeUrl with customparams', waitForAsync(() => {
       const config = { configId: 'configId1' };
 
       spyOn(configurationService, 'getOpenIDConfiguration').and.returnValue(of(config));
@@ -584,7 +584,7 @@ describe('OidcSecurityService', () => {
       oidcSecurityService.getAuthorizeUrl({ custom: 'params' }).subscribe(() => {
         expect(spy).toHaveBeenCalledOnceWith(config, { customParams: { custom: 'params' } });
       });
-    });
+    }));
   });
 
   describe('isLoading$', () => {

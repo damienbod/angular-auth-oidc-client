@@ -91,7 +91,7 @@ describe('CheckAuthService', () => {
   });
 
   describe('checkAuth', () => {
-    it('uses config with matching state when url has state param and config with state param is stored', () => {
+    it('uses config with matching state when url has state param and config with state param is stored', waitForAsync(() => {
       spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
       spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
       const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
@@ -102,9 +102,9 @@ describe('CheckAuthService', () => {
       checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
         expect(spy).toHaveBeenCalledOnceWith(allConfigs[0], allConfigs, undefined);
       });
-    });
+    }));
 
-    it('throws error when url has state param and stored config with matching state param is not found', () => {
+    it('throws error when url has state param and stored config with matching state param is not found', waitForAsync(() => {
       spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
       spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
       const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
@@ -118,9 +118,9 @@ describe('CheckAuthService', () => {
           expect(spy).not.toHaveBeenCalled();
         },
       });
-    });
+    }));
 
-    it('uses first/default config when no param is passed', () => {
+    it('uses first/default config when no param is passed', waitForAsync(() => {
       spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(false);
       const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
       const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
@@ -128,7 +128,7 @@ describe('CheckAuthService', () => {
       checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
         expect(spy).toHaveBeenCalledOnceWith({ configId: 'configId1', authority: 'some-authority' }, allConfigs, undefined);
       });
-    });
+    }));
 
     it('returns isAuthenticated: false with error message when config is not valid', waitForAsync(() => {
       const allConfigs = [];

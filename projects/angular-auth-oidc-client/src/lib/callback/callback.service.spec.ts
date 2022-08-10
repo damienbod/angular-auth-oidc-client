@@ -86,7 +86,7 @@ describe('CallbackService ', () => {
         });
     }));
 
-    it('emits callbackinternal no matter which flow it is', () => {
+    it('emits callbackinternal no matter which flow it is', waitForAsync(() => {
       const callbackSpy = spyOn((callbackService as any).stsCallbackInternal$, 'next');
 
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
@@ -96,6 +96,6 @@ describe('CallbackService ', () => {
         expect(authenticatedCallbackWithCodeSpy).toHaveBeenCalledOnceWith('anyUrl', { configId: 'configId1' }, [{ configId: 'configId1' }]);
         expect(callbackSpy).toHaveBeenCalled();
       });
-    });
+    }));
   });
 });

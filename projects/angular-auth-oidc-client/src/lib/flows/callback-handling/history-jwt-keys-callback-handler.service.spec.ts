@@ -98,6 +98,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       ];
 
       spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of({ keys: [] } as JwtKeys));
+
       service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe(() => {
         expect(storagePersistenceServiceSpy.calls.allArgs()).toEqual([
           ['authnResult', DUMMY_AUTH_RESULT, allconfigs[0]],

@@ -895,7 +895,7 @@ describe('UrlService Tests', () => {
       expect(spyCreateUrlImplicitFlowWithSilentRenew).toHaveBeenCalled();
     });
 
-    it('return empty string if flow is not code flow and createUrlImplicitFlowWithSilentRenew returns falsy', () => {
+    it('return empty string if flow is not code flow and createUrlImplicitFlowWithSilentRenew returns falsy', waitForAsync(() => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
       const spy = spyOn(service as any, 'createUrlImplicitFlowWithSilentRenew').and.returnValue('');
       const resultObs$ = service.getRefreshSessionSilentRenewUrl({ configId: 'configId1' });
@@ -904,7 +904,7 @@ describe('UrlService Tests', () => {
         expect(spy).toHaveBeenCalled();
         expect(result).toBe('');
       });
-    });
+    }));
   });
 
   describe('createBodyForCodeFlowCodeRequest', () => {
@@ -1013,15 +1013,15 @@ describe('UrlService Tests', () => {
   });
 
   describe('createBodyForParCodeFlowRequest', () => {
-    it('returns null redirectUrl is falsy', () => {
+    it('returns null redirectUrl is falsy', waitForAsync(() => {
       const resultObs$ = service.createBodyForParCodeFlowRequest({ redirectUrl: '' });
 
       resultObs$.subscribe((result) => {
         expect(result).toBe(null);
       });
-    });
+    }));
 
-    it('returns basic URL with no extras if properties are given', () => {
+    it('returns basic URL with no extras if properties are given', waitForAsync(() => {
       const config = {
         clientId: 'testClientId',
         responseType: 'testResponseType',
@@ -1043,9 +1043,9 @@ describe('UrlService Tests', () => {
           `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256`
         );
       });
-    });
+    }));
 
-    it('returns basic URL with hdParam if properties are given', () => {
+    it('returns basic URL with hdParam if properties are given', waitForAsync(() => {
       const config = {
         clientId: 'testClientId',
         responseType: 'testResponseType',
@@ -1067,9 +1067,9 @@ describe('UrlService Tests', () => {
           `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam`
         );
       });
-    });
+    }));
 
-    it('returns basic URL with hdParam and custom params if properties are given', () => {
+    it('returns basic URL with hdParam and custom params if properties are given', waitForAsync(() => {
       const config = {
         clientId: 'testClientId',
         responseType: 'testResponseType',
@@ -1091,9 +1091,9 @@ describe('UrlService Tests', () => {
           `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam&any=thing`
         );
       });
-    });
+    }));
 
-    it('returns basic URL with hdParam and custom params and passed cutom params if properties are given', () => {
+    it('returns basic URL with hdParam and custom params and passed cutom params if properties are given', waitForAsync(() => {
       const config = {
         clientId: 'testClientId',
         responseType: 'testResponseType',
@@ -1115,7 +1115,7 @@ describe('UrlService Tests', () => {
           `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam&any=thing&any=otherThing`
         );
       });
-    });
+    }));
   });
 
   describe('createUrlImplicitFlowWithSilentRenew', () => {
@@ -1195,7 +1195,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('createUrlCodeFlowWithSilentRenew', () => {
-    it('returns empty string if silentrenewUrl is falsy', () => {
+    it('returns empty string if silentrenewUrl is falsy', waitForAsync(() => {
       const state = 'testState';
       const nonce = 'testNonce';
       const silentRenewUrl = null;
@@ -1218,9 +1218,9 @@ describe('UrlService Tests', () => {
       resultObs$.subscribe((result) => {
         expect(result).toBe('');
       });
-    });
+    }));
 
-    it('returns correct URL if wellknownendpoints are given', () => {
+    it('returns correct URL if wellknownendpoints are given', waitForAsync(() => {
       const state = 'testState';
       const nonce = 'testNonce';
       const silentRenewUrl = 'http://any-url.com';
@@ -1253,9 +1253,9 @@ describe('UrlService Tests', () => {
           `authorizationEndpoint?client_id=${clientId}&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&prompt=none`
         );
       });
-    });
+    }));
 
-    it('returns empty string if no wellknownendpoints are given', () => {
+    it('returns empty string if no wellknownendpoints are given', waitForAsync(() => {
       const state = 'testState';
       const nonce = 'testNonce';
       const silentRenewUrl = 'http://any-url.com';
@@ -1282,7 +1282,7 @@ describe('UrlService Tests', () => {
       resultObs$.subscribe((result) => {
         expect(result).toBe(null);
       });
-    });
+    }));
   });
 
   describe('createUrlImplicitFlowAuthorize', () => {
@@ -1356,7 +1356,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('createUrlCodeFlowAuthorize', () => {
-    it('returns null if redirectUrl is falsy', () => {
+    it('returns null if redirectUrl is falsy', waitForAsync(() => {
       const state = 'testState';
       const nonce = 'testNonce';
       const redirectUrl = null;
@@ -1374,9 +1374,9 @@ describe('UrlService Tests', () => {
       resultObs$.subscribe((result) => {
         expect(result).toBeNull();
       });
-    });
+    }));
 
-    it('returns correct URL if wellknownendpoints are given', () => {
+    it('returns correct URL if wellknownendpoints are given', waitForAsync(() => {
       const state = 'testState';
       const nonce = 'testNonce';
       const scope = 'testScope';
@@ -1408,9 +1408,9 @@ describe('UrlService Tests', () => {
           `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}`
         );
       });
-    });
+    }));
 
-    it('returns correct URL if wellknownendpoints and custom params are given', () => {
+    it('returns correct URL if wellknownendpoints and custom params are given', waitForAsync(() => {
       const state = 'testState';
       const nonce = 'testNonce';
       const scope = 'testScope';
@@ -1446,9 +1446,9 @@ describe('UrlService Tests', () => {
             `&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&to=add&as=well`
         );
       });
-    });
+    }));
 
-    it('returns empty string if no wellknownendpoints are given', () => {
+    it('returns empty string if no wellknownendpoints are given', waitForAsync(() => {
       const state = 'testState';
       const nonce = 'testNonce';
       const redirectUrl = 'http://any-url.com';
@@ -1471,7 +1471,7 @@ describe('UrlService Tests', () => {
       resultObs$.subscribe((result) => {
         expect(result).toBe('');
       });
-    });
+    }));
   });
 
   describe('createEndSessionUrl', () => {
