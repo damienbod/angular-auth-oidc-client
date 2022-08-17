@@ -193,14 +193,6 @@ export class UrlService {
     configuration: OpenIdConfiguration,
     customTokenParams?: { [p: string]: string | number | boolean }
   ): string {
-    const codeVerifier = this.flowsDataService.getCodeVerifier(configuration);
-
-    if (!codeVerifier) {
-      this.loggerService.logError(configuration, `CodeVerifier is not set `, codeVerifier);
-
-      return null;
-    }
-
     const clientId = this.getClientId(configuration);
 
     if (!clientId) {
@@ -211,7 +203,19 @@ export class UrlService {
 
     params = params.set('grant_type', 'authorization_code');
     params = params.set('client_id', clientId);
-    params = params.set('code_verifier', codeVerifier);
+
+    if(!configuration.disablePkce) {
+      const codeVerifier = this.flowsDataService.getCodeVerifier(configuration);
+
+      if (!codeVerifier) {
+        this.loggerService.logError(configuration, `CodeVerifier is not set `, codeVerifier);
+
+        return null;
+      }
+
+      params = params.set('code_verifier', codeVerifier);
+    }
+
     params = params.set('code', code);
 
     if (customTokenParams) {
