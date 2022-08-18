@@ -1496,6 +1496,27 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
+    it('create URL when all parameters given but no idTokenHint', () => {
+      const config = {
+        authority: 'https://localhost:5001',
+        redirectUrl: 'https://localhost:44386',
+        clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
+        responseType: 'id_token token',
+        scope: 'openid email profile',
+        postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
+      };
+
+      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
+        endSessionEndpoint: 'http://example',
+      });
+
+      const value = service.createEndSessionUrl(null, config);
+
+      const expectValue = 'http://example?post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
+
+      expect(value).toEqual(expectValue);
+    });
+
     it('create URL when all parameters and customParamsEndSession given', () => {
       const config = {
         authority: 'https://localhost:5001',

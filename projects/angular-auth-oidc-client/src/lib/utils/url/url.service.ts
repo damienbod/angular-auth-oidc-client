@@ -126,7 +126,9 @@ export class UrlService {
     const existingParams = urlParts[1];
     let params = this.createHttpParams(existingParams);
 
-    params = params.set('id_token_hint', idTokenHint);
+    if (!!idTokenHint) {
+      params = params.set('id_token_hint', idTokenHint);
+    }
 
     const postLogoutRedirectUri = this.getPostLogoutRedirectUrl(configuration);
 
