@@ -6,6 +6,7 @@ import { CryptoService } from '../utils/crypto/crypto-service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
 import { TokenValidationService } from './token-validation.service';
+import { JwkWindowCryptoService } from './jwk-window-crypto.service';
 import { JwkExtractor } from '../extractors/jwk.extractor';
 
 describe('TokenValidationService', () => {
@@ -27,6 +28,7 @@ describe('TokenValidationService', () => {
           useClass: mockClass(TokenHelperService),
         },
         JwkExtractor,
+        JwkWindowCryptoService,
         JwtWindowCryptoService,
         CryptoService,
       ],

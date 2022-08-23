@@ -9,6 +9,7 @@ import { CryptoService } from '../utils/crypto/crypto-service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
 import { JwkExtractor } from '../extractors/jwk.extractor';
+import { JwkWindowCryptoService } from './jwk-window-crypto.service';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
@@ -64,6 +65,7 @@ export class TokenValidationService {
     private readonly tokenHelperService: TokenHelperService,
     private readonly loggerService: LoggerService,
     private readonly jwkExtractor: JwkExtractor,
+    private readonly jwkWindowCryptoService: JwkWindowCryptoService,
     private readonly jwtWindowCryptoService: JwtWindowCryptoService,
     private readonly cryptoService: CryptoService,
     @Inject(DOCUMENT) private readonly document: any
@@ -386,15 +388,13 @@ export class TokenValidationService {
       key.alg = '';
     }
 
-    const crypto = this.cryptoService.getCrypto();
-
-    return from(crypto.subtle.importKey('jwk', key, algorithm, false, ['verify'])).pipe(
+    return from(this.jwkWindowCryptoService.importVerificationKey(key, algorithm)).pipe(
       mergeMap((cryptoKey: CryptoKey) => {
         const signature: Uint8Array = base64url.parse(rawSignature, { loose: true });
 
         const verifyAlgorithm: RsaHashedImportParams | EcdsaParams = this.getVerifyAlg(alg);
 
-        return from(crypto.subtle.verify(verifyAlgorithm, cryptoKey, signature, new TextEncoder().encode(signingInput)));
+        return from(this.jwkWindowCryptoService.verifyKey(verifyAlgorithm, cryptoKey, signature, signingInput));
       }),
       tap((isValid: boolean) => {
         if (!isValid) {
