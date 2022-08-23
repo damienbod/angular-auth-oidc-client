@@ -8,6 +8,7 @@ import { LoggerService } from '../logging/logger.service';
 import { CryptoService } from '../utils/crypto/crypto-service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
+import { JwkExtractor } from '../extractors/jwk.extractor';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
@@ -62,6 +63,7 @@ export class TokenValidationService {
   constructor(
     private readonly tokenHelperService: TokenHelperService,
     private readonly loggerService: LoggerService,
+    private readonly jwkExtractor: JwkExtractor,
     private readonly jwtWindowCryptoService: JwtWindowCryptoService,
     private readonly cryptoService: CryptoService,
     @Inject(DOCUMENT) private readonly document: any
@@ -360,21 +362,17 @@ export class TokenValidationService {
       return of(false);
     }
 
-    if (kid) {
-      key = keys.find((k: JsonWebKey) => k['kid'] === kid);
-    } else {
-      let kty = this.alg2kty(alg);
-      let matchingKeys: JsonWebKey[] = keys.filter((k: JsonWebKey) => k.kty === kty && k.use === 'sig');
+    const kty = this.alg2kty(alg);
+    const use = 'sig';
 
-      if (matchingKeys.length > 1) {
-        let error = 'More than one matching key found. Please specify a kid in the id_token header.';
+    try {
+      key = kid ?
+        this.jwkExtractor.extractJwk(keys, {kid, kty, use}) :
+        this.jwkExtractor.extractJwk(keys, {kty, use});
+    } catch (e: any) {
+      this.loggerService.logError(configuration, e);
 
-        this.loggerService.logError(configuration, error);
-
-        return of(false);
-      } else if (matchingKeys.length === 1) {
-        key = matchingKeys[0];
-      }
+      return of(false);
     }
 
     const algorithm: RsaHashedImportParams | EcKeyImportParams = this.getImportAlg(alg);
