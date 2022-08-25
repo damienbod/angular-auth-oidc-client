@@ -356,6 +356,7 @@ export class TokenValidationService {
     let alg: string = headerData.alg;
 
     let keys: JsonWebKey[] = jwtkeys.keys;
+    let foundKeys: JsonWebKey[];
     let key: JsonWebKey;
 
     if (!this.keyAlgorithms.includes(alg)) {
@@ -368,9 +369,17 @@ export class TokenValidationService {
     const use = 'sig';
 
     try {
-      key = kid ?
-        this.jwkExtractor.extractJwk(keys, {kid, kty, use}) :
-        this.jwkExtractor.extractJwk(keys, {kty, use});
+      foundKeys = kid ?
+        this.jwkExtractor.extractJwk(keys, {kid, kty, use}, false) :
+        this.jwkExtractor.extractJwk(keys, {kty, use}, false);
+
+      if (foundKeys.length === 0) {
+        foundKeys = kid ?
+          this.jwkExtractor.extractJwk(keys, {kid, kty}) :
+          this.jwkExtractor.extractJwk(keys, {kty});
+      }
+
+      key = foundKeys[0];
     } catch (e: any) {
       this.loggerService.logError(configuration, e);
 
