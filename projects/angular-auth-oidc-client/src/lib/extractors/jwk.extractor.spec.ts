@@ -64,7 +64,14 @@ describe('JwkExtractor', () => {
     "n": "wq0vJv4Xl2xSQTN75_N4JeFHlHH80PytypJqyNrhWIp1P9Ur4-5QSiS8BI8PYSh0dQy4NMoj9YMRcyge3y81uCCwxouePiAGc0xPy6QkAOiinvV3KJEMtbppicOvZEzMXb3EqRM-9Twxbp2hhBAPSAhyL79Rwy4JuIQ6imaqL0NIEGv8_BOe_twMPOLGTJhepDO6kDs6O0qlLgPRHQVuKAz3afVby0C2myDLpo5YaI66arU9VXXGQtIp8MhBY9KbsGaYskejSWhSBOcwdtYMEo5rXWGGVnrHiSqq8mm-sVXLQBe5xPFBs4IQ_Gz4nspr05LEEbsHSwFyGq5D77XPxGUPDCq5ZVvON0yBizaHcJ-KA0Lw6uXtOH9-YyVGuaBynkrQEo3pP2iy1uWt-TiQPb8PMsCAdWZP-6R0QKHtjds9HmjIkgFTJSTIeETjNck_bB4ud79gZT-INikjPFTTeyQYk2jqxEJanVe3k0i_1vpskRpknJ7F2vTL45LAQkjWvczjWmHxGA5D4-1msuylXpY8Y4WxnUq6dRTEN29IRVCil9Mfp6JMsquFGTvJO0-Ffl0_suMZZl3uXNt23E9vGreByalWHivYmfpIor5Q5JaFKekRVV-U1KDBaeQQaHp_VqliUKImdUE9-GXNOIaBMjRvfy0nxsRe_q_dD6jc_GU",
     "e": "AQAB"
   } as JsonWebKey;
-  let keys: JsonWebKey[] = [key1, key2, key3, key4, key5, key6, key7, key8];
+  const key9 = {
+    "kty": "EC",
+    "use": "sig",
+    "kid": "5626CE6A8F4F5FCD79C6642345282CA76D337548RS256",
+    "n": "wq0vJv4Xl2xSQTN75_N4JeFHlHH80PytypJqyNrhWIp1P9Ur4-5QSiS8BI8PYSh0dQy4NMoj9YMRcyge3y81uCCwxouePiAGc0xPy6QkAOiinvV3KJEMtbppicOvZEzMXb3EqRM-9Twxbp2hhBAPSAhyL79Rwy4JuIQ6imaqL0NIEGv8_BOe_twMPOLGTJhepDO6kDs6O0qlLgPRHQVuKAz3afVby0C2myDLpo5YaI66arU9VXXGQtIp8MhBY9KbsGaYskejSWhSBOcwdtYMEo5rXWGGVnrHiSqq8mm-sVXLQBe5xPFBs4IQ_Gz4nspr05LEEbsHSwFyGq5D77XPxGUPDCq5ZVvON0yBizaHcJ-KA0Lw6uXtOH9-YyVGuaBynkrQEo3pP2iy1uWt-TiQPb8PMsCAdWZP-6R0QKHtjds9HmjIkgFTJSTIeETjNck_bB4ud79gZT-INikjPFTTeyQYk2jqxEJanVe3k0i_1vpskRpknJ7F2vTL45LAQkjWvczjWmHxGA5D4-1msuylXpY8Y4WxnUq6dRTEN29IRVCil9Mfp6JMsquFGTvJO0-Ffl0_suMZZl3uXNt23E9vGreByalWHivYmfpIor5Q5JaFKekRVV-U1KDBaeQQaHp_VqliUKImdUE9-GXNOIaBMjRvfy0nxsRe_q_dD6jc_GU",
+    "e": "AQAB"
+  } as JsonWebKey;
+  let keys: JsonWebKey[] = [key1, key2, key3, key4, key5, key6, key7, key8, key9];
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -103,6 +110,13 @@ describe('JwkExtractor', () => {
       }
     );
 
+    it('does not throw error if no key is matching when throwOnEmpty is false', () => {
+        const result = service.extractJwk(keys, {use: 'blorp'}, false);
+
+        expect(result.length).toEqual(0);
+      }
+    );
+
     it('throws error if multiple keys are present, and spec is not present', () => {
         expect(() => {
           service.extractJwk(keys);
@@ -110,62 +124,98 @@ describe('JwkExtractor', () => {
       }
     );
 
-    it('returns first key matching spec.kid', () => {
-        const extracted = service.extractJwk(keys.slice(0, 1), {kid: '5626CE6A8F4F5FCD79C6642345282CA76D337548RS256'});
+    it('returns array of keys matching spec.kid', () => {
+        const extracted = service.extractJwk(keys, {kid: '5626CE6A8F4F5FCD79C6642345282CA76D337548RS256'});
 
-        expect(extracted).toEqual(key1);
+        expect(extracted.length).toEqual(3);
+        expect(extracted).toContain(key1);
+        expect(extracted).toContain(key8);
+        expect(extracted).toContain(key9);
 
         const extracted2 = service.extractJwk(keys, {kid: 'boop'});
 
-        expect(extracted2).toEqual(key2);
+        expect(extracted2.length).toEqual(6);
+        expect(extracted2).toContain(key2);
+        expect(extracted2).toContain(key3);
+        expect(extracted2).toContain(key4);
+        expect(extracted2).toContain(key5);
+        expect(extracted2).toContain(key6);
+        expect(extracted2).toContain(key7);
       }
     );
 
-    it('returns first key that matches spec.use if spec.kid is not present', () => {
+    it('returns array of keys matching spec.use', () => {
         const extracted = service.extractJwk(keys, {use: 'sig'});
 
-        expect(extracted).toEqual(key1);
+        expect(extracted.length).toEqual(6);
+        expect(extracted).toContain(key1);
+        expect(extracted).toContain(key4);
+        expect(extracted).toContain(key5);
+        expect(extracted).toContain(key6);
+        expect(extracted).toContain(key8);
+        expect(extracted).toContain(key9);
 
         const extracted2 = service.extractJwk(keys, {use: 'enc'});
 
-        expect(extracted2).toEqual(key3);
+        expect(extracted2.length).toEqual(2);
+        expect(extracted2).toContain(key3);
+        expect(extracted2).toContain(key7);
       }
     );
 
-    it('returns first key that matches the combination of spec.use and spec.kid', () => {
+    it('returns array of keys matching the combination of spec.use and spec.kid', () => {
         const extracted = service.extractJwk(keys, {kid: 'boop', use: 'sig'});
 
-        expect(extracted).toEqual(key4);
+        expect(extracted.length).toEqual(3);
+        expect(extracted).toContain(key4);
+        expect(extracted).toContain(key5);
+        expect(extracted).toContain(key6);
 
         const extracted2 = service.extractJwk(keys, {kid: 'boop', use: 'enc'});
 
-        expect(extracted2).toEqual(key3);
+        expect(extracted2.length).toEqual(2);
+        expect(extracted2).toContain(key3);
+        expect(extracted2).toContain(key7);
       }
     );
 
-    it('returns first key that matches spec.kty', () => {
+    it('returns array of keys matching spec.kty', () => {
         const extracted = service.extractJwk(keys, {kty: 'RSA'});
 
-        expect(extracted).toEqual(key1);
+        expect(extracted.length).toEqual(5);
+        expect(extracted).toContain(key1);
+        expect(extracted).toContain(key2);
+        expect(extracted).toContain(key3);
+        expect(extracted).toContain(key4);
+        expect(extracted).toContain(key5);
 
         const extracted2 = service.extractJwk(keys, {kty: 'EC'});
 
-        expect(extracted2).toEqual(key6);
+        expect(extracted2.length).toEqual(4);
+        expect(extracted2).toContain(key6);
+        expect(extracted2).toContain(key7);
+        expect(extracted2).toContain(key8);
+        expect(extracted2).toContain(key9);
       }
     );
 
-    it('returns first key that matches the combination of spec.kty and other specs', () => {
+    it('returns array of keys matching the combination of spec.kty and spec.use', () => {
         const extracted = service.extractJwk(keys, {kty: 'RSA', use: 'enc'});
 
-        expect(extracted).toEqual(key3);
+        expect(extracted.length).toEqual(1);
+        expect(extracted).toContain(key3);
 
         const extracted2 = service.extractJwk(keys, {kty: 'EC', use: 'sig'});
 
-        expect(extracted2).toEqual(key6);
+        expect(extracted2.length).toEqual(3);
+        expect(extracted2).toContain(key6);
+        expect(extracted2).toContain(key8);
+        expect(extracted2).toContain(key9);
 
         const extracted3 = service.extractJwk(keys, {kty: 'EC', use: 'enc'});
 
-        expect(extracted3).toEqual(key7);
+        expect(extracted3.length).toEqual(1);
+        expect(extracted3).toContain(key7);
       }
     );
   });
