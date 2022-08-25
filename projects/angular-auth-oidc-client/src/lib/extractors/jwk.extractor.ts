@@ -21,7 +21,7 @@ export class JwkExtractor {
     return JwkExtractor.name + ': ' + name;
   }
 
-  extractJwk(keys: JsonWebKey[], spec?: {kid?: string, use?: string, kty?: string}): JsonWebKey {
+  extractJwk(keys: JsonWebKey[], spec?: {kid?: string, use?: string, kty?: string}, throwOnEmpty = true): JsonWebKey[] {
     if (0 === keys.length) {
       throw JwkExtractor.InvalidArgumentError;
     }
@@ -31,7 +31,7 @@ export class JwkExtractor {
       .filter((k) => spec?.use ? k['use'] === spec.use : true)
       .filter((k) => spec?.kty ? k['kty'] === spec.kty : true);
 
-    if (foundKeys.length === 0) {
+    if (foundKeys.length === 0 && throwOnEmpty) {
       throw JwkExtractor.NoMatchingKeysError;
     }
 
@@ -39,6 +39,6 @@ export class JwkExtractor {
       throw JwkExtractor.SeveralMatchingKeysError;
     }
 
-    return foundKeys[0];
+    return foundKeys;
   }
 }
