@@ -5,7 +5,6 @@ import { from, Observable, of } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
-import { CryptoService } from '../utils/crypto/crypto-service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
 import { JwkExtractor } from '../extractors/jwk.extractor';
@@ -67,7 +66,6 @@ export class TokenValidationService {
     private readonly jwkExtractor: JwkExtractor,
     private readonly jwkWindowCryptoService: JwkWindowCryptoService,
     private readonly jwtWindowCryptoService: JwtWindowCryptoService,
-    private readonly cryptoService: CryptoService,
     @Inject(DOCUMENT) private readonly document: any
   ) {}
 
