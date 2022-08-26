@@ -35,7 +35,6 @@ describe('JwkWindowCryptoService', () => {
     "use": "sig"
   } as JsonWebKey;
   const keys: JsonWebKey[] = [key1, key2, key3];
-  let cryptoKey!: CryptoKey;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -46,7 +45,6 @@ describe('JwkWindowCryptoService', () => {
 
   beforeEach(waitForAsync(() => {
     service = TestBed.inject(JwkWindowCryptoService);
-    service.importVerificationKey(key3, alg).then((c) => cryptoKey = c);
   }));
 
   it('should create', () => {
@@ -74,8 +72,12 @@ describe('JwkWindowCryptoService', () => {
         const signatureString = 'NHVaYe26MbtOYhSKkoKYdFVomg4i8ZJd8_-RU8VNbftc4TSMb4bXP3l3YlNWACwyXPGffz5aXHc6lty1Y2t4SWRqGteragsVdZufDn5BlnJl9pdR_kdVFUsra2rWKEofkZeIC4yWytE58sMIihvo9H1ScmmVwBcQP6XETqYd0aSHp1gOa9RdUPDvoXQ5oqygTqVtxaDr6wUFKrKItgBMzWIdNZ6y7O9E0DhEPTbE9rfBo6KTFsHAZnMg4k68CDp2woYIaXbmYTWcvbzIuHO7_37GT79XdIwkm95QJ7hYC9RiwrV7mesbY4PAahERJawntho0my942XheVLmGwLMBkQ';
         const signature: Uint8Array = base64url.parse(signatureString, { loose: true });
 
-        service.verifyKey(alg, cryptoKey, signature, headerAndPayloadString).then((value) => {
-          expect(value).toEqual(true);
+        service.importVerificationKey(key3, alg).then((c) => {
+          waitForAsync(() => {
+            service.verifyKey(alg, c, signature, headerAndPayloadString).then((value) => {
+              expect(value).toEqual(true);
+            });
+          });
         });
       })
     );
