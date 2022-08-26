@@ -35,7 +35,7 @@ describe('JwkWindowCryptoService', () => {
     "use": "sig"
   } as JsonWebKey;
   const keys: JsonWebKey[] = [key1, key2, key3];
-  let cryptoKey;
+  let cryptoKey!: CryptoKey;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -44,9 +44,9 @@ describe('JwkWindowCryptoService', () => {
     });
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
     service = TestBed.inject(JwkWindowCryptoService);
-    service.importVerificationKey(key3, alg).then((c) => cryptoKey = c);
+    await service.importVerificationKey(key3, alg).then((c) => cryptoKey = c);
   });
 
   it('should create', () => {
