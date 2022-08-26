@@ -44,10 +44,10 @@ describe('JwkWindowCryptoService', () => {
     });
   });
 
-  beforeEach(async () => {
+  beforeEach(waitForAsync(() => {
     service = TestBed.inject(JwkWindowCryptoService);
-    await service.importVerificationKey(key3, alg).then((c) => cryptoKey = c);
-  });
+    service.importVerificationKey(key3, alg).then((c) => cryptoKey = c);
+  }));
 
   it('should create', () => {
     expect(service).toBeTruthy();
