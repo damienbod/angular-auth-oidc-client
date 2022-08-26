@@ -1,5 +1,20 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2022-08-26 14.1.4
+
+- Bugfix/unable to extract jwk without kid
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1517)
+- Make id_token_hint optional on session end logout
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1512)
+- construction of token endpoint body breaks if pkce is disable
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1510)
+- deprecating is loading
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1504)
+- added build step for rxjs 6
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1502)
+- Added console debug to fulfill browser filters
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1499)
+
 ### 2022-08-06 14.1.3
 
 - Improve logging error messages
