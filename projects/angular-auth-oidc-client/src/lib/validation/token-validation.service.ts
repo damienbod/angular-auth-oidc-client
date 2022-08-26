@@ -5,9 +5,10 @@ import { from, Observable, of } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
-import { CryptoService } from '../utils/crypto/crypto-service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
+import { JwkExtractor } from '../extractors/jwk.extractor';
+import { JwkWindowCryptoService } from './jwk-window-crypto.service';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
@@ -62,8 +63,9 @@ export class TokenValidationService {
   constructor(
     private readonly tokenHelperService: TokenHelperService,
     private readonly loggerService: LoggerService,
+    private readonly jwkExtractor: JwkExtractor,
+    private readonly jwkWindowCryptoService: JwkWindowCryptoService,
     private readonly jwtWindowCryptoService: JwtWindowCryptoService,
-    private readonly cryptoService: CryptoService,
     @Inject(DOCUMENT) private readonly document: any
   ) {}
 
@@ -352,6 +354,7 @@ export class TokenValidationService {
     let alg: string = headerData.alg;
 
     let keys: JsonWebKey[] = jwtkeys.keys;
+    let foundKeys: JsonWebKey[];
     let key: JsonWebKey;
 
     if (!this.keyAlgorithms.includes(alg)) {
@@ -360,21 +363,25 @@ export class TokenValidationService {
       return of(false);
     }
 
-    if (kid) {
-      key = keys.find((k: JsonWebKey) => k['kid'] === kid);
-    } else {
-      let kty = this.alg2kty(alg);
-      let matchingKeys: JsonWebKey[] = keys.filter((k: JsonWebKey) => k.kty === kty && k.use === 'sig');
+    const kty = this.alg2kty(alg);
+    const use = 'sig';
 
-      if (matchingKeys.length > 1) {
-        let error = 'More than one matching key found. Please specify a kid in the id_token header.';
+    try {
+      foundKeys = kid ?
+        this.jwkExtractor.extractJwk(keys, {kid, kty, use}, false) :
+        this.jwkExtractor.extractJwk(keys, {kty, use}, false);
 
-        this.loggerService.logError(configuration, error);
-
-        return of(false);
-      } else if (matchingKeys.length === 1) {
-        key = matchingKeys[0];
+      if (foundKeys.length === 0) {
+        foundKeys = kid ?
+          this.jwkExtractor.extractJwk(keys, {kid, kty}) :
+          this.jwkExtractor.extractJwk(keys, {kty});
       }
+
+      key = foundKeys[0];
+    } catch (e: any) {
+      this.loggerService.logError(configuration, e);
+
+      return of(false);
     }
 
     const algorithm: RsaHashedImportParams | EcKeyImportParams = this.getImportAlg(alg);
@@ -388,15 +395,13 @@ export class TokenValidationService {
       key.alg = '';
     }
 
-    const crypto = this.cryptoService.getCrypto();
-
-    return from(crypto.subtle.importKey('jwk', key, algorithm, false, ['verify'])).pipe(
+    return from(this.jwkWindowCryptoService.importVerificationKey(key, algorithm)).pipe(
       mergeMap((cryptoKey: CryptoKey) => {
         const signature: Uint8Array = base64url.parse(rawSignature, { loose: true });
 
         const verifyAlgorithm: RsaHashedImportParams | EcdsaParams = this.getVerifyAlg(alg);
 
-        return from(crypto.subtle.verify(verifyAlgorithm, cryptoKey, signature, new TextEncoder().encode(signingInput)));
+        return from(this.jwkWindowCryptoService.verifyKey(verifyAlgorithm, cryptoKey, signature, signingInput));
       }),
       tap((isValid: boolean) => {
         if (!isValid) {

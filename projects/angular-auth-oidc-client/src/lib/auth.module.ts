@@ -56,6 +56,8 @@ import { UrlService } from './utils/url/url.service';
 import { JwtWindowCryptoService } from './validation/jwt-window-crypto.service';
 import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';
+import { JwkExtractor } from './extractors/jwk.extractor';
+import { JwkWindowCryptoService } from './validation/jwk-window-crypto.service';
 
 export interface PassedInitialConfig {
   config?: OpenIdConfiguration | OpenIdConfiguration[];
@@ -128,6 +130,8 @@ export class AuthModule {
         PopUpLoginService,
         StandardLoginService,
         AutoLoginService,
+        JwkExtractor,
+        JwkWindowCryptoService,
         JwtWindowCryptoService,
         CurrentUrlService,
         ClosestMatchingRouteService,
