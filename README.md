@@ -3,7 +3,7 @@
 ![Build Status](https://github.com/damienbod/angular-auth-oidc-client/workflows/angular-auth-oidc-client-build/badge.svg?branch=main) [![npm](https://img.shields.io/npm/v/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/dm/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/l/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier) [![Coverage Status](https://coveralls.io/repos/github/damienbod/angular-auth-oidc-client/badge.svg?branch=main)](https://coveralls.io/github/damienbod/angular-auth-oidc-client?branch=main)
 
 <p align="center">
-  <a href="https://nice-hill-002425310.azurestaticapps.net/"><img src="https://raw.githubusercontent.com/damienbod/angular-auth-oidc-client/main/.github/angular-auth-logo.png" alt="" width="350" /></a>
+  <a href="https://angular-auth-oidc-client.com/"><img src="https://raw.githubusercontent.com/damienbod/angular-auth-oidc-client/main/.github/angular-auth-logo.png" alt="" width="350" /></a>
 </p>
 
 Secure your Angular app using the latest standards for OpenID Connect & OAuth2. Provides support for token refresh, all modern OIDC Identity Providers and more.
@@ -65,15 +65,15 @@ or with yarn
 
 ## Documentation
 
-[Read the docs here](https://nice-hill-002425310.azurestaticapps.net/)
+[Read the docs here](https://angular-auth-oidc-client.com/)
 
 ## Samples
 
-[Explore the Samples here](https://nice-hill-002425310.azurestaticapps.net/docs/samples/samples)
+[Explore the Samples here](https://angular-auth-oidc-client.com/docs/samples/samples)
 
 ## Quickstart
 
-For the example of the Code Flow. For further examples please check the [Samples](https://nice-hill-002425310.azurestaticapps.net/docs/samples/samples) Section.
+For the example of the Code Flow. For further examples please check the [Samples](https://angular-auth-oidc-client.com/docs/samples/samples) Section.
 
 > If you have done the installation with the schematics, these modules and files should be available already!
 
