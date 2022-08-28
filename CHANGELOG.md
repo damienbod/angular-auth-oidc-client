@@ -62,7 +62,7 @@ In this version the APP_INITIALIZER was removed. ([See PR](https://github.com/da
 The library will not do anything until the application interact with it. There is no pre-loading of anything and it does not affect your application's bootstrapping process at all.
 You can however explicitly preload the secure token server well-known endpoints with a new method called [preloadAuthWellKnownDocument()](/docs/documentation/public-api#preloadauthwellknowndocumentconfigid-string). As a side effect because the config has to be loaded first, a lot of APIs become reactive and return an Observable now.
 
-See the [migration guide](https://nice-hill-002425310.azurestaticapps.net/docs/migrations/v13-to-v14).
+See the [migration guide](https://angular-auth-oidc-client.com/docs/migrations/v13-to-v14).
 
 - refresh token rotation is now optional and can be activated using allowUnsafeReuseRefreshToken
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1342)
@@ -420,7 +420,7 @@ See the [migration guide](https://nice-hill-002425310.azurestaticapps.net/docs/m
 ### 2020-05-14 Version 11.1.0
 
 - Eager loading of well known endpoints can be configured: Made it possible to load the well known endpoints late (per configuration)
-  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/724) // [Docs](https://nice-hill-002425310.azurestaticapps.net/docs/documentation/delay-or-pass-authwellknown) // Fixes [#717](https://github.com/damienbod/angular-auth-oidc-client/issues/717)
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/724) // Fixes [#717](https://github.com/damienbod/angular-auth-oidc-client/issues/717)
 - make it possible to force a session refresh
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/730) // Fixes [#729](https://github.com/damienbod/angular-auth-oidc-client/issues/729)
 

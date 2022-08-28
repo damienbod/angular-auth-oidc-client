@@ -50,6 +50,12 @@ export class AppComponent implements OnInit {
 
 ### Auto Login when all routes are guarded
 
+:::caution
+
+We do NOT recommend all routes to be guarded. We know that this is a common use case but it is the easiest to have at least one public route, e.g. `/callback` where your identity provider can redirect to. In this route you can set up the authentication and then redirect to the route wou wanted to go to initially. This would be the "normal" behaviour of an SPA.
+
+:::
+
 If all your routes are guarded please use the `AutoLoginAllRoutesGuard` instead of the `AutoLoginPartialRoutesGuard`. This guard ensures that `checkAuth()` is being called and that you do not need to call it in `app.component.ts`.
 
 ```ts
