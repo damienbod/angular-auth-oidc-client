@@ -191,8 +191,8 @@ export class CheckSessionService {
     }
   }
 
-  private bindMessageEventToIframe(configId: string): void {
-    const iframeMessageEvent = this.messageHandler.bind(this, configId);
+  private bindMessageEventToIframe(configuration: OpenIdConfiguration): void {
+    const iframeMessageEvent = this.messageHandler.bind(this, configuration);
 
     this.document.defaultView.addEventListener('message', iframeMessageEvent, false);
   }
@@ -202,9 +202,8 @@ export class CheckSessionService {
 
     if (!existingIframe) {
       const frame = this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_CHECK_SESSION_IDENTIFIER, configuration);
-      const { configId } = configuration;
 
-      this.bindMessageEventToIframe(configId);
+      this.bindMessageEventToIframe(configuration);
 
       return frame;
     }
