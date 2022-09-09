@@ -58,6 +58,7 @@ export class StateValidationService {
         disableIatOffsetValidation,
         ignoreNonceAfterRefresh,
         disableIdTokenValidation,
+        renewTimeBeforeTokenExpiresInSeconds,
       } = configuration;
 
       toReturn.idToken = callbackContext.authResult.id_token;
@@ -174,7 +175,7 @@ export class StateValidationService {
             !this.tokenValidationService.validateIdTokenExpNotExpired(
               toReturn.decodedIdToken,
               configuration,
-              maxIdTokenIatOffsetAllowedInSeconds,
+              renewTimeBeforeTokenExpiresInSeconds,
               disableIdTokenValidation
             )
           ) {
