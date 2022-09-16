@@ -73,7 +73,7 @@ export class LogoffRevocationService {
 
     if (this.storagePersistenceService.getRefreshToken(config)) {
       return this.revokeRefreshToken(config).pipe(
-        switchMap((result) => this.revokeAccessToken(config, result)),
+        switchMap((_) => this.revokeAccessToken(config)),
         catchError((error) => {
           const errorMessage = `revoke token failed`;
 
