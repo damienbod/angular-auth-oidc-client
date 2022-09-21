@@ -10,9 +10,6 @@
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1526)
 - fix: Use correct offset in ID token expiry check 
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1529)
-- Fix bug in logoffAndRevokeTokens() which was not revoking the access token correctly
-  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1533)
-
 
 ### 2022-08-26 14.1.4
 
