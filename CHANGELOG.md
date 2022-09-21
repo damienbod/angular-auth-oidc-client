@@ -1,5 +1,16 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2022-09-21 14.1.5
+
+- Exposing payload of access token
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1541)
+- Fix bug in logoffAndRevokeTokens() which was not revoking the access token correctly
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1533)
+- Fix checkSession messageHandler configuration correctly
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1526)
+- fix: Use correct offset in ID token expiry check 
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1529)
+
 ### 2022-08-26 14.1.4
 
 - Bugfix/unable to extract jwk without kid
