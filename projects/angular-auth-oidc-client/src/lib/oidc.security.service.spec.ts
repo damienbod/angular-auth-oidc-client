@@ -361,6 +361,32 @@ describe('OidcSecurityService', () => {
     }));
   });
 
+  describe('getPayloadFromAccessToken', () => {
+    it('calls `authStateService.getAccessToken` method, encode = false', waitForAsync(() => {
+      const config = { configId: 'configId1' };
+
+      spyOn(configurationService, 'getOpenIDConfiguration').and.returnValue(of(config));
+      spyOn(authStateService, 'getAccessToken').and.returnValue('some-access-token');
+      const spy = spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(null);
+
+      oidcSecurityService.getPayloadFromAccessToken().subscribe(() => {
+        expect(spy).toHaveBeenCalledOnceWith('some-access-token', false, config);
+      });
+    }));
+
+    it('calls `authStateService.getIdToken` method, encode = true', waitForAsync(() => {
+      const config = { configId: 'configId1' };
+
+      spyOn(configurationService, 'getOpenIDConfiguration').and.returnValue(of(config));
+      spyOn(authStateService, 'getAccessToken').and.returnValue('some-access-token');
+      const spy = spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(null);
+
+      oidcSecurityService.getPayloadFromAccessToken(true).subscribe(() => {
+        expect(spy).toHaveBeenCalledOnceWith('some-access-token', true, config);
+      });
+    }));
+  });
+
   describe('setState', () => {
     it('calls flowsDataService.setAuthStateControl with param', waitForAsync(() => {
       const config = { configId: 'configId1' };

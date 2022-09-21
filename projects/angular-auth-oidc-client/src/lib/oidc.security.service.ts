@@ -246,6 +246,24 @@ export class OidcSecurityService {
   }
 
   /**
+   * Returns the payload from the access token.
+   *
+   * @param encode Set to true if the payload is base64 encoded
+   * @param configId The configId to check the information for. If not passed, the first configs will be taken
+   *
+   * @returns The payload from the access token.
+   */
+  getPayloadFromAccessToken(encode = false, configId?: string): Observable<any> {
+    return this.configurationService.getOpenIDConfiguration(configId).pipe(
+      map((config) => {
+        const token = this.authStateService.getAccessToken(config);
+
+        return this.tokenHelperService.getPayloadFromToken(token, encode, config);
+      })
+    );
+  }
+
+  /**
    * Sets a custom state for the authorize request.
    *
    * @param state The state to set.
