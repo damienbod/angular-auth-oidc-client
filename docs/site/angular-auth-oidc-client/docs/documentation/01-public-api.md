@@ -406,6 +406,21 @@ this.oidcSecurityService.getPayloadFromIdToken().subscribe(/*...*/);
 this.oidcSecurityService.getPayloadFromIdToken(true, 'configId').subscribe(/*...*/);
 ```
 
+## getPayloadFromAccessToken(encode = false, configId?: string)
+
+Returns the payload from the access token as an `Observable`. This can be used to get claims from the token.
+If you are running with multiple configs and pass a `configId`, the payload for this config is returned. If you are running with multiple configs and do not pass a `configId`, the payload for the first config is returned. If you are running with a single config, the payload for this config returned.
+
+The `encode` param has to be set to `true` if the payload is base64 encoded.
+
+```ts
+this.oidcSecurityService.getPayloadFromAccessToken().subscribe(/*...*/);
+```
+
+```ts
+this.oidcSecurityService.getPayloadFromAccessToken(true, 'configId').subscribe(/*...*/);
+```
+
 ## setState(state: string, configId?: string)
 
 You can set the state value used for the authorize request, if you have `autoCleanStateAfterAuthentication` in the configuration set to `false`. This can be used for custom state logic handling, the state is not automatically reset when set to `false`.
