@@ -52,7 +52,7 @@ export class AppComponent implements OnInit {
 
 :::caution
 
-We do NOT recommend all routes to be guarded. We know that this is a common use case but it is the easiest to have at least one public route, e.g. `/callback` where your identity provider can redirect to. In this route you can set up the authentication and then redirect to the route wou wanted to go to initially. This would be the "normal" behaviour of an SPA.
+We do NOT recommend all routes to be guarded. We know that this is a common use case but it is the easiest to have at least one public route, e.g. `/callback` where your identity provider can redirect to. In this route you can set up the authentication and then redirect to the route you wanted to go to initially. This would be the "normal" behaviour of a SPA.
 
 :::
 
