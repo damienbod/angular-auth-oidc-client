@@ -1,5 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import { mockClass } from '../test/auto-mock';
 import { AuthStateService } from './auth-state/auth-state.service';
 import { CheckAuthService } from './auth-state/check-auth.service';
