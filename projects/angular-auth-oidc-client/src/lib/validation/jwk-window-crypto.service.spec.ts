@@ -52,34 +52,33 @@ describe('JwkWindowCryptoService', () => {
   });
 
   describe('importVerificationKey', () => {
-    it('returns instance of CryptoKey when valid input is provided',
-      waitForAsync(() => {
+    it('returns instance of CryptoKey when valid input is provided',(done) => {
         const promises = keys.map((key) => service.importVerificationKey(key, alg));
 
-        promises.map((promise) => {
-          promise.then((value) => {
+        Promise.all(promises).then(values => {
+          values.forEach(value => {
             expect(value).toBeInstanceOf(CryptoKey);
-          });
+          })
+          done();
         });
       })
-    );
   });
 
   describe('verifyKey', () => {
-    it('returns true when valid input is provided',
-      waitForAsync(() => {
+    it('returns true when valid input is provided', (done) => {
         const headerAndPayloadString = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0';
         const signatureString = 'NHVaYe26MbtOYhSKkoKYdFVomg4i8ZJd8_-RU8VNbftc4TSMb4bXP3l3YlNWACwyXPGffz5aXHc6lty1Y2t4SWRqGteragsVdZufDn5BlnJl9pdR_kdVFUsra2rWKEofkZeIC4yWytE58sMIihvo9H1ScmmVwBcQP6XETqYd0aSHp1gOa9RdUPDvoXQ5oqygTqVtxaDr6wUFKrKItgBMzWIdNZ6y7O9E0DhEPTbE9rfBo6KTFsHAZnMg4k68CDp2woYIaXbmYTWcvbzIuHO7_37GT79XdIwkm95QJ7hYC9RiwrV7mesbY4PAahERJawntho0my942XheVLmGwLMBkQ';
         const signature: Uint8Array = base64url.parse(signatureString, { loose: true });
 
-        service.importVerificationKey(key3, alg).then((c) => {
-          waitForAsync(() => {
-            service.verifyKey(alg, c, signature, headerAndPayloadString).then((value) => {
-              expect(value).toEqual(true);
-            });
+        service.importVerificationKey(key3, alg)
+          .then(c => service.verifyKey(alg, c, signature, headerAndPayloadString))
+          .then(value => {
+            expect(value).toEqual(true);
+          })
+          .finally(() =>{
+            done();
           });
-        });
-      })
+      }
     );
   });
 });
