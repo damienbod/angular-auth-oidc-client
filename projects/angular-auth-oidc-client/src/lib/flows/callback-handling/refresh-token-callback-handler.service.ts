@@ -7,7 +7,7 @@ import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
-import { CallbackContext } from '../callback-context';
+import { AuthResult, CallbackContext } from '../callback-context';
 
 @Injectable()
 export class RefreshTokenCallbackHandlerService {
@@ -38,15 +38,12 @@ export class RefreshTokenCallbackHandlerService {
     const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken, config, customParamsRefresh);
 
     return this.dataService.post(tokenEndpoint, data, config, headers).pipe(
-      switchMap((response: any) => {
+      switchMap((response: AuthResult) => {
         this.loggerService.logDebug(config, 'token refresh response: ', response);
-        // TODO FGO LOOK AT THIS
-        let authResult: any = new Object();
 
-        authResult = response;
-        authResult.state = callbackContext.state;
+        response.state = callbackContext.state;
 
-        callbackContext.authResult = authResult;
+        callbackContext.authResult = response;
 
         return of(callbackContext);
       }),

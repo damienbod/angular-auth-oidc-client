@@ -4,11 +4,11 @@ import { base64url } from 'rfc4648';
 import { from, Observable, of } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
+import { JwkExtractor } from '../extractors/jwk.extractor';
 import { LoggerService } from '../logging/logger.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
-import { JwtWindowCryptoService } from './jwt-window-crypto.service';
-import { JwkExtractor } from '../extractors/jwk.extractor';
 import { JwkWindowCryptoService } from './jwk-window-crypto.service';
+import { JwtWindowCryptoService } from './jwt-window-crypto.service';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
@@ -71,29 +71,15 @@ export class TokenValidationService {
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
   // (possibly allowing for some small leeway to account for clock skew).
-  hasIdTokenExpired(
-    token: string,
-    configuration: OpenIdConfiguration,
-    offsetSeconds?: number,
-    disableIdTokenValidation?: boolean
-  ): boolean {
+  hasIdTokenExpired(token: string, configuration: OpenIdConfiguration, offsetSeconds?: number): boolean {
     const decoded = this.tokenHelperService.getPayloadFromToken(token, false, configuration);
 
-    return !this.validateIdTokenExpNotExpired(decoded, configuration, offsetSeconds, disableIdTokenValidation);
+    return !this.validateIdTokenExpNotExpired(decoded, configuration, offsetSeconds);
   }
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
   // (possibly allowing for some small leeway to account for clock skew).
-  validateIdTokenExpNotExpired(
-    decodedIdToken: string,
-    configuration: OpenIdConfiguration,
-    offsetSeconds?: number,
-    disableIdTokenValidation?: boolean
-  ): boolean {
-    if (disableIdTokenValidation) {
-      return true;
-    }
-
+  validateIdTokenExpNotExpired(decodedIdToken: string, configuration: OpenIdConfiguration, offsetSeconds?: number): boolean {
     const tokenExpirationDate = this.tokenHelperService.getTokenExpirationDate(decodedIdToken);
 
     offsetSeconds = offsetSeconds || 0;
@@ -338,6 +324,10 @@ export class TokenValidationService {
   // id_token C6: The alg value SHOULD be RS256. Validation of tokens using other signing algorithms is described in the
   // OpenID Connect Core 1.0 [OpenID.Core] specification.
   validateSignatureIdToken(idToken: string, jwtkeys: any, configuration: OpenIdConfiguration): Observable<boolean> {
+    if (!idToken) {
+      return of(true);
+    }
+
     if (!jwtkeys || !jwtkeys.keys) {
       return of(false);
     }
@@ -367,14 +357,12 @@ export class TokenValidationService {
     const use = 'sig';
 
     try {
-      foundKeys = kid ?
-        this.jwkExtractor.extractJwk(keys, {kid, kty, use}, false) :
-        this.jwkExtractor.extractJwk(keys, {kty, use}, false);
+      foundKeys = kid
+        ? this.jwkExtractor.extractJwk(keys, { kid, kty, use }, false)
+        : this.jwkExtractor.extractJwk(keys, { kty, use }, false);
 
       if (foundKeys.length === 0) {
-        foundKeys = kid ?
-          this.jwkExtractor.extractJwk(keys, {kid, kty}) :
-          this.jwkExtractor.extractJwk(keys, {kty});
+        foundKeys = kid ? this.jwkExtractor.extractJwk(keys, { kid, kty }) : this.jwkExtractor.extractJwk(keys, { kty });
       }
 
       key = foundKeys[0];

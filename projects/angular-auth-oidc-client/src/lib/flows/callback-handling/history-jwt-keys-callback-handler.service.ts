@@ -33,6 +33,12 @@ export class HistoryJwtKeysCallbackHandlerService {
     config: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
   ): Observable<CallbackContext> {
+    if (!this.responseHasIdToken(callbackContext)) {
+      const existingIdToken = this.storagePersistenceService.getIdToken(config);
+
+      callbackContext.authResult.id_token = existingIdToken;
+    }
+
     this.storagePersistenceService.write('authnResult', callbackContext.authResult, config);
 
     if (config.allowUnsafeReuseRefreshToken && callbackContext.authResult.refresh_token) {
@@ -97,6 +103,10 @@ export class HistoryJwtKeysCallbackHandlerService {
         return throwError(() => new Error(errorMessage));
       })
     );
+  }
+
+  private responseHasIdToken(callbackContext: CallbackContext): boolean {
+    return !!callbackContext?.authResult?.id_token;
   }
 
   private handleResultErrorFromCallback(result: any, isRenewProcess: boolean): void {

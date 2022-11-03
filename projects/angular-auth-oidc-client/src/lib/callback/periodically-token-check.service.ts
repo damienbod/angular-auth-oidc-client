@@ -170,10 +170,9 @@ export class PeriodicallyTokenCheckService {
       return false;
     }
 
-    const idTokenStillValid = this.authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled(config);
     const accessTokenHasExpired = this.authStateService.hasAccessTokenExpiredIfExpiryExists(config);
 
-    if (!idTokenStillValid && !accessTokenHasExpired) {
+    if (!accessTokenHasExpired) {
       return false;
     }
 
