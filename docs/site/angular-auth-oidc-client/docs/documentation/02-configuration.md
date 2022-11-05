@@ -414,7 +414,7 @@ Disables the `auth_time` validation for `id_tokens` in a refresh due to Microsof
 - Type: `boolean`
 - Required: `false`
 
-Enables the `id_token` validation. You can disable this validation if you would like to ignore expired values during the renew process. If no `id_token` is returned while using refresh tokens, set this to false. <br/>
+Enables the `id_token` validation. You can disable this validation if you would like to ignore expired values during the renew process or after the first renew. If no `id_token` is returned while using refresh tokens, set this to false. <br/>
 Default = _true_
 
 ### `tokenRefreshInSeconds`
