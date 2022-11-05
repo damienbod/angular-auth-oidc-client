@@ -188,11 +188,11 @@ export class StateValidationService {
           }
 
           if (
+            !isInRefreshTokenFlow &&
             !this.tokenValidationService.validateIdTokenExpNotExpired(
               toReturn.decodedIdToken,
               configuration,
               renewTimeBeforeTokenExpiresInSeconds
-              //disableIdTokenValidation
             )
           ) {
             this.loggerService.logWarning(configuration, 'authCallback id token expired');
