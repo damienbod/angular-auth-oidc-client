@@ -39,6 +39,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
         silentRenew: true,
         useRefreshToken: true,
         ignoreNonceAfterRefresh: true, // this is required if the id_token is not returned
+        allowUnsafeReuseRefreshToken: true, // this is required if the refresh token is not rotated
         autoUserInfo: false, // if the user endpoint is not supported
         logLevel: LogLevel.Debug,
       },
