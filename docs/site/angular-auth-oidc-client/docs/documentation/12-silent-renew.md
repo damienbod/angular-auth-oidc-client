@@ -22,7 +22,7 @@ Refresh tokens should be rotated and the refresh token should be revoked on a lo
 
 When an identity provider does not return an id_token in the refresh, the nonce cannot be validated in the id_token as it is not returned and needs to be deactivated. The following configuration should work for servers not returning an id_token in the refresh.
 
-```
+```typescript
 import { NgModule } from '@angular/core';
 import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
 
@@ -47,7 +47,6 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
   exports: [AuthModule],
 })
 export class AuthConfigModule {}
-
 ```
 
 ## Silent Renew (iframe)
