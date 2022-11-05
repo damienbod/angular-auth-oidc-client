@@ -467,3 +467,12 @@ Allows multiple usage of refresh token. Refresh tokens which can be stored safel
 Activate this property only if your OIDC provider cannot be configured to rotate refresh tokens.
 
 Default = _false_
+
+### `disableIdTokenValidation`
+
+- Type: `boolean`
+- Required: `false`
+
+Disable validation for id_token. This is not recommended! You should always validate the id_token if returned.
+
+Default = _false_

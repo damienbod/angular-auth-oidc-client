@@ -175,7 +175,9 @@ export interface OpenIdConfiguration {
    * The refresh token rotation is optional (rfc6749) but is more safe and hence encouraged.
    */
   allowUnsafeReuseRefreshToken?: boolean;
-  /** Disable validation for id_token expiry time */
+  /** Disable validation for id_token
+   *  This is not recommended! You should always validate the id_token if returned.
+   */
   disableIdTokenValidation?: boolean;
   /** Disables PKCE support.
    * Authorize request will be sent without code challenge.
