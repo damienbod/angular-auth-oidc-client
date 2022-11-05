@@ -18,6 +18,38 @@ For session renewal with the PKCE flow, no iframes are used by default. Instead,
 
 Refresh tokens should be rotated and the refresh token should be revoked on a logout using the revocation endpoint.
 
+## Silent Renew Code Flow with PKCE using refresh tokens and no id_token returned in the refresh
+
+When an identity provider does not return an id_token in the refresh, the nonce cannot be validated in the id_token as it is not returned and needs to be deactivated. The following configuration should work for servers not returning an id_token in the refresh.
+
+```
+import { NgModule } from '@angular/core';
+import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
+
+@NgModule({
+  imports: [
+    AuthModule.forRoot({
+      config: {
+        authority: '--idp--',
+        redirectUrl: window.location.origin,
+        postLogoutRedirectUri: window.location.origin,
+        clientId: '--client_id--',
+        scope: 'openid profile offline_access',
+        responseType: 'code',
+        silentRenew: true,
+        useRefreshToken: true,
+        ignoreNonceAfterRefresh: true, // this is required if the id_token is not returned
+        autoUserInfo: false, // if the user endpoint is not supported
+        logLevel: LogLevel.Debug,
+      },
+    }),
+  ],
+  exports: [AuthModule],
+})
+export class AuthConfigModule {}
+
+```
+
 ## Silent Renew (iframe)
 
 When silent renew is enabled, a DOM event will automatically be installed in the application's host window. The event `oidc-silent-renew-message` accepts a `CustomEvent` instance with the token returned from the OAuth server in its `detail` field. The event handler will send this token to the authorization callback and complete the validation.
