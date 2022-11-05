@@ -114,6 +114,7 @@ export class StateValidationService {
           }
 
           if (
+            !isInRefreshTokenFlow &&
             !this.tokenValidationService.validateIdTokenIatMaxOffset(
               toReturn.decodedIdToken,
               maxIdTokenIatOffsetAllowedInSeconds,
