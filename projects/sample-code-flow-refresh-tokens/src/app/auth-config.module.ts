@@ -5,15 +5,17 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
   imports: [
     AuthModule.forRoot({
       config: {
-        authority: 'https://offeringsolutions-sts.azurewebsites.net',
+        authority: 'https://devsso.vermeer.com/nidp',
         redirectUrl: window.location.origin,
         postLogoutRedirectUri: window.location.origin,
-        clientId: 'angularCodeRefreshTokens',
-        scope: 'openid profile email taler_api offline_access',
+        clientId: '58df815e-41a1-4fbb-b628-e7c4f8d46e48',
+        scope: 'openid profile offline_access',
         responseType: 'code',
-        // autoUserInfo: true,
         silentRenew: true,
         useRefreshToken: true,
+        ignoreNonceAfterRefresh: true,
+        enableIdTokenExpiredValidation: false,
+        autoUserInfo: false,
         logLevel: LogLevel.Debug,
       },
     }),

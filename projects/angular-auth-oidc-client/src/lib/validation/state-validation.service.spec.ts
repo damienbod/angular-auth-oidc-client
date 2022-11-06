@@ -117,7 +117,7 @@ describe('State Validation Service', () => {
         useRefreshToken: true,
         ignoreNonceAfterRefresh: true,
         disableRefreshIdTokenAuthTimeValidation: true,
-        enableIdTokenExpiredValidationInRenew: true,
+        enableIdTokenExpiredValidation: true,
       };
 
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
@@ -187,7 +187,7 @@ describe('State Validation Service', () => {
         useRefreshToken: true,
         ignoreNonceAfterRefresh: true,
         disableRefreshIdTokenAuthTimeValidation: true,
-        enableIdTokenExpiredValidationInRenew: true,
+        enableIdTokenExpiredValidation: true,
       };
 
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
@@ -257,7 +257,7 @@ describe('State Validation Service', () => {
         useRefreshToken: true,
         ignoreNonceAfterRefresh: true,
         disableRefreshIdTokenAuthTimeValidation: true,
-        enableIdTokenExpiredValidationInRenew: true,
+        enableIdTokenExpiredValidation: true,
       };
 
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
@@ -327,7 +327,7 @@ describe('State Validation Service', () => {
         useRefreshToken: true,
         ignoreNonceAfterRefresh: true,
         disableRefreshIdTokenAuthTimeValidation: false,
-        enableIdTokenExpiredValidationInRenew: true,
+        enableIdTokenExpiredValidation: true,
       };
 
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
@@ -397,7 +397,7 @@ describe('State Validation Service', () => {
         useRefreshToken: true,
         ignoreNonceAfterRefresh: true,
         disableRefreshIdTokenAuthTimeValidation: false,
-        enableIdTokenExpiredValidationInRenew: true,
+        enableIdTokenExpiredValidation: true,
       };
 
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
@@ -467,7 +467,7 @@ describe('State Validation Service', () => {
         useRefreshToken: true,
         ignoreNonceAfterRefresh: true,
         disableRefreshIdTokenAuthTimeValidation: false,
-        enableIdTokenExpiredValidationInRenew: true,
+        enableIdTokenExpiredValidation: true,
       };
 
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
@@ -537,7 +537,7 @@ describe('State Validation Service', () => {
         useRefreshToken: true,
         ignoreNonceAfterRefresh: true,
         disableRefreshIdTokenAuthTimeValidation: false,
-        enableIdTokenExpiredValidationInRenew: true,
+        enableIdTokenExpiredValidation: true,
       };
 
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
@@ -607,7 +607,7 @@ describe('State Validation Service', () => {
         useRefreshToken: true,
         ignoreNonceAfterRefresh: true,
         disableRefreshIdTokenAuthTimeValidation: false,
-        enableIdTokenExpiredValidationInRenew: true,
+        enableIdTokenExpiredValidation: true,
       };
 
       spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
