@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { JwkExtractor } from '../extractors/jwk.extractor';
@@ -372,53 +372,57 @@ describe('TokenValidationService', () => {
   });
 
   describe('validateSignatureIdToken', () => {
-    it('returns false if null as both parameters is passed', (done) => {
-      const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, null, { configId: 'configId1' });
+    it('returns false if no kwtKeys are passed', waitForAsync(() => {
+      const valueFalse$ = tokenValidationService.validateSignatureIdToken('some-id-token', null, { configId: 'configId1' });
 
       valueFalse$.subscribe((valueFalse) => {
         expect(valueFalse).toEqual(false);
-        done();
       });
-    });
+    }));
 
-    it('returns false if jwtkeys has no keys-property', (done) => {
-      const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, { notKeys: '' }, { configId: 'configId1' });
+    it('returns true if no idToken is passed', waitForAsync(() => {
+      const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, 'some-jwt-keys', { configId: 'configId1' });
+
+      valueFalse$.subscribe((valueFalse) => {
+        expect(valueFalse).toEqual(true);
+      });
+    }));
+
+    it('returns false if jwtkeys has no keys-property', waitForAsync(() => {
+      const valueFalse$ = tokenValidationService.validateSignatureIdToken('some-id-token', { notKeys: '' }, { configId: 'configId1' });
 
       valueFalse$.subscribe((valueFalse) => {
         expect(valueFalse).toEqual(false);
-        done();
       });
-    });
+    }));
 
-    it('returns false if header data has no header data', (done) => {
+    it('returns false if header data has no header data', waitForAsync(() => {
       spyOn(tokenHelperService, 'getHeaderFromToken').and.returnValue({});
 
       const jwtKeys = {
         keys: 'someThing',
       };
 
-      const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, jwtKeys, { configId: 'configId1' });
+      const valueFalse$ = tokenValidationService.validateSignatureIdToken('some-id-token', jwtKeys, { configId: 'configId1' });
 
       valueFalse$.subscribe((valueFalse) => {
         expect(valueFalse).toEqual(false);
-        done();
       });
-    });
+    }));
 
-    it('returns false if header data alg property does not exist in keyalgorithms', (done) => {
+    it('returns false if header data alg property does not exist in keyalgorithms', waitForAsync(() => {
       spyOn(tokenHelperService, 'getHeaderFromToken').and.returnValue({ alg: 'NOT SUPPORTED ALG' });
 
       const jwtKeys = {
         keys: 'someThing',
       };
 
-      const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, jwtKeys, { configId: 'configId1' });
+      const valueFalse$ = tokenValidationService.validateSignatureIdToken('some-id-token', jwtKeys, { configId: 'configId1' });
 
       valueFalse$.subscribe((valueFalse) => {
         expect(valueFalse).toEqual(false);
-        done();
       });
-    });
+    }));
 
     it('returns false if header data has kid property and jwtKeys has same kid property but they are not valid with the token', (done) => {
       const kid = '5626CE6A8F4F5FCD79C6642345282CA76D337548';
@@ -566,20 +570,14 @@ describe('TokenValidationService', () => {
   });
 
   describe('validateIdTokenExpNotExpired', () => {
-    it('returns false when tokenExpirationDate is falsy', () => {
+    it('returns false when getTokenExpirationDate returns null', () => {
       spyOn(tokenHelperService, 'getTokenExpirationDate').and.returnValue(null);
       const notExpired = tokenValidationService.validateIdTokenExpNotExpired('idToken', { configId: 'configId1' }, 0);
 
       expect(notExpired).toEqual(false);
     });
 
-    it('returns true if disableIdTokenValidation is true', () => {
-      const notExpired = tokenValidationService.validateIdTokenExpNotExpired('idToken', { configId: 'configId1' }, 0);
-
-      expect(notExpired).toEqual(true);
-    });
-
-    it('validateIdTokenExpNotExpired', () => {
+    it('returns false if token is not expired', () => {
       const idToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
 
