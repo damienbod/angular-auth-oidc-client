@@ -385,7 +385,7 @@ describe('Auth State Service', () => {
 
       authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled(config);
 
-      expect(spy).toHaveBeenCalledOnceWith('idToken', config, 30, undefined);
+      expect(spy).toHaveBeenCalledOnceWith('idToken', config, 30);
     });
 
     it('fires event if idToken is expired', () => {

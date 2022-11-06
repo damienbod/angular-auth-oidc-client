@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
+import { JwkExtractor } from '../extractors/jwk.extractor';
 import { LoggerService } from '../logging/logger.service';
 import { CryptoService } from '../utils/crypto/crypto-service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
+import { JwkWindowCryptoService } from './jwk-window-crypto.service';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
 import { TokenValidationService } from './token-validation.service';
-import { JwkWindowCryptoService } from './jwk-window-crypto.service';
-import { JwkExtractor } from '../extractors/jwk.extractor';
 
 describe('TokenValidationService', () => {
   let tokenValidationService: TokenValidationService;
@@ -452,25 +452,24 @@ describe('TokenValidationService', () => {
     });
 
     it('should return true if valid input is provided', (done) => {
-      const idToken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2V4YW1wbGUuY29tIiwic3ViIjoiMTIzNDU2IiwiYXVkIjoibXlfY2xpZW50X2lkIiwiZXhwIjoxMzExMjgxOTcwLCJpYXQiOjEzMTEyODA5NzAsIm5hbWUiOiJKYW5lIERvZSIsImdpdmVuX25hbWUiOiJKYW5lIiwiZmFtaWx5X25hbWUiOiJEb2UiLCJiaXJ0aGRhdGUiOiIxOTkwLTEwLTMxIiwiZW1haWwiOiJqYW5lZG9lQGV4YW1wbGUuY29tIiwicGljdHVyZSI6Imh0dHBzOi8vZXhhbXBsZS5jb20vamFuZWRvZS9tZS5qcGcifQ.SY0ilps7yKYmYCc41zNOatfmAFhOtDYwuIT80qrHMl_4FEO2WFWSv-aDl4QfTSKY9A6MMP6xy0Z_8Kk7NeRwIV7FVScMLnPvVzs9pxza0e_rl6hmZLb5P5n4AEINwn46X9XmRB5W3EZO_x2LG65_g3NZFiPrzOC1Fs_6taJl7TfI8lOveYDoJyXCWYQMS3Oh5MM9S8W-Hc29_qJLH-kixm1S01qoICRPDGMRwhtAu1DHjwWQp9Ycfz6g3uyb7N1imBvI49t1CwWy02_mQ3g-7e7bOP1Ax2kgrwnJgsVBDULnyCZG9PE8T0CHZl_fErZtvbJJ0jdoZ1fyr48906am2w';
+      const idToken =
+        'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2V4YW1wbGUuY29tIiwic3ViIjoiMTIzNDU2IiwiYXVkIjoibXlfY2xpZW50X2lkIiwiZXhwIjoxMzExMjgxOTcwLCJpYXQiOjEzMTEyODA5NzAsIm5hbWUiOiJKYW5lIERvZSIsImdpdmVuX25hbWUiOiJKYW5lIiwiZmFtaWx5X25hbWUiOiJEb2UiLCJiaXJ0aGRhdGUiOiIxOTkwLTEwLTMxIiwiZW1haWwiOiJqYW5lZG9lQGV4YW1wbGUuY29tIiwicGljdHVyZSI6Imh0dHBzOi8vZXhhbXBsZS5jb20vamFuZWRvZS9tZS5qcGcifQ.SY0ilps7yKYmYCc41zNOatfmAFhOtDYwuIT80qrHMl_4FEO2WFWSv-aDl4QfTSKY9A6MMP6xy0Z_8Kk7NeRwIV7FVScMLnPvVzs9pxza0e_rl6hmZLb5P5n4AEINwn46X9XmRB5W3EZO_x2LG65_g3NZFiPrzOC1Fs_6taJl7TfI8lOveYDoJyXCWYQMS3Oh5MM9S8W-Hc29_qJLH-kixm1S01qoICRPDGMRwhtAu1DHjwWQp9Ycfz6g3uyb7N1imBvI49t1CwWy02_mQ3g-7e7bOP1Ax2kgrwnJgsVBDULnyCZG9PE8T0CHZl_fErZtvbJJ0jdoZ1fyr48906am2w';
       const idTokenParts = idToken.split('.');
       const key = {
-        "kty": "RSA",
-        "n": "u1SU1LfVLPHCozMxH2Mo4lgOEePzNm0tRgeLezV6ffAt0gunVTLw7onLRnrq0_IzW7yWR7QkrmBL7jTKEn5u-qKhbwKfBstIs-bMY2Zkp18gnTxKLxoS2tFczGkPLPgizskuemMghRniWaoLcyehkd3qqGElvW_VDL5AaWTg0nLVkjRo9z-40RQzuVaE8AkAFmxZzow3x-VJYKdjykkJ0iT9wCS0DRTXu269V264Vf_3jvredZiKRkgwlL9xNAwxXFg0x_XFw005UWVRIkdgcKWTjpBP2dPwVZ4WWC-9aGVd-Gyn1o0CLelf4rEjGoXbAAEgAqeGUxrcIlbjXfbcmw",
-        "e": "AQAB",
-        "alg": "RS256",
-        "kid": "boop",
-        "use": "sig"
+        kty: 'RSA',
+        n: 'u1SU1LfVLPHCozMxH2Mo4lgOEePzNm0tRgeLezV6ffAt0gunVTLw7onLRnrq0_IzW7yWR7QkrmBL7jTKEn5u-qKhbwKfBstIs-bMY2Zkp18gnTxKLxoS2tFczGkPLPgizskuemMghRniWaoLcyehkd3qqGElvW_VDL5AaWTg0nLVkjRo9z-40RQzuVaE8AkAFmxZzow3x-VJYKdjykkJ0iT9wCS0DRTXu269V264Vf_3jvredZiKRkgwlL9xNAwxXFg0x_XFw005UWVRIkdgcKWTjpBP2dPwVZ4WWC-9aGVd-Gyn1o0CLelf4rEjGoXbAAEgAqeGUxrcIlbjXfbcmw',
+        e: 'AQAB',
+        alg: 'RS256',
+        kid: 'boop',
+        use: 'sig',
       };
       const jwtKeys = {
-        keys: [
-          key
-        ]
+        keys: [key],
       };
 
       spyOn(tokenHelperService, 'getHeaderFromToken').and.returnValue({
-        "alg": "RS256",
-        "typ": "JWT"
+        alg: 'RS256',
+        typ: 'JWT',
       });
       spyOn(tokenHelperService, 'getSigningInputFromToken').and.returnValue([idTokenParts[0], idTokenParts[1]].join('.'));
       spyOn(tokenHelperService, 'getSignatureFromToken').and.returnValue(idTokenParts[2]);
@@ -575,7 +574,7 @@ describe('TokenValidationService', () => {
     });
 
     it('returns true if disableIdTokenValidation is true', () => {
-      const notExpired = tokenValidationService.validateIdTokenExpNotExpired('idToken', { configId: 'configId1' }, 0, true);
+      const notExpired = tokenValidationService.validateIdTokenExpNotExpired('idToken', { configId: 'configId1' }, 0);
 
       expect(notExpired).toEqual(true);
     });
