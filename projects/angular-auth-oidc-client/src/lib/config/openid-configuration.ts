@@ -153,7 +153,7 @@ export interface OpenIdConfiguration {
    * You can disable this validation if you like to ignore the expired value in the renew process or not check this in the expiry check. Only the access token is used to trigger a renew.
    * If no id_token is returned in using refresh tokens, set this to `false`.
    */
-  enableIdTokenExpiredValidation?: boolean;
+  triggerRefreshWhenIdTokenExpired?: boolean;
 
   /** Controls the periodic check time interval in sections.
    * Default value is 3.

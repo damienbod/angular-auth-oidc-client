@@ -409,7 +409,7 @@ Extra parameters that can be added to the token URL request.
 
 Disables the `auth_time` validation for `id_tokens` in a refresh due to Microsoft Azure's incorrect implementation.
 
-### `enableIdTokenExpiredValidation`
+### `triggerRefreshWhenIdTokenExpired`
 
 - Type: `boolean`
 - Required: `false`

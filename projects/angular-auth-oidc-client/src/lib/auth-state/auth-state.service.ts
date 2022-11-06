@@ -120,9 +120,9 @@ export class AuthStateService {
   }
 
   hasIdTokenExpiredAndRenewCheckIsEnabled(configuration: OpenIdConfiguration): boolean {
-    const { renewTimeBeforeTokenExpiresInSeconds, enableIdTokenExpiredValidation, disableIdTokenValidation } = configuration;
+    const { renewTimeBeforeTokenExpiresInSeconds, triggerRefreshWhenIdTokenExpired, disableIdTokenValidation } = configuration;
 
-    if (!enableIdTokenExpiredValidation || disableIdTokenValidation) {
+    if (!triggerRefreshWhenIdTokenExpired || disableIdTokenValidation) {
       return false;
     }
     const tokenToCheck = this.storagePersistenceService.getIdToken(configuration);

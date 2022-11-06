@@ -35,7 +35,7 @@ export const DEFAULT_CONFIG: OpenIdConfiguration = {
   customParamsEndSessionRequest: {},
   customParamsCodeRequest: {},
   disableRefreshIdTokenAuthTimeValidation: false,
-  enableIdTokenExpiredValidation: true,
+  triggerRefreshWhenIdTokenExpired: true,
   tokenRefreshInSeconds: 4,
   refreshTokenRetryInSeconds: 3,
   ngswBypass: false,

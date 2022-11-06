@@ -9,7 +9,7 @@
 - id_token only has to be valid on the first authentication
 - add support to disable id_token validation completely, not recommended
 
-renamed enableIdTokenExpiredValidationInRenew to enableIdTokenExpiredValidation
+renamed enableIdTokenExpiredValidationInRenew to triggerRefreshWhenIdTokenExpired
 
 Docs: https://angular-auth-oidc-client.com/docs/documentation/silent-renew
 
