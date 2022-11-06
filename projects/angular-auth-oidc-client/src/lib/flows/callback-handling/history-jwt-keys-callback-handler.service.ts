@@ -36,7 +36,7 @@ export class HistoryJwtKeysCallbackHandlerService {
     if (!this.responseHasIdToken(callbackContext)) {
       const existingIdToken = this.storagePersistenceService.getIdToken(config);
 
-      callbackContext.authResult.id_token = existingIdToken;
+      callbackContext.authResult = { ...callbackContext.authResult, id_token: existingIdToken };
     }
 
     this.storagePersistenceService.write('authnResult', callbackContext.authResult, config);

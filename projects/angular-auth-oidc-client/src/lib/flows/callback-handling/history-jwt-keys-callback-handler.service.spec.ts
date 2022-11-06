@@ -10,6 +10,7 @@ import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { ResetAuthDataService } from '../reset-auth-data.service';
 import { SigninKeyDataService } from '../signin-key-data.service';
+import { AuthResult } from './../callback-context';
 import { HistoryJwtKeysCallbackHandlerService } from './history-jwt-keys-callback-handler.service';
 
 const DUMMY_JWT_KEYS: JwtKeys = {
@@ -64,7 +65,12 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
   describe('callbackHistoryAndResetJwtKeys', () => {
     it('writes authResult into the storage', waitForAsync(() => {
       const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'write');
-      const callbackContext = { authResult: 'authResultToStore' } as unknown as CallbackContext;
+      const DUMMY_AUTH_RESULT = {
+        refresh_token: 'dummy_refresh_token',
+        id_token: 'some-id-token',
+      };
+
+      const callbackContext = { authResult: DUMMY_AUTH_RESULT } as CallbackContext;
       const allconfigs = [
         {
           configId: 'configId1',
@@ -75,7 +81,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of({ keys: [] } as JwtKeys));
       service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe(() => {
         expect(storagePersistenceServiceSpy.calls.allArgs()).toEqual([
-          ['authnResult', 'authResultToStore', allconfigs[0]],
+          ['authnResult', DUMMY_AUTH_RESULT, allconfigs[0]],
           ['jwtKeys', { keys: [] }, allconfigs[0]],
         ]);
         // write authnResult & jwtKeys
@@ -86,10 +92,11 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     it('writes refresh_token into the storage without reuse (refresh token rotation)', waitForAsync(() => {
       const DUMMY_AUTH_RESULT = {
         refresh_token: 'dummy_refresh_token',
+        id_token: 'some-id-token',
       };
 
       const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'write');
-      const callbackContext = { authResult: DUMMY_AUTH_RESULT } as unknown as CallbackContext;
+      const callbackContext = { authResult: DUMMY_AUTH_RESULT } as CallbackContext;
       const allconfigs = [
         {
           configId: 'configId1',
@@ -112,10 +119,11 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     it('writes refresh_token into the storage with reuse (without refresh token rotation)', waitForAsync(() => {
       const DUMMY_AUTH_RESULT = {
         refresh_token: 'dummy_refresh_token',
+        id_token: 'some-id-token',
       };
 
       const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'write');
-      const callbackContext = { authResult: DUMMY_AUTH_RESULT } as unknown as CallbackContext;
+      const callbackContext = { authResult: DUMMY_AUTH_RESULT } as CallbackContext;
       const allconfigs = [
         {
           configId: 'configId1',
@@ -137,7 +145,10 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     }));
 
     it('resetBrowserHistory if historyCleanup is turned on and is not in a renewProcess', waitForAsync(() => {
-      const callbackContext = { isRenewProcess: false, authResult: 'authResult' } as unknown as CallbackContext;
+      const DUMMY_AUTH_RESULT = {
+        id_token: 'some-id-token',
+      };
+      const callbackContext = { isRenewProcess: false, authResult: DUMMY_AUTH_RESULT } as CallbackContext;
       const allconfigs = [
         {
           configId: 'configId1',
@@ -154,7 +165,11 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     }));
 
     it('returns callbackContext with jwtkeys filled if everything works fine', waitForAsync(() => {
-      const callbackContext = { isRenewProcess: false, authResult: 'authResult' } as unknown as CallbackContext;
+      const DUMMY_AUTH_RESULT = {
+        id_token: 'some-id-token',
+      };
+
+      const callbackContext = { isRenewProcess: false, authResult: DUMMY_AUTH_RESULT } as CallbackContext;
       const allconfigs = [
         {
           configId: 'configId1',
@@ -166,14 +181,18 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       service.callbackHistoryAndResetJwtKeys(callbackContext, allconfigs[0], allconfigs).subscribe((result) => {
         expect(result).toEqual({
           isRenewProcess: false,
-          authResult: 'authResult',
+          authResult: DUMMY_AUTH_RESULT,
           jwtKeys: { keys: [{ kty: 'henlo' }] },
-        } as unknown as CallbackContext);
+        } as CallbackContext);
       });
     }));
 
     it('returns error if no jwtKeys have been in the call --> keys are null', waitForAsync(() => {
-      const callbackContext = { isRenewProcess: false, authResult: 'authResult' } as unknown as CallbackContext;
+      const DUMMY_AUTH_RESULT = {
+        id_token: 'some-id-token',
+      };
+
+      const callbackContext = { isRenewProcess: false, authResult: DUMMY_AUTH_RESULT } as CallbackContext;
       const allconfigs = [
         {
           configId: 'configId1',
@@ -190,7 +209,10 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     }));
 
     it('returns error if no jwtKeys have been in the call --> keys throw an error', waitForAsync(() => {
-      const callbackContext = { isRenewProcess: false, authResult: 'authResult' } as unknown as CallbackContext;
+      const DUMMY_AUTH_RESULT = {
+        id_token: 'some-id-token',
+      };
+      const callbackContext = { isRenewProcess: false, authResult: DUMMY_AUTH_RESULT } as CallbackContext;
       const allconfigs = [
         {
           configId: 'configId1',
@@ -207,7 +229,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     }));
 
     it('returns error if callbackContext.authresult has an error property filled', waitForAsync(() => {
-      const callbackContext = { authResult: { error: 'someError' } } as unknown as CallbackContext;
+      const callbackContext = { authResult: { error: 'someError' } } as CallbackContext;
       const allconfigs = [
         {
           configId: 'configId1',
@@ -223,7 +245,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     }));
 
     it('calls resetAuthorizationData, resets nonce and authStateService in case of an error', waitForAsync(() => {
-      const callbackContext = { authResult: { error: 'someError' } } as unknown as CallbackContext;
+      const callbackContext = { authResult: { error: 'someError' } } as CallbackContext;
       const allconfigs = [
         {
           configId: 'configId1',
@@ -249,7 +271,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     }));
 
     it('calls authStateService.updateAndPublishAuthState with login required if the error is `login_required`', waitForAsync(() => {
-      const callbackContext = { authResult: { error: 'login_required' } } as unknown as CallbackContext;
+      const callbackContext = { authResult: { error: 'login_required' } } as CallbackContext;
       const allconfigs = [
         {
           configId: 'configId1',
@@ -275,7 +297,11 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     }));
 
     it('should store jwtKeys', waitForAsync(() => {
-      const initialCallbackContext = { authResult: 'authResultToStore' } as unknown as CallbackContext;
+      const DUMMY_AUTH_RESULT = {
+        id_token: 'some-id-token',
+      };
+
+      const initialCallbackContext = { authResult: DUMMY_AUTH_RESULT } as CallbackContext;
       const allconfigs = [
         {
           configId: 'configId1',
@@ -290,7 +316,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         next: (callbackContext: CallbackContext) => {
           expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(2);
           expect(storagePersistenceServiceSpy.calls.allArgs()).toEqual([
-            ['authnResult', 'authResultToStore', allconfigs[0]],
+            ['authnResult', DUMMY_AUTH_RESULT, allconfigs[0]],
             ['jwtKeys', DUMMY_JWT_KEYS, allconfigs[0]],
           ]);
 
@@ -303,7 +329,14 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     }));
 
     it('should not store jwtKeys on error', waitForAsync(() => {
-      const initialCallbackContext = { authResult: 'authResultToStore' } as unknown as CallbackContext;
+      const authResult = {
+        id_token: 'some-id-token',
+        access_token: 'some-access-token',
+      } as AuthResult;
+      const initialCallbackContext = {
+        authResult,
+      } as CallbackContext;
+
       const allconfigs = [
         {
           configId: 'configId1',
@@ -322,13 +355,20 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
           expect(err).toBeTruthy();
 
           // storagePersistenceService.write() should not have been called with jwtKeys
-          expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith('authnResult', 'authResultToStore', allconfigs[0]);
+          expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith('authnResult', authResult, allconfigs[0]);
         },
       });
     }));
 
     it('should fallback to stored jwtKeys on error', waitForAsync(() => {
-      const initialCallbackContext = { authResult: 'authResultToStore' } as unknown as CallbackContext;
+      const authResult = {
+        id_token: 'some-id-token',
+        access_token: 'some-access-token',
+      } as AuthResult;
+      const initialCallbackContext = {
+        authResult,
+      } as CallbackContext;
+
       const allconfigs = [
         {
           configId: 'configId1',
@@ -352,7 +392,12 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     }));
 
     it('should throw error if no jwtKeys are stored', waitForAsync(() => {
-      const initialCallbackContext = { authResult: 'authResultToStore' } as unknown as CallbackContext;
+      const authResult = {
+        id_token: 'some-id-token',
+        access_token: 'some-access-token',
+      } as AuthResult;
+
+      const initialCallbackContext = { authResult } as CallbackContext;
       const allconfigs = [
         {
           configId: 'configId1',
