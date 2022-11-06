@@ -8,10 +8,12 @@
 - run silent renew using only the access token
 - id_token only has to be valid on the first authentication
 - add support to disable id_token validation completely, not recommended
+- Renamed `enableIdTokenExpiredValidationInRenew` to `triggerRefreshWhenIdTokenExpired`
+- Added `disableIdTokenValidation` parameter in config
 
-renamed `enableIdTokenExpiredValidationInRenew` to `triggerRefreshWhenIdTokenExpired`
-
-Docs: [https://angular-auth-oidc-client.com/docs/documentation/silent-renew](https://github.com/damienbod/angular-auth-oidc-client/pull/1541)
+Docs:
+[https://angular-auth-oidc-client.com/docs/documentation/silent-renew](https://github.com/damienbod/angular-auth-oidc-client/pull/1541)
+[https://angular-auth-oidc-client.com/docs/documentation/configuration](https://angular-auth-oidc-client.com/docs/documentation/configuration#disableidtokenvalidation)
 
 ### 2022-09-21 14.1.5
 
