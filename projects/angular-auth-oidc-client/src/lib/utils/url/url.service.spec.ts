@@ -994,10 +994,10 @@ describe('UrlService Tests', () => {
         clientId: 'clientId',
         disablePkce: false,
       };
+
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(null);
 
       const loggerspy = spyOn(loggerService, 'logError');
-
       const result = service.createBodyForCodeFlowCodeRequest(code, config, customTokenParams);
 
       expect(result).toBe(null);
