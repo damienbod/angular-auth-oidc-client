@@ -9,6 +9,7 @@ import { LoggerService } from '../logging/logger.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { JwkWindowCryptoService } from './jwk-window-crypto.service';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
+import { alg2kty, getImportAlg, getVerifyAlg } from './token-validation.helper';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
@@ -353,7 +354,7 @@ export class TokenValidationService {
       return of(false);
     }
 
-    const kty = this.alg2kty(alg);
+    const kty = alg2kty(alg);
     const use = 'sig';
 
     try {
@@ -372,7 +373,7 @@ export class TokenValidationService {
       return of(false);
     }
 
-    const algorithm: RsaHashedImportParams | EcKeyImportParams = this.getImportAlg(alg);
+    const algorithm: RsaHashedImportParams | EcKeyImportParams = getImportAlg(alg);
 
     const signingInput = this.tokenHelperService.getSigningInputFromToken(idToken, true, configuration);
     const rawSignature = this.tokenHelperService.getSignatureFromToken(idToken, true, configuration);
@@ -387,7 +388,7 @@ export class TokenValidationService {
       mergeMap((cryptoKey: CryptoKey) => {
         const signature: Uint8Array = base64url.parse(rawSignature, { loose: true });
 
-        const verifyAlgorithm: RsaHashedImportParams | EcdsaParams = this.getVerifyAlg(alg);
+        const verifyAlgorithm: RsaHashedImportParams | EcdsaParams = getVerifyAlg(alg);
 
         return from(this.jwkWindowCryptoService.verifyKey(verifyAlgorithm, cryptoKey, signature, signingInput));
       }),
@@ -397,85 +398,6 @@ export class TokenValidationService {
         }
       })
     );
-  }
-
-  private getImportAlg(alg: string): RsaHashedImportParams | EcKeyImportParams {
-    switch (alg.charAt(0)) {
-      case 'R':
-        if (alg.includes('256')) {
-          return {
-            name: 'RSASSA-PKCS1-v1_5',
-            hash: 'SHA-256',
-          };
-        } else if (alg.includes('384')) {
-          return {
-            name: 'RSASSA-PKCS1-v1_5',
-            hash: 'SHA-384',
-          };
-        } else if (alg.includes('512')) {
-          return {
-            name: 'RSASSA-PKCS1-v1_5',
-            hash: 'SHA-512',
-          };
-        } else {
-          return null;
-        }
-      case 'E':
-        if (alg.includes('256')) {
-          return {
-            name: 'ECDSA',
-            namedCurve: 'P-256',
-          };
-        } else if (alg.includes('384')) {
-          return {
-            name: 'ECDSA',
-            namedCurve: 'P-384',
-          };
-        } else {
-          return null;
-        }
-      default:
-        return null;
-    }
-  }
-
-  private getVerifyAlg(alg: string): RsaHashedImportParams | EcdsaParams {
-    switch (alg.charAt(0)) {
-      case 'R':
-        return {
-          name: 'RSASSA-PKCS1-v1_5',
-          hash: 'SHA-256',
-        };
-      case 'E':
-        if (alg.includes('256')) {
-          return {
-            name: 'ECDSA',
-            hash: 'SHA-256',
-          };
-        } else if (alg.includes('384')) {
-          return {
-            name: 'ECDSA',
-            hash: 'SHA-384',
-          };
-        } else {
-          return null;
-        }
-      default:
-        return null;
-    }
-  }
-
-  private alg2kty(alg: string): string {
-    switch (alg.charAt(0)) {
-      case 'R':
-        return 'RSA';
-
-      case 'E':
-        return 'EC';
-
-      default:
-        throw new Error('Cannot infer kty from alg: ' + alg);
-    }
   }
 
   // Accepts ID Token without 'kid' claim in JOSE header if only one JWK supplied in 'jwks_url'
