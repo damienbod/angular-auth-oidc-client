@@ -1,5 +1,20 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2022-11-06 15.0.0
+
+- Support for refresh without id_token, run silent renew using only the access token
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1571)
+- Support refresh tokens without returning an id_token in the refresh
+- run silent renew using only the access token
+- id_token only has to be valid on the first authentication
+- add support to disable id_token validation completely, not recommended
+- Renamed `enableIdTokenExpiredValidationInRenew` to `triggerRefreshWhenIdTokenExpired`
+- Added `disableIdTokenValidation` parameter in config
+
+Docs:
+[https://angular-auth-oidc-client.com/docs/documentation/silent-renew](https://github.com/damienbod/angular-auth-oidc-client/pull/1541)
+[https://angular-auth-oidc-client.com/docs/documentation/configuration](https://angular-auth-oidc-client.com/docs/documentation/configuration#disableidtokenvalidation)
+
 ### 2022-09-21 14.1.5
 
 - Exposing payload of access token
@@ -8,7 +23,7 @@
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1533)
 - Fix checkSession messageHandler configuration correctly
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1526)
-- fix: Use correct offset in ID token expiry check 
+- fix: Use correct offset in ID token expiry check
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1529)
 
 ### 2022-08-26 14.1.4

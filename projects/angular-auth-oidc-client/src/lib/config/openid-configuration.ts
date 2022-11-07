@@ -150,10 +150,10 @@ export interface OpenIdConfiguration {
 
   /**
    * Enables the id_token validation, default value is `true`.
-   * You can disable this validation if you like to ignore the expired value in the renew process.
+   * You can disable this validation if you like to ignore the expired value in the renew process or not check this in the expiry check. Only the access token is used to trigger a renew.
    * If no id_token is returned in using refresh tokens, set this to `false`.
    */
-  enableIdTokenExpiredValidationInRenew?: boolean;
+  triggerRefreshWhenIdTokenExpired?: boolean;
 
   /** Controls the periodic check time interval in sections.
    * Default value is 3.
@@ -175,7 +175,9 @@ export interface OpenIdConfiguration {
    * The refresh token rotation is optional (rfc6749) but is more safe and hence encouraged.
    */
   allowUnsafeReuseRefreshToken?: boolean;
-  /** Disable validation for id_token expiry time */
+  /** Disable validation for id_token
+   *  This is not recommended! You should always validate the id_token if returned.
+   */
   disableIdTokenValidation?: boolean;
   /** Disables PKCE support.
    * Authorize request will be sent without code challenge.

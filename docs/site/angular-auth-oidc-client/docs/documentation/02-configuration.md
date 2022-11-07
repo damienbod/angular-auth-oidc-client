@@ -409,12 +409,12 @@ Extra parameters that can be added to the token URL request.
 
 Disables the `auth_time` validation for `id_tokens` in a refresh due to Microsoft Azure's incorrect implementation.
 
-### `enableIdTokenExpiredValidationInRenew`
+### `triggerRefreshWhenIdTokenExpired`
 
 - Type: `boolean`
 - Required: `false`
 
-Enables the `id_token` validation. You can disable this validation if you would like to ignore expired values during the renew process. If no `id_token` is returned while using refresh tokens, set this to false. <br/>
+Enables the `id_token` expiry check in the renew process. You can disable this validation if you would like to ignore expired values during the renew process or after the first renew in the expiry check. With this disabled, a renew process will only be triggered when the access token expires. If no `id_token` is returned while using refresh tokens, set this to false. <br/>
 Default = _true_
 
 ### `tokenRefreshInSeconds`
@@ -465,5 +465,14 @@ Adds the `ngsw-bypass` param to all requests ([Angular Documentation](https://an
 Allows multiple usage of refresh token. Refresh tokens which can be stored safely are typically longer-lived and RFC6749 allows their reuse. When the specification was written, it was not recommended to use refresh tokens in the browser. This is now required in SPAs because modern browsers block cookies required for iframe refresh. When using refresh tokens in the browser, the refresh tokens should be rotated, relatively short lived and only used once. Re-using refresh tokens is strongly discouraged. This configuration is required for older IDPs.
 
 Activate this property only if your OIDC provider cannot be configured to rotate refresh tokens.
+
+Default = _false_
+
+### `disableIdTokenValidation`
+
+- Type: `boolean`
+- Required: `false`
+
+Disable validation for id_token. This is not recommended! You should always validate the id_token if returned.
 
 Default = _false_

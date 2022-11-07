@@ -15,6 +15,7 @@ describe('UrlService Tests', () => {
   let flowsDataService: FlowsDataService;
   let jwtWindowCryptoService: JwtWindowCryptoService;
   let storagePersistenceService: StoragePersistenceService;
+  let loggerService: LoggerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -37,6 +38,7 @@ describe('UrlService Tests', () => {
 
   beforeEach(() => {
     service = TestBed.inject(UrlService);
+    loggerService = TestBed.inject(LoggerService);
     flowHelper = TestBed.inject(FlowHelper);
     flowsDataService = TestBed.inject(FlowsDataService);
     jwtWindowCryptoService = TestBed.inject(JwtWindowCryptoService);
@@ -983,6 +985,23 @@ describe('UrlService Tests', () => {
       const expected = `grant_type=authorization_code&client_id=${clientId}&code_verifier=${codeVerifier}&code=${code}&foo=bar&redirect_uri=${silentRenewUrl}`;
 
       expect(result).toBe(expected);
+    });
+
+    it('returns null if pkce is disabled and no code verifier is given', () => {
+      const code = 'code';
+      const customTokenParams = { foo: 'bar' };
+      const config = {
+        clientId: 'clientId',
+        disablePkce: false,
+      };
+
+      spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(null);
+
+      const loggerspy = spyOn(loggerService, 'logError');
+      const result = service.createBodyForCodeFlowCodeRequest(code, config, customTokenParams);
+
+      expect(result).toBe(null);
+      expect(loggerspy).toHaveBeenCalledOnceWith(config, 'CodeVerifier is not set ', null);
     });
   });
 

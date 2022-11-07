@@ -377,7 +377,7 @@ describe('Auth State Service', () => {
       const config = {
         configId: 'configId1',
         renewTimeBeforeTokenExpiresInSeconds: 30,
-        enableIdTokenExpiredValidationInRenew: true,
+        triggerRefreshWhenIdTokenExpired: true,
       };
 
       spyOn(storagePersistenceService, 'getIdToken').withArgs(config).and.returnValue('idToken');
@@ -385,18 +385,17 @@ describe('Auth State Service', () => {
 
       authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled(config);
 
-      expect(spy).toHaveBeenCalledOnceWith('idToken', config, 30, undefined);
+      expect(spy).toHaveBeenCalledOnceWith('idToken', config, 30);
     });
 
     it('fires event if idToken is expired', () => {
-      // configurationProvider.setConfig({ renewTimeBeforeTokenExpiresInSeconds: 30, enableIdTokenExpiredValidationInRenew: true });
       spyOn(tokenValidationService, 'hasIdTokenExpired').and.callFake((_a, _b) => true);
 
       const spy = spyOn(eventsService, 'fireEvent');
       const config = {
         configId: 'configId1',
         renewTimeBeforeTokenExpiresInSeconds: 30,
-        enableIdTokenExpiredValidationInRenew: true,
+        triggerRefreshWhenIdTokenExpired: true,
       };
 
       spyOn(storagePersistenceService, 'read').withArgs('authnResult', config).and.returnValue('idToken');
@@ -408,7 +407,6 @@ describe('Auth State Service', () => {
     });
 
     it('does NOT fire event if idToken is NOT expired', () => {
-      // configurationProvider.setConfig({ renewTimeBeforeTokenExpiresInSeconds: 30 });
       spyOn(tokenValidationService, 'hasIdTokenExpired').and.callFake((_a, _b) => false);
 
       const spy = spyOn(eventsService, 'fireEvent');

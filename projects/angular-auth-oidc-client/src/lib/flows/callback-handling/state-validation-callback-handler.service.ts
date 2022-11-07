@@ -21,7 +21,6 @@ export class StateValidationCallbackHandlerService {
   ) {}
 
   // STEP 4 All flows
-
   callbackStateValidation(
     callbackContext: CallbackContext,
     configuration: OpenIdConfiguration,

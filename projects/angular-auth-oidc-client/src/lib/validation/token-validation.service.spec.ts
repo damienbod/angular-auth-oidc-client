@@ -1,13 +1,13 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
+import { JwkExtractor } from '../extractors/jwk.extractor';
 import { LoggerService } from '../logging/logger.service';
 import { CryptoService } from '../utils/crypto/crypto-service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
+import { JwkWindowCryptoService } from './jwk-window-crypto.service';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
 import { TokenValidationService } from './token-validation.service';
-import { JwkWindowCryptoService } from './jwk-window-crypto.service';
-import { JwkExtractor } from '../extractors/jwk.extractor';
 
 describe('TokenValidationService', () => {
   let tokenValidationService: TokenValidationService;
@@ -372,53 +372,57 @@ describe('TokenValidationService', () => {
   });
 
   describe('validateSignatureIdToken', () => {
-    it('returns false if null as both parameters is passed', (done) => {
-      const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, null, { configId: 'configId1' });
+    it('returns false if no kwtKeys are passed', waitForAsync(() => {
+      const valueFalse$ = tokenValidationService.validateSignatureIdToken('some-id-token', null, { configId: 'configId1' });
 
       valueFalse$.subscribe((valueFalse) => {
         expect(valueFalse).toEqual(false);
-        done();
       });
-    });
+    }));
 
-    it('returns false if jwtkeys has no keys-property', (done) => {
-      const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, { notKeys: '' }, { configId: 'configId1' });
+    it('returns true if no idToken is passed', waitForAsync(() => {
+      const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, 'some-jwt-keys', { configId: 'configId1' });
+
+      valueFalse$.subscribe((valueFalse) => {
+        expect(valueFalse).toEqual(true);
+      });
+    }));
+
+    it('returns false if jwtkeys has no keys-property', waitForAsync(() => {
+      const valueFalse$ = tokenValidationService.validateSignatureIdToken('some-id-token', { notKeys: '' }, { configId: 'configId1' });
 
       valueFalse$.subscribe((valueFalse) => {
         expect(valueFalse).toEqual(false);
-        done();
       });
-    });
+    }));
 
-    it('returns false if header data has no header data', (done) => {
+    it('returns false if header data has no header data', waitForAsync(() => {
       spyOn(tokenHelperService, 'getHeaderFromToken').and.returnValue({});
 
       const jwtKeys = {
         keys: 'someThing',
       };
 
-      const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, jwtKeys, { configId: 'configId1' });
+      const valueFalse$ = tokenValidationService.validateSignatureIdToken('some-id-token', jwtKeys, { configId: 'configId1' });
 
       valueFalse$.subscribe((valueFalse) => {
         expect(valueFalse).toEqual(false);
-        done();
       });
-    });
+    }));
 
-    it('returns false if header data alg property does not exist in keyalgorithms', (done) => {
+    it('returns false if header data alg property does not exist in keyalgorithms', waitForAsync(() => {
       spyOn(tokenHelperService, 'getHeaderFromToken').and.returnValue({ alg: 'NOT SUPPORTED ALG' });
 
       const jwtKeys = {
         keys: 'someThing',
       };
 
-      const valueFalse$ = tokenValidationService.validateSignatureIdToken(null, jwtKeys, { configId: 'configId1' });
+      const valueFalse$ = tokenValidationService.validateSignatureIdToken('some-id-token', jwtKeys, { configId: 'configId1' });
 
       valueFalse$.subscribe((valueFalse) => {
         expect(valueFalse).toEqual(false);
-        done();
       });
-    });
+    }));
 
     it('returns false if header data has kid property and jwtKeys has same kid property but they are not valid with the token', (done) => {
       const kid = '5626CE6A8F4F5FCD79C6642345282CA76D337548';
@@ -452,25 +456,24 @@ describe('TokenValidationService', () => {
     });
 
     it('should return true if valid input is provided', (done) => {
-      const idToken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2V4YW1wbGUuY29tIiwic3ViIjoiMTIzNDU2IiwiYXVkIjoibXlfY2xpZW50X2lkIiwiZXhwIjoxMzExMjgxOTcwLCJpYXQiOjEzMTEyODA5NzAsIm5hbWUiOiJKYW5lIERvZSIsImdpdmVuX25hbWUiOiJKYW5lIiwiZmFtaWx5X25hbWUiOiJEb2UiLCJiaXJ0aGRhdGUiOiIxOTkwLTEwLTMxIiwiZW1haWwiOiJqYW5lZG9lQGV4YW1wbGUuY29tIiwicGljdHVyZSI6Imh0dHBzOi8vZXhhbXBsZS5jb20vamFuZWRvZS9tZS5qcGcifQ.SY0ilps7yKYmYCc41zNOatfmAFhOtDYwuIT80qrHMl_4FEO2WFWSv-aDl4QfTSKY9A6MMP6xy0Z_8Kk7NeRwIV7FVScMLnPvVzs9pxza0e_rl6hmZLb5P5n4AEINwn46X9XmRB5W3EZO_x2LG65_g3NZFiPrzOC1Fs_6taJl7TfI8lOveYDoJyXCWYQMS3Oh5MM9S8W-Hc29_qJLH-kixm1S01qoICRPDGMRwhtAu1DHjwWQp9Ycfz6g3uyb7N1imBvI49t1CwWy02_mQ3g-7e7bOP1Ax2kgrwnJgsVBDULnyCZG9PE8T0CHZl_fErZtvbJJ0jdoZ1fyr48906am2w';
+      const idToken =
+        'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2V4YW1wbGUuY29tIiwic3ViIjoiMTIzNDU2IiwiYXVkIjoibXlfY2xpZW50X2lkIiwiZXhwIjoxMzExMjgxOTcwLCJpYXQiOjEzMTEyODA5NzAsIm5hbWUiOiJKYW5lIERvZSIsImdpdmVuX25hbWUiOiJKYW5lIiwiZmFtaWx5X25hbWUiOiJEb2UiLCJiaXJ0aGRhdGUiOiIxOTkwLTEwLTMxIiwiZW1haWwiOiJqYW5lZG9lQGV4YW1wbGUuY29tIiwicGljdHVyZSI6Imh0dHBzOi8vZXhhbXBsZS5jb20vamFuZWRvZS9tZS5qcGcifQ.SY0ilps7yKYmYCc41zNOatfmAFhOtDYwuIT80qrHMl_4FEO2WFWSv-aDl4QfTSKY9A6MMP6xy0Z_8Kk7NeRwIV7FVScMLnPvVzs9pxza0e_rl6hmZLb5P5n4AEINwn46X9XmRB5W3EZO_x2LG65_g3NZFiPrzOC1Fs_6taJl7TfI8lOveYDoJyXCWYQMS3Oh5MM9S8W-Hc29_qJLH-kixm1S01qoICRPDGMRwhtAu1DHjwWQp9Ycfz6g3uyb7N1imBvI49t1CwWy02_mQ3g-7e7bOP1Ax2kgrwnJgsVBDULnyCZG9PE8T0CHZl_fErZtvbJJ0jdoZ1fyr48906am2w';
       const idTokenParts = idToken.split('.');
       const key = {
-        "kty": "RSA",
-        "n": "u1SU1LfVLPHCozMxH2Mo4lgOEePzNm0tRgeLezV6ffAt0gunVTLw7onLRnrq0_IzW7yWR7QkrmBL7jTKEn5u-qKhbwKfBstIs-bMY2Zkp18gnTxKLxoS2tFczGkPLPgizskuemMghRniWaoLcyehkd3qqGElvW_VDL5AaWTg0nLVkjRo9z-40RQzuVaE8AkAFmxZzow3x-VJYKdjykkJ0iT9wCS0DRTXu269V264Vf_3jvredZiKRkgwlL9xNAwxXFg0x_XFw005UWVRIkdgcKWTjpBP2dPwVZ4WWC-9aGVd-Gyn1o0CLelf4rEjGoXbAAEgAqeGUxrcIlbjXfbcmw",
-        "e": "AQAB",
-        "alg": "RS256",
-        "kid": "boop",
-        "use": "sig"
+        kty: 'RSA',
+        n: 'u1SU1LfVLPHCozMxH2Mo4lgOEePzNm0tRgeLezV6ffAt0gunVTLw7onLRnrq0_IzW7yWR7QkrmBL7jTKEn5u-qKhbwKfBstIs-bMY2Zkp18gnTxKLxoS2tFczGkPLPgizskuemMghRniWaoLcyehkd3qqGElvW_VDL5AaWTg0nLVkjRo9z-40RQzuVaE8AkAFmxZzow3x-VJYKdjykkJ0iT9wCS0DRTXu269V264Vf_3jvredZiKRkgwlL9xNAwxXFg0x_XFw005UWVRIkdgcKWTjpBP2dPwVZ4WWC-9aGVd-Gyn1o0CLelf4rEjGoXbAAEgAqeGUxrcIlbjXfbcmw',
+        e: 'AQAB',
+        alg: 'RS256',
+        kid: 'boop',
+        use: 'sig',
       };
       const jwtKeys = {
-        keys: [
-          key
-        ]
+        keys: [key],
       };
 
       spyOn(tokenHelperService, 'getHeaderFromToken').and.returnValue({
-        "alg": "RS256",
-        "typ": "JWT"
+        alg: 'RS256',
+        typ: 'JWT',
       });
       spyOn(tokenHelperService, 'getSigningInputFromToken').and.returnValue([idTokenParts[0], idTokenParts[1]].join('.'));
       spyOn(tokenHelperService, 'getSignatureFromToken').and.returnValue(idTokenParts[2]);
@@ -567,20 +570,14 @@ describe('TokenValidationService', () => {
   });
 
   describe('validateIdTokenExpNotExpired', () => {
-    it('returns false when tokenExpirationDate is falsy', () => {
+    it('returns false when getTokenExpirationDate returns null', () => {
       spyOn(tokenHelperService, 'getTokenExpirationDate').and.returnValue(null);
       const notExpired = tokenValidationService.validateIdTokenExpNotExpired('idToken', { configId: 'configId1' }, 0);
 
       expect(notExpired).toEqual(false);
     });
 
-    it('returns true if disableIdTokenValidation is true', () => {
-      const notExpired = tokenValidationService.validateIdTokenExpNotExpired('idToken', { configId: 'configId1' }, 0, true);
-
-      expect(notExpired).toEqual(true);
-    });
-
-    it('validateIdTokenExpNotExpired', () => {
+    it('returns false if token is not expired', () => {
       const idToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
 

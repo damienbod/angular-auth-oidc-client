@@ -25,7 +25,7 @@ jobs:
           node-version: 16
 
       - name: Installing Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Linting Frontend
         run: npm run lint-lib

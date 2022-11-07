@@ -50,6 +50,23 @@ export class StateValidationService {
       toReturn.accessToken = callbackContext.authResult.access_token;
     }
 
+    const disableIdTokenValidation = configuration.disableIdTokenValidation;
+
+    if (disableIdTokenValidation) {
+      toReturn.state = ValidationResult.Ok;
+
+      return of(toReturn);
+    }
+
+    const isInRefreshTokenFlow = callbackContext.isRenewProcess && !!callbackContext.refreshToken;
+    const hasIdToken = !!callbackContext.authResult.id_token;
+
+    if (isInRefreshTokenFlow && !hasIdToken) {
+      toReturn.state = ValidationResult.Ok;
+
+      return of(toReturn);
+    }
+
     if (callbackContext.authResult.id_token) {
       const {
         clientId,
@@ -57,12 +74,10 @@ export class StateValidationService {
         maxIdTokenIatOffsetAllowedInSeconds,
         disableIatOffsetValidation,
         ignoreNonceAfterRefresh,
-        disableIdTokenValidation,
         renewTimeBeforeTokenExpiresInSeconds,
       } = configuration;
 
       toReturn.idToken = callbackContext.authResult.id_token;
-
       toReturn.decodedIdToken = this.tokenHelperService.getPayloadFromToken(toReturn.idToken, false, configuration);
 
       return this.tokenValidationService.validateSignatureIdToken(toReturn.idToken, callbackContext.jwtKeys, configuration).pipe(
@@ -99,6 +114,7 @@ export class StateValidationService {
           }
 
           if (
+            !isInRefreshTokenFlow &&
             !this.tokenValidationService.validateIdTokenIatMaxOffset(
               toReturn.decodedIdToken,
               maxIdTokenIatOffsetAllowedInSeconds,
@@ -172,11 +188,11 @@ export class StateValidationService {
           }
 
           if (
+            !isInRefreshTokenFlow &&
             !this.tokenValidationService.validateIdTokenExpNotExpired(
               toReturn.decodedIdToken,
               configuration,
-              renewTimeBeforeTokenExpiresInSeconds,
-              disableIdTokenValidation
+              renewTimeBeforeTokenExpiresInSeconds
             )
           ) {
             this.loggerService.logWarning(configuration, 'authCallback id token expired');
