@@ -82,30 +82,25 @@ jobs:
       - name: Show files
         run: ls
 
-      - name: Switch Direcctory
-        run: cd ..
-
-      - name: Show files
-        run: ls
-
       - name: Create Directory
         run: sudo ng new angular-auth-oidc-client-test --skip-git
 
-      - name: Show files
+      - name: Switch to Angular Project
         run: cd angular-auth-oidc-client-test
 
+      - name: npm Install
+        run: sudo npm install --unsafe-perm=true
+
+      - name: Install Library from local artefact
+        run: sudo npm install ../angular-auth-oidc-client-artefact
+
+      - name: Test Angular Application
+        run: npm test -- --watch=false --browsers=ChromeHeadless
+
+      - name: Build Angular Application
+        run: sudo npm run build
 
 
-      # - name: Create new Angular Project
-      #   run: sudo ng new testProject --skip-git
-
-      # - name: Create new Angular Project and install lib in it, test it and build it
-      #   run: |
-      #     cd testProject
-      #     sudo npm install --unsafe-perm=true
-      #     sudo npm install ../angular-auth-oidc-client-artefact/dist/angular-auth-oidc-client
-      #     npm test -- --watch=false --browsers=ChromeHeadless
-      #     sudo npm run build
 
       # - name: Create new Angular Project and install lib in it, test it and build it
       #   run: |
