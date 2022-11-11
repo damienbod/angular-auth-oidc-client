@@ -136,6 +136,8 @@ jobs:
         run: |
           cd angular-auth-oidc-client-test
           sudo npm install --unsafe-perm=true
+          echo '=== Current Directory ==='
+          ls
           sudo ng add ../angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using refresh tokens" --use-local-package=true --skip-confirmation
 
       - name: Test Angular Application
