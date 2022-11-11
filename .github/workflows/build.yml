@@ -80,14 +80,17 @@ jobs:
           name: angular-auth-oidc-client-artefact
           path: angular-auth-oidc-client-artefact
 
+      - name: Install AngularCLI globally
+        run: sudo npm install -g @angular/cli
+
       - name: Create Directory
-        run: mkdir angular-auth-oidc-client-test
+        run: sudo ng new angular-auth-oidc-client-test --skip-git
+
+      - name: Show files
+        run: cd angular-auth-oidc-client-test
 
       - name: Show files
         run: ls
-
-      - name: Install Angular
-        run: sudo npm install -g @angular/cli
 
 
 
