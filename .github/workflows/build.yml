@@ -57,18 +57,14 @@ jobs:
       - name: Upload Artefact
         uses: actions/upload-artifact@v2
         with:
-          name: angular-auth-oidc-client-artefact
-          path: dist/angular-auth-oidc-client/*
+          name: angular_auth_oidc_client_artefact
+          path: dist/angular-auth-oidc-client
 
   AngularLatestVersion:
     needs: build_job
     runs-on: ubuntu-latest
     name: Using artefact with Angular latest version Job
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
@@ -77,7 +73,7 @@ jobs:
       - name: Download Artefact
         uses: actions/download-artifact@v2
         with:
-          name: angular-auth-oidc-client-artefact
+          name: angular_auth_oidc_client_artefact
           path: angular-auth-oidc-client-artefact
 
       - name: Install AngularCLI globally
