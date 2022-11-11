@@ -132,7 +132,7 @@ jobs:
       - name: Show files
         run: |
           cd angular-auth-oidc-client-artefact
-          echo '=== Artefact Directory ===' $GITHUB_WORKSPACE
+          echo '=== Artefact Directory ==='
           ls
 
       - name: Npm Install & Install Library from local artefact
@@ -141,7 +141,7 @@ jobs:
           sudo npm install --unsafe-perm=true
           echo '=== Current Directory ==='
           ls
-          sudo ng add ../angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using refresh tokens" --use-local-package=true --skip-confirmation
+          sudo ng add $GITHUB_WORKSPACE/angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using refresh tokens" --use-local-package=true --skip-confirmation
 
       - name: Test Angular Application
         working-directory: ./angular-auth-oidc-client-test
