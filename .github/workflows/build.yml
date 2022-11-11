@@ -104,7 +104,7 @@ jobs:
   AngularLatestVersionWithSchematics:
     needs: build_job
     runs-on: ubuntu-latest
-    name: Using artefact with Angular latest version Job
+    name: Using artefact with Angular latest version & Schematics Job
     steps:
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -145,7 +145,7 @@ jobs:
   AngularLatestVersionWithRxJs6:
     needs: build_job
     runs-on: ubuntu-latest
-    name: Using artefact with Angular latest version Job
+    name: Using artefact with Angular latest version and RxJs 6 Job
     steps:
       - name: Setup Node.js
         uses: actions/setup-node@v2
