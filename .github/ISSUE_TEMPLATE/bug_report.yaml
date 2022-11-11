@@ -22,13 +22,13 @@ body:
       render: true
 
   - type: textarea
-    id: exception-or-error
+    id: steps-to-reproduce
     attributes:
       label: Steps to reproduce the behavior
       render: true
 
   - type: textarea
-    id: exception-or-error
+    id: expectation
     attributes:
       label: A clear and concise description of what you expected to happen.
       render: true
