@@ -60,7 +60,7 @@ jobs:
   AngularLatestVersion:
     needs: build_job
     runs-on: ubuntu-latest
-    name: Using artefact with Angular latest version JOb
+    name: Using artefact with Angular latest version Job
     steps:
       - uses: actions/checkout@v2
         with:
@@ -82,10 +82,14 @@ jobs:
           name: angular-auth-oidc-client-artefact
           path: ./angular-auth-oidc-client/dist/angular-auth-oidc-client
 
+      - name: Install Angular
+        run: sudo npm install -g @angular/cli
+
+      - name: Create new Angular Project
+        run: sudo ng new testProject --skip-git
+
       - name: Create new Angular Project and install lib in it, test it and build it
         run: |
-          sudo npm install -g @angular/cli
-          sudo ng new testProject --skip-git
           cd testProject
           sudo npm install --unsafe-perm=true
           sudo npm install ../angular-auth-oidc-client-artefact/dist/angular-auth-oidc-client
