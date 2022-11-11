@@ -13,7 +13,7 @@ jobs:
   build_job:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
-    name: Build Job
+    name: Built, Lint and Test
     steps:
       - uses: actions/checkout@v2
         with:
@@ -63,7 +63,7 @@ jobs:
   AngularLatestVersion:
     needs: build_job
     runs-on: ubuntu-latest
-    name: Using artefact with Angular latest version Job
+    name: Angular latest
     steps:
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -107,7 +107,7 @@ jobs:
   AngularLatestVersionWithSchematics:
     needs: build_job
     runs-on: ubuntu-latest
-    name: Using artefact with Angular latest version & Schematics Job
+    name: Angular latest & Schematics Job
     steps:
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -151,7 +151,7 @@ jobs:
   AngularLatestVersionWithRxJs6:
     needs: build_job
     runs-on: ubuntu-latest
-    name: Using artefact with Angular latest version and RxJs 6 Job
+    name: Angular latest & RxJs 6
     steps:
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -199,7 +199,7 @@ jobs:
   LibWithAngularV14:
     needs: build_job
     runs-on: ubuntu-latest
-    name: Using artefact with Angular V 14
+    name: Angular V14
     steps:
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -243,7 +243,7 @@ jobs:
   LibWithAngularV13:
     needs: build_job
     runs-on: ubuntu-latest
-    name: Using artefact with Angular V 13
+    name: Angular V13
     steps:
       - name: Setup Node.js
         uses: actions/setup-node@v2
