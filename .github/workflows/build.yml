@@ -55,7 +55,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: angular-auth-oidc-client-artefact
-          path: ./angular-auth-oidc-client/dist/angular-auth-oidc-client
+          path: ./dist/angular-auth-oidc-client
 
   AngularLatestVersion:
     needs: build_job
