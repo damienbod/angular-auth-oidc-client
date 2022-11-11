@@ -83,14 +83,20 @@ jobs:
       - name: Install AngularCLI globally
         run: sudo npm install -g @angular/cli
 
+      - name: Show files
+        run: ls
+
+      - name: Switch Direcctory
+        run: cd ..
+
+      - name: Show files
+        run: ls
+
       - name: Create Directory
         run: sudo ng new angular-auth-oidc-client-test --skip-git
 
       - name: Show files
         run: cd angular-auth-oidc-client-test
-
-      - name: Show files
-        run: ls
 
 
 
