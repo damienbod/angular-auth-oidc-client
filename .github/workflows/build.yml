@@ -79,6 +79,9 @@ jobs:
       - name: Install AngularCLI globally
         run: sudo npm install -g @angular/cli
 
+      - name: Show ng Version
+        run: ng version
+
       - name: Create Angular Project
         run: sudo ng new angular-auth-oidc-client-test --skip-git
 
@@ -120,6 +123,9 @@ jobs:
       - name: Install AngularCLI globally
         run: sudo npm install -g @angular/cli
 
+      - name: Show ng Version
+        run: ng version
+
       - name: Create Angular Project
         run: sudo ng new angular-auth-oidc-client-test --skip-git
 
@@ -160,6 +166,9 @@ jobs:
 
       - name: Install AngularCLI globally
         run: sudo npm install -g @angular/cli
+
+      - name: Show ng Version
+        run: ng version
 
       - name: Create Angular Project
         run: sudo ng new angular-auth-oidc-client-test --skip-git
@@ -206,6 +215,9 @@ jobs:
       - name: Install AngularCLI globally
         run: sudo npm install -g @angular/cli@14
 
+      - name: Show ng Version
+        run: ng version
+
       - name: Create Angular Project
         run: sudo ng new angular-auth-oidc-client-test --skip-git
 
@@ -246,6 +258,9 @@ jobs:
 
       - name: Install AngularCLI globally
         run: sudo npm install -g @angular/cli@13
+
+      - name: Show ng Version
+        run: ng version
 
       - name: Create Angular Project
         run: sudo ng new angular-auth-oidc-client-test --skip-git
