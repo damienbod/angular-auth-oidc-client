@@ -78,10 +78,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: angular-auth-oidc-client-artefact
-          path: ./angular-auth-oidc-client/dist/angular-auth-oidc-client
+          path: angular-auth-oidc-client-artefact
 
-      - name: Switch directory
-        run: cd angular-auth-oidc-client
+      - name: Create Directory
+        run: mkdir angular-auth-oidc-client-test
 
       - name: Show files
         run: ls
