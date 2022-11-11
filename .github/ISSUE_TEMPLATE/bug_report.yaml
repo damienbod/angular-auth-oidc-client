@@ -19,19 +19,19 @@ body:
     id: exception-or-error
     attributes:
       label: Please provide the exception or error you saw
-    render: true
+      render: true
 
   - type: textarea
     id: exception-or-error
     attributes:
       label: Steps to reproduce the behavior
-    render: true
+      render: true
 
   - type: textarea
     id: exception-or-error
     attributes:
       label: A clear and concise description of what you expected to happen.
-    render: true
+      render: true
 
   - type: textarea
     id: other
