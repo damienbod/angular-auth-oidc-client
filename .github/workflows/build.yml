@@ -190,7 +190,7 @@ jobs:
   LibWithAngularV14:
     needs: build_job
     runs-on: ubuntu-latest
-    name: Using artefact with Angular latest version Job
+    name: Using artefact with Angular V 14
     steps:
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -205,6 +205,47 @@ jobs:
 
       - name: Install AngularCLI globally
         run: sudo npm install -g @angular/cli@14
+
+      - name: Create Angular Project
+        run: sudo ng new angular-auth-oidc-client-test --skip-git
+
+      - name: Show files
+        run: ls
+
+      - name: npm install
+        working-directory: ./angular-auth-oidc-client-test
+        run: sudo npm install --unsafe-perm=true
+
+      - name: Install Library from local artefact
+        working-directory: ./angular-auth-oidc-client-test
+        run: sudo npm install ../angular-auth-oidc-client-artefact
+
+      - name: Test Angular Application
+        working-directory: ./angular-auth-oidc-client-test
+        run: npm test -- --watch=false --browsers=ChromeHeadless
+
+      - name: Build Angular Application
+        working-directory: ./angular-auth-oidc-client-test
+        run: sudo npm run build
+
+  LibWithAngularV13:
+    needs: build_job
+    runs-on: ubuntu-latest
+    name: Using artefact with Angular V 13
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Download Artefact
+        uses: actions/download-artifact@v2
+        with:
+          name: angular_auth_oidc_client_artefact
+          path: angular-auth-oidc-client-artefact
+
+      - name: Install AngularCLI globally
+        run: sudo npm install -g @angular/cli@13
 
       - name: Create Angular Project
         run: sudo ng new angular-auth-oidc-client-test --skip-git
