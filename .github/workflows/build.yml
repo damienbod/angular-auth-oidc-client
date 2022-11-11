@@ -1,4 +1,4 @@
-name: Build, Lint and Test Lib
+name: Build, Lint & Test Lib
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
   build_job:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
-    name: Built, Lint and Test
+    name: Built, Lint and Test Library
     steps:
       - uses: actions/checkout@v2
         with:
@@ -132,13 +132,11 @@ jobs:
       - name: Show files
         run: ls
 
-      - name: npm install
-        working-directory: ./angular-auth-oidc-client-test
-        run: sudo npm install --unsafe-perm=true
-
-      - name: Install Library from local artefact
-        working-directory: ./angular-auth-oidc-client-test
-        run: sudo ng add ../angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using iframe silent renew" --use-local-package=true --skip-confirmation
+      - name: Npm Install & Install Library from local artefact
+        run: |
+          cd angular-auth-oidc-client-test
+          sudo npm install --unsafe-perm=true
+          sudo ng add ../angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using refresh tokens" --use-local-package=true --skip-confirmation
 
       - name: Test Angular Application
         working-directory: ./angular-auth-oidc-client-test
