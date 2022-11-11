@@ -57,40 +57,40 @@ jobs:
           name: angular-auth-oidc-client-artefact
           path: ./angular-auth-oidc-client/dist/angular-auth-oidc-client
 
-    AngularLatestVersion:
-      needs: build_job
-      runs-on: ubuntu-latest
-      name: Using artefact with Angular latest version JOb
-      steps:
-        - uses: actions/checkout@v2
-          with:
-            submodules: true
+  AngularLatestVersion:
+    needs: build_job
+    runs-on: ubuntu-latest
+    name: Using artefact with Angular latest version JOb
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
 
-        - name: Setup Node.js
-          uses: actions/setup-node@v2
-          with:
-            node-version: 16
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
 
-        - name: Setup Node.js
-          uses: actions/download-artifact@v2
-          with:
-            name: angular-auth-oidc-client-artefact
+      - name: Setup Node.js
+        uses: actions/download-artifact@v2
+        with:
+          name: angular-auth-oidc-client-artefact
 
-        - name: Download Artefact
-          uses: actions/download-artifact@v2
-          with:
-            name: angular-auth-oidc-client-artefact
-            path: ./angular-auth-oidc-client/dist/angular-auth-oidc-client
+      - name: Download Artefact
+        uses: actions/download-artifact@v2
+        with:
+          name: angular-auth-oidc-client-artefact
+          path: ./angular-auth-oidc-client/dist/angular-auth-oidc-client
 
-        - name: Create new Angular Project and install lib in it, test it and build it
-          run: |
-            sudo npm install -g @angular/cli
-            sudo ng new testProject --skip-git
-            cd testProject
-            sudo npm install --unsafe-perm=true
-            sudo npm install ../angular-auth-oidc-client-artefact/dist/angular-auth-oidc-client
-            npm test -- --watch=false --browsers=ChromeHeadless
-            sudo npm run build
+      - name: Create new Angular Project and install lib in it, test it and build it
+        run: |
+          sudo npm install -g @angular/cli
+          sudo ng new testProject --skip-git
+          cd testProject
+          sudo npm install --unsafe-perm=true
+          sudo npm install ../angular-auth-oidc-client-artefact/dist/angular-auth-oidc-client
+          npm test -- --watch=false --browsers=ChromeHeadless
+          sudo npm run build
 
       # - name: Create new Angular Project and install lib in it, test it and build it
       #   run: |
