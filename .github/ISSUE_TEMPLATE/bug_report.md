@@ -3,38 +3,37 @@ description: Create a report to help us improve
 title: '[Bug]: '
 
 body:
+  - type: input
+    id: version
+    attributes:
+    label: Version
+    validations:
+    required: true
 
-- type: input
-  id: version
-  attributes:
-  label: Version
-  validations:
-  required: true
+  - type: input
+    id: reproduction
+    attributes:
+    label: Please provide a link to a minimal reproduction of the bug
 
-- type: input
-  id: reproduction
-  attributes:
-  label: Please provide a link to a minimal reproduction of the bug
+  - type: textarea
+    id: exception-or-error
+    attributes:
+    label: Please provide the exception or error you saw
+    render: true
 
-- type: textarea
-  id: exception-or-error
-  attributes:
-  label: Please provide the exception or error you saw
-  render: true
+  - type: textarea
+    id: exception-or-error
+    attributes:
+    label: Steps to reproduce the behavior
+    render: true
 
-- type: textarea
-  id: exception-or-error
-  attributes:
-  label: Steps to reproduce the behavior
-  render: true
+  - type: textarea
+    id: exception-or-error
+    attributes:
+    label: A clear and concise description of what you expected to happen.
+    render: true
 
-- type: textarea
-  id: exception-or-error
-  attributes:
-  label: A clear and concise description of what you expected to happen.
-  render: true
-
-- type: textarea
-  id: other
-  attributes:
-  label: Additional context
+  - type: textarea
+    id: other
+    attributes:
+    label: Additional context
