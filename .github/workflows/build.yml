@@ -132,9 +132,8 @@ jobs:
       - name: Show files
         run: |
           cd angular-auth-oidc-client-artefact
-          echo '=== Artefact Directory ==='
+          echo '=== Artefact Directory ===' $GITHUB_WORKSPACE
           ls
-
 
       - name: Npm Install & Install Library from local artefact
         run: |
