@@ -130,7 +130,12 @@ jobs:
         run: sudo ng new angular-auth-oidc-client-test --skip-git
 
       - name: Show files
-        run: ls
+        run: |
+          cd angular-auth-oidc-client-artefact
+          echo '=== Artefact Directory ==='
+          ls
+          sudo ng add ../angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using refresh tokens" --use-local-package=true --skip-confirmation
+
 
       - name: Npm Install & Install Library from local artefact
         run: |
