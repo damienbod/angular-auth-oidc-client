@@ -80,6 +80,9 @@ jobs:
           name: angular-auth-oidc-client-artefact
           path: ./angular-auth-oidc-client/dist/angular-auth-oidc-client
 
+      - name: Switch directory
+        run: cd angular-auth-oidc-client
+
       - name: Show files
         run: ls
 
