@@ -6,38 +6,39 @@ labels: ''
 assignees: ''
 ---
 
-**What Version of the library are you using?**
-...
+body:
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+- type: input
+  id: version
+  attributes:
+  label: Version
+  validations:
+  required: true
 
-**To Reproduce**
-Steps to reproduce the behavior:
+- type: input
+  id: reproduction
+  attributes:
+  label: Please provide a link to a minimal reproduction of the bug
 
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+- type: textarea
+  id: exception-or-error
+  attributes:
+  label: Please provide the exception or error you saw
+  render: true
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+- type: textarea
+  id: exception-or-error
+  attributes:
+  label: Steps to reproduce the behavior
+  render: true
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+- type: textarea
+  id: exception-or-error
+  attributes:
+  label: A clear and concise description of what you expected to happen.
+  render: true
 
-**Desktop (please complete the following information):**
-
-- OS: [e.g. iOS]
-- Browser [e.g. chrome, safari]
-- Version [e.g. 22]
-
-**Smartphone (please complete the following information):**
-
-- Device: [e.g. iPhone6]
-- OS: [e.g. iOS8.1]
-- Browser [e.g. stock browser, safari]
-- Version [e.g. 22]
-
-**Additional context**
-Add any other context about the problem here.
+- type: textarea
+  id: other
+  attributes:
+  label: Additional context
