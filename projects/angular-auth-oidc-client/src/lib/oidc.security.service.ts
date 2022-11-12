@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { AuthOptions } from './auth-options';
 import { AuthenticatedResult } from './auth-state/auth-result';
 import { AuthStateService } from './auth-state/auth-state.service';
@@ -62,16 +62,6 @@ export class OidcSecurityService {
     return this.callbackService.stsCallback$;
   }
 
-  /**
-   * @deprecated This property should not be used. Please use the `PublicEventsService` instead. This property is removed in future versions
-   * Emits false when the observable, returned by one of the checkAuth() methods, emits a value, or errors. Initial value: true.
-   */
-  get isLoading$(): Observable<boolean> {
-    return this.isLoading.asObservable();
-  }
-
-  private readonly isLoading: BehaviorSubject<boolean> = new BehaviorSubject(true);
-
   constructor(
     private readonly checkSessionService: CheckSessionService,
     private readonly checkAuthService: CheckAuthService,
@@ -132,11 +122,9 @@ export class OidcSecurityService {
    * @returns An object `LoginResponse` containing all information about the login
    */
   checkAuth(url?: string, configId?: string): Observable<LoginResponse> {
-    return this.configurationService.getOpenIDConfigurations(configId).pipe(
-      switchMap(({ allConfigs, currentConfig }) => this.checkAuthService.checkAuth(currentConfig, allConfigs, url)),
-      tap(this.finishLoading),
-      catchError(this.finishLoadingOnError)
-    );
+    return this.configurationService
+      .getOpenIDConfigurations(configId)
+      .pipe(switchMap(({ allConfigs, currentConfig }) => this.checkAuthService.checkAuth(currentConfig, allConfigs, url)));
   }
 
   /**
@@ -152,11 +140,9 @@ export class OidcSecurityService {
    * @returns An array of `LoginResponse` objects containing all information about the logins
    */
   checkAuthMultiple(url?: string): Observable<LoginResponse[]> {
-    return this.configurationService.getOpenIDConfigurations().pipe(
-      switchMap(({ allConfigs }) => this.checkAuthService.checkAuthMultiple(allConfigs, url)),
-      tap(this.finishLoading),
-      catchError(this.finishLoadingOnError)
-    );
+    return this.configurationService
+      .getOpenIDConfigurations()
+      .pipe(switchMap(({ allConfigs }) => this.checkAuthService.checkAuthMultiple(allConfigs, url)));
   }
 
   /**
@@ -174,11 +160,9 @@ export class OidcSecurityService {
    * Checks the server for an authenticated session using the iframe silent renew if not locally authenticated.
    */
   checkAuthIncludingServer(configId?: string): Observable<LoginResponse> {
-    return this.configurationService.getOpenIDConfigurations(configId).pipe(
-      switchMap(({ allConfigs, currentConfig }) => this.checkAuthService.checkAuthIncludingServer(currentConfig, allConfigs)),
-      tap(this.finishLoading),
-      catchError(this.finishLoadingOnError)
-    );
+    return this.configurationService
+      .getOpenIDConfigurations(configId)
+      .pipe(switchMap(({ allConfigs, currentConfig }) => this.checkAuthService.checkAuthIncludingServer(currentConfig, allConfigs)));
   }
 
   /**
@@ -447,14 +431,4 @@ export class OidcSecurityService {
       .getOpenIDConfiguration(configId)
       .pipe(switchMap((config) => this.urlService.getAuthorizeUrl(config, customParams ? { customParams } : undefined)));
   }
-
-  private readonly finishLoading = (): void => {
-    this.isLoading.next(false);
-  };
-
-  private readonly finishLoadingOnError = (err: any): Observable<never> => {
-    this.isLoading.next(false);
-
-    return throwError(() => err);
-  };
 }

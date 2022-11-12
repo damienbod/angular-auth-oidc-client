@@ -10,15 +10,21 @@ The library exposes several events which are happening during the runtime. You c
 Currently the following events are supported:
 
 ```ts
-{
-    ConfigLoaded,
-    ConfigLoadingFailed,
-    CheckSessionReceived,
-    UserDataChanged,
-    NewAuthenticationResult,
-    TokenExpired,
-    IdTokenExpired,
-    SilentRenewStarted,
+export enum EventTypes {
+  /**
+   *  This only works in the AppModule Constructor
+   */
+  ConfigLoaded,
+  CheckingAuth,
+  CheckingAuthFinished,
+  CheckingAuthFinishedWithError,
+  ConfigLoadingFailed,
+  CheckSessionReceived,
+  UserDataChanged,
+  NewAuthenticationResult,
+  TokenExpired,
+  IdTokenExpired,
+  SilentRenewStarted,
 }
 ```
 

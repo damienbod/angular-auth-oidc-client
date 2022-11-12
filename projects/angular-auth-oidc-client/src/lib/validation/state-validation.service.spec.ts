@@ -21,6 +21,7 @@ describe('State Validation Service', () => {
   let config: OpenIdConfiguration;
   let authWellKnownEndpoints: AuthWellKnownEndpoints;
   let storagePersistenceService: StoragePersistenceService;
+  let flowHelper: FlowHelper;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -52,6 +53,7 @@ describe('State Validation Service', () => {
     tokenHelperService = TestBed.inject(TokenHelperService);
     loggerService = TestBed.inject(LoggerService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
+    flowHelper = TestBed.inject(FlowHelper);
   });
 
   beforeEach(() => {
@@ -1500,6 +1502,93 @@ describe('State Validation Service', () => {
         expect(state.idToken).toBe('');
         expect(state.decodedIdToken).toBeDefined();
         expect(state.authResponseIsValid).toBe(true);
+      });
+    }));
+
+    it('should return OK if disableIdTokenValidation is true', waitForAsync(() => {
+      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+      spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(false);
+      spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
+
+      config.responseType = 'id_token token';
+      config.maxIdTokenIatOffsetAllowedInSeconds = 0;
+      config.disableIdTokenValidation = true;
+
+      const callbackContext = {
+        code: 'fdffsdfsdf',
+        refreshToken: null,
+        state: 'fdffsggggggdfsdf',
+        sessionState: 'fdffsggggggdfsdf',
+        existingIdToken: null,
+        authResult: {},
+        isRenewProcess: false,
+        jwtKeys: null,
+        validationResult: null,
+      };
+
+      const isValidObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+
+      isValidObs$.subscribe((isValid) => {
+        expect(isValid.state).toBe(ValidationResult.Ok);
+        expect(isValid.authResponseIsValid).toBe(false);
+      });
+    }));
+
+    it('should return OK if disableIdTokenValidation is true', waitForAsync(() => {
+      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+      spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(false);
+      spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
+
+      config.responseType = 'id_token token';
+      config.maxIdTokenIatOffsetAllowedInSeconds = 0;
+      config.disableIdTokenValidation = true;
+
+      const callbackContext = {
+        code: 'fdffsdfsdf',
+        refreshToken: null,
+        state: 'fdffsggggggdfsdf',
+        sessionState: 'fdffsggggggdfsdf',
+        existingIdToken: null,
+        authResult: {},
+        isRenewProcess: false,
+        jwtKeys: null,
+        validationResult: null,
+      };
+
+      const isValidObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+
+      isValidObs$.subscribe((isValid) => {
+        expect(isValid.state).toBe(ValidationResult.Ok);
+        expect(isValid.authResponseIsValid).toBe(false);
+      });
+    }));
+
+    it('should return OK if disableIdTokenValidation is false but inrefreshtokenflow and no id token is returned', waitForAsync(() => {
+      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+      spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(false);
+      spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
+
+      config.responseType = 'id_token token';
+      config.maxIdTokenIatOffsetAllowedInSeconds = 0;
+      config.disableIdTokenValidation = false;
+
+      const callbackContext = {
+        code: 'fdffsdfsdf',
+        refreshToken: 'something',
+        state: 'fdffsggggggdfsdf',
+        sessionState: 'fdffsggggggdfsdf',
+        existingIdToken: null,
+        authResult: {},
+        isRenewProcess: true,
+        jwtKeys: null,
+        validationResult: null,
+      };
+
+      const isValidObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+
+      isValidObs$.subscribe((isValid) => {
+        expect(isValid.state).toBe(ValidationResult.Ok);
+        expect(isValid.authResponseIsValid).toBe(false);
       });
     }));
   });
