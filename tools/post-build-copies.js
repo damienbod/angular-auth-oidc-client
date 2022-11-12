@@ -12,7 +12,7 @@ const toCopy = {
   ngAdd: {
     source: './projects/schematics/src/ng-add/files/*',
     target: './dist/angular-auth-oidc-client/schematics/ng-add/files',
-    createFirectoryFirst: true,
+    createDirectoryFirst: true,
   },
   collectionJson: {
     source: './projects/schematics/src/collection.json',
@@ -22,14 +22,18 @@ const toCopy = {
     source: './projects/schematics/src/ng-add/schema.json',
     target: './dist/angular-auth-oidc-client/schematics/ng-add/schema.json',
   },
+  schematicsPackageJson: {
+    source: './projects/schematics/package.json',
+    target: './dist/angular-auth-oidc-client/schematics/package.json',
+  },
 };
 
 shell.echo('Start copying files...');
 
 Object.entries(toCopy).forEach(([_, value]) => {
-  const { source, target, createFirectoryFirst } = value;
+  const { source, target, createDirectoryFirst } = value;
 
-  if (!!createFirectoryFirst) {
+  if (!!createDirectoryFirst) {
     shell.mkdir('-p', `${target}`);
   }
 

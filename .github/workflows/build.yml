@@ -1,4 +1,4 @@
-name: Build, Lint and Test Lib
+name: Build, Lint & Test Lib
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
   build_job:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
-    name: Build Job
+    name: Built, Lint and Test Library
     steps:
       - uses: actions/checkout@v2
         with:
@@ -51,47 +51,175 @@ jobs:
       - name: Copying essential additional files
         run: npm run copy-files
 
-      - name: Create new Angular Project and install lib in it, test it and build it
-        run: |
-          cd ..
-          echo '=== Current Directory ==='
-          ls
-          sudo npm install -g @angular/cli
-          echo 'Creating new angular project'
-          sudo ng new testProject --skip-git --skip-install
-          cd testProject
-          echo '=== Current Directory ==='
-          ls
-          sudo npm install --unsafe-perm=true
-          sudo npm install ../angular-auth-oidc-client/dist/angular-auth-oidc-client
-          npm test -- --watch=false --browsers=ChromeHeadless
-          sudo npm run build
+      - name: Show files
+        run: ls
 
-      - name: Create new Angular Project and use the schematics to add a module
-        run: |
-          cd ..
-          echo '=== Current Directory ==='
-          ls
-          sudo npm install -g @angular/cli
-          echo 'Creating new angular project'
-          sudo ng new testProjectSchematic --skip-git --skip-install
-          cd testProjectSchematic
-          echo '=== Current Directory ==='
-          ls
-          sudo npm install --unsafe-perm=true
-          sudo ng add ../angular-auth-oidc-client/dist/angular-auth-oidc-client --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using iframe silent renew" --use-local-package=true --skip-confirmation
-          npm test -- --watch=false --browsers=ChromeHeadless
-          sudo npm run build
+      - name: Upload Artefact
+        uses: actions/upload-artifact@v2
+        with:
+          name: angular_auth_oidc_client_artefact
+          path: dist/angular-auth-oidc-client
 
-      - name: Create new Angular Project (with RxJs 6) and use the schematics to add a module
+  AngularLatestVersion:
+    needs: build_job
+    runs-on: ubuntu-latest
+    name: Angular latest
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Download Artefact
+        uses: actions/download-artifact@v2
+        with:
+          name: angular_auth_oidc_client_artefact
+          path: angular-auth-oidc-client-artefact
+
+      - name: Install AngularCLI globally
+        run: sudo npm install -g @angular/cli
+
+      - name: Show ng Version
+        run: ng version
+
+      - name: Create Angular Project
+        run: sudo ng new angular-auth-oidc-client-test --skip-git
+
+      - name: Npm Install & Install Library from local artefact
         run: |
-          cd ..
-          sudo npm install -g @angular/cli
-          echo 'Creating new angular project'
-          sudo ng new testProjectSchematicRxJs6 --skip-git --skip-install
-          cd testProjectSchematicRxJs6
+          sudo cp -R angular-auth-oidc-client-artefact angular-auth-oidc-client-test/
+          cd angular-auth-oidc-client-test
           sudo npm install --unsafe-perm=true
-          sudo npm install rxjs@6.5.3
-          sudo ng add ../angular-auth-oidc-client/dist/angular-auth-oidc-client --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using iframe silent renew" --use-local-package=true --skip-confirmation
-          npm test -- --watch=false --browsers=ChromeHeadless
-          sudo npm run build
+          sudo ng add ./angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using refresh tokens" --use-local-package=true --skip-confirmation
+
+      - name: Test Angular Application
+        working-directory: ./angular-auth-oidc-client-test
+        run: npm test -- --watch=false --browsers=ChromeHeadless
+
+      - name: Build Angular Application
+        working-directory: ./angular-auth-oidc-client-test
+        run: sudo npm run build
+
+  AngularLatestVersionWithSchematics:
+    needs: build_job
+    runs-on: ubuntu-latest
+    name: Angular latest & Schematics Job
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Download Artefact
+        uses: actions/download-artifact@v2
+        with:
+          name: angular_auth_oidc_client_artefact
+          path: angular-auth-oidc-client-artefact
+
+      - name: Install AngularCLI globally
+        run: sudo npm install -g @angular/cli
+
+      - name: Show ng Version
+        run: ng version
+
+      - name: Create Angular Project
+        run: sudo ng new angular-auth-oidc-client-test --skip-git
+
+      - name: Npm Install & Install Library from local artefact
+        run: |
+          sudo cp -R angular-auth-oidc-client-artefact angular-auth-oidc-client-test/
+          cd angular-auth-oidc-client-test
+          sudo npm install --unsafe-perm=true
+          sudo ng add ./angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using refresh tokens" --use-local-package=true --skip-confirmation
+
+      - name: Test Angular Application
+        working-directory: ./angular-auth-oidc-client-test
+        run: npm test -- --watch=false --browsers=ChromeHeadless
+
+      - name: Build Angular Application
+        working-directory: ./angular-auth-oidc-client-test
+        run: sudo npm run build
+
+  AngularLatestVersionWithRxJs6:
+    needs: build_job
+    runs-on: ubuntu-latest
+    name: Angular latest & RxJs 6
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Download Artefact
+        uses: actions/download-artifact@v2
+        with:
+          name: angular_auth_oidc_client_artefact
+          path: angular-auth-oidc-client-artefact
+
+      - name: Install AngularCLI globally
+        run: sudo npm install -g @angular/cli
+
+      - name: Show ng Version
+        run: ng version
+
+      - name: Create Angular Project
+        run: sudo ng new angular-auth-oidc-client-test --skip-git
+
+      - name: npm install RxJs 6
+        working-directory: ./angular-auth-oidc-client-test
+        run: sudo npm install rxjs@6.5.3
+
+      - name: Npm Install & Install Library from local artefact
+        run: |
+          sudo cp -R angular-auth-oidc-client-artefact angular-auth-oidc-client-test/
+          cd angular-auth-oidc-client-test
+          sudo npm install --unsafe-perm=true
+          sudo ng add ./angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using refresh tokens" --use-local-package=true --skip-confirmation
+
+      - name: Test Angular Application
+        working-directory: ./angular-auth-oidc-client-test
+        run: npm test -- --watch=false --browsers=ChromeHeadless
+
+      - name: Build Angular Application
+        working-directory: ./angular-auth-oidc-client-test
+        run: sudo npm run build
+
+  LibWithAngularV14:
+    needs: build_job
+    runs-on: ubuntu-latest
+    name: Angular V14
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Download Artefact
+        uses: actions/download-artifact@v2
+        with:
+          name: angular_auth_oidc_client_artefact
+          path: angular-auth-oidc-client-artefact
+
+      - name: Install AngularCLI globally
+        run: sudo npm install -g @angular/cli@14
+
+      - name: Show ng Version
+        run: ng version
+
+      - name: Create Angular Project
+        run: sudo ng new angular-auth-oidc-client-test --skip-git
+
+      - name: Npm Install & Install Library from local artefact
+        run: |
+          sudo cp -R angular-auth-oidc-client-artefact angular-auth-oidc-client-test/
+          cd angular-auth-oidc-client-test
+          sudo npm install --unsafe-perm=true
+          sudo ng add ./angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using refresh tokens" --use-local-package=true --skip-confirmation
+
+      - name: Test Angular Application
+        working-directory: ./angular-auth-oidc-client-test
+        run: npm test -- --watch=false --browsers=ChromeHeadless
+
+      - name: Build Angular Application
+        working-directory: ./angular-auth-oidc-client-test
+        run: sudo npm run build
