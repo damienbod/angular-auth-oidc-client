@@ -382,22 +382,6 @@ describe('Logout and Revoke Service', () => {
     }));
   });
 
-  // describe('getEndSessionUrl', () => {
-  //   it('uses id_token parameter from persistence if no param is provided', () => {
-  //     // Arrange
-  //     const paramToken = 'damienId';
-
-  //     spyOn(storagePersistenceService, 'getIdToken').and.returnValue(paramToken);
-  //     const revocationSpy = spyOn(urlService, 'createEndSessionUrl');
-  //     const config = { configId: 'configId1' };
-
-  //     // Act
-  //     service.getEndSessionUrl(config);
-  //     // Assert
-  //     expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config, {});
-  //   });
-  // });
-
   describe('logoff', () => {
     it('logs and returns if `endSessionUrl` is false', () => {
       // Arrange

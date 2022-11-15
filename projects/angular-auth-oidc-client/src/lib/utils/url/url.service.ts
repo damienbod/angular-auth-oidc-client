@@ -107,12 +107,15 @@ export class UrlService {
     const endSessionEndpoint = authWellKnownEndPoints?.endSessionEndpoint;
 
     if (!endSessionEndpoint) {
-      return null;
+      return {
+        url: '',
+        existingParams: '',
+      };
     }
 
     const urlParts = endSessionEndpoint.split('?');
     const url = urlParts[0];
-    const existingParams = urlParts[1];
+    const existingParams = urlParts[1] ?? '';
 
     return {
       url,
@@ -317,7 +320,7 @@ export class UrlService {
     idTokenHint: string,
     configuration: OpenIdConfiguration,
     customParamsEndSession?: { [p: string]: string | number | boolean }
-  ): string {
+  ): string | null {
     // Auth0 needs a special logout url
     // See https://auth0.com/docs/api/authentication#logout
 
@@ -326,6 +329,11 @@ export class UrlService {
     }
 
     const { url, existingParams } = this.getEndSessionEndpoint(configuration);
+
+    if (!url) {
+      return null;
+    }
+
     let params = this.createHttpParams(existingParams);
 
     if (!!idTokenHint) {
