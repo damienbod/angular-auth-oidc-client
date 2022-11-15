@@ -130,7 +130,7 @@ export class LogoffRevocationService {
   }
 
   private logout(authOptions: LogoutAuthOptions, endSessionUrl: string, config: OpenIdConfiguration): Observable<unknown> {
-    const { logoffMethod } = authOptions;
+    const { logoffMethod } = authOptions || {};
 
     if (!logoffMethod || logoffMethod === 'GET') {
       return of(this.redirectService.redirectTo(endSessionUrl));

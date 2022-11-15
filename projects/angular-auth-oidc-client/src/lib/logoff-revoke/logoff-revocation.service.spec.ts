@@ -382,26 +382,26 @@ describe('Logout and Revoke Service', () => {
     }));
   });
 
-  describe('getEndSessionUrl', () => {
-    it('uses id_token parameter from persistence if no param is provided', () => {
-      // Arrange
-      const paramToken = 'damienId';
+  // describe('getEndSessionUrl', () => {
+  //   it('uses id_token parameter from persistence if no param is provided', () => {
+  //     // Arrange
+  //     const paramToken = 'damienId';
 
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue(paramToken);
-      const revocationSpy = spyOn(urlService, 'createEndSessionUrl');
-      const config = { configId: 'configId1' };
+  //     spyOn(storagePersistenceService, 'getIdToken').and.returnValue(paramToken);
+  //     const revocationSpy = spyOn(urlService, 'createEndSessionUrl');
+  //     const config = { configId: 'configId1' };
 
-      // Act
-      service.getEndSessionUrl(config);
-      // Assert
-      expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config, {});
-    });
-  });
+  //     // Act
+  //     service.getEndSessionUrl(config);
+  //     // Assert
+  //     expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config, {});
+  //   });
+  // });
 
   describe('logoff', () => {
     it('logs and returns if `endSessionUrl` is false', () => {
       // Arrange
-      spyOn(service, 'getEndSessionUrl').and.returnValue('');
+      spyOn(urlService, 'getEndSessionUrl').and.returnValue('');
       const serverStateChangedSpy = spyOn(checkSessionService, 'serverStateChanged');
       const config = { configId: 'configId1' };
 
@@ -413,7 +413,7 @@ describe('Logout and Revoke Service', () => {
 
     it('logs and returns if `serverStateChanged` is true', () => {
       // Arrange
-      spyOn(service, 'getEndSessionUrl').and.returnValue('someValue');
+      spyOn(urlService, 'getEndSessionUrl').and.returnValue('someValue');
       const redirectSpy = spyOn(redirectService, 'redirectTo');
 
       spyOn(checkSessionService, 'serverStateChanged').and.returnValue(true);
@@ -427,7 +427,7 @@ describe('Logout and Revoke Service', () => {
 
     it('calls urlHandler if urlhandler is passed', () => {
       // Arrange
-      spyOn(service, 'getEndSessionUrl').and.returnValue('someValue');
+      spyOn(urlService, 'getEndSessionUrl').and.returnValue('someValue');
       const spy = jasmine.createSpy();
       const urlHandler = (url): void => {
         spy(url);
@@ -447,7 +447,7 @@ describe('Logout and Revoke Service', () => {
 
     it('calls redirect service if no urlhandler is passed', () => {
       // Arrange
-      spyOn(service, 'getEndSessionUrl').and.returnValue('someValue');
+      spyOn(urlService, 'getEndSessionUrl').and.returnValue('someValue');
 
       const redirectSpy = spyOn(redirectService, 'redirectTo');
 

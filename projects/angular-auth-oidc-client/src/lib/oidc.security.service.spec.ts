@@ -478,14 +478,15 @@ describe('OidcSecurityService', () => {
   });
 
   describe('logoff', () => {
-    it('calls logoffRevocationService.logoff ', waitForAsync(() => {
+    it('calls logoffRevocationService.logoff', waitForAsync(() => {
       const config = { configId: 'configId1' };
 
       spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
-      const spy = spyOn(logoffRevocationService, 'logoff');
+      const spy = spyOn(logoffRevocationService, 'logoff').and.returnValue(of(null));
 
-      oidcSecurityService.logoff();
-      expect(spy).toHaveBeenCalledOnceWith(config, [config], undefined);
+      oidcSecurityService.logoff().subscribe(() => {
+        expect(spy).toHaveBeenCalledOnceWith(config, [config], undefined);
+      });
     }));
   });
 
@@ -567,7 +568,7 @@ describe('OidcSecurityService', () => {
 
       spyOn(configurationService, 'getOpenIDConfiguration').and.returnValue(of(config));
 
-      const spy = spyOn(logoffRevocationService, 'getEndSessionUrl').and.returnValue(null);
+      const spy = spyOn(urlService, 'getEndSessionUrl').and.returnValue(null);
 
       oidcSecurityService.getEndSessionUrl().subscribe(() => {
         expect(spy).toHaveBeenCalledOnceWith(config, undefined);
@@ -579,7 +580,7 @@ describe('OidcSecurityService', () => {
 
       spyOn(configurationService, 'getOpenIDConfiguration').and.returnValue(of(config));
 
-      const spy = spyOn(logoffRevocationService, 'getEndSessionUrl').and.returnValue(null);
+      const spy = spyOn(urlService, 'getEndSessionUrl').and.returnValue(null);
 
       oidcSecurityService.getEndSessionUrl({ custom: 'params' }).subscribe(() => {
         expect(spy).toHaveBeenCalledOnceWith(config, { custom: 'params' });

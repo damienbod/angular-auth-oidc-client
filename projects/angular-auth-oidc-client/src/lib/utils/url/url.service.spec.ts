@@ -1493,150 +1493,150 @@ describe('UrlService Tests', () => {
     }));
   });
 
-  describe('createEndSessionUrl', () => {
-    it('create URL when all parameters given', () => {
-      const config = {
-        authority: 'https://localhost:5001',
-        redirectUrl: 'https://localhost:44386',
-        clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
-        responseType: 'id_token token',
-        scope: 'openid email profile',
-        postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
-      };
+  // describe('createEndSessionUrl', () => {
+  //   it('create URL when all parameters given', () => {
+  //     const config = {
+  //       authority: 'https://localhost:5001',
+  //       redirectUrl: 'https://localhost:44386',
+  //       clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
+  //       responseType: 'id_token token',
+  //       scope: 'openid email profile',
+  //       postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
+  //     };
 
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
-        endSessionEndpoint: 'http://example',
-      });
+  //     spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
+  //       endSessionEndpoint: 'http://example',
+  //     });
 
-      const value = service.createEndSessionUrl('mytoken', config);
+  //     const value = service.createEndSessionUrl('mytoken', config);
 
-      const expectValue = 'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
+  //     const expectValue = 'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
 
-      expect(value).toEqual(expectValue);
-    });
+  //     expect(value).toEqual(expectValue);
+  //   });
 
-    it('create URL when all parameters given but no idTokenHint', () => {
-      const config = {
-        authority: 'https://localhost:5001',
-        redirectUrl: 'https://localhost:44386',
-        clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
-        responseType: 'id_token token',
-        scope: 'openid email profile',
-        postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
-      };
+  //   it('create URL when all parameters given but no idTokenHint', () => {
+  //     const config = {
+  //       authority: 'https://localhost:5001',
+  //       redirectUrl: 'https://localhost:44386',
+  //       clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
+  //       responseType: 'id_token token',
+  //       scope: 'openid email profile',
+  //       postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
+  //     };
 
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
-        endSessionEndpoint: 'http://example',
-      });
+  //     spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
+  //       endSessionEndpoint: 'http://example',
+  //     });
 
-      const value = service.createEndSessionUrl(null, config);
+  //     const value = service.createEndSessionUrl(null, config);
 
-      const expectValue = 'http://example?post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
+  //     const expectValue = 'http://example?post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
 
-      expect(value).toEqual(expectValue);
-    });
+  //     expect(value).toEqual(expectValue);
+  //   });
 
-    it('create URL when all parameters and customParamsEndSession given', () => {
-      const config = {
-        authority: 'https://localhost:5001',
-        redirectUrl: 'https://localhost:44386',
-        clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
-        responseType: 'id_token token',
-        scope: 'openid email profile',
-        postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
-      };
+  //   it('create URL when all parameters and customParamsEndSession given', () => {
+  //     const config = {
+  //       authority: 'https://localhost:5001',
+  //       redirectUrl: 'https://localhost:44386',
+  //       clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
+  //       responseType: 'id_token token',
+  //       scope: 'openid email profile',
+  //       postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
+  //     };
 
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
-        endSessionEndpoint: 'http://example',
-      });
+  //     spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
+  //       endSessionEndpoint: 'http://example',
+  //     });
 
-      const value = service.createEndSessionUrl('mytoken', config, { param: 'to-add' });
+  //     const value = service.createEndSessionUrl('mytoken', config, { param: 'to-add' });
 
-      const expectValue =
-        'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized&param=to-add';
+  //     const expectValue =
+  //       'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized&param=to-add';
 
-      expect(value).toEqual(expectValue);
-    });
+  //     expect(value).toEqual(expectValue);
+  //   });
 
-    it('with azure-ad-b2c policy parameter', () => {
-      const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
+  //   it('with azure-ad-b2c policy parameter', () => {
+  //     const config = { authority: 'https://localhost:5001' } as OpenIdConfiguration;
 
-      config.redirectUrl = 'https://localhost:44386';
-      config.clientId = 'myid';
-      config.responseType = 'id_token token';
-      config.scope = 'openid email profile';
-      config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
+  //     config.redirectUrl = 'https://localhost:44386';
+  //     config.clientId = 'myid';
+  //     config.responseType = 'id_token token';
+  //     config.scope = 'openid email profile';
+  //     config.postLogoutRedirectUri = 'https://localhost:44386/Unauthorized';
 
-      const endSessionEndpoint = 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in';
+  //     const endSessionEndpoint = 'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in';
 
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
-        endSessionEndpoint,
-      });
-      const value = service.createEndSessionUrl('UzI1NiIsImtpZCI6Il', config);
+  //     spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
+  //       endSessionEndpoint,
+  //     });
+  //     const value = service.createEndSessionUrl('UzI1NiIsImtpZCI6Il', config);
 
-      const expectValue =
-        'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in' +
-        '&id_token_hint=UzI1NiIsImtpZCI6Il' +
-        '&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
+  //     const expectValue =
+  //       'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in' +
+  //       '&id_token_hint=UzI1NiIsImtpZCI6Il' +
+  //       '&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
 
-      expect(value).toEqual(expectValue);
-    });
+  //     expect(value).toEqual(expectValue);
+  //   });
 
-    it('create URL without postLogoutRedirectUri when not given', () => {
-      const config = {
-        authority: 'https://localhost:5001',
-        redirectUrl: 'https://localhost:44386',
-        clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
-        responseType: 'id_token token',
-        scope: 'openid email profile',
-        postLogoutRedirectUri: null,
-      };
+  //   it('create URL without postLogoutRedirectUri when not given', () => {
+  //     const config = {
+  //       authority: 'https://localhost:5001',
+  //       redirectUrl: 'https://localhost:44386',
+  //       clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
+  //       responseType: 'id_token token',
+  //       scope: 'openid email profile',
+  //       postLogoutRedirectUri: null,
+  //     };
 
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
-        endSessionEndpoint: 'http://example',
-      });
+  //     spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
+  //       endSessionEndpoint: 'http://example',
+  //     });
 
-      const value = service.createEndSessionUrl('mytoken', config);
+  //     const value = service.createEndSessionUrl('mytoken', config);
 
-      const expectValue = 'http://example?id_token_hint=mytoken';
+  //     const expectValue = 'http://example?id_token_hint=mytoken';
 
-      expect(value).toEqual(expectValue);
-    });
+  //     expect(value).toEqual(expectValue);
+  //   });
 
-    it('returns null if no wellknownEndpoints given', () => {
-      const value = service.createEndSessionUrl('mytoken', {});
+  //   it('returns null if no wellknownEndpoints given', () => {
+  //     const value = service.createEndSessionUrl('mytoken', {});
 
-      const expectValue = null;
+  //     const expectValue = null;
 
-      expect(value).toEqual(expectValue);
-    });
+  //     expect(value).toEqual(expectValue);
+  //   });
 
-    it('returns null if no wellknownEndpoints.endSessionEndpoint given', () => {
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', {}).and.returnValue({
-        endSessionEndpoint: null,
-      });
+  //   it('returns null if no wellknownEndpoints.endSessionEndpoint given', () => {
+  //     spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', {}).and.returnValue({
+  //       endSessionEndpoint: null,
+  //     });
 
-      const value = service.createEndSessionUrl('mytoken', {});
+  //     const value = service.createEndSessionUrl('mytoken', {});
 
-      const expectValue = null;
+  //     const expectValue = null;
 
-      expect(value).toEqual(expectValue);
-    });
+  //     expect(value).toEqual(expectValue);
+  //   });
 
-    it('returns auth0 format URL if authority ends with .auth0', () => {
-      const config = {
-        authority: 'something.auth0.com',
-        clientId: 'someClientId',
-        postLogoutRedirectUri: 'https://localhost:1234/unauthorized',
-      };
+  //   it('returns auth0 format URL if authority ends with .auth0', () => {
+  //     const config = {
+  //       authority: 'something.auth0.com',
+  //       clientId: 'someClientId',
+  //       postLogoutRedirectUri: 'https://localhost:1234/unauthorized',
+  //     };
 
-      const value = service.createEndSessionUrl('anything', config);
+  //     const value = service.createEndSessionUrl('anything', config);
 
-      const expectValue = `something.auth0.com/v2/logout?client_id=someClientId&returnTo=https://localhost:1234/unauthorized`;
+  //     const expectValue = `something.auth0.com/v2/logout?client_id=someClientId&returnTo=https://localhost:1234/unauthorized`;
 
-      expect(value).toEqual(expectValue);
-    });
-  });
+  //     expect(value).toEqual(expectValue);
+  //   });
+  // });
 
   describe('getAuthorizeParUrl', () => {
     it('returns null if authWellKnownEndPoints is undefined', () => {
