@@ -31,6 +31,7 @@ export class LogoffRevocationService {
     this.loggerService.logDebug(config, 'logoff, remove auth', logoutAuthOptions);
 
     const { urlHandler, customParams } = logoutAuthOptions || {};
+
     this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
 
     const endSessionUrl = this.urlService.getEndSessionUrl(config, customParams);

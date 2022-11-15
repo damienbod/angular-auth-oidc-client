@@ -1499,6 +1499,7 @@ describe('UrlService Tests', () => {
       const config = {
         postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
       } as OpenIdConfiguration;
+
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue('mytoken');
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
         endSessionEndpoint: 'http://example',
@@ -1509,6 +1510,7 @@ describe('UrlService Tests', () => {
 
       // Assert
       const expectValue = 'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
+
       expect(value).toEqual(expectValue);
     });
 
@@ -1517,6 +1519,7 @@ describe('UrlService Tests', () => {
       const config = {
         postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
       } as OpenIdConfiguration;
+
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue(null);
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
         endSessionEndpoint: 'http://example',
@@ -1527,6 +1530,7 @@ describe('UrlService Tests', () => {
 
       // Assert
       const expectValue = 'http://example?post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
+
       expect(value).toEqual(expectValue);
     });
 
@@ -1535,6 +1539,7 @@ describe('UrlService Tests', () => {
       const config = {
         postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
       } as OpenIdConfiguration;
+
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue('mytoken');
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
         endSessionEndpoint: 'http://example',
@@ -1546,6 +1551,7 @@ describe('UrlService Tests', () => {
       // Assert
       const expectValue =
         'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized&param=to-add';
+
       expect(value).toEqual(expectValue);
     });
 
@@ -1569,6 +1575,7 @@ describe('UrlService Tests', () => {
         'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in' +
         '&id_token_hint=UzI1NiIsImtpZCI6Il' +
         '&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
+
       expect(value).toEqual(expectValue);
     });
 
@@ -1576,6 +1583,7 @@ describe('UrlService Tests', () => {
       const config = {
         postLogoutRedirectUri: null,
       } as OpenIdConfiguration;
+
       spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({
         endSessionEndpoint: 'http://example',
       });
@@ -1586,6 +1594,7 @@ describe('UrlService Tests', () => {
 
       // Assert
       const expectValue = 'http://example?id_token_hint=mytoken';
+
       expect(value).toEqual(expectValue);
     });
 
@@ -1616,6 +1625,7 @@ describe('UrlService Tests', () => {
 
       // Assert
       const expectValue = `something.auth0.com/v2/logout?client_id=someClientId&returnTo=https://localhost:1234/unauthorized`;
+
       expect(value).toEqual(expectValue);
     });
   });

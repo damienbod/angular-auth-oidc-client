@@ -506,6 +506,7 @@ describe('Logout and Revoke Service', () => {
         );
 
         const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
+
         expect(httpHeaders.has('Content-Type')).toBeTrue();
         expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
       });
@@ -552,6 +553,7 @@ describe('Logout and Revoke Service', () => {
         );
 
         const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
+
         expect(httpHeaders.has('Content-Type')).toBeTrue();
         expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
       });
