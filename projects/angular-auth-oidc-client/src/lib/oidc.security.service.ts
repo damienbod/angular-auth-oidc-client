@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-import { AuthOptions } from './auth-options';
+import { concatMap, map, switchMap } from 'rxjs/operators';
+import { AuthOptions, LogoutAuthOptions } from './auth-options';
 import { AuthenticatedResult } from './auth-state/auth-result';
 import { AuthStateService } from './auth-state/auth-state.service';
 import { CheckAuthService } from './auth-state/check-auth.service';
@@ -327,12 +327,12 @@ export class OidcSecurityService {
    *
    * @returns An observable when the action is finished
    */
-  logoffAndRevokeTokens(configId?: string, authOptions?: AuthOptions): Observable<any> {
+  logoffAndRevokeTokens(configId?: string, logoutAuthOptions?: LogoutAuthOptions): Observable<any> {
     return this.configurationService
       .getOpenIDConfigurations(configId)
       .pipe(
-        switchMap(({ allConfigs, currentConfig }) =>
-          this.logoffRevocationService.logoffAndRevokeTokens(currentConfig, allConfigs, authOptions)
+        concatMap(({ allConfigs, currentConfig }) =>
+          this.logoffRevocationService.logoffAndRevokeTokens(currentConfig, allConfigs, logoutAuthOptions)
         )
       );
   }
@@ -344,10 +344,12 @@ export class OidcSecurityService {
    * @param configId The configId to perform the action in behalf of. If not passed, the first configs will be taken
    * @param authOptions with custom parameters and/or an custom url handler
    */
-  logoff(configId?: string, authOptions?: AuthOptions): void {
-    this.configurationService
+  logoff(configId?: string, logoutAuthOptions?: LogoutAuthOptions): Observable<unknown> {
+    return this.configurationService
       .getOpenIDConfigurations(configId)
-      .subscribe(({ allConfigs, currentConfig }) => this.logoffRevocationService.logoff(currentConfig, allConfigs, authOptions));
+      .pipe(
+        concatMap(({ allConfigs, currentConfig }) => this.logoffRevocationService.logoff(currentConfig, allConfigs, logoutAuthOptions))
+      );
   }
 
   /**
@@ -415,7 +417,7 @@ export class OidcSecurityService {
   getEndSessionUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): Observable<string | null> {
     return this.configurationService
       .getOpenIDConfiguration(configId)
-      .pipe(map((config) => this.logoffRevocationService.getEndSessionUrl(config, customParams)));
+      .pipe(map((config) => this.urlService.getEndSessionUrl(config, customParams)));
   }
 
   /**
