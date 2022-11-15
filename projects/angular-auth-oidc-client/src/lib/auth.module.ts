@@ -13,6 +13,7 @@ import { ConfigurationService } from './config/config.service';
 import { StsConfigLoader, StsConfigStaticLoader } from './config/loader/config-loader';
 import { OpenIdConfiguration } from './config/openid-configuration';
 import { ConfigValidationService } from './config/validation/config-validation.service';
+import { JwkExtractor } from './extractors/jwk.extractor';
 import { CodeFlowCallbackHandlerService } from './flows/callback-handling/code-flow-callback-handler.service';
 import { HistoryJwtKeysCallbackHandlerService } from './flows/callback-handling/history-jwt-keys-callback-handler.service';
 import { ImplicitFlowCallbackHandlerService } from './flows/callback-handling/implicit-flow-callback-handler.service';
@@ -46,18 +47,17 @@ import { BrowserStorageService } from './storage/browser-storage.service';
 import { DefaultSessionStorageService } from './storage/default-sessionstorage.service';
 import { StoragePersistenceService } from './storage/storage-persistence.service';
 import { UserService } from './user-data/user.service';
-import { CryptoService } from './utils/crypto/crypto-service';
+import { CryptoService } from './utils/crypto/crypto.service';
 import { EqualityService } from './utils/equality/equality.service';
 import { FlowHelper } from './utils/flowHelper/flow-helper.service';
 import { PlatformProvider } from './utils/platform-provider/platform.provider';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
 import { CurrentUrlService } from './utils/url/current-url.service';
 import { UrlService } from './utils/url/url.service';
+import { JwkWindowCryptoService } from './validation/jwk-window-crypto.service';
 import { JwtWindowCryptoService } from './validation/jwt-window-crypto.service';
 import { StateValidationService } from './validation/state-validation.service';
 import { TokenValidationService } from './validation/token-validation.service';
-import { JwkExtractor } from './extractors/jwk.extractor';
-import { JwkWindowCryptoService } from './validation/jwk-window-crypto.service';
 
 export interface PassedInitialConfig {
   config?: OpenIdConfiguration | OpenIdConfiguration[];

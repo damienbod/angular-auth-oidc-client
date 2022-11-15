@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { CryptoService } from '../utils/crypto/crypto-service';
+import { CryptoService } from '../utils/crypto/crypto.service';
 
 @Injectable()
 export class JwtWindowCryptoService {

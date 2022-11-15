@@ -3,7 +3,7 @@ import { of } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { JwkExtractor } from '../extractors/jwk.extractor';
 import { LoggerService } from '../logging/logger.service';
-import { CryptoService } from '../utils/crypto/crypto-service';
+import { CryptoService } from '../utils/crypto/crypto.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { JwkWindowCryptoService } from './jwk-window-crypto.service';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';

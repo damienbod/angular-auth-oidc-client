@@ -9,6 +9,7 @@ import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
+import { removeNullAndUndefinedValues } from '../utils/object/object.helper';
 import { RedirectService } from '../utils/redirect/redirect.service';
 import { UrlService } from '../utils/url/url.service';
 
@@ -27,12 +28,12 @@ export class LogoffRevocationService {
   // Logs out on the server and the local client.
   // If the server state has changed, check session, then only a local logout.
   logoff(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[], logoutAuthOptions?: LogoutAuthOptions): Observable<unknown> {
-    this.loggerService.logDebug(config, 'logoff, remove auth');
+    this.loggerService.logDebug(config, 'logoff, remove auth', logoutAuthOptions);
 
     const { urlHandler, customParams } = logoutAuthOptions || {};
-    const endSessionUrl = this.urlService.getEndSessionUrl(config, customParams);
-
     this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
+
+    const endSessionUrl = this.urlService.getEndSessionUrl(config, customParams);
 
     if (!endSessionUrl) {
       this.loggerService.logDebug(config, 'No endsessionUrl present. Logoff was only locally. Returning.');
@@ -53,7 +54,7 @@ export class LogoffRevocationService {
       return of(null);
     }
 
-    return this.logout(logoutAuthOptions, endSessionUrl, config);
+    return this.logoffInternal(logoutAuthOptions, endSessionUrl, config);
   }
 
   logoffLocal(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
@@ -129,14 +130,14 @@ export class LogoffRevocationService {
     return this.sendRevokeRequest(configuration, body);
   }
 
-  private logout(authOptions: LogoutAuthOptions, endSessionUrl: string, config: OpenIdConfiguration): Observable<unknown> {
-    const { logoffMethod } = authOptions || {};
+  private logoffInternal(logoutAuthOptions: LogoutAuthOptions, endSessionUrl: string, config: OpenIdConfiguration): Observable<unknown> {
+    const { logoffMethod, customParams } = logoutAuthOptions || {};
 
     if (!logoffMethod || logoffMethod === 'GET') {
       return of(this.redirectService.redirectTo(endSessionUrl));
     }
 
-    const { state, logout_hint, ui_locales } = authOptions?.customParams || {};
+    const { state, logout_hint, ui_locales } = customParams || {};
     const { clientId } = config;
     const idToken = this.storagePersistenceService.getIdToken(config);
     const postLogoutRedirectUrl = this.urlService.getPostLogoutRedirectUrl(config);
@@ -151,7 +152,9 @@ export class LogoffRevocationService {
       ui_locales,
     };
 
-    return this.dataService.post(url, body, config, headers);
+    const bodyWithoutNullOrUndefined = removeNullAndUndefinedValues(body);
+
+    return this.dataService.post(url, bodyWithoutNullOrUndefined, config, headers);
   }
 
   private sendRevokeRequest(configuration: OpenIdConfiguration, body: string): Observable<any> {
