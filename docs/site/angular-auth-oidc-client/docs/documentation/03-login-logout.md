@@ -151,7 +151,9 @@ logout() {
 }
 ```
 
-### `ConfigId` Parameter
+### Parameters
+
+#### configId
 
 `logoff()` also accepts a `configId` paramater to select a specific config:
 
@@ -164,7 +166,7 @@ logout() {
 }
 ```
 
-### LogoutAuthOptions
+#### LogoutAuthOptions
 
 You can pass in LogoutAuthOptions following optional parameters:
 
