@@ -2,7 +2,7 @@
 
 ### 2022-11-XX 15.0.0
 
-- Support for refresh without id_token, run silent renew using only the access token
+- Support for refresh without id_token
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1571)
 - Support refresh tokens without returning an id_token in the refresh
 - run silent renew using only the access token
@@ -10,6 +10,7 @@
 - add support to disable id_token validation completely, not recommended
 - Renamed `enableIdTokenExpiredValidationInRenew` to `triggerRefreshWhenIdTokenExpired`
 - Added `disableIdTokenValidation` parameter in config
+- `logoff()` possible now with `POST` request
 
 Docs:
 [https://angular-auth-oidc-client.com/docs/documentation/silent-renew](https://github.com/damienbod/angular-auth-oidc-client/pull/1541)
