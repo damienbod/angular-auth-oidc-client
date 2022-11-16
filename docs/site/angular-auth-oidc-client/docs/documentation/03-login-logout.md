@@ -26,7 +26,7 @@ In case you have multiple configs you can pass the `configId` parameter as the f
 
 ```ts
 login() {
-  this.oidcSecurityService.authorizeWithPopUp('configId')
+  this.oidcSecurityService.authorize('configId')
     .subscribe(({ isAuthenticated, userData, idToken, accessToken, errorMessage }) => {
       // ...
     });
@@ -55,7 +55,7 @@ login() {
 
   const configIdOrNull = // ...
 
-  this.oidcSecurityService.authorizeWithPopUp(configIdOrNull, authOptions)
+  this.oidcSecurityService.authorize(configIdOrNull, authOptions)
     .subscribe(({ isAuthenticated, userData, idToken, accessToken, errorMessage }) => {
       // ...
     });
@@ -73,13 +73,14 @@ This allows you to have the provider's consent prompt display in a popup window 
 
 ```ts
 loginWithPopup() {
-  this.oidcSecurityService.authorizeWithPopUp().subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
+  this.oidcSecurityService.authorizeWithPopUp()
+          .subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
     /* use data */
   });
 }
 ```
 
-### AuthOptions & PopupOptions
+### PopupOptions
 
 You can pass options to control the dimension of the popup with the `PopupOptions` interface as a second parameter.
 
@@ -138,7 +139,7 @@ A simplified page (instead of the application url) can be used. Here's an exampl
 
 ### Popup Sample
 
-[app.component.ts](../../../../../projects/sample-code-flow-popup/src/app/app.component.ts)
+[app.component.ts](../../../../../projects/sample-code-flow-popup/src/app/)
 
 ## Logout
 
@@ -146,7 +147,7 @@ The `logoff()` method sends an end session request to the OIDC server, if it is 
 
 ```ts
 logout() {
-  this.oidcSecurityService.logoff();
+  this.oidcSecurityService.logoff().subscribe((result) => console.log(result));
 }
 ```
 
@@ -163,13 +164,21 @@ logout() {
 }
 ```
 
-### AuthOptions Parameter
+### LogoutAuthOptions
 
-You can pass an `authOptions` parameter if you want to control the behavior more.
+You can pass in LogoutAuthOptions following optional parameters:
+
+- `urlHandler` - to manipulate the behavior of the logout with a custom `urlHandler`
+- `customParams` - to send custom parameters to OIDC Provider
+- `logoffMethod` - Which can be `GET` or `POST`. `GET` is default here.
+
+According to the [OIDC Standard](https://openid.net/specs/openid-connect-rpinitiated-1_0.html) only the customParams `state`, `logout_hint` and `ui_locales` are configurable. Other values are being created, being read from storage or taken from your config.
+
+You can pass an `logoutAuthOptions` parameter if you want to control the behavior more.
 
 ```ts
 logout() {
-  const authOptions = {
+  const logoutAuthOptions = {
     customParams: {
       some: 'params',
     },
@@ -178,7 +187,7 @@ logout() {
     },
   };
 
-  this.oidcSecurityService.logoff('configId', authOptions);
+  this.oidcSecurityService.logoff('configId', logoutAuthOptions);
 }
 ```
 
@@ -193,7 +202,7 @@ logoffAndRevokeTokens() {
 }
 ```
 
-The method also takes `configId` and `authOptions` parameters if needed.
+The method also takes `configId` and `logoutAuthOptions` parameters if needed.
 
 ### `logoffLocal()`
 

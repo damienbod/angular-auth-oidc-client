@@ -30,7 +30,7 @@ export class NavMenuComponent implements OnInit {
   }
 
   logout() {
-    this.oidcSecurityService.logoff();
+    this.oidcSecurityService.logoff().subscribe((result) => console.log(result));
   }
   collapse() {
     this.isExpanded = false;

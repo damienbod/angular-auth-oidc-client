@@ -601,14 +601,16 @@ const authOptions = {
 this.oidcSecurityService.logoffAndRevokeTokens('configId', authOptions).subscribe(/* ... */);
 ```
 
-## logoff(configId?: string, authOptions?: AuthOptions)
+## logoff(configId?: string, logoutAuthOptions?: LogoutAuthOptions)
 
-This method logs out on the server and the local client. If the server state has changed, check session, then only a local logout. The method takes a `configId` and `authOptions` as parameter. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+This method logs out on the server and the local client. If the server state has changed, check session, then only a local logout. The method takes a `configId` and `logoutAuthOptions` as parameter. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+
+The method returns an `Observable<unknown>`.
 
 Examples:
 
 ```ts
-this.oidcSecurityService.logoff();
+this.oidcSecurityService.logoff().subscribe((result) => console.log(result));
 ```
 
 ```ts
@@ -621,7 +623,7 @@ const authOptions = {
   },
 };
 
-this.oidcSecurityService.logoff('configId', authOptions);
+this.oidcSecurityService.logoff('configId', authOptions).subscribe((result) => console.log(result));
 ```
 
 ## logoffLocal(configId?: string)

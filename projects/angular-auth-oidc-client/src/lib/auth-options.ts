@@ -8,6 +8,5 @@ export interface AuthOptions {
 export interface LogoutAuthOptions {
   customParams?: { [key: string]: string | number | boolean };
   urlHandler?(url: string): any;
-  /** overrides redirectUrl from configuration */
   logoffMethod?: 'GET' | 'POST';
 }
