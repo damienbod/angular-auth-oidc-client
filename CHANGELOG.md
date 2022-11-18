@@ -15,8 +15,11 @@
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1580)
 
 Docs:
-[https://angular-auth-oidc-client.com/docs/documentation/silent-renew](https://github.com/damienbod/angular-auth-oidc-client/pull/1541)
-[https://angular-auth-oidc-client.com/docs/documentation/configuration](https://angular-auth-oidc-client.com/docs/documentation/configuration#disableidtokenvalidation)
+[Silent Renew](https://www.angular-auth-oidc-client.com/docs/documentation/silent-renew)
+
+[Configuration](https://angular-auth-oidc-client.com/docs/documentation/configuration#disableidtokenvalidation)
+
+[Migration V14 to V15](https://www.angular-auth-oidc-client.com/docs/migrations/v14-to-v15)
 
 ### 2022-09-21 14.1.5
 
