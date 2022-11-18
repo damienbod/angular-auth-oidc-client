@@ -1530,7 +1530,7 @@ describe('State Validation Service', () => {
 
       isValidObs$.subscribe((isValid) => {
         expect(isValid.state).toBe(ValidationResult.Ok);
-        expect(isValid.authResponseIsValid).toBe(false);
+        expect(isValid.authResponseIsValid).toBe(true);
       });
     }));
 
@@ -1559,7 +1559,7 @@ describe('State Validation Service', () => {
 
       isValidObs$.subscribe((isValid) => {
         expect(isValid.state).toBe(ValidationResult.Ok);
-        expect(isValid.authResponseIsValid).toBe(false);
+        expect(isValid.authResponseIsValid).toBe(true);
       });
     }));
 
@@ -1588,7 +1588,7 @@ describe('State Validation Service', () => {
 
       isValidObs$.subscribe((isValid) => {
         expect(isValid.state).toBe(ValidationResult.Ok);
-        expect(isValid.authResponseIsValid).toBe(false);
+        expect(isValid.authResponseIsValid).toBe(true);
       });
     }));
   });

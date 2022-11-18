@@ -1,3 +1,4 @@
+import { HttpHeaders } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
@@ -382,52 +383,43 @@ describe('Logout and Revoke Service', () => {
     }));
   });
 
-  describe('getEndSessionUrl', () => {
-    it('uses id_token parameter from persistence if no param is provided', () => {
-      // Arrange
-      const paramToken = 'damienId';
-
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue(paramToken);
-      const revocationSpy = spyOn(urlService, 'createEndSessionUrl');
-      const config = { configId: 'configId1' };
-
-      // Act
-      service.getEndSessionUrl(config);
-      // Assert
-      expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config, {});
-    });
-  });
-
   describe('logoff', () => {
-    it('logs and returns if `endSessionUrl` is false', () => {
+    it('logs and returns if `endSessionUrl` is false', waitForAsync(() => {
       // Arrange
-      spyOn(service, 'getEndSessionUrl').and.returnValue('');
+      spyOn(urlService, 'getEndSessionUrl').and.returnValue('');
+
       const serverStateChangedSpy = spyOn(checkSessionService, 'serverStateChanged');
       const config = { configId: 'configId1' };
 
       // Act
-      service.logoff(config, [config]);
-      // Assert
-      expect(serverStateChangedSpy).not.toHaveBeenCalled();
-    });
+      const result$ = service.logoff(config, [config]);
 
-    it('logs and returns if `serverStateChanged` is true', () => {
+      // Assert
+      result$.subscribe(() => {
+        expect(serverStateChangedSpy).not.toHaveBeenCalled();
+      });
+    }));
+
+    it('logs and returns if `serverStateChanged` is true', waitForAsync(() => {
       // Arrange
-      spyOn(service, 'getEndSessionUrl').and.returnValue('someValue');
+      spyOn(urlService, 'getEndSessionUrl').and.returnValue('someValue');
       const redirectSpy = spyOn(redirectService, 'redirectTo');
 
       spyOn(checkSessionService, 'serverStateChanged').and.returnValue(true);
       const config = { configId: 'configId1' };
 
       // Act
-      service.logoff(config, [config]);
-      // Assert
-      expect(redirectSpy).not.toHaveBeenCalled();
-    });
+      const result$ = service.logoff(config, [config]);
 
-    it('calls urlHandler if urlhandler is passed', () => {
+      // Assert
+      result$.subscribe(() => {
+        expect(redirectSpy).not.toHaveBeenCalled();
+      });
+    }));
+
+    it('calls urlHandler if urlhandler is passed', waitForAsync(() => {
       // Arrange
-      spyOn(service, 'getEndSessionUrl').and.returnValue('someValue');
+      spyOn(urlService, 'getEndSessionUrl').and.returnValue('someValue');
       const spy = jasmine.createSpy();
       const urlHandler = (url): void => {
         spy(url);
@@ -438,16 +430,18 @@ describe('Logout and Revoke Service', () => {
       const config = { configId: 'configId1' };
 
       // Act
-      service.logoff(config, [config], { urlHandler });
+      const result$ = service.logoff(config, [config], { urlHandler });
 
       // Assert
-      expect(redirectSpy).not.toHaveBeenCalled();
-      expect(spy).toHaveBeenCalledOnceWith('someValue');
-    });
+      result$.subscribe(() => {
+        expect(redirectSpy).not.toHaveBeenCalled();
+        expect(spy).toHaveBeenCalledOnceWith('someValue');
+      });
+    }));
 
-    it('calls redirect service if no urlhandler is passed', () => {
+    it('calls redirect service if no logoutOptions are passed', waitForAsync(() => {
       // Arrange
-      spyOn(service, 'getEndSessionUrl').and.returnValue('someValue');
+      spyOn(urlService, 'getEndSessionUrl').and.returnValue('someValue');
 
       const redirectSpy = spyOn(redirectService, 'redirectTo');
 
@@ -455,11 +449,115 @@ describe('Logout and Revoke Service', () => {
       const config = { configId: 'configId1' };
 
       // Act
-      service.logoff(config, [config]);
+      const result$ = service.logoff(config, [config]);
 
       // Assert
-      expect(redirectSpy).toHaveBeenCalledOnceWith('someValue');
-    });
+      result$.subscribe(() => {
+        expect(redirectSpy).toHaveBeenCalledOnceWith('someValue');
+      });
+    }));
+
+    it('calls redirect service if logoutOptions are passed and method is GET', waitForAsync(() => {
+      // Arrange
+      spyOn(urlService, 'getEndSessionUrl').and.returnValue('someValue');
+
+      const redirectSpy = spyOn(redirectService, 'redirectTo');
+
+      spyOn(checkSessionService, 'serverStateChanged').and.returnValue(false);
+      const config = { configId: 'configId1' };
+
+      // Act
+      const result$ = service.logoff(config, [config], { logoffMethod: 'GET' });
+
+      // Assert
+      result$.subscribe(() => {
+        expect(redirectSpy).toHaveBeenCalledOnceWith('someValue');
+      });
+    }));
+
+    it('calls dataservice post if logoutOptions are passed and method is POST', waitForAsync(() => {
+      // Arrange
+      spyOn(urlService, 'getEndSessionUrl').and.returnValue('someValue');
+
+      const redirectSpy = spyOn(redirectService, 'redirectTo');
+
+      spyOn(checkSessionService, 'serverStateChanged').and.returnValue(false);
+      spyOn(storagePersistenceService, 'getIdToken').and.returnValue('id-token');
+      spyOn(urlService, 'getPostLogoutRedirectUrl').and.returnValue('post-logout-redirect-url');
+      spyOn(urlService, 'getEndSessionEndpoint').and.returnValue({ url: 'some-url', existingParams: '' });
+      const postSpy = spyOn(dataService, 'post').and.returnValue(of(null));
+      const config = { configId: 'configId1', clientId: 'clientId' };
+
+      // Act
+      const result$ = service.logoff(config, [config], { logoffMethod: 'POST' });
+
+      // Assert
+      result$.subscribe(() => {
+        expect(redirectSpy).not.toHaveBeenCalled();
+        expect(postSpy).toHaveBeenCalledOnceWith(
+          'some-url',
+          {
+            id_token_hint: 'id-token',
+            client_id: 'clientId',
+            post_logout_redirect_uri: 'post-logout-redirect-url',
+          },
+          config,
+          jasmine.anything()
+        );
+
+        const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
+
+        expect(httpHeaders.has('Content-Type')).toBeTrue();
+        expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
+      });
+    }));
+
+    it('calls dataservice post if logoutOptions with customParams are passed and method is POST', waitForAsync(() => {
+      // Arrange
+      spyOn(urlService, 'getEndSessionUrl').and.returnValue('someValue');
+
+      const redirectSpy = spyOn(redirectService, 'redirectTo');
+
+      spyOn(checkSessionService, 'serverStateChanged').and.returnValue(false);
+      spyOn(storagePersistenceService, 'getIdToken').and.returnValue('id-token');
+      spyOn(urlService, 'getPostLogoutRedirectUrl').and.returnValue('post-logout-redirect-url');
+      spyOn(urlService, 'getEndSessionEndpoint').and.returnValue({ url: 'some-url', existingParams: '' });
+      const postSpy = spyOn(dataService, 'post').and.returnValue(of(null));
+      const config = { configId: 'configId1', clientId: 'clientId' };
+
+      // Act
+      const result$ = service.logoff(config, [config], {
+        logoffMethod: 'POST',
+        customParams: {
+          state: 'state',
+          logout_hint: 'logoutHint',
+          ui_locales: 'de fr en',
+        },
+      });
+
+      // Assert
+      result$.subscribe(() => {
+        expect(redirectSpy).not.toHaveBeenCalled();
+        expect(postSpy).toHaveBeenCalledOnceWith(
+          'some-url',
+          {
+            id_token_hint: 'id-token',
+            client_id: 'clientId',
+            post_logout_redirect_uri: 'post-logout-redirect-url',
+            state: 'state',
+            logout_hint: 'logoutHint',
+            ui_locales: 'de fr en',
+          },
+          config,
+          jasmine.anything()
+        );
+
+        const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
+
+        expect(httpHeaders.has('Content-Type')).toBeTrue();
+        expect(httpHeaders.get('Content-Type')).toBe('application/x-www-form-urlencoded');
+      });
+    }));
   });
 
   describe('logoffLocal', () => {

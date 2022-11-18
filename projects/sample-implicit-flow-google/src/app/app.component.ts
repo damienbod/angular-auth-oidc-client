@@ -40,7 +40,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   logout() {
     console.log('start logoff');
-    this.oidcSecurityService.logoff();
+    this.oidcSecurityService.logoff().subscribe((result) => console.log(result));
   }
 
   private navigateToStoredEndpoint() {

@@ -23,6 +23,6 @@ export class LazyComponent implements OnInit {
   }
 
   logout() {
-    this.oidcSecurityService.logoff();
+    this.oidcSecurityService.logoff().subscribe((result) => console.log(result));
   }
 }

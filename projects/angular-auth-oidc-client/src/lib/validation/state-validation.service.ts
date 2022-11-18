@@ -54,6 +54,8 @@ export class StateValidationService {
 
     if (disableIdTokenValidation) {
       toReturn.state = ValidationResult.Ok;
+      // TODO TESTING
+      toReturn.authResponseIsValid = true;
 
       return of(toReturn);
     }
@@ -63,6 +65,8 @@ export class StateValidationService {
 
     if (isInRefreshTokenFlow && !hasIdToken) {
       toReturn.state = ValidationResult.Ok;
+      // TODO TESTING
+      toReturn.authResponseIsValid = true;
 
       return of(toReturn);
     }

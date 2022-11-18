@@ -102,45 +102,33 @@ export class UrlService {
     return of(this.createUrlImplicitFlowAuthorize(config, authOptions) || '');
   }
 
-  createEndSessionUrl(
-    idTokenHint: string,
-    configuration: OpenIdConfiguration,
-    customParamsEndSession?: { [p: string]: string | number | boolean }
-  ): string {
-    // Auth0 needs a special logout url
-    // See https://auth0.com/docs/api/authentication#logout
-
-    if (this.isAuth0Endpoint(configuration)) {
-      return this.composeAuth0Endpoint(configuration);
-    }
-
+  getEndSessionEndpoint(configuration: OpenIdConfiguration): { url: string; existingParams: string } {
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
     const endSessionEndpoint = authWellKnownEndPoints?.endSessionEndpoint;
 
     if (!endSessionEndpoint) {
-      return null;
+      return {
+        url: '',
+        existingParams: '',
+      };
     }
 
     const urlParts = endSessionEndpoint.split('?');
-    const authorizationEndSessionUrl = urlParts[0];
-    const existingParams = urlParts[1];
-    let params = this.createHttpParams(existingParams);
+    const url = urlParts[0];
+    const existingParams = urlParts[1] ?? '';
 
-    if (!!idTokenHint) {
-      params = params.set('id_token_hint', idTokenHint);
-    }
+    return {
+      url,
+      existingParams,
+    };
+  }
 
-    const postLogoutRedirectUri = this.getPostLogoutRedirectUrl(configuration);
+  getEndSessionUrl(configuration: OpenIdConfiguration, customParams?: { [p: string]: string | number | boolean }): string | null {
+    const idToken = this.storagePersistenceService.getIdToken(configuration);
+    const { customParamsEndSessionRequest } = configuration;
+    const mergedParams = { ...customParamsEndSessionRequest, ...customParams };
 
-    if (postLogoutRedirectUri) {
-      params = params.append('post_logout_redirect_uri', postLogoutRedirectUri);
-    }
-
-    if (customParamsEndSession) {
-      params = this.appendCustomParams({ ...customParamsEndSession }, params);
-    }
-
-    return `${authorizationEndSessionUrl}?${params}`;
+    return this.createEndSessionUrl(idToken, configuration, mergedParams);
   }
 
   createRevocationEndpointBodyAccessToken(token: any, configuration: OpenIdConfiguration): string {
@@ -206,7 +194,7 @@ export class UrlService {
     params = params.set('grant_type', 'authorization_code');
     params = params.set('client_id', clientId);
 
-    if(!configuration.disablePkce) {
+    if (!configuration.disablePkce) {
       const codeVerifier = this.flowsDataService.getCodeVerifier(configuration);
 
       if (!codeVerifier) {
@@ -314,6 +302,55 @@ export class UrlService {
         return params.toString();
       })
     );
+  }
+
+  getPostLogoutRedirectUrl(configuration: OpenIdConfiguration): string {
+    const { postLogoutRedirectUri } = configuration;
+
+    if (!postLogoutRedirectUri) {
+      this.loggerService.logError(configuration, `could not get postLogoutRedirectUri, was: `, postLogoutRedirectUri);
+
+      return null;
+    }
+
+    return postLogoutRedirectUri;
+  }
+
+  private createEndSessionUrl(
+    idTokenHint: string,
+    configuration: OpenIdConfiguration,
+    customParamsEndSession?: { [p: string]: string | number | boolean }
+  ): string | null {
+    // Auth0 needs a special logout url
+    // See https://auth0.com/docs/api/authentication#logout
+
+    if (this.isAuth0Endpoint(configuration)) {
+      return this.composeAuth0Endpoint(configuration);
+    }
+
+    const { url, existingParams } = this.getEndSessionEndpoint(configuration);
+
+    if (!url) {
+      return null;
+    }
+
+    let params = this.createHttpParams(existingParams);
+
+    if (!!idTokenHint) {
+      params = params.set('id_token_hint', idTokenHint);
+    }
+
+    const postLogoutRedirectUri = this.getPostLogoutRedirectUrl(configuration);
+
+    if (postLogoutRedirectUri) {
+      params = params.append('post_logout_redirect_uri', postLogoutRedirectUri);
+    }
+
+    if (customParamsEndSession) {
+      params = this.appendCustomParams({ ...customParamsEndSession }, params);
+    }
+
+    return `${url}?${params}`;
   }
 
   private createAuthorizeUrl(
@@ -541,18 +578,6 @@ export class UrlService {
     }
 
     return silentRenewUrl;
-  }
-
-  private getPostLogoutRedirectUrl(configuration: OpenIdConfiguration): string {
-    const { postLogoutRedirectUri } = configuration;
-
-    if (!postLogoutRedirectUri) {
-      this.loggerService.logError(configuration, `could not get postLogoutRedirectUri, was: `, postLogoutRedirectUri);
-
-      return null;
-    }
-
-    return postLogoutRedirectUri;
   }
 
   private getClientId(configuration: OpenIdConfiguration): string {

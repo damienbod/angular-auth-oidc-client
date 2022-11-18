@@ -31,6 +31,7 @@
         "no-case-declarations": ["error"],
         "no-empty": ["error"],
         "@typescript-eslint/no-empty-function": ["error"],
+        "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": ["error"],
         "@typescript-eslint/ban-types": ["error"],
         "no-useless-escape": ["error"],

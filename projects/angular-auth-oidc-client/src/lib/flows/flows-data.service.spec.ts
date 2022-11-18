@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { mockClass } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { CryptoService } from '../utils/crypto/crypto-service';
+import { CryptoService } from '../utils/crypto/crypto.service';
 import { FlowsDataService } from './flows-data.service';
 import { RandomService } from './random/random.service';
 
