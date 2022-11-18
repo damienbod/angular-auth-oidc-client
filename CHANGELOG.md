@@ -15,7 +15,7 @@
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1580)
 
 Docs:
-[Silent Renew](https://github.com/damienbod/angular-auth-oidc-client/pull/1541)
+[Silent Renew](https://www.angular-auth-oidc-client.com/docs/documentation/silent-renew)
 
 [Configuration](https://angular-auth-oidc-client.com/docs/documentation/configuration#disableidtokenvalidation)
 
