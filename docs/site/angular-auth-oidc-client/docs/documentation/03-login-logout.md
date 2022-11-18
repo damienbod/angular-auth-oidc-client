@@ -193,6 +193,20 @@ logout() {
 }
 ```
 
+If you prefer to send a POST logout request:
+
+```
+logout() {
+	// logoffMethod` - Which can be `GET` or `POST
+	const logoutAuthOptions: LogoutAuthOptions = {
+	  logoffMethod: 'POST',
+	};
+
+	this.oidcSecurityService.logoff('', logoutAuthOptions)
+		.subscribe((result) => console.log(result));
+}
+```
+
 ### `logoffAndRevokeTokens()`
 
 The `logoffAndRevokeTokens()` method revokes the access token and the refresh token if using a refresh flow, and then logoff like above.
