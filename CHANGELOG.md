@@ -1,6 +1,6 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
-### 2022-11-16 15.0.0
+### 2022-11-18 15.0.0
 
 - Support refresh tokens without returning an id_token in the refresh
 - run silent renew using only the access token
