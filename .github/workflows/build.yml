@@ -68,7 +68,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: 16.13.0
 
       - name: Download Artefact
         uses: actions/download-artifact@v2
@@ -76,14 +76,11 @@ jobs:
           name: angular_auth_oidc_client_artefact
           path: angular-auth-oidc-client-artefact
 
-      - name: Install AngularCLI globally
-        run: sudo npm install -g @angular/cli
+      - name: Create Angular Project
+        run: sudo npx @angular/cli new angular-auth-oidc-client-test --skip-git
 
       - name: Show ng Version
         run: ng version
-
-      - name: Create Angular Project
-        run: sudo ng new angular-auth-oidc-client-test --skip-git
 
       - name: Npm Install & Install Library from local artefact
         run: |
@@ -108,7 +105,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: 16.13.0
 
       - name: Download Artefact
         uses: actions/download-artifact@v2
@@ -116,14 +113,11 @@ jobs:
           name: angular_auth_oidc_client_artefact
           path: angular-auth-oidc-client-artefact
 
-      - name: Install AngularCLI globally
-        run: sudo npm install -g @angular/cli
+      - name: Create Angular Project
+        run: sudo npx @angular/cli new angular-auth-oidc-client-test --skip-git
 
       - name: Show ng Version
         run: ng version
-
-      - name: Create Angular Project
-        run: sudo ng new angular-auth-oidc-client-test --skip-git
 
       - name: Npm Install & Install Library from local artefact
         run: |
@@ -148,7 +142,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: 16.13.0
 
       - name: Download Artefact
         uses: actions/download-artifact@v2
@@ -156,14 +150,11 @@ jobs:
           name: angular_auth_oidc_client_artefact
           path: angular-auth-oidc-client-artefact
 
-      - name: Install AngularCLI globally
-        run: sudo npm install -g @angular/cli
+      - name: Create Angular Project
+        run: sudo npx @angular/cli new angular-auth-oidc-client-test --skip-git
 
       - name: Show ng Version
         run: ng version
-
-      - name: Create Angular Project
-        run: sudo ng new angular-auth-oidc-client-test --skip-git
 
       - name: npm install RxJs 6
         working-directory: ./angular-auth-oidc-client-test
@@ -192,7 +183,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: 16.10.0
 
       - name: Download Artefact
         uses: actions/download-artifact@v2
@@ -200,14 +191,11 @@ jobs:
           name: angular_auth_oidc_client_artefact
           path: angular-auth-oidc-client-artefact
 
-      - name: Install AngularCLI globally
-        run: sudo npm install -g @angular/cli@14
+      - name: Create Angular Project
+        run: sudo npx @angular/cli@14 new angular-auth-oidc-client-test --skip-git
 
       - name: Show ng Version
         run: ng version
-
-      - name: Create Angular Project
-        run: sudo ng new angular-auth-oidc-client-test --skip-git
 
       - name: Npm Install & Install Library from local artefact
         run: |
