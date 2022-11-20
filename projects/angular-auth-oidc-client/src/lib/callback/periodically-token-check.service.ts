@@ -78,7 +78,7 @@ export class PeriodicallyTokenCheckService {
       });
   }
 
-  private getRefreshEvent(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): Observable<any> {
+  private getRefreshEvent(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): Observable<boolean | CallbackContext> {
     const shouldStartRefreshEvent = this.shouldStartPeriodicallyCheckForConfig(config);
 
     if (!shouldStartRefreshEvent) {
@@ -92,6 +92,7 @@ export class PeriodicallyTokenCheckService {
     const refreshEventWithErrorHandler$ = refreshEvent$.pipe(
       catchError((error) => {
         this.loggerService.logError(config, 'silent renew failed!', error);
+        this.publicEventsService.fireEvent(EventTypes.SilentRenewFailed, error);
         this.flowsDataService.resetSilentRenewRunning(config);
 
         return throwError(() => new Error(error));

@@ -9,6 +9,7 @@ import { FlowsDataService } from '../flows/flows-data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { LoggerService } from '../logging/logger.service';
+import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UserService } from '../user-data/user.service';
@@ -28,6 +29,7 @@ describe('PeriodicallyTokenCheckService', () => {
   let storagePersistenceService: StoragePersistenceService;
   let resetAuthDataService: ResetAuthDataService;
   let configurationService: ConfigurationService;
+  let publicEventsService: PublicEventsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -46,7 +48,7 @@ describe('PeriodicallyTokenCheckService', () => {
         { provide: RefreshSessionRefreshTokenService, useClass: mockClass(RefreshSessionRefreshTokenService) },
         IntervalService,
         { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
-        PublicEventsService,
+        { provide: PublicEventsService, useClass: mockClass(PublicEventsService) },
         { provide: ConfigurationService, useClass: mockClass(ConfigurationService) },
       ],
     });
@@ -62,6 +64,7 @@ describe('PeriodicallyTokenCheckService', () => {
     userService = TestBed.inject(UserService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
     resetAuthDataService = TestBed.inject(ResetAuthDataService);
+    publicEventsService = TestBed.inject(PublicEventsService);
     configurationService = TestBed.inject(ConfigurationService);
   });
 
@@ -135,6 +138,29 @@ describe('PeriodicallyTokenCheckService', () => {
 
       expect(periodicallyTokenCheckService.startTokenValidationPeriodically).toThrowError();
       expect(resetSilentRenewRunning).toHaveBeenCalledOnceWith(configs[0]);
+    }));
+
+    it('interval throws silent renew failed event with data in case of an error', fakeAsync(() => {
+      const configs = [{ silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 }];
+
+      spyOn(intervalService, 'startPeriodicTokenCheck').and.returnValue(of(null));
+      spyOn(periodicallyTokenCheckService as any, 'shouldStartPeriodicallyCheckForConfig').and.returnValue(true);
+      spyOn(flowsDataService, 'resetSilentRenewRunning');
+      const publicEventsServiceSpy = spyOn(publicEventsService, 'fireEvent');
+
+      spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(true);
+      spyOn(refreshSessionRefreshTokenService, 'refreshSessionWithRefreshTokens').and.returnValue(throwError(() => new Error('error')));
+      spyOn(configurationService, 'getOpenIDConfiguration').and.returnValue(of(configs[0]));
+
+      periodicallyTokenCheckService.startTokenValidationPeriodically(configs, configs[0]);
+
+      tick(1000);
+
+      expect(periodicallyTokenCheckService.startTokenValidationPeriodically).toThrowError();
+      expect(publicEventsServiceSpy.calls.allArgs()).toEqual([
+        [EventTypes.SilentRenewStarted],
+        [EventTypes.SilentRenewFailed, new Error('error')],
+      ]);
     }));
 
     it('calls resetAuthorizationData and returns if no silent renew is configured', fakeAsync(() => {
