@@ -85,7 +85,6 @@ export class PopUpService {
   sendMessageToMainWindow(url: string): void {
     if (this.windowInternal.opener) {
       const href = this.windowInternal.location.href;
-      alert(href);
 
       this.sendMessage(url, href);
     }
@@ -108,7 +107,6 @@ export class PopUpService {
 
   private getOptions(popupOptions?: PopupOptions): string {
     const popupDefaultOptions: PopupOptions = { width: 500, height: 500, left: 50, top: 50 };
-
     const options: PopupOptions = { ...popupDefaultOptions, ...(popupOptions || {}) };
     const left: number = this.windowInternal.screenLeft + (this.windowInternal.outerWidth - options.width) / 2;
     const top: number = this.windowInternal.screenTop + (this.windowInternal.outerHeight - options.height) / 2;

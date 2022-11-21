@@ -107,9 +107,9 @@ export class CheckAuthService {
     this.loggerService.logDebug(config, `Working with config '${configId}' using ${authority}`);
 
     if (this.popupService.currentWindowIsPopUp()) {
-      alert('I AM IN POPUP');
       this.popupService.sendMessageToMainWindow(currentUrl);
-      // return of({ isAuthenticated: false, errorMessage: null, userData: null, idToken: null, accessToken: null, configId });
+
+      return of(null);
     }
 
     const isCallback = this.callbackService.isCallback(currentUrl);
