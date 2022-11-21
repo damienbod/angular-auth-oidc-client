@@ -1,6 +1,9 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { OpenIdConfiguration } from '../../config/openid-configuration';
+import { LoggerService } from '../../logging/logger.service';
+import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { PopupOptions } from './popup-options';
 import { PopupResult } from './popup-result';
 
@@ -22,43 +25,59 @@ export class PopUpService {
     return this.document.defaultView;
   }
 
-  constructor(@Inject(DOCUMENT) private readonly document: Document) {}
+  constructor(
+    @Inject(DOCUMENT) private readonly document: Document,
+    private readonly loggerService: LoggerService,
+    private storagePersistenceService: StoragePersistenceService
+  ) {}
 
-  isCurrentlyInPopup(): boolean {
+  currentWindowIsPopUp(): boolean {
+    return !!window.opener && window.opener !== window;
+  }
+
+  isCurrentlyInPopup(config: OpenIdConfiguration): boolean {
     if (this.canAccessSessionStorage()) {
-      const popup = sessionStorage.getItem(this.STORAGE_IDENTIFIER);
+      const mainWindowHasPopupOpen = this.mainWindowHasPopupOpen(config);
+      const currentWindowIsPopup = this.currentWindowIsPopUp();
 
-      return !!this.windowInternal.opener && this.windowInternal.opener !== this.windowInternal && !!popup;
+      return mainWindowHasPopupOpen || currentWindowIsPopup;
     }
 
     return false;
   }
 
-  openPopUp(url: string, popupOptions?: PopupOptions): void {
+  openPopUp(url: string, popupOptions: PopupOptions, config: OpenIdConfiguration): void {
     const optionsToPass = this.getOptions(popupOptions);
 
     this.popUp = this.windowInternal.open(url, '_blank', optionsToPass);
-    this.popUp.sessionStorage.setItem(this.STORAGE_IDENTIFIER, 'true');
+
+    if (!this.popUp) {
+      this.loggerService.logError(config, 'Could not open popup');
+
+      return;
+    }
+
+    this.storagePersistenceService.write(this.STORAGE_IDENTIFIER, 'true', config);
 
     const listener = (event: MessageEvent): void => {
       if (!event?.data || typeof event.data !== 'string') {
-        this.cleanUp(listener);
+        this.cleanUp(listener, config);
 
         return;
       }
 
       this.resultInternal$.next({ userClosed: false, receivedUrl: event.data });
 
-      this.cleanUp(listener);
+      this.cleanUp(listener, config);
     };
 
     this.windowInternal.addEventListener('message', listener, false);
 
     this.handle = this.windowInternal.setInterval(() => {
-      if (this.popUp.closed) {
+      if (this.popUp?.closed) {
         this.resultInternal$.next({ userClosed: true });
 
-        this.cleanUp(listener);
+        this.cleanUp(listener, config);
       }
     }, 200);
   }
@@ -66,18 +85,18 @@ export class PopUpService {
   sendMessageToMainWindow(url: string): void {
     if (this.windowInternal.opener) {
       const href = this.windowInternal.location.href;
+      alert(href);
 
       this.sendMessage(url, href);
     }
   }
 
-  private cleanUp(listener: any): void {
+  private cleanUp(listener: any, config: OpenIdConfiguration): void {
     this.windowInternal.removeEventListener('message', listener, false);
-
     this.windowInternal.clearInterval(this.handle);
 
     if (this.popUp) {
-      this.popUp.sessionStorage?.removeItem(this.STORAGE_IDENTIFIER);
+      this.storagePersistenceService.remove(this.STORAGE_IDENTIFIER, config);
       this.popUp.close();
       this.popUp = null;
     }
@@ -100,6 +119,10 @@ export class PopUpService {
     return Object.entries(options)
       .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
       .join(',');
+  }
+
+  private mainWindowHasPopupOpen(config: OpenIdConfiguration): boolean {
+    return this.storagePersistenceService.read(this.STORAGE_IDENTIFIER, config);
   }
 
   private canAccessSessionStorage(): boolean {

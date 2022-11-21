@@ -5,17 +5,13 @@ import { Inject, Injectable } from '@angular/core';
 export class CurrentUrlService {
   constructor(@Inject(DOCUMENT) private readonly doc: any) {}
 
-  getStateParamFromCurrentUrl(): string {
-    const currentUrl = this.getCurrentUrl();
+  getStateParamFromCurrentUrl(url?: string): string {
+    const currentUrl = url ?? this.getCurrentUrl();
     const parsedUrl = new URL(currentUrl);
     const urlParams = new URLSearchParams(parsedUrl.search);
     const stateFromUrl = urlParams.get('state');
 
     return stateFromUrl;
-  }
-
-  currentUrlHasStateParam(): boolean {
-    return !!this.getStateParamFromCurrentUrl();
   }
 
   getCurrentUrl(): string {

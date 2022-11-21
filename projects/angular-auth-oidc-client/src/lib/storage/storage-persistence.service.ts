@@ -20,7 +20,8 @@ export type StorageKeys =
   | 'storageCustomParamsEndSession'
   | 'redirect'
   | 'configIds'
-  | 'jwtKeys';
+  | 'jwtKeys'
+  | 'popupauth';
 
 @Injectable()
 export class StoragePersistenceService {
