@@ -32,8 +32,7 @@ export class PopUpService {
   ) {}
 
   currentWindowIsPopUp(): boolean {
-    // TODO Check again this.windowInternal
-    return !!this.windowInternal.opener && this.windowInternal.opener !== window;
+    return !!this.windowInternal.opener && this.windowInternal.opener !== this.windowInternal;
   }
 
   isCurrentlyInPopup(config: OpenIdConfiguration): boolean {
@@ -106,7 +105,7 @@ export class PopUpService {
     this.windowInternal.opener.postMessage(url, href);
   }
 
-  private getOptions(popupOptions?: PopupOptions): string {
+  private getOptions(popupOptions: PopupOptions): string {
     const popupDefaultOptions: PopupOptions = { width: 500, height: 500, left: 50, top: 50 };
     const options: PopupOptions = { ...popupDefaultOptions, ...(popupOptions || {}) };
     const left: number = this.windowInternal.screenLeft + (this.windowInternal.outerWidth - options.width) / 2;
@@ -121,7 +120,7 @@ export class PopUpService {
   }
 
   private mainWindowHasPopupOpen(config: OpenIdConfiguration): boolean {
-    return this.storagePersistenceService.read(this.STORAGE_IDENTIFIER, config);
+    return !!this.storagePersistenceService.read(this.STORAGE_IDENTIFIER, config);
   }
 
   private canAccessSessionStorage(): boolean {
