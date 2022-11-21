@@ -32,7 +32,8 @@ export class PopUpService {
   ) {}
 
   currentWindowIsPopUp(): boolean {
-    return !!window.opener && window.opener !== window;
+    // TODO Check again this.windowInternal
+    return !!this.windowInternal.opener && this.windowInternal.opener !== window;
   }
 
   isCurrentlyInPopup(config: OpenIdConfiguration): boolean {

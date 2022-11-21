@@ -24,7 +24,7 @@ export class UrlService {
     private readonly jwtWindowCryptoService: JwtWindowCryptoService
   ) {}
 
-  getUrlParameter(urlToCheck: any, name: any): string {
+  getUrlParameter(urlToCheck: string, name: string): string {
     if (!urlToCheck) {
       return '';
     }

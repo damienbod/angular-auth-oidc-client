@@ -5,6 +5,7 @@ import { StoragePersistenceService } from '../storage/storage-persistence.servic
 import { LoginService } from './login.service';
 import { ParLoginService } from './par/par-login.service';
 import { PopUpLoginService } from './popup/popup-login.service';
+import { PopUpService } from './popup/popup.service';
 import { StandardLoginService } from './standard/standard-login.service';
 
 describe('LoginService', () => {
@@ -23,6 +24,7 @@ describe('LoginService', () => {
         { provide: PopUpLoginService, useClass: mockClass(PopUpLoginService) },
         { provide: StandardLoginService, useClass: mockClass(StandardLoginService) },
         { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
+        { provide: PopUpService, useClass: mockClass(PopUpService) },
       ],
     });
   });
