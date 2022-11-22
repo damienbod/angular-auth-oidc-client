@@ -3,7 +3,7 @@ import { Inject, Injectable } from '@angular/core';
 
 @Injectable()
 export class CryptoService {
-  constructor(@Inject(DOCUMENT) private readonly doc: any) {}
+  constructor(@Inject(DOCUMENT) private readonly doc: Document) {}
 
   getCrypto(): any {
     // support for IE,  (window.crypto || window.msCrypto)
