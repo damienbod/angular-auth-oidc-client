@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { CryptoService } from './crypto.service';
 
-describe('CryptoService Tests', () => {
+describe('CryptoService', () => {
   let cryptoService: CryptoService;
 
   beforeEach(() => {

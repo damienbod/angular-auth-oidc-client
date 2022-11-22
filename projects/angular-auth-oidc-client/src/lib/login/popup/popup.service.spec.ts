@@ -9,6 +9,7 @@ import { PopUpService } from './popup.service';
 describe('PopUpService', () => {
   let popUpService: PopUpService;
   let storagePersistenceService: StoragePersistenceService;
+  let loggerService: LoggerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -25,6 +26,7 @@ describe('PopUpService', () => {
 
   beforeEach(() => {
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
+    loggerService = TestBed.inject(LoggerService);
     popUpService = TestBed.inject(PopUpService);
   });
 
@@ -80,7 +82,7 @@ describe('PopUpService', () => {
 
     it('returns true if mainWindowHasPopupOpen', () => {
       // arrange
-      // spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(true);
+      spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(true);
       spyOn(storagePersistenceService, 'read').and.returnValue('some-thing');
       const config = {} as OpenIdConfiguration;
 
@@ -146,8 +148,20 @@ describe('PopUpService', () => {
       popUpService.openPopUp('url', { width: 100 }, { configId: 'configId1' });
 
       // assert
-      expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', 'width=100,height=500,left=-31970,top=-32236');
+      expect(popupSpy).toHaveBeenCalledOnceWith('url', '_blank', jasmine.any(String));
     }));
+
+    it('logs error and return if popup could not be opened', () => {
+      // arrange
+      spyOn(window, 'open').and.callFake(() => null);
+      const loggerSpy = spyOn(loggerService, 'logError');
+
+      // act
+      popUpService.openPopUp('url', { width: 100 }, { configId: 'configId1' });
+
+      // assert
+      expect(loggerSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'Could not open popup');
+    });
 
     describe('popup closed', () => {
       let popup: Window;
@@ -156,7 +170,6 @@ describe('PopUpService', () => {
 
       beforeEach(() => {
         popup = {
-          sessionStorage: mockStorage,
           closed: false,
           close: () => undefined,
         } as Window;
