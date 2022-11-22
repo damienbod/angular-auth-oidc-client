@@ -80,7 +80,7 @@ describe('PopUpService', () => {
 
     it('returns true if mainWindowHasPopupOpen', () => {
       // arrange
-      spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(true);
+      // spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(true);
       spyOn(storagePersistenceService, 'read').and.returnValue('some-thing');
       const config = {} as OpenIdConfiguration;
 

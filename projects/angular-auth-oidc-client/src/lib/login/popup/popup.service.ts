@@ -28,7 +28,7 @@ export class PopUpService {
   constructor(
     @Inject(DOCUMENT) private readonly document: Document,
     private readonly loggerService: LoggerService,
-    private storagePersistenceService: StoragePersistenceService
+    private readonly storagePersistenceService: StoragePersistenceService
   ) {}
 
   currentWindowIsPopUp(): boolean {
