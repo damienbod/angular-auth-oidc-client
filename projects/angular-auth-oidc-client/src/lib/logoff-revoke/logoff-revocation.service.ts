@@ -1,7 +1,7 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, retry, switchMap, tap } from 'rxjs/operators';
+import { catchError, concatMap, retry, switchMap, tap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { LogoutAuthOptions } from '../auth-options';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -32,8 +32,6 @@ export class LogoffRevocationService {
 
     const { urlHandler, customParams } = logoutAuthOptions || {};
 
-    this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
-
     const endSessionUrl = this.urlService.getEndSessionUrl(config, customParams);
 
     if (!endSessionUrl) {
@@ -55,7 +53,7 @@ export class LogoffRevocationService {
       return of(null);
     }
 
-    return this.logoffInternal(logoutAuthOptions, endSessionUrl, config);
+    return this.logoffInternal(logoutAuthOptions, endSessionUrl, config, allConfigs);
   }
 
   logoffLocal(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
@@ -78,9 +76,8 @@ export class LogoffRevocationService {
 
     if (!revocationEndpoint) {
       this.loggerService.logDebug(config, 'revocation endpoint not supported');
-      this.logoff(config, allConfigs, logoutAuthOptions);
 
-      return of(null);
+      return this.logoff(config, allConfigs, logoutAuthOptions);
     }
 
     if (this.storagePersistenceService.getRefreshToken(config)) {
@@ -93,7 +90,7 @@ export class LogoffRevocationService {
 
           return throwError(() => new Error(errorMessage));
         }),
-        tap(() => this.logoff(config, allConfigs, logoutAuthOptions))
+        concatMap(() => this.logoff(config, allConfigs, logoutAuthOptions))
       );
     } else {
       return this.revokeAccessToken(config).pipe(
@@ -104,7 +101,7 @@ export class LogoffRevocationService {
 
           return throwError(() => new Error(errorMessage));
         }),
-        tap(() => this.logoff(config, allConfigs, logoutAuthOptions))
+        concatMap(() => this.logoff(config, allConfigs, logoutAuthOptions))
       );
     }
   }
@@ -131,10 +128,17 @@ export class LogoffRevocationService {
     return this.sendRevokeRequest(configuration, body);
   }
 
-  private logoffInternal(logoutAuthOptions: LogoutAuthOptions, endSessionUrl: string, config: OpenIdConfiguration): Observable<unknown> {
+  private logoffInternal(
+    logoutAuthOptions: LogoutAuthOptions,
+    endSessionUrl: string,
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): Observable<unknown> {
     const { logoffMethod, customParams } = logoutAuthOptions || {};
 
     if (!logoffMethod || logoffMethod === 'GET') {
+      this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
+
       return of(this.redirectService.redirectTo(endSessionUrl));
     }
 
@@ -155,7 +159,9 @@ export class LogoffRevocationService {
 
     const bodyWithoutNullOrUndefined = removeNullAndUndefinedValues(body);
 
-    return this.dataService.post(url, bodyWithoutNullOrUndefined, config, headers);
+    return this.dataService
+      .post(url, bodyWithoutNullOrUndefined, config, headers)
+      .pipe(tap(() => this.resetAuthDataService.resetAuthorizationData(config, allConfigs)));
   }
 
   private sendRevokeRequest(configuration: OpenIdConfiguration, body: string): Observable<any> {
