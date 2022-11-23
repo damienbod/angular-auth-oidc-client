@@ -1,7 +1,7 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, concatMap, retry, switchMap, tap } from 'rxjs/operators';
+import { catchError, concatMap, retry, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { LogoutAuthOptions } from '../auth-options';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -136,8 +136,9 @@ export class LogoffRevocationService {
   ): Observable<unknown> {
     const { logoffMethod, customParams } = logoutAuthOptions || {};
 
+    this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
+
     if (!logoffMethod || logoffMethod === 'GET') {
-      this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
       this.redirectService.redirectTo(endSessionUrl);
 
       return of(null);
@@ -160,9 +161,7 @@ export class LogoffRevocationService {
 
     const bodyWithoutNullOrUndefined = removeNullAndUndefinedValues(body);
 
-    return this.dataService
-      .post(url, bodyWithoutNullOrUndefined, config, headers)
-      .pipe(tap(() => this.resetAuthDataService.resetAuthorizationData(config, allConfigs)));
+    return this.dataService.post(url, bodyWithoutNullOrUndefined, config, headers);
   }
 
   private sendRevokeRequest(configuration: OpenIdConfiguration, body: string): Observable<any> {
