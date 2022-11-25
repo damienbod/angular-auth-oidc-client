@@ -37,7 +37,7 @@ export class HomeComponent implements OnInit {
   }
 
   logout() {
-    this.oidcSecurityService.logoffAndRevokeTokens().subscribe((result) => console.log(result));
+    this.oidcSecurityService.logoff().subscribe((result) => console.log(result));
   }
 
   logoffLocal() {

@@ -11,7 +11,6 @@ export class CurrentUrlService {
     const urlParams = new URLSearchParams(parsedUrl.search);
     const stateFromUrl = urlParams.get('state');
 
-    // TODO Maybe return null here if not found
     return stateFromUrl;
   }
 
