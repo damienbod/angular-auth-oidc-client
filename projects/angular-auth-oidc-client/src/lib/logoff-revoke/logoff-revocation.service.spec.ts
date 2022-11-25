@@ -625,7 +625,7 @@ describe('Logout and Revoke Service', () => {
       spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
       spyOn(service, 'revokeRefreshToken').and.returnValue(of({ any: 'thing' }));
       spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
-      const logoffSpy = spyOn(service, 'logoff');
+      const logoffSpy = spyOn(service, 'logoff').and.returnValue(of(null));
       const config = { configId: 'configId1' };
 
       // Act
@@ -642,7 +642,7 @@ describe('Logout and Revoke Service', () => {
       spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(paramToken);
       spyOn(service, 'revokeRefreshToken').and.returnValue(of({ any: 'thing' }));
       spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
-      const logoffSpy = spyOn(service, 'logoff');
+      const logoffSpy = spyOn(service, 'logoff').and.returnValue(of(null));
       const urlHandler = (_url): void => undefined;
       const config = { configId: 'configId1' };
 
