@@ -36,14 +36,6 @@ describe('CurrentUrlService', () => {
   });
 
   describe('currentUrlHasStateParam', () => {
-    it('returns true for the given URL', () => {
-      const hasStateParam = service.currentUrlHasStateParam();
-
-      expect(hasStateParam).toBe(true);
-    });
-  });
-
-  describe('currentUrlHasStateParam', () => {
     it('returns the state param for the given URL', () => {
       const stateParam = service.getStateParamFromCurrentUrl();
 

@@ -43,10 +43,8 @@ export class PopUpLoginService {
     this.loggerService.logDebug(configuration, 'BEGIN Authorize OIDC Flow with popup, no auth data');
 
     return this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(configuration).pipe(
-      switchMap(() => {
-        return this.urlService.getAuthorizeUrl(configuration, authOptions);
-      }),
-      tap((authUrl: string) => this.popupService.openPopUp(authUrl, popupOptions)),
+      switchMap(() => this.urlService.getAuthorizeUrl(configuration, authOptions)),
+      tap((authUrl: string) => this.popupService.openPopUp(authUrl, popupOptions, configuration)),
       switchMap(() => {
         return this.popupService.result$.pipe(
           take(1),

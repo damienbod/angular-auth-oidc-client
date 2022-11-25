@@ -72,7 +72,7 @@ export class RefreshTokenCallbackHandlerService {
           return timer(refreshTokenRetryInSeconds * 1000);
         }
 
-        return throwError(() => new Error(error));
+        return throwError(() => error);
       })
     );
   }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { concatMap, map, switchMap } from 'rxjs/operators';
+import { concatMap, map } from 'rxjs/operators';
 import { AuthOptions, LogoutAuthOptions } from './auth-options';
 import { AuthenticatedResult } from './auth-state/auth-result';
 import { AuthStateService } from './auth-state/auth-state.service';
@@ -81,7 +81,7 @@ export class OidcSecurityService {
   preloadAuthWellKnownDocument(configId?: string): Observable<AuthWellKnownEndpoints> {
     return this.configurationService
       .getOpenIDConfiguration(configId)
-      .pipe(switchMap((config) => this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(config)));
+      .pipe(concatMap((config) => this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(config)));
   }
 
   /**
@@ -124,7 +124,7 @@ export class OidcSecurityService {
   checkAuth(url?: string, configId?: string): Observable<LoginResponse> {
     return this.configurationService
       .getOpenIDConfigurations(configId)
-      .pipe(switchMap(({ allConfigs, currentConfig }) => this.checkAuthService.checkAuth(currentConfig, allConfigs, url)));
+      .pipe(concatMap(({ allConfigs, currentConfig }) => this.checkAuthService.checkAuth(currentConfig, allConfigs, url)));
   }
 
   /**
@@ -142,7 +142,7 @@ export class OidcSecurityService {
   checkAuthMultiple(url?: string): Observable<LoginResponse[]> {
     return this.configurationService
       .getOpenIDConfigurations()
-      .pipe(switchMap(({ allConfigs }) => this.checkAuthService.checkAuthMultiple(allConfigs, url)));
+      .pipe(concatMap(({ allConfigs }) => this.checkAuthService.checkAuthMultiple(allConfigs, url)));
   }
 
   /**
@@ -162,7 +162,7 @@ export class OidcSecurityService {
   checkAuthIncludingServer(configId?: string): Observable<LoginResponse> {
     return this.configurationService
       .getOpenIDConfigurations(configId)
-      .pipe(switchMap(({ allConfigs, currentConfig }) => this.checkAuthService.checkAuthIncludingServer(currentConfig, allConfigs)));
+      .pipe(concatMap(({ allConfigs, currentConfig }) => this.checkAuthService.checkAuthIncludingServer(currentConfig, allConfigs)));
   }
 
   /**
@@ -295,7 +295,7 @@ export class OidcSecurityService {
     return this.configurationService
       .getOpenIDConfigurations(configId)
       .pipe(
-        switchMap(({ allConfigs, currentConfig }) => this.loginService.loginWithPopUp(currentConfig, allConfigs, authOptions, popupOptions))
+        concatMap(({ allConfigs, currentConfig }) => this.loginService.loginWithPopUp(currentConfig, allConfigs, authOptions, popupOptions))
       );
   }
 
@@ -311,7 +311,7 @@ export class OidcSecurityService {
     return this.configurationService
       .getOpenIDConfigurations(configId)
       .pipe(
-        switchMap(({ allConfigs, currentConfig }) =>
+        concatMap(({ allConfigs, currentConfig }) =>
           this.refreshSessionService.userForceRefreshSession(currentConfig, allConfigs, customParams)
         )
       );
@@ -387,7 +387,7 @@ export class OidcSecurityService {
   revokeAccessToken(accessToken?: any, configId?: string): Observable<any> {
     return this.configurationService
       .getOpenIDConfiguration(configId)
-      .pipe(switchMap((config) => this.logoffRevocationService.revokeAccessToken(config, accessToken)));
+      .pipe(concatMap((config) => this.logoffRevocationService.revokeAccessToken(config, accessToken)));
   }
 
   /**
@@ -403,7 +403,7 @@ export class OidcSecurityService {
   revokeRefreshToken(refreshToken?: any, configId?: string): Observable<any> {
     return this.configurationService
       .getOpenIDConfiguration(configId)
-      .pipe(switchMap((config) => this.logoffRevocationService.revokeRefreshToken(config, refreshToken)));
+      .pipe(concatMap((config) => this.logoffRevocationService.revokeRefreshToken(config, refreshToken)));
   }
 
   /**
@@ -431,6 +431,6 @@ export class OidcSecurityService {
   getAuthorizeUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): Observable<string | null> {
     return this.configurationService
       .getOpenIDConfiguration(configId)
-      .pipe(switchMap((config) => this.urlService.getAuthorizeUrl(config, customParams ? { customParams } : undefined)));
+      .pipe(concatMap((config) => this.urlService.getAuthorizeUrl(config, customParams ? { customParams } : undefined)));
   }
 }

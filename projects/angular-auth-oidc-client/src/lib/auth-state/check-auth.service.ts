@@ -39,9 +39,9 @@ export class CheckAuthService {
   checkAuth(configuration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[], url?: string): Observable<LoginResponse> {
     this.publicEventsService.fireEvent(EventTypes.CheckingAuth);
 
-    if (this.currentUrlService.currentUrlHasStateParam()) {
-      const stateParamFromUrl = this.currentUrlService.getStateParamFromCurrentUrl();
+    const stateParamFromUrl = this.currentUrlService.getStateParamFromCurrentUrl(url);
 
+    if (!!stateParamFromUrl) {
       configuration = this.getConfigurationWithUrlState([configuration], stateParamFromUrl);
 
       if (!configuration) {
@@ -53,8 +53,9 @@ export class CheckAuthService {
   }
 
   checkAuthMultiple(allConfigs: OpenIdConfiguration[], url?: string): Observable<LoginResponse[]> {
-    if (this.currentUrlService.currentUrlHasStateParam()) {
-      const stateParamFromUrl = this.currentUrlService.getStateParamFromCurrentUrl();
+    const stateParamFromUrl = this.currentUrlService.getStateParamFromCurrentUrl(url);
+
+    if (stateParamFromUrl) {
       const config = this.getConfigurationWithUrlState(allConfigs, stateParamFromUrl);
 
       if (!config) {
@@ -104,7 +105,7 @@ export class CheckAuthService {
 
     this.loggerService.logDebug(config, `Working with config '${configId}' using ${authority}`);
 
-    if (this.popupService.isCurrentlyInPopup()) {
+    if (this.popupService.currentWindowIsPopUp()) {
       this.popupService.sendMessageToMainWindow(currentUrl);
 
       return of(null);

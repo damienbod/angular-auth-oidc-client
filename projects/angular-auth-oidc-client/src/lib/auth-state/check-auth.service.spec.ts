@@ -92,7 +92,6 @@ describe('CheckAuthService', () => {
 
   describe('checkAuth', () => {
     it('uses config with matching state when url has state param and config with state param is stored', waitForAsync(() => {
-      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
       spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
       const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
 
@@ -105,7 +104,6 @@ describe('CheckAuthService', () => {
     }));
 
     it('throws error when url has state param and stored config with matching state param is not found', waitForAsync(() => {
-      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
       spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
       const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
 
@@ -121,7 +119,7 @@ describe('CheckAuthService', () => {
     }));
 
     it('uses first/default config when no param is passed', waitForAsync(() => {
-      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(false);
+      spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue(null);
       const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
       const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
 
@@ -148,7 +146,7 @@ describe('CheckAuthService', () => {
     it('returns null and sendMessageToMainWindow if currently in a popup', waitForAsync(() => {
       const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
 
-      spyOn(popUpService, 'isCurrentlyInPopup').and.returnValue(true);
+      spyOn(popUpService, 'currentWindowIsPopUp').and.returnValue(true);
       const popupSpy = spyOn(popUpService, 'sendMessageToMainWindow');
 
       checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
@@ -499,7 +497,6 @@ describe('CheckAuthService', () => {
         { configId: 'configId2', authority: 'some-authority2' },
       ];
 
-      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
       spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
       spyOn(storagePersistenceService, 'read').withArgs('authStateControl', allConfigs[0]).and.returnValue('the-state-param');
       const spy = spyOn(checkAuthService as any, 'checkAuthWithConfig').and.callThrough();
@@ -513,7 +510,7 @@ describe('CheckAuthService', () => {
     }));
 
     it('uses config from passed configId if configId was passed and returns all results', waitForAsync(() => {
-      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(false);
+      spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue(null);
 
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority1' },
@@ -532,7 +529,7 @@ describe('CheckAuthService', () => {
     }));
 
     it('runs through all configs if no parameter is passed and has no state in url', waitForAsync(() => {
-      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(false);
+      spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue(null);
 
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority1' },
@@ -550,7 +547,6 @@ describe('CheckAuthService', () => {
     }));
 
     it('throws error if url has state param but no config could be found', waitForAsync(() => {
-      spyOn(currentUrlService, 'currentUrlHasStateParam').and.returnValue(true);
       spyOn(currentUrlService, 'getStateParamFromCurrentUrl').and.returnValue('the-state-param');
 
       const allConfigs = [];

@@ -2,7 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { CryptoService } from './crypto.service';
 
-describe('CryptoService: crypto', () => {
+describe('CryptoService', () => {
   let cryptoService: CryptoService;
 
   beforeEach(() => {

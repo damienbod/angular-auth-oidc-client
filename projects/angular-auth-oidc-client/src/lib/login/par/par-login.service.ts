@@ -101,7 +101,7 @@ export class ParLoginService {
           return throwError(() => new Error(errorMessage));
         }
 
-        this.popupService.openPopUp(url, popupOptions);
+        this.popupService.openPopUp(url, popupOptions, configuration);
 
         return this.popupService.result$.pipe(
           take(1),

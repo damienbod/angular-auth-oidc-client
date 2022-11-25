@@ -54,7 +54,7 @@ export class SilentRenewService {
   }
 
   codeFlowCallbackSilentRenewIframe(
-    urlParts: any,
+    urlParts: string[],
     config: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
   ): Observable<CallbackContext> {
