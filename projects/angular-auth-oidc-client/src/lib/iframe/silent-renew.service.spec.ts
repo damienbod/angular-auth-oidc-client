@@ -10,6 +10,7 @@ import { FlowsService } from '../flows/flows.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { LoggerService } from '../logging/logger.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
+import { ValidationResult } from '../validation/validation-result';
 import { IFrameService } from './existing-iframe.service';
 import { SilentRenewService } from './silent-renew.service';
 
@@ -21,6 +22,9 @@ describe('SilentRenewService  ', () => {
   let flowsDataService: FlowsDataService;
   let loggerService: LoggerService;
   let flowsService: FlowsService;
+  let authStateService: AuthStateService;
+  let resetAuthDataService: ResetAuthDataService;
+  let intervalService: IntervalService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -47,6 +51,9 @@ describe('SilentRenewService  ', () => {
     flowsDataService = TestBed.inject(FlowsDataService);
     flowsService = TestBed.inject(FlowsService);
     loggerService = TestBed.inject(LoggerService);
+    authStateService = TestBed.inject(AuthStateService);
+    resetAuthDataService = TestBed.inject(ResetAuthDataService);
+    intervalService = TestBed.inject(IntervalService);
   });
 
   it('should create', () => {
@@ -109,36 +116,58 @@ describe('SilentRenewService  ', () => {
   });
 
   describe('codeFlowCallbackSilentRenewIframe', () => {
-    it(
-      'calls processSilentRenewCodeFlowCallback with correct arguments',
-      waitForAsync(() => {
-        const config = { configId: 'configId1' };
-        const allConfigs = [config];
+    it('calls processSilentRenewCodeFlowCallback with correct arguments', waitForAsync(() => {
+      const config = { configId: 'configId1' };
+      const allConfigs = [config];
 
-        const spy = spyOn(flowsService, 'processSilentRenewCodeFlowCallback').and.returnValue(of(null));
-        const expectedContext = {
-          code: 'some-code',
-          refreshToken: null,
-          state: 'some-state',
-          sessionState: 'some-session-state',
-          authResult: null,
-          isRenewProcess: true,
-          jwtKeys: null,
-          validationResult: null,
-          existingIdToken: null,
-        };
+      const spy = spyOn(flowsService, 'processSilentRenewCodeFlowCallback').and.returnValue(of(null));
+      const expectedContext = {
+        code: 'some-code',
+        refreshToken: null,
+        state: 'some-state',
+        sessionState: 'some-session-state',
+        authResult: null,
+        isRenewProcess: true,
+        jwtKeys: null,
+        validationResult: null,
+        existingIdToken: null,
+      };
+      const url = 'url-part-1';
+      const urlParts = 'code=some-code&state=some-state&session_state=some-session-state';
 
-        silentRenewService
-          .codeFlowCallbackSilentRenewIframe(
-            ['url-part-1', 'code=some-code&state=some-state&session_state=some-session-state'],
-            config,
-            allConfigs
-          )
-          .subscribe(() => {
-            expect(spy).toHaveBeenCalledOnceWith(expectedContext, config, allConfigs);
+      silentRenewService.codeFlowCallbackSilentRenewIframe([url, urlParts], config, allConfigs).subscribe(() => {
+        expect(spy).toHaveBeenCalledOnceWith(expectedContext, config, allConfigs);
+      });
+    }));
+
+    it('throws error if url has error param and resets everything on error', waitForAsync(() => {
+      const config = { configId: 'configId1' };
+      const allConfigs = [config];
+
+      const spy = spyOn(flowsService, 'processSilentRenewCodeFlowCallback').and.returnValue(of(null));
+      const authStateServiceSpy = spyOn(authStateService, 'updateAndPublishAuthState');
+      const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
+      const setNonceSpy = spyOn(flowsDataService, 'setNonce');
+      const stopPeriodicTokenCheckSpy = spyOn(intervalService, 'stopPeriodicTokenCheck');
+
+      const url = 'url-part-1';
+      const urlParts = 'error=some_error';
+
+      silentRenewService.codeFlowCallbackSilentRenewIframe([url, urlParts], config, allConfigs).subscribe({
+        error: (error) => {
+          expect(error).toEqual(new Error('some_error'));
+          expect(spy).not.toHaveBeenCalled();
+          expect(authStateServiceSpy).toHaveBeenCalledOnceWith({
+            isAuthenticated: false,
+            validationResult: ValidationResult.LoginRequired,
+            isRenewProcess: true,
           });
-      })
-    );
+          expect(resetAuthorizationDataSpy).toHaveBeenCalledOnceWith(config, allConfigs);
+          expect(setNonceSpy).toHaveBeenCalledOnceWith('', config);
+          expect(stopPeriodicTokenCheckSpy).toHaveBeenCalledTimes(1);
+        },
+      });
+    }));
   });
 
   describe('silentRenewEventHandler', () => {
