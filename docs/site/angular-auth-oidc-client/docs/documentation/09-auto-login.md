@@ -5,9 +5,13 @@ sidebar_position: 9
 
 # Auto Login
 
-The library supports route-based automatic login thanks to the two included route guards: `AutoLoginPartialRoutesGuard` and `AutoLoginAllRoutesGuard`. The guards implement the necessary handlers for both `canActivate` and `canLoad`, and they will preserve the route upon completing a successful login.
+The library supports route-based automatic login thanks to the route guard: `AutoLoginPartialRoutesGuard`. The guard implements the necessary handlers for both `canActivate` and `canLoad`, and will preserve the route upon completing a successful login.
 
-_IMPORTANT: If you are using multiple configurations, the guards currently select the first provided configuration to perform the login._
+:::info
+
+If you are using multiple configurations, the guards currently select the first provided configuration to perform the login.\_
+
+:::
 
 ## Common Scenarios
 
@@ -52,37 +56,20 @@ export class AppComponent implements OnInit {
 
 :::caution
 
-We do NOT recommend all routes to be guarded. We know that this is a common use case but it is the easiest to have at least one public route, e.g. `/callback` where your identity provider can redirect to. In this route you can set up the authentication and then redirect to the route you wanted to go to initially. This would be the "normal" behaviour of a SPA.
+Please do not use the `AutoLoginAllRoutesGuard` anymore as it is not recommended anymore, deprecated and will be removed in future versions of this library.
+
+More information [Why is AutoLoginAllRoutesGuard not recommended?](https://github.com/damienbod/angular-auth-oidc-client/issues/1549)
 
 :::
 
-If all your routes are guarded please use the `AutoLoginAllRoutesGuard` instead of the `AutoLoginPartialRoutesGuard`. This guard ensures that `checkAuth()` is being called and that you do not need to call it in `app.component.ts`.
+If you want to protect your complete application, every route in your app, we recommend having one public route, e.g. `/callback` where your identity provider can redirect to. In this route you can set up the authentication and then redirect to the route you wanted to go to initially. This would be the "normal" behaviour of a SPA. You have to call `checkAuth()` in this `CallbackComponent` so that the url can be processed and set up, then redirect. Also think of calling `checkAuth()` in the AppComponent
 
 ```ts
-export class AppComponent implements OnInit {
-  constructor(/* ... */) {}
+import { AutoLoginPartialRoutesGuard } from 'angular-auth-oidc-client';
 
-  ngOnInit() {
-    // No need to call checkAuth()
-  }
-}
-```
-
-```ts
-import { AutoLoginAllRoutesGuard } from 'angular-auth-oidc-client';
-
-const appRoutes: Routes = [
+const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
-  { path: 'home', component: HomeComponent, canActivate: [AutoLoginAllRoutesGuard] },
-  { path: 'protected', component: ProtectedComponent, canActivate: [AutoLoginAllRoutesGuard] },
-  { path: 'forbidden', component: ForbiddenComponent, canActivate: [AutoLoginAllRoutesGuard] },
-  {
-    path: 'customers',
-    loadChildren: () => import('./customers/customers.module').then((m) => m.CustomersModule),
-    canLoad: [AutoLoginAllRoutesGuard],
-  },
-  { path: 'unauthorized', component: UnauthorizedComponent },
+  { path: 'home', component: HomeComponent, canActivate: [AutoLoginPartialRoutesGuard] },
+  { path: 'callback', component: CallbackComponent }, // does nothing but setting up auth
 ];
 ```
-
-[Source Code](../../../../../projects/sample-code-flow-auto-login/src/app/app.routes.ts)
