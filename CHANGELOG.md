@@ -9,6 +9,7 @@
 - Bugfixes revocation
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1592)
 - Updated project to Angular 15
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1590)
 
 ### 2022-11-18 15.0.0
 
