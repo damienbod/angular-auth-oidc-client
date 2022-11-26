@@ -14,8 +14,11 @@ import { Observable } from 'rxjs';
 })
 export class HomeComponent implements OnInit {
   configurations: OpenIdConfiguration[];
+
   userDataChanged$: Observable<OidcClientNotification<any>>;
+
   userData$: Observable<UserDataResult>;
+
   isAuthenticated$: Observable<AuthenticatedResult>;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
@@ -35,7 +38,7 @@ export class HomeComponent implements OnInit {
   }
 
   logout(configId: string) {
-    this.oidcSecurityService.logoff(configId);
+    this.oidcSecurityService.logoff(configId).subscribe((result) => console.log(result));
   }
 
   refreshSessionId4(configId: string) {
