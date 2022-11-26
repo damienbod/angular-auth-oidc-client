@@ -5,9 +5,9 @@
 - Add silent renew error event
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1592)
 - Improve Popup flows
-  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1592)
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1595)
 - Bugfixes revocation
-  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1592)
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1604)
 - Updated project to Angular 15
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1590)
 
