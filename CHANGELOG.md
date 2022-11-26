@@ -1,10 +1,15 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
-### 2022-11-xx 15.0.1
+### 2022-11-26 15.0.1
 
 - Add silent renew error event
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1592)
-  
+- Improve Popup flows
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1592)
+- Bugfixes revocation
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1592)
+- Updated project to Angular 15
+
 ### 2022-11-18 15.0.0
 
 - Support refresh tokens without returning an id_token in the refresh
