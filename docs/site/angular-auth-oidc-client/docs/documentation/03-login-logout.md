@@ -182,7 +182,8 @@ You can pass an `logoutAuthOptions` parameter if you want to control the behavio
 logout() {
   const logoutAuthOptions = {
     customParams: {
-      some: 'params',
+      logout_hint: 'some-logout-hint',
+      /* other params */
     },
     urlHandler: () => {
       /* ... */
