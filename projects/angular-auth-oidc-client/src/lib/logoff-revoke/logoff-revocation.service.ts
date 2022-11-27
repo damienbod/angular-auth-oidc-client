@@ -158,8 +158,8 @@ export class LogoffRevocationService {
       logout_hint,
       ui_locales,
     };
-
     const bodyWithoutNullOrUndefined = removeNullAndUndefinedValues(body);
+
     this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
 
     return this.dataService.post(url, bodyWithoutNullOrUndefined, config, headers);
