@@ -136,10 +136,10 @@ export class LogoffRevocationService {
   ): Observable<unknown> {
     const { logoffMethod, customParams } = logoutAuthOptions || {};
 
-    this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
-
     if (!logoffMethod || logoffMethod === 'GET') {
       this.redirectService.redirectTo(endSessionUrl);
+
+      this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
 
       return of(null);
     }
@@ -158,8 +158,9 @@ export class LogoffRevocationService {
       logout_hint,
       ui_locales,
     };
-
     const bodyWithoutNullOrUndefined = removeNullAndUndefinedValues(body);
+
+    this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
 
     return this.dataService.post(url, bodyWithoutNullOrUndefined, config, headers);
   }
