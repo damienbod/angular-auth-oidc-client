@@ -180,31 +180,34 @@ You can pass an `logoutAuthOptions` parameter if you want to control the behavio
 
 ```ts
 logout() {
-  const logoutAuthOptions = {
+  const logoutAuthOptions: LogoutAuthOptions = {
     customParams: {
       logout_hint: 'some-logout-hint',
       /* other params */
-    },
-    urlHandler: () => {
-      /* ... */
-    },
+    }
   };
 
+  // Use an empty string for the configId if this is not a multiple client
+  // subscribe to the result if you expect the function to return.
+  // => .subscribe((result) => console.log(result));
   this.oidcSecurityService.logoff('configId', logoutAuthOptions);
 }
 ```
 
 If you prefer to send a POST logout request:
 
-```
+```ts
 logout() {
-	// logoffMethod` - Which can be `GET` or `POST
-	const logoutAuthOptions: LogoutAuthOptions = {
-	  logoffMethod: 'POST',
-	};
+    // logoffMethod` - Which can be `GET` or `POST
+    const logoutAuthOptions: LogoutAuthOptions = {
+      customParams: {
+        logout_hint: 'some-logout-hint',
+      },
+      logoffMethod: 'POST',
+    };
 
-	this.oidcSecurityService.logoff('', logoutAuthOptions)
-		.subscribe((result) => console.log(result));
+    this.oidcSecurityService.logoff('', logoutAuthOptions)
+      .subscribe((result) => console.log(result));
 }
 ```
 
@@ -215,6 +218,21 @@ The `logoffAndRevokeTokens()` method revokes the access token and the refresh to
 ```ts
 logoffAndRevokeTokens() {
   this.oidcSecurityService.logoffAndRevokeTokens()
+    .subscribe((result) => console.log(result));
+}
+```
+
+or an example using the LogoutAuthOptions parameters:
+
+```ts
+logoffAndRevokeTokens() {
+  const logoutAuthOptions: LogoutAuthOptions = {
+    customParams: {
+        logout_hint: 'some-logout-hint',
+    },
+  };
+
+  this.oidcSecurityService.logoffAndRevokeTokens('', logoutAuthOptions)
     .subscribe((result) => console.log(result));
 }
 ```
