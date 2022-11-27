@@ -1,5 +1,10 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2022-11-27 15.0.2
+
+- bugfix POST logout, missing parameters
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1612)
+
 ### 2022-11-26 15.0.1
 
 - Add silent renew error event
