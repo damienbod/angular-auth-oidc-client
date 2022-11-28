@@ -6,7 +6,7 @@ export class CurrentUrlService {
   constructor(@Inject(DOCUMENT) private readonly doc: any) {}
 
   getStateParamFromCurrentUrl(url?: string): string {
-    const currentUrl = url ?? this.getCurrentUrl();
+    const currentUrl = url || this.getCurrentUrl();
     const parsedUrl = new URL(currentUrl);
     const urlParams = new URLSearchParams(parsedUrl.search);
     const stateFromUrl = urlParams.get('state');
