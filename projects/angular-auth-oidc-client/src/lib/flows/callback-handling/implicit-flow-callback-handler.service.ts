@@ -13,7 +13,7 @@ export class ImplicitFlowCallbackHandlerService {
     private readonly resetAuthDataService: ResetAuthDataService,
     private readonly loggerService: LoggerService,
     private readonly flowsDataService: FlowsDataService,
-    @Inject(DOCUMENT) private readonly doc: any
+    @Inject(DOCUMENT) private readonly document: Document
   ) {}
 
   // STEP 1 Code Flow
@@ -26,7 +26,7 @@ export class ImplicitFlowCallbackHandlerService {
       this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
     }
 
-    hash = hash || this.doc.location.hash.substr(1);
+    hash = hash || this.document.location.hash.substring(1);
 
     const authResult: any = hash.split('&').reduce((resultData: any, item: string) => {
       const parts = item.split('=');

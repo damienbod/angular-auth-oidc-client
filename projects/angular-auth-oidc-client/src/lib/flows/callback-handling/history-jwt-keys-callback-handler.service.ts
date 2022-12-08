@@ -24,7 +24,7 @@ export class HistoryJwtKeysCallbackHandlerService {
     private readonly signInKeyDataService: SigninKeyDataService,
     private readonly storagePersistenceService: StoragePersistenceService,
     private readonly resetAuthDataService: ResetAuthDataService,
-    @Inject(DOCUMENT) private readonly document: any
+    @Inject(DOCUMENT) private readonly document: Document
   ) {}
 
   // STEP 3 Code Flow, STEP 2 Implicit Flow, STEP 3 Refresh Token
@@ -132,7 +132,7 @@ export class HistoryJwtKeysCallbackHandlerService {
   private resetBrowserHistory(): void {
     this.document.defaultView.history.replaceState(
       {},
-      this.document.defaultView.title,
+      this.document.title,
       this.document.defaultView.location.origin + this.document.defaultView.location.pathname
     );
   }

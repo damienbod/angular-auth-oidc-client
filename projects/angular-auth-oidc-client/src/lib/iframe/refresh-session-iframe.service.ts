@@ -12,7 +12,7 @@ export class RefreshSessionIframeService {
   private readonly renderer: Renderer2;
 
   constructor(
-    @Inject(DOCUMENT) private readonly doc: any,
+    @Inject(DOCUMENT) private readonly document: Document,
     private readonly loggerService: LoggerService,
     private readonly urlService: UrlService,
     private readonly silentRenewService: SilentRenewService,
@@ -71,7 +71,7 @@ export class RefreshSessionIframeService {
       this.silentRenewService.silentRenewEventHandler(e, config, allConfigs)
     );
 
-    this.doc.defaultView.dispatchEvent(
+    this.document.defaultView.dispatchEvent(
       new CustomEvent('oidc-silent-renew-init', {
         detail: instanceId,
       })
