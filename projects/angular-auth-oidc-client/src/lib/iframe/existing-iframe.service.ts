@@ -5,7 +5,7 @@ import { LoggerService } from '../logging/logger.service';
 
 @Injectable()
 export class IFrameService {
-  constructor(@Inject(DOCUMENT) private readonly doc: any, private readonly loggerService: LoggerService) {}
+  constructor(@Inject(DOCUMENT) private readonly document: Document, private readonly loggerService: LoggerService) {}
 
   getExistingIFrame(identifier: string): HTMLIFrameElement | null {
     const iFrameOnParent = this.getIFrameFromParentWindow(identifier);
@@ -24,20 +24,20 @@ export class IFrameService {
   }
 
   addIFrameToWindowBody(identifier: string, config: OpenIdConfiguration): HTMLIFrameElement {
-    const sessionIframe = this.doc.createElement('iframe');
+    const sessionIframe = this.document.createElement('iframe');
 
     sessionIframe.id = identifier;
     sessionIframe.title = identifier;
     this.loggerService.logDebug(config, sessionIframe);
     sessionIframe.style.display = 'none';
-    this.doc.body.appendChild(sessionIframe);
+    this.document.body.appendChild(sessionIframe);
 
     return sessionIframe;
   }
 
   private getIFrameFromParentWindow(identifier: string): HTMLIFrameElement | null {
     try {
-      const iFrameElement = this.doc.defaultView.parent.document.getElementById(identifier);
+      const iFrameElement = this.document.defaultView.parent.document.getElementById(identifier);
 
       if (this.isIFrameElement(iFrameElement)) {
         return iFrameElement;
@@ -50,7 +50,7 @@ export class IFrameService {
   }
 
   private getIFrameFromWindow(identifier: string): HTMLIFrameElement | null {
-    const iFrameElement = this.doc.getElementById(identifier);
+    const iFrameElement = this.document.getElementById(identifier);
 
     if (this.isIFrameElement(iFrameElement)) {
       return iFrameElement;

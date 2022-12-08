@@ -67,7 +67,7 @@ export class TokenValidationService {
     private readonly jwkExtractor: JwkExtractor,
     private readonly jwkWindowCryptoService: JwkWindowCryptoService,
     private readonly jwtWindowCryptoService: JwtWindowCryptoService,
-    @Inject(DOCUMENT) private readonly document: any
+    @Inject(DOCUMENT) private readonly document: Document
   ) {}
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim

@@ -17,7 +17,7 @@ export class StateValidationCallbackHandlerService {
     private readonly stateValidationService: StateValidationService,
     private readonly authStateService: AuthStateService,
     private readonly resetAuthDataService: ResetAuthDataService,
-    @Inject(DOCUMENT) private readonly doc: any
+    @Inject(DOCUMENT) private readonly document: Document
   ) {}
 
   // STEP 4 All flows
@@ -35,7 +35,7 @@ export class StateValidationCallbackHandlerService {
 
           return callbackContext;
         } else {
-          const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${this.doc.location.hash}`;
+          const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${this.document.location.hash}`;
 
           this.loggerService.logWarning(configuration, errorMessage);
           this.resetAuthDataService.resetAuthorizationData(configuration, allConfigs);

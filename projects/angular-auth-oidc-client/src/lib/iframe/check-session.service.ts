@@ -39,7 +39,7 @@ export class CheckSessionService {
     private readonly iFrameService: IFrameService,
     private readonly eventService: PublicEventsService,
     private readonly zone: NgZone,
-    @Inject(DOCUMENT) private readonly document: any
+    @Inject(DOCUMENT) private readonly document: Document
   ) {}
 
   isCheckSessionConfigured(configuration: OpenIdConfiguration): boolean {
