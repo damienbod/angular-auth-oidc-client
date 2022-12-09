@@ -4,7 +4,7 @@ import { RedirectService } from './redirect.service';
 
 describe('Redirect Service Tests', () => {
   let service: RedirectService;
-  let myDocument: any;
+  let myDocument: Document;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
