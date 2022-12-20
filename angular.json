@@ -1115,7 +1115,7 @@
             "outputPath": "dist/sample-code-flow-standalone",
             "index": "projects/sample-code-flow-standalone/src/index.html",
             "main": "projects/sample-code-flow-standalone/src/main.ts",
-            "polyfills": "projects/sample-code-flow-standalone/src/polyfills.ts",
+            "polyfills": ["zone.js"],
             "tsConfig": "projects/sample-code-flow-standalone/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -1187,7 +1187,7 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "main": "projects/sample-code-flow-standalone/src/test.ts",
-            "polyfills": "projects/sample-code-flow-standalone/src/polyfills.ts",
+            "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "projects/sample-code-flow-standalone/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-standalone/karma.conf.js",
             "assets": ["projects/sample-code-flow-standalone/src/favicon.ico", "projects/sample-code-flow-standalone/src/assets"],
