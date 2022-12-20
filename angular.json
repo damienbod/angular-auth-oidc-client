@@ -1102,6 +1102,119 @@
         }
       }
     },
+    "sample-code-flow-standalone": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "projects/sample-code-flow-standalone",
+      "sourceRoot": "projects/sample-code-flow-standalone/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/sample-code-flow-standalone",
+            "index": "projects/sample-code-flow-standalone/src/index.html",
+            "main": "projects/sample-code-flow-standalone/src/main.ts",
+            "polyfills": "projects/sample-code-flow-standalone/src/polyfills.ts",
+            "tsConfig": "projects/sample-code-flow-standalone/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "projects/sample-code-flow-standalone/src/favicon.ico",
+              "projects/sample-code-flow-standalone/src/silent-renew.html",
+              "projects/sample-code-flow-standalone/src/assets"
+            ],
+            "styles": ["projects/sample-code-flow-standalone/src/styles.css"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "sample-code-flow-standalone:build",
+            "sslKey": "certs/dev_localhost.key",
+            "sslCert": "certs/dev_localhost.pem",
+            "port": 4204
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "sample-code-flow-standalone:build:production"
+            },
+            "development": {
+              "browserTarget": "sample-code-flow-standalone:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "sample-code-flow-standalone:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sample-code-flow-standalone/src/test.ts",
+            "polyfills": "projects/sample-code-flow-standalone/src/polyfills.ts",
+            "tsConfig": "projects/sample-code-flow-standalone/tsconfig.spec.json",
+            "karmaConfig": "projects/sample-code-flow-standalone/karma.conf.js",
+            "assets": ["projects/sample-code-flow-standalone/src/favicon.ico", "projects/sample-code-flow-standalone/src/assets"],
+            "styles": ["projects/sample-code-flow-standalone/src/styles.css"],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["projects/sample-code-flow-standalone/**/*.ts", "projects/sample-code-flow-standalone/**/*.html"]
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "projects/sample-code-flow-standalone/e2e/protractor.conf.js",
+            "devServerTarget": "sample-code-flow-standalone:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-code-flow-standalone:serve:production"
+            }
+          }
+        }
+      }
+    },
     "sample-code-flow-multi-Azure-B2C": {
       "projectType": "application",
       "schematics": {},
