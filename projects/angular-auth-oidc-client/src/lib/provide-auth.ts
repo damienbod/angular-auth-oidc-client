@@ -1,4 +1,4 @@
-import * as ngCore from '@angular/core';
+import { makeEnvironmentProviders, Provider } from '@angular/core';
 import { createStaticLoader, PassedInitialConfig, PASSED_CONFIG } from './auth-config';
 import { StsConfigLoader } from './config/loader/config-loader';
 import { AbstractLoggerService } from './logging/abstract-logger.service';
@@ -12,14 +12,10 @@ declare type EnvironmentProviders = {
 };
 
 export function provideAuth(passedConfig: PassedInitialConfig): EnvironmentProviders {
-  if (!('makeEnvironmentProviders' in ngCore)) {
-    throw Error('provideAuth can only be used with Angular 15');
-  }
-
-  return ngCore['makeEnvironmentProviders']([..._provideAuth(passedConfig)]);
+  return makeEnvironmentProviders([..._provideAuth(passedConfig)]);
 }
 
-export function _provideAuth(passedConfig: PassedInitialConfig): ngCore.Provider[] {
+export function _provideAuth(passedConfig: PassedInitialConfig): Provider[] {
   return [
     // Make the PASSED_CONFIG available through injection
     { provide: PASSED_CONFIG, useValue: passedConfig },
