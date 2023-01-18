@@ -24,10 +24,12 @@ export class RefreshSessionRefreshTokenService {
   ): Observable<CallbackContext> {
     this.loggerService.logDebug(config, 'BEGIN refresh session Authorize');
     let refreshTokenFailed = false;
+
     return this.flowsService.processRefreshToken(config, allConfigs, customParamsRefresh).pipe(
       catchError((error) => {
         this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
         refreshTokenFailed = true;
+
         return throwError(() => new Error(error));
       }),
       finalize(() => refreshTokenFailed && this.intervalService.stopPeriodicTokenCheck())
