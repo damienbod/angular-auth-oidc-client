@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, finalize } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsService } from '../flows/flows.service';
@@ -23,14 +23,16 @@ export class RefreshSessionRefreshTokenService {
     customParamsRefresh?: { [key: string]: string | number | boolean }
   ): Observable<CallbackContext> {
     this.loggerService.logDebug(config, 'BEGIN refresh session Authorize');
+    let refreshTokenFailed = false;
 
     return this.flowsService.processRefreshToken(config, allConfigs, customParamsRefresh).pipe(
       catchError((error) => {
-        this.intervalService.stopPeriodicTokenCheck();
         this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
+        refreshTokenFailed = true;
 
         return throwError(() => new Error(error));
-      })
+      }),
+      finalize(() => refreshTokenFailed && this.intervalService.stopPeriodicTokenCheck())
     );
   }
 }
