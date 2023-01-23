@@ -1,5 +1,9 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2023-01-23 15.0.3
+
+- fix(refreshSession): fix refreshSessionWithRefreshTokens
+
 ### 2022-11-27 15.0.2
 
 - bugfix POST logout, missing parameters
