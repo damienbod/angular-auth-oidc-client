@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AbstractLoggerService } from './abstract-logger.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ConsoleLoggerService implements AbstractLoggerService {
   logError(message?: any, ...args: any[]): void {
     console.error(message, ...args);

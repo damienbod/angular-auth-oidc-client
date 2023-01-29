@@ -13,7 +13,7 @@ import { ConfigUserDataResult, UserDataResult } from './userdata-result';
 
 const DEFAULT_USERRESULT = { userData: null, allUserData: [] };
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class UserService {
   private readonly userDataInternal$ = new BehaviorSubject<UserDataResult>(DEFAULT_USERRESULT);
 

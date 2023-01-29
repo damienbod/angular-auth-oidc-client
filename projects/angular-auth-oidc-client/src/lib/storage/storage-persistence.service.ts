@@ -23,7 +23,7 @@ export type StorageKeys =
   | 'jwtKeys'
   | 'popupauth';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class StoragePersistenceService {
   constructor(private readonly browserStorageService: BrowserStorageService) {}
 

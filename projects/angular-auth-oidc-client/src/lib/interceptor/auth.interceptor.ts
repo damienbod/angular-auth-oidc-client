@@ -10,7 +10,7 @@ import { ClosestMatchingRouteService } from './closest-matching-route.service';
 declare type HttpHandlerFn = (req: HttpRequest<unknown>) => Observable<HttpEvent<unknown>>;
 declare type HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => Observable<HttpEvent<unknown>>;
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AuthInterceptor implements HttpInterceptor {
   constructor(
     private readonly authStateService: AuthStateService,

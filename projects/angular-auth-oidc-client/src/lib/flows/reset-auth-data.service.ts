@@ -5,7 +5,7 @@ import { LoggerService } from '../logging/logger.service';
 import { UserService } from '../user-data/user.service';
 import { FlowsDataService } from './flows-data.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ResetAuthDataService {
   constructor(
     private readonly authStateService: AuthStateService,

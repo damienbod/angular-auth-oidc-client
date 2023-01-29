@@ -8,7 +8,7 @@ import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 
 const WELL_KNOWN_SUFFIX = `/.well-known/openid-configuration`;
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AuthWellKnownDataService {
   constructor(private readonly http: DataService, private readonly loggerService: LoggerService) {}
 

@@ -10,7 +10,7 @@ import { StateValidationService } from '../../validation/state-validation.servic
 import { CallbackContext } from '../callback-context';
 import { ResetAuthDataService } from '../reset-auth-data.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class StateValidationCallbackHandlerService {
   constructor(
     private readonly loggerService: LoggerService,

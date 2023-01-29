@@ -13,7 +13,7 @@ import { removeNullAndUndefinedValues } from '../utils/object/object.helper';
 import { RedirectService } from '../utils/redirect/redirect.service';
 import { UrlService } from '../utils/url/url.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class LogoffRevocationService {
   constructor(
     private readonly dataService: DataService,

@@ -13,7 +13,7 @@ const IFRAME_FOR_CHECK_SESSION_IDENTIFIER = 'myiFrameForCheckSession';
 
 // http://openid.net/specs/openid-connect-session-1_0-ID4.html
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CheckSessionService {
   private checkSessionReceived = false;
 

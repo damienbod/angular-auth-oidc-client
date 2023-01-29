@@ -5,7 +5,7 @@ import { Level, RuleValidationResult } from './rule';
 import { allRules } from './rules';
 import { allMultipleConfigRules } from './rules/index';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ConfigValidationService {
   constructor(private readonly loggerService: LoggerService) {}
 

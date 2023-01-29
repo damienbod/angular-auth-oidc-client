@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CurrentUrlService {
   constructor(@Inject(DOCUMENT) private readonly document: Document) {}
 

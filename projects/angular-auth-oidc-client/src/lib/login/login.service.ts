@@ -10,7 +10,7 @@ import { PopupOptions } from './popup/popup-options';
 import { PopUpService } from './popup/popup.service';
 import { StandardLoginService } from './standard/standard-login.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class LoginService {
   constructor(
     private readonly parLoginService: ParLoginService,

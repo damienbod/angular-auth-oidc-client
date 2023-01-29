@@ -10,7 +10,7 @@ import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { ResetAuthDataService } from '../reset-auth-data.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class UserCallbackHandlerService {
   constructor(
     private readonly loggerService: LoggerService,

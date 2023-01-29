@@ -15,7 +15,7 @@ import { SigninKeyDataService } from '../signin-key-data.service';
 
 const JWT_KEYS = 'jwtKeys';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class HistoryJwtKeysCallbackHandlerService {
   constructor(
     private readonly loggerService: LoggerService,

@@ -11,7 +11,7 @@ import { RefreshTokenCallbackHandlerService } from './callback-handling/refresh-
 import { StateValidationCallbackHandlerService } from './callback-handling/state-validation-callback-handler.service';
 import { UserCallbackHandlerService } from './callback-handling/user-callback-handler.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class FlowsService {
   constructor(
     private readonly codeFlowCallbackHandlerService: CodeFlowCallbackHandlerService,

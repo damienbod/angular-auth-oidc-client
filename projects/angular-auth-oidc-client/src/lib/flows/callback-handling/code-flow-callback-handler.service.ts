@@ -11,7 +11,7 @@ import { TokenValidationService } from '../../validation/token-validation.servic
 import { AuthResult, CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CodeFlowCallbackHandlerService {
   constructor(
     private readonly urlService: UrlService,

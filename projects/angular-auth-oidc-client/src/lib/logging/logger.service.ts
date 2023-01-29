@@ -3,7 +3,7 @@ import { OpenIdConfiguration } from '../config/openid-configuration';
 import { AbstractLoggerService } from './abstract-logger.service';
 import { LogLevel } from './log-level';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class LoggerService {
   constructor(private readonly abstractLoggerService: AbstractLoggerService) {}
 

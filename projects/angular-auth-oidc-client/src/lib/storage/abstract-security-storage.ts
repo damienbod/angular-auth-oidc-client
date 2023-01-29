@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 /**
  * Implement this class-interface to create a custom storage.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export abstract class AbstractSecurityStorage {
   /**
    * This method must contain the logic to read the storage.

@@ -3,7 +3,7 @@ import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CryptoService } from '../utils/crypto/crypto.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class JwtWindowCryptoService {
   constructor(private readonly cryptoService: CryptoService) {}
 

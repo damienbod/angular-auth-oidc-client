@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class FlowHelper {
   isCurrentFlowCodeFlow(configuration: OpenIdConfiguration): boolean {
     return this.currentFlowIs('code', configuration);

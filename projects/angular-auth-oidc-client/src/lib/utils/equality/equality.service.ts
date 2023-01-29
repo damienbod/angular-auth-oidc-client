@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class EqualityService {
   isStringEqualOrNonOrderedArrayEqual(value1: string | any[], value2: string | any[]): boolean {
     if (this.isNullOrUndefined(value1)) {

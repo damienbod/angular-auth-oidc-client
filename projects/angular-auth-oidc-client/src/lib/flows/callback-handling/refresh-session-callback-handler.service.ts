@@ -7,7 +7,7 @@ import { TokenValidationService } from '../../validation/token-validation.servic
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class RefreshSessionCallbackHandlerService {
   constructor(
     private readonly loggerService: LoggerService,

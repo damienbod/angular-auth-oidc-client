@@ -8,7 +8,7 @@ import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { JwtKeys } from '../validation/jwtkeys';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class SigninKeyDataService {
   constructor(
     private readonly storagePersistenceService: StoragePersistenceService,

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class DefaultSessionStorageService implements AbstractSecurityStorage {
   public read(key: string): any {
     return sessionStorage.getItem(key);

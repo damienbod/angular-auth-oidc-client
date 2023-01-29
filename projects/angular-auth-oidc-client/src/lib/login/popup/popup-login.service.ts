@@ -13,7 +13,7 @@ import { PopUpService } from '../popup/popup.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
 import { PopupResultReceivedUrl } from './popup-result';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class PopUpLoginService {
   constructor(
     private readonly loggerService: LoggerService,
