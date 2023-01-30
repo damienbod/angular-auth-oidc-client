@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { LoggerService } from '../../logging/logger.service';
 import { OpenIdConfiguration } from '../openid-configuration';
 import { Level, RuleValidationResult } from './rule';
-import { allRules } from './rules';
-import { allMultipleConfigRules } from './rules/index';
+import { allRules, allMultipleConfigRules } from './rules';
 
 @Injectable()
 export class ConfigValidationService {

@@ -6,11 +6,10 @@ import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { JwtKey, JwtKeys } from '../../validation/jwtkeys';
 import { ValidationResult } from '../../validation/validation-result';
-import { CallbackContext } from '../callback-context';
+import { CallbackContext, AuthResult} from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { ResetAuthDataService } from '../reset-auth-data.service';
 import { SigninKeyDataService } from '../signin-key-data.service';
-import { AuthResult } from './../callback-context';
 import { HistoryJwtKeysCallbackHandlerService } from './history-jwt-keys-callback-handler.service';
 
 const DUMMY_JWT_KEYS: JwtKeys = {

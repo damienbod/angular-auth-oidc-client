@@ -290,11 +290,7 @@ export class TokenValidationService {
       return false;
     }
 
-    if (Array.isArray(dataIdToken.aud) && dataIdToken.aud.length > 1 && !dataIdToken.azp) {
-      return false;
-    }
-
-    return true;
+    return !(Array.isArray(dataIdToken.aud) && dataIdToken.aud.length > 1 && !dataIdToken.azp);
   }
 
   // If an azp (authorized party) Claim is present, the Client SHOULD verify that its client_id is the Claim Value.
@@ -303,11 +299,7 @@ export class TokenValidationService {
       return true;
     }
 
-    if (dataIdToken.azp === clientId) {
-      return true;
-    }
-
-    return false;
+    return dataIdToken.azp === clientId;
   }
 
   validateStateFromHashCallback(state: any, localState: any, configuration: OpenIdConfiguration): boolean {

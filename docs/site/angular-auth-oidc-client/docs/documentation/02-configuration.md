@@ -168,6 +168,32 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
 export class AuthConfigModule {}
 ```
 
+### Using localstorage instead of default sessionstorage
+The angular-auth-oidc-client uses session storage by default that gets cleared whenever you open the website in a new tab, if you want to change it to localstorage then need to provide a different AbstractSecurityStorage.
+
+```ts
+import { NgModule } from '@angular/core';
+import { AuthModule, DefaultLocalStorageService, AbstractSecurityStorage } from 'angular-auth-oidc-client';
+
+@NgModule({
+  imports: [
+    AuthModule.forRoot({
+      config: {
+        /* Your config here */
+      },
+    }),
+  ],
+  exports: [AuthModule],
+  providers: [
+    {
+      provide: AbstractSecurityStorage,
+      useClass: DefaultLocalStorageService,
+    },
+  ],
+})
+export class AuthConfigModule {}
+```
+
 ## Config Values
 
 ### `configId`

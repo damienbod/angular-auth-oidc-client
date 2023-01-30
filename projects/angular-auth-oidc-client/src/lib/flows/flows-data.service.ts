@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { OpenIdConfiguration } from './../config/openid-configuration';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { RandomService } from './random/random.service';
 
 @Injectable()

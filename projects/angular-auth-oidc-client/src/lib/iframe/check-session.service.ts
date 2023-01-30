@@ -6,7 +6,7 @@ import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { OpenIdConfiguration } from './../config/openid-configuration';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { IFrameService } from './existing-iframe.service';
 
 const IFRAME_FOR_CHECK_SESSION_IDENTIFIER = 'myiFrameForCheckSession';

@@ -9,9 +9,8 @@ export class CurrentUrlService {
     const currentUrl = url || this.getCurrentUrl();
     const parsedUrl = new URL(currentUrl);
     const urlParams = new URLSearchParams(parsedUrl.search);
-    const stateFromUrl = urlParams.get('state');
 
-    return stateFromUrl;
+    return urlParams.get('state');
   }
 
   getCurrentUrl(): string {

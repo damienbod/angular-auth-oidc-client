@@ -14,11 +14,7 @@ export class FlowHelper {
   isCurrentFlowCodeFlowWithRefreshTokens(configuration: OpenIdConfiguration): boolean {
     const { useRefreshToken } = configuration;
 
-    if (this.isCurrentFlowCodeFlow(configuration) && useRefreshToken) {
-      return true;
-    }
-
-    return false;
+    return this.isCurrentFlowCodeFlow(configuration) && useRefreshToken;
   }
 
   isCurrentFlowImplicitFlowWithAccessToken(configuration: OpenIdConfiguration): boolean {

@@ -56,9 +56,8 @@ describe('Config Validation Service', () => {
 
     messageTypeSpy.withArgs('warning', jasmine.any(Array)).and.returnValue(['A warning message']);
     messageTypeSpy.withArgs('error', jasmine.any(Array)).and.callThrough();
-    const anyConfig = VALID_CONFIG;
 
-    configValidationService.validateConfig(anyConfig);
+    configValidationService.validateConfig(VALID_CONFIG);
     expect(loggerWarningSpy).toHaveBeenCalled();
   });
 

@@ -6,7 +6,7 @@ import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
-import { OpenIdConfiguration } from './../../config/openid-configuration';
+import { OpenIdConfiguration } from '../../config/openid-configuration';
 
 @Injectable()
 export class StandardLoginService {

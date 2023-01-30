@@ -1,6 +1,6 @@
 ﻿import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, Subject, throwError } from 'rxjs';
+import { Observable, Subject, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
@@ -12,7 +12,7 @@ import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { LoggerService } from '../logging/logger.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { ValidationResult } from '../validation/validation-result';
-import { OpenIdConfiguration } from './../config/openid-configuration';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { IFrameService } from './existing-iframe.service';
 
 const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
@@ -109,7 +109,7 @@ export class SilentRenewService {
       return;
     }
 
-    let callback$ = of(null) as Observable<CallbackContext>;
+    let callback$: Observable<CallbackContext>;
     const isCodeFlow = this.flowHelper.isCurrentFlowCodeFlow(config);
 
     if (isCodeFlow) {

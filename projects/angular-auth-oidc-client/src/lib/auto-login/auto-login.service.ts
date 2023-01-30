@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { OpenIdConfiguration } from './../config/openid-configuration';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 
 const STORAGE_KEY = 'redirect';
 
@@ -21,6 +21,7 @@ export class AutoLoginService {
   /**
    * Saves the redirect URL to storage.
    *
+   * @param config The OpenId configuration.
    * @param url The redirect URL to save.
    */
   saveRedirectRoute(config: OpenIdConfiguration, url: string): void {

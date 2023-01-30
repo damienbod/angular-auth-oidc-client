@@ -89,7 +89,7 @@ export class PeriodicallyTokenCheckService {
 
     this.publicEventsService.fireEvent(EventTypes.SilentRenewStarted);
 
-    const refreshEventWithErrorHandler$ = refreshEvent$.pipe(
+    return refreshEvent$.pipe(
       catchError((error) => {
         this.loggerService.logError(config, 'silent renew failed!', error);
         this.publicEventsService.fireEvent(EventTypes.SilentRenewFailed, error);
@@ -98,8 +98,6 @@ export class PeriodicallyTokenCheckService {
         return throwError(() => new Error(error));
       })
     );
-
-    return refreshEventWithErrorHandler$;
   }
 
   private getSmallestRefreshTimeFromConfigs(configsWithSilentRenewEnabled: OpenIdConfiguration[]): number {
@@ -157,26 +155,20 @@ export class PeriodicallyTokenCheckService {
   private shouldStartPeriodicallyCheckForConfig(config: OpenIdConfiguration): boolean {
     const idToken = this.authStateService.getIdToken(config);
     const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning(config);
-    const isCodeFlowinProgress = this.flowsDataService.isCodeFlowInProgress(config);
+    const isCodeFlowInProgress = this.flowsDataService.isCodeFlowInProgress(config);
     const userDataFromStore = this.userService.getUserDataFromStore(config);
 
     this.loggerService.logDebug(
       config,
-      `Checking: silentRenewRunning: ${isSilentRenewRunning}, isCodeFlowInProgress: ${isCodeFlowinProgress} - has idToken: ${!!idToken} - has userData: ${!!userDataFromStore}`
+      `Checking: silentRenewRunning: ${isSilentRenewRunning}, isCodeFlowInProgress: ${isCodeFlowInProgress} - has idToken: ${!!idToken} - has userData: ${!!userDataFromStore}`
     );
 
-    const shouldBeExecuted = !!userDataFromStore && !isSilentRenewRunning && !!idToken && !isCodeFlowinProgress;
+    const shouldBeExecuted = !!userDataFromStore && !isSilentRenewRunning && !!idToken && !isCodeFlowInProgress;
 
     if (!shouldBeExecuted) {
       return false;
     }
 
-    const accessTokenHasExpired = this.authStateService.hasAccessTokenExpiredIfExpiryExists(config);
-
-    if (!accessTokenHasExpired) {
-      return false;
-    }
-
-    return true;
+    return this.authStateService.hasAccessTokenExpiredIfExpiryExists(config);
   }
 }

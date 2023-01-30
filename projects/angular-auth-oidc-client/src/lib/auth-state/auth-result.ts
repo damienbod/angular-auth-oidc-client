@@ -1,6 +1,5 @@
 export interface AuthenticatedResult {
   isAuthenticated: boolean;
-
   allConfigsAuthenticated: ConfigAuthenticatedResult[];
 }
 

@@ -8,8 +8,8 @@ import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { UrlService } from '../../utils/url/url.service';
 import { LoginResponse } from '../login-response';
-import { PopupOptions } from '../popup/popup-options';
-import { PopUpService } from '../popup/popup.service';
+import { PopupOptions } from './popup-options';
+import { PopUpService } from './popup.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
 import { PopupResultReceivedUrl } from './popup-result';
 

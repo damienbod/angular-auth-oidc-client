@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { AuthStateService } from '../auth-state/auth-state.service';
+import { AuthStateService } from './auth-state.service';
 import { AutoLoginService } from '../auto-login/auto-login.service';
 import { CallbackService } from '../callback/callback.service';
 import { PeriodicallyTokenCheckService } from '../callback/periodically-token-check.service';
