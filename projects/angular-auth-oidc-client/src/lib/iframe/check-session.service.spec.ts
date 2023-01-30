@@ -8,7 +8,7 @@ import { PublicEventsService } from '../public-events/public-events.service';
 import { AbstractSecurityStorage } from '../storage/abstract-security-storage';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
-import { DefaultSessionStorageService } from './../storage/default-sessionstorage.service';
+import { DefaultSessionStorageService } from '../storage/default-sessionstorage.service';
 import { CheckSessionService } from './check-session.service';
 import { IFrameService } from './existing-iframe.service';
 

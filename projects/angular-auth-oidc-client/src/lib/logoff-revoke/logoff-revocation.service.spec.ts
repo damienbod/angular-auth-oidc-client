@@ -9,7 +9,7 @@ import { CheckSessionService } from '../iframe/check-session.service';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UrlService } from '../utils/url/url.service';
-import { RedirectService } from './../utils/redirect/redirect.service';
+import { RedirectService } from '../utils/redirect/redirect.service';
 import { LogoffRevocationService } from './logoff-revocation.service';
 
 describe('Logout and Revoke Service', () => {

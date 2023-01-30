@@ -81,11 +81,7 @@ export class LoggerService {
       return false;
     }
 
-    if (logLevel === undefined) {
-      return false;
-    }
-
-    return true;
+    return logLevel !== undefined;
   }
 
   private loggingIsTurnedOff(configuration: OpenIdConfiguration): boolean {

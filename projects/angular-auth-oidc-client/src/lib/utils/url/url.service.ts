@@ -173,9 +173,7 @@ export class UrlService {
 
     const urlParts = revocationEndpoint.split('?');
 
-    const revocationEndpointUrl = urlParts[0];
-
-    return revocationEndpointUrl;
+    return urlParts[0];
   }
 
   createBodyForCodeFlowCodeRequest(
@@ -607,12 +605,10 @@ export class UrlService {
   private createHttpParams(existingParams?: string): HttpParams {
     existingParams = existingParams ?? '';
 
-    const params = new HttpParams({
+    return new HttpParams({
       fromString: existingParams,
       encoder: new UriEncoder(),
     });
-
-    return params;
   }
 
   private isAuth0Endpoint(configuration: OpenIdConfiguration): boolean {

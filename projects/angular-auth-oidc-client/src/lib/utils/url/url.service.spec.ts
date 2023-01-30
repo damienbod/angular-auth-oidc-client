@@ -6,7 +6,7 @@ import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { JwtWindowCryptoService } from '../../validation/jwt-window-crypto.service';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
-import { OpenIdConfiguration } from './../../config/openid-configuration';
+import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { UrlService } from './url.service';
 
 describe('UrlService Tests', () => {

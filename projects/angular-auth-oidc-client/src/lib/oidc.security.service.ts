@@ -134,8 +134,6 @@ export class OidcSecurityService {
    * an error message in case an error happened in an array for each config which was provided
    *
    * @param url The URL to perform the authorization on the behalf of.
-   * @param configId The configId to perform the authorization on the behalf of. If not passed, all of the current
-   * configured ones will be used to check.
    *
    * @returns An array of `LoginResponse` objects containing all information about the logins
    */
@@ -323,7 +321,7 @@ export class OidcSecurityService {
    * only the access token is revoked. Then the logout run.
    *
    * @param configId The configId to perform the action in behalf of. If not passed, the first configs will be taken
-   * @param authOptions The custom options for the request.
+   * @param logoutAuthOptions The custom options for the request.
    *
    * @returns An observable when the action is finished
    */
@@ -342,7 +340,7 @@ export class OidcSecurityService {
    * then only a local logout is performed.
    *
    * @param configId The configId to perform the action in behalf of. If not passed, the first configs will be taken
-   * @param authOptions with custom parameters and/or an custom url handler
+   * @param logoutAuthOptions with custom parameters and/or an custom url handler
    */
   logoff(configId?: string, logoutAuthOptions?: LogoutAuthOptions): Observable<unknown> {
     return this.configurationService

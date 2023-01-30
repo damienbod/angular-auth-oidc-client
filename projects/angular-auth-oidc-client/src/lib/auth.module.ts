@@ -62,7 +62,6 @@ import { TokenValidationService } from './validation/token-validation.service';
 export interface PassedInitialConfig {
   config?: OpenIdConfiguration | OpenIdConfiguration[];
   loader?: Provider;
-  storage?: any;
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type

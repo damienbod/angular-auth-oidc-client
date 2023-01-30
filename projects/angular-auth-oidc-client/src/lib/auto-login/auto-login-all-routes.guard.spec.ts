@@ -7,7 +7,7 @@ import { CheckAuthService } from '../auth-state/check-auth.service';
 import { ConfigurationService } from '../config/config.service';
 import { LoginService } from '../login/login.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { LoginResponse } from './../login/login-response';
+import { LoginResponse } from '../login/login-response';
 import { AutoLoginAllRoutesGuard } from './auto-login-all-routes.guard';
 import { AutoLoginService } from './auto-login.service';
 
