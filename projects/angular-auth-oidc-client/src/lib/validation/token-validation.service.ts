@@ -55,7 +55,7 @@ import { alg2kty, getImportAlg, getVerifyAlg } from './token-validation.helper';
 // access_token C3: The value of at_hash in the ID Token MUST match the value produced in the previous step if at_hash is present
 // in the ID Token.
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class TokenValidationService {
   static refreshTokenNoncePlaceholder = '--RefreshToken--';
 

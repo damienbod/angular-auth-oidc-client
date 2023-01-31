@@ -4,7 +4,7 @@ import { StoragePersistenceService } from '../storage/storage-persistence.servic
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { RandomService } from './random/random.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class FlowsDataService {
   constructor(
     private readonly storagePersistenceService: StoragePersistenceService,

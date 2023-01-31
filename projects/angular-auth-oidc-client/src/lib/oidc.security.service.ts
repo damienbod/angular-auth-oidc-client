@@ -22,7 +22,7 @@ import { UserDataResult } from './user-data/userdata-result';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
 import { UrlService } from './utils/url/url.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class OidcSecurityService {
   /**
    * Provides information about the user after they have logged in.

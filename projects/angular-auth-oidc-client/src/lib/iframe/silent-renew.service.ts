@@ -17,7 +17,7 @@ import { IFrameService } from './existing-iframe.service';
 
 const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class SilentRenewService {
   private readonly refreshSessionWithIFrameCompletedInternal$ = new Subject<CallbackContext>();
 

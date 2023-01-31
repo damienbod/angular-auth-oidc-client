@@ -3,7 +3,7 @@ import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { FlowHelper } from '../../utils/flowHelper/flow-helper.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ResponseTypeValidationService {
   constructor(private readonly loggerService: LoggerService, private readonly flowHelper: FlowHelper) {}
 

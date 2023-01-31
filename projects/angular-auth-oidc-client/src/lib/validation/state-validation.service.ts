@@ -12,7 +12,7 @@ import { StateValidationResult } from './state-validation-result';
 import { TokenValidationService } from './token-validation.service';
 import { ValidationResult } from './validation-result';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class StateValidationService {
   constructor(
     private readonly storagePersistenceService: StoragePersistenceService,

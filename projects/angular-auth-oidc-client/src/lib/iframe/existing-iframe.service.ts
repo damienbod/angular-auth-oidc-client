@@ -3,7 +3,7 @@ import { Inject, Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class IFrameService {
   constructor(@Inject(DOCUMENT) private readonly document: Document, private readonly loggerService: LoggerService) {}
 

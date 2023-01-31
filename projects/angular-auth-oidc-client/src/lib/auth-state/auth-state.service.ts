@@ -13,7 +13,7 @@ import { AuthStateResult } from './auth-state';
 
 const DEFAULT_AUTHRESULT = { isAuthenticated: false, allConfigsAuthenticated: [] };
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AuthStateService {
   private readonly authenticatedInternal$ = new BehaviorSubject<AuthenticatedResult>(DEFAULT_AUTHRESULT);
 

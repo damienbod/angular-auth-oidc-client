@@ -5,7 +5,7 @@ import { LoggerService } from '../../logging/logger.service';
 
 const PARTS_OF_TOKEN = 3;
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class TokenHelperService {
   constructor(private readonly loggerService: LoggerService, @Inject(DOCUMENT) private readonly document: Document) {}
 

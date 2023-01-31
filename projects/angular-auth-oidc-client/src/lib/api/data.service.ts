@@ -6,7 +6,7 @@ import { HttpBaseService } from './http-base.service';
 
 const NGSW_CUSTOM_PARAM = 'ngsw-bypass';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class DataService {
   constructor(private readonly httpClient: HttpBaseService) {}
 

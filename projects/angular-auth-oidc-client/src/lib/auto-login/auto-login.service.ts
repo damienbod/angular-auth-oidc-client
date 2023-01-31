@@ -5,7 +5,7 @@ import { OpenIdConfiguration } from '../config/openid-configuration';
 
 const STORAGE_KEY = 'redirect';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AutoLoginService {
   constructor(private readonly storageService: StoragePersistenceService, private readonly router: Router) {}
 

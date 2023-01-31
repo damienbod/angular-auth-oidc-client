@@ -4,7 +4,7 @@ import { OpenIdConfiguration } from '../openid-configuration';
 import { Level, RuleValidationResult } from './rule';
 import { allRules, allMultipleConfigRules } from './rules';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ConfigValidationService {
   constructor(private readonly loggerService: LoggerService) {}
 

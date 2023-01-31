@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CryptoService } from '../utils/crypto/crypto.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class JwkWindowCryptoService {
   constructor(private readonly cryptoService: CryptoService) {}
 

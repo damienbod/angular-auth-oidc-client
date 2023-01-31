@@ -9,7 +9,7 @@ import { StoragePersistenceService } from '../../storage/storage-persistence.ser
 import { UrlService } from '../../utils/url/url.service';
 import { AuthResult, CallbackContext } from '../callback-context';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class RefreshTokenCallbackHandlerService {
   constructor(
     private readonly urlService: UrlService,

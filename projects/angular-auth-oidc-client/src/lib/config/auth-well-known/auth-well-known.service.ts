@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of,  throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { EventTypes } from '../../public-events/event-types';
 import { PublicEventsService } from '../../public-events/public-events.service';
@@ -8,7 +8,7 @@ import { OpenIdConfiguration } from '../openid-configuration';
 import { AuthWellKnownDataService } from './auth-well-known-data.service';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AuthWellKnownService {
   constructor(
     private readonly dataService: AuthWellKnownDataService,

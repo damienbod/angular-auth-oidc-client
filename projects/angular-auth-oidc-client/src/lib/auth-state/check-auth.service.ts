@@ -18,7 +18,7 @@ import { StoragePersistenceService } from '../storage/storage-persistence.servic
 import { UserService } from '../user-data/user.service';
 import { CurrentUrlService } from '../utils/url/current-url.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CheckAuthService {
   constructor(
     private readonly checkSessionService: CheckSessionService,

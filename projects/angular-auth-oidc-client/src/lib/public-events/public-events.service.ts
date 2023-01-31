@@ -3,7 +3,7 @@ import { Observable, ReplaySubject } from 'rxjs';
 import { EventTypes } from './event-types';
 import { OidcClientNotification } from './notification';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class PublicEventsService {
   private readonly notify = new ReplaySubject<OidcClientNotification<any>>(1);
 

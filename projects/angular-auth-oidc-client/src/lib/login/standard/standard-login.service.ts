@@ -8,7 +8,7 @@ import { UrlService } from '../../utils/url/url.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class StandardLoginService {
   constructor(
     private readonly loggerService: LoggerService,

@@ -9,7 +9,7 @@ import { StoragePersistenceService } from '../../storage/storage-persistence.ser
 import { UrlService } from '../../utils/url/url.service';
 import { ParResponse } from './par-response';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ParService {
   constructor(
     private readonly loggerService: LoggerService,

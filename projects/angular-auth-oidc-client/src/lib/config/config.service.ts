@@ -12,7 +12,7 @@ import { StsConfigLoader } from './loader/config-loader';
 import { OpenIdConfiguration } from './openid-configuration';
 import { ConfigValidationService } from './validation/config-validation.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ConfigurationService {
   private configsInternal: Record<string, OpenIdConfiguration> = {};
 

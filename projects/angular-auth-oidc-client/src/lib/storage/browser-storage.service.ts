@@ -3,7 +3,7 @@ import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class BrowserStorageService {
   constructor(private readonly loggerService: LoggerService, private readonly abstractSecurityStorage: AbstractSecurityStorage) {}
 

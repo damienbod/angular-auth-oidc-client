@@ -16,7 +16,7 @@ import { ResponseTypeValidationService } from '../response-type-validation/respo
 import { ParResponse } from './par-response';
 import { ParService } from './par.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ParLoginService {
   constructor(
     private readonly loggerService: LoggerService,

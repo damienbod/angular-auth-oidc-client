@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ClosestMatchingRouteService {
   getConfigIdForClosestMatchingRoute(route: string, configurations: OpenIdConfiguration[]): ClosestMatchingRouteResult {
     for (const config of configurations) {
