@@ -169,6 +169,7 @@ export class AuthConfigModule {}
 ```
 
 ### Using localstorage instead of default sessionstorage
+
 The angular-auth-oidc-client uses session storage by default that gets cleared whenever you open the website in a new tab, if you want to change it to localstorage then need to provide a different AbstractSecurityStorage.
 
 ```ts
@@ -286,7 +287,7 @@ Indicates that the library should renew the client's tokens after the `token_id`
 - Type: `string`
 - Required: `false`
 
-If you are using the silent renew process and set this parameter, the supplied URL will be used for lightweight silent renew callbacks. See [Silent Renew](12-silent-renew.md).
+If you are using the silent renew process and set this parameter, the supplied URL will be used for lightweight silent renew callbacks. See [Silent Renew](silent-renew.md).
 
 ### `silentRenewTimeoutInSeconds`
 
@@ -457,7 +458,7 @@ Default = _3_
 - Required: `false`
 
 An array of secure urls to which the token should be sent if the interceptor is added to the `HTTP_INTERCEPTORS`. <br/>
-See [Http Interceptor](./10-using-access-tokens.md/#http-interceptor)
+See [Http Interceptor](using-access-tokens.md/#http-interceptor)
 
 ### `usePushedAuthorisationRequests`
 

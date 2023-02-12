@@ -1,41 +1,9 @@
 ---
-sidebar_label: Using Access Tokens
-sidebar_position: 10
+sidebar_label: Http Interceptor
+sidebar_position: 11
 ---
 
-# Using Access Tokens
-
-The access token can be used by calling the `getAccessToken()` method.
-
-## Accessing the access token
-
-You can get the access token by calling the method `getAccessToken()` on the `OidcSecurityService`
-
-```ts
-this.oidcSecurityService.getAccessToken().subscribe(at => ...);
-```
-
-or for a specific config:
-
-```ts
-this.oidcSecurityService.getAccessToken('configId').subscribe(at => ...);
-```
-
-You can then manually use the token within `HttpHeaders` when performing an HTTP request with Angular's `HttpClient`:
-
-```ts
-import { HttpHeaders } from '@angular/common/http';
-
-this.oidcSecurityServices.getAccessToken().subscribe((token) => {
-  const httpOptions = {
-    headers: new HttpHeaders({
-      Authorization: 'Bearer ' + token,
-    }),
-  };
-});
-```
-
-## Http Interceptor
+# Http Interceptor
 
 The `HttpClient` allows you to implement [HTTP interceptors](https://angular.io/guide/http#intercepting-requests-and-responses) to tap into requests and responses. A common use case would be to intercept any outgoing HTTP request and add an authorization header.
 
@@ -78,14 +46,3 @@ If you configured a route to be protected, every child route underneath is prote
 In case you are running multiple configurations all the configured routes over all configurations are collected and compared against the currently requested route. If a match is made, the token for the configuration you added the secure route to is being taken and applied in the Authorization header.
 
 Keep in mind that you always can implement your own interceptor as [described in the Angular documentation](https://angular.io/guide/http#intercepting-requests-and-responses).
-
-## Revoke the access token
-
-Access tokens can be revoked using the `revokeAccessToken()` method. If you provide the access token as a parameter, any access token from the same Security Token Service can be revoked, if the Security Token Service supports the revocation endpoint.
-
-```ts
-revokeAccessToken() {
-  this.oidcSecurityService.revokeAccessToken()
-      .subscribe((result) => console.log(result));
-}
-```
