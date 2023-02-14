@@ -166,7 +166,7 @@ An auth guard subscribes to `isAuthenticated$` before the observable, returned b
 
 ## checkSessionChanged$
 
-The `checkSessionChanged$` observable emits values every time the server comes back with a check session and the value `changed`. If you want to get information about when the `CheckSession` Event has been received, please take a look at the [public events](05-public-events.md).
+The `checkSessionChanged$` observable emits values every time the server comes back with a check session and the value `changed`. If you want to get information about when the `CheckSession` Event has been received, please take a look at the [public events](public-events.md).
 
 ```ts
 this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
@@ -452,7 +452,7 @@ this.oidcSecurityService.getState('configId').subscribe(/*...*/);
 This method must be called when you want to redirect to the authority and sign in the identity. This method takes a `configId` as parameter if you want to use a specific config and it also takes `authOptions` adding `customParams` or `redirectUrl` which can change every time you want to login.
 It also accepts an `urlHandler` which is getting called instead of the redirect.
 
-See also: [Custom parameters](11-custom-parameters.md).
+See also: [Custom parameters](custom-parameters.md).
 
 ```ts
 export interface AuthOptions {
@@ -545,7 +545,7 @@ This method provides the functionality to manually refresh the session at any ti
 
 This method takes `customParams` for this request as well as a `configId` as parameter if you want to use a specific config. If you are running with multiple configs and pass a `configId`, the passed config is taken. If you are running with multiple configs and do not pass a `configId`, the first config is taken. If you are running with a single config, then this config is taken.
 
-See also: [Custom parameters](11-custom-parameters.md)
+See also: [Custom parameters](custom-parameters.md)
 
 The method returns an `Observable<LoginResponse>` containing
 
