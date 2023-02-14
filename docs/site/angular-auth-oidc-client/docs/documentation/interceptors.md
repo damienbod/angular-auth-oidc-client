@@ -9,7 +9,7 @@ The `HttpClient` allows you to implement [HTTP interceptors](https://angular.io/
 
 **Note:** Do not send the access token with requests for which the access token is not intended!
 
-You can configure the routes you want to send a token with in the configuration:
+You can configure the routes you want to send a token within the configuration:
 
 ```ts
 AuthModule.forRoot({
@@ -20,7 +20,7 @@ AuthModule.forRoot({
 }),
 ```
 
-The lib provides an own interceptor implementation which you can register like any other HTTP interceptor:
+The lib provides its own interceptor implementation which you can register like any other HTTP interceptor:
 and use the interceptor the lib provides you
 
 ```ts
