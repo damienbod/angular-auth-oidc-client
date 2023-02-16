@@ -161,6 +161,23 @@ const token = this.oidcSecurityServices.getAccessToken().subscribe((token) => {
 });
 ```
 
+You can use the built in interceptor to add the accesstokens to your request
+
+```ts
+AuthModule.forRoot({
+  config: {
+    // ...
+    secureRoutes: ['https://my-secure-url.com/', 'https://my-second-secure-url.com/'],
+  },
+}),
+```
+
+```ts
+ providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+  ],
+```
+
 ## Versions
 
 Current Version is Version 15.x
