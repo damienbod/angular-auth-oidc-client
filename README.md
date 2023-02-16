@@ -122,7 +122,9 @@ export class AppComponent implements OnInit {
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken, idToken }) => {
+    this.oidcSecurityService.checkAuth().subscribe((loginResult: LoginResult) => {
+      const { isAuthenticated, userData, accessToken, idToken, configId } = loginResult;
+
       /*...*/
     });
   }
