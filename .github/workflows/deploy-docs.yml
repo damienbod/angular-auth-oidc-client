@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 16.13.0
+          node-version: 16.16.0
 
       - name: Installing Dependencies
         run: sudo npm install
@@ -32,7 +32,7 @@ jobs:
         working-directory: docs/site/angular-auth-oidc-client
 
       - name: Building Documentation
-        run: sudo npm run build -- --openssl-legacy-provider
+        run: sudo npm run build
         working-directory: docs/site/angular-auth-oidc-client
 
       - name: Build And Deploy
