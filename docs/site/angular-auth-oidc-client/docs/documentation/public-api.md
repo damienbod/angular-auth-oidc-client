@@ -285,7 +285,7 @@ It returns an `Observable<LoginResponse[]>` containing all information you need 
 ```
 
 ```ts
-this.oidcSecurityService.checkAuthMultiple().subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
+this.oidcSecurityService.checkAuthMultiple().subscribe((responses: LoginResponse[]) => {
   // ...use data
 });
 ```
@@ -295,7 +295,7 @@ You can also pass a `configId` to check for as well as a URL in case you want to
 ```ts
 const url = '...';
 
-this.oidcSecurityService.checkAuthMultiple(url).subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
+this.oidcSecurityService.checkAuthMultiple(url).subscribe((responses: LoginResponse[]) => {
   // ...use data
 });
 ```
