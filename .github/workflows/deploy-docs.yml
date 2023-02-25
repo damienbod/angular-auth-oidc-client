@@ -32,7 +32,7 @@ jobs:
         working-directory: docs/site/angular-auth-oidc-client
 
       - name: Building Documentation
-        run: sudo npm run build
+        run: sudo npm run build -- --openssl-legacy-provider
         working-directory: docs/site/angular-auth-oidc-client
 
       - name: Build And Deploy
