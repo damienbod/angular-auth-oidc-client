@@ -1,5 +1,4 @@
-﻿import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { base64url } from 'rfc4648';
 import { from, Observable, of } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
@@ -66,8 +65,7 @@ export class TokenValidationService {
     private readonly loggerService: LoggerService,
     private readonly jwkExtractor: JwkExtractor,
     private readonly jwkWindowCryptoService: JwkWindowCryptoService,
-    private readonly jwtWindowCryptoService: JwtWindowCryptoService,
-    @Inject(DOCUMENT) private readonly document: Document
+    private readonly jwtWindowCryptoService: JwtWindowCryptoService
   ) {}
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
@@ -369,12 +367,6 @@ export class TokenValidationService {
 
     const signingInput = this.tokenHelperService.getSigningInputFromToken(idToken, true, configuration);
     const rawSignature = this.tokenHelperService.getSignatureFromToken(idToken, true, configuration);
-
-    const agent: string = this.document.defaultView.navigator.userAgent.toLowerCase();
-
-    if (agent.indexOf('firefox') > -1 && key.kty === 'EC') {
-      key.alg = '';
-    }
 
     return from(this.jwkWindowCryptoService.importVerificationKey(key, algorithm)).pipe(
       mergeMap((cryptoKey: CryptoKey) => {
