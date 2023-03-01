@@ -18,7 +18,7 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 
 ## Features
 
-- Code samples for most of the common use cases
+- [Code samples](https://angular-auth-oidc-client.com/docs/samples/) for most of the common use cases
 - Supports schematics via `ng add` support
 - Supports all modern OIDC identity providers
 - Supports OpenID Connect Code Flow with PKCE
@@ -69,11 +69,11 @@ or with yarn
 
 ## Samples
 
-[Explore the Samples here](https://angular-auth-oidc-client.com/docs/samples/samples)
+[Explore the Samples here](https://angular-auth-oidc-client.com/docs/samples/)
 
 ## Quickstart
 
-For the example of the Code Flow. For further examples please check the [Samples](https://angular-auth-oidc-client.com/docs/samples/samples) Section.
+For the example of the Code Flow. For further examples please check the [Samples](https://angular-auth-oidc-client.com/docs/samples/) Section.
 
 > If you have done the installation with the schematics, these modules and files should be available already!
 
