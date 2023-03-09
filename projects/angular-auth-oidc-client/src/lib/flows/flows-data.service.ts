@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { OpenIdConfiguration } from '../config/openid-configuration';
+import { SilentRenewRunning } from './flows.models';
 import { RandomService } from './random/random.service';
 
 @Injectable({ providedIn: 'root' })
@@ -65,35 +66,15 @@ export class FlowsDataService {
   }
 
   isCodeFlowInProgress(configuration: OpenIdConfiguration): boolean {
-    const storageObject = this.getCodeFlowInProgressStorageEntry(configuration);
-
-    if (!storageObject) {
-      return false;
-    }
-
-    return storageObject.state === 'in progress';
+    return this.storagePersistenceService.read('storageCodeFlowInProgress', configuration);
   }
 
   setCodeFlowInProgress(configuration: OpenIdConfiguration): void {
-    const storageObject = {
-      state: 'in progress',
-    };
-
-    this.storagePersistenceService.write('storageCodeFlowInProgress', JSON.stringify(storageObject), configuration);
+    this.storagePersistenceService.write('storageCodeFlowInProgress', true, configuration);
   }
 
   resetCodeFlowInProgress(configuration: OpenIdConfiguration): void {
-    this.storagePersistenceService.write('storageCodeFlowInProgress', '', configuration);
-  }
-
-  private getCodeFlowInProgressStorageEntry(configuration: OpenIdConfiguration): any {
-    const storageEntry = this.storagePersistenceService.read('storageCodeFlowInProgress', configuration);
-
-    if (!storageEntry) {
-      return null;
-    }
-
-    return JSON.parse(storageEntry);
+    this.storagePersistenceService.write('storageCodeFlowInProgress', false, configuration);
   }
 
   isSilentRenewRunning(configuration: OpenIdConfiguration): boolean {
@@ -121,7 +102,7 @@ export class FlowsDataService {
   }
 
   setSilentRenewRunning(configuration: OpenIdConfiguration): void {
-    const storageObject = {
+    const storageObject: SilentRenewRunning = {
       state: 'running',
       dateOfLaunchedProcessUtc: new Date().toISOString(),
     };
@@ -133,7 +114,7 @@ export class FlowsDataService {
     this.storagePersistenceService.write('storageSilentRenewRunning', '', configuration);
   }
 
-  private getSilentRenewRunningStorageEntry(configuration: OpenIdConfiguration): any {
+  private getSilentRenewRunningStorageEntry(configuration: OpenIdConfiguration): SilentRenewRunning {
     const storageEntry = this.storagePersistenceService.read('storageSilentRenewRunning', configuration);
 
     if (!storageEntry) {
