@@ -153,10 +153,13 @@ describe('Flows Data Service', () => {
     });
 
     it('state object does not exist returns false result', () => {
+      // arrange
       spyOn(storagePersistenceService, 'read').withArgs('storageCodeFlowInProgress', { configId: 'configId1' }).and.returnValue(null);
 
+      // act
       const isCodeFlowInProgressResult = service.isCodeFlowInProgress({ configId: 'configId1' });
 
+      // assert
       expect(isCodeFlowInProgressResult).toBeFalse();
     });
   });

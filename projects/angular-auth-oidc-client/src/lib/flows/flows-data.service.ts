@@ -66,7 +66,7 @@ export class FlowsDataService {
   }
 
   isCodeFlowInProgress(configuration: OpenIdConfiguration): boolean {
-    return this.storagePersistenceService.read('storageCodeFlowInProgress', configuration);
+    return !!this.storagePersistenceService.read('storageCodeFlowInProgress', configuration);
   }
 
   setCodeFlowInProgress(configuration: OpenIdConfiguration): void {
