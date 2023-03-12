@@ -1,5 +1,6 @@
 ---
 sidebar_label: Configuration
+sidebar_collapsed: false
 sidebar_position: 2
 ---
 
