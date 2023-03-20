@@ -7,6 +7,7 @@ import { CallbackService } from '../callback/callback.service';
 import { PeriodicallyTokenCheckService } from '../callback/periodically-token-check.service';
 import { RefreshSessionService } from '../callback/refresh-session.service';
 import { StsConfigLoader, StsConfigStaticLoader } from '../config/loader/config-loader';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
@@ -146,7 +147,12 @@ describe('CheckAuthService', () => {
     it('returns null and sendMessageToMainWindow if currently in a popup', waitForAsync(() => {
       const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
 
-      spyOn(popUpService, 'currentWindowIsPopUp').and.returnValue(true);
+      spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(true);
+      spyOnProperty(popUpService as any, 'windowInternal').and.returnValue({ opener: {} as Window });
+      spyOn(storagePersistenceService, 'read').and.returnValue(null);
+      const config = {} as OpenIdConfiguration;
+
+      spyOn(popUpService, 'isCurrentlyInPopup').and.returnValue(true);
       const popupSpy = spyOn(popUpService, 'sendMessageToMainWindow');
 
       checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
