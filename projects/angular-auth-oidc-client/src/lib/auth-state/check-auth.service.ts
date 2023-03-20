@@ -105,7 +105,7 @@ export class CheckAuthService {
 
     this.loggerService.logDebug(config, `Working with config '${configId}' using ${authority}`);
 
-    if (this.popupService.currentWindowIsPopUp()) {
+    if (this.popupService.isCurrentlyInPopup(config)) {
       this.popupService.sendMessageToMainWindow(currentUrl);
 
       return of(null);

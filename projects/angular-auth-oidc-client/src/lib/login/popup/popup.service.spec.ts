@@ -52,55 +52,46 @@ describe('PopUpService', () => {
     expect(popUpService).toBeTruthy();
   });
 
-  describe('currentWindowIsPopUp', () => {
-    it('returns false if window has no opener', () => {
-      // arrange
-      spyOnProperty(popUpService as any, 'windowInternal').and.returnValue({ opener: null });
-
-      // act
-      const result = popUpService.currentWindowIsPopUp();
-
-      // assert
-      expect(result).toBe(false);
-    });
-  });
-
   describe('isCurrentlyInPopup', () => {
-    it('returns true if currentWindowIsPopUp', () => {
-      // arrange
-      spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(true);
-      spyOn(popUpService as any, 'currentWindowIsPopUp').and.returnValue(true);
-      spyOn(storagePersistenceService, 'read').and.returnValue(null);
-      const config = {} as OpenIdConfiguration;
-
-      // act
-      const result = popUpService.isCurrentlyInPopup(config);
-
-      // assert
-      expect(result).toBe(true);
-    });
-
-    it('returns true if mainWindowHasPopupOpen', () => {
-      // arrange
-      spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(true);
-      spyOn(storagePersistenceService, 'read').and.returnValue('some-thing');
-      const config = {} as OpenIdConfiguration;
-
-      // act
-      const result = popUpService.isCurrentlyInPopup(config);
-
-      // assert
-      expect(result).toBe(true);
-    });
-
     it('returns false if can not access Session Storage', () => {
       // arrange
+      spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(false);
+      spyOnProperty(popUpService as any, 'windowInternal').and.returnValue({ opener: {} as Window });
+      spyOn(storagePersistenceService, 'read').and.returnValue({ popupauth: true });
+      const config = {} as OpenIdConfiguration;
 
       // act
-      const result = popUpService.isCurrentlyInPopup(null);
+      const result = popUpService.isCurrentlyInPopup(config);
 
       // assert
       expect(result).toBe(false);
+    });
+
+    it('returns false if window has no opener', () => {
+      // arrange
+      spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(true);
+      spyOn(storagePersistenceService, 'read').and.returnValue({ popupauth: true });
+      const config = {} as OpenIdConfiguration;
+
+      // act
+      const result = popUpService.isCurrentlyInPopup(config);
+
+      // assert
+      expect(result).toBe(false);
+    });
+
+    it('returns true if isCurrentlyInPopup', () => {
+      // arrange
+      spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(true);
+      spyOnProperty(popUpService as any, 'windowInternal').and.returnValue({ opener: {} as Window });
+      spyOn(storagePersistenceService, 'read').and.returnValue({ popupauth: true });
+      const config = {} as OpenIdConfiguration;
+
+      // act
+      const result = popUpService.isCurrentlyInPopup(config);
+
+      // assert
+      expect(result).toBe(true);
     });
   });
 

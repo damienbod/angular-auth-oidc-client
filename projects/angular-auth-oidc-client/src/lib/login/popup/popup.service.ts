@@ -31,16 +31,11 @@ export class PopUpService {
     private readonly storagePersistenceService: StoragePersistenceService
   ) {}
 
-  currentWindowIsPopUp(): boolean {
-    return !!this.windowInternal.opener && this.windowInternal.opener !== this.windowInternal;
-  }
-
   isCurrentlyInPopup(config: OpenIdConfiguration): boolean {
     if (this.canAccessSessionStorage()) {
-      const mainWindowHasPopupOpen = this.mainWindowHasPopupOpen(config);
-      const currentWindowIsPopup = this.currentWindowIsPopUp();
+      const popup = this.storagePersistenceService.read(this.STORAGE_IDENTIFIER, config);
 
-      return mainWindowHasPopupOpen || currentWindowIsPopup;
+      return !!this.windowInternal.opener && this.windowInternal.opener !== this.windowInternal && !!popup;
     }
 
     return false;
@@ -117,10 +112,6 @@ export class PopUpService {
     return Object.entries(options)
       .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
       .join(',');
-  }
-
-  private mainWindowHasPopupOpen(config: OpenIdConfiguration): boolean {
-    return !!this.storagePersistenceService.read(this.STORAGE_IDENTIFIER, config);
   }
 
   private canAccessSessionStorage(): boolean {
