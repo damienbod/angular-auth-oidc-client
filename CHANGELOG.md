@@ -1,5 +1,20 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2023-04-15 15.0.4
+
+- isCurrentlyInPopup will check for opener and session storage 
+ - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1719)
+- Expand configuration per default
+ - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1713)
+- Move code storage values to store to simple boolean 
+ - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1710)
+- Bugfix: Library fails on Firefox REOPEN #1621
+ - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1704)
+- added localstorage service. refactored missed jsdocs + fixed imports
+ - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1666)
+- adding provided in root to services
+ - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1665)
+ 
 ### 2023-01-23 15.0.3
 
 - fix(refreshSession): fix refreshSessionWithRefreshTokens
