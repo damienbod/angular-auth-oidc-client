@@ -153,7 +153,7 @@ export class UserService {
       return false;
     }
 
-    if ((idTokenSub as string) !== (userDataSub as string)) {
+    if ((idTokenSub.toString()) !== (userDataSub.toString())) {
       this.loggerService.logDebug(currentConfiguration, 'validateUserDataSubIdToken failed', idTokenSub, userDataSub);
 
       return false;
