@@ -1,5 +1,10 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2023-05-05 15.0.5
+
+- Bugfix id token expire check
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1751)
+
 ### 2023-04-15 15.0.4
 
 - isCurrentlyInPopup will check for opener and session storage 
