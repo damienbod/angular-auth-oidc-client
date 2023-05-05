@@ -169,6 +169,9 @@ export class PeriodicallyTokenCheckService {
       return false;
     }
 
-    return this.authStateService.hasAccessTokenExpiredIfExpiryExists(config);
+    let idTokenExpired = this.authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled(config);
+    let accessTokenExpired = this.authStateService.hasAccessTokenExpiredIfExpiryExists(config);
+
+    return idTokenExpired || accessTokenExpired;
   }
 }
