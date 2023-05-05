@@ -10,6 +10,7 @@ import { LoginService } from '../login/login.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { AutoLoginPartialRoutesGuard } from './auto-login-partial-routes.guard';
 import { AutoLoginService } from './auto-login.service';
+import { PeriodicallyTokenCheckService } from "../callback/periodically-token-check.service";
 
 describe(`AutoLoginPartialRoutesGuard`, () => {
   let autoLoginPartialRoutesGuard: AutoLoginPartialRoutesGuard;
@@ -18,6 +19,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
   let storagePersistenceService: StoragePersistenceService;
   let configurationService: ConfigurationService;
   let autoLoginService: AutoLoginService;
+  let periodicallyTokenCheckService: PeriodicallyTokenCheckService;
   let router: Router;
 
   beforeEach(() => {
@@ -42,6 +44,10 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           provide: ConfigurationService,
           useClass: mockClass(ConfigurationService),
         },
+        {
+          provide: PeriodicallyTokenCheckService,
+          useClass: mockClass(PeriodicallyTokenCheckService)
+        }
       ],
     });
   });
@@ -56,6 +62,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
 
     autoLoginPartialRoutesGuard = TestBed.inject(AutoLoginPartialRoutesGuard);
     autoLoginService = TestBed.inject(AutoLoginService);
+    periodicallyTokenCheckService = TestBed.inject(PeriodicallyTokenCheckService);
     router = TestBed.inject(Router);
   });
 
@@ -96,6 +103,18 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
           expect(loginSpy).not.toHaveBeenCalled();
           expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
+        });
+      })
+    );
+
+    it(
+      'should call `startTokenValidationPeriodically` if authenticated already',
+      waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+        const startTokenValidationPeriodicallySpy = spyOn(periodicallyTokenCheckService, 'startTokenValidationPeriodically');
+
+        autoLoginPartialRoutesGuard.canActivate(null, { url: 'some-url1' } as RouterStateSnapshot).subscribe(() => {
+          of(expect(startTokenValidationPeriodicallySpy).toHaveBeenCalled());
         });
       })
     );
