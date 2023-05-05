@@ -10,6 +10,8 @@ import { LoginService } from '../login/login.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { AutoLoginPartialRoutesGuard } from './auto-login-partial-routes.guard';
 import { AutoLoginService } from './auto-login.service';
+import { PeriodicallyTokenCheckService } from "../callback/periodically-token-check.service";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
 
 describe(`AutoLoginPartialRoutesGuard`, () => {
   let autoLoginPartialRoutesGuard: AutoLoginPartialRoutesGuard;
@@ -18,11 +20,12 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
   let storagePersistenceService: StoragePersistenceService;
   let configurationService: ConfigurationService;
   let autoLoginService: AutoLoginService;
+  let periodicallyTokenCheckService: PeriodicallyTokenCheckService;
   let router: Router;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
         AutoLoginService,
         { provide: AuthStateService, useClass: mockClass(AuthStateService) },
@@ -42,17 +45,24 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           provide: ConfigurationService,
           useClass: mockClass(ConfigurationService),
         },
+        {
+          provide: PeriodicallyTokenCheckService,
+          useClass: PeriodicallyTokenCheckService
+        }
       ],
     });
   });
 
   beforeEach(() => {
+    const config = { configId: 'configId1' };
+
     authStateService = TestBed.inject(AuthStateService);
     loginService = TestBed.inject(LoginService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
     configurationService = TestBed.inject(ConfigurationService);
+    periodicallyTokenCheckService = TestBed.inject(PeriodicallyTokenCheckService);
 
-    spyOn(configurationService, 'getOpenIDConfiguration').and.returnValue(of({ configId: 'configId1' }));
+    spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(of({ allConfigs: [config], currentConfig: config }));
 
     autoLoginPartialRoutesGuard = TestBed.inject(AutoLoginPartialRoutesGuard);
     autoLoginService = TestBed.inject(AutoLoginService);
@@ -74,12 +84,14 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(false);
         const checkSavedRedirectRouteAndNavigateSpy = spyOn(autoLoginService, 'checkSavedRedirectRouteAndNavigate');
         const saveRedirectRouteSpy = spyOn(autoLoginService, 'saveRedirectRoute');
+        const startTokenValidationPeriodicallySpy = spyOn(periodicallyTokenCheckService, 'startTokenValidationPeriodically');
         const loginSpy = spyOn(loginService, 'login');
 
         autoLoginPartialRoutesGuard.canActivate(null, { url: 'some-url1' } as RouterStateSnapshot).subscribe(() => {
           expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'some-url1');
           expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
           expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
+          expect(startTokenValidationPeriodicallySpy).not.toHaveBeenCalled();
         });
       })
     );
@@ -96,6 +108,18 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
           expect(loginSpy).not.toHaveBeenCalled();
           expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
+        });
+      })
+    );
+
+    it(
+      'should call `startTokenValidationPeriodically` if authenticated already',
+      waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
+        const startTokenValidationPeriodicallySpy = spyOn(periodicallyTokenCheckService, 'startTokenValidationPeriodically');
+
+        autoLoginPartialRoutesGuard.canActivate(null, { url: 'some-url1' } as RouterStateSnapshot).subscribe(() => {
+          expect(startTokenValidationPeriodicallySpy).toHaveBeenCalled();
         });
       })
     );

@@ -6,6 +6,7 @@ import { AuthStateService } from '../auth-state/auth-state.service';
 import { ConfigurationService } from '../config/config.service';
 import { LoginService } from '../login/login.service';
 import { AutoLoginService } from './auto-login.service';
+import { PeriodicallyTokenCheckService } from "../callback/periodically-token-check.service";
 
 @Injectable({ providedIn: 'root' })
 export class AutoLoginPartialRoutesGuard implements CanActivate, CanActivateChild, CanLoad {
@@ -14,6 +15,7 @@ export class AutoLoginPartialRoutesGuard implements CanActivate, CanActivateChil
     private readonly authStateService: AuthStateService,
     private readonly loginService: LoginService,
     private readonly configurationService: ConfigurationService,
+    private readonly periodicallyTokenCheckService: PeriodicallyTokenCheckService,
     private readonly router: Router
   ) {}
 
@@ -29,18 +31,20 @@ export class AutoLoginPartialRoutesGuard implements CanActivate, CanActivateChil
     return this.checkAuth(state.url);
   }
 
-  private checkAuth(url: string): Observable<boolean> {
-    return this.configurationService.getOpenIDConfiguration().pipe(
-      map((configuration) => {
-        const isAuthenticated = this.authStateService.areAuthStorageTokensValid(configuration);
+  private checkAuth(url: string): Observable<boolean>
+  {
+    return this.configurationService.getOpenIDConfigurations().pipe(
+      map(({allConfigs, currentConfig}) => {
+        const isAuthenticated = this.authStateService.areAuthStorageTokensValid(currentConfig);
 
         if (isAuthenticated) {
-          this.autoLoginService.checkSavedRedirectRouteAndNavigate(configuration);
+          this.autoLoginService.checkSavedRedirectRouteAndNavigate(currentConfig);
+          this.periodicallyTokenCheckService.startTokenValidationPeriodically(allConfigs, currentConfig);
         }
 
         if (!isAuthenticated) {
-          this.autoLoginService.saveRedirectRoute(configuration, url);
-          this.loginService.login(configuration);
+          this.autoLoginService.saveRedirectRoute(currentConfig, url);
+          this.loginService.login(currentConfig);
         }
 
         return isAuthenticated;
