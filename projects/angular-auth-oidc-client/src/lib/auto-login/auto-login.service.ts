@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
+import { StoragePersistenceService } from '../storage/storage-persistence.service';
 
 const STORAGE_KEY = 'redirect';
 

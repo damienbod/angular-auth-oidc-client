@@ -11,7 +11,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
         logLevel: LogLevel.Debug,
         historyCleanupOff: true,
         authority: 'https://offeringsolutions-sts.azurewebsites.net',
-        redirectUrl: window.location.origin,
+        redirectUrl: `${window.location.origin}/callback`,
         postLogoutRedirectUri: window.location.origin,
         clientId: 'angularCodeRefreshTokens',
         scope: 'openid profile email offline_access',
