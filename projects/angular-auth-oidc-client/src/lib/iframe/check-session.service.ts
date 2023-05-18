@@ -8,13 +8,14 @@ import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { IFrameService } from './existing-iframe.service';
+import { OnDestroy } from '@angular/core';
 
 const IFRAME_FOR_CHECK_SESSION_IDENTIFIER = 'myiFrameForCheckSession';
 
 // http://openid.net/specs/openid-connect-session-1_0-ID4.html
 
 @Injectable({ providedIn: 'root' })
-export class CheckSessionService {
+export class CheckSessionService implements OnDestroy {
   private checkSessionReceived = false;
 
   private scheduledHeartBeatRunning: any;
@@ -29,6 +30,8 @@ export class CheckSessionService {
 
   private readonly checkSessionChangedInternal$ = new BehaviorSubject<boolean>(false);
 
+  private iframeMessageEventListener: any;
+
   get checkSessionChanged$(): Observable<boolean> {
     return this.checkSessionChangedInternal$.asObservable();
   }
@@ -41,6 +44,11 @@ export class CheckSessionService {
     private readonly zone: NgZone,
     @Inject(DOCUMENT) private readonly document: Document
   ) {}
+
+  ngOnDestroy(): void {
+    this.stop();
+    this.document.defaultView.removeEventListener('message', this.iframeMessageEventListener, false)
+  }
 
   isCheckSessionConfigured(configuration: OpenIdConfiguration): boolean {
     const { startCheckSession } = configuration;
@@ -91,6 +99,11 @@ export class CheckSessionService {
     }
 
     const existingIframe = this.getOrCreateIframe(configuration);
+
+    // https://www.w3.org/TR/2000/REC-DOM-Level-2-Events-20001113/events.html#Events-EventTarget-addEventListener
+    // If multiple identical EventListeners are registered on the same EventTarget with the same parameters the duplicate instances are discarded. They do not cause the EventListener to be called twice and since they are discarded they do not need to be removed with the removeEventListener method.
+    // this is done even if iframe exists for HMR to work, since iframe exists on service init
+    this.bindMessageEventToIframe(configuration);
     const checkSessionIframe = authWellKnownEndPoints.checkSessionIframe;
 
     if (checkSessionIframe) {
@@ -192,22 +205,11 @@ export class CheckSessionService {
   }
 
   private bindMessageEventToIframe(configuration: OpenIdConfiguration): void {
-    const iframeMessageEvent = this.messageHandler.bind(this, configuration);
-
-    this.document.defaultView.addEventListener('message', iframeMessageEvent, false);
+    this.iframeMessageEventListener = this.messageHandler.bind(this, configuration);
+    this.document.defaultView.addEventListener('message', this.iframeMessageEventListener, false);
   }
 
   private getOrCreateIframe(configuration: OpenIdConfiguration): HTMLIFrameElement {
-    const existingIframe = this.getExistingIframe();
-
-    if (!existingIframe) {
-      const frame = this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_CHECK_SESSION_IDENTIFIER, configuration);
-
-      this.bindMessageEventToIframe(configuration);
-
-      return frame;
-    }
-
-    return existingIframe;
+    return this.getExistingIframe() || this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_CHECK_SESSION_IDENTIFIER, configuration);
   }
 }

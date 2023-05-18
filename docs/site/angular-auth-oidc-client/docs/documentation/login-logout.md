@@ -26,10 +26,7 @@ In case you have multiple configs you can pass the `configId` parameter as the f
 
 ```ts
 login() {
-  this.oidcSecurityService.authorize('configId')
-    .subscribe(({ isAuthenticated, userData, idToken, accessToken, errorMessage }) => {
-      // ...
-    });
+  this.oidcSecurityService.authorize('configId');
 }
 ```
 
@@ -55,10 +52,7 @@ login() {
 
   const configIdOrNull = // ...
 
-  this.oidcSecurityService.authorize(configIdOrNull, authOptions)
-    .subscribe(({ isAuthenticated, userData, idToken, accessToken, errorMessage }) => {
-      // ...
-    });
+  this.oidcSecurityService.authorize(configIdOrNull, authOptions);
 }
 
 ```

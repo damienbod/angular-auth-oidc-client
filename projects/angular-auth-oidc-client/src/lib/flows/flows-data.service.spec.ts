@@ -143,11 +143,7 @@ describe('Flows Data Service', () => {
 
       jasmine.clock().mockDate(baseTime);
 
-      const storageObject = {
-        state: 'in progress',
-      };
-
-      spyOn(storagePersistenceService, 'read').withArgs('storageCodeFlowInProgress', config).and.returnValue(JSON.stringify(storageObject));
+      spyOn(storagePersistenceService, 'read').withArgs('storageCodeFlowInProgress', config).and.returnValue(true);
       const spyWrite = spyOn(storagePersistenceService, 'write');
 
       const isCodeFlowInProgressResult = service.isCodeFlowInProgress(config);
@@ -157,10 +153,13 @@ describe('Flows Data Service', () => {
     });
 
     it('state object does not exist returns false result', () => {
+      // arrange
       spyOn(storagePersistenceService, 'read').withArgs('storageCodeFlowInProgress', { configId: 'configId1' }).and.returnValue(null);
 
+      // act
       const isCodeFlowInProgressResult = service.isCodeFlowInProgress({ configId: 'configId1' });
 
+      // assert
       expect(isCodeFlowInProgressResult).toBeFalse();
     });
   });
@@ -173,23 +172,19 @@ describe('Flows Data Service', () => {
 
       jasmine.clock().mockDate(baseTime);
 
-      const storageObject = {
-        state: 'in progress',
-      };
-
       const spy = spyOn(storagePersistenceService, 'write');
 
       service.setCodeFlowInProgress({ configId: 'configId1' });
-      expect(spy).toHaveBeenCalledOnceWith('storageCodeFlowInProgress', JSON.stringify(storageObject), { configId: 'configId1' });
+      expect(spy).toHaveBeenCalledOnceWith('storageCodeFlowInProgress', true, { configId: 'configId1' });
     });
   });
 
   describe('resetCodeFlowInProgress', () => {
-    it('set resetCodeFlowInProgress to empty string when called', () => {
+    it('set resetCodeFlowInProgress to false when called', () => {
       const spy = spyOn(storagePersistenceService, 'write');
 
       service.resetCodeFlowInProgress({ configId: 'configId1' });
-      expect(spy).toHaveBeenCalledOnceWith('storageCodeFlowInProgress', '', { configId: 'configId1' });
+      expect(spy).toHaveBeenCalledOnceWith('storageCodeFlowInProgress', false, { configId: 'configId1' });
     });
   });
 

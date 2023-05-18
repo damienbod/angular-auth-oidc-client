@@ -18,7 +18,7 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 
 ## Features
 
-- Code samples for most of the common use cases
+- [Code samples](https://angular-auth-oidc-client.com/docs/samples/) for most of the common use cases
 - Supports schematics via `ng add` support
 - Supports all modern OIDC identity providers
 - Supports OpenID Connect Code Flow with PKCE
@@ -69,11 +69,11 @@ or with yarn
 
 ## Samples
 
-[Explore the Samples here](https://angular-auth-oidc-client.com/docs/samples/samples)
+[Explore the Samples here](https://angular-auth-oidc-client.com/docs/samples/)
 
 ## Quickstart
 
-For the example of the Code Flow. For further examples please check the [Samples](https://angular-auth-oidc-client.com/docs/samples/samples) Section.
+For the example of the Code Flow. For further examples please check the [Samples](https://angular-auth-oidc-client.com/docs/samples/) Section.
 
 > If you have done the installation with the schematics, these modules and files should be available already!
 
@@ -122,7 +122,9 @@ export class AppComponent implements OnInit {
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken, idToken }) => {
+    this.oidcSecurityService.checkAuth().subscribe((loginResponse: LoginResponse) => {
+      const { isAuthenticated, userData, accessToken, idToken, configId } = loginResponse;
+
       /*...*/
     });
   }
@@ -157,6 +159,23 @@ const token = this.oidcSecurityServices.getAccessToken().subscribe((token) => {
     }),
   };
 });
+```
+
+You can use the built in interceptor to add the accesstokens to your request
+
+```ts
+AuthModule.forRoot({
+  config: {
+    // ...
+    secureRoutes: ['https://my-secure-url.com/', 'https://my-second-secure-url.com/'],
+  },
+}),
+```
+
+```ts
+ providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+  ],
 ```
 
 ## Versions

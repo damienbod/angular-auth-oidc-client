@@ -146,7 +146,11 @@ describe('CheckAuthService', () => {
     it('returns null and sendMessageToMainWindow if currently in a popup', waitForAsync(() => {
       const allConfigs = [{ configId: 'configId1', authority: 'some-authority' }];
 
-      spyOn(popUpService, 'currentWindowIsPopUp').and.returnValue(true);
+      spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(true);
+      spyOnProperty(popUpService as any, 'windowInternal').and.returnValue({ opener: {} as Window });
+      spyOn(storagePersistenceService, 'read').and.returnValue(null);
+
+      spyOn(popUpService, 'isCurrentlyInPopup').and.returnValue(true);
       const popupSpy = spyOn(popUpService, 'sendMessageToMainWindow');
 
       checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe((result) => {
