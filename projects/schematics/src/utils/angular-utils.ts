@@ -50,7 +50,7 @@ export function getDefaultProjectName(tree: Tree) {
   const workspace = getAngularWorkspace(tree);
   const allProjects = Object.keys(workspace.projects);
 
-  return workspace.defaultProject || allProjects[0];
+  return allProjects[0];
 }
 
 export function getAngularJsonContent(tree: Tree) {

@@ -1,6 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { CryptoService } from '../utils/crypto/crypto.service';
-import { JwkExtractor } from './jwk.extractor';
+import {
+  JwkExtractor,
+  JwkExtractorInvalidArgumentError,
+  JwkExtractorNoMatchingKeysError,
+  JwkExtractorSeveralMatchingKeysError,
+} from './jwk.extractor';
 
 describe('JwkExtractor', () => {
   let service: JwkExtractor;
@@ -71,7 +76,7 @@ describe('JwkExtractor', () => {
     n: 'wq0vJv4Xl2xSQTN75_N4JeFHlHH80PytypJqyNrhWIp1P9Ur4-5QSiS8BI8PYSh0dQy4NMoj9YMRcyge3y81uCCwxouePiAGc0xPy6QkAOiinvV3KJEMtbppicOvZEzMXb3EqRM-9Twxbp2hhBAPSAhyL79Rwy4JuIQ6imaqL0NIEGv8_BOe_twMPOLGTJhepDO6kDs6O0qlLgPRHQVuKAz3afVby0C2myDLpo5YaI66arU9VXXGQtIp8MhBY9KbsGaYskejSWhSBOcwdtYMEo5rXWGGVnrHiSqq8mm-sVXLQBe5xPFBs4IQ_Gz4nspr05LEEbsHSwFyGq5D77XPxGUPDCq5ZVvON0yBizaHcJ-KA0Lw6uXtOH9-YyVGuaBynkrQEo3pP2iy1uWt-TiQPb8PMsCAdWZP-6R0QKHtjds9HmjIkgFTJSTIeETjNck_bB4ud79gZT-INikjPFTTeyQYk2jqxEJanVe3k0i_1vpskRpknJ7F2vTL45LAQkjWvczjWmHxGA5D4-1msuylXpY8Y4WxnUq6dRTEN29IRVCil9Mfp6JMsquFGTvJO0-Ffl0_suMZZl3uXNt23E9vGreByalWHivYmfpIor5Q5JaFKekRVV-U1KDBaeQQaHp_VqliUKImdUE9-GXNOIaBMjRvfy0nxsRe_q_dD6jc_GU',
     e: 'AQAB',
   } as JsonWebKey;
-  let keys: JsonWebKey[] = [key1, key2, key3, key4, key5, key6, key7, key8, key9];
+  const keys: JsonWebKey[] = [key1, key2, key3, key4, key5, key6, key7, key8, key9];
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -92,19 +97,19 @@ describe('JwkExtractor', () => {
     it('throws error if no keys are present in array', () => {
       expect(() => {
         service.extractJwk([]);
-      }).toThrow(JwkExtractor.InvalidArgumentError);
+      }).toThrow(JwkExtractorInvalidArgumentError);
     });
 
     it('throws error if spec.kid is present, but no key was matching', () => {
       expect(() => {
         service.extractJwk(keys, { kid: 'doot' });
-      }).toThrow(JwkExtractor.NoMatchingKeysError);
+      }).toThrow(JwkExtractorNoMatchingKeysError);
     });
 
     it('throws error if spec.use is present, but no key was matching', () => {
       expect(() => {
         service.extractJwk(keys, { use: 'blorp' });
-      }).toThrow(JwkExtractor.NoMatchingKeysError);
+      }).toThrow(JwkExtractorNoMatchingKeysError);
     });
 
     it('does not throw error if no key is matching when throwOnEmpty is false', () => {
@@ -116,7 +121,7 @@ describe('JwkExtractor', () => {
     it('throws error if multiple keys are present, and spec is not present', () => {
       expect(() => {
         service.extractJwk(keys);
-      }).toThrow(JwkExtractor.SeveralMatchingKeysError);
+      }).toThrow(JwkExtractorSeveralMatchingKeysError);
     });
 
     it('returns array of keys matching spec.kid', () => {

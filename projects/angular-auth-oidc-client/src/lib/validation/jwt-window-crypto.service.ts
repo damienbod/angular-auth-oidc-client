@@ -14,7 +14,7 @@ export class JwtWindowCryptoService {
   generateAtHash(accessToken: string, algorithm: string): Observable<string> {
     return this.calcHash(accessToken, algorithm).pipe(
       map((tokenHash) => {
-        let substr: string = tokenHash.substr(0, tokenHash.length / 2);
+        const substr: string = tokenHash.substr(0, tokenHash.length / 2);
         const tokenHashBase64: string = btoa(substr);
 
         return tokenHashBase64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
@@ -37,7 +37,7 @@ export class JwtWindowCryptoService {
   private toHashString(byteArray: number[]): string {
     let result = '';
 
-    for (let e of byteArray) {
+    for (const e of byteArray) {
       result += String.fromCharCode(e);
     }
 

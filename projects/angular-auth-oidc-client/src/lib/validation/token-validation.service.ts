@@ -332,9 +332,9 @@ export class TokenValidationService {
     }
 
     const kid: string = headerData.kid;
-    let alg: string = headerData.alg;
+    const alg: string = headerData.alg;
 
-    let keys: JsonWebKey[] = jwtkeys.keys;
+    const keys: JsonWebKey[] = jwtkeys.keys;
     let foundKeys: JsonWebKey[];
     let key: JsonWebKey;
 

@@ -28,7 +28,7 @@ export class PeriodicallyTokenCheckService {
     private readonly authStateService: AuthStateService,
     private readonly refreshSessionIframeService: RefreshSessionIframeService,
     private readonly refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService,
-    private intervalService: IntervalService,
+    private readonly intervalService: IntervalService,
     private readonly storagePersistenceService: StoragePersistenceService,
     private readonly publicEventsService: PublicEventsService,
     private readonly configurationService: ConfigurationService
