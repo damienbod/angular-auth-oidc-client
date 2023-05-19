@@ -4,6 +4,7 @@ import { delay } from 'rxjs/operators';
 import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.service';
+import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
@@ -170,7 +171,7 @@ describe('RefreshSessionService ', () => {
       spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
       spyOnProperty(silentRenewService, 'refreshSessionWithIFrameCompleted$').and.returnValue(
-        of({ authResult: { id_token: 'some-id_token', access_token: 'some-access_token' } })
+        of({ authResult: { id_token: 'some-id_token', access_token: 'some-access_token' } } as CallbackContext)
       );
       const allConfigs = [
         {
@@ -290,7 +291,7 @@ describe('RefreshSessionService ', () => {
         spyOn(flowHelper, 'isCurrentFlowCodeFlowWithRefreshTokens').and.returnValue(false);
         spyOn(refreshSessionService as any, 'startRefreshSession').and.returnValue(of(null));
         spyOnProperty(silentRenewService, 'refreshSessionWithIFrameCompleted$').and.returnValue(
-          of({ authResult: { id_token: 'some-id_token', access_token: 'some-access_token' } })
+          of({ authResult: { id_token: 'some-id_token', access_token: 'some-access_token' } } as CallbackContext)
         );
         const spyInsideMap = spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(true);
 
