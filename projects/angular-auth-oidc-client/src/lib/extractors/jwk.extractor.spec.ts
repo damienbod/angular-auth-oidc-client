@@ -1,6 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { CryptoService } from '../utils/crypto/crypto.service';
-import { JwkExtractor } from './jwk.extractor';
+import {
+  JwkExtractor,
+  JwkExtractorInvalidArgumentError,
+  JwkExtractorNoMatchingKeysError,
+  JwkExtractorSeveralMatchingKeysError,
+} from './jwk.extractor';
 
 describe('JwkExtractor', () => {
   let service: JwkExtractor;
@@ -92,19 +97,19 @@ describe('JwkExtractor', () => {
     it('throws error if no keys are present in array', () => {
       expect(() => {
         service.extractJwk([]);
-      }).toThrow(JwkExtractor.InvalidArgumentError);
+      }).toThrow(JwkExtractorInvalidArgumentError);
     });
 
     it('throws error if spec.kid is present, but no key was matching', () => {
       expect(() => {
         service.extractJwk(keys, { kid: 'doot' });
-      }).toThrow(JwkExtractor.NoMatchingKeysError);
+      }).toThrow(JwkExtractorNoMatchingKeysError);
     });
 
     it('throws error if spec.use is present, but no key was matching', () => {
       expect(() => {
         service.extractJwk(keys, { use: 'blorp' });
-      }).toThrow(JwkExtractor.NoMatchingKeysError);
+      }).toThrow(JwkExtractorNoMatchingKeysError);
     });
 
     it('does not throw error if no key is matching when throwOnEmpty is false', () => {
@@ -116,7 +121,7 @@ describe('JwkExtractor', () => {
     it('throws error if multiple keys are present, and spec is not present', () => {
       expect(() => {
         service.extractJwk(keys);
-      }).toThrow(JwkExtractor.SeveralMatchingKeysError);
+      }).toThrow(JwkExtractorSeveralMatchingKeysError);
     });
 
     it('returns array of keys matching spec.kid', () => {
