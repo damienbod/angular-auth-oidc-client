@@ -3,7 +3,7 @@
   "ignorePatterns": ["!**/*"],
   "overrides": [
     {
-      "files": ["*.ts"],
+      "files": ["*.ts"],,
       "parserOptions": {
         "project": [
           "projects/sample-code-flow-http-config/tsconfig.app.json",
