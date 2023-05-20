@@ -275,7 +275,7 @@ describe('ParLoginService', () => {
       spyOn(parService, 'postParRequest').and.returnValue(of({ requestUri: 'requestUri' } as ParResponse));
       spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
       spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
-      spyOnProperty(popupService, 'result$').and.returnValue(of({}));
+      spyOnProperty(popupService, 'result$').and.returnValue(of({} as PopupResult));
       const spy = spyOn(popupService, 'openPopUp');
 
       service.loginWithPopUpPar(config, allConfigs).subscribe(() => {

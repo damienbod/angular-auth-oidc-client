@@ -1,12 +1,12 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockClass } from '../../../test/auto-mock';
+import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { FlowsDataService } from '../../flows/flows-data.service';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { JwtWindowCryptoService } from '../../validation/jwt-window-crypto.service';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
-import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { UrlService } from './url.service';
 
 describe('UrlService Tests', () => {
@@ -798,15 +798,15 @@ describe('UrlService Tests', () => {
 
   describe('getRedirectUrl', () => {
     it('returns configured redirectUrl', () => {
-      let config = { configId: 'configId1', redirectUrl: 'one-url' };
-      let url = (service as any).getRedirectUrl(config);
+      const config = { configId: 'configId1', redirectUrl: 'one-url' };
+      const url = (service as any).getRedirectUrl(config);
 
       expect(url).toEqual('one-url');
     });
 
     it('returns redefined redirectUrl in AuthOptions', () => {
-      let config = { configId: 'configId1', redirectUrl: 'one-url' };
-      let url = (service as any).getRedirectUrl(config, { redirectUrl: 'other-url' });
+      const config = { configId: 'configId1', redirectUrl: 'one-url' };
+      const url = (service as any).getRedirectUrl(config, { redirectUrl: 'other-url' });
 
       expect(url).toEqual('other-url');
     });

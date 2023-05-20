@@ -1,6 +1,7 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { mockClass } from '../test/auto-mock';
+import { AuthenticatedResult } from './auth-state/auth-result';
 import { AuthStateService } from './auth-state/auth-state.service';
 import { CheckAuthService } from './auth-state/check-auth.service';
 import { CallbackService } from './callback/callback.service';
@@ -13,6 +14,7 @@ import { LoginService } from './login/login.service';
 import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.service';
 import { OidcSecurityService } from './oidc.security.service';
 import { UserService } from './user-data/user.service';
+import { UserDataResult } from './user-data/userdata-result';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
 import { UrlService } from './utils/url/url.service';
 
@@ -95,7 +97,7 @@ describe('OidcSecurityService', () => {
 
   describe('userData$', () => {
     it('calls userService.userData$', waitForAsync(() => {
-      const spy = spyOnProperty(userService, 'userData$').and.returnValue(of({ some: 'data' }));
+      const spy = spyOnProperty(userService, 'userData$').and.returnValue(of({} as UserDataResult));
 
       oidcSecurityService.userData$.subscribe(() => {
         expect(spy).toHaveBeenCalledTimes(1);
@@ -105,7 +107,7 @@ describe('OidcSecurityService', () => {
 
   describe('isAuthenticated$', () => {
     it('calls authStateService.isAuthenticated$', waitForAsync(() => {
-      const spy = spyOnProperty(authStateService, 'authenticated$').and.returnValue(of({ some: 'data' }));
+      const spy = spyOnProperty(authStateService, 'authenticated$').and.returnValue(of({} as AuthenticatedResult));
 
       oidcSecurityService.isAuthenticated$.subscribe(() => {
         expect(spy).toHaveBeenCalledTimes(1);
