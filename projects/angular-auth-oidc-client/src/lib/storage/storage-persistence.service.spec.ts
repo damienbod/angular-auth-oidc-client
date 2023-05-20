@@ -199,7 +199,7 @@ describe('Storage Persistence Service', () => {
     it('get calls oidcSecurityStorage.read with correct key and returns the value (refresh token without rotation)', () => {
       const returnValue = { reusable_refresh_token: 'test_refresh_token' };
       const config = { configId: 'configId1', allowUnsafeReuseRefreshToken: true };
-      let spy = spyOn(securityStorage, 'read');
+      const spy = spyOn(securityStorage, 'read');
 
       spy.withArgs('reusable_refresh_token', config).and.returnValue(returnValue);
       spy.withArgs('authnResult', config).and.returnValue(undefined);
