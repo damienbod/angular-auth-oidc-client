@@ -17,6 +17,7 @@ export * from './login/login-response';
 export * from './login/popup/popup-options';
 export * from './login/popup/popup.service';
 export * from './oidc.security.service';
+export * from './provide-auth';
 export * from './public-events/event-types';
 export * from './public-events/notification';
 export * from './public-events/public-events.service';
