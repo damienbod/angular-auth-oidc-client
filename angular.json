@@ -145,18 +145,6 @@
           "options": {
             "lintFilePatterns": ["projects/sample-code-flow-multi-iframe/**/*.ts", "projects/sample-code-flow-multi-iframe/**/*.html"]
           }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/sample-code-flow-multi-iframe/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-multi-iframe:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "sample-code-flow-multi-iframe:serve:production"
-            }
-          }
         }
       }
     },
@@ -262,18 +250,6 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": ["projects/sample-code-flow-auto-login/**/*.ts", "projects/sample-code-flow-auto-login/**/*.html"]
-          }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/sample-code-flow-auto-login/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-auto-login:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "sample-code-flow-auto-login:serve:production"
-            }
           }
         }
       }
@@ -381,18 +357,6 @@
           "options": {
             "lintFilePatterns": ["projects/sample-code-flow-http-config/**/*.ts", "projects/sample-code-flow-http-config/**/*.html"]
           }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/sample-code-flow-http-config/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-http-config:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "sample-code-flow-http-config:serve:production"
-            }
-          }
         }
       }
     },
@@ -494,18 +458,6 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": ["projects/sample-implicit-flow-google/**/*.ts", "projects/sample-implicit-flow-google/**/*.html"]
-          }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/sample-implicit-flow-google/e2e/protractor.conf.js",
-            "devServerTarget": "sample-implicit-flow-google:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "sample-implicit-flow-google:serve:production"
-            }
           }
         }
       }
@@ -617,18 +569,6 @@
           "options": {
             "lintFilePatterns": ["projects/sample-code-flow-azuread/**/*.ts", "projects/sample-code-flow-azuread/**/*.html"]
           }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/sample-code-flow-azuread/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-azuread:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "sample-code-flow-azuread:serve:production"
-            }
-          }
         }
       }
     },
@@ -734,18 +674,6 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": ["projects/sample-code-flow-azure-b2c/**/*.ts", "projects/sample-code-flow-azure-b2c/**/*.html"]
-          }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/sample-code-flow-azure-b2c/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-azure-b2c:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "sample-code-flow-azure-b2c:serve:production"
-            }
           }
         }
       }
@@ -859,18 +787,6 @@
               "projects/sample-implicit-flow-silent-renew/**/*.html"
             ]
           }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/sample-implicit-flow-silent-renew/e2e/protractor.conf.js",
-            "devServerTarget": "sample-implicit-flow-silent-renew:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "sample-implicit-flow-silent-renew:serve:production"
-            }
-          }
         }
       }
     },
@@ -972,18 +888,6 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": ["projects/sample-code-flow-auth0/**/*.ts", "projects/sample-code-flow-auth0/**/*.html"]
-          }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/sample-code-flow-auth0/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-auth0:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "sample-code-flow-auth0:serve:production"
-            }
           }
         }
       }
@@ -1087,18 +991,6 @@
           "options": {
             "lintFilePatterns": ["projects/sample-code-flow-refresh-tokens/**/*.ts", "projects/sample-code-flow-refresh-tokens/**/*.html"]
           }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/sample-code-flow-refresh-tokens/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-refresh-tokens:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "sample-code-flow-refresh-tokens:serve:production"
-            }
-          }
         }
       }
     },
@@ -1199,18 +1091,6 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": ["projects/sample-code-flow-standalone/**/*.ts", "projects/sample-code-flow-standalone/**/*.html"]
-          }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/sample-code-flow-standalone/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-standalone:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "sample-code-flow-standalone:serve:production"
-            }
           }
         }
       }
@@ -1314,18 +1194,6 @@
           "options": {
             "lintFilePatterns": ["projects/sample-code-flow-multi-Azure-B2C/**/*.ts", "projects/sample-code-flow-multi-Azure-B2C/**/*.html"]
           }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/sample-code-flow-multi-Azure-B2C/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-multi-Azure-B2C:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "sample-code-flow-multi-Azure-B2C:serve:production"
-            }
-          }
         }
       }
     },
@@ -1427,18 +1295,6 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": ["projects/sample-code-flow-multi-AAD/**/*.ts", "projects/sample-code-flow-multi-AAD/**/*.html"]
-          }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/sample-code-flow-multi-AAD/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-multi-AAD:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "sample-code-flow-multi-AAD:serve:production"
-            }
           }
         }
       }
@@ -1551,18 +1407,6 @@
               "projects/sample-code-flow-multi-Auth0-ID4-popup/**/*.html"
             ]
           }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/sample-code-flow-multi-Auth0-ID4-popup/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-multi-Auth0-ID4-popup:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "sample-code-flow-multi-Auth0-ID4-popup:serve:production"
-            }
-          }
         }
       }
     },
@@ -1665,18 +1509,6 @@
           "options": {
             "lintFilePatterns": ["projects/sample-code-flow-multi-Auth0-ID4/**/*.ts", "projects/sample-code-flow-multi-Auth0-ID4/**/*.html"]
           }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/sample-code-flow-multi-Auth0-ID4/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-multi-Auth0-ID4:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "sample-code-flow-multi-Auth0-ID4:serve:production"
-            }
-          }
         }
       }
     },
@@ -1778,18 +1610,6 @@
           "options": {
             "lintFilePatterns": ["projects/sample-code-flow-lazy-loaded/**/*.ts", "projects/sample-code-flow-lazy-loaded/**/*.html"]
           }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/sample-code-flow-lazy-loaded/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-lazy-loaded:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "sample-code-flow-lazy-loaded:serve:production"
-            }
-          }
         }
       }
     },
@@ -1885,18 +1705,6 @@
             "assets": ["projects/sample-code-flow-popup/src/favicon.ico", "projects/sample-code-flow-popup/src/assets"],
             "styles": ["projects/sample-code-flow-popup/src/styles.css"],
             "scripts": []
-          }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/sample-code-flow-popup/e2e/protractor.conf.js",
-            "devServerTarget": "sample-code-flow-popup:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "sample-code-flow-popup:serve:production"
-            }
           }
         }
       }
@@ -1997,18 +1805,6 @@
             "assets": ["projects/sample-code-flow-par/src/favicon.ico", "projects/sample-code-flow-par/src/assets"],
             "styles": ["projects/sample-code-flow-par/src/styles.css"],
             "scripts": []
-          }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/sample-code-flow-par/e2e/protractor.conf.js",
-            "devServerTarget": ":serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": ":serve:production"
-            }
           }
         }
       }
