@@ -1,19 +1,11 @@
 {
   "extends": "../../.eslintrc.json",
-  "ignorePatterns": [
-    "!**/*"
-  ],
+  "ignorePatterns": ["!**/*"],
   "overrides": [
     {
-      "files": [
-        "*.ts"
-      ],
+      "files": ["*.ts"],
       "parserOptions": {
-        "project": [
-          "projects/sample-implicit-flow-google/tsconfig.app.json",
-          "projects/sample-implicit-flow-google/tsconfig.spec.json",
-          "projects/sample-implicit-flow-google/e2e/tsconfig.json"
-        ],
+        "project": ["projects/sample-implicit-flow-google/tsconfig.app.json", "projects/sample-implicit-flow-google/tsconfig.spec.json"],
         "createDefaultProgram": true
       },
       "rules": {
@@ -36,9 +28,7 @@
       }
     },
     {
-      "files": [
-        "*.html"
-      ],
+      "files": ["*.html"],
       "rules": {}
     }
   ]

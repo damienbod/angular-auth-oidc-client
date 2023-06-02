@@ -1,18 +1,13 @@
 {
   "extends": "../../.eslintrc.json",
-  "ignorePatterns": [
-    "!**/*"
-  ],
+  "ignorePatterns": ["!**/*"],
   "overrides": [
     {
-      "files": [
-        "*.ts"
-      ],
+      "files": ["*.ts"],
       "parserOptions": {
         "project": [
           "projects/sample-code-flow-multi-iframe/tsconfig.app.json",
-          "projects/sample-code-flow-multi-iframe/tsconfig.spec.json",
-          "projects/sample-code-flow-multi-iframe/e2e/tsconfig.json"
+          "projects/sample-code-flow-multi-iframe/tsconfig.spec.json"
         ],
         "createDefaultProgram": true
       },
@@ -36,9 +31,7 @@
       }
     },
     {
-      "files": [
-        "*.html"
-      ],
+      "files": ["*.html"],
       "rules": {}
     }
   ]

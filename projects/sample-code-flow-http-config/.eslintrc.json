@@ -8,7 +8,6 @@
         "project": [
           "projects/sample-code-flow-http-config/tsconfig.app.json",
           "projects/sample-code-flow-http-config/tsconfig.spec.json",
-          "projects/sample-code-flow-http-config/e2e/tsconfig.json"
         ],
         "createDefaultProgram": true
       },

@@ -1,18 +1,13 @@
 {
   "extends": "../../.eslintrc.json",
-  "ignorePatterns": [
-    "!**/*"
-  ],
+  "ignorePatterns": ["!**/*"],
   "overrides": [
     {
-      "files": [
-        "*.ts"
-      ],
+      "files": ["*.ts"],
       "parserOptions": {
         "project": [
           "projects/sample-code-flow-multi-Auth0-ID4/tsconfig.app.json",
-          "projects/sample-code-flow-multi-Auth0-ID4/tsconfig.spec.json",
-          "projects/sample-code-flow-multi-Auth0-ID4/e2e/tsconfig.json"
+          "projects/sample-code-flow-multi-Auth0-ID4/tsconfig.spec.json"
         ],
         "createDefaultProgram": true
       },
@@ -36,9 +31,7 @@
       }
     },
     {
-      "files": [
-        "*.html"
-      ],
+      "files": ["*.html"],
       "rules": {}
     }
   ]
