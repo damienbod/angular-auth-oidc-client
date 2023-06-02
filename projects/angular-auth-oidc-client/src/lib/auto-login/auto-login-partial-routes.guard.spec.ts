@@ -187,6 +187,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const checkSavedRedirectRouteAndNavigateSpy = spyOn(autoLoginService, 'checkSavedRedirectRouteAndNavigate');
         const saveRedirectRouteSpy = spyOn(autoLoginService, 'saveRedirectRoute');
         const loginSpy = spyOn(loginService, 'login');
+
         spyOn(router, 'getCurrentNavigation').and.returnValue({
           extractedUrl: router.parseUrl('some-url12/with/some-param?queryParam=true'),
           extras: {},
