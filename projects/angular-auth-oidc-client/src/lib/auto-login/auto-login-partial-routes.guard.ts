@@ -6,6 +6,7 @@ import { AuthStateService } from '../auth-state/auth-state.service';
 import { ConfigurationService } from '../config/config.service';
 import { LoginService } from '../login/login.service';
 import { AutoLoginService } from './auto-login.service';
+import {AuthOptions} from '../auth-options';
 
 @Injectable({ providedIn: 'root' })
 export class AutoLoginPartialRoutesGuard  {
@@ -22,14 +23,15 @@ export class AutoLoginPartialRoutesGuard  {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    return this.checkAuth(state.url);
+    return route?.data ? this.checkAuth(state.url,{customParams:route.data}): this.checkAuth(state.url)
   }
 
   canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    return this.checkAuth(state.url);
+
+    return route?.data ? this.checkAuth(state.url,{customParams:route.data}): this.checkAuth(state.url)
   }
 
-  private checkAuth(url: string): Observable<boolean> {
+  private checkAuth(url: string,authOptions?:AuthOptions): Observable<boolean> {
     return this.configurationService.getOpenIDConfiguration().pipe(
       map((configuration) => {
         const isAuthenticated = this.authStateService.areAuthStorageTokensValid(configuration);
@@ -40,7 +42,13 @@ export class AutoLoginPartialRoutesGuard  {
 
         if (!isAuthenticated) {
           this.autoLoginService.saveRedirectRoute(configuration, url);
-          this.loginService.login(configuration);
+          if(authOptions){
+            this.loginService.login(configuration,authOptions);
+          }
+          else{
+            this.loginService.login(configuration);
+          }
+
         }
 
         return isAuthenticated;

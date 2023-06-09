@@ -73,3 +73,16 @@ const routes: Routes = [
   { path: 'callback', component: CallbackComponent }, // does nothing but setting up auth
 ];
 ```
+### Custom Params for the guard
+
+If you need to pass custom params to the login request you can simply use the [data](https://angular.io/api/router/Route#data) attribute of the route. 
+These parameters will then be appended to the login request
+```ts
+import { AutoLoginPartialRoutesGuard } from 'angular-auth-oidc-client';
+
+const routes: Routes = [
+  { path: '', pathMatch: 'full', redirectTo: 'home' },
+  { path: 'home', component: HomeComponent, canActivate: [AutoLoginPartialRoutesGuard], data:{custom:'param'} },
+  { path: 'callback', component: CallbackComponent }, // does nothing but setting up auth
+];
+```
