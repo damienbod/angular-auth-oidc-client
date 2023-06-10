@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   ActivatedRouteSnapshot,
   Router,
@@ -22,12 +22,19 @@ export class AutoLoginAllRoutesGuard {
     private readonly router: Router
   ) {}
 
-  canLoad(): Observable<boolean | UrlTree> {
-    return this.checkAuth(
+  canLoad(): Observable<boolean> {
+    const url =
       this.router
         .getCurrentNavigation()
         ?.extractedUrl.toString()
-        .substring(1) ?? ''
+        .substring(1) ?? '';
+
+    return checkAuth(
+      url,
+      this.configurationService,
+      this.checkAuthService,
+      this.autoLoginService,
+      this.loginService
     );
   }
 
@@ -35,37 +42,83 @@ export class AutoLoginAllRoutesGuard {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean | UrlTree> {
-    return this.checkAuth(state.url);
+    return checkAuth(
+      state.url,
+      this.configurationService,
+      this.checkAuthService,
+      this.autoLoginService,
+      this.loginService
+    );
   }
 
   canActivateChild(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean | UrlTree> {
-    return this.checkAuth(state.url);
-  }
-
-  private checkAuth(url: string): Observable<boolean> {
-    return this.configurationService.getOpenIDConfiguration().pipe(
-      switchMap((config) => {
-        const allConfigs = this.configurationService.getAllConfigurations();
-
-        return this.checkAuthService.checkAuth(config, allConfigs).pipe(
-          take(1),
-          map(({ isAuthenticated }) => {
-            if (isAuthenticated) {
-              this.autoLoginService.checkSavedRedirectRouteAndNavigate(config);
-            }
-
-            if (!isAuthenticated) {
-              this.autoLoginService.saveRedirectRoute(config, url);
-              this.loginService.login(config);
-            }
-
-            return isAuthenticated;
-          })
-        );
-      })
+    return checkAuth(
+      state.url,
+      this.configurationService,
+      this.checkAuthService,
+      this.autoLoginService,
+      this.loginService
     );
   }
+}
+
+export function autoLoginAllRoutesGuard(): Observable<boolean> {
+  const configurationService = inject(ConfigurationService);
+  const checkAuthService = inject(CheckAuthService);
+  const loginService = inject(LoginService);
+  const autoLoginService = inject(AutoLoginService);
+  const router = inject(Router);
+
+  const url =
+    router.getCurrentNavigation()?.extractedUrl.toString().substring(1) ?? '';
+
+  return checkAuth(
+    url,
+    configurationService,
+    checkAuthService,
+    autoLoginService,
+    loginService
+  );
+}
+
+// export function autoLoginAllRoutesGuard(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+//   const configurationService = inject(ConfigurationService);
+//   const checkAuthService = inject(CheckAuthService);
+//   const loginService = inject(LoginService);
+//   const autoLoginService = inject(AutoLoginService);
+
+//   return checkAuth(state.url, configurationService, checkAuthService, autoLoginService, loginService);
+// }
+
+function checkAuth(
+  url: string,
+  configurationService: ConfigurationService,
+  checkAuthService: CheckAuthService,
+  autoLoginService: AutoLoginService,
+  loginService: LoginService
+): Observable<boolean> {
+  return configurationService.getOpenIDConfiguration().pipe(
+    switchMap((config) => {
+      const allConfigs = configurationService.getAllConfigurations();
+
+      return checkAuthService.checkAuth(config, allConfigs).pipe(
+        take(1),
+        map(({ isAuthenticated }) => {
+          if (isAuthenticated) {
+            autoLoginService.checkSavedRedirectRouteAndNavigate(config);
+          }
+
+          if (!isAuthenticated) {
+            autoLoginService.saveRedirectRoute(config, url);
+            loginService.login(config);
+          }
+
+          return isAuthenticated;
+        })
+      );
+    })
+  );
 }
