@@ -16,21 +16,38 @@ export class AuthWellKnownService {
     private readonly storagePersistenceService: StoragePersistenceService
   ) {}
 
-  storeWellKnownEndpoints(config: OpenIdConfiguration, mappedWellKnownEndpoints: AuthWellKnownEndpoints): void {
-    this.storagePersistenceService.write('authWellKnownEndPoints', mappedWellKnownEndpoints, config);
+  storeWellKnownEndpoints(
+    config: OpenIdConfiguration,
+    mappedWellKnownEndpoints: AuthWellKnownEndpoints
+  ): void {
+    this.storagePersistenceService.write(
+      'authWellKnownEndPoints',
+      mappedWellKnownEndpoints,
+      config
+    );
   }
 
-  queryAndStoreAuthWellKnownEndPoints(config: OpenIdConfiguration): Observable<AuthWellKnownEndpoints> {
-    const alreadySavedWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', config);
+  queryAndStoreAuthWellKnownEndPoints(
+    config: OpenIdConfiguration
+  ): Observable<AuthWellKnownEndpoints> {
+    const alreadySavedWellKnownEndpoints = this.storagePersistenceService.read(
+      'authWellKnownEndPoints',
+      config
+    );
 
     if (!!alreadySavedWellKnownEndpoints) {
       return of(alreadySavedWellKnownEndpoints);
     }
 
     return this.dataService.getWellKnownEndPointsForConfig(config).pipe(
-      tap((mappedWellKnownEndpoints) => this.storeWellKnownEndpoints(config, mappedWellKnownEndpoints)),
+      tap((mappedWellKnownEndpoints) =>
+        this.storeWellKnownEndpoints(config, mappedWellKnownEndpoints)
+      ),
       catchError((error) => {
-        this.publicEventsService.fireEvent(EventTypes.ConfigLoadingFailed, null);
+        this.publicEventsService.fireEvent(
+          EventTypes.ConfigLoadingFailed,
+          null
+        );
 
         return throwError(() => new Error(error));
       })

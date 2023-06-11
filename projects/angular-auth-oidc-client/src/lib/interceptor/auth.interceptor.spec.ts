@@ -1,5 +1,14 @@
-import { HttpClient, HTTP_INTERCEPTORS, provideHttpClient, withInterceptors } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import {
+  HttpClient,
+  HTTP_INTERCEPTORS,
+  provideHttpClient,
+  withInterceptors,
+} from '@angular/common/http';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+  provideHttpClientTesting,
+} from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { mockClass } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
@@ -235,7 +244,10 @@ describe(`AuthHttpInterceptor`, () => {
           configId: 'configId1',
         },
       ]);
-      spyOn(closestMatchingRouteService, 'getConfigIdForClosestMatchingRoute').and.returnValue({
+      spyOn(
+        closestMatchingRouteService,
+        'getConfigIdForClosestMatchingRoute'
+      ).and.returnValue({
         matchingRoute: null,
         matchingConfig: null,
       });

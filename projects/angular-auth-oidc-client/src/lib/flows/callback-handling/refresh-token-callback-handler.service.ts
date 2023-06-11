@@ -28,18 +28,29 @@ export class RefreshTokenCallbackHandlerService {
 
     headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-    const authWellknownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', config);
+    const authWellknownEndpoints = this.storagePersistenceService.read(
+      'authWellKnownEndPoints',
+      config
+    );
     const tokenEndpoint = authWellknownEndpoints?.tokenEndpoint;
 
     if (!tokenEndpoint) {
       return throwError(() => new Error('Token Endpoint not defined'));
     }
 
-    const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(callbackContext.refreshToken, config, customParamsRefresh);
+    const data = this.urlService.createBodyForCodeFlowRefreshTokensRequest(
+      callbackContext.refreshToken,
+      config,
+      customParamsRefresh
+    );
 
     return this.dataService.post(tokenEndpoint, data, config, headers).pipe(
       switchMap((response: AuthResult) => {
-        this.loggerService.logDebug(config, 'token refresh response: ', response);
+        this.loggerService.logDebug(
+          config,
+          'token refresh response: ',
+          response
+        );
 
         response.state = callbackContext.state;
 
@@ -59,11 +70,19 @@ export class RefreshTokenCallbackHandlerService {
     );
   }
 
-  private handleRefreshRetry(errors: Observable<any>, config: OpenIdConfiguration): Observable<any> {
+  private handleRefreshRetry(
+    errors: Observable<any>,
+    config: OpenIdConfiguration
+  ): Observable<any> {
     return errors.pipe(
       mergeMap((error) => {
         // retry token refresh if there is no internet connection
-        if (error && error instanceof HttpErrorResponse && error.error instanceof ProgressEvent && error.error.type === 'error') {
+        if (
+          error &&
+          error instanceof HttpErrorResponse &&
+          error.error instanceof ProgressEvent &&
+          error.error.type === 'error'
+        ) {
           const { authority, refreshTokenRetryInSeconds } = config;
           const errorMessage = `OidcService code request ${authority} - no internet connection`;
 

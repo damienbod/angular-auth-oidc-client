@@ -9,7 +9,13 @@ describe('Storage Persistence Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [StoragePersistenceService, { provide: BrowserStorageService, useClass: mockClass(BrowserStorageService) }],
+      providers: [
+        StoragePersistenceService,
+        {
+          provide: BrowserStorageService,
+          useClass: mockClass(BrowserStorageService),
+        },
+      ],
     });
   });
 
@@ -50,14 +56,19 @@ describe('Storage Persistence Service', () => {
       service.write('authNonce', 'anyValue', config);
 
       expect(readSpy).toHaveBeenCalledOnceWith('authNonce', config);
-      expect(writeSpy).toHaveBeenCalledOnceWith({ authNonce: 'anyValue' }, config);
+      expect(writeSpy).toHaveBeenCalledOnceWith(
+        { authNonce: 'anyValue' },
+        config
+      );
     });
   });
 
   describe('remove', () => {
     it('should remove key from config', () => {
       const config = { configId: 'configId1' };
-      const readSpy = spyOn(securityStorage, 'read').and.returnValue({ authNonce: 'anyValue' });
+      const readSpy = spyOn(securityStorage, 'read').and.returnValue({
+        authNonce: 'anyValue',
+      });
       const writeSpy = spyOn(securityStorage, 'write');
 
       service.remove('authNonce', config);
@@ -97,14 +108,29 @@ describe('Storage Persistence Service', () => {
 
       expect(spy).toHaveBeenCalledTimes(10);
       expect(spy.calls.argsFor(0)).toEqual(['session_state', config]);
-      expect(spy.calls.argsFor(1)).toEqual(['storageSilentRenewRunning', config]);
-      expect(spy.calls.argsFor(2)).toEqual(['storageCodeFlowInProgress', config]);
+      expect(spy.calls.argsFor(1)).toEqual([
+        'storageSilentRenewRunning',
+        config,
+      ]);
+      expect(spy.calls.argsFor(2)).toEqual([
+        'storageCodeFlowInProgress',
+        config,
+      ]);
       expect(spy.calls.argsFor(3)).toEqual(['codeVerifier', config]);
       expect(spy.calls.argsFor(4)).toEqual(['userData', config]);
-      expect(spy.calls.argsFor(5)).toEqual(['storageCustomParamsAuthRequest', config]);
+      expect(spy.calls.argsFor(5)).toEqual([
+        'storageCustomParamsAuthRequest',
+        config,
+      ]);
       expect(spy.calls.argsFor(6)).toEqual(['access_token_expires_at', config]);
-      expect(spy.calls.argsFor(7)).toEqual(['storageCustomParamsRefresh', config]);
-      expect(spy.calls.argsFor(8)).toEqual(['storageCustomParamsEndSession', config]);
+      expect(spy.calls.argsFor(7)).toEqual([
+        'storageCustomParamsRefresh',
+        config,
+      ]);
+      expect(spy.calls.argsFor(8)).toEqual([
+        'storageCustomParamsEndSession',
+        config,
+      ]);
       expect(spy.calls.argsFor(9)).toEqual(['reusable_refresh_token', config]);
     });
   });
@@ -198,10 +224,15 @@ describe('Storage Persistence Service', () => {
 
     it('get calls oidcSecurityStorage.read with correct key and returns the value (refresh token without rotation)', () => {
       const returnValue = { reusable_refresh_token: 'test_refresh_token' };
-      const config = { configId: 'configId1', allowUnsafeReuseRefreshToken: true };
+      const config = {
+        configId: 'configId1',
+        allowUnsafeReuseRefreshToken: true,
+      };
       const spy = spyOn(securityStorage, 'read');
 
-      spy.withArgs('reusable_refresh_token', config).and.returnValue(returnValue);
+      spy
+        .withArgs('reusable_refresh_token', config)
+        .and.returnValue(returnValue);
       spy.withArgs('authnResult', config).and.returnValue(undefined);
       const result = service.getRefreshToken(config);
 

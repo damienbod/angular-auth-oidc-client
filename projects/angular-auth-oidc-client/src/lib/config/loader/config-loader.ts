@@ -12,7 +12,9 @@ export abstract class StsConfigLoader {
 }
 
 export class StsConfigStaticLoader implements StsConfigLoader {
-  constructor(private readonly passedConfigs: OpenIdConfiguration | OpenIdConfiguration[]) {}
+  constructor(
+    private readonly passedConfigs: OpenIdConfiguration | OpenIdConfiguration[]
+  ) {}
 
   loadConfigs(): Observable<OpenIdConfiguration[]> {
     if (Array.isArray(this.passedConfigs)) {
@@ -25,7 +27,10 @@ export class StsConfigStaticLoader implements StsConfigLoader {
 
 export class StsConfigHttpLoader implements StsConfigLoader {
   constructor(
-    private readonly configs$: Observable<OpenIdConfiguration> | Observable<OpenIdConfiguration>[] | Observable<OpenIdConfiguration[]>
+    private readonly configs$:
+      | Observable<OpenIdConfiguration>
+      | Observable<OpenIdConfiguration>[]
+      | Observable<OpenIdConfiguration[]>
   ) {}
 
   loadConfigs(): Observable<OpenIdConfiguration[]> {

@@ -219,7 +219,11 @@ describe('EqualityService Tests', () => {
 
     testCases.forEach(({ input1, input2, expected }) => {
       it(`returns '${expected}' if '${input1}' and '${input2}' is given`, () => {
-        const result = equalityHelperService.isStringEqualOrNonOrderedArrayEqual(input1, input2);
+        const result =
+          equalityHelperService.isStringEqualOrNonOrderedArrayEqual(
+            input1,
+            input2
+          );
 
         expect(result).toBe(expected);
       });

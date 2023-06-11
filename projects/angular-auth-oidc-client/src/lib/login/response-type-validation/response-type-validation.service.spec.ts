@@ -26,7 +26,9 @@ describe('ResponseTypeValidationService', () => {
   });
 
   beforeEach(() => {
-    responseTypeValidationService = TestBed.inject(ResponseTypeValidationService);
+    responseTypeValidationService = TestBed.inject(
+      ResponseTypeValidationService
+    );
     flowHelper = TestBed.inject(FlowHelper);
   });
 
@@ -38,7 +40,9 @@ describe('ResponseTypeValidationService', () => {
     it('returns true if current configured flow is any implicit flow', () => {
       spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(true);
 
-      const result = responseTypeValidationService.hasConfigValidResponseType({ configId: 'configId1' });
+      const result = responseTypeValidationService.hasConfigValidResponseType({
+        configId: 'configId1',
+      });
 
       expect(result).toEqual(true);
     });
@@ -47,7 +51,9 @@ describe('ResponseTypeValidationService', () => {
       spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(false);
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
 
-      const result = responseTypeValidationService.hasConfigValidResponseType({ configId: 'configId1' });
+      const result = responseTypeValidationService.hasConfigValidResponseType({
+        configId: 'configId1',
+      });
 
       expect(result).toEqual(true);
     });
@@ -56,7 +62,9 @@ describe('ResponseTypeValidationService', () => {
       spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(false);
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
 
-      const result = responseTypeValidationService.hasConfigValidResponseType({ configId: 'configId1' });
+      const result = responseTypeValidationService.hasConfigValidResponseType({
+        configId: 'configId1',
+      });
 
       expect(result).toEqual(false);
     });

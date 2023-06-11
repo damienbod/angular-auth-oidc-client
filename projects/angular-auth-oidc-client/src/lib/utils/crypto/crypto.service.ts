@@ -7,6 +7,8 @@ export class CryptoService {
 
   getCrypto(): any {
     // support for IE,  (window.crypto || window.msCrypto)
-    return this.doc.defaultView.crypto || (this.doc.defaultView as any).msCrypto;
+    return (
+      this.doc.defaultView.crypto || (this.doc.defaultView as any).msCrypto
+    );
   }
 }

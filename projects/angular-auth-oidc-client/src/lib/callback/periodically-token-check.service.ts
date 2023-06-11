@@ -34,8 +34,12 @@ export class PeriodicallyTokenCheckService {
     private readonly configurationService: ConfigurationService
   ) {}
 
-  startTokenValidationPeriodically(allConfigs: OpenIdConfiguration[], currentConfig: OpenIdConfiguration): void {
-    const configsWithSilentRenewEnabled = this.getConfigsWithSilentRenewEnabled(allConfigs);
+  startTokenValidationPeriodically(
+    allConfigs: OpenIdConfiguration[],
+    currentConfig: OpenIdConfiguration
+  ): void {
+    const configsWithSilentRenewEnabled =
+      this.getConfigsWithSilentRenewEnabled(allConfigs);
 
     if (configsWithSilentRenewEnabled.length <= 0) {
       return;
@@ -45,41 +49,61 @@ export class PeriodicallyTokenCheckService {
       return;
     }
 
-    const refreshTimeInSeconds = this.getSmallestRefreshTimeFromConfigs(configsWithSilentRenewEnabled);
-    const periodicallyCheck$ = this.intervalService.startPeriodicTokenCheck(refreshTimeInSeconds).pipe(
-      switchMap(() => {
-        const objectWithConfigIdsAndRefreshEvent = {};
-
-        configsWithSilentRenewEnabled.forEach((config) => {
-          objectWithConfigIdsAndRefreshEvent[config.configId] = this.getRefreshEvent(config, allConfigs);
-        });
-
-        return forkJoin(objectWithConfigIdsAndRefreshEvent);
-      })
+    const refreshTimeInSeconds = this.getSmallestRefreshTimeFromConfigs(
+      configsWithSilentRenewEnabled
     );
+    const periodicallyCheck$ = this.intervalService
+      .startPeriodicTokenCheck(refreshTimeInSeconds)
+      .pipe(
+        switchMap(() => {
+          const objectWithConfigIdsAndRefreshEvent = {};
+
+          configsWithSilentRenewEnabled.forEach((config) => {
+            objectWithConfigIdsAndRefreshEvent[config.configId] =
+              this.getRefreshEvent(config, allConfigs);
+          });
+
+          return forkJoin(objectWithConfigIdsAndRefreshEvent);
+        })
+      );
 
     this.intervalService.runTokenValidationRunning = periodicallyCheck$
       .pipe(catchError((error) => throwError(() => new Error(error))))
       .subscribe({
         next: (objectWithConfigIds) => {
           for (const [configId, _] of Object.entries(objectWithConfigIds)) {
-            this.configurationService.getOpenIDConfiguration(configId).subscribe((config) => {
-              this.loggerService.logDebug(config, 'silent renew, periodic check finished!');
+            this.configurationService
+              .getOpenIDConfiguration(configId)
+              .subscribe((config) => {
+                this.loggerService.logDebug(
+                  config,
+                  'silent renew, periodic check finished!'
+                );
 
-              if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config)) {
-                this.flowsDataService.resetSilentRenewRunning(config);
-              }
-            });
+                if (
+                  this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config)
+                ) {
+                  this.flowsDataService.resetSilentRenewRunning(config);
+                }
+              });
           }
         },
         error: (error) => {
-          this.loggerService.logError(currentConfig, 'silent renew failed!', error);
+          this.loggerService.logError(
+            currentConfig,
+            'silent renew failed!',
+            error
+          );
         },
       });
   }
 
-  private getRefreshEvent(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): Observable<boolean | CallbackContext> {
-    const shouldStartRefreshEvent = this.shouldStartPeriodicallyCheckForConfig(config);
+  private getRefreshEvent(
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): Observable<boolean | CallbackContext> {
+    const shouldStartRefreshEvent =
+      this.shouldStartPeriodicallyCheckForConfig(config);
 
     if (!shouldStartRefreshEvent) {
       return of(null);
@@ -100,7 +124,9 @@ export class PeriodicallyTokenCheckService {
     );
   }
 
-  private getSmallestRefreshTimeFromConfigs(configsWithSilentRenewEnabled: OpenIdConfiguration[]): number {
+  private getSmallestRefreshTimeFromConfigs(
+    configsWithSilentRenewEnabled: OpenIdConfiguration[]
+  ): number {
     const result = configsWithSilentRenewEnabled.reduce((prev, curr) =>
       prev.tokenRefreshInSeconds < curr.tokenRefreshInSeconds ? prev : curr
     );
@@ -108,7 +134,9 @@ export class PeriodicallyTokenCheckService {
     return result.tokenRefreshInSeconds;
   }
 
-  private getConfigsWithSilentRenewEnabled(allConfigs: OpenIdConfiguration[]): OpenIdConfiguration[] {
+  private getConfigsWithSilentRenewEnabled(
+    allConfigs: OpenIdConfiguration[]
+  ): OpenIdConfiguration[] {
     return allConfigs.filter((x) => x.silentRenew);
   }
 
@@ -118,44 +146,70 @@ export class PeriodicallyTokenCheckService {
   ): Observable<boolean | CallbackContext> {
     this.loggerService.logDebug(configuration, 'starting silent renew...');
 
-    return this.configurationService.getOpenIDConfiguration(configuration.configId).pipe(
-      switchMap((config) => {
-        if (!config?.silentRenew) {
-          this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
+    return this.configurationService
+      .getOpenIDConfiguration(configuration.configId)
+      .pipe(
+        switchMap((config) => {
+          if (!config?.silentRenew) {
+            this.resetAuthDataService.resetAuthorizationData(
+              config,
+              allConfigs
+            );
 
-          return of(null);
-        }
+            return of(null);
+          }
 
-        this.flowsDataService.setSilentRenewRunning(config);
+          this.flowsDataService.setSilentRenewRunning(config);
 
-        if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config)) {
-          // Retrieve Dynamically Set Custom Params for refresh body
-          const customParamsRefresh: { [key: string]: string | number | boolean } =
-            this.storagePersistenceService.read('storageCustomParamsRefresh', config) || {};
+          if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config)) {
+            // Retrieve Dynamically Set Custom Params for refresh body
+            const customParamsRefresh: {
+              [key: string]: string | number | boolean;
+            } =
+              this.storagePersistenceService.read(
+                'storageCustomParamsRefresh',
+                config
+              ) || {};
 
-          const { customParamsRefreshTokenRequest } = config;
+            const { customParamsRefreshTokenRequest } = config;
 
-          const mergedParams = { ...customParamsRefreshTokenRequest, ...customParamsRefresh };
+            const mergedParams = {
+              ...customParamsRefreshTokenRequest,
+              ...customParamsRefresh,
+            };
 
-          // Refresh Session using Refresh tokens
-          return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(config, allConfigs, mergedParams);
-        }
+            // Refresh Session using Refresh tokens
+            return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
+              config,
+              allConfigs,
+              mergedParams
+            );
+          }
 
-        // Retrieve Dynamically Set Custom Params
-        const customParams: { [key: string]: string | number | boolean } = this.storagePersistenceService.read(
-          'storageCustomParamsAuthRequest',
-          config
-        );
+          // Retrieve Dynamically Set Custom Params
+          const customParams: { [key: string]: string | number | boolean } =
+            this.storagePersistenceService.read(
+              'storageCustomParamsAuthRequest',
+              config
+            );
 
-        return this.refreshSessionIframeService.refreshSessionWithIframe(config, allConfigs, customParams);
-      })
-    );
+          return this.refreshSessionIframeService.refreshSessionWithIframe(
+            config,
+            allConfigs,
+            customParams
+          );
+        })
+      );
   }
 
-  private shouldStartPeriodicallyCheckForConfig(config: OpenIdConfiguration): boolean {
+  private shouldStartPeriodicallyCheckForConfig(
+    config: OpenIdConfiguration
+  ): boolean {
     const idToken = this.authStateService.getIdToken(config);
-    const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning(config);
-    const isCodeFlowInProgress = this.flowsDataService.isCodeFlowInProgress(config);
+    const isSilentRenewRunning =
+      this.flowsDataService.isSilentRenewRunning(config);
+    const isCodeFlowInProgress =
+      this.flowsDataService.isCodeFlowInProgress(config);
     const userDataFromStore = this.userService.getUserDataFromStore(config);
 
     this.loggerService.logDebug(
@@ -163,14 +217,20 @@ export class PeriodicallyTokenCheckService {
       `Checking: silentRenewRunning: ${isSilentRenewRunning}, isCodeFlowInProgress: ${isCodeFlowInProgress} - has idToken: ${!!idToken} - has userData: ${!!userDataFromStore}`
     );
 
-    const shouldBeExecuted = !!userDataFromStore && !isSilentRenewRunning && !!idToken && !isCodeFlowInProgress;
+    const shouldBeExecuted =
+      !!userDataFromStore &&
+      !isSilentRenewRunning &&
+      !!idToken &&
+      !isCodeFlowInProgress;
 
     if (!shouldBeExecuted) {
       return false;
     }
 
-    const idTokenExpired = this.authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled(config);
-    const accessTokenExpired = this.authStateService.hasAccessTokenExpiredIfExpiryExists(config);
+    const idTokenExpired =
+      this.authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled(config);
+    const accessTokenExpired =
+      this.authStateService.hasAccessTokenExpiredIfExpiryExists(config);
 
     return idTokenExpired || accessTokenExpired;
   }

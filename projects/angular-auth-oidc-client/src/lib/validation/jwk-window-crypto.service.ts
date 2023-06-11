@@ -7,9 +7,16 @@ export class JwkWindowCryptoService {
 
   importVerificationKey(
     key: JsonWebKey,
-    algorithm: AlgorithmIdentifier | RsaHashedImportParams | EcKeyImportParams | HmacImportParams | AesKeyAlgorithm
+    algorithm:
+      | AlgorithmIdentifier
+      | RsaHashedImportParams
+      | EcKeyImportParams
+      | HmacImportParams
+      | AesKeyAlgorithm
   ): Promise<CryptoKey> {
-    return this.cryptoService.getCrypto().subtle.importKey('jwk', key, algorithm, false, ['verify']);
+    return this.cryptoService
+      .getCrypto()
+      .subtle.importKey('jwk', key, algorithm, false, ['verify']);
   }
 
   verifyKey(
@@ -18,6 +25,13 @@ export class JwkWindowCryptoService {
     signature: BufferSource,
     signingInput: string
   ): Promise<boolean> {
-    return this.cryptoService.getCrypto().subtle.verify(verifyAlgorithm, cryptoKey, signature, new TextEncoder().encode(signingInput));
+    return this.cryptoService
+      .getCrypto()
+      .subtle.verify(
+        verifyAlgorithm,
+        cryptoKey,
+        signature,
+        new TextEncoder().encode(signingInput)
+      );
   }
 }

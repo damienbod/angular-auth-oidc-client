@@ -26,28 +26,44 @@ export class StateValidationCallbackHandlerService {
     configuration: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
   ): Observable<CallbackContext> {
-    return this.stateValidationService.getValidatedStateResult(callbackContext, configuration).pipe(
-      map((validationResult: StateValidationResult) => {
-        callbackContext.validationResult = validationResult;
+    return this.stateValidationService
+      .getValidatedStateResult(callbackContext, configuration)
+      .pipe(
+        map((validationResult: StateValidationResult) => {
+          callbackContext.validationResult = validationResult;
 
-        if (validationResult.authResponseIsValid) {
-          this.authStateService.setAuthorizationData(validationResult.accessToken, callbackContext.authResult, configuration, allConfigs);
+          if (validationResult.authResponseIsValid) {
+            this.authStateService.setAuthorizationData(
+              validationResult.accessToken,
+              callbackContext.authResult,
+              configuration,
+              allConfigs
+            );
 
-          return callbackContext;
-        } else {
-          const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${this.document.location.hash}`;
+            return callbackContext;
+          } else {
+            const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${this.document.location.hash}`;
 
-          this.loggerService.logWarning(configuration, errorMessage);
-          this.resetAuthDataService.resetAuthorizationData(configuration, allConfigs);
-          this.publishUnauthorizedState(callbackContext.validationResult, callbackContext.isRenewProcess);
+            this.loggerService.logWarning(configuration, errorMessage);
+            this.resetAuthDataService.resetAuthorizationData(
+              configuration,
+              allConfigs
+            );
+            this.publishUnauthorizedState(
+              callbackContext.validationResult,
+              callbackContext.isRenewProcess
+            );
 
-          throw new Error(errorMessage);
-        }
-      })
-    );
+            throw new Error(errorMessage);
+          }
+        })
+      );
   }
 
-  private publishUnauthorizedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean): void {
+  private publishUnauthorizedState(
+    stateValidationResult: StateValidationResult,
+    isRenewProcess: boolean
+  ): void {
     this.authStateService.updateAndPublishAuthState({
       isAuthenticated: false,
       validationResult: stateValidationResult.state,

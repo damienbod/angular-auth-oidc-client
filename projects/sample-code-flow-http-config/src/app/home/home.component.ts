@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { OidcClientNotification, OidcSecurityService, OpenIdConfiguration, UserDataResult } from 'angular-auth-oidc-client';
+import {
+  OidcClientNotification,
+  OidcSecurityService,
+  OpenIdConfiguration,
+  UserDataResult,
+} from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -21,11 +26,13 @@ export class HomeComponent implements OnInit {
     this.userData$ = this.oidcSecurityService.userData$;
     this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 
-    this.oidcSecurityService.isAuthenticated$.subscribe(({ isAuthenticated }) => {
-      this.isAuthenticated = isAuthenticated;
+    this.oidcSecurityService.isAuthenticated$.subscribe(
+      ({ isAuthenticated }) => {
+        this.isAuthenticated = isAuthenticated;
 
-      console.warn('authenticated: ', isAuthenticated);
-    });
+        console.warn('authenticated: ', isAuthenticated);
+      }
+    );
   }
 
   login() {
@@ -33,11 +40,15 @@ export class HomeComponent implements OnInit {
   }
 
   refreshSession() {
-    this.oidcSecurityService.forceRefreshSession().subscribe((result) => console.log(result));
+    this.oidcSecurityService
+      .forceRefreshSession()
+      .subscribe((result) => console.log(result));
   }
 
   logout() {
-    this.oidcSecurityService.logoff().subscribe((result) => console.log(result));
+    this.oidcSecurityService
+      .logoff()
+      .subscribe((result) => console.log(result));
   }
 
   logoffLocal() {

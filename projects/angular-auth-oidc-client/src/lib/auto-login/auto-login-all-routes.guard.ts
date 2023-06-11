@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+import {
+  ActivatedRouteSnapshot,
+  Router,
+  RouterStateSnapshot,
+  UrlTree,
+} from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, switchMap, take } from 'rxjs/operators';
 import { CheckAuthService } from '../auth-state/check-auth.service';
@@ -8,7 +13,7 @@ import { LoginService } from '../login/login.service';
 import { AutoLoginService } from './auto-login.service';
 
 @Injectable({ providedIn: 'root' })
-export class AutoLoginAllRoutesGuard  {
+export class AutoLoginAllRoutesGuard {
   constructor(
     private readonly autoLoginService: AutoLoginService,
     private readonly checkAuthService: CheckAuthService,
@@ -18,14 +23,25 @@ export class AutoLoginAllRoutesGuard  {
   ) {}
 
   canLoad(): Observable<boolean | UrlTree> {
-    return this.checkAuth(this.router.getCurrentNavigation()?.extractedUrl.toString().substring(1) ?? '');
+    return this.checkAuth(
+      this.router
+        .getCurrentNavigation()
+        ?.extractedUrl.toString()
+        .substring(1) ?? ''
+    );
   }
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Observable<boolean | UrlTree> {
     return this.checkAuth(state.url);
   }
 
-  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
+  canActivateChild(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Observable<boolean | UrlTree> {
     return this.checkAuth(state.url);
   }
 

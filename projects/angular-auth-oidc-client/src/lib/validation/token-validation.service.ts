@@ -58,7 +58,19 @@ import { alg2kty, getImportAlg, getVerifyAlg } from './token-validation.helper';
 export class TokenValidationService {
   static refreshTokenNoncePlaceholder = '--RefreshToken--';
 
-  keyAlgorithms: string[] = ['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'PS256', 'PS384', 'PS512'];
+  keyAlgorithms: string[] = [
+    'HS256',
+    'HS384',
+    'HS512',
+    'RS256',
+    'RS384',
+    'RS512',
+    'ES256',
+    'ES384',
+    'PS256',
+    'PS384',
+    'PS512',
+  ];
 
   constructor(
     private readonly tokenHelperService: TokenHelperService,
@@ -70,16 +82,33 @@ export class TokenValidationService {
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
   // (possibly allowing for some small leeway to account for clock skew).
-  hasIdTokenExpired(token: string, configuration: OpenIdConfiguration, offsetSeconds?: number): boolean {
-    const decoded = this.tokenHelperService.getPayloadFromToken(token, false, configuration);
+  hasIdTokenExpired(
+    token: string,
+    configuration: OpenIdConfiguration,
+    offsetSeconds?: number
+  ): boolean {
+    const decoded = this.tokenHelperService.getPayloadFromToken(
+      token,
+      false,
+      configuration
+    );
 
-    return !this.validateIdTokenExpNotExpired(decoded, configuration, offsetSeconds);
+    return !this.validateIdTokenExpNotExpired(
+      decoded,
+      configuration,
+      offsetSeconds
+    );
   }
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
   // (possibly allowing for some small leeway to account for clock skew).
-  validateIdTokenExpNotExpired(decodedIdToken: string, configuration: OpenIdConfiguration, offsetSeconds?: number): boolean {
-    const tokenExpirationDate = this.tokenHelperService.getTokenExpirationDate(decodedIdToken);
+  validateIdTokenExpNotExpired(
+    decodedIdToken: string,
+    configuration: OpenIdConfiguration,
+    offsetSeconds?: number
+  ): boolean {
+    const tokenExpirationDate =
+      this.tokenHelperService.getTokenExpirationDate(decodedIdToken);
 
     offsetSeconds = offsetSeconds || 0;
 
@@ -95,13 +124,19 @@ export class TokenValidationService {
       configuration,
       `Has idToken expired: ${!tokenNotExpired} --> expires in ${this.millisToMinutesAndSeconds(
         tokenExpirationValue - nowWithOffset
-      )} , ${new Date(tokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`
+      )} , ${new Date(tokenExpirationValue).toLocaleTimeString()} > ${new Date(
+        nowWithOffset
+      ).toLocaleTimeString()}`
     );
 
     return tokenNotExpired;
   }
 
-  validateAccessTokenNotExpired(accessTokenExpiresAt: Date, configuration: OpenIdConfiguration, offsetSeconds?: number): boolean {
+  validateAccessTokenNotExpired(
+    accessTokenExpiresAt: Date,
+    configuration: OpenIdConfiguration,
+    offsetSeconds?: number
+  ): boolean {
     // value is optional, so if it does not exist, then it has not expired
     if (!accessTokenExpiresAt) {
       return true;
@@ -116,7 +151,9 @@ export class TokenValidationService {
       configuration,
       `Has accessToken expired: ${!tokenNotExpired} --> expires in ${this.millisToMinutesAndSeconds(
         accessTokenExpirationValue - nowWithOffset
-      )} , ${new Date(accessTokenExpirationValue).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`
+      )} , ${new Date(
+        accessTokenExpirationValue
+      ).toLocaleTimeString()} > ${new Date(nowWithOffset).toLocaleTimeString()}`
     );
 
     return tokenNotExpired;
@@ -150,32 +187,50 @@ export class TokenValidationService {
   // REQUIRED. Time at which the JWT was issued. Its value is a JSON number representing the number of seconds from
   // 1970- 01 - 01T00: 00: 00Z as measured
   // in UTC until the date/ time.
-  validateRequiredIdToken(dataIdToken: any, configuration: OpenIdConfiguration): boolean {
+  validateRequiredIdToken(
+    dataIdToken: any,
+    configuration: OpenIdConfiguration
+  ): boolean {
     let validated = true;
 
     if (!Object.prototype.hasOwnProperty.call(dataIdToken, 'iss')) {
       validated = false;
-      this.loggerService.logWarning(configuration, 'iss is missing, this is required in the id_token');
+      this.loggerService.logWarning(
+        configuration,
+        'iss is missing, this is required in the id_token'
+      );
     }
 
     if (!Object.prototype.hasOwnProperty.call(dataIdToken, 'sub')) {
       validated = false;
-      this.loggerService.logWarning(configuration, 'sub is missing, this is required in the id_token');
+      this.loggerService.logWarning(
+        configuration,
+        'sub is missing, this is required in the id_token'
+      );
     }
 
     if (!Object.prototype.hasOwnProperty.call(dataIdToken, 'aud')) {
       validated = false;
-      this.loggerService.logWarning(configuration, 'aud is missing, this is required in the id_token');
+      this.loggerService.logWarning(
+        configuration,
+        'aud is missing, this is required in the id_token'
+      );
     }
 
     if (!Object.prototype.hasOwnProperty.call(dataIdToken, 'exp')) {
       validated = false;
-      this.loggerService.logWarning(configuration, 'exp is missing, this is required in the id_token');
+      this.loggerService.logWarning(
+        configuration,
+        'exp is missing, this is required in the id_token'
+      );
     }
 
     if (!Object.prototype.hasOwnProperty.call(dataIdToken, 'iat')) {
       validated = false;
-      this.loggerService.logWarning(configuration, 'iat is missing, this is required in the id_token');
+      this.loggerService.logWarning(
+        configuration,
+        'iat is missing, this is required in the id_token'
+      );
     }
 
     return validated;
@@ -206,7 +261,10 @@ export class TokenValidationService {
     const diff = nowInUtc.valueOf() - dateTimeIatIdToken.valueOf();
     const maxOffsetAllowedInMilliseconds = maxOffsetAllowedInSeconds * 1000;
 
-    this.loggerService.logDebug(configuration, `validate id token iat max offset ${diff} < ${maxOffsetAllowedInMilliseconds}`);
+    this.loggerService.logDebug(
+      configuration,
+      `validate id token iat max offset ${diff} < ${maxOffsetAllowedInMilliseconds}`
+    );
 
     if (diff > 0) {
       return diff < maxOffsetAllowedInMilliseconds;
@@ -222,14 +280,23 @@ export class TokenValidationService {
   // However the nonce claim SHOULD not be present for the refresh_token grant type
   // https://bitbucket.org/openid/connect/issues/1025/ambiguity-with-how-nonce-is-handled-on
   // The current spec is ambiguous and KeyCloak does send it.
-  validateIdTokenNonce(dataIdToken: any, localNonce: any, ignoreNonceAfterRefresh: boolean, configuration: OpenIdConfiguration): boolean {
+  validateIdTokenNonce(
+    dataIdToken: any,
+    localNonce: any,
+    ignoreNonceAfterRefresh: boolean,
+    configuration: OpenIdConfiguration
+  ): boolean {
     const isFromRefreshToken =
-      (dataIdToken.nonce === undefined || ignoreNonceAfterRefresh) && localNonce === TokenValidationService.refreshTokenNoncePlaceholder;
+      (dataIdToken.nonce === undefined || ignoreNonceAfterRefresh) &&
+      localNonce === TokenValidationService.refreshTokenNoncePlaceholder;
 
     if (!isFromRefreshToken && dataIdToken.nonce !== localNonce) {
       this.loggerService.logDebug(
         configuration,
-        'Validate_id_token_nonce failed, dataIdToken.nonce: ' + dataIdToken.nonce + ' local_nonce:' + localNonce
+        'Validate_id_token_nonce failed, dataIdToken.nonce: ' +
+          dataIdToken.nonce +
+          ' local_nonce:' +
+          localNonce
       );
 
       return false;
@@ -240,8 +307,14 @@ export class TokenValidationService {
 
   // id_token C1: The Issuer Identifier for the OpenID Provider (which is typically obtained during Discovery)
   // MUST exactly match the value of the iss (issuer) Claim.
-  validateIdTokenIss(dataIdToken: any, authWellKnownEndpointsIssuer: any, configuration: OpenIdConfiguration): boolean {
-    if ((dataIdToken.iss as string) !== (authWellKnownEndpointsIssuer as string)) {
+  validateIdTokenIss(
+    dataIdToken: any,
+    authWellKnownEndpointsIssuer: any,
+    configuration: OpenIdConfiguration
+  ): boolean {
+    if (
+      (dataIdToken.iss as string) !== (authWellKnownEndpointsIssuer as string)
+    ) {
       this.loggerService.logDebug(
         configuration,
         'Validate_id_token_iss failed, dataIdToken.iss: ' +
@@ -260,14 +333,21 @@ export class TokenValidationService {
   // by the iss (issuer) Claim as an audience.
   // The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience, or if it contains additional audiences
   // not trusted by the Client.
-  validateIdTokenAud(dataIdToken: any, aud: any, configuration: OpenIdConfiguration): boolean {
+  validateIdTokenAud(
+    dataIdToken: any,
+    aud: any,
+    configuration: OpenIdConfiguration
+  ): boolean {
     if (Array.isArray(dataIdToken.aud)) {
       const result = dataIdToken.aud.includes(aud);
 
       if (!result) {
         this.loggerService.logDebug(
           configuration,
-          'Validate_id_token_aud array failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud
+          'Validate_id_token_aud array failed, dataIdToken.aud: ' +
+            dataIdToken.aud +
+            ' client_id:' +
+            aud
         );
 
         return false;
@@ -275,7 +355,13 @@ export class TokenValidationService {
 
       return true;
     } else if (dataIdToken.aud !== aud) {
-      this.loggerService.logDebug(configuration, 'Validate_id_token_aud failed, dataIdToken.aud: ' + dataIdToken.aud + ' client_id:' + aud);
+      this.loggerService.logDebug(
+        configuration,
+        'Validate_id_token_aud failed, dataIdToken.aud: ' +
+          dataIdToken.aud +
+          ' client_id:' +
+          aud
+      );
 
       return false;
     }
@@ -288,7 +374,11 @@ export class TokenValidationService {
       return false;
     }
 
-    return !(Array.isArray(dataIdToken.aud) && dataIdToken.aud.length > 1 && !dataIdToken.azp);
+    return !(
+      Array.isArray(dataIdToken.aud) &&
+      dataIdToken.aud.length > 1 &&
+      !dataIdToken.azp
+    );
   }
 
   // If an azp (authorized party) Claim is present, the Client SHOULD verify that its client_id is the Claim Value.
@@ -300,9 +390,19 @@ export class TokenValidationService {
     return dataIdToken.azp === clientId;
   }
 
-  validateStateFromHashCallback(state: any, localState: any, configuration: OpenIdConfiguration): boolean {
+  validateStateFromHashCallback(
+    state: any,
+    localState: any,
+    configuration: OpenIdConfiguration
+  ): boolean {
     if ((state as string) !== (localState as string)) {
-      this.loggerService.logDebug(configuration, 'ValidateStateFromHashCallback failed, state: ' + state + ' local_state:' + localState);
+      this.loggerService.logDebug(
+        configuration,
+        'ValidateStateFromHashCallback failed, state: ' +
+          state +
+          ' local_state:' +
+          localState
+      );
 
       return false;
     }
@@ -314,7 +414,11 @@ export class TokenValidationService {
   // Header Parameter of the JOSE Header.The Client MUST use the keys provided by the Issuer.
   // id_token C6: The alg value SHOULD be RS256. Validation of tokens using other signing algorithms is described in the
   // OpenID Connect Core 1.0 [OpenID.Core] specification.
-  validateSignatureIdToken(idToken: string, jwtkeys: any, configuration: OpenIdConfiguration): Observable<boolean> {
+  validateSignatureIdToken(
+    idToken: string,
+    jwtkeys: any,
+    configuration: OpenIdConfiguration
+  ): Observable<boolean> {
     if (!idToken) {
       return of(true);
     }
@@ -323,10 +427,20 @@ export class TokenValidationService {
       return of(false);
     }
 
-    const headerData = this.tokenHelperService.getHeaderFromToken(idToken, false, configuration);
+    const headerData = this.tokenHelperService.getHeaderFromToken(
+      idToken,
+      false,
+      configuration
+    );
 
-    if (Object.keys(headerData).length === 0 && headerData.constructor === Object) {
-      this.loggerService.logWarning(configuration, 'id token has no header data');
+    if (
+      Object.keys(headerData).length === 0 &&
+      headerData.constructor === Object
+    ) {
+      this.loggerService.logWarning(
+        configuration,
+        'id token has no header data'
+      );
 
       return of(false);
     }
@@ -353,7 +467,9 @@ export class TokenValidationService {
         : this.jwkExtractor.extractJwk(keys, { kty, use }, false);
 
       if (foundKeys.length === 0) {
-        foundKeys = kid ? this.jwkExtractor.extractJwk(keys, { kid, kty }) : this.jwkExtractor.extractJwk(keys, { kty });
+        foundKeys = kid
+          ? this.jwkExtractor.extractJwk(keys, { kid, kty })
+          : this.jwkExtractor.extractJwk(keys, { kty });
       }
 
       key = foundKeys[0];
@@ -363,22 +479,46 @@ export class TokenValidationService {
       return of(false);
     }
 
-    const algorithm: RsaHashedImportParams | EcKeyImportParams = getImportAlg(alg);
+    const algorithm: RsaHashedImportParams | EcKeyImportParams =
+      getImportAlg(alg);
 
-    const signingInput = this.tokenHelperService.getSigningInputFromToken(idToken, true, configuration);
-    const rawSignature = this.tokenHelperService.getSignatureFromToken(idToken, true, configuration);
+    const signingInput = this.tokenHelperService.getSigningInputFromToken(
+      idToken,
+      true,
+      configuration
+    );
+    const rawSignature = this.tokenHelperService.getSignatureFromToken(
+      idToken,
+      true,
+      configuration
+    );
 
-    return from(this.jwkWindowCryptoService.importVerificationKey(key, algorithm)).pipe(
+    return from(
+      this.jwkWindowCryptoService.importVerificationKey(key, algorithm)
+    ).pipe(
       mergeMap((cryptoKey: CryptoKey) => {
-        const signature: Uint8Array = base64url.parse(rawSignature, { loose: true });
+        const signature: Uint8Array = base64url.parse(rawSignature, {
+          loose: true,
+        });
 
-        const verifyAlgorithm: RsaHashedImportParams | EcdsaParams = getVerifyAlg(alg);
+        const verifyAlgorithm: RsaHashedImportParams | EcdsaParams =
+          getVerifyAlg(alg);
 
-        return from(this.jwkWindowCryptoService.verifyKey(verifyAlgorithm, cryptoKey, signature, signingInput));
+        return from(
+          this.jwkWindowCryptoService.verifyKey(
+            verifyAlgorithm,
+            cryptoKey,
+            signature,
+            signingInput
+          )
+        );
       }),
       tap((isValid: boolean) => {
         if (!isValid) {
-          this.loggerService.logWarning(configuration, 'incorrect Signature, validation failed for id_token');
+          this.loggerService.logWarning(
+            configuration,
+            'incorrect Signature, validation failed for id_token'
+          );
         }
       })
     );
@@ -404,8 +544,16 @@ export class TokenValidationService {
   // access_token C2: Take the left- most half of the hash and base64url- encode it.
   // access_token C3: The value of at_hash in the ID Token MUST match the value produced in the previous step if at_hash
   // is present in the ID Token.
-  validateIdTokenAtHash(accessToken: string, atHash: string, idTokenAlg: string, configuration: OpenIdConfiguration): Observable<boolean> {
-    this.loggerService.logDebug(configuration, 'at_hash from the server:' + atHash);
+  validateIdTokenAtHash(
+    accessToken: string,
+    atHash: string,
+    idTokenAlg: string,
+    configuration: OpenIdConfiguration
+  ): Observable<boolean> {
+    this.loggerService.logDebug(
+      configuration,
+      'at_hash from the server:' + atHash
+    );
 
     // 'sha256' 'sha384' 'sha512'
     let sha = 'SHA-256';
@@ -416,22 +564,32 @@ export class TokenValidationService {
       sha = 'SHA-512';
     }
 
-    return this.jwtWindowCryptoService.generateAtHash('' + accessToken, sha).pipe(
-      mergeMap((hash: string) => {
-        this.loggerService.logDebug(configuration, 'at_hash client validation not decoded:' + hash);
-        if (hash === atHash) {
-          return of(true); // isValid;
-        } else {
-          return this.jwtWindowCryptoService.generateAtHash('' + decodeURIComponent(accessToken), sha).pipe(
-            map((newHash: string) => {
-              this.loggerService.logDebug(configuration, '-gen access--' + hash);
-
-              return newHash === atHash;
-            })
+    return this.jwtWindowCryptoService
+      .generateAtHash('' + accessToken, sha)
+      .pipe(
+        mergeMap((hash: string) => {
+          this.loggerService.logDebug(
+            configuration,
+            'at_hash client validation not decoded:' + hash
           );
-        }
-      })
-    );
+          if (hash === atHash) {
+            return of(true); // isValid;
+          } else {
+            return this.jwtWindowCryptoService
+              .generateAtHash('' + decodeURIComponent(accessToken), sha)
+              .pipe(
+                map((newHash: string) => {
+                  this.loggerService.logDebug(
+                    configuration,
+                    '-gen access--' + hash
+                  );
+
+                  return newHash === atHash;
+                })
+              );
+          }
+        })
+      );
   }
 
   private millisToMinutesAndSeconds(millis: number): string {

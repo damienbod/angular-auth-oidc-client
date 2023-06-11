@@ -43,7 +43,9 @@ describe('CurrentUrlService with existing Url', () => {
     });
 
     it('returns the state param for the URL if one is passed', () => {
-      const stateParam = service.getStateParamFromCurrentUrl('http://my-url.com?state=my-passed-state');
+      const stateParam = service.getStateParamFromCurrentUrl(
+        'http://my-url.com?state=my-passed-state'
+      );
 
       expect(stateParam).toBe('my-passed-state');
     });

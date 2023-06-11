@@ -67,7 +67,9 @@ describe('ParLoginService', () => {
   beforeEach(() => {
     service = TestBed.inject(ParLoginService);
     loggerService = TestBed.inject(LoggerService);
-    responseTypeValidationService = TestBed.inject(ResponseTypeValidationService);
+    responseTypeValidationService = TestBed.inject(
+      ResponseTypeValidationService
+    );
     authWellKnownService = TestBed.inject(AuthWellKnownService);
     parService = TestBed.inject(ParService);
     urlService = TestBed.inject(UrlService);
@@ -82,7 +84,10 @@ describe('ParLoginService', () => {
 
   describe('loginPar', () => {
     it('does nothing if it has an invalid response type', waitForAsync(() => {
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(false);
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(false);
       const loggerSpy = spyOn(loggerService, 'logError');
 
       const result = service.loginPar({});
@@ -92,11 +97,19 @@ describe('ParLoginService', () => {
     }));
 
     it('calls parService.postParRequest without custom params when no custom params are passed', waitForAsync(() => {
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
 
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
 
-      const spy = spyOn(parService, 'postParRequest').and.returnValue(of({ requestUri: 'requestUri' } as ParResponse));
+      const spy = spyOn(parService, 'postParRequest').and.returnValue(
+        of({ requestUri: 'requestUri' } as ParResponse)
+      );
 
       const result = service.loginPar({
         authWellknownEndpointUrl: 'authWellknownEndpoint',
@@ -108,32 +121,50 @@ describe('ParLoginService', () => {
     }));
 
     it('calls parService.postParRequest with custom params when custom params are passed', waitForAsync(() => {
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
 
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
 
-      const spy = spyOn(parService, 'postParRequest').and.returnValue(of({ requestUri: 'requestUri' } as ParResponse));
+      const spy = spyOn(parService, 'postParRequest').and.returnValue(
+        of({ requestUri: 'requestUri' } as ParResponse)
+      );
 
-      const result = service.loginPar(config, { customParams: { some: 'thing' } });
+      const result = service.loginPar(config, {
+        customParams: { some: 'thing' },
+      });
 
       expect(result).toBeUndefined();
       expect(spy).toHaveBeenCalledOnceWith(config, { some: 'thing' });
     }));
 
     it('returns undefined and logs error when no url could be created', waitForAsync(() => {
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
 
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
 
-      spyOn(parService, 'postParRequest').and.returnValue(of({ requestUri: 'requestUri' } as ParResponse));
+      spyOn(parService, 'postParRequest').and.returnValue(
+        of({ requestUri: 'requestUri' } as ParResponse)
+      );
       spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('');
       const spy = spyOn(loggerService, 'logError');
 
@@ -144,15 +175,23 @@ describe('ParLoginService', () => {
     }));
 
     it('calls redirect service redirectTo when url could be created', waitForAsync(() => {
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
 
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
 
-      spyOn(parService, 'postParRequest').and.returnValue(of({ requestUri: 'requestUri' } as ParResponse));
+      spyOn(parService, 'postParRequest').and.returnValue(
+        of({ requestUri: 'requestUri' } as ParResponse)
+      );
       spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
       const spy = spyOn(redirectService, 'redirectTo');
 
@@ -162,15 +201,23 @@ describe('ParLoginService', () => {
     }));
 
     it('calls urlHandler when URL is passed', waitForAsync(() => {
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
 
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
 
-      spyOn(parService, 'postParRequest').and.returnValue(of({ requestUri: 'requestUri' } as ParResponse));
+      spyOn(parService, 'postParRequest').and.returnValue(
+        of({ requestUri: 'requestUri' } as ParResponse)
+      );
       spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
       const redirectToSpy = spyOn(redirectService, 'redirectTo');
       const spy = jasmine.createSpy();
@@ -187,7 +234,10 @@ describe('ParLoginService', () => {
 
   describe('loginWithPopUpPar', () => {
     it('does nothing if it has an invalid response type', waitForAsync(() => {
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(false);
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(false);
       const loggerSpy = spyOn(loggerService, 'logError');
       const config = {};
       const allConfigs = [config];
@@ -201,81 +251,129 @@ describe('ParLoginService', () => {
     }));
 
     it('calls parService.postParRequest without custom params when no custom params are passed', waitForAsync(() => {
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
       const allConfigs = [config];
 
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
 
-      const spy = spyOn(parService, 'postParRequest').and.returnValue(of({ requestUri: 'requestUri' } as ParResponse));
+      const spy = spyOn(parService, 'postParRequest').and.returnValue(
+        of({ requestUri: 'requestUri' } as ParResponse)
+      );
 
       service.loginWithPopUpPar(config, allConfigs).subscribe({
         error: (err) => {
           expect(spy).toHaveBeenCalled();
-          expect(err.message).toBe("Could not create URL with param requestUri: 'url'");
+          expect(err.message).toBe(
+            "Could not create URL with param requestUri: 'url'"
+          );
         },
       });
     }));
 
     it('calls parService.postParRequest with custom params when custom params are passed', waitForAsync(() => {
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
       const allConfigs = [config];
 
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
 
-      const spy = spyOn(parService, 'postParRequest').and.returnValue(of({ requestUri: 'requestUri' } as ParResponse));
+      const spy = spyOn(parService, 'postParRequest').and.returnValue(
+        of({ requestUri: 'requestUri' } as ParResponse)
+      );
 
-      service.loginWithPopUpPar(config, allConfigs, { customParams: { some: 'thing' } }).subscribe({
-        error: (err) => {
-          expect(spy).toHaveBeenCalledOnceWith(config, { some: 'thing' });
-          expect(err.message).toBe("Could not create URL with param requestUri: 'url'");
-        },
-      });
+      service
+        .loginWithPopUpPar(config, allConfigs, {
+          customParams: { some: 'thing' },
+        })
+        .subscribe({
+          error: (err) => {
+            expect(spy).toHaveBeenCalledOnceWith(config, { some: 'thing' });
+            expect(err.message).toBe(
+              "Could not create URL with param requestUri: 'url'"
+            );
+          },
+        });
     }));
 
     it('returns undefined and logs error when no URL could be created', waitForAsync(() => {
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
       const allConfigs = [config];
 
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
 
-      spyOn(parService, 'postParRequest').and.returnValue(of({ requestUri: 'requestUri' } as ParResponse));
+      spyOn(parService, 'postParRequest').and.returnValue(
+        of({ requestUri: 'requestUri' } as ParResponse)
+      );
       spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('');
       const spy = spyOn(loggerService, 'logError');
 
-      service.loginWithPopUpPar(config, allConfigs, { customParams: { some: 'thing' } }).subscribe({
-        error: (err) => {
-          expect(err.message).toBe("Could not create URL with param requestUri: 'url'");
-          expect(spy).toHaveBeenCalledTimes(1);
-        },
-      });
+      service
+        .loginWithPopUpPar(config, allConfigs, {
+          customParams: { some: 'thing' },
+        })
+        .subscribe({
+          error: (err) => {
+            expect(err.message).toBe(
+              "Could not create URL with param requestUri: 'url'"
+            );
+            expect(spy).toHaveBeenCalledTimes(1);
+          },
+        });
     }));
 
     it('calls popupService openPopUp when URL could be created', waitForAsync(() => {
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
       const allConfigs = [config];
 
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
 
-      spyOn(parService, 'postParRequest').and.returnValue(of({ requestUri: 'requestUri' } as ParResponse));
+      spyOn(parService, 'postParRequest').and.returnValue(
+        of({ requestUri: 'requestUri' } as ParResponse)
+      );
       spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
       spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
-      spyOnProperty(popupService, 'result$').and.returnValue(of({} as PopupResult));
+      spyOnProperty(popupService, 'result$').and.returnValue(
+        of({} as PopupResult)
+      );
       const spy = spyOn(popupService, 'openPopUp');
 
       service.loginWithPopUpPar(config, allConfigs).subscribe(() => {
@@ -284,7 +382,10 @@ describe('ParLoginService', () => {
     }));
 
     it('returns correct properties if URL is received', waitForAsync(() => {
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
@@ -292,9 +393,14 @@ describe('ParLoginService', () => {
       };
       const allConfigs = [config];
 
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
 
-      spyOn(parService, 'postParRequest').and.returnValue(of({ requestUri: 'requestUri' } as ParResponse));
+      spyOn(parService, 'postParRequest').and.returnValue(
+        of({ requestUri: 'requestUri' } as ParResponse)
+      );
       spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
 
       const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(
@@ -306,12 +412,19 @@ describe('ParLoginService', () => {
           accessToken: 'anyAccessToken',
         })
       );
-      const popupResult: PopupResult = { userClosed: false, receivedUrl: 'someUrl' };
+      const popupResult: PopupResult = {
+        userClosed: false,
+        receivedUrl: 'someUrl',
+      };
 
       spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
       service.loginWithPopUpPar(config, allConfigs).subscribe((result) => {
-        expect(checkAuthSpy).toHaveBeenCalledOnceWith(config, allConfigs, 'someUrl');
+        expect(checkAuthSpy).toHaveBeenCalledOnceWith(
+          config,
+          allConfigs,
+          'someUrl'
+        );
 
         expect(result).toEqual({
           isAuthenticated: true,
@@ -324,7 +437,10 @@ describe('ParLoginService', () => {
     }));
 
     it('returns correct properties if popup was closed by user', waitForAsync(() => {
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
@@ -332,9 +448,14 @@ describe('ParLoginService', () => {
       };
       const allConfigs = [config];
 
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
 
-      spyOn(parService, 'postParRequest').and.returnValue(of({ requestUri: 'requestUri' } as ParResponse));
+      spyOn(parService, 'postParRequest').and.returnValue(
+        of({ requestUri: 'requestUri' } as ParResponse)
+      );
       spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
 
       const checkAuthSpy = spyOn(checkAuthService, 'checkAuth');

@@ -32,7 +32,11 @@ export class PopUpLoginService {
   ): Observable<LoginResponse> {
     const { configId } = configuration;
 
-    if (!this.responseTypeValidationService.hasConfigValidResponseType(configuration)) {
+    if (
+      !this.responseTypeValidationService.hasConfigValidResponseType(
+        configuration
+      )
+    ) {
       const errorMessage = 'Invalid response type!';
 
       this.loggerService.logError(configuration, errorMessage);
@@ -40,32 +44,45 @@ export class PopUpLoginService {
       return throwError(() => new Error(errorMessage));
     }
 
-    this.loggerService.logDebug(configuration, 'BEGIN Authorize OIDC Flow with popup, no auth data');
-
-    return this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(configuration).pipe(
-      switchMap(() => this.urlService.getAuthorizeUrl(configuration, authOptions)),
-      tap((authUrl: string) => this.popupService.openPopUp(authUrl, popupOptions, configuration)),
-      switchMap(() => {
-        return this.popupService.result$.pipe(
-          take(1),
-          switchMap((result: PopupResultReceivedUrl) => {
-            const { userClosed, receivedUrl } = result;
-
-            if (userClosed) {
-              return of({
-                isAuthenticated: false,
-                errorMessage: 'User closed popup',
-                userData: null,
-                idToken: null,
-                accessToken: null,
-                configId,
-              });
-            }
-
-            return this.checkAuthService.checkAuth(configuration, allConfigs, receivedUrl);
-          })
-        );
-      })
+    this.loggerService.logDebug(
+      configuration,
+      'BEGIN Authorize OIDC Flow with popup, no auth data'
     );
+
+    return this.authWellKnownService
+      .queryAndStoreAuthWellKnownEndPoints(configuration)
+      .pipe(
+        switchMap(() =>
+          this.urlService.getAuthorizeUrl(configuration, authOptions)
+        ),
+        tap((authUrl: string) =>
+          this.popupService.openPopUp(authUrl, popupOptions, configuration)
+        ),
+        switchMap(() => {
+          return this.popupService.result$.pipe(
+            take(1),
+            switchMap((result: PopupResultReceivedUrl) => {
+              const { userClosed, receivedUrl } = result;
+
+              if (userClosed) {
+                return of({
+                  isAuthenticated: false,
+                  errorMessage: 'User closed popup',
+                  userData: null,
+                  idToken: null,
+                  accessToken: null,
+                  configId,
+                });
+              }
+
+              return this.checkAuthService.checkAuth(
+                configuration,
+                allConfigs,
+                receivedUrl
+              );
+            })
+          );
+        })
+      );
   }
 }

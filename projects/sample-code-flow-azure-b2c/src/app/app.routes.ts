@@ -7,9 +7,21 @@ import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 
 const appRoutes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
-  { path: 'home', component: HomeComponent, canActivate: [AutoLoginAllRoutesGuard] },
-  { path: 'forbidden', component: ForbiddenComponent, canActivate: [AutoLoginAllRoutesGuard] },
-  { path: 'protected', component: ProtectedComponent, canActivate: [AutoLoginAllRoutesGuard] },
+  {
+    path: 'home',
+    component: HomeComponent,
+    canActivate: [AutoLoginAllRoutesGuard],
+  },
+  {
+    path: 'forbidden',
+    component: ForbiddenComponent,
+    canActivate: [AutoLoginAllRoutesGuard],
+  },
+  {
+    path: 'protected',
+    component: ProtectedComponent,
+    canActivate: [AutoLoginAllRoutesGuard],
+  },
   { path: 'unauthorized', component: UnauthorizedComponent },
 ];
 

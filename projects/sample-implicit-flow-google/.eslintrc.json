@@ -5,7 +5,10 @@
     {
       "files": ["*.ts"],
       "parserOptions": {
-        "project": ["projects/sample-implicit-flow-google/tsconfig.app.json", "projects/sample-implicit-flow-google/tsconfig.spec.json"],
+        "project": [
+          "projects/sample-implicit-flow-google/tsconfig.app.json",
+          "projects/sample-implicit-flow-google/tsconfig.spec.json"
+        ],
         "createDefaultProgram": true
       },
       "rules": {

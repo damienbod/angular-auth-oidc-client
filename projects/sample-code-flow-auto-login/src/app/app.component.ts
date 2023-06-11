@@ -10,10 +10,12 @@ export class AppComponent implements OnInit {
   constructor(private oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken }) => {
-      console.log('app authenticated', isAuthenticated);
-      console.log(`Current access token is '${accessToken}'`);
-    });
+    this.oidcSecurityService
+      .checkAuth()
+      .subscribe(({ isAuthenticated, userData, accessToken }) => {
+        console.log('app authenticated', isAuthenticated);
+        console.log(`Current access token is '${accessToken}'`);
+      });
   }
 
   login() {
@@ -28,6 +30,8 @@ export class AppComponent implements OnInit {
 
   logout() {
     console.log('start logoff');
-    this.oidcSecurityService.logoff().subscribe((result) => console.log(result));
+    this.oidcSecurityService
+      .logoff()
+      .subscribe((result) => console.log(result));
   }
 }

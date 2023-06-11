@@ -34,14 +34,20 @@ export class HomeComponent implements OnInit {
   }
 
   forceRefreshSession() {
-    this.oidcSecurityService.forceRefreshSession().subscribe((result) => console.warn(result));
+    this.oidcSecurityService
+      .forceRefreshSession()
+      .subscribe((result) => console.warn(result));
   }
 
   logout(configId: string) {
-    this.oidcSecurityService.logoff(configId).subscribe((result) => console.log(result));
+    this.oidcSecurityService
+      .logoff(configId)
+      .subscribe((result) => console.log(result));
   }
 
   refreshSession(configId: string) {
-    this.oidcSecurityService.forceRefreshSession(null, configId).subscribe((result) => console.log(result));
+    this.oidcSecurityService
+      .forceRefreshSession(null, configId)
+      .subscribe((result) => console.log(result));
   }
 }

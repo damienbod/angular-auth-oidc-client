@@ -7,22 +7,37 @@ import { LogLevel } from './log-level';
 export class LoggerService {
   constructor(private readonly abstractLoggerService: AbstractLoggerService) {}
 
-  logError(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {
+  logError(
+    configuration: OpenIdConfiguration,
+    message: any,
+    ...args: any[]
+  ): void {
     if (this.loggingIsTurnedOff(configuration)) {
       return;
     }
 
     const { configId } = configuration;
-    const messageToLog = this.isObject(message) ? JSON.stringify(message) : message;
+    const messageToLog = this.isObject(message)
+      ? JSON.stringify(message)
+      : message;
 
     if (!!args && !!args.length) {
-      this.abstractLoggerService.logError(`[ERROR] ${configId} - ${messageToLog}`, ...args);
+      this.abstractLoggerService.logError(
+        `[ERROR] ${configId} - ${messageToLog}`,
+        ...args
+      );
     } else {
-      this.abstractLoggerService.logError(`[ERROR] ${configId} - ${messageToLog}`);
+      this.abstractLoggerService.logError(
+        `[ERROR] ${configId} - ${messageToLog}`
+      );
     }
   }
 
-  logWarning(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {
+  logWarning(
+    configuration: OpenIdConfiguration,
+    message: any,
+    ...args: any[]
+  ): void {
     if (!this.logLevelIsSet(configuration)) {
       return;
     }
@@ -31,21 +46,34 @@ export class LoggerService {
       return;
     }
 
-    if (!this.currentLogLevelIsEqualOrSmallerThan(configuration, LogLevel.Warn)) {
+    if (
+      !this.currentLogLevelIsEqualOrSmallerThan(configuration, LogLevel.Warn)
+    ) {
       return;
     }
 
     const { configId } = configuration;
-    const messageToLog = this.isObject(message) ? JSON.stringify(message) : message;
+    const messageToLog = this.isObject(message)
+      ? JSON.stringify(message)
+      : message;
 
     if (!!args && !!args.length) {
-      this.abstractLoggerService.logWarning(`[WARN] ${configId} - ${messageToLog}`, ...args);
+      this.abstractLoggerService.logWarning(
+        `[WARN] ${configId} - ${messageToLog}`,
+        ...args
+      );
     } else {
-      this.abstractLoggerService.logWarning(`[WARN] ${configId} - ${messageToLog}`);
+      this.abstractLoggerService.logWarning(
+        `[WARN] ${configId} - ${messageToLog}`
+      );
     }
   }
 
-  logDebug(configuration: OpenIdConfiguration, message: any, ...args: any[]): void {
+  logDebug(
+    configuration: OpenIdConfiguration,
+    message: any,
+    ...args: any[]
+  ): void {
     if (!this.logLevelIsSet(configuration)) {
       return;
     }
@@ -54,21 +82,33 @@ export class LoggerService {
       return;
     }
 
-    if (!this.currentLogLevelIsEqualOrSmallerThan(configuration, LogLevel.Debug)) {
+    if (
+      !this.currentLogLevelIsEqualOrSmallerThan(configuration, LogLevel.Debug)
+    ) {
       return;
     }
 
     const { configId } = configuration;
-    const messageToLog = this.isObject(message) ? JSON.stringify(message) : message;
+    const messageToLog = this.isObject(message)
+      ? JSON.stringify(message)
+      : message;
 
     if (!!args && !!args.length) {
-      this.abstractLoggerService.logDebug(`[DEBUG] ${configId} - ${messageToLog}`, ...args);
+      this.abstractLoggerService.logDebug(
+        `[DEBUG] ${configId} - ${messageToLog}`,
+        ...args
+      );
     } else {
-      this.abstractLoggerService.logDebug(`[DEBUG] ${configId} - ${messageToLog}`);
+      this.abstractLoggerService.logDebug(
+        `[DEBUG] ${configId} - ${messageToLog}`
+      );
     }
   }
 
-  private currentLogLevelIsEqualOrSmallerThan(configuration: OpenIdConfiguration, logLevelToCompare: LogLevel): boolean {
+  private currentLogLevelIsEqualOrSmallerThan(
+    configuration: OpenIdConfiguration,
+    logLevelToCompare: LogLevel
+  ): boolean {
     const { logLevel } = configuration || {};
 
     return logLevel <= logLevelToCompare;

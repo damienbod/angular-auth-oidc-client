@@ -26,19 +26,27 @@ export class UserCallbackHandlerService {
     configuration: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
   ): Observable<CallbackContext> {
-    const { isRenewProcess, validationResult, authResult, refreshToken } = callbackContext;
+    const { isRenewProcess, validationResult, authResult, refreshToken } =
+      callbackContext;
     const { autoUserInfo, renewUserInfoAfterTokenRenew } = configuration;
 
     if (!autoUserInfo) {
       if (!isRenewProcess || renewUserInfoAfterTokenRenew) {
         // userData is set to the id_token decoded, auto get user data set to false
         if (validationResult.decodedIdToken) {
-          this.userService.setUserDataToStore(validationResult.decodedIdToken, configuration, allConfigs);
+          this.userService.setUserDataToStore(
+            validationResult.decodedIdToken,
+            configuration,
+            allConfigs
+          );
         }
       }
 
       if (!isRenewProcess && !refreshToken) {
-        this.flowsDataService.setSessionState(authResult.session_state, configuration);
+        this.flowsDataService.setSessionState(
+          authResult.session_state,
+          configuration
+        );
       }
 
       this.publishAuthState(validationResult, isRenewProcess);
@@ -47,19 +55,31 @@ export class UserCallbackHandlerService {
     }
 
     return this.userService
-      .getAndPersistUserDataInStore(configuration, allConfigs, isRenewProcess, validationResult.idToken, validationResult.decodedIdToken)
+      .getAndPersistUserDataInStore(
+        configuration,
+        allConfigs,
+        isRenewProcess,
+        validationResult.idToken,
+        validationResult.decodedIdToken
+      )
       .pipe(
         switchMap((userData) => {
           if (!!userData) {
             if (!refreshToken) {
-              this.flowsDataService.setSessionState(authResult.session_state, configuration);
+              this.flowsDataService.setSessionState(
+                authResult.session_state,
+                configuration
+              );
             }
 
             this.publishAuthState(validationResult, isRenewProcess);
 
             return of(callbackContext);
           } else {
-            this.resetAuthDataService.resetAuthorizationData(configuration, allConfigs);
+            this.resetAuthDataService.resetAuthorizationData(
+              configuration,
+              allConfigs
+            );
             this.publishUnauthenticatedState(validationResult, isRenewProcess);
             const errorMessage = `Called for userData but they were ${userData}`;
 
@@ -78,7 +98,10 @@ export class UserCallbackHandlerService {
       );
   }
 
-  private publishAuthState(stateValidationResult: StateValidationResult, isRenewProcess: boolean): void {
+  private publishAuthState(
+    stateValidationResult: StateValidationResult,
+    isRenewProcess: boolean
+  ): void {
     this.authStateService.updateAndPublishAuthState({
       isAuthenticated: true,
       validationResult: stateValidationResult.state,
@@ -86,7 +109,10 @@ export class UserCallbackHandlerService {
     });
   }
 
-  private publishUnauthenticatedState(stateValidationResult: StateValidationResult, isRenewProcess: boolean): void {
+  private publishUnauthenticatedState(
+    stateValidationResult: StateValidationResult,
+    isRenewProcess: boolean
+  ): void {
     this.authStateService.updateAndPublishAuthState({
       isAuthenticated: false,
       validationResult: stateValidationResult.state,

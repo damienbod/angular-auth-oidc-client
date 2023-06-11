@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DefaultLocalStorageService implements AbstractSecurityStorage {
   public read(key: string): any {

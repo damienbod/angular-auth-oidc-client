@@ -8,20 +8,30 @@ export class FlowHelper {
   }
 
   isCurrentFlowAnyImplicitFlow(configuration: OpenIdConfiguration): boolean {
-    return this.isCurrentFlowImplicitFlowWithAccessToken(configuration) || this.isCurrentFlowImplicitFlowWithoutAccessToken(configuration);
+    return (
+      this.isCurrentFlowImplicitFlowWithAccessToken(configuration) ||
+      this.isCurrentFlowImplicitFlowWithoutAccessToken(configuration)
+    );
   }
 
-  isCurrentFlowCodeFlowWithRefreshTokens(configuration: OpenIdConfiguration): boolean {
+  isCurrentFlowCodeFlowWithRefreshTokens(
+    configuration: OpenIdConfiguration
+  ): boolean {
     const { useRefreshToken } = configuration;
 
     return this.isCurrentFlowCodeFlow(configuration) && useRefreshToken;
   }
 
-  isCurrentFlowImplicitFlowWithAccessToken(configuration: OpenIdConfiguration): boolean {
+  isCurrentFlowImplicitFlowWithAccessToken(
+    configuration: OpenIdConfiguration
+  ): boolean {
     return this.currentFlowIs('id_token token', configuration);
   }
 
-  currentFlowIs(flowTypes: string[] | string, configuration: OpenIdConfiguration): boolean {
+  currentFlowIs(
+    flowTypes: string[] | string,
+    configuration: OpenIdConfiguration
+  ): boolean {
     const { responseType } = configuration;
 
     if (Array.isArray(flowTypes)) {
@@ -31,7 +41,9 @@ export class FlowHelper {
     return responseType === flowTypes;
   }
 
-  private isCurrentFlowImplicitFlowWithoutAccessToken(configuration: OpenIdConfiguration): boolean {
+  private isCurrentFlowImplicitFlowWithoutAccessToken(
+    configuration: OpenIdConfiguration
+  ): boolean {
     return this.currentFlowIs('id_token', configuration);
   }
 }

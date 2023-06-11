@@ -39,10 +39,14 @@ export class ConfigurationService {
       return of(this.getConfig(configId));
     }
 
-    return this.getOpenIDConfigurations(configId).pipe(map((result) => result.currentConfig));
+    return this.getOpenIDConfigurations(configId).pipe(
+      map((result) => result.currentConfig)
+    );
   }
 
-  getOpenIDConfigurations(configId?: string): Observable<{ allConfigs; currentConfig }> {
+  getOpenIDConfigurations(
+    configId?: string
+  ): Observable<{ allConfigs; currentConfig }> {
     return this.loadConfigs().pipe(
       concatMap((allConfigs) => this.prepareAndSaveConfigs(allConfigs)),
       map((allPreparedConfigs) => ({
@@ -80,7 +84,9 @@ export class ConfigurationService {
     return value || null;
   }
 
-  private prepareAndSaveConfigs(passedConfigs: OpenIdConfiguration[]): Observable<OpenIdConfiguration[]> {
+  private prepareAndSaveConfigs(
+    passedConfigs: OpenIdConfiguration[]
+  ): Observable<OpenIdConfiguration[]> {
     if (!this.configValidationService.validateConfigs(passedConfigs)) {
       return of(null);
     }
@@ -99,9 +105,14 @@ export class ConfigurationService {
     });
   }
 
-  private handleConfig(passedConfig: OpenIdConfiguration): Observable<OpenIdConfiguration> {
+  private handleConfig(
+    passedConfig: OpenIdConfiguration
+  ): Observable<OpenIdConfiguration> {
     if (!this.configValidationService.validateConfig(passedConfig)) {
-      this.loggerService.logError(passedConfig, 'Validation of config rejected with errors. Config is NOT set.');
+      this.loggerService.logError(
+        passedConfig,
+        'Validation of config rejected with errors. Config is NOT set.'
+      );
 
       return of(null);
     }
@@ -114,18 +125,29 @@ export class ConfigurationService {
 
     this.saveConfig(usedConfig);
 
-    const configWithAuthWellKnown = this.enhanceConfigWithWellKnownEndpoint(usedConfig);
+    const configWithAuthWellKnown =
+      this.enhanceConfigWithWellKnownEndpoint(usedConfig);
 
-    this.publicEventsService.fireEvent<OpenIdConfiguration>(EventTypes.ConfigLoaded, configWithAuthWellKnown);
+    this.publicEventsService.fireEvent<OpenIdConfiguration>(
+      EventTypes.ConfigLoaded,
+      configWithAuthWellKnown
+    );
 
     return of(usedConfig);
   }
 
-  private enhanceConfigWithWellKnownEndpoint(configuration: OpenIdConfiguration): OpenIdConfiguration {
-    const alreadyExistingAuthWellKnownEndpoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
+  private enhanceConfigWithWellKnownEndpoint(
+    configuration: OpenIdConfiguration
+  ): OpenIdConfiguration {
+    const alreadyExistingAuthWellKnownEndpoints =
+      this.storagePersistenceService.read(
+        'authWellKnownEndPoints',
+        configuration
+      );
 
     if (!!alreadyExistingAuthWellKnownEndpoints) {
-      configuration.authWellknownEndpoints = alreadyExistingAuthWellKnownEndpoints;
+      configuration.authWellknownEndpoints =
+        alreadyExistingAuthWellKnownEndpoints;
 
       return configuration;
     }
@@ -133,7 +155,10 @@ export class ConfigurationService {
     const passedAuthWellKnownEndpoints = configuration.authWellknownEndpoints;
 
     if (!!passedAuthWellKnownEndpoints) {
-      this.authWellKnownService.storeWellKnownEndpoints(configuration, passedAuthWellKnownEndpoints);
+      this.authWellKnownService.storeWellKnownEndpoints(
+        configuration,
+        passedAuthWellKnownEndpoints
+      );
       configuration.authWellknownEndpoints = passedAuthWellKnownEndpoints;
 
       return configuration;
@@ -142,7 +167,9 @@ export class ConfigurationService {
     return configuration;
   }
 
-  private prepareConfig(configuration: OpenIdConfiguration): OpenIdConfiguration {
+  private prepareConfig(
+    configuration: OpenIdConfiguration
+  ): OpenIdConfiguration {
     const openIdConfigurationInternal = { ...DEFAULT_CONFIG, ...configuration };
 
     this.setSpecialCases(openIdConfigurationInternal);

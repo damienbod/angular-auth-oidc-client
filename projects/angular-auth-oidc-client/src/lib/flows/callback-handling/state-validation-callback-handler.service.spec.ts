@@ -23,9 +23,15 @@ describe('StateValidationCallbackHandlerService', () => {
       providers: [
         StateValidationCallbackHandlerService,
         { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: StateValidationService, useClass: mockClass(StateValidationService) },
+        {
+          provide: StateValidationService,
+          useClass: mockClass(StateValidationService),
+        },
         { provide: AuthStateService, useClass: mockClass(AuthStateService) },
-        { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
+        {
+          provide: ResetAuthDataService,
+          useClass: mockClass(ResetAuthDataService),
+        },
         {
           provide: DOCUMENT,
           useValue: {
@@ -65,14 +71,20 @@ describe('StateValidationCallbackHandlerService', () => {
       );
       const allConfigs = [{ configId: 'configId1' }];
 
-      service.callbackStateValidation({} as CallbackContext, allConfigs[0], allConfigs).subscribe((newCallbackContext) => {
-        expect(newCallbackContext).toEqual({
-          validationResult: {
-            idToken: 'idTokenJustForTesting',
-            authResponseIsValid: true,
-          },
-        } as CallbackContext);
-      });
+      service
+        .callbackStateValidation(
+          {} as CallbackContext,
+          allConfigs[0],
+          allConfigs
+        )
+        .subscribe((newCallbackContext) => {
+          expect(newCallbackContext).toEqual({
+            validationResult: {
+              idToken: 'idTokenJustForTesting',
+              authResponseIsValid: true,
+            },
+          } as CallbackContext);
+        });
     }));
 
     it('logs error in case of an error', waitForAsync(() => {
@@ -85,14 +97,20 @@ describe('StateValidationCallbackHandlerService', () => {
       const loggerSpy = spyOn(loggerService, 'logWarning');
       const allConfigs = [{ configId: 'configId1' }];
 
-      service.callbackStateValidation({} as CallbackContext, allConfigs[0], allConfigs).subscribe({
-        error: () => {
-          expect(loggerSpy).toHaveBeenCalledOnceWith(
-            allConfigs[0],
-            'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
-          );
-        },
-      });
+      service
+        .callbackStateValidation(
+          {} as CallbackContext,
+          allConfigs[0],
+          allConfigs
+        )
+        .subscribe({
+          error: () => {
+            expect(loggerSpy).toHaveBeenCalledOnceWith(
+              allConfigs[0],
+              'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
+            );
+          },
+        });
     }));
 
     it('calls resetAuthDataService.resetAuthorizationData and authStateService.updateAndPublishAuthState in case of an error', waitForAsync(() => {
@@ -103,20 +121,32 @@ describe('StateValidationCallbackHandlerService', () => {
         } as StateValidationResult)
       );
 
-      const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
-      const updateAndPublishAuthStateSpy = spyOn(authStateService, 'updateAndPublishAuthState');
+      const resetAuthorizationDataSpy = spyOn(
+        resetAuthDataService,
+        'resetAuthorizationData'
+      );
+      const updateAndPublishAuthStateSpy = spyOn(
+        authStateService,
+        'updateAndPublishAuthState'
+      );
       const allConfigs = [{ configId: 'configId1' }];
 
-      service.callbackStateValidation({ isRenewProcess: true } as CallbackContext, allConfigs[0], allConfigs).subscribe({
-        error: () => {
-          expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
-          expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
-            isAuthenticated: false,
-            validationResult: ValidationResult.LoginRequired,
-            isRenewProcess: true,
-          });
-        },
-      });
+      service
+        .callbackStateValidation(
+          { isRenewProcess: true } as CallbackContext,
+          allConfigs[0],
+          allConfigs
+        )
+        .subscribe({
+          error: () => {
+            expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
+            expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
+              isAuthenticated: false,
+              validationResult: ValidationResult.LoginRequired,
+              isRenewProcess: true,
+            });
+          },
+        });
     }));
   });
 });

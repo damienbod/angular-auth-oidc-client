@@ -35,14 +35,29 @@ export class CallbackService {
     let callback$: Observable<any>;
 
     if (this.flowHelper.isCurrentFlowCodeFlow(config)) {
-      callback$ = this.codeFlowCallbackService.authenticatedCallbackWithCode(currentCallbackUrl, config, allConfigs);
+      callback$ = this.codeFlowCallbackService.authenticatedCallbackWithCode(
+        currentCallbackUrl,
+        config,
+        allConfigs
+      );
     } else if (this.flowHelper.isCurrentFlowAnyImplicitFlow(config)) {
       if (currentCallbackUrl?.includes('#')) {
-        const hash = currentCallbackUrl.substring(currentCallbackUrl.indexOf('#') + 1);
+        const hash = currentCallbackUrl.substring(
+          currentCallbackUrl.indexOf('#') + 1
+        );
 
-        callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(config, allConfigs, hash);
+        callback$ =
+          this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(
+            config,
+            allConfigs,
+            hash
+          );
       } else {
-        callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(config, allConfigs);
+        callback$ =
+          this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(
+            config,
+            allConfigs
+          );
       }
     }
 

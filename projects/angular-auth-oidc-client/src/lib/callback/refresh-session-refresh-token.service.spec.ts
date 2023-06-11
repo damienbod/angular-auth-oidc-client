@@ -20,7 +20,10 @@ describe('RefreshSessionRefreshTokenService', () => {
         RefreshSessionRefreshTokenService,
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         { provide: FlowsService, useClass: mockClass(FlowsService) },
-        { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
+        {
+          provide: ResetAuthDataService,
+          useClass: mockClass(ResetAuthDataService),
+        },
         IntervalService,
       ],
     });
@@ -28,7 +31,9 @@ describe('RefreshSessionRefreshTokenService', () => {
 
   beforeEach(() => {
     flowsService = TestBed.inject(FlowsService);
-    refreshSessionRefreshTokenService = TestBed.inject(RefreshSessionRefreshTokenService);
+    refreshSessionRefreshTokenService = TestBed.inject(
+      RefreshSessionRefreshTokenService
+    );
     intervalService = TestBed.inject(IntervalService);
     resetAuthDataService = TestBed.inject(ResetAuthDataService);
   });
@@ -39,36 +44,58 @@ describe('RefreshSessionRefreshTokenService', () => {
 
   describe('refreshSessionWithRefreshTokens', () => {
     it('calls flowsService.processRefreshToken()', waitForAsync(() => {
-      const spy = spyOn(flowsService, 'processRefreshToken').and.returnValue(of(null));
+      const spy = spyOn(flowsService, 'processRefreshToken').and.returnValue(
+        of(null)
+      );
 
       refreshSessionRefreshTokenService
-        .refreshSessionWithRefreshTokens({ configId: 'configId1' }, [{ configId: 'configId1' }])
+        .refreshSessionWithRefreshTokens({ configId: 'configId1' }, [
+          { configId: 'configId1' },
+        ])
         .subscribe(() => {
           expect(spy).toHaveBeenCalled();
         });
     }));
 
     it('resetAuthorizationData in case of error', waitForAsync(() => {
-      spyOn(flowsService, 'processRefreshToken').and.returnValue(throwError(() => new Error('error')));
-      const resetSilentRenewRunningSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
+      spyOn(flowsService, 'processRefreshToken').and.returnValue(
+        throwError(() => new Error('error'))
+      );
+      const resetSilentRenewRunningSpy = spyOn(
+        resetAuthDataService,
+        'resetAuthorizationData'
+      );
 
-      refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens({ configId: 'configId1' }, [{ configId: 'configId1' }]).subscribe({
-        error: (err) => {
-          expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-          expect(err).toBeTruthy();
-        },
-      });
+      refreshSessionRefreshTokenService
+        .refreshSessionWithRefreshTokens({ configId: 'configId1' }, [
+          { configId: 'configId1' },
+        ])
+        .subscribe({
+          error: (err) => {
+            expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+            expect(err).toBeTruthy();
+          },
+        });
     }));
 
     it('finalize with stopPeriodicTokenCheck in case of error', fakeAsync(() => {
-      spyOn(flowsService, 'processRefreshToken').and.returnValue(throwError(() => new Error('error')));
-      const stopPeriodicallyTokenCheckSpy = spyOn(intervalService, 'stopPeriodicTokenCheck');
+      spyOn(flowsService, 'processRefreshToken').and.returnValue(
+        throwError(() => new Error('error'))
+      );
+      const stopPeriodicallyTokenCheckSpy = spyOn(
+        intervalService,
+        'stopPeriodicTokenCheck'
+      );
 
-      refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens({ configId: 'configId1' }, [{ configId: 'configId1' }]).subscribe({
-        error: (err) => {
-          expect(err).toBeTruthy();
-        },
-      });
+      refreshSessionRefreshTokenService
+        .refreshSessionWithRefreshTokens({ configId: 'configId1' }, [
+          { configId: 'configId1' },
+        ])
+        .subscribe({
+          error: (err) => {
+            expect(err).toBeTruthy();
+          },
+        });
       tick();
       expect(stopPeriodicallyTokenCheckSpy).toHaveBeenCalled();
     }));

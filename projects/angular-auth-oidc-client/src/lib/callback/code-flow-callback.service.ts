@@ -23,25 +23,34 @@ export class CodeFlowCallbackService {
     allConfigs: OpenIdConfiguration[]
   ): Observable<CallbackContext> {
     const isRenewProcess = this.flowsDataService.isSilentRenewRunning(config);
-    const { triggerAuthorizationResultEvent, postLoginRoute, unauthorizedRoute } = config;
+    const {
+      triggerAuthorizationResultEvent,
+      postLoginRoute,
+      unauthorizedRoute,
+    } = config;
 
-    return this.flowsService.processCodeFlowCallback(urlToCheck, config, allConfigs).pipe(
-      tap((callbackContext) => {
-        this.flowsDataService.resetCodeFlowInProgress(config);
-        if (!triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
-          this.router.navigateByUrl(postLoginRoute);
-        }
-      }),
-      catchError((error) => {
-        this.flowsDataService.resetSilentRenewRunning(config);
-        this.flowsDataService.resetCodeFlowInProgress(config);
-        this.intervalService.stopPeriodicTokenCheck();
-        if (!triggerAuthorizationResultEvent && !isRenewProcess) {
-          this.router.navigateByUrl(unauthorizedRoute);
-        }
+    return this.flowsService
+      .processCodeFlowCallback(urlToCheck, config, allConfigs)
+      .pipe(
+        tap((callbackContext) => {
+          this.flowsDataService.resetCodeFlowInProgress(config);
+          if (
+            !triggerAuthorizationResultEvent &&
+            !callbackContext.isRenewProcess
+          ) {
+            this.router.navigateByUrl(postLoginRoute);
+          }
+        }),
+        catchError((error) => {
+          this.flowsDataService.resetSilentRenewRunning(config);
+          this.flowsDataService.resetCodeFlowInProgress(config);
+          this.intervalService.stopPeriodicTokenCheck();
+          if (!triggerAuthorizationResultEvent && !isRenewProcess) {
+            this.router.navigateByUrl(unauthorizedRoute);
+          }
 
-        return throwError(() => new Error(error));
-      })
-    );
+          return throwError(() => new Error(error));
+        })
+      );
   }
 }

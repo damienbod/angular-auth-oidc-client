@@ -2,7 +2,11 @@ import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class JwkExtractor {
-  extractJwk(keys: JsonWebKey[], spec?: { kid?: string; use?: string; kty?: string }, throwOnEmpty = true): JsonWebKey[] {
+  extractJwk(
+    keys: JsonWebKey[],
+    spec?: { kid?: string; use?: string; kty?: string },
+    throwOnEmpty = true
+  ): JsonWebKey[] {
     if (0 === keys.length) {
       throw JwkExtractorInvalidArgumentError;
     }

@@ -72,11 +72,21 @@ describe('User Service', () => {
         configId: 'configId1',
       } as OpenIdConfiguration;
 
-      spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
+      spyOn(userService, 'getUserDataFromStore').and.returnValue(
+        userDataInstore
+      );
 
-      userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
-        expect(decodedIdToken).toBe(token);
-      });
+      userService
+        .getAndPersistUserDataInStore(
+          config,
+          [config],
+          isRenewProcess,
+          idToken,
+          decodedIdToken
+        )
+        .subscribe((token) => {
+          expect(decodedIdToken).toBe(token);
+        });
     }));
 
     it('if not currentFlow is NOT id Token or Code flow, "setUserDataToStore" is called with the decodedIdToken', waitForAsync(() => {
@@ -90,12 +100,22 @@ describe('User Service', () => {
         configId: 'configId1',
       } as OpenIdConfiguration;
 
-      spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
+      spyOn(userService, 'getUserDataFromStore').and.returnValue(
+        userDataInstore
+      );
       spyOn(userService, 'setUserDataToStore');
 
-      userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
-        expect(decodedIdToken).toBe(token);
-      });
+      userService
+        .getAndPersistUserDataInStore(
+          config,
+          [config],
+          isRenewProcess,
+          idToken,
+          decodedIdToken
+        )
+        .subscribe((token) => {
+          expect(decodedIdToken).toBe(token);
+        });
 
       expect(userService.setUserDataToStore).toHaveBeenCalled();
     }));
@@ -111,11 +131,21 @@ describe('User Service', () => {
         configId: 'configId1',
       } as OpenIdConfiguration;
 
-      spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
+      spyOn(userService, 'getUserDataFromStore').and.returnValue(
+        userDataInstore
+      );
 
-      userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
-        expect(userDataInstore).toBe(token);
-      });
+      userService
+        .getAndPersistUserDataInStore(
+          config,
+          [config],
+          isRenewProcess,
+          idToken,
+          decodedIdToken
+        )
+        .subscribe((token) => {
+          expect(userDataInstore).toBe(token);
+        });
     }));
 
     it('if not currentFlow is id token or code flow and not renewProcess --> ask server for data', waitForAsync(() => {
@@ -130,12 +160,25 @@ describe('User Service', () => {
         configId: 'configId1',
       } as OpenIdConfiguration;
 
-      spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
-      const spy = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
+      spyOn(userService, 'getUserDataFromStore').and.returnValue(
+        userDataInstore
+      );
+      const spy = spyOn(
+        userService as any,
+        'getIdentityUserData'
+      ).and.returnValue(of(userDataFromSts));
 
-      userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
-        expect(userDataFromSts).toEqual(token);
-      });
+      userService
+        .getAndPersistUserDataInStore(
+          config,
+          [config],
+          isRenewProcess,
+          idToken,
+          decodedIdToken
+        )
+        .subscribe((token) => {
+          expect(userDataFromSts).toEqual(token);
+        });
 
       expect(spy).toHaveBeenCalled();
     }));
@@ -154,15 +197,30 @@ describe('User Service', () => {
         configId: 'configId1',
       } as OpenIdConfiguration;
 
-      spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
-      const spy = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
+      spyOn(userService, 'getUserDataFromStore').and.returnValue(
+        userDataInstore
+      );
+      const spy = spyOn(
+        userService as any,
+        'getIdentityUserData'
+      ).and.returnValue(of(userDataFromSts));
 
       spyOn(loggerService, 'logDebug');
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+        'accessToken'
+      );
 
-      userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
-        expect(userDataFromSts).toEqual(token);
-      });
+      userService
+        .getAndPersistUserDataInStore(
+          config,
+          [config],
+          isRenewProcess,
+          idToken,
+          decodedIdToken
+        )
+        .subscribe((token) => {
+          expect(userDataFromSts).toEqual(token);
+        });
 
       expect(spy).toHaveBeenCalled();
       expect(loggerService.logDebug).toHaveBeenCalled();
@@ -182,17 +240,34 @@ describe('User Service', () => {
         configId: 'configId1',
       } as OpenIdConfiguration;
 
-      spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
-      const spyGetIdentityUserData = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
+      spyOn(userService, 'getUserDataFromStore').and.returnValue(
+        userDataInstore
+      );
+      const spyGetIdentityUserData = spyOn(
+        userService as any,
+        'getIdentityUserData'
+      ).and.returnValue(of(userDataFromSts));
 
       spyOn(loggerService, 'logDebug');
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+        'accessToken'
+      );
 
-      userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe({
-        error: (err) => {
-          expect(err.message).toEqual('Received no user data, request failed');
-        },
-      });
+      userService
+        .getAndPersistUserDataInStore(
+          config,
+          [config],
+          isRenewProcess,
+          idToken,
+          decodedIdToken
+        )
+        .subscribe({
+          error: (err) => {
+            expect(err.message).toEqual(
+              'Received no user data, request failed'
+            );
+          },
+        });
 
       expect(spyGetIdentityUserData).toHaveBeenCalled();
     }));
@@ -211,12 +286,25 @@ describe('User Service', () => {
         configId: 'configId1',
       } as OpenIdConfiguration;
 
-      spyOn(userService, 'getUserDataFromStore').and.returnValue(userDataInstore);
-      const spy = spyOn(userService as any, 'getIdentityUserData').and.returnValue(of(userDataFromSts));
+      spyOn(userService, 'getUserDataFromStore').and.returnValue(
+        userDataInstore
+      );
+      const spy = spyOn(
+        userService as any,
+        'getIdentityUserData'
+      ).and.returnValue(of(userDataFromSts));
 
-      userService.getAndPersistUserDataInStore(config, [config], isRenewProcess, idToken, decodedIdToken).subscribe((token) => {
-        expect(userDataFromSts).toEqual(token);
-      });
+      userService
+        .getAndPersistUserDataInStore(
+          config,
+          [config],
+          isRenewProcess,
+          idToken,
+          decodedIdToken
+        )
+        .subscribe((token) => {
+          expect(userDataFromSts).toEqual(token);
+        });
 
       expect(spy).toHaveBeenCalled();
     }));
@@ -233,7 +321,9 @@ describe('User Service', () => {
     it('returns value if there is data', () => {
       const config = { configId: 'configId1' };
 
-      spyOn(storagePersistenceService, 'read').withArgs('userData', config).and.returnValue('userData');
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('userData', config)
+        .and.returnValue('userData');
       const result = userService.getUserDataFromStore(config);
 
       expect(result).toBeTruthy();
@@ -246,7 +336,11 @@ describe('User Service', () => {
       const spy = spyOn(storagePersistenceService, 'write');
 
       userService.setUserDataToStore('userDataForTest', config, [config]);
-      expect(spy).toHaveBeenCalledOnceWith('userData', 'userDataForTest', config);
+      expect(spy).toHaveBeenCalledOnceWith(
+        'userData',
+        'userDataForTest',
+        config
+      );
     });
 
     it('userDataInternal$ is called when userData is set', () => {
@@ -268,7 +362,10 @@ describe('User Service', () => {
 
       userService.setUserDataToStore('userDataForTest', config, [config]);
 
-      expect(spy).toHaveBeenCalledOnceWith(EventTypes.UserDataChanged, { configId: 'configId1', userData: 'userDataForTest' });
+      expect(spy).toHaveBeenCalledOnceWith(EventTypes.UserDataChanged, {
+        configId: 'configId1',
+        userData: 'userDataForTest',
+      });
     });
   });
 
@@ -300,14 +397,20 @@ describe('User Service', () => {
 
       userService.resetUserDataInStore(config, [config]);
 
-      expect(spy).toHaveBeenCalledOnceWith(EventTypes.UserDataChanged, { configId: 'configId1', userData: null });
+      expect(spy).toHaveBeenCalledOnceWith(EventTypes.UserDataChanged, {
+        configId: 'configId1',
+        userData: null,
+      });
     });
   });
 
   describe('publishUserDataIfExists', () => {
     it('do nothing if no userData is stored', () => {
       spyOn(userService, 'getUserDataFromStore').and.returnValue('');
-      const observableSpy = spyOn((userService as any).userDataInternal$, 'next');
+      const observableSpy = spyOn(
+        (userService as any).userDataInternal$,
+        'next'
+      );
       const eventSpy = spyOn(eventsService, 'fireEvent');
       const config = { configId: 'configId1' };
 
@@ -319,7 +422,10 @@ describe('User Service', () => {
 
     it('userDataInternal is fired if userData exists with single config', () => {
       spyOn(userService, 'getUserDataFromStore').and.returnValue('something');
-      const observableSpy = spyOn((userService as any).userDataInternal$, 'next');
+      const observableSpy = spyOn(
+        (userService as any).userDataInternal$,
+        'next'
+      );
       const config = { configId: 'configId1' };
 
       userService.publishUserDataIfExists(config, [config]);
@@ -332,7 +438,10 @@ describe('User Service', () => {
 
     it('userDataInternal is fired if userData exists with multiple configs', () => {
       const allConfigs = [{ configId: 'configId1' }, { configId: 'configId2' }];
-      const observableSpy = spyOn((userService as any).userDataInternal$, 'next');
+      const observableSpy = spyOn(
+        (userService as any).userDataInternal$,
+        'next'
+      );
 
       spyOn(storagePersistenceService, 'read')
         .withArgs('userData', allConfigs[0])
@@ -359,7 +468,10 @@ describe('User Service', () => {
 
       userService.publishUserDataIfExists(allConfigs[0], allConfigs);
 
-      expect(eventSpy).toHaveBeenCalledOnceWith(EventTypes.UserDataChanged, { configId: 'configId1', userData: 'something' });
+      expect(eventSpy).toHaveBeenCalledOnceWith(EventTypes.UserDataChanged, {
+        configId: 'configId1',
+        userData: 'something',
+      });
     });
   });
 
@@ -368,7 +480,11 @@ describe('User Service', () => {
       const serviceAsAny = userService as any;
       const config = { configId: 'configId1' };
 
-      const result = serviceAsAny.validateUserDataSubIdToken(config, '', 'anything');
+      const result = serviceAsAny.validateUserDataSubIdToken(
+        config,
+        '',
+        'anything'
+      );
 
       expect(result).toBeFalse();
     });
@@ -377,7 +493,11 @@ describe('User Service', () => {
       const serviceAsAny = userService as any;
       const config = { configId: 'configId1' };
 
-      const result = serviceAsAny.validateUserDataSubIdToken(config, 'something', '');
+      const result = serviceAsAny.validateUserDataSubIdToken(
+        config,
+        'something',
+        ''
+      );
 
       expect(result).toBeFalse();
     });
@@ -387,10 +507,19 @@ describe('User Service', () => {
       const loggerSpy = spyOn(loggerService, 'logDebug');
       const config = { configId: 'configId1' };
 
-      const result = serviceAsAny.validateUserDataSubIdToken(config, 'something', 'something2');
+      const result = serviceAsAny.validateUserDataSubIdToken(
+        config,
+        'something',
+        'something2'
+      );
 
       expect(result).toBeFalse();
-      expect(loggerSpy).toHaveBeenCalledOnceWith(config, 'validateUserDataSubIdToken failed', 'something', 'something2');
+      expect(loggerSpy).toHaveBeenCalledOnceWith(
+        config,
+        'validateUserDataSubIdToken failed',
+        'something',
+        'something2'
+      );
     });
   });
 
@@ -399,8 +528,12 @@ describe('User Service', () => {
       const config = { configId: 'configId1' };
       const serviceAsAny = userService as any;
 
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue(null);
+      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+        'accessToken'
+      );
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(null);
       serviceAsAny.getIdentityUserData(config).subscribe({
         error: (err) => {
           expect(err).toBeTruthy();
@@ -412,8 +545,12 @@ describe('User Service', () => {
       const config = { configId: 'configId1' };
       const serviceAsAny = userService as any;
 
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({ userInfoEndpoint: null });
+      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+        'accessToken'
+      );
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue({ userInfoEndpoint: null });
       serviceAsAny.getIdentityUserData(config).subscribe({
         error: (err) => {
           expect(err).toBeTruthy();
@@ -426,12 +563,18 @@ describe('User Service', () => {
       const serviceAsAny = userService as any;
       const spy = spyOn(dataService, 'get').and.returnValue(of({}));
 
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+        'accessToken'
+      );
       spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
       serviceAsAny.getIdentityUserData(config).subscribe(() => {
-        expect(spy).toHaveBeenCalledOnceWith('userInfoEndpoint', config, 'accessToken');
+        expect(spy).toHaveBeenCalledOnceWith(
+          'userInfoEndpoint',
+          config,
+          'accessToken'
+        );
       });
     }));
   });
@@ -439,7 +582,9 @@ describe('User Service', () => {
   it('should retry once', waitForAsync(() => {
     const config = { configId: 'configId1' };
 
-    spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+    spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      'accessToken'
+    );
     spyOn(storagePersistenceService, 'read')
       .withArgs('authWellKnownEndPoints', config)
       .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
@@ -461,7 +606,9 @@ describe('User Service', () => {
   it('should retry twice', waitForAsync(() => {
     const config = { configId: 'configId1' };
 
-    spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+    spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      'accessToken'
+    );
     spyOn(storagePersistenceService, 'read')
       .withArgs('authWellKnownEndPoints', config)
       .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });
@@ -484,7 +631,9 @@ describe('User Service', () => {
   it('should fail after three tries', waitForAsync(() => {
     const config = { configId: 'configId1' };
 
-    spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('accessToken');
+    spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      'accessToken'
+    );
     spyOn(storagePersistenceService, 'read')
       .withArgs('authWellKnownEndPoints', config)
       .and.returnValue({ userInfoEndpoint: 'userInfoEndpoint' });

@@ -1,7 +1,9 @@
 import { OpenIdConfiguration } from '../../openid-configuration';
 import { POSITIVE_VALIDATION_RESULT, RuleValidationResult } from '../rule';
 
-export const ensureSilentRenewUrlWhenNoRefreshTokenUsed = (passedConfig: OpenIdConfiguration): RuleValidationResult => {
+export const ensureSilentRenewUrlWhenNoRefreshTokenUsed = (
+  passedConfig: OpenIdConfiguration
+): RuleValidationResult => {
   const usesSilentRenew = passedConfig.silentRenew;
   const usesRefreshToken = passedConfig.useRefreshToken;
   const hasSilentRenewUrl = passedConfig.silentRenewUrl;
@@ -9,7 +11,9 @@ export const ensureSilentRenewUrlWhenNoRefreshTokenUsed = (passedConfig: OpenIdC
   if (usesSilentRenew && !usesRefreshToken && !hasSilentRenewUrl) {
     return {
       result: false,
-      messages: ['Please provide a silent renew URL if using renew and not refresh tokens'],
+      messages: [
+        'Please provide a silent renew URL if using renew and not refresh tokens',
+      ],
       level: 'error',
     };
   }

@@ -8,11 +8,20 @@ import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 const appRoutes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
   { path: 'home', component: HomeComponent },
-  { path: 'protected', component: ProtectedComponent, canActivate: [AutoLoginPartialRoutesGuard] },
-  { path: 'forbidden', component: ForbiddenComponent, canActivate: [AutoLoginPartialRoutesGuard] },
+  {
+    path: 'protected',
+    component: ProtectedComponent,
+    canActivate: [AutoLoginPartialRoutesGuard],
+  },
+  {
+    path: 'forbidden',
+    component: ForbiddenComponent,
+    canActivate: [AutoLoginPartialRoutesGuard],
+  },
   {
     path: 'customers',
-    loadChildren: () => import('./customers/customers.module').then((m) => m.CustomersModule),
+    loadChildren: () =>
+      import('./customers/customers.module').then((m) => m.CustomersModule),
     canLoad: [AutoLoginPartialRoutesGuard],
   },
   { path: 'unauthorized', component: UnauthorizedComponent },

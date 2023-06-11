@@ -4,7 +4,11 @@ import { mockClass } from '../test/auto-mock';
 import { PASSED_CONFIG } from './auth-config';
 import { AuthModule } from './auth.module';
 import { ConfigurationService } from './config/config.service';
-import { StsConfigHttpLoader, StsConfigLoader, StsConfigStaticLoader } from './config/loader/config-loader';
+import {
+  StsConfigHttpLoader,
+  StsConfigLoader,
+  StsConfigStaticLoader,
+} from './config/loader/config-loader';
 
 describe('AuthModule', () => {
   describe('APP_CONFIG', () => {
@@ -13,7 +17,12 @@ describe('AuthModule', () => {
     beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [AuthModule.forRoot({ config: { authority: 'something' } })],
-        providers: [{ provide: ConfigurationService, useClass: mockClass(ConfigurationService) }],
+        providers: [
+          {
+            provide: ConfigurationService,
+            useClass: mockClass(ConfigurationService),
+          },
+        ],
       }).compileComponents();
     }));
 
@@ -45,7 +54,12 @@ describe('AuthModule', () => {
             },
           }),
         ],
-        providers: [{ provide: ConfigurationService, useClass: mockClass(ConfigurationService) }],
+        providers: [
+          {
+            provide: ConfigurationService,
+            useClass: mockClass(ConfigurationService),
+          },
+        ],
       }).compileComponents();
     }));
 

@@ -23,23 +23,32 @@ export class ImplicitFlowCallbackService {
     hash?: string
   ): Observable<CallbackContext> {
     const isRenewProcess = this.flowsDataService.isSilentRenewRunning(config);
-    const { triggerAuthorizationResultEvent, postLoginRoute, unauthorizedRoute } = config;
+    const {
+      triggerAuthorizationResultEvent,
+      postLoginRoute,
+      unauthorizedRoute,
+    } = config;
 
-    return this.flowsService.processImplicitFlowCallback(config, allConfigs, hash).pipe(
-      tap((callbackContext) => {
-        if (!triggerAuthorizationResultEvent && !callbackContext.isRenewProcess) {
-          this.router.navigateByUrl(postLoginRoute);
-        }
-      }),
-      catchError((error) => {
-        this.flowsDataService.resetSilentRenewRunning(config);
-        this.intervalService.stopPeriodicTokenCheck();
-        if (!triggerAuthorizationResultEvent && !isRenewProcess) {
-          this.router.navigateByUrl(unauthorizedRoute);
-        }
+    return this.flowsService
+      .processImplicitFlowCallback(config, allConfigs, hash)
+      .pipe(
+        tap((callbackContext) => {
+          if (
+            !triggerAuthorizationResultEvent &&
+            !callbackContext.isRenewProcess
+          ) {
+            this.router.navigateByUrl(postLoginRoute);
+          }
+        }),
+        catchError((error) => {
+          this.flowsDataService.resetSilentRenewRunning(config);
+          this.intervalService.stopPeriodicTokenCheck();
+          if (!triggerAuthorizationResultEvent && !isRenewProcess) {
+            this.router.navigateByUrl(unauthorizedRoute);
+          }
 
-        return throwError(() => new Error(error));
-      })
-    );
+          return throwError(() => new Error(error));
+        })
+      );
   }
 }

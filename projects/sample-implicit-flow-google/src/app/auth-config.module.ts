@@ -7,7 +7,8 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
       config: {
         authority: 'https://accounts.google.com',
         redirectUrl: window.location.origin,
-        clientId: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
+        clientId:
+          '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         responseType: 'id_token token',
         scope: 'openid email profile',
         triggerAuthorizationResultEvent: true,

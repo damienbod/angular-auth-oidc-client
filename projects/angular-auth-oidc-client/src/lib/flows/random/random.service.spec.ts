@@ -9,7 +9,11 @@ describe('RandomService Tests', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [RandomService, { provide: LoggerService, useClass: mockClass(LoggerService) }, CryptoService],
+      providers: [
+        RandomService,
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        CryptoService,
+      ],
     });
   });
 
@@ -54,7 +58,9 @@ describe('RandomService Tests', () => {
     it('Giving back 10 or more characters when called with numbers less than 7', () => {
       const requiredLengthSmallerThenSeven = index;
       const fallbackLength = 10;
-      const r1 = randomService.createRandom(requiredLengthSmallerThenSeven, { configId: 'configId1' });
+      const r1 = randomService.createRandom(requiredLengthSmallerThenSeven, {
+        configId: 'configId1',
+      });
 
       expect(r1.length).toBeGreaterThanOrEqual(fallbackLength);
     });

@@ -37,7 +37,9 @@ export function alg2kty(alg: string): string {
   }
 }
 
-export function getImportAlg(alg: string): RsaHashedImportParams | EcKeyImportParams {
+export function getImportAlg(
+  alg: string
+): RsaHashedImportParams | EcKeyImportParams {
   switch (alg.charAt(0)) {
     case 'R':
       if (alg.includes('256')) {

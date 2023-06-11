@@ -5,7 +5,10 @@ import { PlatformProvider } from './platform.provider';
 describe('PlatformProvider Tests', () => {
   it('should create', () => {
     TestBed.configureTestingModule({
-      providers: [PlatformProvider, { provide: PLATFORM_ID, useValue: 'browser' }],
+      providers: [
+        PlatformProvider,
+        { provide: PLATFORM_ID, useValue: 'browser' },
+      ],
     });
 
     const service = TestBed.inject(PlatformProvider);
@@ -15,7 +18,10 @@ describe('PlatformProvider Tests', () => {
 
   it('isBrowser equals true if "isPlatformBrowser" is true', () => {
     TestBed.configureTestingModule({
-      providers: [PlatformProvider, { provide: PLATFORM_ID, useValue: 'browser' }],
+      providers: [
+        PlatformProvider,
+        { provide: PLATFORM_ID, useValue: 'browser' },
+      ],
     });
 
     const service = TestBed.inject(PlatformProvider);
@@ -25,7 +31,10 @@ describe('PlatformProvider Tests', () => {
 
   it('isBrowser equals true if "isPlatformBrowser" is true', () => {
     TestBed.configureTestingModule({
-      providers: [PlatformProvider, { provide: PLATFORM_ID, useValue: 'notABrowser' }],
+      providers: [
+        PlatformProvider,
+        { provide: PLATFORM_ID, useValue: 'notABrowser' },
+      ],
     });
 
     const service = TestBed.inject(PlatformProvider);

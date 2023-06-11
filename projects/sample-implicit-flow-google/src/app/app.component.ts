@@ -7,7 +7,10 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
   templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit, OnDestroy {
-  constructor(public oidcSecurityService: OidcSecurityService, private router: Router) {}
+  constructor(
+    public oidcSecurityService: OidcSecurityService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.oidcSecurityService
@@ -40,7 +43,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   logout() {
     console.log('start logoff');
-    this.oidcSecurityService.logoff().subscribe((result) => console.log(result));
+    this.oidcSecurityService
+      .logoff()
+      .subscribe((result) => console.log(result));
   }
 
   private navigateToStoredEndpoint() {

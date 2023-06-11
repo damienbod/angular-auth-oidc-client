@@ -9,7 +9,9 @@ UserData
 
 <div *ngFor="let config of configurations">
   <h3>{{ config.configId }}</h3>
-  <button (click)="login(config.configId)">Login with {{ config.configId }}</button>
+  <button (click)="login(config.configId)">
+    Login with {{ config.configId }}
+  </button>
   <button (click)="logout(config.configId)">Logout</button>
   <pre>{{ config | json }}</pre>
 </div>

@@ -3,7 +3,11 @@ import { of } from 'rxjs';
 import { mockClass } from '../test/auto-mock';
 import { PASSED_CONFIG } from './auth-config';
 import { ConfigurationService } from './config/config.service';
-import { StsConfigHttpLoader, StsConfigLoader, StsConfigStaticLoader } from './config/loader/config-loader';
+import {
+  StsConfigHttpLoader,
+  StsConfigLoader,
+  StsConfigStaticLoader,
+} from './config/loader/config-loader';
 import { provideAuth } from './provide-auth';
 
 describe('provideAuth', () => {
@@ -14,7 +18,10 @@ describe('provideAuth', () => {
       TestBed.configureTestingModule({
         providers: [
           provideAuth({ config: { authority: 'something' } }),
-          { provide: ConfigurationService, useClass: mockClass(ConfigurationService) },
+          {
+            provide: ConfigurationService,
+            useClass: mockClass(ConfigurationService),
+          },
         ],
       }).compileComponents();
     }));
@@ -41,7 +48,10 @@ describe('provideAuth', () => {
               useFactory: () => new StsConfigHttpLoader(of(null)),
             },
           }),
-          { provide: ConfigurationService, useClass: mockClass(ConfigurationService) },
+          {
+            provide: ConfigurationService,
+            useClass: mockClass(ConfigurationService),
+          },
         ],
       }).compileComponents();
     }));

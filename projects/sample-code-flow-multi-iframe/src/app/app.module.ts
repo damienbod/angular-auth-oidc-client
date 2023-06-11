@@ -26,12 +26,18 @@ export class AppModule {
   constructor(private readonly eventService: PublicEventsService) {
     this.eventService
       .registerForEvents()
-      .pipe(filter((notification) => notification.type === EventTypes.ConfigLoaded))
+      .pipe(
+        filter((notification) => notification.type === EventTypes.ConfigLoaded)
+      )
       .subscribe((config) => console.log('ConfigLoaded', config));
 
     this.eventService
       .registerForEvents()
-      .pipe(filter((notification) => notification.type === EventTypes.ConfigLoadingFailed))
+      .pipe(
+        filter(
+          (notification) => notification.type === EventTypes.ConfigLoadingFailed
+        )
+      )
       .subscribe(({ value }) => console.log('ConfigLoadingFailed', value));
   }
 }

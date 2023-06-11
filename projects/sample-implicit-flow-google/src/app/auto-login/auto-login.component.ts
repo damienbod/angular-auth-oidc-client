@@ -11,6 +11,8 @@ export class AutoLoginComponent implements OnInit {
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.oidcSecurityService.checkAuth().subscribe(() => this.oidcSecurityService.authorize());
+    this.oidcSecurityService
+      .checkAuth()
+      .subscribe(() => this.oidcSecurityService.authorize());
   }
 }

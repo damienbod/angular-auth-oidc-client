@@ -12,8 +12,21 @@ import { ProtectedComponent } from './protected/protected.component';
 import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 
 @NgModule({
-  declarations: [AppComponent, NavMenuComponent, HomeComponent, ForbiddenComponent, UnauthorizedComponent, ProtectedComponent],
-  imports: [BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }), HttpClientModule, FormsModule, routing, AuthConfigModule],
+  declarations: [
+    AppComponent,
+    NavMenuComponent,
+    HomeComponent,
+    ForbiddenComponent,
+    UnauthorizedComponent,
+    ProtectedComponent,
+  ],
+  imports: [
+    BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
+    HttpClientModule,
+    FormsModule,
+    routing,
+    AuthConfigModule,
+  ],
   providers: [],
   bootstrap: [AppComponent],
 })

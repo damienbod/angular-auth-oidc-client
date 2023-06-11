@@ -1,16 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { OidcSecurityService, UserDataResult } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
-import {AsyncPipe, JsonPipe} from "@angular/common";
+import { AsyncPipe, JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.component.html',
   standalone: true,
-  imports: [
-    AsyncPipe,
-    JsonPipe
-  ]
+  imports: [AsyncPipe, JsonPipe],
 })
 export class HomeComponent implements OnInit {
   userData$: Observable<UserDataResult>;
@@ -19,11 +16,13 @@ export class HomeComponent implements OnInit {
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.oidcSecurityService.isAuthenticated$.subscribe(({ isAuthenticated }) => {
-      this.isAuthenticated = isAuthenticated;
+    this.oidcSecurityService.isAuthenticated$.subscribe(
+      ({ isAuthenticated }) => {
+        this.isAuthenticated = isAuthenticated;
 
-      console.warn('authenticated: ', isAuthenticated);
-    });
+        console.warn('authenticated: ', isAuthenticated);
+      }
+    );
 
     this.userData$ = this.oidcSecurityService.userData$;
   }

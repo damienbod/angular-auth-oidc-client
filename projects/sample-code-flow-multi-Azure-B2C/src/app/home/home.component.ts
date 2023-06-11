@@ -31,7 +31,9 @@ export class HomeComponent implements OnInit {
   }
 
   forceRefreshSession() {
-    this.oidcSecurityService.forceRefreshSession().subscribe((result) => console.warn(result));
+    this.oidcSecurityService
+      .forceRefreshSession()
+      .subscribe((result) => console.warn(result));
   }
 
   logout(configId: string) {
@@ -39,6 +41,8 @@ export class HomeComponent implements OnInit {
   }
 
   refreshSession(configId: string) {
-    this.oidcSecurityService.forceRefreshSession(null, configId).subscribe((result) => console.log(result));
+    this.oidcSecurityService
+      .forceRefreshSession(null, configId)
+      .subscribe((result) => console.log(result));
   }
 }

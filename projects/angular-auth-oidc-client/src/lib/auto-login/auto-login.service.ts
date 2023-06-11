@@ -7,7 +7,10 @@ const STORAGE_KEY = 'redirect';
 
 @Injectable({ providedIn: 'root' })
 export class AutoLoginService {
-  constructor(private readonly storageService: StoragePersistenceService, private readonly router: Router) {}
+  constructor(
+    private readonly storageService: StoragePersistenceService,
+    private readonly router: Router
+  ) {}
 
   checkSavedRedirectRouteAndNavigate(config: OpenIdConfiguration): void {
     const savedRouteForRedirect = this.getStoredRedirectRoute(config);

@@ -25,7 +25,10 @@ module.exports = function (config) {
       suppressAll: true, // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, '../../coverage/sample-code-flow-azuread'),
+      dir: require('path').join(
+        __dirname,
+        '../../coverage/sample-code-flow-azuread'
+      ),
       subdir: '.',
       reporters: [{ type: 'html' }, { type: 'text-summary' }],
     },

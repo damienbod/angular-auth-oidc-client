@@ -8,11 +8,18 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
   styleUrls: ['./callback.component.css'],
 })
 export class CallbackComponent {
-  constructor(public oidcSecurityService: OidcSecurityService, private router: Router) {}
+  constructor(
+    public oidcSecurityService: OidcSecurityService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
-      console.log('callback authenticated', isAuthenticated);
-    });
+    this.oidcSecurityService
+      .checkAuth()
+      .subscribe(
+        ({ isAuthenticated, userData, accessToken, idToken, configId }) => {
+          console.log('callback authenticated', isAuthenticated);
+        }
+      );
   }
 }

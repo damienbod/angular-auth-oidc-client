@@ -71,7 +71,9 @@ describe('alg2kty', () => {
   it('returns correct result if algorithm is E', () => {
     const algorithm = 'SOMETHING_ELSE';
 
-    expect(() => alg2kty(algorithm)).toThrow(new Error('Cannot infer kty from alg: SOMETHING_ELSE'));
+    expect(() => alg2kty(algorithm)).toThrow(
+      new Error('Cannot infer kty from alg: SOMETHING_ELSE')
+    );
   });
 });
 

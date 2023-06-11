@@ -27,42 +27,72 @@ export class LogoffRevocationService {
 
   // Logs out on the server and the local client.
   // If the server state has changed, check session, then only a local logout.
-  logoff(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[], logoutAuthOptions?: LogoutAuthOptions): Observable<unknown> {
-    this.loggerService.logDebug(config, 'logoff, remove auth', logoutAuthOptions);
+  logoff(
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[],
+    logoutAuthOptions?: LogoutAuthOptions
+  ): Observable<unknown> {
+    this.loggerService.logDebug(
+      config,
+      'logoff, remove auth',
+      logoutAuthOptions
+    );
 
     const { urlHandler, customParams } = logoutAuthOptions || {};
 
-    const endSessionUrl = this.urlService.getEndSessionUrl(config, customParams);
+    const endSessionUrl = this.urlService.getEndSessionUrl(
+      config,
+      customParams
+    );
 
     if (!endSessionUrl) {
-      this.loggerService.logDebug(config, 'No endsessionUrl present. Logoff was only locally. Returning.');
+      this.loggerService.logDebug(
+        config,
+        'No endsessionUrl present. Logoff was only locally. Returning.'
+      );
 
       return of(null);
     }
 
     if (this.checkSessionService.serverStateChanged(config)) {
-      this.loggerService.logDebug(config, 'Server State changed. Logoff was only locally. Returning.');
+      this.loggerService.logDebug(
+        config,
+        'Server State changed. Logoff was only locally. Returning.'
+      );
 
       return of(null);
     }
 
     if (urlHandler) {
-      this.loggerService.logDebug(config, `Custom UrlHandler found. Using this to handle logoff with url '${endSessionUrl}'`);
+      this.loggerService.logDebug(
+        config,
+        `Custom UrlHandler found. Using this to handle logoff with url '${endSessionUrl}'`
+      );
       urlHandler(endSessionUrl);
 
       return of(null);
     }
 
-    return this.logoffInternal(logoutAuthOptions, endSessionUrl, config, allConfigs);
+    return this.logoffInternal(
+      logoutAuthOptions,
+      endSessionUrl,
+      config,
+      allConfigs
+    );
   }
 
-  logoffLocal(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
+  logoffLocal(
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): void {
     this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
     this.checkSessionService.stop();
   }
 
   logoffLocalMultiple(allConfigs: OpenIdConfiguration[]): void {
-    allConfigs.forEach((configuration) => this.logoffLocal(configuration, allConfigs));
+    allConfigs.forEach((configuration) =>
+      this.logoffLocal(configuration, allConfigs)
+    );
   }
 
   // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
@@ -72,7 +102,9 @@ export class LogoffRevocationService {
     allConfigs: OpenIdConfiguration[],
     logoutAuthOptions?: LogoutAuthOptions
   ): Observable<any> {
-    const { revocationEndpoint } = this.storagePersistenceService.read('authWellKnownEndPoints', config) || {};
+    const { revocationEndpoint } =
+      this.storagePersistenceService.read('authWellKnownEndPoints', config) ||
+      {};
 
     if (!revocationEndpoint) {
       this.loggerService.logDebug(config, 'revocation endpoint not supported');
@@ -110,9 +142,17 @@ export class LogoffRevocationService {
   // revokes an access token on the STS. If no token is provided, then the token from
   // the storage is revoked. You can pass any token to revoke. This makes it possible to
   // manage your own tokens. The is a public API.
-  revokeAccessToken(configuration: OpenIdConfiguration, accessToken?: any): Observable<any> {
-    const accessTok = accessToken || this.storagePersistenceService.getAccessToken(configuration);
-    const body = this.urlService.createRevocationEndpointBodyAccessToken(accessTok, configuration);
+  revokeAccessToken(
+    configuration: OpenIdConfiguration,
+    accessToken?: any
+  ): Observable<any> {
+    const accessTok =
+      accessToken ||
+      this.storagePersistenceService.getAccessToken(configuration);
+    const body = this.urlService.createRevocationEndpointBodyAccessToken(
+      accessTok,
+      configuration
+    );
 
     return this.sendRevokeRequest(configuration, body);
   }
@@ -121,9 +161,17 @@ export class LogoffRevocationService {
   // revokes an refresh token on the STS. This is only required in the code flow with refresh tokens.
   // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
   // This makes it possible to manage your own tokens.
-  revokeRefreshToken(configuration: OpenIdConfiguration, refreshToken?: any): Observable<any> {
-    const refreshTok = refreshToken || this.storagePersistenceService.getRefreshToken(configuration);
-    const body = this.urlService.createRevocationEndpointBodyRefreshToken(refreshTok, configuration);
+  revokeRefreshToken(
+    configuration: OpenIdConfiguration,
+    refreshToken?: any
+  ): Observable<any> {
+    const refreshTok =
+      refreshToken ||
+      this.storagePersistenceService.getRefreshToken(configuration);
+    const body = this.urlService.createRevocationEndpointBodyRefreshToken(
+      refreshTok,
+      configuration
+    );
 
     return this.sendRevokeRequest(configuration, body);
   }
@@ -147,7 +195,8 @@ export class LogoffRevocationService {
     const { state, logout_hint, ui_locales } = customParams || {};
     const { clientId } = config;
     const idToken = this.storagePersistenceService.getIdToken(config);
-    const postLogoutRedirectUrl = this.urlService.getPostLogoutRedirectUrl(config);
+    const postLogoutRedirectUrl =
+      this.urlService.getPostLogoutRedirectUrl(config);
     const headers = this.getHeaders();
     const { url } = this.urlService.getEndSessionEndpoint(config);
     const body = {
@@ -162,17 +211,29 @@ export class LogoffRevocationService {
 
     this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
 
-    return this.dataService.post(url, bodyWithoutNullOrUndefined, config, headers);
+    return this.dataService.post(
+      url,
+      bodyWithoutNullOrUndefined,
+      config,
+      headers
+    );
   }
 
-  private sendRevokeRequest(configuration: OpenIdConfiguration, body: string): Observable<any> {
+  private sendRevokeRequest(
+    configuration: OpenIdConfiguration,
+    body: string
+  ): Observable<any> {
     const url = this.urlService.getRevocationEndpointUrl(configuration);
     const headers = this.getHeaders();
 
     return this.dataService.post(url, body, configuration, headers).pipe(
       retry(2),
       switchMap((response: any) => {
-        this.loggerService.logDebug(configuration, 'revocation endpoint post response: ', response);
+        this.loggerService.logDebug(
+          configuration,
+          'revocation endpoint post response: ',
+          response
+        );
 
         return of(response);
       }),

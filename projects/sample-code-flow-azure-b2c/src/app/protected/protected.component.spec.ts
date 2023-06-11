@@ -5,13 +5,11 @@ describe('ProtectedComponent', () => {
   let component: ProtectedComponent;
   let fixture: ComponentFixture<ProtectedComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [ProtectedComponent],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [ProtectedComponent],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ProtectedComponent);

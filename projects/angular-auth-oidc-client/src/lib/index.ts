@@ -22,7 +22,7 @@ export * from './public-events/event-types';
 export * from './public-events/notification';
 export * from './public-events/public-events.service';
 export * from './storage/abstract-security-storage';
-export * from './storage/default-localstorage.service'
+export * from './storage/default-localstorage.service';
 export * from './user-data/userdata-result';
 export * from './validation/jwtkeys';
 export * from './validation/state-validation-result';

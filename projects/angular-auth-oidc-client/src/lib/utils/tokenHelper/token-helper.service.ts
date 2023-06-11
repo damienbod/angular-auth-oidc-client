@@ -7,7 +7,10 @@ const PARTS_OF_TOKEN = 3;
 
 @Injectable({ providedIn: 'root' })
 export class TokenHelperService {
-  constructor(private readonly loggerService: LoggerService, @Inject(DOCUMENT) private readonly document: Document) {}
+  constructor(
+    private readonly loggerService: LoggerService,
+    @Inject(DOCUMENT) private readonly document: Document
+  ) {}
 
   getTokenExpirationDate(dataIdToken: any): Date {
     if (!Object.prototype.hasOwnProperty.call(dataIdToken, 'exp')) {
@@ -21,18 +24,34 @@ export class TokenHelperService {
     return date;
   }
 
-  getSigningInputFromToken(token: any, encoded: boolean, configuration: OpenIdConfiguration): string {
+  getSigningInputFromToken(
+    token: any,
+    encoded: boolean,
+    configuration: OpenIdConfiguration
+  ): string {
     if (!this.tokenIsValid(token, configuration)) {
       return '';
     }
 
-    const header: string = this.getHeaderFromToken(token, encoded, configuration);
-    const payload: string = this.getPayloadFromToken(token, encoded, configuration);
+    const header: string = this.getHeaderFromToken(
+      token,
+      encoded,
+      configuration
+    );
+    const payload: string = this.getPayloadFromToken(
+      token,
+      encoded,
+      configuration
+    );
 
     return [header, payload].join('.');
   }
 
-  getHeaderFromToken(token: any, encoded: boolean, configuration: OpenIdConfiguration): any {
+  getHeaderFromToken(
+    token: any,
+    encoded: boolean,
+    configuration: OpenIdConfiguration
+  ): any {
     if (!this.tokenIsValid(token, configuration)) {
       return {};
     }
@@ -40,7 +59,11 @@ export class TokenHelperService {
     return this.getPartOfToken(token, 0, encoded);
   }
 
-  getPayloadFromToken(token: any, encoded: boolean, configuration: OpenIdConfiguration): any {
+  getPayloadFromToken(
+    token: any,
+    encoded: boolean,
+    configuration: OpenIdConfiguration
+  ): any {
     if (!this.tokenIsValid(token, configuration)) {
       return {};
     }
@@ -48,7 +71,11 @@ export class TokenHelperService {
     return this.getPartOfToken(token, 1, encoded);
   }
 
-  getSignatureFromToken(token: any, encoded: boolean, configuration: OpenIdConfiguration): any {
+  getSignatureFromToken(
+    token: any,
+    encoded: boolean,
+    configuration: OpenIdConfiguration
+  ): any {
     if (!this.tokenIsValid(token, configuration)) {
       return {};
     }
@@ -94,7 +121,9 @@ export class TokenHelperService {
       return decodeURIComponent(
         decoded
           .split('')
-          .map((c: string) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .map(
+            (c: string) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+          )
           .join('')
       );
     } catch (err) {
@@ -102,15 +131,24 @@ export class TokenHelperService {
     }
   }
 
-  private tokenIsValid(token: string, configuration: OpenIdConfiguration): boolean {
+  private tokenIsValid(
+    token: string,
+    configuration: OpenIdConfiguration
+  ): boolean {
     if (!token) {
-      this.loggerService.logError(configuration, `token '${token}' is not valid --> token falsy`);
+      this.loggerService.logError(
+        configuration,
+        `token '${token}' is not valid --> token falsy`
+      );
 
       return false;
     }
 
     if (!(token as string).includes('.')) {
-      this.loggerService.logError(configuration, `token '${token}' is not valid --> no dots included`);
+      this.loggerService.logError(
+        configuration,
+        `token '${token}' is not valid --> no dots included`
+      );
 
       return false;
     }
@@ -118,7 +156,12 @@ export class TokenHelperService {
     const parts = token.split('.');
 
     if (parts.length !== PARTS_OF_TOKEN) {
-      this.loggerService.logError(configuration, `token '${token}' is not valid --> token has to have exactly ${PARTS_OF_TOKEN - 1} dots`);
+      this.loggerService.logError(
+        configuration,
+        `token '${token}' is not valid --> token has to have exactly ${
+          PARTS_OF_TOKEN - 1
+        } dots`
+      );
 
       return false;
     }

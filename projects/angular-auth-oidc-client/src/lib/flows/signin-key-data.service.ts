@@ -16,8 +16,13 @@ export class SigninKeyDataService {
     private readonly dataService: DataService
   ) {}
 
-  getSigningKeys(currentConfiguration: OpenIdConfiguration): Observable<JwtKeys> {
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', currentConfiguration);
+  getSigningKeys(
+    currentConfiguration: OpenIdConfiguration
+  ): Observable<JwtKeys> {
+    const authWellKnownEndPoints = this.storagePersistenceService.read(
+      'authWellKnownEndPoints',
+      currentConfiguration
+    );
     const jwksUri = authWellKnownEndPoints?.jwksUri;
 
     if (!jwksUri) {
@@ -28,7 +33,11 @@ export class SigninKeyDataService {
       return throwError(() => new Error(error));
     }
 
-    this.loggerService.logDebug(currentConfiguration, 'Getting signinkeys from ', jwksUri);
+    this.loggerService.logDebug(
+      currentConfiguration,
+      'Getting signinkeys from ',
+      jwksUri
+    );
 
     return this.dataService.get<JwtKeys>(jwksUri, currentConfiguration).pipe(
       retry(2),
@@ -36,7 +45,10 @@ export class SigninKeyDataService {
     );
   }
 
-  private handleErrorGetSigningKeys(errorResponse: HttpResponse<any> | any, currentConfiguration: OpenIdConfiguration): Observable<never> {
+  private handleErrorGetSigningKeys(
+    errorResponse: HttpResponse<any> | any,
+    currentConfiguration: OpenIdConfiguration
+  ): Observable<never> {
     let errMsg = '';
 
     if (errorResponse instanceof HttpResponse) {

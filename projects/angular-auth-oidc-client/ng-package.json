@@ -4,5 +4,10 @@
   "lib": {
     "entryFile": "src/public-api.ts"
   },
-  "allowedNonPeerDependencies": ["rfc4648", "@angular-devkit/core", "@schematics/angular", "@angular-devkit/schematics"]
+  "allowedNonPeerDependencies": [
+    "rfc4648",
+    "@angular-devkit/core",
+    "@schematics/angular",
+    "@angular-devkit/schematics"
+  ]
 }

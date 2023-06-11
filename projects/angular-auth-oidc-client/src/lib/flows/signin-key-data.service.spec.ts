@@ -36,7 +36,10 @@ describe('Signin Key Data Service', () => {
         SigninKeyDataService,
         { provide: DataService, useClass: mockClass(DataService) },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
+        {
+          provide: StoragePersistenceService,
+          useClass: mockClass(StoragePersistenceService),
+        },
       ],
     });
   });
@@ -54,7 +57,9 @@ describe('Signin Key Data Service', () => {
 
   describe('getSigningKeys', () => {
     it('throws error when no wellKnownEndpoints given', waitForAsync(() => {
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', { configId: 'configId1' }).and.returnValue(null);
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
+        .and.returnValue(null);
       const result = service.getSigningKeys({ configId: 'configId1' });
 
       result.subscribe({
@@ -87,7 +92,9 @@ describe('Signin Key Data Service', () => {
 
       result.subscribe({
         complete: () => {
-          expect(spy).toHaveBeenCalledOnceWith('someUrl', { configId: 'configId1' });
+          expect(spy).toHaveBeenCalledOnceWith('someUrl', {
+            configId: 'configId1',
+          });
         },
       });
     }));
@@ -154,7 +161,9 @@ describe('Signin Key Data Service', () => {
 
   describe('handleErrorGetSigningKeys', () => {
     it('keeps observable if error is catched', waitForAsync(() => {
-      const result = (service as any).handleErrorGetSigningKeys(new HttpResponse());
+      const result = (service as any).handleErrorGetSigningKeys(
+        new HttpResponse()
+      );
       const hasTypeObservable = isObservable(result);
 
       expect(hasTypeObservable).toBeTrue();
@@ -164,10 +173,16 @@ describe('Signin Key Data Service', () => {
       const logSpy = spyOn(loggerService, 'logError');
 
       (service as any)
-        .handleErrorGetSigningKeys(new HttpResponse({ status: 400, statusText: 'nono' }), { configId: 'configId1' })
+        .handleErrorGetSigningKeys(
+          new HttpResponse({ status: 400, statusText: 'nono' }),
+          { configId: 'configId1' }
+        )
         .subscribe({
           error: () => {
-            expect(logSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, '400 - nono {}');
+            expect(logSpy).toHaveBeenCalledOnceWith(
+              { configId: 'configId1' },
+              '400 - nono {}'
+            );
           },
         });
     }));
@@ -175,21 +190,34 @@ describe('Signin Key Data Service', () => {
     it('logs error if error is not a response', waitForAsync(() => {
       const logSpy = spyOn(loggerService, 'logError');
 
-      (service as any).handleErrorGetSigningKeys('Just some Error', { configId: 'configId1' }).subscribe({
-        error: () => {
-          expect(logSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'Just some Error');
-        },
-      });
+      (service as any)
+        .handleErrorGetSigningKeys('Just some Error', { configId: 'configId1' })
+        .subscribe({
+          error: () => {
+            expect(logSpy).toHaveBeenCalledOnceWith(
+              { configId: 'configId1' },
+              'Just some Error'
+            );
+          },
+        });
     }));
 
     it('logs error if error with message property is not a response', waitForAsync(() => {
       const logSpy = spyOn(loggerService, 'logError');
 
-      (service as any).handleErrorGetSigningKeys({ message: 'Just some Error' }, { configId: 'configId1' }).subscribe({
-        error: () => {
-          expect(logSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' }, 'Just some Error');
-        },
-      });
+      (service as any)
+        .handleErrorGetSigningKeys(
+          { message: 'Just some Error' },
+          { configId: 'configId1' }
+        )
+        .subscribe({
+          error: () => {
+            expect(logSpy).toHaveBeenCalledOnceWith(
+              { configId: 'configId1' },
+              'Just some Error'
+            );
+          },
+        });
     }));
   });
 });

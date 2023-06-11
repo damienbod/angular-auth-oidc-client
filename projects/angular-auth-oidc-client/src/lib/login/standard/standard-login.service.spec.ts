@@ -24,10 +24,16 @@ describe('StandardLoginService', () => {
       providers: [
         StandardLoginService,
         { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: ResponseTypeValidationService, useClass: mockClass(ResponseTypeValidationService) },
+        {
+          provide: ResponseTypeValidationService,
+          useClass: mockClass(ResponseTypeValidationService),
+        },
         { provide: UrlService, useClass: mockClass(UrlService) },
         { provide: RedirectService, useClass: mockClass(RedirectService) },
-        { provide: AuthWellKnownService, useClass: mockClass(AuthWellKnownService) },
+        {
+          provide: AuthWellKnownService,
+          useClass: mockClass(AuthWellKnownService),
+        },
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
       ],
     });
@@ -36,7 +42,9 @@ describe('StandardLoginService', () => {
   beforeEach(() => {
     standardLoginService = TestBed.inject(StandardLoginService);
     loggerService = TestBed.inject(LoggerService);
-    responseTypeValidationService = TestBed.inject(ResponseTypeValidationService);
+    responseTypeValidationService = TestBed.inject(
+      ResponseTypeValidationService
+    );
     standardLoginService = TestBed.inject(StandardLoginService);
     urlService = TestBed.inject(UrlService);
     redirectService = TestBed.inject(RedirectService);
@@ -50,10 +58,15 @@ describe('StandardLoginService', () => {
 
   describe('loginStandard', () => {
     it('does nothing if it has an invalid response type', waitForAsync(() => {
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(false);
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(false);
       const loggerSpy = spyOn(loggerService, 'logError');
 
-      const result = standardLoginService.loginStandard({ configId: 'configId1' });
+      const result = standardLoginService.loginStandard({
+        configId: 'configId1',
+      });
 
       expect(result).toBeUndefined();
       expect(loggerSpy).toHaveBeenCalled();
@@ -65,8 +78,14 @@ describe('StandardLoginService', () => {
         responseType: 'stubValue',
       };
 
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
       spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
       const flowsDataSpy = spyOn(flowsDataService, 'setCodeFlowInProgress');
 
@@ -82,8 +101,14 @@ describe('StandardLoginService', () => {
         responseType: 'stubValue',
       };
 
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
       spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
 
       const result = standardLoginService.loginStandard(config);
@@ -97,10 +122,19 @@ describe('StandardLoginService', () => {
         responseType: 'stubValue',
       };
 
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
       spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
-      const redirectSpy = spyOn(redirectService, 'redirectTo').and.callThrough();
+      const redirectSpy = spyOn(
+        redirectService,
+        'redirectTo'
+      ).and.callThrough();
 
       standardLoginService.loginStandard(config);
       tick();
@@ -113,10 +147,18 @@ describe('StandardLoginService', () => {
         responseType: 'stubValue',
       };
 
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
       spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
-      const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => undefined);
+      const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(
+        () => undefined
+      );
       const spy = jasmine.createSpy();
       const urlHandler = (url): void => {
         spy(url);
@@ -134,8 +176,14 @@ describe('StandardLoginService', () => {
         responseType: 'stubValue',
       };
 
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
       spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
       const flowsDataSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
 
@@ -151,15 +199,30 @@ describe('StandardLoginService', () => {
         responseType: 'stubValue',
       };
 
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
-      const getAuthorizeUrlSpy = spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
-      const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => undefined);
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
+      const getAuthorizeUrlSpy = spyOn(
+        urlService,
+        'getAuthorizeUrl'
+      ).and.returnValue(of('someUrl'));
+      const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(
+        () => undefined
+      );
 
-      standardLoginService.loginStandard(config, { customParams: { to: 'add', as: 'well' } });
+      standardLoginService.loginStandard(config, {
+        customParams: { to: 'add', as: 'well' },
+      });
       tick();
       expect(redirectSpy).toHaveBeenCalledOnceWith('someUrl');
-      expect(getAuthorizeUrlSpy).toHaveBeenCalledOnceWith(config, { customParams: { to: 'add', as: 'well' } });
+      expect(getAuthorizeUrlSpy).toHaveBeenCalledOnceWith(config, {
+        customParams: { to: 'add', as: 'well' },
+      });
     }));
 
     it('does nothing, logs only if getAuthorizeUrl returns falsy', fakeAsync(() => {
@@ -168,16 +231,28 @@ describe('StandardLoginService', () => {
         responseType: 'stubValue',
       };
 
-      spyOn(responseTypeValidationService, 'hasConfigValidResponseType').and.returnValue(true);
-      spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints').and.returnValue(of({}));
+      spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).and.returnValue(true);
+      spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).and.returnValue(of({}));
       const loggerSpy = spyOn(loggerService, 'logError');
 
       spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of(''));
-      const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(() => undefined);
+      const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(
+        () => undefined
+      );
 
       standardLoginService.loginStandard(config);
       tick();
-      expect(loggerSpy).toHaveBeenCalledOnceWith(config, 'Could not create URL', '');
+      expect(loggerSpy).toHaveBeenCalledOnceWith(
+        config,
+        'Could not create URL',
+        ''
+      );
       expect(redirectSpy).not.toHaveBeenCalled();
     }));
   });

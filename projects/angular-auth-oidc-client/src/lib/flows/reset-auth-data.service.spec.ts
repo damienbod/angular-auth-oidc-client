@@ -37,7 +37,10 @@ describe('ResetAuthDataService', () => {
 
   describe('resetAuthorizationData', () => {
     it('calls resetUserDataInStore when autoUserInfo is true', () => {
-      const resetUserDataInStoreSpy = spyOn(userService, 'resetUserDataInStore');
+      const resetUserDataInStoreSpy = spyOn(
+        userService,
+        'resetUserDataInStore'
+      );
       const allConfigs = [
         {
           configId: 'configId1',
@@ -49,8 +52,14 @@ describe('ResetAuthDataService', () => {
     });
 
     it('calls correct methods', () => {
-      const resetStorageFlowDataSpy = spyOn(flowsDataService, 'resetStorageFlowData');
-      const setUnauthorizedAndFireEventSpy = spyOn(authStateService, 'setUnauthenticatedAndFireEvent');
+      const resetStorageFlowDataSpy = spyOn(
+        flowsDataService,
+        'resetStorageFlowData'
+      );
+      const setUnauthorizedAndFireEventSpy = spyOn(
+        authStateService,
+        'setUnauthenticatedAndFireEvent'
+      );
       const allConfigs = [
         {
           configId: 'configId1',

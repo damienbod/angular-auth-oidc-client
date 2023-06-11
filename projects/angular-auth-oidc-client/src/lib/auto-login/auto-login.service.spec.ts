@@ -13,7 +13,13 @@ describe('AutoLoginService ', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
-      providers: [AutoLoginService, { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) }],
+      providers: [
+        AutoLoginService,
+        {
+          provide: StoragePersistenceService,
+          useClass: mockClass(StoragePersistenceService),
+        },
+      ],
     });
   });
 
@@ -31,25 +37,39 @@ describe('AutoLoginService ', () => {
     it('if not route is saved, router and delete are not called', () => {
       const deleteSpy = spyOn(storagePersistenceService, 'remove');
       const routerSpy = spyOn(router, 'navigateByUrl');
-      const readSpy = spyOn(storagePersistenceService, 'read').and.returnValue(null);
+      const readSpy = spyOn(storagePersistenceService, 'read').and.returnValue(
+        null
+      );
 
-      autoLoginService.checkSavedRedirectRouteAndNavigate({ configId: 'configId1' });
+      autoLoginService.checkSavedRedirectRouteAndNavigate({
+        configId: 'configId1',
+      });
 
       expect(deleteSpy).not.toHaveBeenCalled();
       expect(routerSpy).not.toHaveBeenCalled();
-      expect(readSpy).toHaveBeenCalledOnceWith('redirect', { configId: 'configId1' });
+      expect(readSpy).toHaveBeenCalledOnceWith('redirect', {
+        configId: 'configId1',
+      });
     });
 
     it('if route is saved, router and delete are called', () => {
       const deleteSpy = spyOn(storagePersistenceService, 'remove');
       const routerSpy = spyOn(router, 'navigateByUrl');
-      const readSpy = spyOn(storagePersistenceService, 'read').and.returnValue('saved-route');
+      const readSpy = spyOn(storagePersistenceService, 'read').and.returnValue(
+        'saved-route'
+      );
 
-      autoLoginService.checkSavedRedirectRouteAndNavigate({ configId: 'configId1' });
+      autoLoginService.checkSavedRedirectRouteAndNavigate({
+        configId: 'configId1',
+      });
 
-      expect(deleteSpy).toHaveBeenCalledOnceWith('redirect', { configId: 'configId1' });
+      expect(deleteSpy).toHaveBeenCalledOnceWith('redirect', {
+        configId: 'configId1',
+      });
       expect(routerSpy).toHaveBeenCalledOnceWith('saved-route');
-      expect(readSpy).toHaveBeenCalledOnceWith('redirect', { configId: 'configId1' });
+      expect(readSpy).toHaveBeenCalledOnceWith('redirect', {
+        configId: 'configId1',
+      });
     });
   });
 
@@ -57,9 +77,14 @@ describe('AutoLoginService ', () => {
     it('calls storageService with correct params', () => {
       const writeSpy = spyOn(storagePersistenceService, 'write');
 
-      autoLoginService.saveRedirectRoute({ configId: 'configId1' }, 'some-route');
+      autoLoginService.saveRedirectRoute(
+        { configId: 'configId1' },
+        'some-route'
+      );
 
-      expect(writeSpy).toHaveBeenCalledOnceWith('redirect', 'some-route', { configId: 'configId1' });
+      expect(writeSpy).toHaveBeenCalledOnceWith('redirect', 'some-route', {
+        configId: 'configId1',
+      });
     });
   });
 });
