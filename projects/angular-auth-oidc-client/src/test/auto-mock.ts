@@ -11,8 +11,8 @@ export function mockClass<T>(obj: new (...args: any[]) => T): any {
 
   const mockedClass = class T {};
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   allMethods.forEach(
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     (method) => (mockedClass.prototype[method] = (): void => {})
   );
 
