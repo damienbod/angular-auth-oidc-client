@@ -45,7 +45,9 @@ describe('Flow Helper Service', () => {
   it('currentFlowIs returns true if current flow is id_token token or code (array)', () => {
     const config = { responseType: 'id_token token' };
 
-    expect(flowHelper.currentFlowIs(['id_token token', 'code'], config)).toBeTrue();
+    expect(
+      flowHelper.currentFlowIs(['id_token token', 'code'], config)
+    ).toBeTrue();
   });
 
   it('currentFlowIs returns true if current flow is code flow', () => {
@@ -73,7 +75,9 @@ describe('Flow Helper Service', () => {
   it('isCurrentFlowImplicitFlowWithoutAccessToken return true if flow is "id_token"', () => {
     const config = { responseType: 'id_token' };
 
-    const result = (flowHelper as any).isCurrentFlowImplicitFlowWithoutAccessToken(config);
+    const result = (
+      flowHelper as any
+    ).isCurrentFlowImplicitFlowWithoutAccessToken(config);
 
     expect(result).toBeTrue();
   });
@@ -81,7 +85,9 @@ describe('Flow Helper Service', () => {
   it('isCurrentFlowImplicitFlowWithoutAccessToken return false if flow is not "id_token token"', () => {
     const config = { responseType: 'id_token2' };
 
-    const result = (flowHelper as any).isCurrentFlowImplicitFlowWithoutAccessToken(config);
+    const result = (
+      flowHelper as any
+    ).isCurrentFlowImplicitFlowWithoutAccessToken(config);
 
     expect(result).toBeFalse();
   });
@@ -112,28 +118,52 @@ describe('Flow Helper Service', () => {
 
   describe('isCurrentFlowAnyImplicitFlow', () => {
     it('returns true if currentFlowIsImplicitFlowWithAccessToken is true', () => {
-      spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(true);
-      spyOn(flowHelper as any, 'isCurrentFlowImplicitFlowWithoutAccessToken').and.returnValue(false);
+      spyOn(
+        flowHelper,
+        'isCurrentFlowImplicitFlowWithAccessToken'
+      ).and.returnValue(true);
+      spyOn(
+        flowHelper as any,
+        'isCurrentFlowImplicitFlowWithoutAccessToken'
+      ).and.returnValue(false);
 
-      const result = flowHelper.isCurrentFlowAnyImplicitFlow({ configId: 'configId1' });
+      const result = flowHelper.isCurrentFlowAnyImplicitFlow({
+        configId: 'configId1',
+      });
 
       expect(result).toBeTrue();
     });
 
     it('returns true if isCurrentFlowImplicitFlowWithoutAccessToken is true', () => {
-      spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(false);
-      spyOn(flowHelper as any, 'isCurrentFlowImplicitFlowWithoutAccessToken').and.returnValue(true);
+      spyOn(
+        flowHelper,
+        'isCurrentFlowImplicitFlowWithAccessToken'
+      ).and.returnValue(false);
+      spyOn(
+        flowHelper as any,
+        'isCurrentFlowImplicitFlowWithoutAccessToken'
+      ).and.returnValue(true);
 
-      const result = flowHelper.isCurrentFlowAnyImplicitFlow({ configId: 'configId1' });
+      const result = flowHelper.isCurrentFlowAnyImplicitFlow({
+        configId: 'configId1',
+      });
 
       expect(result).toBeTrue();
     });
 
     it('returns false it is not any implicit flow', () => {
-      spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(false);
-      spyOn(flowHelper as any, 'isCurrentFlowImplicitFlowWithoutAccessToken').and.returnValue(false);
+      spyOn(
+        flowHelper,
+        'isCurrentFlowImplicitFlowWithAccessToken'
+      ).and.returnValue(false);
+      spyOn(
+        flowHelper as any,
+        'isCurrentFlowImplicitFlowWithoutAccessToken'
+      ).and.returnValue(false);
 
-      const result = flowHelper.isCurrentFlowAnyImplicitFlow({ configId: 'configId1' });
+      const result = flowHelper.isCurrentFlowAnyImplicitFlow({
+        configId: 'configId1',
+      });
 
       expect(result).toBeFalse();
     });

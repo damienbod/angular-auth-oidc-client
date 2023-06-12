@@ -12,11 +12,13 @@ export class NavigationComponent implements OnInit {
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.oidcSecurityService.isAuthenticated$.subscribe(({ isAuthenticated }) => {
-      this.isAuthenticated = isAuthenticated;
+    this.oidcSecurityService.isAuthenticated$.subscribe(
+      ({ isAuthenticated }) => {
+        this.isAuthenticated = isAuthenticated;
 
-      console.warn('authenticated: ', isAuthenticated);
-    });
+        console.warn('authenticated: ', isAuthenticated);
+      }
+    );
   }
 
   login() {
@@ -28,6 +30,8 @@ export class NavigationComponent implements OnInit {
   }
 
   logout() {
-    this.oidcSecurityService.logoff().subscribe((result) => console.log(result));
+    this.oidcSecurityService
+      .logoff()
+      .subscribe((result) => console.log(result));
   }
 }

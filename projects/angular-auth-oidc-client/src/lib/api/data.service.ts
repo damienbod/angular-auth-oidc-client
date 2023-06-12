@@ -10,7 +10,11 @@ const NGSW_CUSTOM_PARAM = 'ngsw-bypass';
 export class DataService {
   constructor(private readonly httpClient: HttpBaseService) {}
 
-  get<T>(url: string, config: OpenIdConfiguration, token?: string): Observable<T> {
+  get<T>(
+    url: string,
+    config: OpenIdConfiguration,
+    token?: string
+  ): Observable<T> {
     const headers = this.prepareHeaders(token);
     const params = this.prepareParams(config);
 
@@ -20,7 +24,12 @@ export class DataService {
     });
   }
 
-  post<T>(url: string, body: any, config: OpenIdConfiguration, headersParams?: HttpHeaders): Observable<T> {
+  post<T>(
+    url: string,
+    body: any,
+    config: OpenIdConfiguration,
+    headersParams?: HttpHeaders
+  ): Observable<T> {
     const headers = headersParams || this.prepareHeaders();
     const params = this.prepareParams(config);
 
@@ -33,7 +42,10 @@ export class DataService {
     headers = headers.set('Accept', 'application/json');
 
     if (!!token) {
-      headers = headers.set('Authorization', 'Bearer ' + decodeURIComponent(token));
+      headers = headers.set(
+        'Authorization',
+        'Bearer ' + decodeURIComponent(token)
+      );
     }
 
     return headers;

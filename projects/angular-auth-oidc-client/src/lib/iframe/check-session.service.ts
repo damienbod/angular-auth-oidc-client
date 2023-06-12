@@ -28,7 +28,9 @@ export class CheckSessionService implements OnDestroy {
 
   private readonly iframeRefreshInterval = 60000;
 
-  private readonly checkSessionChangedInternal$ = new BehaviorSubject<boolean>(false);
+  private readonly checkSessionChangedInternal$ = new BehaviorSubject<boolean>(
+    false
+  );
 
   private iframeMessageEventListener: any;
 
@@ -47,7 +49,11 @@ export class CheckSessionService implements OnDestroy {
 
   ngOnDestroy(): void {
     this.stop();
-    this.document.defaultView.removeEventListener('message', this.iframeMessageEventListener, false)
+    this.document.defaultView.removeEventListener(
+      'message',
+      this.iframeMessageEventListener,
+      false
+    );
   }
 
   isCheckSessionConfigured(configuration: OpenIdConfiguration): boolean {
@@ -82,7 +88,9 @@ export class CheckSessionService implements OnDestroy {
   }
 
   getExistingIframe(): HTMLIFrameElement {
-    return this.iFrameService.getExistingIFrame(IFRAME_FOR_CHECK_SESSION_IDENTIFIER);
+    return this.iFrameService.getExistingIFrame(
+      IFRAME_FOR_CHECK_SESSION_IDENTIFIER
+    );
   }
 
   private init(configuration: OpenIdConfiguration): Observable<any> {
@@ -90,10 +98,16 @@ export class CheckSessionService implements OnDestroy {
       return of(undefined);
     }
 
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
+    const authWellKnownEndPoints = this.storagePersistenceService.read(
+      'authWellKnownEndPoints',
+      configuration
+    );
 
     if (!authWellKnownEndPoints) {
-      this.loggerService.logWarning(configuration, 'CheckSession - init check session: authWellKnownEndpoints is undefined. Returning.');
+      this.loggerService.logWarning(
+        configuration,
+        'CheckSession - init check session: authWellKnownEndpoints is undefined. Returning.'
+      );
 
       return of();
     }
@@ -109,7 +123,10 @@ export class CheckSessionService implements OnDestroy {
     if (checkSessionIframe) {
       existingIframe.contentWindow.location.replace(checkSessionIframe);
     } else {
-      this.loggerService.logWarning(configuration, 'CheckSession - init check session: checkSessionIframe is not configured to run');
+      this.loggerService.logWarning(
+        configuration,
+        'CheckSession - init check session: checkSessionIframe is not configured to run'
+      );
     }
 
     return new Observable((observer) => {
@@ -121,7 +138,10 @@ export class CheckSessionService implements OnDestroy {
     });
   }
 
-  private pollServerSession(clientId: string, configuration: OpenIdConfiguration): void {
+  private pollServerSession(
+    clientId: string,
+    configuration: OpenIdConfiguration
+  ): void {
     this.outstandingMessages = 0;
 
     const pollServerSessionRecur = (): void => {
@@ -131,15 +151,29 @@ export class CheckSessionService implements OnDestroy {
           const existingIframe = this.getExistingIframe();
 
           if (existingIframe && clientId) {
-            this.loggerService.logDebug(configuration, `CheckSession - clientId : '${clientId}' - existingIframe: '${existingIframe}'`);
-            const sessionState = this.storagePersistenceService.read('session_state', configuration);
-            const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
+            this.loggerService.logDebug(
+              configuration,
+              `CheckSession - clientId : '${clientId}' - existingIframe: '${existingIframe}'`
+            );
+            const sessionState = this.storagePersistenceService.read(
+              'session_state',
+              configuration
+            );
+            const authWellKnownEndPoints = this.storagePersistenceService.read(
+              'authWellKnownEndPoints',
+              configuration
+            );
 
             if (sessionState && authWellKnownEndPoints?.checkSessionIframe) {
-              const iframeOrigin = new URL(authWellKnownEndPoints.checkSessionIframe)?.origin;
+              const iframeOrigin = new URL(
+                authWellKnownEndPoints.checkSessionIframe
+              )?.origin;
 
               this.outstandingMessages++;
-              existingIframe.contentWindow.postMessage(clientId + ' ' + sessionState, iframeOrigin);
+              existingIframe.contentWindow.postMessage(
+                clientId + ' ' + sessionState,
+                iframeOrigin
+              );
             } else {
               this.loggerService.logDebug(
                 configuration,
@@ -169,7 +203,10 @@ export class CheckSessionService implements OnDestroy {
           }
 
           this.zone.runOutsideAngular(() => {
-            this.scheduledHeartBeatRunning = setTimeout(() => this.zone.run(pollServerSessionRecur), this.heartBeatInterval);
+            this.scheduledHeartBeatRunning = setTimeout(
+              () => this.zone.run(pollServerSessionRecur),
+              this.heartBeatInterval
+            );
           });
         });
     };
@@ -184,32 +221,65 @@ export class CheckSessionService implements OnDestroy {
 
   private messageHandler(configuration: OpenIdConfiguration, e: any): void {
     const existingIFrame = this.getExistingIframe();
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
-    const startsWith = !!authWellKnownEndPoints?.checkSessionIframe?.startsWith(e.origin);
+    const authWellKnownEndPoints = this.storagePersistenceService.read(
+      'authWellKnownEndPoints',
+      configuration
+    );
+    const startsWith = !!authWellKnownEndPoints?.checkSessionIframe?.startsWith(
+      e.origin
+    );
 
     this.outstandingMessages = 0;
 
-    if (existingIFrame && startsWith && e.source === existingIFrame.contentWindow) {
+    if (
+      existingIFrame &&
+      startsWith &&
+      e.source === existingIFrame.contentWindow
+    ) {
       if (e.data === 'error') {
-        this.loggerService.logWarning(configuration, 'CheckSession - error from check session messageHandler');
+        this.loggerService.logWarning(
+          configuration,
+          'CheckSession - error from check session messageHandler'
+        );
       } else if (e.data === 'changed') {
-        this.loggerService.logDebug(configuration, `CheckSession - ${e} from check session messageHandler`);
+        this.loggerService.logDebug(
+          configuration,
+          `CheckSession - ${e} from check session messageHandler`
+        );
         this.checkSessionReceived = true;
         this.eventService.fireEvent(EventTypes.CheckSessionReceived, e.data);
         this.checkSessionChangedInternal$.next(true);
       } else {
         this.eventService.fireEvent(EventTypes.CheckSessionReceived, e.data);
-        this.loggerService.logDebug(configuration, `CheckSession - ${e.data} from check session messageHandler`);
+        this.loggerService.logDebug(
+          configuration,
+          `CheckSession - ${e.data} from check session messageHandler`
+        );
       }
     }
   }
 
   private bindMessageEventToIframe(configuration: OpenIdConfiguration): void {
-    this.iframeMessageEventListener = this.messageHandler.bind(this, configuration);
-    this.document.defaultView.addEventListener('message', this.iframeMessageEventListener, false);
+    this.iframeMessageEventListener = this.messageHandler.bind(
+      this,
+      configuration
+    );
+    this.document.defaultView.addEventListener(
+      'message',
+      this.iframeMessageEventListener,
+      false
+    );
   }
 
-  private getOrCreateIframe(configuration: OpenIdConfiguration): HTMLIFrameElement {
-    return this.getExistingIframe() || this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_CHECK_SESSION_IDENTIFIER, configuration);
+  private getOrCreateIframe(
+    configuration: OpenIdConfiguration
+  ): HTMLIFrameElement {
+    return (
+      this.getExistingIframe() ||
+      this.iFrameService.addIFrameToWindowBody(
+        IFRAME_FOR_CHECK_SESSION_IDENTIFIER,
+        configuration
+      )
+    );
   }
 }

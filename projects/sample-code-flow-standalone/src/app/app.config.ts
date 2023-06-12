@@ -1,7 +1,14 @@
 import { provideHttpClient } from '@angular/common/http';
 import { ApplicationConfig } from '@angular/core';
-import { provideRouter, withEnabledBlockingInitialNavigation } from '@angular/router';
-import { AutoLoginPartialRoutesGuard, LogLevel, provideAuth } from 'angular-auth-oidc-client';
+import {
+  provideRouter,
+  withEnabledBlockingInitialNavigation,
+} from '@angular/router';
+import {
+  AutoLoginPartialRoutesGuard,
+  LogLevel,
+  provideAuth,
+} from 'angular-auth-oidc-client';
 import { ForbiddenComponent } from './forbidden/forbidden.component';
 import { HomeComponent } from './home/home.component';
 import { ProtectedComponent } from './protected/protected.component';
@@ -32,11 +39,20 @@ export const appConfig: ApplicationConfig = {
       [
         { path: '', pathMatch: 'full', redirectTo: 'home' },
         { path: 'home', component: HomeComponent },
-        { path: 'protected', component: ProtectedComponent, canActivate: [AutoLoginPartialRoutesGuard] },
-        { path: 'forbidden', component: ForbiddenComponent, canActivate: [AutoLoginPartialRoutesGuard] },
+        {
+          path: 'protected',
+          component: ProtectedComponent,
+          canActivate: [AutoLoginPartialRoutesGuard],
+        },
+        {
+          path: 'forbidden',
+          component: ForbiddenComponent,
+          canActivate: [AutoLoginPartialRoutesGuard],
+        },
         {
           path: 'customers',
-          loadChildren: () => import('./customers/customers.routes').then((m) => m.routes),
+          loadChildren: () =>
+            import('./customers/customers.routes').then((m) => m.routes),
           canLoad: [AutoLoginPartialRoutesGuard],
         },
         { path: 'unauthorized', component: UnauthorizedComponent },

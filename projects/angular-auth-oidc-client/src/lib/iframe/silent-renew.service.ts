@@ -19,7 +19,8 @@ const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 
 @Injectable({ providedIn: 'root' })
 export class SilentRenewService {
-  private readonly refreshSessionWithIFrameCompletedInternal$ = new Subject<CallbackContext>();
+  private readonly refreshSessionWithIFrameCompletedInternal$ =
+    new Subject<CallbackContext>();
 
   get refreshSessionWithIFrameCompleted$(): Observable<CallbackContext> {
     return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
@@ -41,7 +42,10 @@ export class SilentRenewService {
     const existingIframe = this.getExistingIframe();
 
     if (!existingIframe) {
-      return this.iFrameService.addIFrameToWindowBody(IFRAME_FOR_SILENT_RENEW_IDENTIFIER, config);
+      return this.iFrameService.addIFrameToWindowBody(
+        IFRAME_FOR_SILENT_RENEW_IDENTIFIER,
+        config
+      );
     }
 
     return existingIframe;
@@ -93,17 +97,23 @@ export class SilentRenewService {
       existingIdToken: null,
     };
 
-    return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext, config, allConfigs).pipe(
-      catchError(() => {
-        this.intervalService.stopPeriodicTokenCheck();
-        this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
+    return this.flowsService
+      .processSilentRenewCodeFlowCallback(callbackContext, config, allConfigs)
+      .pipe(
+        catchError(() => {
+          this.intervalService.stopPeriodicTokenCheck();
+          this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
 
-        return throwError(() => new Error(error));
-      })
-    );
+          return throwError(() => new Error(error));
+        })
+      );
   }
 
-  silentRenewEventHandler(e: CustomEvent, config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
+  silentRenewEventHandler(
+    e: CustomEvent,
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): void {
     this.loggerService.logDebug(config, 'silentRenewEventHandler');
     if (!e.detail) {
       return;
@@ -115,9 +125,18 @@ export class SilentRenewService {
     if (isCodeFlow) {
       const urlParts = e.detail.toString().split('?');
 
-      callback$ = this.codeFlowCallbackSilentRenewIframe(urlParts, config, allConfigs);
+      callback$ = this.codeFlowCallbackSilentRenewIframe(
+        urlParts,
+        config,
+        allConfigs
+      );
     } else {
-      callback$ = this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(config, allConfigs, e.detail);
+      callback$ =
+        this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(
+          config,
+          allConfigs,
+          e.detail
+        );
     }
 
     callback$.subscribe({
@@ -134,6 +153,8 @@ export class SilentRenewService {
   }
 
   private getExistingIframe(): HTMLIFrameElement {
-    return this.iFrameService.getExistingIFrame(IFRAME_FOR_SILENT_RENEW_IDENTIFIER);
+    return this.iFrameService.getExistingIFrame(
+      IFRAME_FOR_SILENT_RENEW_IDENTIFIER
+    );
   }
 }

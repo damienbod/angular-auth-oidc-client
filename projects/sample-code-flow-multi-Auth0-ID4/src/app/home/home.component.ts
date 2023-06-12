@@ -34,28 +34,41 @@ export class HomeComponent implements OnInit {
   }
 
   forceRefreshSession() {
-    this.oidcSecurityService.forceRefreshSession().subscribe((result) => console.warn(result));
+    this.oidcSecurityService
+      .forceRefreshSession()
+      .subscribe((result) => console.warn(result));
   }
 
   logout(configId: string) {
-    this.oidcSecurityService.logoff(configId).subscribe((result) => console.log(result));
+    this.oidcSecurityService
+      .logoff(configId)
+      .subscribe((result) => console.log(result));
   }
 
   refreshSessionId4(configId: string) {
-    this.oidcSecurityService.forceRefreshSession(null, configId).subscribe((result) => console.log(result));
+    this.oidcSecurityService
+      .forceRefreshSession(null, configId)
+      .subscribe((result) => console.log(result));
   }
 
   refreshSessionAuth0(configId: string) {
     this.oidcSecurityService
-      .forceRefreshSession({ scope: 'openid profile offline_access auth0-user-api-spa' }, configId)
+      .forceRefreshSession(
+        { scope: 'openid profile offline_access auth0-user-api-spa' },
+        configId
+      )
       .subscribe((result) => console.log(result));
   }
 
   logoffAndRevokeTokens(configId: string) {
-    this.oidcSecurityService.logoffAndRevokeTokens(configId).subscribe((result) => console.log(result));
+    this.oidcSecurityService
+      .logoffAndRevokeTokens(configId)
+      .subscribe((result) => console.log(result));
   }
 
   revokeRefreshToken(configId: string) {
-    this.oidcSecurityService.revokeRefreshToken(null, configId).subscribe((result) => console.log(result));
+    this.oidcSecurityService
+      .revokeRefreshToken(null, configId)
+      .subscribe((result) => console.log(result));
   }
 }

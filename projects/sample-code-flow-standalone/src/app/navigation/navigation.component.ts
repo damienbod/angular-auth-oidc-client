@@ -1,17 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import {RouterLink} from "@angular/router";
-import {NgIf} from "@angular/common";
+import { RouterLink } from '@angular/router';
+import { NgIf } from '@angular/common';
 
 @Component({
-    selector: 'app-navigation',
-    templateUrl: 'navigation.component.html',
-    styleUrls: ['navigation.component.css'],
-    standalone: true,
-    imports: [
-      RouterLink,
-      NgIf
-    ]
+  selector: 'app-navigation',
+  templateUrl: 'navigation.component.html',
+  styleUrls: ['navigation.component.css'],
+  standalone: true,
+  imports: [RouterLink, NgIf],
 })
 export class NavigationComponent implements OnInit {
   isAuthenticated: boolean;
@@ -19,11 +16,13 @@ export class NavigationComponent implements OnInit {
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.oidcSecurityService.isAuthenticated$.subscribe(({ isAuthenticated }) => {
-      this.isAuthenticated = isAuthenticated;
+    this.oidcSecurityService.isAuthenticated$.subscribe(
+      ({ isAuthenticated }) => {
+        this.isAuthenticated = isAuthenticated;
 
-      console.warn('authenticated: ', isAuthenticated);
-    });
+        console.warn('authenticated: ', isAuthenticated);
+      }
+    );
   }
 
   login() {
@@ -35,6 +34,8 @@ export class NavigationComponent implements OnInit {
   }
 
   logout() {
-    this.oidcSecurityService.logoff().subscribe((result) => console.log(result));
+    this.oidcSecurityService
+      .logoff()
+      .subscribe((result) => console.log(result));
   }
 }

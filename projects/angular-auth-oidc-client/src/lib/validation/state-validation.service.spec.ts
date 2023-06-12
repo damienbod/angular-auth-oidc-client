@@ -122,7 +122,10 @@ describe('State Validation Service', () => {
         triggerRefreshWhenIdTokenExpired: true,
       };
 
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(false);
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -154,7 +157,9 @@ describe('State Validation Service', () => {
         tfp: 'B2C_1_b2cpolicydamien',
         at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
       };
-      const isValid = (stateValidationService as any).isIdTokenAfterRefreshTokenRequestValid(
+      const isValid = (
+        stateValidationService as any
+      ).isIdTokenAfterRefreshTokenRequestValid(
         callbackContext,
         decodedIdToken,
         configRefresh
@@ -192,7 +197,10 @@ describe('State Validation Service', () => {
         triggerRefreshWhenIdTokenExpired: true,
       };
 
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(false);
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -224,7 +232,9 @@ describe('State Validation Service', () => {
         tfp: 'B2C_1_b2cpolicydamien',
         at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
       };
-      const isValid = (stateValidationService as any).isIdTokenAfterRefreshTokenRequestValid(
+      const isValid = (
+        stateValidationService as any
+      ).isIdTokenAfterRefreshTokenRequestValid(
         callbackContext,
         decodedIdToken,
         configRefresh
@@ -262,7 +272,10 @@ describe('State Validation Service', () => {
         triggerRefreshWhenIdTokenExpired: true,
       };
 
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(false);
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -294,7 +307,9 @@ describe('State Validation Service', () => {
         tfp: 'B2C_1_b2cpolicydamien',
         at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
       };
-      const isValid = (stateValidationService as any).isIdTokenAfterRefreshTokenRequestValid(
+      const isValid = (
+        stateValidationService as any
+      ).isIdTokenAfterRefreshTokenRequestValid(
         callbackContext,
         decodedIdToken,
         configRefresh
@@ -332,7 +347,10 @@ describe('State Validation Service', () => {
         triggerRefreshWhenIdTokenExpired: true,
       };
 
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(false);
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -364,7 +382,9 @@ describe('State Validation Service', () => {
         tfp: 'B2C_1_b2cpolicydamien',
         at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
       };
-      const isValid = (stateValidationService as any).isIdTokenAfterRefreshTokenRequestValid(
+      const isValid = (
+        stateValidationService as any
+      ).isIdTokenAfterRefreshTokenRequestValid(
         callbackContext,
         decodedIdToken,
         configRefresh
@@ -402,7 +422,10 @@ describe('State Validation Service', () => {
         triggerRefreshWhenIdTokenExpired: true,
       };
 
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(false);
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -434,7 +457,9 @@ describe('State Validation Service', () => {
         tfp: 'B2C_1_b2cpolicydamien',
         at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
       };
-      const isValid = (stateValidationService as any).isIdTokenAfterRefreshTokenRequestValid(
+      const isValid = (
+        stateValidationService as any
+      ).isIdTokenAfterRefreshTokenRequestValid(
         callbackContext,
         decodedIdToken,
         configRefresh
@@ -472,7 +497,10 @@ describe('State Validation Service', () => {
         triggerRefreshWhenIdTokenExpired: true,
       };
 
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(false);
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -504,7 +532,9 @@ describe('State Validation Service', () => {
         tfp: 'B2C_1_b2cpolicydamien',
         at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
       };
-      const isValid = (stateValidationService as any).isIdTokenAfterRefreshTokenRequestValid(
+      const isValid = (
+        stateValidationService as any
+      ).isIdTokenAfterRefreshTokenRequestValid(
         callbackContext,
         decodedIdToken,
         configRefresh
@@ -542,7 +572,10 @@ describe('State Validation Service', () => {
         triggerRefreshWhenIdTokenExpired: true,
       };
 
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(false);
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -574,7 +607,9 @@ describe('State Validation Service', () => {
         tfp: 'B2C_1_b2cpolicydamien',
         at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
       };
-      const isValid = (stateValidationService as any).isIdTokenAfterRefreshTokenRequestValid(
+      const isValid = (
+        stateValidationService as any
+      ).isIdTokenAfterRefreshTokenRequestValid(
         callbackContext,
         decodedIdToken,
         configRefresh
@@ -612,7 +647,10 @@ describe('State Validation Service', () => {
         triggerRefreshWhenIdTokenExpired: true,
       };
 
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(false);
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -645,7 +683,9 @@ describe('State Validation Service', () => {
         at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
         azp: 'no bad',
       };
-      const isValid = (stateValidationService as any).isIdTokenAfterRefreshTokenRequestValid(
+      const isValid = (
+        stateValidationService as any
+      ).isIdTokenAfterRefreshTokenRequestValid(
         callbackContext,
         decodedIdToken,
         configRefresh
@@ -657,7 +697,10 @@ describe('State Validation Service', () => {
 
   describe('getValidatedStateResult', () => {
     it('should return authResponseIsValid false when null is passed', waitForAsync(() => {
-      const isValidObs$ = stateValidationService.getValidatedStateResult(null, config);
+      const isValidObs$ = stateValidationService.getValidatedStateResult(
+        null,
+        config
+      );
 
       isValidObs$.subscribe((isValid) => {
         expect(isValid.authResponseIsValid).toBe(false);
@@ -665,12 +708,17 @@ describe('State Validation Service', () => {
     }));
 
     it('should return invalid context error', waitForAsync(() => {
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
 
       config.responseType = 'id_token token';
 
       config.maxIdTokenIatOffsetAllowedInSeconds = 0;
-      spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(false);
+      spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(
+        false
+      );
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -686,7 +734,10 @@ describe('State Validation Service', () => {
         validationResult: null,
       };
 
-      const isValidObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const isValidObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       isValidObs$.subscribe((isValid) => {
         expect(isValid.authResponseIsValid).toBe(false);
@@ -694,34 +745,67 @@ describe('State Validation Service', () => {
     }));
 
     it('should return invalid result if validateIdTokenExpNotExpired is false', waitForAsync(() => {
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
 
       config.responseType = 'id_token token';
 
-      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
+      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
+        'decoded_id_token'
+      );
 
       spyOn(tokenValidationService, 'hasIdTokenExpired').and.returnValue(false);
-      spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(of(true));
-      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
-      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateAccessTokenNotExpired'
+      ).and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenAzpExistsIfMoreThanOneAud'
+      ).and.returnValue(true);
+      spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(
+        true
+      );
+      spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(
+        of(true)
+      );
+      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(
+        of(true)
+      );
+      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(
+        true
+      );
+      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(
+        true
+      );
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenIatMaxOffset'
+      ).and.returnValue(true);
       config.maxIdTokenIatOffsetAllowedInSeconds = 0;
       spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(true);
       spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(true);
 
       config.clientId = '';
-      spyOn(tokenValidationService, 'validateIdTokenExpNotExpired').and.returnValue(false);
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenExpNotExpired'
+      ).and.returnValue(false);
       const readSpy = spyOn(storagePersistenceService, 'read');
 
-      readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+      readSpy
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      readSpy
+        .withArgs('authStateControl', config)
+        .and.returnValue('authStateControl');
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
 
-      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => undefined);
+      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+        () => undefined
+      );
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -737,10 +821,16 @@ describe('State Validation Service', () => {
         validationResult: null,
         existingIdToken: null,
       };
-      const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const stateObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       stateObs$.subscribe((state) => {
-        expect(logWarningSpy).toHaveBeenCalledOnceWith(config, 'authCallback id token expired');
+        expect(logWarningSpy).toHaveBeenCalledOnceWith(
+          config,
+          'authCallback id token expired'
+        );
         expect(state.accessToken).toBe('access_tokenTEST');
         expect(state.idToken).toBe('id_tokenTEST');
         expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -751,11 +841,20 @@ describe('State Validation Service', () => {
     it('should return invalid result if validateStateFromHashCallback is false', waitForAsync(() => {
       const readSpy = spyOn(storagePersistenceService, 'read');
 
-      readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(false);
+      readSpy
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      readSpy
+        .withArgs('authStateControl', config)
+        .and.returnValue('authStateControl');
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(false);
 
-      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => undefined);
+      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+        () => undefined
+      );
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -771,12 +870,20 @@ describe('State Validation Service', () => {
         validationResult: null,
         existingIdToken: null,
       };
-      const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const stateObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
-      expect(tokenValidationService.validateStateFromHashCallback).toHaveBeenCalled();
+      expect(
+        tokenValidationService.validateStateFromHashCallback
+      ).toHaveBeenCalled();
 
       stateObs$.subscribe((state) => {
-        expect(logWarningSpy).toHaveBeenCalledOnceWith(config, 'authCallback incorrect state');
+        expect(logWarningSpy).toHaveBeenCalledOnceWith(
+          config,
+          'authCallback incorrect state'
+        );
         expect(state.accessToken).toBe('');
         expect(state.authResponseIsValid).toBe(false);
         expect(state.decodedIdToken).toBeDefined();
@@ -785,20 +892,47 @@ describe('State Validation Service', () => {
     }));
 
     it('access_token should equal result.access_token and is valid if response_type is "id_token token"', waitForAsync(() => {
-      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
+      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
+        'decoded_id_token'
+      );
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
+      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(
+        of(true)
+      );
       spyOn(tokenValidationService, 'hasIdTokenExpired').and.returnValue(false);
-      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(
+        true
+      );
+      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(
+        true
+      );
+      spyOn(
+        tokenValidationService,
+        'validateAccessTokenNotExpired'
+      ).and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenAzpExistsIfMoreThanOneAud'
+      ).and.returnValue(true);
+      spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(
+        true
+      );
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenIatMaxOffset'
+      ).and.returnValue(true);
       spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenExpNotExpired').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenExpNotExpired'
+      ).and.returnValue(true);
       spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(of(true));
+      spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(
+        of(true)
+      );
 
       config.maxIdTokenIatOffsetAllowedInSeconds = 0;
       config.clientId = '';
@@ -807,8 +941,12 @@ describe('State Validation Service', () => {
 
       const readSpy = spyOn(storagePersistenceService, 'read');
 
-      readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+      readSpy
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      readSpy
+        .withArgs('authStateControl', config)
+        .and.returnValue('authStateControl');
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
 
       const callbackContext = {
@@ -825,7 +963,10 @@ describe('State Validation Service', () => {
         validationResult: null,
         existingIdToken: null,
       };
-      const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const stateObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       stateObs$.subscribe((state) => {
         expect(state.accessToken).toBe('access_tokenTEST');
@@ -836,16 +977,29 @@ describe('State Validation Service', () => {
     }));
 
     it('should return invalid result if validateSignatureIdToken is false', waitForAsync(() => {
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
       config.responseType = 'id_token token';
-      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(false));
+      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
+        'decoded_id_token'
+      );
+      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(
+        of(false)
+      );
 
       const readSpy = spyOn(storagePersistenceService, 'read');
 
-      readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
-      const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => undefined);
+      readSpy
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      readSpy
+        .withArgs('authStateControl', config)
+        .and.returnValue('authStateControl');
+      const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(
+        () => undefined
+      );
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -862,7 +1016,10 @@ describe('State Validation Service', () => {
         existingIdToken: null,
       };
 
-      const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const stateObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       stateObs$.subscribe((state) => {
         expect(logDebugSpy.calls.allArgs()).toEqual([
@@ -878,18 +1035,33 @@ describe('State Validation Service', () => {
     }));
 
     it('should return invalid result if validateIdTokenNonce is false', waitForAsync(() => {
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
       config.responseType = 'id_token token';
-      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
-      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(false);
+      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
+        'decoded_id_token'
+      );
+      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(
+        of(true)
+      );
+      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(
+        false
+      );
       const readSpy = spyOn(storagePersistenceService, 'read');
 
-      readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+      readSpy
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      readSpy
+        .withArgs('authStateControl', config)
+        .and.returnValue('authStateControl');
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
 
-      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => undefined);
+      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+        () => undefined
+      );
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -905,7 +1077,10 @@ describe('State Validation Service', () => {
         validationResult: null,
         existingIdToken: null,
       };
-      const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const stateObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       stateObs$.subscribe((state) => {
         expect(logWarningSpy).toHaveBeenCalledOnceWith(
@@ -920,23 +1095,40 @@ describe('State Validation Service', () => {
     }));
 
     it('should return invalid result if validateRequiredIdToken is false', waitForAsync(() => {
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
 
       config.responseType = 'id_token token';
 
-      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
+      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
+        'decoded_id_token'
+      );
 
-      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
+      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(
+        of(true)
+      );
 
-      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
+      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(
+        true
+      );
 
-      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(false);
+      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(
+        false
+      );
       const readSpy = spyOn(storagePersistenceService, 'read');
 
-      readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+      readSpy
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      readSpy
+        .withArgs('authStateControl', config)
+        .and.returnValue('authStateControl');
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
-      const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => undefined);
+      const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(
+        () => undefined
+      );
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -952,11 +1144,20 @@ describe('State Validation Service', () => {
         validationResult: null,
         existingIdToken: null,
       };
-      const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const stateObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       stateObs$.subscribe((state) => {
-        expect(logDebugSpy).toHaveBeenCalledWith(config, 'authCallback Validation, one of the REQUIRED properties missing from id_token');
-        expect(logDebugSpy).toHaveBeenCalledWith(config, 'authCallback token(s) invalid');
+        expect(logDebugSpy).toHaveBeenCalledWith(
+          config,
+          'authCallback Validation, one of the REQUIRED properties missing from id_token'
+        );
+        expect(logDebugSpy).toHaveBeenCalledWith(
+          config,
+          'authCallback token(s) invalid'
+        );
         expect(state.accessToken).toBe('access_tokenTEST');
         expect(state.idToken).toBe('id_tokenTEST');
         expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -965,23 +1166,43 @@ describe('State Validation Service', () => {
     }));
 
     it('should return invalid result if validateIdTokenIatMaxOffset is false', waitForAsync(() => {
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
 
       config.responseType = 'id_token token';
 
-      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
-      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(false);
+      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
+        'decoded_id_token'
+      );
+      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(
+        of(true)
+      );
+      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(
+        true
+      );
+      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(
+        true
+      );
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenIatMaxOffset'
+      ).and.returnValue(false);
 
       config.maxIdTokenIatOffsetAllowedInSeconds = 0;
       const readSpy = spyOn(storagePersistenceService, 'read');
 
-      readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+      readSpy
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      readSpy
+        .withArgs('authStateControl', config)
+        .and.returnValue('authStateControl');
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
-      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => undefined);
+      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+        () => undefined
+      );
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -997,7 +1218,10 @@ describe('State Validation Service', () => {
         validationResult: null,
         existingIdToken: null,
       };
-      const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const stateObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       stateObs$.subscribe((state) => {
         expect(logWarningSpy).toHaveBeenCalledOnceWith(
@@ -1012,28 +1236,50 @@ describe('State Validation Service', () => {
     }));
 
     it('should return invalid result if validateIdTokenIss is false and has authWellKnownEndPoints', waitForAsync(() => {
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
 
       config.responseType = 'id_token token';
 
-      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
+      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
+        'decoded_id_token'
+      );
 
-      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
+      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(
+        of(true)
+      );
 
-      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
+      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(
+        true
+      );
 
-      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
+      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(
+        true
+      );
 
-      spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenIatMaxOffset'
+      ).and.returnValue(true);
 
       config.maxIdTokenIatOffsetAllowedInSeconds = 0;
-      spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(false);
+      spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(
+        false
+      );
       const readSpy = spyOn(storagePersistenceService, 'read');
 
-      readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+      readSpy
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      readSpy
+        .withArgs('authStateControl', config)
+        .and.returnValue('authStateControl');
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
-      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => undefined);
+      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+        () => undefined
+      );
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -1049,10 +1295,16 @@ describe('State Validation Service', () => {
         validationResult: null,
         existingIdToken: null,
       };
-      const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const stateObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       stateObs$.subscribe((state) => {
-        expect(logWarningSpy).toHaveBeenCalledOnceWith(config, 'authCallback incorrect iss does not match authWellKnownEndpoints issuer');
+        expect(logWarningSpy).toHaveBeenCalledOnceWith(
+          config,
+          'authCallback incorrect iss does not match authWellKnownEndpoints issuer'
+        );
         expect(state.accessToken).toBe('access_tokenTEST');
         expect(state.idToken).toBe('id_tokenTEST');
         expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -1061,20 +1313,38 @@ describe('State Validation Service', () => {
     }));
 
     it('should return invalid result if validateIdTokenIss is false and has no authWellKnownEndPoints', waitForAsync(() => {
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
       config.responseType = 'id_token token';
-      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
-      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
+        'decoded_id_token'
+      );
+      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(
+        of(true)
+      );
+      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(
+        true
+      );
+      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(
+        true
+      );
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenIatMaxOffset'
+      ).and.returnValue(true);
       config.maxIdTokenIatOffsetAllowedInSeconds = 0;
       const readSpy = spyOn(storagePersistenceService, 'read');
 
       readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(null);
-      readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+      readSpy
+        .withArgs('authStateControl', config)
+        .and.returnValue('authStateControl');
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
-      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => undefined);
+      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+        () => undefined
+      );
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -1090,10 +1360,16 @@ describe('State Validation Service', () => {
         validationResult: null,
         existingIdToken: null,
       };
-      const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const stateObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       stateObs$.subscribe((state) => {
-        expect(logWarningSpy).toHaveBeenCalledOnceWith(config, 'authWellKnownEndpoints is undefined');
+        expect(logWarningSpy).toHaveBeenCalledOnceWith(
+          config,
+          'authWellKnownEndpoints is undefined'
+        );
 
         expect(state.accessToken).toBe('access_tokenTEST');
         expect(state.idToken).toBe('id_tokenTEST');
@@ -1104,24 +1380,46 @@ describe('State Validation Service', () => {
     }));
 
     it('should return invalid result if validateIdTokenAud is false', waitForAsync(() => {
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
       config.responseType = 'id_token token';
-      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
-      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
+        'decoded_id_token'
+      );
+      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(
+        of(true)
+      );
+      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(
+        true
+      );
+      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(
+        true
+      );
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenIatMaxOffset'
+      ).and.returnValue(true);
       config.maxIdTokenIatOffsetAllowedInSeconds = 0;
       spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(false);
+      spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(
+        false
+      );
 
       config.clientId = '';
       const readSpy = spyOn(storagePersistenceService, 'read');
 
-      readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+      readSpy
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      readSpy
+        .withArgs('authStateControl', config)
+        .and.returnValue('authStateControl');
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
-      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => undefined);
+      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+        () => undefined
+      );
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -1137,10 +1435,16 @@ describe('State Validation Service', () => {
         validationResult: null,
         existingIdToken: null,
       };
-      const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const stateObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       stateObs$.subscribe((state) => {
-        expect(logWarningSpy).toHaveBeenCalledOnceWith(config, 'authCallback incorrect aud');
+        expect(logWarningSpy).toHaveBeenCalledOnceWith(
+          config,
+          'authCallback incorrect aud'
+        );
         expect(state.accessToken).toBe('access_tokenTEST');
         expect(state.idToken).toBe('id_tokenTEST');
         expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -1149,25 +1453,48 @@ describe('State Validation Service', () => {
     }));
 
     it('should return invalid result if validateIdTokenAzpExistsIfMoreThanOneAud is false', waitForAsync(() => {
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
       config.responseType = 'id_token token';
-      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
-      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
+        'decoded_id_token'
+      );
+      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(
+        of(true)
+      );
+      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(
+        true
+      );
+      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(
+        true
+      );
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenIatMaxOffset'
+      ).and.returnValue(true);
       config.maxIdTokenIatOffsetAllowedInSeconds = 0;
       spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(true);
       spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(false);
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenAzpExistsIfMoreThanOneAud'
+      ).and.returnValue(false);
 
       config.clientId = '';
       const readSpy = spyOn(storagePersistenceService, 'read');
 
-      readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+      readSpy
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      readSpy
+        .withArgs('authStateControl', config)
+        .and.returnValue('authStateControl');
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
-      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => undefined);
+      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+        () => undefined
+      );
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -1183,10 +1510,16 @@ describe('State Validation Service', () => {
         validationResult: null,
         existingIdToken: null,
       };
-      const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const stateObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       stateObs$.subscribe((state) => {
-        expect(logWarningSpy).toHaveBeenCalledOnceWith(config, 'authCallback missing azp');
+        expect(logWarningSpy).toHaveBeenCalledOnceWith(
+          config,
+          'authCallback missing azp'
+        );
         expect(state.accessToken).toBe('access_tokenTEST');
         expect(state.idToken).toBe('id_tokenTEST');
         expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -1196,26 +1529,51 @@ describe('State Validation Service', () => {
     }));
 
     it('should return invalid result if validateIdTokenAzpValid is false', waitForAsync(() => {
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
       config.responseType = 'id_token token';
-      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
-      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
+        'decoded_id_token'
+      );
+      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(
+        of(true)
+      );
+      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(
+        true
+      );
+      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(
+        true
+      );
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenIatMaxOffset'
+      ).and.returnValue(true);
       config.maxIdTokenIatOffsetAllowedInSeconds = 0;
       spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(true);
       spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(false);
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenAzpExistsIfMoreThanOneAud'
+      ).and.returnValue(true);
+      spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(
+        false
+      );
 
       config.clientId = '';
       const readSpy = spyOn(storagePersistenceService, 'read');
 
-      readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+      readSpy
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      readSpy
+        .withArgs('authStateControl', config)
+        .and.returnValue('authStateControl');
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
-      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => undefined);
+      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+        () => undefined
+      );
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -1231,10 +1589,16 @@ describe('State Validation Service', () => {
         validationResult: null,
         existingIdToken: null,
       };
-      const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const stateObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       stateObs$.subscribe((state) => {
-        expect(logWarningSpy).toHaveBeenCalledOnceWith(config, 'authCallback incorrect azp');
+        expect(logWarningSpy).toHaveBeenCalledOnceWith(
+          config,
+          'authCallback incorrect azp'
+        );
         expect(state.accessToken).toBe('access_tokenTEST');
         expect(state.idToken).toBe('id_tokenTEST');
         expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -1244,27 +1608,55 @@ describe('State Validation Service', () => {
     }));
 
     it('should return invalid result if isIdTokenAfterRefreshTokenRequestValid is false', waitForAsync(() => {
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
       config.responseType = 'id_token token';
-      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
-      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
+        'decoded_id_token'
+      );
+      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(
+        of(true)
+      );
+      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(
+        true
+      );
+      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(
+        true
+      );
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenIatMaxOffset'
+      ).and.returnValue(true);
       config.maxIdTokenIatOffsetAllowedInSeconds = 0;
       spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(true);
       spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(true);
-      spyOn(stateValidationService as any, 'isIdTokenAfterRefreshTokenRequestValid').and.returnValue(false);
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenAzpExistsIfMoreThanOneAud'
+      ).and.returnValue(true);
+      spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(
+        true
+      );
+      spyOn(
+        stateValidationService as any,
+        'isIdTokenAfterRefreshTokenRequestValid'
+      ).and.returnValue(false);
 
       config.clientId = '';
       const readSpy = spyOn(storagePersistenceService, 'read');
 
-      readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+      readSpy
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      readSpy
+        .withArgs('authStateControl', config)
+        .and.returnValue('authStateControl');
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
-      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => undefined);
+      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+        () => undefined
+      );
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -1280,44 +1672,85 @@ describe('State Validation Service', () => {
         validationResult: null,
         existingIdToken: null,
       };
-      const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const stateObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       stateObs$.subscribe((state) => {
-        expect(logWarningSpy).toHaveBeenCalledOnceWith(config, 'authCallback pre, post id_token claims do not match in refresh');
+        expect(logWarningSpy).toHaveBeenCalledOnceWith(
+          config,
+          'authCallback pre, post id_token claims do not match in refresh'
+        );
         expect(state.accessToken).toBe('access_tokenTEST');
         expect(state.idToken).toBe('id_tokenTEST');
         expect(state.decodedIdToken).toBe('decoded_id_token');
         expect(state.authResponseIsValid).toBe(false);
-        expect(state.state).toBe(ValidationResult.IncorrectIdTokenClaimsAfterRefresh);
+        expect(state.state).toBe(
+          ValidationResult.IncorrectIdTokenClaimsAfterRefresh
+        );
       });
     }));
 
     it('Reponse is valid if authConfiguration.response_type does not equal "id_token token"', waitForAsync(() => {
       spyOn(tokenValidationService, 'hasIdTokenExpired').and.returnValue(false);
-      spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(of(true));
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
-      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
-      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateAccessTokenNotExpired'
+      ).and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenAzpExistsIfMoreThanOneAud'
+      ).and.returnValue(true);
+      spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(
+        true
+      );
+      spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(
+        of(true)
+      );
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
+      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
+        'decoded_id_token'
+      );
+      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(
+        of(true)
+      );
+      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(
+        true
+      );
+      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(
+        true
+      );
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenIatMaxOffset'
+      ).and.returnValue(true);
       config.maxIdTokenIatOffsetAllowedInSeconds = 0;
       spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(true);
       spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(true);
       config.clientId = '';
-      spyOn(tokenValidationService, 'validateIdTokenExpNotExpired').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenExpNotExpired'
+      ).and.returnValue(true);
       config.responseType = 'NOT id_token token';
       config.autoCleanStateAfterAuthentication = false;
       const readSpy = spyOn(storagePersistenceService, 'read');
 
-      readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+      readSpy
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      readSpy
+        .withArgs('authStateControl', config)
+        .and.returnValue('authStateControl');
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
 
-      const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(() => undefined);
+      const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(
+        () => undefined
+      );
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -1334,11 +1767,20 @@ describe('State Validation Service', () => {
         existingIdToken: null,
       };
 
-      const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const stateObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       stateObs$.subscribe((state) => {
-        expect(logDebugSpy).toHaveBeenCalledWith(config, 'authCallback token(s) validated, continue');
-        expect(logDebugSpy).toHaveBeenCalledWith(config, 'authCallback token(s) invalid');
+        expect(logDebugSpy).toHaveBeenCalledWith(
+          config,
+          'authCallback token(s) validated, continue'
+        );
+        expect(logDebugSpy).toHaveBeenCalledWith(
+          config,
+          'authCallback token(s) invalid'
+        );
         expect(state.accessToken).toBe('');
         expect(state.idToken).toBe('id_tokenTEST');
         expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -1347,33 +1789,66 @@ describe('State Validation Service', () => {
     }));
 
     it('Response is invalid if validateIdTokenAtHash is false', waitForAsync(() => {
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
-      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
-      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
+      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
+        'decoded_id_token'
+      );
+      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(
+        of(true)
+      );
+      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(
+        true
+      );
+      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(
+        true
+      );
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenIatMaxOffset'
+      ).and.returnValue(true);
       config.maxIdTokenIatOffsetAllowedInSeconds = 0;
       spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(true);
       spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(true);
       config.clientId = '';
-      spyOn(tokenValidationService, 'validateIdTokenExpNotExpired').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenExpNotExpired'
+      ).and.returnValue(true);
       config.responseType = 'id_token token';
       config.autoCleanStateAfterAuthentication = false;
-      spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(of(false));
+      spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(
+        of(false)
+      );
 
       spyOn(tokenValidationService, 'hasIdTokenExpired').and.returnValue(false);
-      spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateAccessTokenNotExpired'
+      ).and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenAzpExistsIfMoreThanOneAud'
+      ).and.returnValue(true);
+      spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(
+        true
+      );
 
       const readSpy = spyOn(storagePersistenceService, 'read');
 
-      readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+      readSpy
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      readSpy
+        .withArgs('authStateControl', config)
+        .and.returnValue('authStateControl');
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
 
-      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(() => undefined);
+      const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
+        () => undefined
+      );
 
       const callbackContext = {
         code: 'fdffsdfsdf',
@@ -1389,10 +1864,16 @@ describe('State Validation Service', () => {
         validationResult: null,
         existingIdToken: null,
       };
-      const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const stateObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       stateObs$.subscribe((state) => {
-        expect(logWarningSpy).toHaveBeenCalledOnceWith(config, 'authCallback incorrect at_hash');
+        expect(logWarningSpy).toHaveBeenCalledOnceWith(
+          config,
+          'authCallback incorrect at_hash'
+        );
         expect(state.accessToken).toBe('access_tokenTEST');
         expect(state.idToken).toBe('id_tokenTEST');
         expect(state.decodedIdToken).toBe('decoded_id_token');
@@ -1402,27 +1883,60 @@ describe('State Validation Service', () => {
 
     it('should return valid result if validateIdTokenIss is false and iss_validation_off is true', waitForAsync(() => {
       config.issValidationOff = true;
-      spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(false);
+      spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(
+        false
+      );
 
       spyOn(tokenValidationService, 'hasIdTokenExpired').and.returnValue(false);
-      spyOn(tokenValidationService, 'validateAccessTokenNotExpired').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAzpExistsIfMoreThanOneAud').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateAccessTokenNotExpired'
+      ).and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenAzpExistsIfMoreThanOneAud'
+      ).and.returnValue(true);
+      spyOn(tokenValidationService, 'validateIdTokenAzpValid').and.returnValue(
+        true
+      );
 
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
-      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
-      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
+      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
+        'decoded_id_token'
+      );
+      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(
+        of(true)
+      );
+      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(
+        true
+      );
+      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(
+        true
+      );
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenIatMaxOffset'
+      ).and.returnValue(true);
       spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenExpNotExpired').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(of(true));
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenExpNotExpired'
+      ).and.returnValue(true);
+      spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(
+        of(true)
+      );
       config.responseType = 'id_token token';
       const readSpy = spyOn(storagePersistenceService, 'read');
 
-      readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+      readSpy
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      readSpy
+        .withArgs('authStateControl', config)
+        .and.returnValue('authStateControl');
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
 
       const logDebugSpy = spyOn(loggerService, 'logDebug'); // .and.callFake(() => undefined);
@@ -1441,7 +1955,10 @@ describe('State Validation Service', () => {
         validationResult: null,
         existingIdToken: null,
       };
-      const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const stateObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       stateObs$.subscribe((state) => {
         expect(logDebugSpy.calls.allArgs()).toEqual([
@@ -1457,27 +1974,50 @@ describe('State Validation Service', () => {
     }));
 
     it('should return valid if there is no id_token', waitForAsync(() => {
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
 
       config.responseType = 'code';
-      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue('decoded_id_token');
-      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(of(true));
-      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(true);
+      spyOn(tokenHelperService, 'getPayloadFromToken').and.returnValue(
+        'decoded_id_token'
+      );
+      spyOn(tokenValidationService, 'validateSignatureIdToken').and.returnValue(
+        of(true)
+      );
+      spyOn(tokenValidationService, 'validateIdTokenNonce').and.returnValue(
+        true
+      );
+      spyOn(tokenValidationService, 'validateRequiredIdToken').and.returnValue(
+        true
+      );
       config.maxIdTokenIatOffsetAllowedInSeconds = 0;
       config.clientId = '';
-      spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenIatMaxOffset'
+      ).and.returnValue(true);
       spyOn(tokenValidationService, 'validateIdTokenAud').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenExpNotExpired').and.returnValue(true);
+      spyOn(
+        tokenValidationService,
+        'validateIdTokenExpNotExpired'
+      ).and.returnValue(true);
       spyOn(tokenValidationService, 'validateIdTokenIss').and.returnValue(true);
-      spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(of(true));
+      spyOn(tokenValidationService, 'validateIdTokenAtHash').and.returnValue(
+        of(true)
+      );
 
       config.autoCleanStateAfterAuthentication = false;
 
       const readSpy = spyOn(storagePersistenceService, 'read');
 
-      readSpy.withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      readSpy.withArgs('authStateControl', config).and.returnValue('authStateControl');
+      readSpy
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      readSpy
+        .withArgs('authStateControl', config)
+        .and.returnValue('authStateControl');
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
 
       const callbackContext = {
@@ -1495,7 +2035,10 @@ describe('State Validation Service', () => {
         existingIdToken: null,
       };
 
-      const stateObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const stateObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       stateObs$.subscribe((state) => {
         expect(state.accessToken).toBe('access_tokenTEST');
@@ -1506,8 +2049,14 @@ describe('State Validation Service', () => {
     }));
 
     it('should return OK if disableIdTokenValidation is true', waitForAsync(() => {
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
-      spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(false);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
+      spyOn(
+        flowHelper,
+        'isCurrentFlowImplicitFlowWithAccessToken'
+      ).and.returnValue(false);
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
 
       config.responseType = 'id_token token';
@@ -1526,7 +2075,10 @@ describe('State Validation Service', () => {
         validationResult: null,
       };
 
-      const isValidObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const isValidObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       isValidObs$.subscribe((isValid) => {
         expect(isValid.state).toBe(ValidationResult.Ok);
@@ -1535,8 +2087,14 @@ describe('State Validation Service', () => {
     }));
 
     it('should return OK if disableIdTokenValidation is true', waitForAsync(() => {
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
-      spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(false);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
+      spyOn(
+        flowHelper,
+        'isCurrentFlowImplicitFlowWithAccessToken'
+      ).and.returnValue(false);
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
 
       config.responseType = 'id_token token';
@@ -1555,7 +2113,10 @@ describe('State Validation Service', () => {
         validationResult: null,
       };
 
-      const isValidObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const isValidObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       isValidObs$.subscribe((isValid) => {
         expect(isValid.state).toBe(ValidationResult.Ok);
@@ -1564,8 +2125,14 @@ describe('State Validation Service', () => {
     }));
 
     it('should return OK if disableIdTokenValidation is false but inrefreshtokenflow and no id token is returned', waitForAsync(() => {
-      spyOn(tokenValidationService, 'validateStateFromHashCallback').and.returnValue(true);
-      spyOn(flowHelper, 'isCurrentFlowImplicitFlowWithAccessToken').and.returnValue(false);
+      spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).and.returnValue(true);
+      spyOn(
+        flowHelper,
+        'isCurrentFlowImplicitFlowWithAccessToken'
+      ).and.returnValue(false);
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
 
       config.responseType = 'id_token token';
@@ -1584,7 +2151,10 @@ describe('State Validation Service', () => {
         validationResult: null,
       };
 
-      const isValidObs$ = stateValidationService.getValidatedStateResult(callbackContext, config);
+      const isValidObs$ = stateValidationService.getValidatedStateResult(
+        callbackContext,
+        config
+      );
 
       isValidObs$.subscribe((isValid) => {
         expect(isValid.state).toBe(ValidationResult.Ok);

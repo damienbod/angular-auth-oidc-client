@@ -1,5 +1,8 @@
 import { HttpHeaders } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { DataService } from './data.service';
 import { HttpBaseService } from './http-base.service';
@@ -25,160 +28,156 @@ describe('Data Service', () => {
   });
 
   describe('get', () => {
-    it(
-      'get call sets the accept header',
-      waitForAsync(() => {
-        const url = 'anyurl';
+    it('get call sets the accept header', waitForAsync(() => {
+      const url = 'anyurl';
 
-        dataService.get(url, { configId: 'configId1' }).subscribe((data: unknown) => {
+      dataService
+        .get(url, { configId: 'configId1' })
+        .subscribe((data: unknown) => {
           expect(data).toBe('bodyData');
         });
-        const req = httpMock.expectOne(url);
+      const req = httpMock.expectOne(url);
 
-        expect(req.request.method).toBe('GET');
-        expect(req.request.headers.get('Accept')).toBe('application/json');
+      expect(req.request.method).toBe('GET');
+      expect(req.request.headers.get('Accept')).toBe('application/json');
 
-        req.flush('bodyData');
+      req.flush('bodyData');
 
-        httpMock.verify();
-      })
-    );
+      httpMock.verify();
+    }));
 
-    it(
-      'get call with token the accept header and the token',
-      waitForAsync(() => {
-        const url = 'anyurl';
-        const token = 'token';
+    it('get call with token the accept header and the token', waitForAsync(() => {
+      const url = 'anyurl';
+      const token = 'token';
 
-        dataService.get(url, { configId: 'configId1' }, token).subscribe((data: unknown) => {
+      dataService
+        .get(url, { configId: 'configId1' }, token)
+        .subscribe((data: unknown) => {
           expect(data).toBe('bodyData');
         });
-        const req = httpMock.expectOne(url);
+      const req = httpMock.expectOne(url);
 
-        expect(req.request.method).toBe('GET');
-        expect(req.request.headers.get('Accept')).toBe('application/json');
-        expect(req.request.headers.get('Authorization')).toBe('Bearer ' + token);
+      expect(req.request.method).toBe('GET');
+      expect(req.request.headers.get('Accept')).toBe('application/json');
+      expect(req.request.headers.get('Authorization')).toBe('Bearer ' + token);
 
-        req.flush('bodyData');
+      req.flush('bodyData');
 
-        httpMock.verify();
-      })
-    );
+      httpMock.verify();
+    }));
 
-    it(
-      'call without ngsw-bypass param by default',
-      waitForAsync(() => {
-        const url = 'anyurl';
+    it('call without ngsw-bypass param by default', waitForAsync(() => {
+      const url = 'anyurl';
 
-        dataService.get(url, { configId: 'configId1' }).subscribe((data: unknown) => {
+      dataService
+        .get(url, { configId: 'configId1' })
+        .subscribe((data: unknown) => {
           expect(data).toBe('bodyData');
         });
-        const req = httpMock.expectOne(url);
+      const req = httpMock.expectOne(url);
 
-        expect(req.request.method).toBe('GET');
-        expect(req.request.headers.get('Accept')).toBe('application/json');
-        expect(req.request.params.get('ngsw-bypass')).toBeNull();
+      expect(req.request.method).toBe('GET');
+      expect(req.request.headers.get('Accept')).toBe('application/json');
+      expect(req.request.params.get('ngsw-bypass')).toBeNull();
 
-        req.flush('bodyData');
+      req.flush('bodyData');
 
-        httpMock.verify();
-      })
-    );
+      httpMock.verify();
+    }));
 
-    it(
-      'call with ngsw-bypass param',
-      waitForAsync(() => {
-        const url = 'anyurl';
+    it('call with ngsw-bypass param', waitForAsync(() => {
+      const url = 'anyurl';
 
-        dataService.get(url, { configId: 'configId1', ngswBypass: true }).subscribe((data: unknown) => {
+      dataService
+        .get(url, { configId: 'configId1', ngswBypass: true })
+        .subscribe((data: unknown) => {
           expect(data).toBe('bodyData');
         });
-        const req = httpMock.expectOne(url + '?ngsw-bypass=');
+      const req = httpMock.expectOne(url + '?ngsw-bypass=');
 
-        expect(req.request.method).toBe('GET');
-        expect(req.request.headers.get('Accept')).toBe('application/json');
-        expect(req.request.params.get('ngsw-bypass')).toBe('');
+      expect(req.request.method).toBe('GET');
+      expect(req.request.headers.get('Accept')).toBe('application/json');
+      expect(req.request.params.get('ngsw-bypass')).toBe('');
 
-        req.flush('bodyData');
+      req.flush('bodyData');
 
-        httpMock.verify();
-      })
-    );
+      httpMock.verify();
+    }));
   });
 
   describe('post', () => {
-    it(
-      'call sets the accept header when no other params given',
-      waitForAsync(() => {
-        const url = 'anyurl';
+    it('call sets the accept header when no other params given', waitForAsync(() => {
+      const url = 'anyurl';
 
-        dataService.post(url, { some: 'thing' }, { configId: 'configId1' }).subscribe();
-        const req = httpMock.expectOne(url);
+      dataService
+        .post(url, { some: 'thing' }, { configId: 'configId1' })
+        .subscribe();
+      const req = httpMock.expectOne(url);
 
-        expect(req.request.method).toBe('POST');
-        expect(req.request.headers.get('Accept')).toBe('application/json');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.headers.get('Accept')).toBe('application/json');
 
-        req.flush('bodyData');
+      req.flush('bodyData');
 
-        httpMock.verify();
-      })
-    );
+      httpMock.verify();
+    }));
 
-    it(
-      'call sets custom headers ONLY (No ACCEPT header) when custom headers are given',
-      waitForAsync(() => {
-        const url = 'anyurl';
-        let headers = new HttpHeaders();
+    it('call sets custom headers ONLY (No ACCEPT header) when custom headers are given', waitForAsync(() => {
+      const url = 'anyurl';
+      let headers = new HttpHeaders();
 
-        headers = headers.set('X-MyHeader', 'Genesis');
+      headers = headers.set('X-MyHeader', 'Genesis');
 
-        dataService.post(url, { some: 'thing' }, { configId: 'configId1' }, headers).subscribe();
-        const req = httpMock.expectOne(url);
+      dataService
+        .post(url, { some: 'thing' }, { configId: 'configId1' }, headers)
+        .subscribe();
+      const req = httpMock.expectOne(url);
 
-        expect(req.request.method).toBe('POST');
-        expect(req.request.headers.get('X-MyHeader')).toEqual('Genesis');
-        expect(req.request.headers.get('X-MyHeader')).not.toEqual('Genesis333');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.headers.get('X-MyHeader')).toEqual('Genesis');
+      expect(req.request.headers.get('X-MyHeader')).not.toEqual('Genesis333');
 
-        req.flush('bodyData');
+      req.flush('bodyData');
 
-        httpMock.verify();
-      })
-    );
+      httpMock.verify();
+    }));
 
-    it(
-      'call without ngsw-bypass param by default',
-      waitForAsync(() => {
-        const url = 'anyurl';
+    it('call without ngsw-bypass param by default', waitForAsync(() => {
+      const url = 'anyurl';
 
-        dataService.post(url, { some: 'thing' }, { configId: 'configId1' }).subscribe();
-        const req = httpMock.expectOne(url);
+      dataService
+        .post(url, { some: 'thing' }, { configId: 'configId1' })
+        .subscribe();
+      const req = httpMock.expectOne(url);
 
-        expect(req.request.method).toBe('POST');
-        expect(req.request.headers.get('Accept')).toBe('application/json');
-        expect(req.request.params.get('ngsw-bypass')).toBeNull();
+      expect(req.request.method).toBe('POST');
+      expect(req.request.headers.get('Accept')).toBe('application/json');
+      expect(req.request.params.get('ngsw-bypass')).toBeNull();
 
-        req.flush('bodyData');
+      req.flush('bodyData');
 
-        httpMock.verify();
-      })
-    );
+      httpMock.verify();
+    }));
 
-    it(
-      'call with ngsw-bypass param',
-      waitForAsync(() => {
-        const url = 'anyurl';
+    it('call with ngsw-bypass param', waitForAsync(() => {
+      const url = 'anyurl';
 
-        dataService.post(url, { some: 'thing' }, { configId: 'configId1', ngswBypass: true }).subscribe();
-        const req = httpMock.expectOne(url + '?ngsw-bypass=');
+      dataService
+        .post(
+          url,
+          { some: 'thing' },
+          { configId: 'configId1', ngswBypass: true }
+        )
+        .subscribe();
+      const req = httpMock.expectOne(url + '?ngsw-bypass=');
 
-        expect(req.request.method).toBe('POST');
-        expect(req.request.headers.get('Accept')).toBe('application/json');
-        expect(req.request.params.get('ngsw-bypass')).toBe('');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.headers.get('Accept')).toBe('application/json');
+      expect(req.request.params.get('ngsw-bypass')).toBe('');
 
-        req.flush('bodyData');
+      req.flush('bodyData');
 
-        httpMock.verify();
-      })
-    );
+      httpMock.verify();
+    }));
   });
 });

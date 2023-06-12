@@ -33,15 +33,26 @@ export class PopUpService {
 
   isCurrentlyInPopup(config: OpenIdConfiguration): boolean {
     if (this.canAccessSessionStorage()) {
-      const popup = this.storagePersistenceService.read(this.STORAGE_IDENTIFIER, config);
+      const popup = this.storagePersistenceService.read(
+        this.STORAGE_IDENTIFIER,
+        config
+      );
 
-      return !!this.windowInternal.opener && this.windowInternal.opener !== this.windowInternal && !!popup;
+      return (
+        !!this.windowInternal.opener &&
+        this.windowInternal.opener !== this.windowInternal &&
+        !!popup
+      );
     }
 
     return false;
   }
 
-  openPopUp(url: string, popupOptions: PopupOptions, config: OpenIdConfiguration): void {
+  openPopUp(
+    url: string,
+    popupOptions: PopupOptions,
+    config: OpenIdConfiguration
+  ): void {
     const optionsToPass = this.getOptions(popupOptions);
 
     this.popUp = this.windowInternal.open(url, '_blank', optionsToPass);
@@ -52,7 +63,11 @@ export class PopUpService {
       return;
     }
 
-    this.storagePersistenceService.write(this.STORAGE_IDENTIFIER, 'true', config);
+    this.storagePersistenceService.write(
+      this.STORAGE_IDENTIFIER,
+      'true',
+      config
+    );
 
     const listener = (event: MessageEvent): void => {
       if (!event?.data || typeof event.data !== 'string') {
@@ -101,20 +116,39 @@ export class PopUpService {
   }
 
   private getOptions(popupOptions: PopupOptions): string {
-    const popupDefaultOptions: PopupOptions = { width: 500, height: 500, left: 50, top: 50 };
-    const options: PopupOptions = { ...popupDefaultOptions, ...(popupOptions || {}) };
-    const left: number = this.windowInternal.screenLeft + (this.windowInternal.outerWidth - options.width) / 2;
-    const top: number = this.windowInternal.screenTop + (this.windowInternal.outerHeight - options.height) / 2;
+    const popupDefaultOptions: PopupOptions = {
+      width: 500,
+      height: 500,
+      left: 50,
+      top: 50,
+    };
+    const options: PopupOptions = {
+      ...popupDefaultOptions,
+      ...(popupOptions || {}),
+    };
+    const left: number =
+      this.windowInternal.screenLeft +
+      (this.windowInternal.outerWidth - options.width) / 2;
+    const top: number =
+      this.windowInternal.screenTop +
+      (this.windowInternal.outerHeight - options.height) / 2;
 
     options.left = left;
     options.top = top;
 
     return Object.entries(options)
-      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+      .map(
+        ([key, value]) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+      )
       .join(',');
   }
 
   private canAccessSessionStorage(): boolean {
-    return typeof navigator !== 'undefined' && navigator.cookieEnabled && typeof Storage !== 'undefined';
+    return (
+      typeof navigator !== 'undefined' &&
+      navigator.cookieEnabled &&
+      typeof Storage !== 'undefined'
+    );
   }
 }

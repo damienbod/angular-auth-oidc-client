@@ -23,17 +23,42 @@ export class FlowsService {
     private readonly refreshTokenCallbackHandlerService: RefreshTokenCallbackHandlerService
   ) {}
 
-  processCodeFlowCallback(urlToCheck: string, config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): Observable<CallbackContext> {
-    return this.codeFlowCallbackHandlerService.codeFlowCallback(urlToCheck, config).pipe(
-      concatMap((callbackContext) => this.codeFlowCallbackHandlerService.codeFlowCodeRequest(callbackContext, config)),
-      concatMap((callbackContext) =>
-        this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext, config, allConfigs)
-      ),
-      concatMap((callbackContext) =>
-        this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext, config, allConfigs)
-      ),
-      concatMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext, config, allConfigs))
-    );
+  processCodeFlowCallback(
+    urlToCheck: string,
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): Observable<CallbackContext> {
+    return this.codeFlowCallbackHandlerService
+      .codeFlowCallback(urlToCheck, config)
+      .pipe(
+        concatMap((callbackContext) =>
+          this.codeFlowCallbackHandlerService.codeFlowCodeRequest(
+            callbackContext,
+            config
+          )
+        ),
+        concatMap((callbackContext) =>
+          this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(
+            callbackContext,
+            config,
+            allConfigs
+          )
+        ),
+        concatMap((callbackContext) =>
+          this.stateValidationCallbackHandlerService.callbackStateValidation(
+            callbackContext,
+            config,
+            allConfigs
+          )
+        ),
+        concatMap((callbackContext) =>
+          this.userHandlerService.callbackUser(
+            callbackContext,
+            config,
+            allConfigs
+          )
+        )
+      );
   }
 
   processSilentRenewCodeFlowCallback(
@@ -41,27 +66,63 @@ export class FlowsService {
     config: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
   ): Observable<CallbackContext> {
-    return this.codeFlowCallbackHandlerService.codeFlowCodeRequest(firstContext, config).pipe(
-      concatMap((callbackContext) =>
-        this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext, config, allConfigs)
-      ),
-      concatMap((callbackContext) =>
-        this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext, config, allConfigs)
-      ),
-      concatMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext, config, allConfigs))
-    );
+    return this.codeFlowCallbackHandlerService
+      .codeFlowCodeRequest(firstContext, config)
+      .pipe(
+        concatMap((callbackContext) =>
+          this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(
+            callbackContext,
+            config,
+            allConfigs
+          )
+        ),
+        concatMap((callbackContext) =>
+          this.stateValidationCallbackHandlerService.callbackStateValidation(
+            callbackContext,
+            config,
+            allConfigs
+          )
+        ),
+        concatMap((callbackContext) =>
+          this.userHandlerService.callbackUser(
+            callbackContext,
+            config,
+            allConfigs
+          )
+        )
+      );
   }
 
-  processImplicitFlowCallback(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[], hash?: string): Observable<CallbackContext> {
-    return this.implicitFlowCallbackHandlerService.implicitFlowCallback(config, allConfigs, hash).pipe(
-      concatMap((callbackContext) =>
-        this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext, config, allConfigs)
-      ),
-      concatMap((callbackContext) =>
-        this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext, config, allConfigs)
-      ),
-      concatMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext, config, allConfigs))
-    );
+  processImplicitFlowCallback(
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[],
+    hash?: string
+  ): Observable<CallbackContext> {
+    return this.implicitFlowCallbackHandlerService
+      .implicitFlowCallback(config, allConfigs, hash)
+      .pipe(
+        concatMap((callbackContext) =>
+          this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(
+            callbackContext,
+            config,
+            allConfigs
+          )
+        ),
+        concatMap((callbackContext) =>
+          this.stateValidationCallbackHandlerService.callbackStateValidation(
+            callbackContext,
+            config,
+            allConfigs
+          )
+        ),
+        concatMap((callbackContext) =>
+          this.userHandlerService.callbackUser(
+            callbackContext,
+            config,
+            allConfigs
+          )
+        )
+      );
   }
 
   processRefreshToken(
@@ -69,17 +130,37 @@ export class FlowsService {
     allConfigs: OpenIdConfiguration[],
     customParamsRefresh?: { [key: string]: string | number | boolean }
   ): Observable<CallbackContext> {
-    return this.refreshSessionCallbackHandlerService.refreshSessionWithRefreshTokens(config).pipe(
-      concatMap((callbackContext) =>
-        this.refreshTokenCallbackHandlerService.refreshTokensRequestTokens(callbackContext, config, customParamsRefresh)
-      ),
-      concatMap((callbackContext) =>
-        this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(callbackContext, config, allConfigs)
-      ),
-      concatMap((callbackContext) =>
-        this.stateValidationCallbackHandlerService.callbackStateValidation(callbackContext, config, allConfigs)
-      ),
-      concatMap((callbackContext) => this.userHandlerService.callbackUser(callbackContext, config, allConfigs))
-    );
+    return this.refreshSessionCallbackHandlerService
+      .refreshSessionWithRefreshTokens(config)
+      .pipe(
+        concatMap((callbackContext) =>
+          this.refreshTokenCallbackHandlerService.refreshTokensRequestTokens(
+            callbackContext,
+            config,
+            customParamsRefresh
+          )
+        ),
+        concatMap((callbackContext) =>
+          this.historyJwtKeysCallbackHandlerService.callbackHistoryAndResetJwtKeys(
+            callbackContext,
+            config,
+            allConfigs
+          )
+        ),
+        concatMap((callbackContext) =>
+          this.stateValidationCallbackHandlerService.callbackStateValidation(
+            callbackContext,
+            config,
+            allConfigs
+          )
+        ),
+        concatMap((callbackContext) =>
+          this.userHandlerService.callbackUser(
+            callbackContext,
+            config,
+            allConfigs
+          )
+        )
+      );
   }
 }

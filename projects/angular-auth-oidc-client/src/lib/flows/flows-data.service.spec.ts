@@ -17,7 +17,10 @@ describe('Flows Data Service', () => {
         RandomService,
         CryptoService,
         { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
+        {
+          provide: StoragePersistenceService,
+          useClass: mockClass(StoragePersistenceService),
+        },
       ],
     });
   });
@@ -42,7 +45,9 @@ describe('Flows Data Service', () => {
       const result = service.createNonce({ configId: 'configId1' });
 
       expect(result).toBeTruthy();
-      expect(spy).toHaveBeenCalledOnceWith('authNonce', result, { configId: 'configId1' });
+      expect(spy).toHaveBeenCalledOnceWith('authNonce', result, {
+        configId: 'configId1',
+      });
     });
   });
 
@@ -52,7 +57,9 @@ describe('Flows Data Service', () => {
 
       service.getAuthStateControl({ configId: 'configId1' });
 
-      expect(spy).toHaveBeenCalledOnceWith('authStateControl', { configId: 'configId1' });
+      expect(spy).toHaveBeenCalledOnceWith('authStateControl', {
+        configId: 'configId1',
+      });
     });
 
     it('setAuthStateControl saves property in store', () => {
@@ -60,20 +67,28 @@ describe('Flows Data Service', () => {
 
       service.setAuthStateControl('ToSave', { configId: 'configId1' });
 
-      expect(spy).toHaveBeenCalledOnceWith('authStateControl', 'ToSave', { configId: 'configId1' });
+      expect(spy).toHaveBeenCalledOnceWith('authStateControl', 'ToSave', {
+        configId: 'configId1',
+      });
     });
   });
 
   describe('getExistingOrCreateAuthStateControl', () => {
     it('if nothing stored it creates a 40 char one and saves the authStateControl', () => {
-      spyOn(storagePersistenceService, 'read').withArgs('authStateControl', { configId: 'configId1' }).and.returnValue(null);
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('authStateControl', { configId: 'configId1' })
+        .and.returnValue(null);
       const setSpy = spyOn(storagePersistenceService, 'write');
 
-      const result = service.getExistingOrCreateAuthStateControl({ configId: 'configId1' });
+      const result = service.getExistingOrCreateAuthStateControl({
+        configId: 'configId1',
+      });
 
       expect(result).toBeTruthy();
       expect(result.length).toBe(41);
-      expect(setSpy).toHaveBeenCalledOnceWith('authStateControl', result, { configId: 'configId1' });
+      expect(setSpy).toHaveBeenCalledOnceWith('authStateControl', result, {
+        configId: 'configId1',
+      });
     });
 
     it('if stored it returns the value and does NOT Store the value again', () => {
@@ -82,7 +97,9 @@ describe('Flows Data Service', () => {
         .and.returnValue('someAuthStateControl');
       const setSpy = spyOn(storagePersistenceService, 'write');
 
-      const result = service.getExistingOrCreateAuthStateControl({ configId: 'configId1' });
+      const result = service.getExistingOrCreateAuthStateControl({
+        configId: 'configId1',
+      });
 
       expect(result).toEqual('someAuthStateControl');
       expect(result.length).toBe('someAuthStateControl'.length);
@@ -96,7 +113,9 @@ describe('Flows Data Service', () => {
 
       service.setSessionState('Genesis', { configId: 'configId1' });
 
-      expect(spy).toHaveBeenCalledOnceWith('session_state', 'Genesis', { configId: 'configId1' });
+      expect(spy).toHaveBeenCalledOnceWith('session_state', 'Genesis', {
+        configId: 'configId1',
+      });
     });
   });
 
@@ -112,12 +131,16 @@ describe('Flows Data Service', () => {
 
   describe('codeVerifier', () => {
     it('getCodeVerifier returns value from the store', () => {
-      const spy = spyOn(storagePersistenceService, 'read').withArgs('codeVerifier', { configId: 'configId1' }).and.returnValue('Genesis');
+      const spy = spyOn(storagePersistenceService, 'read')
+        .withArgs('codeVerifier', { configId: 'configId1' })
+        .and.returnValue('Genesis');
 
       const result = service.getCodeVerifier({ configId: 'configId1' });
 
       expect(result).toBe('Genesis');
-      expect(spy).toHaveBeenCalledOnceWith('codeVerifier', { configId: 'configId1' });
+      expect(spy).toHaveBeenCalledOnceWith('codeVerifier', {
+        configId: 'configId1',
+      });
     });
 
     it('createCodeVerifier returns random createCodeVerifier and stores it', () => {
@@ -127,7 +150,9 @@ describe('Flows Data Service', () => {
 
       expect(result).toBeTruthy();
       expect(result.length).toBe(67);
-      expect(setSpy).toHaveBeenCalledOnceWith('codeVerifier', result, { configId: 'configId1' });
+      expect(setSpy).toHaveBeenCalledOnceWith('codeVerifier', result, {
+        configId: 'configId1',
+      });
     });
   });
 
@@ -143,7 +168,9 @@ describe('Flows Data Service', () => {
 
       jasmine.clock().mockDate(baseTime);
 
-      spyOn(storagePersistenceService, 'read').withArgs('storageCodeFlowInProgress', config).and.returnValue(true);
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('storageCodeFlowInProgress', config)
+        .and.returnValue(true);
       const spyWrite = spyOn(storagePersistenceService, 'write');
 
       const isCodeFlowInProgressResult = service.isCodeFlowInProgress(config);
@@ -154,10 +181,14 @@ describe('Flows Data Service', () => {
 
     it('state object does not exist returns false result', () => {
       // arrange
-      spyOn(storagePersistenceService, 'read').withArgs('storageCodeFlowInProgress', { configId: 'configId1' }).and.returnValue(null);
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('storageCodeFlowInProgress', { configId: 'configId1' })
+        .and.returnValue(null);
 
       // act
-      const isCodeFlowInProgressResult = service.isCodeFlowInProgress({ configId: 'configId1' });
+      const isCodeFlowInProgressResult = service.isCodeFlowInProgress({
+        configId: 'configId1',
+      });
 
       // assert
       expect(isCodeFlowInProgressResult).toBeFalse();
@@ -175,7 +206,9 @@ describe('Flows Data Service', () => {
       const spy = spyOn(storagePersistenceService, 'write');
 
       service.setCodeFlowInProgress({ configId: 'configId1' });
-      expect(spy).toHaveBeenCalledOnceWith('storageCodeFlowInProgress', true, { configId: 'configId1' });
+      expect(spy).toHaveBeenCalledOnceWith('storageCodeFlowInProgress', true, {
+        configId: 'configId1',
+      });
     });
   });
 
@@ -184,7 +217,9 @@ describe('Flows Data Service', () => {
       const spy = spyOn(storagePersistenceService, 'write');
 
       service.resetCodeFlowInProgress({ configId: 'configId1' });
-      expect(spy).toHaveBeenCalledOnceWith('storageCodeFlowInProgress', false, { configId: 'configId1' });
+      expect(spy).toHaveBeenCalledOnceWith('storageCodeFlowInProgress', false, {
+        configId: 'configId1',
+      });
     });
   });
 
@@ -206,14 +241,20 @@ describe('Flows Data Service', () => {
         dateOfLaunchedProcessUtc: baseTime.toISOString(),
       };
 
-      spyOn(storagePersistenceService, 'read').withArgs('storageSilentRenewRunning', config).and.returnValue(JSON.stringify(storageObject));
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('storageSilentRenewRunning', config)
+        .and.returnValue(JSON.stringify(storageObject));
       const spyWrite = spyOn(storagePersistenceService, 'write');
 
       jasmine.clock().tick((config.silentRenewTimeoutInSeconds + 1) * 1000);
 
       const isSilentRenewRunningResult = service.isSilentRenewRunning(config);
 
-      expect(spyWrite).toHaveBeenCalledOnceWith('storageSilentRenewRunning', '', config);
+      expect(spyWrite).toHaveBeenCalledOnceWith(
+        'storageSilentRenewRunning',
+        '',
+        config
+      );
       expect(isSilentRenewRunningResult).toBeFalse();
     });
 
@@ -234,7 +275,9 @@ describe('Flows Data Service', () => {
         dateOfLaunchedProcessUtc: baseTime.toISOString(),
       };
 
-      spyOn(storagePersistenceService, 'read').withArgs('storageSilentRenewRunning', config).and.returnValue(JSON.stringify(storageObject));
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('storageSilentRenewRunning', config)
+        .and.returnValue(JSON.stringify(storageObject));
       const spyWrite = spyOn(storagePersistenceService, 'write');
 
       const isSilentRenewRunningResult = service.isSilentRenewRunning(config);
@@ -244,9 +287,13 @@ describe('Flows Data Service', () => {
     });
 
     it('state object does not exist returns false result', () => {
-      spyOn(storagePersistenceService, 'read').withArgs('storageSilentRenewRunning', { configId: 'configId1' }).and.returnValue(null);
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('storageSilentRenewRunning', { configId: 'configId1' })
+        .and.returnValue(null);
 
-      const isSilentRenewRunningResult = service.isSilentRenewRunning({ configId: 'configId1' });
+      const isSilentRenewRunningResult = service.isSilentRenewRunning({
+        configId: 'configId1',
+      });
 
       expect(isSilentRenewRunningResult).toBeFalse();
     });
@@ -268,7 +315,11 @@ describe('Flows Data Service', () => {
       const spy = spyOn(storagePersistenceService, 'write');
 
       service.setSilentRenewRunning({ configId: 'configId1' });
-      expect(spy).toHaveBeenCalledOnceWith('storageSilentRenewRunning', JSON.stringify(storageObject), { configId: 'configId1' });
+      expect(spy).toHaveBeenCalledOnceWith(
+        'storageSilentRenewRunning',
+        JSON.stringify(storageObject),
+        { configId: 'configId1' }
+      );
     });
   });
 
@@ -277,7 +328,9 @@ describe('Flows Data Service', () => {
       const spy = spyOn(storagePersistenceService, 'write');
 
       service.resetSilentRenewRunning({ configId: 'configId1' });
-      expect(spy).toHaveBeenCalledOnceWith('storageSilentRenewRunning', '', { configId: 'configId1' });
+      expect(spy).toHaveBeenCalledOnceWith('storageSilentRenewRunning', '', {
+        configId: 'configId1',
+      });
     });
   });
 });

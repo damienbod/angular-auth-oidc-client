@@ -10,9 +10,14 @@ const WELL_KNOWN_SUFFIX = `/.well-known/openid-configuration`;
 
 @Injectable({ providedIn: 'root' })
 export class AuthWellKnownDataService {
-  constructor(private readonly http: DataService, private readonly loggerService: LoggerService) {}
+  constructor(
+    private readonly http: DataService,
+    private readonly loggerService: LoggerService
+  ) {}
 
-  getWellKnownEndPointsForConfig(config: OpenIdConfiguration): Observable<AuthWellKnownEndpoints> {
+  getWellKnownEndPointsForConfig(
+    config: OpenIdConfiguration
+  ): Observable<AuthWellKnownEndpoints> {
     const { authWellknownEndpointUrl } = config;
 
     if (!authWellknownEndpointUrl) {
@@ -36,13 +41,17 @@ export class AuthWellKnownDataService {
             checkSessionIframe: wellKnownEndpoints.check_session_iframe,
             revocationEndpoint: wellKnownEndpoints.revocation_endpoint,
             introspectionEndpoint: wellKnownEndpoints.introspection_endpoint,
-            parEndpoint: wellKnownEndpoints.pushed_authorization_request_endpoint,
+            parEndpoint:
+              wellKnownEndpoints.pushed_authorization_request_endpoint,
           } as AuthWellKnownEndpoints)
       )
     );
   }
 
-  private getWellKnownDocument(wellKnownEndpoint: string, config: OpenIdConfiguration): Observable<any> {
+  private getWellKnownDocument(
+    wellKnownEndpoint: string,
+    config: OpenIdConfiguration
+  ): Observable<any> {
     let url = wellKnownEndpoint;
 
     if (!wellKnownEndpoint.includes(WELL_KNOWN_SUFFIX)) {

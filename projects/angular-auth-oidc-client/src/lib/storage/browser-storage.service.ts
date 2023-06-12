@@ -5,13 +5,19 @@ import { AbstractSecurityStorage } from './abstract-security-storage';
 
 @Injectable({ providedIn: 'root' })
 export class BrowserStorageService {
-  constructor(private readonly loggerService: LoggerService, private readonly abstractSecurityStorage: AbstractSecurityStorage) {}
+  constructor(
+    private readonly loggerService: LoggerService,
+    private readonly abstractSecurityStorage: AbstractSecurityStorage
+  ) {}
 
   read(key: string, configuration: OpenIdConfiguration): any {
     const { configId } = configuration;
 
     if (!this.hasStorage()) {
-      this.loggerService.logDebug(configuration, `Wanted to read '${key}' but Storage was undefined`);
+      this.loggerService.logDebug(
+        configuration,
+        `Wanted to read '${key}' but Storage was undefined`
+      );
 
       return null;
     }
@@ -29,7 +35,10 @@ export class BrowserStorageService {
     const { configId } = configuration;
 
     if (!this.hasStorage()) {
-      this.loggerService.logDebug(configuration, `Wanted to write '${value}' but Storage was falsy`);
+      this.loggerService.logDebug(
+        configuration,
+        `Wanted to write '${value}' but Storage was falsy`
+      );
 
       return false;
     }
@@ -43,7 +52,10 @@ export class BrowserStorageService {
 
   remove(key: string, configuration: OpenIdConfiguration): boolean {
     if (!this.hasStorage()) {
-      this.loggerService.logDebug(configuration, `Wanted to remove '${key}' but Storage was falsy`);
+      this.loggerService.logDebug(
+        configuration,
+        `Wanted to remove '${key}' but Storage was falsy`
+      );
 
       return false;
     }
@@ -63,7 +75,10 @@ export class BrowserStorageService {
   // TODO THIS STORAGE WANTS AN ID BUT CLEARS EVERYTHING
   clear(configuration: OpenIdConfiguration): boolean {
     if (!this.hasStorage()) {
-      this.loggerService.logDebug(configuration, `Wanted to clear storage but Storage was falsy`);
+      this.loggerService.logDebug(
+        configuration,
+        `Wanted to clear storage but Storage was falsy`
+      );
 
       return false;
     }

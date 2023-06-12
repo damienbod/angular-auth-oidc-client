@@ -34,7 +34,11 @@ module.exports = {
     },
   },
   cookies: {
-    keys: ['some secret key', 'and also the old rotated away some time ago', 'and one more'],
+    keys: [
+      'some secret key',
+      'and also the old rotated away some time ago',
+      'and one more',
+    ],
   },
   claims: {
     address: ['address'],

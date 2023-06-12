@@ -12,7 +12,10 @@ describe('Browser Service', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        { provide: AbstractSecurityStorage, useClass: mockClass(DefaultSessionStorageService) },
+        {
+          provide: AbstractSecurityStorage,
+          useClass: mockClass(DefaultSessionStorageService),
+        },
         BrowserStorageService,
         { provide: LoggerService, useClass: mockClass(LoggerService) },
       ],
@@ -73,12 +76,18 @@ describe('Browser Service', () => {
       const config = { configId: 'configId1' };
 
       spyOn(service as any, 'hasStorage').and.returnValue(true);
-      const writeSpy = spyOn(abstractSecurityStorage, 'write').and.callThrough();
+      const writeSpy = spyOn(
+        abstractSecurityStorage,
+        'write'
+      ).and.callThrough();
 
       const result = service.write({ anyKey: 'anyvalue' }, config);
 
       expect(result).toBe(true);
-      expect(writeSpy).toHaveBeenCalledOnceWith('configId1', JSON.stringify({ anyKey: 'anyvalue' }));
+      expect(writeSpy).toHaveBeenCalledOnceWith(
+        'configId1',
+        JSON.stringify({ anyKey: 'anyvalue' })
+      );
     });
 
     it('writes null if item is falsy', () => {
@@ -86,13 +95,19 @@ describe('Browser Service', () => {
 
       spyOn(service as any, 'hasStorage').and.returnValue(true);
 
-      const writeSpy = spyOn(abstractSecurityStorage, 'write').and.callThrough();
+      const writeSpy = spyOn(
+        abstractSecurityStorage,
+        'write'
+      ).and.callThrough();
       const somethingFalsy = '';
 
       const result = service.write(somethingFalsy, config);
 
       expect(result).toBe(true);
-      expect(writeSpy).toHaveBeenCalledOnceWith('configId1', JSON.stringify(null));
+      expect(writeSpy).toHaveBeenCalledOnceWith(
+        'configId1',
+        JSON.stringify(null)
+      );
     });
   });
 
@@ -108,7 +123,10 @@ describe('Browser Service', () => {
       spyOn(service as any, 'hasStorage').and.returnValue(true);
       const config = { configId: 'configId1' };
 
-      const setItemSpy = spyOn(abstractSecurityStorage, 'remove').and.callThrough();
+      const setItemSpy = spyOn(
+        abstractSecurityStorage,
+        'remove'
+      ).and.callThrough();
 
       const result = service.remove('anyKey', config);
 
@@ -128,7 +146,10 @@ describe('Browser Service', () => {
     it('returns true if clear is called', () => {
       spyOn(service as any, 'hasStorage').and.returnValue(true);
 
-      const setItemSpy = spyOn(abstractSecurityStorage, 'clear').and.callThrough();
+      const setItemSpy = spyOn(
+        abstractSecurityStorage,
+        'clear'
+      ).and.callThrough();
       const config = { configId: 'configId1' };
 
       const result = service.clear(config);

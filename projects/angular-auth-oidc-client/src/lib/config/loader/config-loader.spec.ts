@@ -7,7 +7,10 @@ describe('ConfigLoader', () => {
   describe('StsConfigStaticLoader', () => {
     describe('loadConfigs', () => {
       it('returns an array if an array is passed', waitForAsync(() => {
-        const toPass = [{ configId: 'configId1' } as OpenIdConfiguration, { configId: 'configId2' } as OpenIdConfiguration];
+        const toPass = [
+          { configId: 'configId1' } as OpenIdConfiguration,
+          { configId: 'configId2' } as OpenIdConfiguration,
+        ];
 
         const loader = new StsConfigStaticLoader(toPass);
 
@@ -19,7 +22,9 @@ describe('ConfigLoader', () => {
       }));
 
       it('returns an array if only one config is passed', waitForAsync(() => {
-        const loader = new StsConfigStaticLoader({ configId: 'configId1' } as OpenIdConfiguration);
+        const loader = new StsConfigStaticLoader({
+          configId: 'configId1',
+        } as OpenIdConfiguration);
 
         const result$ = loader.loadConfigs();
 
@@ -33,7 +38,10 @@ describe('ConfigLoader', () => {
   describe('StsConfigHttpLoader', () => {
     describe('loadConfigs', () => {
       it('returns an array if an array of observables is passed', waitForAsync(() => {
-        const toPass = [of({ configId: 'configId1' } as OpenIdConfiguration), of({ configId: 'configId2' } as OpenIdConfiguration)];
+        const toPass = [
+          of({ configId: 'configId1' } as OpenIdConfiguration),
+          of({ configId: 'configId2' } as OpenIdConfiguration),
+        ];
         const loader = new StsConfigHttpLoader(toPass);
 
         const result$ = loader.loadConfigs();
@@ -46,7 +54,10 @@ describe('ConfigLoader', () => {
       }));
 
       it('returns an array if an observable with a config array is passed', waitForAsync(() => {
-        const toPass = of([{ configId: 'configId1' } as OpenIdConfiguration, { configId: 'configId2' } as OpenIdConfiguration]);
+        const toPass = of([
+          { configId: 'configId1' } as OpenIdConfiguration,
+          { configId: 'configId2' } as OpenIdConfiguration,
+        ]);
         const loader = new StsConfigHttpLoader(toPass);
 
         const result$ = loader.loadConfigs();
@@ -59,7 +70,9 @@ describe('ConfigLoader', () => {
       }));
 
       it('returns an array if only one config is passed', waitForAsync(() => {
-        const loader = new StsConfigHttpLoader(of({ configId: 'configId1' } as OpenIdConfiguration));
+        const loader = new StsConfigHttpLoader(
+          of({ configId: 'configId1' } as OpenIdConfiguration)
+        );
 
         const result$ = loader.loadConfigs();
 

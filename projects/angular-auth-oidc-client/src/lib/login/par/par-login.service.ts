@@ -29,29 +29,49 @@ export class ParLoginService {
     private readonly parService: ParService
   ) {}
 
-  loginPar(configuration: OpenIdConfiguration, authOptions?: AuthOptions): void {
-    if (!this.responseTypeValidationService.hasConfigValidResponseType(configuration)) {
+  loginPar(
+    configuration: OpenIdConfiguration,
+    authOptions?: AuthOptions
+  ): void {
+    if (
+      !this.responseTypeValidationService.hasConfigValidResponseType(
+        configuration
+      )
+    ) {
       this.loggerService.logError(configuration, 'Invalid response type!');
 
       return;
     }
 
-    this.loggerService.logDebug(configuration, 'BEGIN Authorize OIDC Flow, no auth data');
+    this.loggerService.logDebug(
+      configuration,
+      'BEGIN Authorize OIDC Flow, no auth data'
+    );
 
     const { urlHandler, customParams } = authOptions || {};
 
     this.authWellKnownService
       .queryAndStoreAuthWellKnownEndPoints(configuration)
-      .pipe(switchMap(() => this.parService.postParRequest(configuration, customParams)))
+      .pipe(
+        switchMap(() =>
+          this.parService.postParRequest(configuration, customParams)
+        )
+      )
       .subscribe((response) => {
         this.loggerService.logDebug(configuration, 'par response: ', response);
 
-        const url = this.urlService.getAuthorizeParUrl(response.requestUri, configuration);
+        const url = this.urlService.getAuthorizeParUrl(
+          response.requestUri,
+          configuration
+        );
 
         this.loggerService.logDebug(configuration, 'par request url: ', url);
 
         if (!url) {
-          this.loggerService.logError(configuration, `Could not create URL with param ${response.requestUri}: '${url}'`);
+          this.loggerService.logError(
+            configuration,
+            `Could not create URL with param ${response.requestUri}: '${url}'`
+          );
 
           return;
         }
@@ -72,7 +92,11 @@ export class ParLoginService {
   ): Observable<LoginResponse> {
     const { configId } = configuration;
 
-    if (!this.responseTypeValidationService.hasConfigValidResponseType(configuration)) {
+    if (
+      !this.responseTypeValidationService.hasConfigValidResponseType(
+        configuration
+      )
+    ) {
       const errorMessage = 'Invalid response type!';
 
       this.loggerService.logError(configuration, errorMessage);
@@ -80,49 +104,67 @@ export class ParLoginService {
       return throwError(() => new Error(errorMessage));
     }
 
-    this.loggerService.logDebug(configuration, 'BEGIN Authorize OIDC Flow with popup, no auth data');
+    this.loggerService.logDebug(
+      configuration,
+      'BEGIN Authorize OIDC Flow with popup, no auth data'
+    );
 
     const { customParams } = authOptions || {};
 
-    return this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(configuration).pipe(
-      switchMap(() => this.parService.postParRequest(configuration, customParams)),
-      switchMap((response: ParResponse) => {
-        this.loggerService.logDebug(configuration, 'par response: ', response);
+    return this.authWellKnownService
+      .queryAndStoreAuthWellKnownEndPoints(configuration)
+      .pipe(
+        switchMap(() =>
+          this.parService.postParRequest(configuration, customParams)
+        ),
+        switchMap((response: ParResponse) => {
+          this.loggerService.logDebug(
+            configuration,
+            'par response: ',
+            response
+          );
 
-        const url = this.urlService.getAuthorizeParUrl(response.requestUri, configuration);
+          const url = this.urlService.getAuthorizeParUrl(
+            response.requestUri,
+            configuration
+          );
 
-        this.loggerService.logDebug(configuration, 'par request url: ', url);
+          this.loggerService.logDebug(configuration, 'par request url: ', url);
 
-        if (!url) {
-          const errorMessage = `Could not create URL with param ${response.requestUri}: 'url'`;
+          if (!url) {
+            const errorMessage = `Could not create URL with param ${response.requestUri}: 'url'`;
 
-          this.loggerService.logError(configuration, errorMessage);
+            this.loggerService.logError(configuration, errorMessage);
 
-          return throwError(() => new Error(errorMessage));
-        }
+            return throwError(() => new Error(errorMessage));
+          }
 
-        this.popupService.openPopUp(url, popupOptions, configuration);
+          this.popupService.openPopUp(url, popupOptions, configuration);
 
-        return this.popupService.result$.pipe(
-          take(1),
-          switchMap((result: PopupResultReceivedUrl) => {
-            const { userClosed, receivedUrl } = result;
+          return this.popupService.result$.pipe(
+            take(1),
+            switchMap((result: PopupResultReceivedUrl) => {
+              const { userClosed, receivedUrl } = result;
 
-            if (userClosed) {
-              return of({
-                isAuthenticated: false,
-                errorMessage: 'User closed popup',
-                userData: null,
-                idToken: null,
-                accessToken: null,
-                configId,
-              });
-            }
+              if (userClosed) {
+                return of({
+                  isAuthenticated: false,
+                  errorMessage: 'User closed popup',
+                  userData: null,
+                  idToken: null,
+                  accessToken: null,
+                  configId,
+                });
+              }
 
-            return this.checkAuthService.checkAuth(configuration, allConfigs, receivedUrl);
-          })
-        );
-      })
-    );
+              return this.checkAuthService.checkAuth(
+                configuration,
+                allConfigs,
+                receivedUrl
+              );
+            })
+          );
+        })
+      );
   }
 }

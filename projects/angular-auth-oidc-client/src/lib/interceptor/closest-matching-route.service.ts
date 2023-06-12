@@ -3,7 +3,10 @@ import { OpenIdConfiguration } from '../config/openid-configuration';
 
 @Injectable({ providedIn: 'root' })
 export class ClosestMatchingRouteService {
-  getConfigIdForClosestMatchingRoute(route: string, configurations: OpenIdConfiguration[]): ClosestMatchingRouteResult {
+  getConfigIdForClosestMatchingRoute(
+    route: string,
+    configurations: OpenIdConfiguration[]
+  ): ClosestMatchingRouteResult {
     for (const config of configurations) {
       const { secureRoutes } = config;
 

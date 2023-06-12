@@ -36,16 +36,33 @@ export class HistoryJwtKeysCallbackHandlerService {
     if (!this.responseHasIdToken(callbackContext)) {
       const existingIdToken = this.storagePersistenceService.getIdToken(config);
 
-      callbackContext.authResult = { ...callbackContext.authResult, id_token: existingIdToken };
+      callbackContext.authResult = {
+        ...callbackContext.authResult,
+        id_token: existingIdToken,
+      };
     }
 
-    this.storagePersistenceService.write('authnResult', callbackContext.authResult, config);
+    this.storagePersistenceService.write(
+      'authnResult',
+      callbackContext.authResult,
+      config
+    );
 
-    if (config.allowUnsafeReuseRefreshToken && callbackContext.authResult.refresh_token) {
-      this.storagePersistenceService.write('reusable_refresh_token', callbackContext.authResult.refresh_token, config);
+    if (
+      config.allowUnsafeReuseRefreshToken &&
+      callbackContext.authResult.refresh_token
+    ) {
+      this.storagePersistenceService.write(
+        'reusable_refresh_token',
+        callbackContext.authResult.refresh_token,
+        config
+      );
     }
 
-    if (this.historyCleanUpTurnedOn(config) && !callbackContext.isRenewProcess) {
+    if (
+      this.historyCleanUpTurnedOn(config) &&
+      !callbackContext.isRenewProcess
+    ) {
       this.resetBrowserHistory();
     } else {
       this.loggerService.logDebug(config, 'history clean up inactive');
@@ -57,7 +74,10 @@ export class HistoryJwtKeysCallbackHandlerService {
       this.loggerService.logDebug(config, errorMessage);
       this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
       this.flowsDataService.setNonce('', config);
-      this.handleResultErrorFromCallback(callbackContext.authResult, callbackContext.isRenewProcess);
+      this.handleResultErrorFromCallback(
+        callbackContext.authResult,
+        callbackContext.isRenewProcess
+      );
 
       return throwError(() => new Error(errorMessage));
     }
@@ -75,7 +95,10 @@ export class HistoryJwtKeysCallbackHandlerService {
         const storedJwtKeys = this.readSigningKeys(config);
 
         if (!!storedJwtKeys) {
-          this.loggerService.logWarning(config, `Failed to retrieve signing keys, fallback to stored keys`);
+          this.loggerService.logWarning(
+            config,
+            `Failed to retrieve signing keys, fallback to stored keys`
+          );
 
           return of(storedJwtKeys);
         }
@@ -109,7 +132,10 @@ export class HistoryJwtKeysCallbackHandlerService {
     return !!callbackContext?.authResult?.id_token;
   }
 
-  private handleResultErrorFromCallback(result: any, isRenewProcess: boolean): void {
+  private handleResultErrorFromCallback(
+    result: any,
+    isRenewProcess: boolean
+  ): void {
     let validationResult = ValidationResult.SecureTokenServerError;
 
     if ((result.error as string) === 'login_required') {
@@ -133,11 +159,15 @@ export class HistoryJwtKeysCallbackHandlerService {
     this.document.defaultView.history.replaceState(
       {},
       this.document.title,
-      this.document.defaultView.location.origin + this.document.defaultView.location.pathname
+      this.document.defaultView.location.origin +
+        this.document.defaultView.location.pathname
     );
   }
 
-  private storeSigningKeys(jwtKeys: JwtKeys, config: OpenIdConfiguration): void {
+  private storeSigningKeys(
+    jwtKeys: JwtKeys,
+    config: OpenIdConfiguration
+  ): void {
     this.storagePersistenceService.write(JWT_KEYS, jwtKeys, config);
   }
 

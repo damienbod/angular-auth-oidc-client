@@ -5,7 +5,10 @@
     {
       "files": ["*.ts"],
       "parserOptions": {
-        "project": ["projects/sample-code-flow-multi-AAD/tsconfig.app.json", "projects/sample-code-flow-multi-AAD/tsconfig.spec.json"],
+        "project": [
+          "projects/sample-code-flow-multi-AAD/tsconfig.app.json",
+          "projects/sample-code-flow-multi-AAD/tsconfig.spec.json"
+        ],
         "createDefaultProgram": true
       },
       "rules": {

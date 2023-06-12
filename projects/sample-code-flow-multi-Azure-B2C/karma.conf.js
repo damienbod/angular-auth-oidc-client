@@ -25,7 +25,10 @@ module.exports = function (config) {
       suppressAll: true, // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, '../../coverage/sample-code-flow-refresh-tokens'),
+      dir: require('path').join(
+        __dirname,
+        '../../coverage/sample-code-flow-refresh-tokens'
+      ),
       subdir: '.',
       reporters: [{ type: 'html' }, { type: 'text-summary' }],
     },

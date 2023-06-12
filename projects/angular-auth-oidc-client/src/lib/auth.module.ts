@@ -10,7 +10,9 @@ import { _provideAuth } from './provide-auth';
   exports: [],
 })
 export class AuthModule {
-  static forRoot(passedConfig: PassedInitialConfig): ModuleWithProviders<AuthModule> {
+  static forRoot(
+    passedConfig: PassedInitialConfig
+  ): ModuleWithProviders<AuthModule> {
     return {
       ngModule: AuthModule,
       providers: [..._provideAuth(passedConfig)],

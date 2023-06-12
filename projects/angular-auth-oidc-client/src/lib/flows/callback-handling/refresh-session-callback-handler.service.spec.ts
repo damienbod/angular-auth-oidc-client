@@ -32,44 +32,50 @@ describe('RefreshSessionCallbackHandlerService', () => {
   });
 
   describe('refreshSessionWithRefreshTokens', () => {
-    it(
-      'returns callbackContext if all params are good',
-      waitForAsync(() => {
-        spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('state-data');
-        spyOn(authStateService, 'getRefreshToken').and.returnValue('henlo-furiend');
-        spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
+    it('returns callbackContext if all params are good', waitForAsync(() => {
+      spyOn(
+        flowsDataService,
+        'getExistingOrCreateAuthStateControl'
+      ).and.returnValue('state-data');
+      spyOn(authStateService, 'getRefreshToken').and.returnValue(
+        'henlo-furiend'
+      );
+      spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
 
-        const expectedCallbackContext = {
-          code: null,
-          refreshToken: 'henlo-furiend',
-          state: 'state-data',
-          sessionState: null,
-          authResult: null,
-          isRenewProcess: true,
-          jwtKeys: null,
-          validationResult: null,
-          existingIdToken: 'henlo-legger',
-        };
+      const expectedCallbackContext = {
+        code: null,
+        refreshToken: 'henlo-furiend',
+        state: 'state-data',
+        sessionState: null,
+        authResult: null,
+        isRenewProcess: true,
+        jwtKeys: null,
+        validationResult: null,
+        existingIdToken: 'henlo-legger',
+      };
 
-        service.refreshSessionWithRefreshTokens({ configId: 'configId1' }).subscribe((callbackContext) => {
+      service
+        .refreshSessionWithRefreshTokens({ configId: 'configId1' })
+        .subscribe((callbackContext) => {
           expect(callbackContext).toEqual(expectedCallbackContext);
         });
-      })
-    );
+    }));
 
-    it(
-      'throws error if no refresh token is given',
-      waitForAsync(() => {
-        spyOn(flowsDataService, 'getExistingOrCreateAuthStateControl').and.returnValue('state-data');
-        spyOn(authStateService, 'getRefreshToken').and.returnValue(null);
-        spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
+    it('throws error if no refresh token is given', waitForAsync(() => {
+      spyOn(
+        flowsDataService,
+        'getExistingOrCreateAuthStateControl'
+      ).and.returnValue('state-data');
+      spyOn(authStateService, 'getRefreshToken').and.returnValue(null);
+      spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
 
-        service.refreshSessionWithRefreshTokens({ configId: 'configId1' }).subscribe({
+      service
+        .refreshSessionWithRefreshTokens({ configId: 'configId1' })
+        .subscribe({
           error: (err) => {
             expect(err).toBeTruthy();
           },
         });
-      })
-    );
+    }));
   });
 });

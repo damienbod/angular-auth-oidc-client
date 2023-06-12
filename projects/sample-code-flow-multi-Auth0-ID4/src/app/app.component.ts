@@ -10,10 +10,12 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     //this.oidcSecurityService.preloadAuthWellKnownDocument().subscribe();
-    this.oidcSecurityService.checkAuthMultiple().subscribe(([{ isAuthenticated, userData, accessToken }]) => {
-      console.log('Authenticated', isAuthenticated);
-      console.log('Received Userdata', userData);
-      console.log(`Current access token is '${accessToken}'`);
-    });
+    this.oidcSecurityService
+      .checkAuthMultiple()
+      .subscribe(([{ isAuthenticated, userData, accessToken }]) => {
+        console.log('Authenticated', isAuthenticated);
+        console.log('Received Userdata', userData);
+        console.log(`Current access token is '${accessToken}'`);
+      });
   }
 }

@@ -25,8 +25,14 @@ describe('LoginService', () => {
         LoginService,
         { provide: ParLoginService, useClass: mockClass(ParLoginService) },
         { provide: PopUpLoginService, useClass: mockClass(PopUpLoginService) },
-        { provide: StandardLoginService, useClass: mockClass(StandardLoginService) },
-        { provide: StoragePersistenceService, useClass: mockClass(StoragePersistenceService) },
+        {
+          provide: StandardLoginService,
+          useClass: mockClass(StandardLoginService),
+        },
+        {
+          provide: StoragePersistenceService,
+          useClass: mockClass(StoragePersistenceService),
+        },
         { provide: PopUpService, useClass: mockClass(PopUpService) },
       ],
     });
@@ -70,12 +76,19 @@ describe('LoginService', () => {
 
     it('stores the customParams to the storage if customParams are given', () => {
       const config = { usePushedAuthorisationRequests: false };
-      const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'write');
+      const storagePersistenceServiceSpy = spyOn(
+        storagePersistenceService,
+        'write'
+      );
       const authOptions = { customParams: { custom: 'params' } };
 
       service.login(config, authOptions);
 
-      expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith('storageCustomParamsAuthRequest', { custom: 'params' }, config);
+      expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith(
+        'storageCustomParamsAuthRequest',
+        { custom: 'params' },
+        config
+      );
     });
   });
 
@@ -83,8 +96,14 @@ describe('LoginService', () => {
     it('calls parLoginService loginWithPopUpPar if usePushedAuthorisationRequests is true', waitForAsync(() => {
       // arrange
       const config = { usePushedAuthorisationRequests: true };
-      const loginWithPopUpPar = spyOn(parLoginService, 'loginWithPopUpPar').and.returnValue(of(null));
-      const loginWithPopUpStandardSpy = spyOn(popUpLoginService, 'loginWithPopUpStandard').and.returnValue(of(null));
+      const loginWithPopUpPar = spyOn(
+        parLoginService,
+        'loginWithPopUpPar'
+      ).and.returnValue(of(null));
+      const loginWithPopUpStandardSpy = spyOn(
+        popUpLoginService,
+        'loginWithPopUpStandard'
+      ).and.returnValue(of(null));
 
       // act
       service.loginWithPopUp(config, [config]).subscribe(() => {
@@ -97,8 +116,14 @@ describe('LoginService', () => {
     it('calls standardLoginService loginstandard if usePushedAuthorisationRequests is false', waitForAsync(() => {
       // arrange
       const config = { usePushedAuthorisationRequests: false };
-      const loginWithPopUpPar = spyOn(parLoginService, 'loginWithPopUpPar').and.returnValue(of(null));
-      const loginWithPopUpStandardSpy = spyOn(popUpLoginService, 'loginWithPopUpStandard').and.returnValue(of(null));
+      const loginWithPopUpPar = spyOn(
+        parLoginService,
+        'loginWithPopUpPar'
+      ).and.returnValue(of(null));
+      const loginWithPopUpStandardSpy = spyOn(
+        popUpLoginService,
+        'loginWithPopUpStandard'
+      ).and.returnValue(of(null));
 
       // act
       service.loginWithPopUp(config, [config]).subscribe(() => {
@@ -111,15 +136,24 @@ describe('LoginService', () => {
     it('stores the customParams to the storage if customParams are given', waitForAsync(() => {
       // arrange
       const config = { usePushedAuthorisationRequests: false };
-      const storagePersistenceServiceSpy = spyOn(storagePersistenceService, 'write');
+      const storagePersistenceServiceSpy = spyOn(
+        storagePersistenceService,
+        'write'
+      );
       const authOptions = { customParams: { custom: 'params' } };
 
-      spyOn(popUpLoginService, 'loginWithPopUpStandard').and.returnValue(of(null));
+      spyOn(popUpLoginService, 'loginWithPopUpStandard').and.returnValue(
+        of(null)
+      );
 
       // act
       service.loginWithPopUp(config, [config], authOptions).subscribe(() => {
         // assert
-        expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith('storageCustomParamsAuthRequest', { custom: 'params' }, config);
+        expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith(
+          'storageCustomParamsAuthRequest',
+          { custom: 'params' },
+          config
+        );
       });
     }));
 
@@ -127,18 +161,28 @@ describe('LoginService', () => {
       // arrange
       const config = { usePushedAuthorisationRequests: false };
       const authOptions = { customParams: { custom: 'params' } };
-      const loginWithPopUpPar = spyOn(parLoginService, 'loginWithPopUpPar').and.returnValue(of(null));
-      const loginWithPopUpStandardSpy = spyOn(popUpLoginService, 'loginWithPopUpStandard').and.returnValue(of(null));
+      const loginWithPopUpPar = spyOn(
+        parLoginService,
+        'loginWithPopUpPar'
+      ).and.returnValue(of(null));
+      const loginWithPopUpStandardSpy = spyOn(
+        popUpLoginService,
+        'loginWithPopUpStandard'
+      ).and.returnValue(of(null));
 
       spyOn(popUpService, 'isCurrentlyInPopup').and.returnValue(true);
 
       // act
-      service.loginWithPopUp(config, [config], authOptions).subscribe((result) => {
-        // assert
-        expect(result).toEqual({ errorMessage: 'There is already a popup open.' } as LoginResponse);
-        expect(loginWithPopUpPar).not.toHaveBeenCalled();
-        expect(loginWithPopUpStandardSpy).not.toHaveBeenCalled();
-      });
+      service
+        .loginWithPopUp(config, [config], authOptions)
+        .subscribe((result) => {
+          // assert
+          expect(result).toEqual({
+            errorMessage: 'There is already a popup open.',
+          } as LoginResponse);
+          expect(loginWithPopUpPar).not.toHaveBeenCalled();
+          expect(loginWithPopUpStandardSpy).not.toHaveBeenCalled();
+        });
     });
   });
 });

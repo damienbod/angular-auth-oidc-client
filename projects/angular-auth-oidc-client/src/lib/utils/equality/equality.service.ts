@@ -2,7 +2,10 @@ import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class EqualityService {
-  isStringEqualOrNonOrderedArrayEqual(value1: string | any[], value2: string | any[]): boolean {
+  isStringEqualOrNonOrderedArrayEqual(
+    value1: string | any[],
+    value2: string | any[]
+  ): boolean {
     if (this.isNullOrUndefined(value1)) {
       return false;
     }
@@ -22,7 +25,10 @@ export class EqualityService {
     return this.arraysHaveEqualContent(value1 as any[], value2 as any[]);
   }
 
-  areEqual(value1: string | any[] | any | null | undefined, value2: string | any[] | any | null | undefined): boolean {
+  areEqual(
+    value1: string | any[] | any | null | undefined,
+    value2: string | any[] | any | null | undefined
+  ): boolean {
     if (!value1 || !value2) {
       return false;
     }
@@ -36,7 +42,10 @@ export class EqualityService {
     }
 
     if (this.bothValuesAreObjects(value1, value2)) {
-      return JSON.stringify(value1).toLowerCase() === JSON.stringify(value2).toLowerCase();
+      return (
+        JSON.stringify(value1).toLowerCase() ===
+        JSON.stringify(value2).toLowerCase()
+      );
     }
 
     if (this.oneValueIsStringAndTheOtherIsArray(value1, value2)) {
@@ -51,19 +60,34 @@ export class EqualityService {
     return value1 === value2;
   }
 
-  private oneValueIsStringAndTheOtherIsArray(value1: string | any | any[], value2: string | any | any[]): boolean {
-    return (Array.isArray(value1) && this.valueIsString(value2)) || (Array.isArray(value2) && this.valueIsString(value1));
+  private oneValueIsStringAndTheOtherIsArray(
+    value1: string | any | any[],
+    value2: string | any | any[]
+  ): boolean {
+    return (
+      (Array.isArray(value1) && this.valueIsString(value2)) ||
+      (Array.isArray(value2) && this.valueIsString(value1))
+    );
   }
 
-  private bothValuesAreObjects(value1: string | any | any[], value2: string | any | any[]): boolean {
+  private bothValuesAreObjects(
+    value1: string | any | any[],
+    value2: string | any | any[]
+  ): boolean {
     return this.valueIsObject(value1) && this.valueIsObject(value2);
   }
 
-  private bothValuesAreStrings(value1: string | any | any[], value2: string | any | any[]): boolean {
+  private bothValuesAreStrings(
+    value1: string | any | any[],
+    value2: string | any | any[]
+  ): boolean {
     return this.valueIsString(value1) && this.valueIsString(value2);
   }
 
-  private bothValuesAreArrays(value1: string | any | any[], value2: string | any | any[]): boolean {
+  private bothValuesAreArrays(
+    value1: string | any | any[],
+    value2: string | any | any[]
+  ): boolean {
     return Array.isArray(value1) && Array.isArray(value2);
   }
 
@@ -89,7 +113,10 @@ export class EqualityService {
     return true;
   }
 
-  private arraysHaveEqualContent(arr1: Array<string>, arr2: Array<string>): boolean {
+  private arraysHaveEqualContent(
+    arr1: Array<string>,
+    arr2: Array<string>
+  ): boolean {
     if (arr1.length !== arr2.length) {
       return false;
     }

@@ -26,13 +26,22 @@ export class RefreshSessionIframeService {
     allConfigs: OpenIdConfiguration[],
     customParams?: { [key: string]: string | number | boolean }
   ): Observable<boolean> {
-    this.loggerService.logDebug(config, 'BEGIN refresh session Authorize Iframe renew');
-
-    return this.urlService.getRefreshSessionSilentRenewUrl(config, customParams).pipe(
-      switchMap((url) => {
-        return this.sendAuthorizeRequestUsingSilentRenew(url, config, allConfigs);
-      })
+    this.loggerService.logDebug(
+      config,
+      'BEGIN refresh session Authorize Iframe renew'
     );
+
+    return this.urlService
+      .getRefreshSessionSilentRenewUrl(config, customParams)
+      .pipe(
+        switchMap((url) => {
+          return this.sendAuthorizeRequestUsingSilentRenew(
+            url,
+            config,
+            allConfigs
+          );
+        })
+      );
   }
 
   private sendAuthorizeRequestUsingSilentRenew(
@@ -43,12 +52,18 @@ export class RefreshSessionIframeService {
     const sessionIframe = this.silentRenewService.getOrCreateIframe(config);
 
     this.initSilentRenewRequest(config, allConfigs);
-    this.loggerService.logDebug(config, 'sendAuthorizeRequestUsingSilentRenew for URL:' + url);
+    this.loggerService.logDebug(
+      config,
+      'sendAuthorizeRequestUsingSilentRenew for URL:' + url
+    );
 
     return new Observable((observer) => {
       const onLoadHandler = (): void => {
         sessionIframe.removeEventListener('load', onLoadHandler);
-        this.loggerService.logDebug(config, 'removed event listener from IFrame');
+        this.loggerService.logDebug(
+          config,
+          'removed event listener from IFrame'
+        );
         observer.next(true);
         observer.complete();
       };
@@ -58,17 +73,27 @@ export class RefreshSessionIframeService {
     });
   }
 
-  private initSilentRenewRequest(config: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
+  private initSilentRenewRequest(
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): void {
     const instanceId = Math.random();
 
-    const initDestroyHandler = this.renderer.listen('window', 'oidc-silent-renew-init', (e: CustomEvent) => {
-      if (e.detail !== instanceId) {
-        initDestroyHandler();
-        renewDestroyHandler();
+    const initDestroyHandler = this.renderer.listen(
+      'window',
+      'oidc-silent-renew-init',
+      (e: CustomEvent) => {
+        if (e.detail !== instanceId) {
+          initDestroyHandler();
+          renewDestroyHandler();
+        }
       }
-    });
-    const renewDestroyHandler = this.renderer.listen('window', 'oidc-silent-renew-message', (e) =>
-      this.silentRenewService.silentRenewEventHandler(e, config, allConfigs)
+    );
+    const renewDestroyHandler = this.renderer.listen(
+      'window',
+      'oidc-silent-renew-message',
+      (e) =>
+        this.silentRenewService.silentRenewEventHandler(e, config, allConfigs)
     );
 
     this.document.defaultView.dispatchEvent(

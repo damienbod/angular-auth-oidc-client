@@ -32,12 +32,18 @@ describe('SilentRenewService  ', () => {
         SilentRenewService,
         IFrameService,
         { provide: FlowsService, useClass: mockClass(FlowsService) },
-        { provide: ResetAuthDataService, useClass: mockClass(ResetAuthDataService) },
+        {
+          provide: ResetAuthDataService,
+          useClass: mockClass(ResetAuthDataService),
+        },
         { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
         { provide: AuthStateService, useClass: mockClass(AuthStateService) },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
         FlowHelper,
-        { provide: ImplicitFlowCallbackService, useClass: mockClass(ImplicitFlowCallbackService) },
+        {
+          provide: ImplicitFlowCallbackService,
+          useClass: mockClass(ImplicitFlowCallbackService),
+        },
         IntervalService,
       ],
     });
@@ -62,7 +68,9 @@ describe('SilentRenewService  ', () => {
 
   describe('refreshSessionWithIFrameCompleted', () => {
     it('is of type observable', () => {
-      expect(silentRenewService.refreshSessionWithIFrameCompleted$).toEqual(jasmine.any(Observable));
+      expect(silentRenewService.refreshSessionWithIFrameCompleted$).toEqual(
+        jasmine.any(Observable)
+      );
     });
   });
 
@@ -93,9 +101,13 @@ describe('SilentRenewService  ', () => {
 
   describe('getOrCreateIframe', () => {
     it('returns iframe if iframe is truthy', () => {
-      spyOn(silentRenewService as any, 'getExistingIframe').and.returnValue({ name: 'anything' });
+      spyOn(silentRenewService as any, 'getExistingIframe').and.returnValue({
+        name: 'anything',
+      });
 
-      const result = silentRenewService.getOrCreateIframe({ configId: 'configId1' });
+      const result = silentRenewService.getOrCreateIframe({
+        configId: 'configId1',
+      });
 
       expect(result).toEqual({ name: 'anything' } as HTMLIFrameElement);
     });
@@ -103,9 +115,13 @@ describe('SilentRenewService  ', () => {
     it('adds iframe to body if existing iframe is falsy', () => {
       const config = { configId: 'configId1' };
 
-      spyOn(silentRenewService as any, 'getExistingIframe').and.returnValue(null);
+      spyOn(silentRenewService as any, 'getExistingIframe').and.returnValue(
+        null
+      );
 
-      const spy = spyOn(iFrameService, 'addIFrameToWindowBody').and.returnValue({ name: 'anything' } as HTMLIFrameElement);
+      const spy = spyOn(iFrameService, 'addIFrameToWindowBody').and.returnValue(
+        { name: 'anything' } as HTMLIFrameElement
+      );
 
       const result = silentRenewService.getOrCreateIframe(config);
 
@@ -120,7 +136,10 @@ describe('SilentRenewService  ', () => {
       const config = { configId: 'configId1' };
       const allConfigs = [config];
 
-      const spy = spyOn(flowsService, 'processSilentRenewCodeFlowCallback').and.returnValue(of(null));
+      const spy = spyOn(
+        flowsService,
+        'processSilentRenewCodeFlowCallback'
+      ).and.returnValue(of(null));
       const expectedContext = {
         code: 'some-code',
         refreshToken: null,
@@ -133,117 +152,206 @@ describe('SilentRenewService  ', () => {
         existingIdToken: null,
       };
       const url = 'url-part-1';
-      const urlParts = 'code=some-code&state=some-state&session_state=some-session-state';
+      const urlParts =
+        'code=some-code&state=some-state&session_state=some-session-state';
 
-      silentRenewService.codeFlowCallbackSilentRenewIframe([url, urlParts], config, allConfigs).subscribe(() => {
-        expect(spy).toHaveBeenCalledOnceWith(expectedContext, config, allConfigs);
-      });
+      silentRenewService
+        .codeFlowCallbackSilentRenewIframe([url, urlParts], config, allConfigs)
+        .subscribe(() => {
+          expect(spy).toHaveBeenCalledOnceWith(
+            expectedContext,
+            config,
+            allConfigs
+          );
+        });
     }));
 
     it('throws error if url has error param and resets everything on error', waitForAsync(() => {
       const config = { configId: 'configId1' };
       const allConfigs = [config];
 
-      const spy = spyOn(flowsService, 'processSilentRenewCodeFlowCallback').and.returnValue(of(null));
-      const authStateServiceSpy = spyOn(authStateService, 'updateAndPublishAuthState');
-      const resetAuthorizationDataSpy = spyOn(resetAuthDataService, 'resetAuthorizationData');
+      const spy = spyOn(
+        flowsService,
+        'processSilentRenewCodeFlowCallback'
+      ).and.returnValue(of(null));
+      const authStateServiceSpy = spyOn(
+        authStateService,
+        'updateAndPublishAuthState'
+      );
+      const resetAuthorizationDataSpy = spyOn(
+        resetAuthDataService,
+        'resetAuthorizationData'
+      );
       const setNonceSpy = spyOn(flowsDataService, 'setNonce');
-      const stopPeriodicTokenCheckSpy = spyOn(intervalService, 'stopPeriodicTokenCheck');
+      const stopPeriodicTokenCheckSpy = spyOn(
+        intervalService,
+        'stopPeriodicTokenCheck'
+      );
 
       const url = 'url-part-1';
       const urlParts = 'error=some_error';
 
-      silentRenewService.codeFlowCallbackSilentRenewIframe([url, urlParts], config, allConfigs).subscribe({
-        error: (error) => {
-          expect(error).toEqual(new Error('some_error'));
-          expect(spy).not.toHaveBeenCalled();
-          expect(authStateServiceSpy).toHaveBeenCalledOnceWith({
-            isAuthenticated: false,
-            validationResult: ValidationResult.LoginRequired,
-            isRenewProcess: true,
-          });
-          expect(resetAuthorizationDataSpy).toHaveBeenCalledOnceWith(config, allConfigs);
-          expect(setNonceSpy).toHaveBeenCalledOnceWith('', config);
-          expect(stopPeriodicTokenCheckSpy).toHaveBeenCalledTimes(1);
-        },
-      });
+      silentRenewService
+        .codeFlowCallbackSilentRenewIframe([url, urlParts], config, allConfigs)
+        .subscribe({
+          error: (error) => {
+            expect(error).toEqual(new Error('some_error'));
+            expect(spy).not.toHaveBeenCalled();
+            expect(authStateServiceSpy).toHaveBeenCalledOnceWith({
+              isAuthenticated: false,
+              validationResult: ValidationResult.LoginRequired,
+              isRenewProcess: true,
+            });
+            expect(resetAuthorizationDataSpy).toHaveBeenCalledOnceWith(
+              config,
+              allConfigs
+            );
+            expect(setNonceSpy).toHaveBeenCalledOnceWith('', config);
+            expect(stopPeriodicTokenCheckSpy).toHaveBeenCalledTimes(1);
+          },
+        });
     }));
   });
 
   describe('silentRenewEventHandler', () => {
     it('returns if no details is given', fakeAsync(() => {
-      const isCurrentFlowCodeFlowSpy = spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
+      const isCurrentFlowCodeFlowSpy = spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlow'
+      ).and.returnValue(false);
 
-      spyOn(implicitFlowCallbackService, 'authenticatedImplicitFlowCallback').and.returnValue(of(null));
+      spyOn(
+        implicitFlowCallbackService,
+        'authenticatedImplicitFlowCallback'
+      ).and.returnValue(of(null));
       const eventData = { detail: null } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
 
-      silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
+      silentRenewService.silentRenewEventHandler(
+        eventData,
+        allConfigs[0],
+        allConfigs
+      );
       tick(1000);
       expect(isCurrentFlowCodeFlowSpy).not.toHaveBeenCalled();
     }));
 
     it('calls authorizedImplicitFlowCallback if current flow is not code flow', fakeAsync(() => {
-      const isCurrentFlowCodeFlowSpy = spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
-      const authorizedImplicitFlowCallbackSpy = spyOn(implicitFlowCallbackService, 'authenticatedImplicitFlowCallback').and.returnValue(
-        of(null)
-      );
+      const isCurrentFlowCodeFlowSpy = spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlow'
+      ).and.returnValue(false);
+      const authorizedImplicitFlowCallbackSpy = spyOn(
+        implicitFlowCallbackService,
+        'authenticatedImplicitFlowCallback'
+      ).and.returnValue(of(null));
       const eventData = { detail: 'detail' } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
 
-      silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
+      silentRenewService.silentRenewEventHandler(
+        eventData,
+        allConfigs[0],
+        allConfigs
+      );
       tick(1000);
       expect(isCurrentFlowCodeFlowSpy).toHaveBeenCalled();
-      expect(authorizedImplicitFlowCallbackSpy).toHaveBeenCalledOnceWith(allConfigs[0], allConfigs, 'detail');
+      expect(authorizedImplicitFlowCallbackSpy).toHaveBeenCalledOnceWith(
+        allConfigs[0],
+        allConfigs,
+        'detail'
+      );
     }));
 
     it('calls codeFlowCallbackSilentRenewIframe if current flow is code flow', fakeAsync(() => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-      const codeFlowCallbackSilentRenewIframe = spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe').and.returnValue(of(null));
+      const codeFlowCallbackSilentRenewIframe = spyOn(
+        silentRenewService,
+        'codeFlowCallbackSilentRenewIframe'
+      ).and.returnValue(of(null));
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
 
-      silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
+      silentRenewService.silentRenewEventHandler(
+        eventData,
+        allConfigs[0],
+        allConfigs
+      );
       tick(1000);
-      expect(codeFlowCallbackSilentRenewIframe).toHaveBeenCalledOnceWith(['detail', 'detail2'], allConfigs[0], allConfigs);
+      expect(codeFlowCallbackSilentRenewIframe).toHaveBeenCalledOnceWith(
+        ['detail', 'detail2'],
+        allConfigs[0],
+        allConfigs
+      );
     }));
 
     it('calls authorizedImplicitFlowCallback if current flow is not code flow', fakeAsync(() => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-      const codeFlowCallbackSilentRenewIframe = spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe').and.returnValue(of(null));
+      const codeFlowCallbackSilentRenewIframe = spyOn(
+        silentRenewService,
+        'codeFlowCallbackSilentRenewIframe'
+      ).and.returnValue(of(null));
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
 
-      silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
+      silentRenewService.silentRenewEventHandler(
+        eventData,
+        allConfigs[0],
+        allConfigs
+      );
       tick(1000);
-      expect(codeFlowCallbackSilentRenewIframe).toHaveBeenCalledOnceWith(['detail', 'detail2'], allConfigs[0], allConfigs);
+      expect(codeFlowCallbackSilentRenewIframe).toHaveBeenCalledOnceWith(
+        ['detail', 'detail2'],
+        allConfigs[0],
+        allConfigs
+      );
     }));
 
     it('calls next on refreshSessionWithIFrameCompleted with callbackcontext', fakeAsync(() => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-      spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe').and.returnValue(
+      spyOn(
+        silentRenewService,
+        'codeFlowCallbackSilentRenewIframe'
+      ).and.returnValue(
         of({ refreshToken: 'callbackContext' } as CallbackContext)
       );
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
 
-      silentRenewService.refreshSessionWithIFrameCompleted$.subscribe((result) => {
-        expect(result).toEqual({ refreshToken: 'callbackContext' } as CallbackContext);
-      });
+      silentRenewService.refreshSessionWithIFrameCompleted$.subscribe(
+        (result) => {
+          expect(result).toEqual({
+            refreshToken: 'callbackContext',
+          } as CallbackContext);
+        }
+      );
 
-      silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
+      silentRenewService.silentRenewEventHandler(
+        eventData,
+        allConfigs[0],
+        allConfigs
+      );
       tick(1000);
     }));
 
     it('loggs and calls flowsDataService.resetSilentRenewRunning in case of an error', fakeAsync(() => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-      spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe').and.returnValue(throwError(() => new Error('ERROR')));
-      const resetSilentRenewRunningSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
+      spyOn(
+        silentRenewService,
+        'codeFlowCallbackSilentRenewIframe'
+      ).and.returnValue(throwError(() => new Error('ERROR')));
+      const resetSilentRenewRunningSpy = spyOn(
+        flowsDataService,
+        'resetSilentRenewRunning'
+      );
       const logErrorSpy = spyOn(loggerService, 'logError');
       const allConfigs = [{ configId: 'configId1' }];
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
 
-      silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
+      silentRenewService.silentRenewEventHandler(
+        eventData,
+        allConfigs[0],
+        allConfigs
+      );
       tick(1000);
       expect(resetSilentRenewRunningSpy).toHaveBeenCalledTimes(1);
       expect(logErrorSpy).toHaveBeenCalledTimes(1);
@@ -251,15 +359,24 @@ describe('SilentRenewService  ', () => {
 
     it('calls next on refreshSessionWithIFrameCompleted with null in case of error', fakeAsync(() => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-      spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe').and.returnValue(throwError(() => new Error('ERROR')));
+      spyOn(
+        silentRenewService,
+        'codeFlowCallbackSilentRenewIframe'
+      ).and.returnValue(throwError(() => new Error('ERROR')));
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
 
-      silentRenewService.refreshSessionWithIFrameCompleted$.subscribe((result) => {
-        expect(result).toBeNull();
-      });
+      silentRenewService.refreshSessionWithIFrameCompleted$.subscribe(
+        (result) => {
+          expect(result).toBeNull();
+        }
+      );
 
-      silentRenewService.silentRenewEventHandler(eventData, allConfigs[0], allConfigs);
+      silentRenewService.silentRenewEventHandler(
+        eventData,
+        allConfigs[0],
+        allConfigs
+      );
       tick(1000);
     }));
   });

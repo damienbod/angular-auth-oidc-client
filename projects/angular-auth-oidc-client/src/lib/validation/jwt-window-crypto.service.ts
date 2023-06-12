@@ -8,7 +8,9 @@ export class JwtWindowCryptoService {
   constructor(private readonly cryptoService: CryptoService) {}
 
   generateCodeChallenge(codeVerifier: string): Observable<string> {
-    return this.calcHash(codeVerifier).pipe(map((challengeRaw: string) => this.base64UrlEncode(challengeRaw)));
+    return this.calcHash(codeVerifier).pipe(
+      map((challengeRaw: string) => this.base64UrlEncode(challengeRaw))
+    );
   }
 
   generateAtHash(accessToken: string, algorithm: string): Observable<string> {
@@ -17,15 +19,23 @@ export class JwtWindowCryptoService {
         const substr: string = tokenHash.substr(0, tokenHash.length / 2);
         const tokenHashBase64: string = btoa(substr);
 
-        return tokenHashBase64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        return tokenHashBase64
+          .replace(/\+/g, '-')
+          .replace(/\//g, '_')
+          .replace(/=/g, '');
       })
     );
   }
 
-  private calcHash(valueToHash: string, algorithm = 'SHA-256'): Observable<string> {
+  private calcHash(
+    valueToHash: string,
+    algorithm = 'SHA-256'
+  ): Observable<string> {
     const msgBuffer: Uint8Array = new TextEncoder().encode(valueToHash);
 
-    return from(this.cryptoService.getCrypto().subtle.digest(algorithm, msgBuffer)).pipe(
+    return from(
+      this.cryptoService.getCrypto().subtle.digest(algorithm, msgBuffer)
+    ).pipe(
       map((hashBuffer: ArrayBuffer) => {
         const hashArray: number[] = Array.from(new Uint8Array(hashBuffer));
 

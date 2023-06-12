@@ -3,11 +3,11 @@
   "ignorePatterns": ["!**/*"],
   "overrides": [
     {
-      "files": ["*.ts"],,
+      "files": ["*.ts"],
       "parserOptions": {
         "project": [
           "projects/sample-code-flow-http-config/tsconfig.app.json",
-          "projects/sample-code-flow-http-config/tsconfig.spec.json",
+          "projects/sample-code-flow-http-config/tsconfig.spec.json"
         ],
         "createDefaultProgram": true
       },

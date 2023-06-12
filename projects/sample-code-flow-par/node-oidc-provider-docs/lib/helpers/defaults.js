@@ -22,13 +22,17 @@ const warned = new Set();
 function shouldChange(name, msg) {
   if (!warned.has(name)) {
     warned.add(name);
-    attention.info(`default ${name} function called, you SHOULD change it in order to ${msg}.`);
+    attention.info(
+      `default ${name} function called, you SHOULD change it in order to ${msg}.`
+    );
   }
 }
 function mustChange(name, msg) {
   if (!warned.has(name)) {
     warned.add(name);
-    attention.warn(`default ${name} function called, you MUST change it in order to ${msg}.`);
+    attention.warn(
+      `default ${name} function called, you MUST change it in order to ${msg}.`
+    );
   }
 }
 
@@ -38,13 +42,21 @@ function clientBasedCORS(ctx, origin, client) {
 }
 
 function getCertificate(ctx) {
-  mustChange('features.mTLS.getCertificate', 'retrieve the PEM-formatted client certificate from the request context');
+  mustChange(
+    'features.mTLS.getCertificate',
+    'retrieve the PEM-formatted client certificate from the request context'
+  );
   throw new Error('features.mTLS.getCertificate function not configured');
 }
 
 function certificateAuthorized(ctx) {
-  mustChange('features.mTLS.certificateAuthorized', 'determine if the client certificate is verified and comes from a trusted CA');
-  throw new Error('features.mTLS.certificateAuthorized function not configured');
+  mustChange(
+    'features.mTLS.certificateAuthorized',
+    'determine if the client certificate is verified and comes from a trusted CA'
+  );
+  throw new Error(
+    'features.mTLS.certificateAuthorized function not configured'
+  );
 }
 
 function certificateSubjectMatches(ctx, property, expected) {
@@ -52,7 +64,9 @@ function certificateSubjectMatches(ctx, property, expected) {
     'features.mTLS.certificateSubjectMatches',
     'verify that the tls_client_auth_* registered client property value matches the certificate one'
   );
-  throw new Error('features.mTLS.certificateSubjectMatches function not configured');
+  throw new Error(
+    'features.mTLS.certificateSubjectMatches function not configured'
+  );
 }
 
 function deviceInfo(ctx) {
@@ -70,7 +84,10 @@ async function userCodeInputSource(ctx, form, out, err) {
   //   rendered, i.e. does not include internal error messages
   // @param err - error object with an optional userCode property passed when the form is being
   //   re-rendered due to code missing/invalid/expired
-  shouldChange('features.deviceFlow.userCodeInputSource', 'customize the look of the user code input page');
+  shouldChange(
+    'features.deviceFlow.userCodeInputSource',
+    'customize the look of the user code input page'
+  );
   let msg;
   if (err && (err.userCode || err.name === 'NoCodeError')) {
     msg = '<p class="red">The code you entered is incorrect. Try again</p>';
@@ -108,8 +125,12 @@ async function userCodeConfirmSource(ctx, form, client, deviceInfo, userCode) {
   //   submitted by the End-User.
   // @param deviceInfo - device information from the device_authorization_endpoint call
   // @param userCode - formatted user code by the configured mask
-  shouldChange('features.deviceFlow.userCodeConfirmSource', 'customize the look of the user code confirmation page');
-  const { clientId, clientName, clientUri, logoUri, policyUri, tosUri } = ctx.oidc.client;
+  shouldChange(
+    'features.deviceFlow.userCodeConfirmSource',
+    'customize the look of the user code confirmation page'
+  );
+  const { clientId, clientName, clientUri, logoUri, policyUri, tosUri } =
+    ctx.oidc.client;
   ctx.body = `<!DOCTYPE html>
     <head>
       <meta charset="utf-8">
@@ -143,8 +164,19 @@ async function userCodeConfirmSource(ctx, form, client, deviceInfo, userCode) {
 
 async function successSource(ctx) {
   // @param ctx - koa request context
-  shouldChange('features.deviceFlow.successSource', 'customize the look of the device code success page');
-  const { clientId, clientName, clientUri, initiateLoginUri, logoUri, policyUri, tosUri } = ctx.oidc.client;
+  shouldChange(
+    'features.deviceFlow.successSource',
+    'customize the look of the device code success page'
+  );
+  const {
+    clientId,
+    clientName,
+    clientUri,
+    initiateLoginUri,
+    logoUri,
+    policyUri,
+    tosUri,
+  } = ctx.oidc.client;
   ctx.body = `<!DOCTYPE html>
     <head>
       <meta charset="utf-8">
@@ -158,16 +190,24 @@ async function successSource(ctx) {
     <body>
       <div class="container">
         <h1>Sign-in Success</h1>
-        <p>Your sign-in ${clientName ? `with ${clientName}` : ''} was successful, you can now close this page.</p>
+        <p>Your sign-in ${
+          clientName ? `with ${clientName}` : ''
+        } was successful, you can now close this page.</p>
       </div>
     </body>
     </html>`;
 }
 
 async function introspectionAllowedPolicy(ctx, client, token) {
-  shouldChange('features.introspection.allowedPolicy', 'to check whether the caller is authorized to receive the introspection response');
+  shouldChange(
+    'features.introspection.allowedPolicy',
+    'to check whether the caller is authorized to receive the introspection response'
+  );
 
-  if (client.introspectionEndpointAuthMethod === 'none' && token.clientId !== ctx.oidc.client.clientId) {
+  if (
+    client.introspectionEndpointAuthMethod === 'none' &&
+    token.clientId !== ctx.oidc.client.clientId
+  ) {
     return false;
   }
 
@@ -231,7 +271,10 @@ async function expiresWithSession(ctx, token) {
 }
 
 async function issueRefreshToken(ctx, client, code) {
-  return client.grantTypeAllowed('refresh_token') && code.scopes.has('offline_access');
+  return (
+    client.grantTypeAllowed('refresh_token') &&
+    code.scopes.has('offline_access')
+  );
 }
 
 function pkceRequired(ctx, client) {
@@ -266,7 +309,10 @@ function ClientCredentialsFormat(ctx, token) {
 }
 
 function AccessTokenTTL(ctx, token, client) {
-  shouldChange('ttl.AccessToken', 'define the expiration for AccessToken artifacts');
+  shouldChange(
+    'ttl.AccessToken',
+    'define the expiration for AccessToken artifacts'
+  );
   if (token.resourceServer) {
     return token.resourceServer.accessTokenTTL || 60 * 60; // 1 hour in seconds
   }
@@ -278,7 +324,10 @@ function AuthorizationCodeTTL(ctx, code, client) {
 }
 
 function ClientCredentialsTTL(ctx, token, client) {
-  shouldChange('ttl.ClientCredentials', 'define the expiration for ClientCredentials artifacts');
+  shouldChange(
+    'ttl.ClientCredentials',
+    'define the expiration for ClientCredentials artifacts'
+  );
   if (token.resourceServer) {
     return token.resourceServer.accessTokenTTL || 10 * 60; // 10 minutes in seconds
   }
@@ -286,12 +335,18 @@ function ClientCredentialsTTL(ctx, token, client) {
 }
 
 function DeviceCodeTTL(ctx, deviceCode, client) {
-  shouldChange('ttl.DeviceCode', 'define the expiration for DeviceCode artifacts');
+  shouldChange(
+    'ttl.DeviceCode',
+    'define the expiration for DeviceCode artifacts'
+  );
   return 10 * 60; // 10 minutes in seconds
 }
 
 function BackchannelAuthenticationRequestTTL(ctx, request, client) {
-  shouldChange('ttl.BackchannelAuthenticationRequest', 'define the expiration for BackchannelAuthenticationRequest artifacts');
+  shouldChange(
+    'ttl.BackchannelAuthenticationRequest',
+    'define the expiration for BackchannelAuthenticationRequest artifacts'
+  );
   if (ctx && ctx.oidc && ctx.oidc.params.requested_expiry) {
     return Math.min(10 * 60, +ctx.oidc.params.requested_expiry); // 10 minutes in seconds or requested_expiry, whichever is shorter
   }
@@ -305,7 +360,10 @@ function IdTokenTTL(ctx, token, client) {
 }
 
 function RefreshTokenTTL(ctx, token, client) {
-  shouldChange('ttl.RefreshToken', 'define the expiration for RefreshToken artifacts');
+  shouldChange(
+    'ttl.RefreshToken',
+    'define the expiration for RefreshToken artifacts'
+  );
   if (
     ctx &&
     ctx.oidc.entities.RotatedRefreshToken &&
@@ -321,7 +379,10 @@ function RefreshTokenTTL(ctx, token, client) {
 }
 
 function InteractionTTL(ctx, interaction) {
-  shouldChange('ttl.Interaction', 'define the expiration for Interaction artifacts');
+  shouldChange(
+    'ttl.Interaction',
+    'define the expiration for Interaction artifacts'
+  );
   return 60 * 60; // 1 hour in seconds
 }
 
@@ -351,8 +412,19 @@ function extraClientMetadataValidator(ctx, key, value, metadata) {
 
 async function postLogoutSuccessSource(ctx) {
   // @param ctx - koa request context
-  shouldChange('features.rpInitiatedLogout.postLogoutSuccessSource', 'customize the look of the default post logout success page');
-  const { clientId, clientName, clientUri, initiateLoginUri, logoUri, policyUri, tosUri } = ctx.oidc.client || {}; // client is defined if the user chose to stay logged in with the OP
+  shouldChange(
+    'features.rpInitiatedLogout.postLogoutSuccessSource',
+    'customize the look of the default post logout success page'
+  );
+  const {
+    clientId,
+    clientName,
+    clientUri,
+    initiateLoginUri,
+    logoUri,
+    policyUri,
+    tosUri,
+  } = ctx.oidc.client || {}; // client is defined if the user chose to stay logged in with the OP
   const display = clientName || clientId;
   ctx.body = `<!DOCTYPE html>
     <head>
@@ -377,7 +449,10 @@ async function logoutSource(ctx, form) {
   // @param ctx - koa request context
   // @param form - form source (id="op.logoutForm") to be embedded in the page and submitted by
   //   the End-User
-  shouldChange('features.rpInitiatedLogout.logoutSource', 'customize the look of the logout page');
+  shouldChange(
+    'features.rpInitiatedLogout.logoutSource',
+    'customize the look of the logout page'
+  );
   ctx.body = `<!DOCTYPE html>
     <head>
       <meta charset="utf-8">
@@ -416,7 +491,10 @@ async function renderError(ctx, out, error) {
       <div class="container">
         <h1>oops! something went wrong</h1>
         ${Object.entries(out)
-          .map(([key, value]) => `<pre><strong>${key}</strong>: ${htmlSafe(value)}</pre>`)
+          .map(
+            ([key, value]) =>
+              `<pre><strong>${key}</strong>: ${htmlSafe(value)}</pre>`
+          )
           .join('')}
       </div>
     </body>
@@ -461,7 +539,10 @@ function rotateRefreshToken(ctx) {
   }
 
   // rotate non sender-constrained public client refresh tokens
-  if (client.tokenEndpointAuthMethod === 'none' && !refreshToken.isSenderConstrained()) {
+  if (
+    client.tokenEndpointAuthMethod === 'none' &&
+    !refreshToken.isSenderConstrained()
+  ) {
     return true;
   }
 
@@ -471,7 +552,9 @@ function rotateRefreshToken(ctx) {
 
 async function loadExistingGrant(ctx) {
   const grantId =
-    (ctx.oidc.result && ctx.oidc.result.consent && ctx.oidc.result.consent.grantId) ||
+    (ctx.oidc.result &&
+      ctx.oidc.result.consent &&
+      ctx.oidc.result.consent.grantId) ||
     ctx.oidc.session.grantIdFor(ctx.oidc.client.clientId);
 
   if (grantId) {
@@ -513,7 +596,10 @@ async function verifyUserCode(ctx, account, userCode) {
   // @param ctx - koa request context
   // @param account -
   // @param userCode - string value of the user_code parameter, when not provided it is undefined
-  mustChange('features.ciba.verifyUserCode', 'verify the user_code parameter is present when required and verify its value');
+  mustChange(
+    'features.ciba.verifyUserCode',
+    'verify the user_code parameter is present when required and verify its value'
+  );
   throw new Error('features.ciba.verifyUserCode not implemented');
 }
 
@@ -534,7 +620,10 @@ async function validateBindingMessage(ctx, bindingMessage) {
 async function validateRequestContext(ctx, requestContext) {
   // @param ctx - koa request context
   // @param requestContext - string value of the request_context parameter, when not provided it is undefined
-  mustChange('features.ciba.validateRequestContext', 'verify the request_context parameter is present when required and verify its value');
+  mustChange(
+    'features.ciba.validateRequestContext',
+    'verify the request_context parameter is present when required and verify its value'
+  );
   throw new Error('features.ciba.validateRequestContext not implemented');
 }
 
@@ -2182,7 +2271,13 @@ function getDefaults() {
      * ]
      * ```
      */
-    tokenEndpointAuthMethods: ['client_secret_basic', 'client_secret_jwt', 'client_secret_post', 'private_key_jwt', 'none'],
+    tokenEndpointAuthMethods: [
+      'client_secret_basic',
+      'client_secret_jwt',
+      'client_secret_post',
+      'private_key_jwt',
+      'none',
+    ],
 
     /*
      * ttl
@@ -2423,7 +2518,13 @@ function getDefaults() {
        * ]
        * ```
        */
-      tokenEndpointAuthSigningAlgValues: ['HS256', 'RS256', 'PS256', 'ES256', 'EdDSA'],
+      tokenEndpointAuthSigningAlgValues: [
+        'HS256',
+        'RS256',
+        'PS256',
+        'ES256',
+        'EdDSA',
+      ],
 
       /*
        * enabledJWA.introspectionEndpointAuthSigningAlgValues
@@ -2443,7 +2544,13 @@ function getDefaults() {
        * ]
        * ```
        */
-      introspectionEndpointAuthSigningAlgValues: ['HS256', 'RS256', 'PS256', 'ES256', 'EdDSA'],
+      introspectionEndpointAuthSigningAlgValues: [
+        'HS256',
+        'RS256',
+        'PS256',
+        'ES256',
+        'EdDSA',
+      ],
 
       /*
        * enabledJWA.revocationEndpointAuthSigningAlgValues
@@ -2463,7 +2570,13 @@ function getDefaults() {
        * ]
        * ```
        */
-      revocationEndpointAuthSigningAlgValues: ['HS256', 'RS256', 'PS256', 'ES256', 'EdDSA'],
+      revocationEndpointAuthSigningAlgValues: [
+        'HS256',
+        'RS256',
+        'PS256',
+        'ES256',
+        'EdDSA',
+      ],
 
       /*
        * enabledJWA.idTokenSigningAlgValues
@@ -2501,7 +2614,13 @@ function getDefaults() {
        * ]
        * ```
        */
-      requestObjectSigningAlgValues: ['HS256', 'RS256', 'PS256', 'ES256', 'EdDSA'],
+      requestObjectSigningAlgValues: [
+        'HS256',
+        'RS256',
+        'PS256',
+        'ES256',
+        'EdDSA',
+      ],
 
       /*
        * enabledJWA.userinfoSigningAlgValues
@@ -2580,7 +2699,13 @@ function getDefaults() {
        * ]
        * ```
        */
-      idTokenEncryptionAlgValues: ['A128KW', 'A256KW', 'ECDH-ES', 'RSA-OAEP', 'dir'],
+      idTokenEncryptionAlgValues: [
+        'A128KW',
+        'A256KW',
+        'ECDH-ES',
+        'RSA-OAEP',
+        'dir',
+      ],
 
       /*
        * enabledJWA.requestObjectEncryptionAlgValues
@@ -2603,7 +2728,13 @@ function getDefaults() {
        * ]
        * ```
        */
-      requestObjectEncryptionAlgValues: ['A128KW', 'A256KW', 'ECDH-ES', 'RSA-OAEP', 'dir'],
+      requestObjectEncryptionAlgValues: [
+        'A128KW',
+        'A256KW',
+        'ECDH-ES',
+        'RSA-OAEP',
+        'dir',
+      ],
 
       /*
        * enabledJWA.userinfoEncryptionAlgValues
@@ -2626,7 +2757,13 @@ function getDefaults() {
        * ]
        * ```
        */
-      userinfoEncryptionAlgValues: ['A128KW', 'A256KW', 'ECDH-ES', 'RSA-OAEP', 'dir'],
+      userinfoEncryptionAlgValues: [
+        'A128KW',
+        'A256KW',
+        'ECDH-ES',
+        'RSA-OAEP',
+        'dir',
+      ],
 
       /*
        * enabledJWA.introspectionEncryptionAlgValues
@@ -2650,7 +2787,13 @@ function getDefaults() {
        * ]
        * ```
        */
-      introspectionEncryptionAlgValues: ['A128KW', 'A256KW', 'ECDH-ES', 'RSA-OAEP', 'dir'],
+      introspectionEncryptionAlgValues: [
+        'A128KW',
+        'A256KW',
+        'ECDH-ES',
+        'RSA-OAEP',
+        'dir',
+      ],
 
       /*
        * enabledJWA.authorizationEncryptionAlgValues
@@ -2674,7 +2817,13 @@ function getDefaults() {
        * ]
        * ```
        */
-      authorizationEncryptionAlgValues: ['A128KW', 'A256KW', 'ECDH-ES', 'RSA-OAEP', 'dir'],
+      authorizationEncryptionAlgValues: [
+        'A128KW',
+        'A256KW',
+        'ECDH-ES',
+        'RSA-OAEP',
+        'dir',
+      ],
 
       /*
        * enabledJWA.idTokenEncryptionEncValues
@@ -2688,7 +2837,12 @@ function getDefaults() {
        * ]
        * ```
        */
-      idTokenEncryptionEncValues: ['A128CBC-HS256', 'A128GCM', 'A256CBC-HS512', 'A256GCM'],
+      idTokenEncryptionEncValues: [
+        'A128CBC-HS256',
+        'A128GCM',
+        'A256CBC-HS512',
+        'A256GCM',
+      ],
 
       /*
        * enabledJWA.requestObjectEncryptionEncValues
@@ -2702,7 +2856,12 @@ function getDefaults() {
        * ]
        * ```
        */
-      requestObjectEncryptionEncValues: ['A128CBC-HS256', 'A128GCM', 'A256CBC-HS512', 'A256GCM'],
+      requestObjectEncryptionEncValues: [
+        'A128CBC-HS256',
+        'A128GCM',
+        'A256CBC-HS512',
+        'A256GCM',
+      ],
 
       /*
        * enabledJWA.userinfoEncryptionEncValues
@@ -2716,7 +2875,12 @@ function getDefaults() {
        * ]
        * ```
        */
-      userinfoEncryptionEncValues: ['A128CBC-HS256', 'A128GCM', 'A256CBC-HS512', 'A256GCM'],
+      userinfoEncryptionEncValues: [
+        'A128CBC-HS256',
+        'A128GCM',
+        'A256CBC-HS512',
+        'A256GCM',
+      ],
 
       /*
        * enabledJWA.introspectionEncryptionEncValues
@@ -2730,7 +2894,12 @@ function getDefaults() {
        * ]
        * ```
        */
-      introspectionEncryptionEncValues: ['A128CBC-HS256', 'A128GCM', 'A256CBC-HS512', 'A256GCM'],
+      introspectionEncryptionEncValues: [
+        'A128CBC-HS256',
+        'A128GCM',
+        'A256CBC-HS512',
+        'A256GCM',
+      ],
 
       /*
        * enabledJWA.authorizationEncryptionEncValues
@@ -2744,7 +2913,12 @@ function getDefaults() {
        * ]
        * ```
        */
-      authorizationEncryptionEncValues: ['A128CBC-HS256', 'A128GCM', 'A256CBC-HS512', 'A256GCM'],
+      authorizationEncryptionEncValues: [
+        'A128CBC-HS256',
+        'A128GCM',
+        'A256CBC-HS512',
+        'A256GCM',
+      ],
 
       /*
        * enabledJWA.dPoPSigningAlgValues

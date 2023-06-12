@@ -14,11 +14,20 @@ export class ResetAuthDataService {
     private readonly loggerService: LoggerService
   ) {}
 
-  resetAuthorizationData(currentConfiguration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
+  resetAuthorizationData(
+    currentConfiguration: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): void {
     this.userService.resetUserDataInStore(currentConfiguration, allConfigs);
     this.flowsDataService.resetStorageFlowData(currentConfiguration);
-    this.authStateService.setUnauthenticatedAndFireEvent(currentConfiguration, allConfigs);
+    this.authStateService.setUnauthenticatedAndFireEvent(
+      currentConfiguration,
+      allConfigs
+    );
 
-    this.loggerService.logDebug(currentConfiguration, 'Local Login information cleaned up and event fired');
+    this.loggerService.logDebug(
+      currentConfiguration,
+      'Local Login information cleaned up and event fired'
+    );
   }
 }

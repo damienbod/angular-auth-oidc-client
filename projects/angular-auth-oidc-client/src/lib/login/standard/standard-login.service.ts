@@ -19,34 +19,52 @@ export class StandardLoginService {
     private readonly flowsDataService: FlowsDataService
   ) {}
 
-  loginStandard(configuration: OpenIdConfiguration, authOptions?: AuthOptions): void {
-    if (!this.responseTypeValidationService.hasConfigValidResponseType(configuration)) {
+  loginStandard(
+    configuration: OpenIdConfiguration,
+    authOptions?: AuthOptions
+  ): void {
+    if (
+      !this.responseTypeValidationService.hasConfigValidResponseType(
+        configuration
+      )
+    ) {
       this.loggerService.logError(configuration, 'Invalid response type!');
 
       return;
     }
 
-    this.loggerService.logDebug(configuration, 'BEGIN Authorize OIDC Flow, no auth data');
+    this.loggerService.logDebug(
+      configuration,
+      'BEGIN Authorize OIDC Flow, no auth data'
+    );
     this.flowsDataService.setCodeFlowInProgress(configuration);
 
-    this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(configuration).subscribe(() => {
-      const { urlHandler } = authOptions || {};
+    this.authWellKnownService
+      .queryAndStoreAuthWellKnownEndPoints(configuration)
+      .subscribe(() => {
+        const { urlHandler } = authOptions || {};
 
-      this.flowsDataService.resetSilentRenewRunning(configuration);
+        this.flowsDataService.resetSilentRenewRunning(configuration);
 
-      this.urlService.getAuthorizeUrl(configuration, authOptions).subscribe((url: string) => {
-        if (!url) {
-          this.loggerService.logError(configuration, 'Could not create URL', url);
+        this.urlService
+          .getAuthorizeUrl(configuration, authOptions)
+          .subscribe((url: string) => {
+            if (!url) {
+              this.loggerService.logError(
+                configuration,
+                'Could not create URL',
+                url
+              );
 
-          return;
-        }
+              return;
+            }
 
-        if (urlHandler) {
-          urlHandler(url);
-        } else {
-          this.redirectService.redirectTo(url);
-        }
+            if (urlHandler) {
+              urlHandler(url);
+            } else {
+              this.redirectService.redirectTo(url);
+            }
+          });
       });
-    });
   }
 }

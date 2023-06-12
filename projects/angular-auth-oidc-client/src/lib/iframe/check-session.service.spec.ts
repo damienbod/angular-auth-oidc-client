@@ -30,7 +30,10 @@ describe('CheckSessionService', () => {
           useClass: mockClass(StoragePersistenceService),
         },
         { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: AbstractSecurityStorage, useClass: mockClass(DefaultSessionStorageService) },
+        {
+          provide: AbstractSecurityStorage,
+          useClass: mockClass(DefaultSessionStorageService),
+        },
         { provide: PlatformProvider, useClass: mockClass(PlatformProvider) },
       ],
     });
@@ -44,12 +47,18 @@ describe('CheckSessionService', () => {
   });
 
   afterEach(() => {
-    const iFrameIdwhichshouldneverexist = window.document.getElementById('idwhichshouldneverexist');
+    const iFrameIdwhichshouldneverexist = window.document.getElementById(
+      'idwhichshouldneverexist'
+    );
 
     if (iFrameIdwhichshouldneverexist) {
-      iFrameIdwhichshouldneverexist.parentNode.removeChild(iFrameIdwhichshouldneverexist);
+      iFrameIdwhichshouldneverexist.parentNode.removeChild(
+        iFrameIdwhichshouldneverexist
+      );
     }
-    const myiFrameForCheckSession = window.document.getElementById('myiFrameForCheckSession');
+    const myiFrameForCheckSession = window.document.getElementById(
+      'myiFrameForCheckSession'
+    );
 
     if (myiFrameForCheckSession) {
       myiFrameForCheckSession.parentNode.removeChild(myiFrameForCheckSession);
@@ -63,14 +72,18 @@ describe('CheckSessionService', () => {
   it('getOrCreateIframe calls iFrameService.addIFrameToWindowBody if no Iframe exists', () => {
     spyOn(iFrameService, 'addIFrameToWindowBody').and.callThrough();
 
-    const result = (checkSessionService as any).getOrCreateIframe({ configId: 'configId1' });
+    const result = (checkSessionService as any).getOrCreateIframe({
+      configId: 'configId1',
+    });
 
     expect(result).toBeTruthy();
     expect(iFrameService.addIFrameToWindowBody).toHaveBeenCalled();
   });
 
   it('getOrCreateIframe returns true if document found on window.document', () => {
-    iFrameService.addIFrameToWindowBody('myiFrameForCheckSession', { configId: 'configId1' });
+    iFrameService.addIFrameToWindowBody('myiFrameForCheckSession', {
+      configId: 'configId1',
+    });
 
     const result = (checkSessionService as any).getOrCreateIframe();
 
@@ -82,7 +95,9 @@ describe('CheckSessionService', () => {
     spyOn<any>(loggerService, 'logDebug').and.callFake(() => undefined);
 
     (checkSessionService as any).init();
-    const iframe = (checkSessionService as any).getOrCreateIframe({ configId: 'configId1' });
+    const iframe = (checkSessionService as any).getOrCreateIframe({
+      configId: 'configId1',
+    });
 
     expect(iframe).toBeTruthy();
     expect(iframe.id).toBe('myiFrameForCheckSession');
@@ -97,7 +112,9 @@ describe('CheckSessionService', () => {
     const config = { configId: 'configId1' };
 
     spyOn<any>(loggerService, 'logDebug').and.callFake(() => undefined);
-    spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue({ checkSessionIframe: undefined });
+    spyOn(storagePersistenceService, 'read')
+      .withArgs('authWellKnownEndPoints', config)
+      .and.returnValue({ checkSessionIframe: undefined });
     (checkSessionService as any).init(config);
 
     expect(spyLogWarning).toHaveBeenCalledOnceWith(config, jasmine.any(String));
@@ -115,13 +132,17 @@ describe('CheckSessionService', () => {
     const config = { configId: 'configId1' };
     const spy = spyOn<any>(checkSessionService, 'pollServerSession');
 
-    (checkSessionService as any).scheduledHeartBeatRunning = (): void => undefined;
+    (checkSessionService as any).scheduledHeartBeatRunning = (): void =>
+      undefined;
     checkSessionService.start(config);
     expect(spy).not.toHaveBeenCalled();
   });
 
   it('stopCheckingSession sets heartbeat to null', () => {
-    (checkSessionService as any).scheduledHeartBeatRunning = setTimeout(() => undefined, 999);
+    (checkSessionService as any).scheduledHeartBeatRunning = setTimeout(
+      () => undefined,
+      999
+    );
     checkSessionService.stop();
     const heartBeat = (checkSessionService as any).scheduledHeartBeatRunning;
 
@@ -167,7 +188,9 @@ describe('CheckSessionService', () => {
     });
 
     it('increases outstandingMessages', () => {
-      spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue({ contentWindow: { postMessage: () => undefined } });
+      spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue({
+        contentWindow: { postMessage: () => undefined },
+      });
       const authWellKnownEndpoints = {
         checkSessionIframe: 'https://some-testing-url.com',
       };
@@ -184,18 +207,27 @@ describe('CheckSessionService', () => {
     });
 
     it('logs warning if iframe does not exist', () => {
-      spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue(null);
+      spyOn<any>(checkSessionService, 'getExistingIframe').and.returnValue(
+        null
+      );
       const authWellKnownEndpoints = {
         checkSessionIframe: 'https://some-testing-url.com',
       };
       const config = { configId: 'configId1' };
 
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => undefined);
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(
+        () => undefined
+      );
 
       spyOn(loggerService, 'logDebug').and.callFake(() => undefined);
       (checkSessionService as any).pollServerSession('clientId', config);
-      expect(spyLogWarning).toHaveBeenCalledOnceWith(config, jasmine.any(String));
+      expect(spyLogWarning).toHaveBeenCalledOnceWith(
+        config,
+        jasmine.any(String)
+      );
     });
 
     it('logs warning if clientId is not set', () => {
@@ -205,12 +237,19 @@ describe('CheckSessionService', () => {
       };
       const config = { configId: 'configId1' };
 
-      spyOn(storagePersistenceService, 'read').withArgs('authWellKnownEndPoints', config).and.returnValue(authWellKnownEndpoints);
-      const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(() => undefined);
+      spyOn(storagePersistenceService, 'read')
+        .withArgs('authWellKnownEndPoints', config)
+        .and.returnValue(authWellKnownEndpoints);
+      const spyLogWarning = spyOn(loggerService, 'logWarning').and.callFake(
+        () => undefined
+      );
 
       spyOn(loggerService, 'logDebug').and.callFake(() => undefined);
       (checkSessionService as any).pollServerSession('', config);
-      expect(spyLogWarning).toHaveBeenCalledOnceWith(config, jasmine.any(String));
+      expect(spyLogWarning).toHaveBeenCalledOnceWith(
+        config,
+        jasmine.any(String)
+      );
     });
 
     it('logs debug if session_state is not set', () => {
@@ -226,7 +265,9 @@ describe('CheckSessionService', () => {
         .withArgs('session_state', config)
         .and.returnValue(null);
 
-      const spyLogDebug = spyOn(loggerService, 'logDebug').and.callFake(() => undefined);
+      const spyLogDebug = spyOn(loggerService, 'logDebug').and.callFake(
+        () => undefined
+      );
 
       (checkSessionService as any).pollServerSession('clientId', config);
       expect(spyLogDebug).toHaveBeenCalledTimes(2);
@@ -242,7 +283,9 @@ describe('CheckSessionService', () => {
         .and.returnValue(authWellKnownEndpoints)
         .withArgs('session_state', config)
         .and.returnValue('some_session_state');
-      const spyLogDebug = spyOn(loggerService, 'logDebug').and.callFake(() => undefined);
+      const spyLogDebug = spyOn(loggerService, 'logDebug').and.callFake(
+        () => undefined
+      );
 
       (checkSessionService as any).pollServerSession('clientId', config);
       expect(spyLogDebug).toHaveBeenCalledTimes(2);
@@ -284,9 +327,11 @@ describe('CheckSessionService', () => {
 
   describe('checkSessionChanged$', () => {
     it('emits when internal event is thrown', waitForAsync(() => {
-      checkSessionService.checkSessionChanged$.pipe(skip(1)).subscribe((result) => {
-        expect(result).toBe(true);
-      });
+      checkSessionService.checkSessionChanged$
+        .pipe(skip(1))
+        .subscribe((result) => {
+          expect(result).toBe(true);
+        });
 
       const serviceAsAny = checkSessionService as any;
 

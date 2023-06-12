@@ -7,7 +7,13 @@ describe('CryptoService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [CryptoService, { provide: DOCUMENT, useValue: { defaultView: { crypto: 'some-thing' } } }],
+      providers: [
+        CryptoService,
+        {
+          provide: DOCUMENT,
+          useValue: { defaultView: { crypto: 'some-thing' } },
+        },
+      ],
     });
   });
 
@@ -35,7 +41,13 @@ describe('CryptoService: msCrypto', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [CryptoService, { provide: DOCUMENT, useValue: { defaultView: { msCrypto: 'some-msCrypto-thing' } } }],
+      providers: [
+        CryptoService,
+        {
+          provide: DOCUMENT,
+          useValue: { defaultView: { msCrypto: 'some-msCrypto-thing' } },
+        },
+      ],
     });
   });
 

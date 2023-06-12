@@ -15,7 +15,9 @@ const DEFAULT_USERRESULT = { userData: null, allUserData: [] };
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private readonly userDataInternal$ = new BehaviorSubject<UserDataResult>(DEFAULT_USERRESULT);
+  private readonly userDataInternal$ = new BehaviorSubject<UserDataResult>(
+    DEFAULT_USERRESULT
+  );
 
   get userData$(): Observable<UserDataResult> {
     return this.userDataInternal$.asObservable();
@@ -37,18 +39,35 @@ export class UserService {
     idToken?: any,
     decodedIdToken?: any
   ): Observable<any> {
-    idToken = idToken || this.storagePersistenceService.getIdToken(currentConfiguration);
-    decodedIdToken = decodedIdToken || this.tokenHelperService.getPayloadFromToken(idToken, false, currentConfiguration);
+    idToken =
+      idToken ||
+      this.storagePersistenceService.getIdToken(currentConfiguration);
+    decodedIdToken =
+      decodedIdToken ||
+      this.tokenHelperService.getPayloadFromToken(
+        idToken,
+        false,
+        currentConfiguration
+      );
 
-    const existingUserDataFromStorage = this.getUserDataFromStore(currentConfiguration);
+    const existingUserDataFromStorage =
+      this.getUserDataFromStore(currentConfiguration);
     const haveUserData = !!existingUserDataFromStorage;
-    const isCurrentFlowImplicitFlowWithAccessToken = this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken(currentConfiguration);
-    const isCurrentFlowCodeFlow = this.flowHelper.isCurrentFlowCodeFlow(currentConfiguration);
+    const isCurrentFlowImplicitFlowWithAccessToken =
+      this.flowHelper.isCurrentFlowImplicitFlowWithAccessToken(
+        currentConfiguration
+      );
+    const isCurrentFlowCodeFlow =
+      this.flowHelper.isCurrentFlowCodeFlow(currentConfiguration);
 
-    const accessToken = this.storagePersistenceService.getAccessToken(currentConfiguration);
+    const accessToken =
+      this.storagePersistenceService.getAccessToken(currentConfiguration);
 
     if (!(isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow)) {
-      this.loggerService.logDebug(currentConfiguration, `authCallback idToken flow with accessToken ${accessToken}`);
+      this.loggerService.logDebug(
+        currentConfiguration,
+        `authCallback idToken flow with accessToken ${accessToken}`
+      );
 
       this.setUserDataToStore(decodedIdToken, currentConfiguration, allConfigs);
 
@@ -58,15 +77,29 @@ export class UserService {
     const { renewUserInfoAfterTokenRenew } = currentConfiguration;
 
     if (!isRenewProcess || renewUserInfoAfterTokenRenew || !haveUserData) {
-      return this.getUserDataOidcFlowAndSave(decodedIdToken.sub, currentConfiguration, allConfigs).pipe(
+      return this.getUserDataOidcFlowAndSave(
+        decodedIdToken.sub,
+        currentConfiguration,
+        allConfigs
+      ).pipe(
         switchMap((userData) => {
-          this.loggerService.logDebug(currentConfiguration, 'Received user data: ', userData);
+          this.loggerService.logDebug(
+            currentConfiguration,
+            'Received user data: ',
+            userData
+          );
           if (!!userData) {
-            this.loggerService.logDebug(currentConfiguration, 'accessToken: ', accessToken);
+            this.loggerService.logDebug(
+              currentConfiguration,
+              'accessToken: ',
+              accessToken
+            );
 
             return of(userData);
           } else {
-            return throwError(() => new Error('Received no user data, request failed'));
+            return throwError(
+              () => new Error('Received no user data, request failed')
+            );
           }
         })
       );
@@ -76,10 +109,16 @@ export class UserService {
   }
 
   getUserDataFromStore(currentConfiguration: OpenIdConfiguration): any {
-    return this.storagePersistenceService.read('userData', currentConfiguration) || null;
+    return (
+      this.storagePersistenceService.read('userData', currentConfiguration) ||
+      null
+    );
   }
 
-  publishUserDataIfExists(currentConfiguration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
+  publishUserDataIfExists(
+    currentConfiguration: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): void {
     const userData = this.getUserDataFromStore(currentConfiguration);
 
     if (userData) {
@@ -87,12 +126,23 @@ export class UserService {
     }
   }
 
-  setUserDataToStore(userData: any, currentConfiguration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
-    this.storagePersistenceService.write('userData', userData, currentConfiguration);
+  setUserDataToStore(
+    userData: any,
+    currentConfiguration: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): void {
+    this.storagePersistenceService.write(
+      'userData',
+      userData,
+      currentConfiguration
+    );
     this.fireUserDataEvent(currentConfiguration, allConfigs, userData);
   }
 
-  resetUserDataInStore(currentConfiguration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[]): void {
+  resetUserDataInStore(
+    currentConfiguration: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): void {
     this.storagePersistenceService.remove('userData', currentConfiguration);
     this.fireUserDataEvent(currentConfiguration, allConfigs, null);
   }
@@ -104,13 +154,22 @@ export class UserService {
   ): Observable<any> {
     return this.getIdentityUserData(currentConfiguration).pipe(
       map((data: any) => {
-        if (this.validateUserDataSubIdToken(currentConfiguration, idTokenSub, data?.sub)) {
+        if (
+          this.validateUserDataSubIdToken(
+            currentConfiguration,
+            idTokenSub,
+            data?.sub
+          )
+        ) {
           this.setUserDataToStore(data, currentConfiguration, allConfigs);
 
           return data;
         } else {
           // something went wrong, user data sub does not match that from id_token
-          this.loggerService.logWarning(currentConfiguration, `User data sub does not match sub in id_token, resetting`);
+          this.loggerService.logWarning(
+            currentConfiguration,
+            `User data sub does not match sub in id_token, resetting`
+          );
           this.resetUserDataInStore(currentConfiguration, allConfigs);
 
           return null;
@@ -119,13 +178,22 @@ export class UserService {
     );
   }
 
-  private getIdentityUserData(currentConfiguration: OpenIdConfiguration): Observable<any> {
-    const token = this.storagePersistenceService.getAccessToken(currentConfiguration);
+  private getIdentityUserData(
+    currentConfiguration: OpenIdConfiguration
+  ): Observable<any> {
+    const token =
+      this.storagePersistenceService.getAccessToken(currentConfiguration);
 
-    const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', currentConfiguration);
+    const authWellKnownEndPoints = this.storagePersistenceService.read(
+      'authWellKnownEndPoints',
+      currentConfiguration
+    );
 
     if (!authWellKnownEndPoints) {
-      this.loggerService.logWarning(currentConfiguration, 'init check session: authWellKnownEndpoints is undefined');
+      this.loggerService.logWarning(
+        currentConfiguration,
+        'init check session: authWellKnownEndpoints is undefined'
+      );
 
       return throwError(() => new Error('authWellKnownEndpoints is undefined'));
     }
@@ -138,13 +206,21 @@ export class UserService {
         'init check session: authWellKnownEndpoints.userinfo_endpoint is undefined; set auto_userinfo = false in config'
       );
 
-      return throwError(() => new Error('authWellKnownEndpoints.userinfo_endpoint is undefined'));
+      return throwError(
+        () => new Error('authWellKnownEndpoints.userinfo_endpoint is undefined')
+      );
     }
 
-    return this.oidcDataService.get(userInfoEndpoint, currentConfiguration, token).pipe(retry(2));
+    return this.oidcDataService
+      .get(userInfoEndpoint, currentConfiguration, token)
+      .pipe(retry(2));
   }
 
-  private validateUserDataSubIdToken(currentConfiguration: OpenIdConfiguration, idTokenSub: any, userDataSub: any): boolean {
+  private validateUserDataSubIdToken(
+    currentConfiguration: OpenIdConfiguration,
+    idTokenSub: any,
+    userDataSub: any
+  ): boolean {
     if (!idTokenSub) {
       return false;
     }
@@ -153,8 +229,13 @@ export class UserService {
       return false;
     }
 
-    if ((idTokenSub.toString()) !== (userDataSub.toString())) {
-      this.loggerService.logDebug(currentConfiguration, 'validateUserDataSubIdToken failed', idTokenSub, userDataSub);
+    if (idTokenSub.toString() !== userDataSub.toString()) {
+      this.loggerService.logDebug(
+        currentConfiguration,
+        'validateUserDataSubIdToken failed',
+        idTokenSub,
+        userDataSub
+      );
 
       return false;
     }
@@ -162,14 +243,25 @@ export class UserService {
     return true;
   }
 
-  private fireUserDataEvent(currentConfiguration: OpenIdConfiguration, allConfigs: OpenIdConfiguration[], passedUserData: any): void {
-    const userData = this.composeSingleOrMultipleUserDataObject(currentConfiguration, allConfigs, passedUserData);
+  private fireUserDataEvent(
+    currentConfiguration: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[],
+    passedUserData: any
+  ): void {
+    const userData = this.composeSingleOrMultipleUserDataObject(
+      currentConfiguration,
+      allConfigs,
+      passedUserData
+    );
 
     this.userDataInternal$.next(userData);
 
     const { configId } = currentConfiguration;
 
-    this.eventService.fireEvent(EventTypes.UserDataChanged, { configId, userData: passedUserData });
+    this.eventService.fireEvent(EventTypes.UserDataChanged, {
+      configId,
+      userData: passedUserData,
+    });
   }
 
   private composeSingleOrMultipleUserDataObject(
@@ -192,7 +284,8 @@ export class UserService {
         return { configId: config.configId, userData: passedUserData };
       }
 
-      const alreadySavedUserData = this.storagePersistenceService.read('userData', config) || null;
+      const alreadySavedUserData =
+        this.storagePersistenceService.read('userData', config) || null;
 
       return { configId: config.configId, userData: alreadySavedUserData };
     });
@@ -203,14 +296,20 @@ export class UserService {
     };
   }
 
-  private composeSingleUserDataResult(configId: string, userData: any): UserDataResult {
+  private composeSingleUserDataResult(
+    configId: string,
+    userData: any
+  ): UserDataResult {
     return {
       userData,
       allUserData: [{ configId, userData }],
     };
   }
 
-  private currentConfigIsToUpdate(configId: string, config: OpenIdConfiguration): boolean {
+  private currentConfigIsToUpdate(
+    configId: string,
+    config: OpenIdConfiguration
+  ): boolean {
     return config.configId === configId;
   }
 }

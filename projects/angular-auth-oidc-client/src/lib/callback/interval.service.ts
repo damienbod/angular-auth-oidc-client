@@ -25,7 +25,10 @@ export class IntervalService {
       let intervalId;
 
       this.zone.runOutsideAngular(() => {
-        intervalId = setInterval(() => this.zone.run(() => subscriber.next()), millisecondsDelayBetweenTokenCheck);
+        intervalId = setInterval(
+          () => this.zone.run(() => subscriber.next()),
+          millisecondsDelayBetweenTokenCheck
+        );
       });
 
       return (): void => {

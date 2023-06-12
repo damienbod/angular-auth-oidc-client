@@ -78,10 +78,16 @@ export class OidcSecurityService {
     private readonly authWellKnownService: AuthWellKnownService
   ) {}
 
-  preloadAuthWellKnownDocument(configId?: string): Observable<AuthWellKnownEndpoints> {
+  preloadAuthWellKnownDocument(
+    configId?: string
+  ): Observable<AuthWellKnownEndpoints> {
     return this.configurationService
       .getOpenIDConfiguration(configId)
-      .pipe(concatMap((config) => this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(config)));
+      .pipe(
+        concatMap((config) =>
+          this.authWellKnownService.queryAndStoreAuthWellKnownEndPoints(config)
+        )
+      );
   }
 
   /**
@@ -108,7 +114,9 @@ export class OidcSecurityService {
    * @param configId The configId to identify the config. If not passed, the first one is being used
    */
   getUserData(configId?: string): Observable<any> {
-    return this.configurationService.getOpenIDConfiguration(configId).pipe(map((config) => this.userService.getUserDataFromStore(config)));
+    return this.configurationService
+      .getOpenIDConfiguration(configId)
+      .pipe(map((config) => this.userService.getUserDataFromStore(config)));
   }
 
   /**
@@ -124,7 +132,11 @@ export class OidcSecurityService {
   checkAuth(url?: string, configId?: string): Observable<LoginResponse> {
     return this.configurationService
       .getOpenIDConfigurations(configId)
-      .pipe(concatMap(({ allConfigs, currentConfig }) => this.checkAuthService.checkAuth(currentConfig, allConfigs, url)));
+      .pipe(
+        concatMap(({ allConfigs, currentConfig }) =>
+          this.checkAuthService.checkAuth(currentConfig, allConfigs, url)
+        )
+      );
   }
 
   /**
@@ -140,7 +152,11 @@ export class OidcSecurityService {
   checkAuthMultiple(url?: string): Observable<LoginResponse[]> {
     return this.configurationService
       .getOpenIDConfigurations()
-      .pipe(concatMap(({ allConfigs }) => this.checkAuthService.checkAuthMultiple(allConfigs, url)));
+      .pipe(
+        concatMap(({ allConfigs }) =>
+          this.checkAuthService.checkAuthMultiple(allConfigs, url)
+        )
+      );
   }
 
   /**
@@ -151,7 +167,9 @@ export class OidcSecurityService {
    * @returns A boolean whether the config is authenticated or not.
    */
   isAuthenticated(configId?: string): Observable<boolean> {
-    return this.configurationService.getOpenIDConfiguration(configId).pipe(map((config) => this.authStateService.isAuthenticated(config)));
+    return this.configurationService
+      .getOpenIDConfiguration(configId)
+      .pipe(map((config) => this.authStateService.isAuthenticated(config)));
   }
 
   /**
@@ -160,7 +178,14 @@ export class OidcSecurityService {
   checkAuthIncludingServer(configId?: string): Observable<LoginResponse> {
     return this.configurationService
       .getOpenIDConfigurations(configId)
-      .pipe(concatMap(({ allConfigs, currentConfig }) => this.checkAuthService.checkAuthIncludingServer(currentConfig, allConfigs)));
+      .pipe(
+        concatMap(({ allConfigs, currentConfig }) =>
+          this.checkAuthService.checkAuthIncludingServer(
+            currentConfig,
+            allConfigs
+          )
+        )
+      );
   }
 
   /**
@@ -171,7 +196,9 @@ export class OidcSecurityService {
    * @returns A string with the access token.
    */
   getAccessToken(configId?: string): Observable<string> {
-    return this.configurationService.getOpenIDConfiguration(configId).pipe(map((config) => this.authStateService.getAccessToken(config)));
+    return this.configurationService
+      .getOpenIDConfiguration(configId)
+      .pipe(map((config) => this.authStateService.getAccessToken(config)));
   }
 
   /**
@@ -182,7 +209,9 @@ export class OidcSecurityService {
    * @returns A string with the id token.
    */
   getIdToken(configId?: string): Observable<string> {
-    return this.configurationService.getOpenIDConfiguration(configId).pipe(map((config) => this.authStateService.getIdToken(config)));
+    return this.configurationService
+      .getOpenIDConfiguration(configId)
+      .pipe(map((config) => this.authStateService.getIdToken(config)));
   }
 
   /**
@@ -193,7 +222,9 @@ export class OidcSecurityService {
    * @returns A string with the refresh token.
    */
   getRefreshToken(configId?: string): Observable<string> {
-    return this.configurationService.getOpenIDConfiguration(configId).pipe(map((config) => this.authStateService.getRefreshToken(config)));
+    return this.configurationService
+      .getOpenIDConfiguration(configId)
+      .pipe(map((config) => this.authStateService.getRefreshToken(config)));
   }
 
   /**
@@ -206,7 +237,9 @@ export class OidcSecurityService {
   getAuthenticationResult(configId?: string): Observable<any> {
     return this.configurationService
       .getOpenIDConfiguration(configId)
-      .pipe(map((config) => this.authStateService.getAuthenticationResult(config)));
+      .pipe(
+        map((config) => this.authStateService.getAuthenticationResult(config))
+      );
   }
 
   /**
@@ -222,7 +255,11 @@ export class OidcSecurityService {
       map((config) => {
         const token = this.authStateService.getIdToken(config);
 
-        return this.tokenHelperService.getPayloadFromToken(token, encode, config);
+        return this.tokenHelperService.getPayloadFromToken(
+          token,
+          encode,
+          config
+        );
       })
     );
   }
@@ -235,12 +272,19 @@ export class OidcSecurityService {
    *
    * @returns The payload from the access token.
    */
-  getPayloadFromAccessToken(encode = false, configId?: string): Observable<any> {
+  getPayloadFromAccessToken(
+    encode = false,
+    configId?: string
+  ): Observable<any> {
     return this.configurationService.getOpenIDConfiguration(configId).pipe(
       map((config) => {
         const token = this.authStateService.getAccessToken(config);
 
-        return this.tokenHelperService.getPayloadFromToken(token, encode, config);
+        return this.tokenHelperService.getPayloadFromToken(
+          token,
+          encode,
+          config
+        );
       })
     );
   }
@@ -254,7 +298,11 @@ export class OidcSecurityService {
   setState(state: string, configId?: string): Observable<boolean> {
     return this.configurationService
       .getOpenIDConfiguration(configId)
-      .pipe(map((config) => this.flowsDataService.setAuthStateControl(state, config)));
+      .pipe(
+        map((config) =>
+          this.flowsDataService.setAuthStateControl(state, config)
+        )
+      );
   }
 
   /**
@@ -277,7 +325,9 @@ export class OidcSecurityService {
    * @param authOptions The custom options for the the authentication request.
    */
   authorize(configId?: string, authOptions?: AuthOptions): void {
-    this.configurationService.getOpenIDConfiguration(configId).subscribe((config) => this.loginService.login(config, authOptions));
+    this.configurationService
+      .getOpenIDConfiguration(configId)
+      .subscribe((config) => this.loginService.login(config, authOptions));
   }
 
   /**
@@ -289,11 +339,22 @@ export class OidcSecurityService {
    *
    * @returns An `Observable<LoginResponse>` containing all information about the login
    */
-  authorizeWithPopUp(authOptions?: AuthOptions, popupOptions?: PopupOptions, configId?: string): Observable<LoginResponse> {
+  authorizeWithPopUp(
+    authOptions?: AuthOptions,
+    popupOptions?: PopupOptions,
+    configId?: string
+  ): Observable<LoginResponse> {
     return this.configurationService
       .getOpenIDConfigurations(configId)
       .pipe(
-        concatMap(({ allConfigs, currentConfig }) => this.loginService.loginWithPopUp(currentConfig, allConfigs, authOptions, popupOptions))
+        concatMap(({ allConfigs, currentConfig }) =>
+          this.loginService.loginWithPopUp(
+            currentConfig,
+            allConfigs,
+            authOptions,
+            popupOptions
+          )
+        )
       );
   }
 
@@ -305,12 +366,19 @@ export class OidcSecurityService {
    *
    * @returns An `Observable<LoginResponse>` containing all information about the login
    */
-  forceRefreshSession(customParams?: { [key: string]: string | number | boolean }, configId?: string): Observable<LoginResponse> {
+  forceRefreshSession(
+    customParams?: { [key: string]: string | number | boolean },
+    configId?: string
+  ): Observable<LoginResponse> {
     return this.configurationService
       .getOpenIDConfigurations(configId)
       .pipe(
         concatMap(({ allConfigs, currentConfig }) =>
-          this.refreshSessionService.userForceRefreshSession(currentConfig, allConfigs, customParams)
+          this.refreshSessionService.userForceRefreshSession(
+            currentConfig,
+            allConfigs,
+            customParams
+          )
         )
       );
   }
@@ -325,12 +393,19 @@ export class OidcSecurityService {
    *
    * @returns An observable when the action is finished
    */
-  logoffAndRevokeTokens(configId?: string, logoutAuthOptions?: LogoutAuthOptions): Observable<any> {
+  logoffAndRevokeTokens(
+    configId?: string,
+    logoutAuthOptions?: LogoutAuthOptions
+  ): Observable<any> {
     return this.configurationService
       .getOpenIDConfigurations(configId)
       .pipe(
         concatMap(({ allConfigs, currentConfig }) =>
-          this.logoffRevocationService.logoffAndRevokeTokens(currentConfig, allConfigs, logoutAuthOptions)
+          this.logoffRevocationService.logoffAndRevokeTokens(
+            currentConfig,
+            allConfigs,
+            logoutAuthOptions
+          )
         )
       );
   }
@@ -342,11 +417,20 @@ export class OidcSecurityService {
    * @param configId The configId to perform the action in behalf of. If not passed, the first configs will be taken
    * @param logoutAuthOptions with custom parameters and/or an custom url handler
    */
-  logoff(configId?: string, logoutAuthOptions?: LogoutAuthOptions): Observable<unknown> {
+  logoff(
+    configId?: string,
+    logoutAuthOptions?: LogoutAuthOptions
+  ): Observable<unknown> {
     return this.configurationService
       .getOpenIDConfigurations(configId)
       .pipe(
-        concatMap(({ allConfigs, currentConfig }) => this.logoffRevocationService.logoff(currentConfig, allConfigs, logoutAuthOptions))
+        concatMap(({ allConfigs, currentConfig }) =>
+          this.logoffRevocationService.logoff(
+            currentConfig,
+            allConfigs,
+            logoutAuthOptions
+          )
+        )
       );
   }
 
@@ -359,7 +443,9 @@ export class OidcSecurityService {
   logoffLocal(configId?: string): void {
     this.configurationService
       .getOpenIDConfigurations(configId)
-      .subscribe(({ allConfigs, currentConfig }) => this.logoffRevocationService.logoffLocal(currentConfig, allConfigs));
+      .subscribe(({ allConfigs, currentConfig }) =>
+        this.logoffRevocationService.logoffLocal(currentConfig, allConfigs)
+      );
   }
 
   /**
@@ -369,7 +455,9 @@ export class OidcSecurityService {
   logoffLocalMultiple(): void {
     this.configurationService
       .getOpenIDConfigurations()
-      .subscribe(({ allConfigs }) => this.logoffRevocationService.logoffLocalMultiple(allConfigs));
+      .subscribe(({ allConfigs }) =>
+        this.logoffRevocationService.logoffLocalMultiple(allConfigs)
+      );
   }
 
   /**
@@ -385,7 +473,11 @@ export class OidcSecurityService {
   revokeAccessToken(accessToken?: any, configId?: string): Observable<any> {
     return this.configurationService
       .getOpenIDConfiguration(configId)
-      .pipe(concatMap((config) => this.logoffRevocationService.revokeAccessToken(config, accessToken)));
+      .pipe(
+        concatMap((config) =>
+          this.logoffRevocationService.revokeAccessToken(config, accessToken)
+        )
+      );
   }
 
   /**
@@ -401,7 +493,11 @@ export class OidcSecurityService {
   revokeRefreshToken(refreshToken?: any, configId?: string): Observable<any> {
     return this.configurationService
       .getOpenIDConfiguration(configId)
-      .pipe(concatMap((config) => this.logoffRevocationService.revokeRefreshToken(config, refreshToken)));
+      .pipe(
+        concatMap((config) =>
+          this.logoffRevocationService.revokeRefreshToken(config, refreshToken)
+        )
+      );
   }
 
   /**
@@ -412,10 +508,15 @@ export class OidcSecurityService {
    *
    * @returns A string with the end session url or null
    */
-  getEndSessionUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): Observable<string | null> {
+  getEndSessionUrl(
+    customParams?: { [p: string]: string | number | boolean },
+    configId?: string
+  ): Observable<string | null> {
     return this.configurationService
       .getOpenIDConfiguration(configId)
-      .pipe(map((config) => this.urlService.getEndSessionUrl(config, customParams)));
+      .pipe(
+        map((config) => this.urlService.getEndSessionUrl(config, customParams))
+      );
   }
 
   /**
@@ -426,9 +527,19 @@ export class OidcSecurityService {
    *
    * @returns A string with the authorize URL or null
    */
-  getAuthorizeUrl(customParams?: { [p: string]: string | number | boolean }, configId?: string): Observable<string | null> {
+  getAuthorizeUrl(
+    customParams?: { [p: string]: string | number | boolean },
+    configId?: string
+  ): Observable<string | null> {
     return this.configurationService
       .getOpenIDConfiguration(configId)
-      .pipe(concatMap((config) => this.urlService.getAuthorizeUrl(config, customParams ? { customParams } : undefined)));
+      .pipe(
+        concatMap((config) =>
+          this.urlService.getAuthorizeUrl(
+            config,
+            customParams ? { customParams } : undefined
+          )
+        )
+      );
   }
 }

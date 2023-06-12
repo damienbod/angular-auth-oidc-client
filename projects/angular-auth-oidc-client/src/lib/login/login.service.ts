@@ -24,13 +24,20 @@ export class LoginService {
     const { usePushedAuthorisationRequests } = configuration;
 
     if (authOptions?.customParams) {
-      this.storagePersistenceService.write('storageCustomParamsAuthRequest', authOptions.customParams, configuration);
+      this.storagePersistenceService.write(
+        'storageCustomParamsAuthRequest',
+        authOptions.customParams,
+        configuration
+      );
     }
 
     if (usePushedAuthorisationRequests) {
       return this.parLoginService.loginPar(configuration, authOptions);
     } else {
-      return this.standardLoginService.loginStandard(configuration, authOptions);
+      return this.standardLoginService.loginStandard(
+        configuration,
+        authOptions
+      );
     }
   }
 
@@ -40,22 +47,39 @@ export class LoginService {
     authOptions?: AuthOptions,
     popupOptions?: PopupOptions
   ): Observable<LoginResponse> {
-    const isAlreadyInPopUp = this.popupService.isCurrentlyInPopup(configuration);
+    const isAlreadyInPopUp =
+      this.popupService.isCurrentlyInPopup(configuration);
 
     if (isAlreadyInPopUp) {
-      return of({ errorMessage: 'There is already a popup open.' } as LoginResponse);
+      return of({
+        errorMessage: 'There is already a popup open.',
+      } as LoginResponse);
     }
 
     const { usePushedAuthorisationRequests } = configuration;
 
     if (authOptions?.customParams) {
-      this.storagePersistenceService.write('storageCustomParamsAuthRequest', authOptions.customParams, configuration);
+      this.storagePersistenceService.write(
+        'storageCustomParamsAuthRequest',
+        authOptions.customParams,
+        configuration
+      );
     }
 
     if (usePushedAuthorisationRequests) {
-      return this.parLoginService.loginWithPopUpPar(configuration, allConfigs, authOptions, popupOptions);
+      return this.parLoginService.loginWithPopUpPar(
+        configuration,
+        allConfigs,
+        authOptions,
+        popupOptions
+      );
     }
 
-    return this.popUpLoginService.loginWithPopUpStandard(configuration, allConfigs, authOptions, popupOptions);
+    return this.popUpLoginService.loginWithPopUpStandard(
+      configuration,
+      allConfigs,
+      authOptions,
+      popupOptions
+    );
   }
 }

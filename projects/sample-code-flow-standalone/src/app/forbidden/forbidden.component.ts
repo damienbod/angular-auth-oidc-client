@@ -12,10 +12,12 @@ export class ForbiddenComponent implements OnInit {
   constructor(private oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.oidcSecurityService.isAuthenticated$.subscribe(({ isAuthenticated }) => {
-      this.isAuthenticated = isAuthenticated;
+    this.oidcSecurityService.isAuthenticated$.subscribe(
+      ({ isAuthenticated }) => {
+        this.isAuthenticated = isAuthenticated;
 
-      console.warn('authenticated: ', isAuthenticated);
-    });
+        console.warn('authenticated: ', isAuthenticated);
+      }
+    );
   }
 }

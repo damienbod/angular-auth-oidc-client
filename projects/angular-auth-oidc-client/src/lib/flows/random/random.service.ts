@@ -5,9 +5,15 @@ import { OpenIdConfiguration } from '../../config/openid-configuration';
 
 @Injectable({ providedIn: 'root' })
 export class RandomService {
-  constructor(private readonly cryptoService: CryptoService, private readonly loggerService: LoggerService) {}
+  constructor(
+    private readonly cryptoService: CryptoService,
+    private readonly loggerService: LoggerService
+  ) {}
 
-  createRandom(requiredLength: number, configuration: OpenIdConfiguration): string {
+  createRandom(
+    requiredLength: number,
+    configuration: OpenIdConfiguration
+  ): string {
     if (requiredLength <= 0) {
       return '';
     }
@@ -37,7 +43,8 @@ export class RandomService {
 
   private randomString(length: number): string {
     let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
     const values = new Uint32Array(length);
     const crypto = this.cryptoService.getCrypto();

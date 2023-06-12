@@ -11,7 +11,13 @@ import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 
 @NgModule({
   imports: [BrowserModule, routing, HttpClientModule, AuthConfigModule],
-  declarations: [AppComponent, ForbiddenComponent, HomeComponent, NavigationComponent, UnauthorizedComponent],
+  declarations: [
+    AppComponent,
+    ForbiddenComponent,
+    HomeComponent,
+    NavigationComponent,
+    UnauthorizedComponent,
+  ],
   providers: [],
   bootstrap: [AppComponent],
 })

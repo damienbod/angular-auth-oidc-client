@@ -43,7 +43,10 @@ describe('Configuration Service', () => {
           provide: AuthWellKnownService,
           useClass: mockClass(AuthWellKnownService),
         },
-        { provide: StsConfigLoader, useClass: mockClass(StsConfigStaticLoader) },
+        {
+          provide: StsConfigLoader,
+          useClass: mockClass(StsConfigStaticLoader),
+        },
       ],
     });
   });
@@ -64,7 +67,10 @@ describe('Configuration Service', () => {
 
   describe('hasManyConfigs', () => {
     it('returns true if many configs are stored', () => {
-      (configService as any).configsInternal = { configId1: { configId: 'configId1' }, configId2: { configId: 'configId2' } };
+      (configService as any).configsInternal = {
+        configId1: { configId: 'configId1' },
+        configId2: { configId: 'configId2' },
+      };
 
       const result = configService.hasManyConfigs();
 
@@ -72,7 +78,9 @@ describe('Configuration Service', () => {
     });
 
     it('returns false if only one config is stored', () => {
-      (configService as any).configsInternal = { configId1: { configId: 'configId1' } };
+      (configService as any).configsInternal = {
+        configId1: { configId: 'configId1' },
+      };
 
       const result = configService.hasManyConfigs();
 
@@ -82,7 +90,10 @@ describe('Configuration Service', () => {
 
   describe('getAllConfigurations', () => {
     it('returns all configs as array', () => {
-      (configService as any).configsInternal = { configId1: { configId: 'configId1' }, configId2: { configId: 'configId2' } };
+      (configService as any).configsInternal = {
+        configId1: { configId: 'configId1' },
+        configId2: { configId: 'configId2' },
+      };
 
       const result = configService.getAllConfigurations();
 
@@ -93,7 +104,10 @@ describe('Configuration Service', () => {
 
   describe('getOpenIDConfiguration', () => {
     it(`if config is already saved 'loadConfigs' is not called`, waitForAsync(() => {
-      (configService as any).configsInternal = { configId1: { configId: 'configId1' }, configId2: { configId: 'configId2' } };
+      (configService as any).configsInternal = {
+        configId1: { configId: 'configId1' },
+        configId2: { configId: 'configId2' },
+      };
       const spy = spyOn(configService as any, 'loadConfigs');
 
       configService.getOpenIDConfiguration('configId1').subscribe((config) => {
@@ -104,7 +118,9 @@ describe('Configuration Service', () => {
 
     it(`if config is NOT already saved 'loadConfigs' is called`, waitForAsync(() => {
       const configs = [{ configId: 'configId1' }, { configId: 'configId2' }];
-      const spy = spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
+      const spy = spyOn(configService as any, 'loadConfigs').and.returnValue(
+        of(configs)
+      );
 
       spyOn(configValidationService, 'validateConfig').and.returnValue(true);
 
@@ -126,11 +142,16 @@ describe('Configuration Service', () => {
     }));
 
     it(`returns null if configs are stored but not existing ID is passed`, waitForAsync(() => {
-      (configService as any).configsInternal = { configId1: { configId: 'configId1' }, configId2: { configId: 'configId2' } };
+      (configService as any).configsInternal = {
+        configId1: { configId: 'configId1' },
+        configId2: { configId: 'configId2' },
+      };
 
-      configService.getOpenIDConfiguration('notExisting').subscribe((config) => {
-        expect(config).toBeNull();
-      });
+      configService
+        .getOpenIDConfiguration('notExisting')
+        .subscribe((config) => {
+          expect(config).toBeNull();
+        });
     }));
 
     it(`sets authWellKnownEndPoints on config if authWellKnownEndPoints is stored`, waitForAsync(() => {
@@ -139,10 +160,14 @@ describe('Configuration Service', () => {
       spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
       spyOn(configValidationService, 'validateConfig').and.returnValue(true);
 
-      spyOn(storagePersistenceService, 'read').and.returnValue({ issuer: 'auth-well-known' });
+      spyOn(storagePersistenceService, 'read').and.returnValue({
+        issuer: 'auth-well-known',
+      });
 
       configService.getOpenIDConfiguration('configId1').subscribe((config) => {
-        expect(config.authWellknownEndpoints).toEqual({ issuer: 'auth-well-known' });
+        expect(config.authWellknownEndpoints).toEqual({
+          issuer: 'auth-well-known',
+        });
       });
     }));
 
@@ -151,29 +176,47 @@ describe('Configuration Service', () => {
 
       spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
       spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-      spyOn(storagePersistenceService, 'read').and.returnValue({ issuer: 'auth-well-known' });
+      spyOn(storagePersistenceService, 'read').and.returnValue({
+        issuer: 'auth-well-known',
+      });
 
       const spy = spyOn(publicEventsService, 'fireEvent');
 
       configService.getOpenIDConfiguration('configId1').subscribe(() => {
-        expect(spy).toHaveBeenCalledOnceWith(EventTypes.ConfigLoaded, jasmine.anything());
+        expect(spy).toHaveBeenCalledOnceWith(
+          EventTypes.ConfigLoaded,
+          jasmine.anything()
+        );
       });
     }));
 
     it(`stores, uses and fires event when authwellknownendpoints are passed`, waitForAsync(() => {
-      const configs = [{ configId: 'configId1', authWellknownEndpoints: { issuer: 'auth-well-known' } }];
+      const configs = [
+        {
+          configId: 'configId1',
+          authWellknownEndpoints: { issuer: 'auth-well-known' },
+        },
+      ];
 
       spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
       spyOn(configValidationService, 'validateConfig').and.returnValue(true);
       spyOn(storagePersistenceService, 'read').and.returnValue(null);
 
       const fireEventSpy = spyOn(publicEventsService, 'fireEvent');
-      const storeWellKnownEndpointsSpy = spyOn(authWellKnownService, 'storeWellKnownEndpoints');
+      const storeWellKnownEndpointsSpy = spyOn(
+        authWellKnownService,
+        'storeWellKnownEndpoints'
+      );
 
       configService.getOpenIDConfiguration('configId1').subscribe((config) => {
         expect(config).toBeTruthy();
-        expect(fireEventSpy).toHaveBeenCalledOnceWith(EventTypes.ConfigLoaded, jasmine.anything());
-        expect(storeWellKnownEndpointsSpy).toHaveBeenCalledOnceWith(config, { issuer: 'auth-well-known' });
+        expect(fireEventSpy).toHaveBeenCalledOnceWith(
+          EventTypes.ConfigLoaded,
+          jasmine.anything()
+        );
+        expect(storeWellKnownEndpointsSpy).toHaveBeenCalledOnceWith(config, {
+          issuer: 'auth-well-known',
+        });
       });
     }));
   });
@@ -181,7 +224,10 @@ describe('Configuration Service', () => {
   describe('getOpenIDConfigurations', () => {
     it(`returns correct result`, waitForAsync(() => {
       spyOn(stsConfigLoader, 'loadConfigs').and.returnValue(
-        of([{ configId: 'configId1' } as OpenIdConfiguration, { configId: 'configId2' } as OpenIdConfiguration])
+        of([
+          { configId: 'configId1' } as OpenIdConfiguration,
+          { configId: 'configId2' } as OpenIdConfiguration,
+        ])
       );
 
       spyOn(configValidationService, 'validateConfig').and.returnValue(true);
@@ -194,7 +240,10 @@ describe('Configuration Service', () => {
 
     it(`created configId when configId is not set`, waitForAsync(() => {
       spyOn(stsConfigLoader, 'loadConfigs').and.returnValue(
-        of([{ clientId: 'clientId1' } as OpenIdConfiguration, { clientId: 'clientId2' } as OpenIdConfiguration])
+        of([
+          { clientId: 'clientId1' } as OpenIdConfiguration,
+          { clientId: 'clientId2' } as OpenIdConfiguration,
+        ])
       );
 
       spyOn(configValidationService, 'validateConfig').and.returnValue(true);
@@ -212,15 +261,20 @@ describe('Configuration Service', () => {
 
     it(`returns null if config is not valid`, waitForAsync(() => {
       spyOn(stsConfigLoader, 'loadConfigs').and.returnValue(
-        of([{ configId: 'configId1' } as OpenIdConfiguration, { configId: 'configId2' } as OpenIdConfiguration])
+        of([
+          { configId: 'configId1' } as OpenIdConfiguration,
+          { configId: 'configId2' } as OpenIdConfiguration,
+        ])
       );
 
       spyOn(configValidationService, 'validateConfigs').and.returnValue(false);
 
-      configService.getOpenIDConfigurations().subscribe(({ allConfigs, currentConfig }) => {
-        expect(allConfigs).toBeNull();
-        expect(currentConfig).toBeNull();
-      });
+      configService
+        .getOpenIDConfigurations()
+        .subscribe(({ allConfigs, currentConfig }) => {
+          expect(allConfigs).toBeNull();
+          expect(currentConfig).toBeNull();
+        });
     }));
   });
 

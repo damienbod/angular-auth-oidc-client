@@ -136,7 +136,9 @@ export interface OpenIdConfiguration {
   customParamsAuthRequest?: { [key: string]: string | number | boolean };
 
   /** Extra parameters to add to the refresh token request body */
-  customParamsRefreshTokenRequest?: { [key: string]: string | number | boolean };
+  customParamsRefreshTokenRequest?: {
+    [key: string]: string | number | boolean;
+  };
 
   /** Extra parameters to add to the authorization EndSession request */
   customParamsEndSessionRequest?: { [key: string]: string | number | boolean };

@@ -31,7 +31,9 @@ export class HomeComponent implements OnInit {
   }
 
   forceRefreshSession() {
-    this.oidcSecurityService.forceRefreshSession().subscribe((result) => console.warn(result));
+    this.oidcSecurityService
+      .forceRefreshSession()
+      .subscribe((result) => console.warn(result));
   }
 
   logout(configId: string) {

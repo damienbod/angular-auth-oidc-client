@@ -11,7 +11,10 @@ describe('Config Validation Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ConfigValidationService, { provide: LoggerService, useClass: mockClass(LoggerService) }],
+      providers: [
+        ConfigValidationService,
+        { provide: LoggerService, useClass: mockClass(LoggerService) },
+      ],
     });
   });
 
@@ -52,9 +55,14 @@ describe('Config Validation Service', () => {
 
   it('calls `logWarning` if one rule has warning level', () => {
     const loggerWarningSpy = spyOn(loggerService, 'logWarning');
-    const messageTypeSpy = spyOn(configValidationService as any, 'getAllMessagesOfType');
+    const messageTypeSpy = spyOn(
+      configValidationService as any,
+      'getAllMessagesOfType'
+    );
 
-    messageTypeSpy.withArgs('warning', jasmine.any(Array)).and.returnValue(['A warning message']);
+    messageTypeSpy
+      .withArgs('warning', jasmine.any(Array))
+      .and.returnValue(['A warning message']);
     messageTypeSpy.withArgs('error', jasmine.any(Array)).and.callThrough();
 
     configValidationService.validateConfig(VALID_CONFIG);
@@ -90,7 +98,12 @@ describe('Config Validation Service', () => {
 
   describe('ensureSilentRenewUrlWhenNoRefreshTokenUsed', () => {
     it('return false when silent renew is used with no useRefreshToken and no silentrenewUrl', () => {
-      const config = { ...VALID_CONFIG, silentRenew: true, useRefreshToken: false, silentRenewUrl: null };
+      const config = {
+        ...VALID_CONFIG,
+        silentRenew: true,
+        useRefreshToken: false,
+        silentRenewUrl: null,
+      };
       const result = configValidationService.validateConfig(config);
 
       expect(result).toBeFalse();
@@ -99,7 +112,12 @@ describe('Config Validation Service', () => {
 
   describe('use-offline-scope-with-silent-renew.rule', () => {
     it('return true but warning when silent renew is used with useRefreshToken but no offline_access scope is given', () => {
-      const config = { ...VALID_CONFIG, silentRenew: true, useRefreshToken: true, scopes: 'scope1 scope2 but_no_offline_access' };
+      const config = {
+        ...VALID_CONFIG,
+        silentRenew: true,
+        useRefreshToken: true,
+        scopes: 'scope1 scope2 but_no_offline_access',
+      };
 
       const loggerSpy = spyOn(loggerService, 'logError');
       const loggerWarningSpy = spyOn(loggerService, 'logWarning');
@@ -114,13 +132,26 @@ describe('Config Validation Service', () => {
 
   describe('ensure-no-duplicated-configs.rule', () => {
     it('should print out correct error when mutiple configs with same properties are passed', () => {
-      const config1 = { ...VALID_CONFIG, silentRenew: true, useRefreshToken: true, scopes: 'scope1 scope2 but_no_offline_access' };
-      const config2 = { ...VALID_CONFIG, silentRenew: true, useRefreshToken: true, scopes: 'scope1 scope2 but_no_offline_access' };
+      const config1 = {
+        ...VALID_CONFIG,
+        silentRenew: true,
+        useRefreshToken: true,
+        scopes: 'scope1 scope2 but_no_offline_access',
+      };
+      const config2 = {
+        ...VALID_CONFIG,
+        silentRenew: true,
+        useRefreshToken: true,
+        scopes: 'scope1 scope2 but_no_offline_access',
+      };
 
       const loggerErrorSpy = spyOn(loggerService, 'logError');
       const loggerWarningSpy = spyOn(loggerService, 'logWarning');
 
-      const result = configValidationService.validateConfigs([config1, config2]);
+      const result = configValidationService.validateConfigs([
+        config1,
+        config2,
+      ]);
 
       expect(result).toBeTrue();
       expect(loggerErrorSpy).not.toHaveBeenCalled();
@@ -151,7 +182,10 @@ describe('Config Validation Service', () => {
 
   describe('validateConfigs', () => {
     it('calls internal method with empty array if something falsy is passed', () => {
-      const spy = spyOn(configValidationService as any, 'validateConfigsInternal').and.callThrough();
+      const spy = spyOn(
+        configValidationService as any,
+        'validateConfigsInternal'
+      ).and.callThrough();
 
       const result = configValidationService.validateConfigs(null);
 

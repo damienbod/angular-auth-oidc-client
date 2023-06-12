@@ -27,26 +27,47 @@ export class FlowsDataService {
   }
 
   getAuthStateControl(configuration: OpenIdConfiguration): any {
-    return this.storagePersistenceService.read('authStateControl', configuration);
+    return this.storagePersistenceService.read(
+      'authStateControl',
+      configuration
+    );
   }
 
-  setAuthStateControl(authStateControl: string, configuration: OpenIdConfiguration): boolean {
-    return this.storagePersistenceService.write('authStateControl', authStateControl, configuration);
+  setAuthStateControl(
+    authStateControl: string,
+    configuration: OpenIdConfiguration
+  ): boolean {
+    return this.storagePersistenceService.write(
+      'authStateControl',
+      authStateControl,
+      configuration
+    );
   }
 
   getExistingOrCreateAuthStateControl(configuration: OpenIdConfiguration): any {
-    let state = this.storagePersistenceService.read('authStateControl', configuration);
+    let state = this.storagePersistenceService.read(
+      'authStateControl',
+      configuration
+    );
 
     if (!state) {
       state = this.randomService.createRandom(40, configuration);
-      this.storagePersistenceService.write('authStateControl', state, configuration);
+      this.storagePersistenceService.write(
+        'authStateControl',
+        state,
+        configuration
+      );
     }
 
     return state;
   }
 
   setSessionState(sessionState: any, configuration: OpenIdConfiguration): void {
-    this.storagePersistenceService.write('session_state', sessionState, configuration);
+    this.storagePersistenceService.write(
+      'session_state',
+      sessionState,
+      configuration
+    );
   }
 
   resetStorageFlowData(configuration: OpenIdConfiguration): void {
@@ -60,21 +81,36 @@ export class FlowsDataService {
   createCodeVerifier(configuration: OpenIdConfiguration): string {
     const codeVerifier = this.randomService.createRandom(67, configuration);
 
-    this.storagePersistenceService.write('codeVerifier', codeVerifier, configuration);
+    this.storagePersistenceService.write(
+      'codeVerifier',
+      codeVerifier,
+      configuration
+    );
 
     return codeVerifier;
   }
 
   isCodeFlowInProgress(configuration: OpenIdConfiguration): boolean {
-    return !!this.storagePersistenceService.read('storageCodeFlowInProgress', configuration);
+    return !!this.storagePersistenceService.read(
+      'storageCodeFlowInProgress',
+      configuration
+    );
   }
 
   setCodeFlowInProgress(configuration: OpenIdConfiguration): void {
-    this.storagePersistenceService.write('storageCodeFlowInProgress', true, configuration);
+    this.storagePersistenceService.write(
+      'storageCodeFlowInProgress',
+      true,
+      configuration
+    );
   }
 
   resetCodeFlowInProgress(configuration: OpenIdConfiguration): void {
-    this.storagePersistenceService.write('storageCodeFlowInProgress', false, configuration);
+    this.storagePersistenceService.write(
+      'storageCodeFlowInProgress',
+      false,
+      configuration
+    );
   }
 
   isSilentRenewRunning(configuration: OpenIdConfiguration): boolean {
@@ -86,13 +122,21 @@ export class FlowsDataService {
     }
 
     const timeOutInMilliseconds = silentRenewTimeoutInSeconds * 1000;
-    const dateOfLaunchedProcessUtc = Date.parse(storageObject.dateOfLaunchedProcessUtc);
+    const dateOfLaunchedProcessUtc = Date.parse(
+      storageObject.dateOfLaunchedProcessUtc
+    );
     const currentDateUtc = Date.parse(new Date().toISOString());
-    const elapsedTimeInMilliseconds = Math.abs(currentDateUtc - dateOfLaunchedProcessUtc);
+    const elapsedTimeInMilliseconds = Math.abs(
+      currentDateUtc - dateOfLaunchedProcessUtc
+    );
     const isProbablyStuck = elapsedTimeInMilliseconds > timeOutInMilliseconds;
 
     if (isProbablyStuck) {
-      this.loggerService.logDebug(configuration, 'silent renew process is probably stuck, state will be reset.', configId);
+      this.loggerService.logDebug(
+        configuration,
+        'silent renew process is probably stuck, state will be reset.',
+        configId
+      );
       this.resetSilentRenewRunning(configuration);
 
       return false;
@@ -107,15 +151,28 @@ export class FlowsDataService {
       dateOfLaunchedProcessUtc: new Date().toISOString(),
     };
 
-    this.storagePersistenceService.write('storageSilentRenewRunning', JSON.stringify(storageObject), configuration);
+    this.storagePersistenceService.write(
+      'storageSilentRenewRunning',
+      JSON.stringify(storageObject),
+      configuration
+    );
   }
 
   resetSilentRenewRunning(configuration: OpenIdConfiguration): void {
-    this.storagePersistenceService.write('storageSilentRenewRunning', '', configuration);
+    this.storagePersistenceService.write(
+      'storageSilentRenewRunning',
+      '',
+      configuration
+    );
   }
 
-  private getSilentRenewRunningStorageEntry(configuration: OpenIdConfiguration): SilentRenewRunning {
-    const storageEntry = this.storagePersistenceService.read('storageSilentRenewRunning', configuration);
+  private getSilentRenewRunningStorageEntry(
+    configuration: OpenIdConfiguration
+  ): SilentRenewRunning {
+    const storageEntry = this.storagePersistenceService.read(
+      'storageSilentRenewRunning',
+      configuration
+    );
 
     if (!storageEntry) {
       return null;

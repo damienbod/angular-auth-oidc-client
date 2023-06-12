@@ -25,7 +25,10 @@ module.exports = function (config) {
       suppressAll: true, // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, '../../coverage/sample-implicit-flow-google'),
+      dir: require('path').join(
+        __dirname,
+        '../../coverage/sample-implicit-flow-google'
+      ),
       subdir: '.',
       reporters: [{ type: 'html' }, { type: 'text-summary' }],
     },
