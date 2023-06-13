@@ -55,19 +55,22 @@ export class PopUpService {
   ): void {
     const optionsToPass = this.getOptions(popupOptions);
 
-    this.popUp = this.windowInternal.open(url, '_blank', optionsToPass);
-
-    if (!this.popUp) {
-      this.loggerService.logError(config, 'Could not open popup');
-
-      return;
-    }
-
     this.storagePersistenceService.write(
       this.STORAGE_IDENTIFIER,
       'true',
       config
     );
+
+    this.popUp = this.windowInternal.open(url, '_blank', optionsToPass);
+
+    if (!this.popUp) {
+      this.storagePersistenceService.remove(this.STORAGE_IDENTIFIER, config);
+      this.loggerService.logError(config, 'Could not open popup');
+
+      return;
+    }
+
+    this.loggerService.logDebug(config, 'Opened popup with url ' + url);
 
     const listener = (event: MessageEvent): void => {
       if (!event?.data || typeof event.data !== 'string') {
@@ -75,6 +78,11 @@ export class PopUpService {
 
         return;
       }
+
+      this.loggerService.logDebug(
+        config,
+        'Received message from popup with url ' + event.data
+      );
 
       this.resultInternal$.next({ userClosed: false, receivedUrl: event.data });
 
