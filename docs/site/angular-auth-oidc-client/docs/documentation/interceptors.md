@@ -46,3 +46,28 @@ If you configured a route to be protected, every child route underneath is prote
 In case you are running multiple configurations all the configured routes over all configurations are collected and compared against the currently requested route. If a match is made, the token for the configuration you added the secure route to is being taken and applied in the Authorization header.
 
 Keep in mind that you always can implement your own interceptor as [described in the Angular documentation](https://angular.io/guide/http#intercepting-requests-and-responses).
+
+## Standalone API
+
+To use the standalone API use the `authInterceptor` method
+
+```ts
+import { ApplicationConfig } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideAuth, authInterceptor } from 'angular-auth-oidc-client';
+import { AppComponent } from './app/app.component';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(withInterceptors([authInterceptor()])),
+    provideAuth({
+      config: {
+        /* Your config here */
+      },
+    }),
+  ],
+};
+
+bootstrapApplication(AppComponent, appConfig);
+```
