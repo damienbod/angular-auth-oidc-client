@@ -196,6 +196,29 @@ import { AuthModule, DefaultLocalStorageService, AbstractSecurityStorage } from 
 export class AuthConfigModule {}
 ```
 
+## Configure with standalone config
+
+To configure the auth module by using the standalone API, you can use the `provideAuth` method
+
+```ts
+import { ApplicationConfig } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideAuth } from 'angular-auth-oidc-client';
+import { AppComponent } from './app/app.component';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAuth({
+      config: {
+        /* Your config here */
+      },
+    }),
+  ],
+};
+
+bootstrapApplication(AppComponent, appConfig);
+```
+
 ## Config Values
 
 ### `configId`

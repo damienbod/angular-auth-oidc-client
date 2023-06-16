@@ -1,4 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig } from '@angular/core';
 import {
   provideRouter,
@@ -6,6 +6,7 @@ import {
 } from '@angular/router';
 import {
   LogLevel,
+  authInterceptor,
   autoLoginPartialRoutesGuard,
   provideAuth,
 } from 'angular-auth-oidc-client';
@@ -16,7 +17,7 @@ import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([authInterceptor()])),
     provideAuth({
       config: {
         triggerAuthorizationResultEvent: true,
