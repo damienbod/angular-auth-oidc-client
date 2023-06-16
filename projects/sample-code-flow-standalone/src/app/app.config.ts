@@ -5,9 +5,9 @@ import {
   withEnabledBlockingInitialNavigation,
 } from '@angular/router';
 import {
-  AutoLoginPartialRoutesGuard,
   LogLevel,
   authInterceptor,
+  autoLoginPartialRoutesGuard,
   provideAuth,
 } from 'angular-auth-oidc-client';
 import { ForbiddenComponent } from './forbidden/forbidden.component';
@@ -43,18 +43,18 @@ export const appConfig: ApplicationConfig = {
         {
           path: 'protected',
           component: ProtectedComponent,
-          canActivate: [AutoLoginPartialRoutesGuard],
+          canActivate: [autoLoginPartialRoutesGuard],
         },
         {
           path: 'forbidden',
           component: ForbiddenComponent,
-          canActivate: [AutoLoginPartialRoutesGuard],
+          canActivate: [autoLoginPartialRoutesGuard],
         },
         {
           path: 'customers',
           loadChildren: () =>
             import('./customers/customers.routes').then((m) => m.routes),
-          canLoad: [AutoLoginPartialRoutesGuard],
+          canMatch: [autoLoginPartialRoutesGuard],
         },
         { path: 'unauthorized', component: UnauthorizedComponent },
       ],
