@@ -136,10 +136,11 @@ export class CheckAuthService {
 
       return of({
         isAuthenticated: false,
-        errorMessage: '',
+        errorMessage,
         userData: null,
         idToken: '',
         accessToken: '',
+        configId: null,
       });
     }
 
@@ -223,7 +224,7 @@ export class CheckAuthService {
 
         return of({
           isAuthenticated: false,
-          errorMessage: '',
+          errorMessage: message,
           userData: null,
           idToken: '',
           accessToken: '',

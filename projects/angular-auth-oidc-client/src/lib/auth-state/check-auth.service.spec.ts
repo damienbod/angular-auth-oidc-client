@@ -192,9 +192,9 @@ describe('CheckAuthService', () => {
             errorMessage:
               'Please provide at least one configuration before setting up the module',
             configId: null,
-            idToken: null,
+            idToken: '',
             userData: null,
-            accessToken: null,
+            accessToken: '',
           })
         );
     }));
@@ -218,7 +218,13 @@ describe('CheckAuthService', () => {
       checkAuthService
         .checkAuth(allConfigs[0], allConfigs)
         .subscribe((result) => {
-          expect(result).toBeNull();
+          expect(result).toEqual({
+            isAuthenticated: false,
+            errorMessage: '',
+            userData: null,
+            idToken: '',
+            accessToken: '',
+          });
           expect(popupSpy).toHaveBeenCalled();
         });
     }));
@@ -244,9 +250,9 @@ describe('CheckAuthService', () => {
             isAuthenticated: false,
             errorMessage: 'ERROR',
             configId: 'configId1',
-            idToken: null,
+            idToken: '',
             userData: null,
-            accessToken: null,
+            accessToken: '',
           });
           expect(spy).toHaveBeenCalled();
         });
