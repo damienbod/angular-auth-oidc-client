@@ -231,7 +231,14 @@ describe('RefreshSessionService ', () => {
       refreshSessionService
         .forceRefreshSession(allConfigs[0], allConfigs)
         .subscribe((result) => {
-          expect(result).toBeNull();
+          expect(result).toEqual({
+            isAuthenticated: false,
+            errorMessage: '',
+            userData: null,
+            idToken: '',
+            accessToken: '',
+            configId: 'configId1',
+          });
         });
     }));
 
@@ -273,7 +280,7 @@ describe('RefreshSessionService ', () => {
         });
     }));
 
-    it('calls start refresh session and waits for completed, returns null if auth is false', waitForAsync(() => {
+    it('calls start refresh session and waits for completed, returns LoginResponse if auth is false', waitForAsync(() => {
       spyOn(
         flowHelper,
         'isCurrentFlowCodeFlowWithRefreshTokens'
@@ -299,7 +306,14 @@ describe('RefreshSessionService ', () => {
       refreshSessionService
         .forceRefreshSession(allConfigs[0], allConfigs)
         .subscribe((result) => {
-          expect(result).toBeNull();
+          expect(result).toEqual({
+            isAuthenticated: false,
+            errorMessage: '',
+            userData: null,
+            idToken: '',
+            accessToken: '',
+            configId: 'configId1',
+          });
         });
     }));
 
@@ -423,7 +437,14 @@ describe('RefreshSessionService ', () => {
         refreshSessionService
           .forceRefreshSession(allConfigs[0], allConfigs)
           .subscribe((result) => {
-            expect(result).toBeNull();
+            expect(result).toEqual({
+              isAuthenticated: false,
+              errorMessage: '',
+              userData: null,
+              idToken: '',
+              accessToken: '',
+              configId: 'configId1',
+            });
           });
       }));
 

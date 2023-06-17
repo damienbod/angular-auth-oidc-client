@@ -30,6 +30,7 @@ import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 
 export const MAX_RETRY_ATTEMPTS = 3;
+
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionService {
   constructor(
@@ -82,7 +83,14 @@ export class RefreshSessionService {
             } as LoginResponse;
           }
 
-          return null;
+          return {
+            isAuthenticated: false,
+            errorMessage: '',
+            userData: null,
+            idToken: '',
+            accessToken: '',
+            configId,
+          };
         })
       );
     }
@@ -110,13 +118,20 @@ export class RefreshSessionService {
           };
         }
 
-        return null;
+        return {
+          isAuthenticated: false,
+          errorMessage: '',
+          userData: null,
+          idToken: '',
+          accessToken: '',
+          configId,
+        };
       })
     );
   }
 
   private persistCustomParams(
-    extraCustomParams: { [key: string]: string | number | boolean },
+    extraCustomParams: { [key: string]: string | number | boolean } | undefined,
     config: OpenIdConfiguration
   ): void {
     const { useRefreshToken } = config;
