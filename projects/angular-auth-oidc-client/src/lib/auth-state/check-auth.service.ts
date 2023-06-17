@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { AuthStateService } from './auth-state.service';
 import { AutoLoginService } from '../auto-login/auto-login.service';
 import { CallbackService } from '../callback/callback.service';
 import { PeriodicallyTokenCheckService } from '../callback/periodically-token-check.service';
@@ -17,6 +16,7 @@ import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UserService } from '../user-data/user.service';
 import { CurrentUrlService } from '../utils/url/current-url.service';
+import { AuthStateService } from './auth-state.service';
 
 @Injectable({ providedIn: 'root' })
 export class CheckAuthService {
@@ -136,11 +136,10 @@ export class CheckAuthService {
 
       return of({
         isAuthenticated: false,
-        errorMessage,
+        errorMessage: '',
         userData: null,
-        idToken: null,
-        accessToken: null,
-        configId: null,
+        idToken: '',
+        accessToken: '',
       });
     }
 
@@ -155,7 +154,13 @@ export class CheckAuthService {
     if (this.popupService.isCurrentlyInPopup(config)) {
       this.popupService.sendMessageToMainWindow(currentUrl);
 
-      return of(null);
+      return of({
+        isAuthenticated: false,
+        errorMessage: '',
+        userData: null,
+        idToken: '',
+        accessToken: '',
+      });
     }
 
     const isCallback = this.callbackService.isCallback(currentUrl);
@@ -200,7 +205,7 @@ export class CheckAuthService {
           accessToken: this.authStateService.getAccessToken(config),
           idToken: this.authStateService.getIdToken(config),
           configId,
-        };
+        } as LoginResponse;
       }),
       tap(({ isAuthenticated }) => {
         this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinished);
@@ -218,10 +223,10 @@ export class CheckAuthService {
 
         return of({
           isAuthenticated: false,
-          errorMessage: message,
+          errorMessage: '',
           userData: null,
-          idToken: null,
-          accessToken: null,
+          idToken: '',
+          accessToken: '',
           configId,
         });
       })
@@ -249,7 +254,7 @@ export class CheckAuthService {
   private getConfigurationWithUrlState(
     configurations: OpenIdConfiguration[],
     stateFromUrl: string
-  ): OpenIdConfiguration {
+  ): OpenIdConfiguration | null {
     for (const config of configurations) {
       const storedState = this.storagePersistenceService.read(
         'authStateControl',
