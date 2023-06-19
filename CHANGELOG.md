@@ -1,5 +1,18 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2023-06-19 16.0.0
+
+- Add provideAuth for standalone applications
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1643)
+- Docs: adds docs for standalone methods
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1778)
+- Docs: add standalone example
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1639)
+- Fix: returning a loginresponse and not null
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1781)
+- Deprecate guard and update docs
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1782)
+
 ### 2023-05-05 15.0.5
 
 - Bugfix id token expire check
