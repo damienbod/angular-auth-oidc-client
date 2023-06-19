@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   ActivatedRouteSnapshot,
   Router,
@@ -12,6 +12,9 @@ import { ConfigurationService } from '../config/config.service';
 import { LoginService } from '../login/login.service';
 import { AutoLoginService } from './auto-login.service';
 
+/**
+ * @deprecated Please do not use the `AutoLoginAllRoutesGuard` anymore as it is not recommended anymore, deprecated and will be removed in future versions of this library. More information [Why is AutoLoginAllRoutesGuard not recommended?](https://github.com/damienbod/angular-auth-oidc-client/issues/1549)
+ */
 @Injectable({ providedIn: 'root' })
 export class AutoLoginAllRoutesGuard {
   constructor(
@@ -64,34 +67,6 @@ export class AutoLoginAllRoutesGuard {
     );
   }
 }
-
-export function autoLoginAllRoutesGuard(): Observable<boolean> {
-  const configurationService = inject(ConfigurationService);
-  const checkAuthService = inject(CheckAuthService);
-  const loginService = inject(LoginService);
-  const autoLoginService = inject(AutoLoginService);
-  const router = inject(Router);
-
-  const url =
-    router.getCurrentNavigation()?.extractedUrl.toString().substring(1) ?? '';
-
-  return checkAuth(
-    url,
-    configurationService,
-    checkAuthService,
-    autoLoginService,
-    loginService
-  );
-}
-
-// export function autoLoginAllRoutesGuard(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-//   const configurationService = inject(ConfigurationService);
-//   const checkAuthService = inject(CheckAuthService);
-//   const loginService = inject(LoginService);
-//   const autoLoginService = inject(AutoLoginService);
-
-//   return checkAuth(state.url, configurationService, checkAuthService, autoLoginService, loginService);
-// }
 
 function checkAuth(
   url: string,

@@ -54,7 +54,7 @@ const appRoutes: Routes = [
 
 All other guard types like `canLoad` or `canActivateChild` work in a similar way. However, the guard class has to implement the respective interfaces and methods accordingly.
 
-## Functional
+## Functional API
 
 ```ts
 import { inject } from '@angular/core';

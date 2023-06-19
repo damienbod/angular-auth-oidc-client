@@ -47,9 +47,9 @@ In case you are running multiple configurations all the configured routes over a
 
 Keep in mind that you always can implement your own interceptor as [described in the Angular documentation](https://angular.io/guide/http#intercepting-requests-and-responses).
 
-## Standalone API
+## Functional API
 
-To use the standalone API use the `authInterceptor` method
+To use the functional API use the `authInterceptor` method
 
 ```ts
 import { ApplicationConfig } from '@angular/core';
