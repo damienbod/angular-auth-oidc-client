@@ -10,6 +10,8 @@
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1639)
 - Fix: returning a loginresponse and not null
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1781)
+- moved the setting of popupauth in storage before opening the popup wi…
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1776)
 - Deprecate guard and update docs
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1782)
 

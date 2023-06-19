@@ -1,11 +1,11 @@
 import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
-import { addPackageJsonDependency, NodeDependency, NodeDependencyType } from '@schematics/angular/utility/dependencies';
+import { NodeDependency, NodeDependencyType, addPackageJsonDependency } from '@schematics/angular/utility/dependencies';
 import { NgAddOptions } from '../models/ng-add-options';
 
 const dependenciesToAdd: any[] = [
   {
     name: 'angular-auth-oidc-client',
-    version: '15.0.5',
+    version: '16.0.0',
   },
 ];
 
