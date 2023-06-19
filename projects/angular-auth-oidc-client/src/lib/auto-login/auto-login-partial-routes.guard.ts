@@ -94,17 +94,6 @@ export function autoLoginPartialRoutesGuard(): Observable<boolean> {
   );
 }
 
-// export function autoLoginPartialRoutesGuard(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-//   const configurationService = inject(ConfigurationService);
-//   const authStateService = inject(AuthStateService);
-//   const loginService = inject(LoginService);
-//   const autoLoginService = inject(AutoLoginService);
-
-//   const authOptions: AuthOptions | undefined = route?.data ? { customParams: route.data } : undefined;
-
-//   return checkAuth(state.url, configurationService, authStateService, autoLoginService, loginService, authOptions);
-// }
-
 function checkAuth(
   url: string,
   configurationService: ConfigurationService,
