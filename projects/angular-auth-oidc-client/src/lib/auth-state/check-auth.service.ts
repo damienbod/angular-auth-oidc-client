@@ -226,7 +226,7 @@ export class CheckAuthService {
           isAuthenticated: false,
           errorMessage: message,
           userData: null,
-          idToken: null,
+          idToken: '',
           accessToken: '',
           configId,
         });
