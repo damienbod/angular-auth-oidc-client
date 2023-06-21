@@ -206,7 +206,7 @@ export class CheckAuthService {
           accessToken: this.authStateService.getAccessToken(config),
           idToken: this.authStateService.getIdToken(config),
           configId,
-        } as LoginResponse;
+        };
       }),
       tap(({ isAuthenticated }) => {
         this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinished);
